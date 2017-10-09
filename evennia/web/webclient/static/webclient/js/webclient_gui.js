@@ -243,10 +243,10 @@ var resizeInputField = function () {
 
 // Handle resizing of client
 function doWindowResize() {
-      var mwin = $("#messagewindow");
-      var parent = mwin.closest(".split")
-      parent.animate({
-          scrollTop: parent.prop("scrollHeight")
+      var resizable = $("[data-update-append]");
+      var parents = resizable.closest(".split")
+      parents.animate({
+          scrollTop: parents.prop("scrollHeight")
       }, 0);
 }
 
