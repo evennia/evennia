@@ -158,7 +158,7 @@ function doCloseDialog(event) {
 function onKeydown (event) {
     var code = event.which;
     var history_entry = null;
-    var inputfield = $("[data-role-input]");
+    var inputfield = $("#inputfield");
     if (code === 9) {
       return;
     }
@@ -207,41 +207,12 @@ function onKeyPress (event) {
 }
 
 var resizeInputField = function () {
-    return
-    var min_height = 50;
-    var max_height = 300;
-    var prev_text_len = 0;
+    return function() {
+      var wrapper = $("#inputform")
+      var input = $("#inputcontrol")
+      var prompt = $("#prompt")
 
-    // Check to see if we should change the height of the input area
-    return function () {
-        var inputfield = $("[data-role-input]");
-        var scrollh = inputfield.prop("scrollHeight");
-        var clienth = inputfield.prop("clientHeight");
-        var newh = 0;
-        var curr_text_len = inputfield.val().length;
-
-        if (scrollh > clienth && scrollh <= max_height) {
-            // Need to make it bigger
-            newh = scrollh;
-        }
-        else if (curr_text_len < prev_text_len) {
-            // There is less text in the field; try to make it smaller
-            // To avoid repaints, we draw the text in an offscreen element and
-            // determine its dimensions.
-            var sizer = $('#inputsizer')
-                .css("width", inputfield.prop("clientWidth"))
-                .text(inputfield.val());
-            newh = sizer.prop("scrollHeight");
-        }
-
-        if (newh != 0) {
-            newh = Math.min(newh, max_height);
-            if (clienth != newh) {
-                inputfield.css("height", newh + "px");
-                doWindowResize();
-            }
-        }
-        prev_text_len = curr_text_len;
+      input.height(wrapper.height() - (input.offset().top - wrapper.offset().top));
     }
 }();
 
@@ -276,7 +247,7 @@ function onText(args, kwargs) {
 
     if (renderto == "main") {
         for (var i = 0; i < tags.length; i++) {
-          var mwin = $("[data-role-output][data-tag='" + tags[i] + "']");
+          var mwin = $("[data-role-output][data-tags*='" + tags[i] + "\"']");//this monster here makes sure the tag ends with "
           var parent = mwin.closest(".split")
           var cls = kwargs == null ? 'out' : kwargs['cls'];
           mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
