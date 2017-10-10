@@ -22,8 +22,8 @@ body {
 }
 @media screen and (max-width: 480px) {
   body {
-    font-size: .6rem;
-    line-height: 1rem;
+    font-size: .5rem;
+    line-height: .7rem;
   }
 }
 
