@@ -28,7 +28,7 @@ var SplitHandler = (function () {
       sizes: sizes,
       gutterSize: 8,
       cursor: 'row-resize',
-      minSize: [100,150],
+      minSize: [50,50],
       onDragEnd: function () {
         var wrapper = $("#inputform")
         var input = $("#inputcontrol")
