@@ -56,6 +56,24 @@ var SplitHandler = (function () {
     move_to.append(move_from_children);
   }
 
+  var setTags = function(output_selector, tags) {
+    var output_panel = $(output_selector)
+    if (!output_panel.attr("data-role-output")) {
+      console.log("Tried to set non-output element's tag handling")
+      return
+    }
+    if (!output_panel) {
+      console.log("Unable to find by selector")
+      return
+    }
+    if (tags.constructor !== Array) {
+      tags = [tags];
+    }
+    var formatted_tags = tags.join(", ")
+    output_panel.data("tags", formatted_tags);
+    console.log(selector + " tags are now " + JSON.stringify(formatted_tags));
+  }
+
   var split = function(selector, direction) {
     // input a selector, split that into a directional 50/50 split
     var elem = $(selector);
@@ -80,7 +98,7 @@ var SplitHandler = (function () {
       var split_1 = Mustache.render(split_template, {horizontal: horizontal, id: first_id})
       var split_2 = Mustache.render(split_template, {horizontal: horizontal, id: second_id})
 
-      var output_panel = Mustache.render(output_template, {id: "panel_" + second_id, tag: "all"})
+      var output_panel = Mustache.render(output_template, {id: "panel_" + second_id, tags: ["all"]})
 
       parent_split.append(split_1, split_2);
       var newsplit = Split(["#" + first_id, "#" + second_id], {
@@ -101,7 +119,8 @@ var SplitHandler = (function () {
   return {
     init: init,
     split: split,
-    swapContent: swapContent
+    swapContent: swapContent,
+    setTags: setTags
   }
 })();
 
