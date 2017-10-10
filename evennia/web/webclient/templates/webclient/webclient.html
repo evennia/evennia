@@ -12,7 +12,7 @@
   <button id="optionsbutton" type="button" aria-haspopup="true" aria-owns="#optionsdialog">&#x2699;<span class="sr-only sr-only-focusable">Settings</span></button>
 </div>
 <div id="main" class="split content">
-  <div id="messagewindow" role="log" data-role-output data-tag="all"></div>
+  <div id="messagewindow" role="log" data-role-output data-tags='["all"]'></div>
 </div>
 <div id="input" class="split content" data-role-input>
 </div>
@@ -48,14 +48,12 @@
 </script>
 
 <script type="text/html" id="output-template">
-  <div id="<%id%>" role="log" data-role-output data-update-append data-tag="<%tag%>"></div>
+  <div id="<%id%>" role="log" data-role-output data-update-append data-tags='[<%#tags%>"<%.%>", <%/tags%>]'></div>
 </script>
 
 <script type="text/html" id="input-template">
   <div id="inputform" class="wrapper">
-    <div class="prompt">
-      <div id="prompt">
-      </div>
+    <div id="prompt" class="prompt">
     </div>
     <div id="inputcontrol" class="input-group">
       <textarea id="inputfield" type="text" class="form-control"></textarea>

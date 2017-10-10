@@ -105,7 +105,7 @@ div {margin:0px;}
   height: 100%;
 }
 #inputcontrol {
-  height: calc(100% - 3rem);
+  height: 100%;
 }
 
 #inputfield:focus {
@@ -113,8 +113,7 @@ div {margin:0px;}
 
 /* prompt area above input field */
 .prompt {
-  height: 2rem;
-  margin-bottom: 1rem;
+  max-height: 3rem;
 }
 
 #optionsbutton {
