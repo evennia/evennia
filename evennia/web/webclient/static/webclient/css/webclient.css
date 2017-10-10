@@ -23,7 +23,7 @@ body {
 @media screen and (max-width: 480px) {
   body {
     font-size: .6rem;
-    line-height: 1.2rem;
+    line-height: 1rem;
   }
 }
 
