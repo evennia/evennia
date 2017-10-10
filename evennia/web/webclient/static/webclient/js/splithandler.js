@@ -30,6 +30,11 @@ var SplitHandler = (function () {
       cursor: 'row-resize',
       minSize: [100,150],
       onDragEnd: function () {
+        var wrapper = $("#inputform")
+        var input = $("#inputcontrol")
+        var prompt = $("#prompt")
+
+        input.height(wrapper.height() - (input.offset().top - wrapper.offset().top));
         localStorage.setItem('split-sizes', JSON.stringify(initial_split.getSizes()));
       }
     })
