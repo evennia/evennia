@@ -237,7 +237,7 @@ div {margin:0px;}
     background-color: black;
     padding: 1rem;
 }
-@media screen and (min-width: 480px) {
+@media screen and (max-width: 480px) {
   .content {
     padding: .5rem;
   }

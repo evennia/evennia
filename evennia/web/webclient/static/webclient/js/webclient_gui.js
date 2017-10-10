@@ -221,6 +221,7 @@ var resizeInputField = function () {
 
 // Handle resizing of client
 function doWindowResize() {
+      resizeInputField();
       var resizable = $("[data-update-append]");
       var parents = resizable.closest(".split")
       parents.animate({
