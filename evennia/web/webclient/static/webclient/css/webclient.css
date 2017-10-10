@@ -117,7 +117,7 @@ div {margin:0px;}
   height: 100%;
 }
 #inputcontrol {
-  height: calc(100% - 3rem);
+  height: 100%;
 }
 
 /* Input 'send' button */
@@ -132,12 +132,7 @@ div {margin:0px;}
 
 /* prompt area above input field */
 .prompt {
-<<<<<<< HEAD
   max-height: 3rem;
-=======
-  height: 2rem;
-  margin-bottom: 1rem;
->>>>>>> dynamic splits and tag-handling enabled
 }
 
 #optionsbutton {
