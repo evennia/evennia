@@ -112,6 +112,7 @@ div {margin:0px;}
     padding: 0 .45rem;
     font-size: 1.1rem;
     font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
+    resize: none;
 }
 #inputsend {
   height: 100%;
