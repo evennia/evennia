@@ -75,7 +75,7 @@ class CmdHelp(Command):
                     pass
 
             if usemore:
-                evmore.msg(self.caller, text)
+                evmore.msg(self.caller, text, session=self.session)
                 return
 
         self.msg((text, {"type": "help"}))

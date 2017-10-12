@@ -161,7 +161,7 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
     # Try to retrieve the session
     session = caller
     if hasattr(caller, "sessions"):
-        session = caller.sessions.get()[0]
+        sessions = caller.sessions.all()
 
     # import useful variables
     import evennia
@@ -175,11 +175,12 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
     }
 
     if show_input:
-        try:
-            caller.msg(">>> %s" % pycode, session=session,
-                       options={"raw": True})
-        except TypeError:
-            caller.msg(">>> %s" % pycode, options={"raw": True})
+        for session in sessions:
+            try:
+                caller.msg(">>> %s" % pycode, session=session,
+                           options={"raw": True})
+            except TypeError:
+                caller.msg(">>> %s" % pycode, options={"raw": True})
 
     try:
         try:
@@ -206,10 +207,11 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
             errlist = errlist[4:]
         ret = "\n".join("%s" % line for line in errlist if line)
 
-    try:
-        caller.msg(ret, session=session, options={"raw": True})
-    except TypeError:
-        caller.msg(ret, options={"raw": True})
+    for session in sessions:
+        try:
+            caller.msg(ret, session=session, options={"raw": True})
+        except TypeError:
+            caller.msg(ret, options={"raw": True})
 
 
 class CmdPy(COMMAND_DEFAULT_CLASS):
