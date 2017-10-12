@@ -254,7 +254,11 @@ function onText(args, kwargs) {
           var mwin = $("[data-role-output][data-tags*='" + tags[i] + "\"']");//this monster here makes sure the tag ends with "
           var parent = mwin.closest(".split")
           var cls = kwargs == null ? 'out' : kwargs['cls'];
-          mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
+          if ( mwin.attr("data-update-overwrite") !== undefined ) {
+            mwin.html("<div class='" + cls + "'>" + args[0] + "</div>");
+          } else {
+            mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
+          }
           parent.animate({
               scrollTop: parent.prop("scrollHeight")
           }, 0);
