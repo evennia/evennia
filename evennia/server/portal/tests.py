@@ -23,12 +23,6 @@ class TestIRC(TestCase):
         self.assertEqual(irc_ansi, string.printable)
         self.assertEqual(ansi_irc, string.printable)
 
-    def test_evennia_strings(self):
-        pass
-
-    def test_irc_string(self):
-        pass
-
     def test_bold(self):
         s_irc = "\x02thisisatest"
         s_eve = r'|hthisisatest'
