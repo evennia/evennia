@@ -192,7 +192,7 @@ class EvMore(object):
 
         if self._npages <= 1 and not always_page:
             # no need for paging; just pass-through.
-            caller.msg(text=text, **kwargs)
+            caller.msg(text=text, session=self._session, **kwargs)
         else:
             # go into paging mode
             # first pass on the msg kwargs

@@ -31,6 +31,8 @@ strong {font-weight: bold;}
 
 div {margin:0px;}
 
+.hidden { display: none; }
+
 /* Utility messages (green) */
 .sys { color: #0f0 }
 
