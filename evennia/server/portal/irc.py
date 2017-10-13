@@ -3,7 +3,6 @@ This connects to an IRC network/channel and launches an 'bot' onto it.
 The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
-from __future__ import print_function
 from future.utils import viewkeys, viewvalues, viewitems
 
 import re
@@ -144,9 +143,7 @@ def parse_irc_to_ansi(string):
         return ANSI_COLOR_MAP.get(irc_match.group(), "")
 
     in_string = utils.to_str(string)
-    print("parse_irc_to_ansi (before): %s" % in_string)
     pstring = RE_IRC_COLOR.sub(_sub_to_ansi, in_string)
-    print("parse_irc_to_ansi (after): %s" % pstring)
     return pstring
 
 
