@@ -21,6 +21,11 @@ implemented and customized:
             the battle system, including commands for wielding weapons and
             donning armor, and modifiers to accuracy and damage based on
             currently used equipment.
+    
+    tb_range.py - Adds a system for abstract positioning and movement, which
+            tracks the distance between different characters and objects in
+            combat, as well as differentiates between melee and ranged
+            attacks.
             
 This system is meant as a basic framework to start from, and is modeled
 after the combat systems of popular tabletop role playing games rather than
