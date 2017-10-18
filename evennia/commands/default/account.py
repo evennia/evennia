@@ -168,7 +168,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         if desc:
             new_character.db.desc = desc
         elif not new_character.db.desc:
-            new_character.db.desc = "This is an Account."
+            new_character.db.desc = "This is a character."
         self.msg("Created new character %s. Use |w@ic %s|n to enter the game as this character."
                  % (new_character.key, new_character.key))
 
