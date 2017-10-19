@@ -41,6 +41,9 @@ VOLUME /usr/src/game
 # set the working directory
 WORKDIR /usr/src/game
 
+# set bash prompt
+ENV PS1 "evennia docker $ "
+
 # startup a shell when we start the container
 ENTRYPOINT  ["bash"]
 
