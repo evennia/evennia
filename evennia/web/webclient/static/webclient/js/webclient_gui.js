@@ -282,6 +282,7 @@ function onPrompt(args, kwargs) {
 
 // Called when the user logged in
 function onLoggedIn() {
+    $('#optionsbutton').removeClass('hidden');
     Evennia.msg("webclient_options", [], {});
 }
 
@@ -316,6 +317,8 @@ function onSilence(cmdname, args, kwargs) {}
 
 // Handle the server connection closing
 function onConnectionClose(conn_name, evt) {
+    $('#optionsbutton').addClass('hidden');
+    closePopup("#optionsdialog");
     onText(["The connection was closed or lost."], {'cls': 'err'});
 }
 

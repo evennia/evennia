@@ -75,7 +75,7 @@ class CmdHelp(Command):
                     pass
 
             if usemore:
-                evmore.msg(self.caller, text)
+                evmore.msg(self.caller, text, session=self.session)
                 return
 
         self.msg((text, {"type": "help"}))
@@ -267,7 +267,7 @@ class CmdHelp(Command):
             return
 
         # no exact matches found. Just give suggestions.
-        self.msg(self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
+        self.msg((self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions), {"type": "help"}))
 
 
 def _loadhelp(caller):

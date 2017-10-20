@@ -197,7 +197,7 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg(string)
             return
         if not re.findall(r"^[\w. @+\-']+$", password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @/./+/-/_/' only." \
+            string = "\n\r Password should be longer than 3 characters. Letters, spaces, digits and @/./+/-/_/' only." \
                      "\nFor best security, make it longer than 8 characters. You can also use a phrase of" \
                      "\nmany words if you enclose the password in double quotes."
             session.msg(string)
