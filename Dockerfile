@@ -30,19 +30,20 @@ ADD . /usr/src/evennia
 # install dependencies
 RUN pip install -e /usr/src/evennia --index-url=http://pypi.python.org/simple/ --trusted-host pypi.python.org
 
-# add the game source during game builds
+# add the game source when rebuilding a new docker image from inside
+# a game dir 
 ONBUILD ADD . /usr/src/game
 
 # make the game source hierarchy persistent with a named volume.
-# during development this is typically superceded by directives in
-# docker-compose.yml or the CLI to mount a local directory.
+# mount on-disk game location here when using the container
+# to just get an evennia environment.
 VOLUME /usr/src/game
 
 # set the working directory
 WORKDIR /usr/src/game
 
 # set bash prompt
-ENV PS1 "evennia docker $ "
+ENV PS1 "evennia|docker \w $ "
 
 # startup a shell when we start the container
 ENTRYPOINT  ["bash"]
