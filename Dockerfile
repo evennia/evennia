@@ -21,6 +21,8 @@
 #
 FROM alpine
 
+MAINTAINER www.evennia.com
+
 # install compilation environment
 RUN apk update && apk add python py-pip python-dev py-setuptools gcc musl-dev jpeg-dev zlib-dev bash
 
