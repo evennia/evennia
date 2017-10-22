@@ -4,7 +4,7 @@ Extended Room
 Evennia Contribution - Griatch 2012
 
 This is an extended Room typeclass for Evennia. It is supported
-by an extended `Look` command and an extended `@desc` command, also
+by an extended `Look` command and an extended `desc` command, also
 in this module.
 
 
@@ -21,7 +21,7 @@ There is also a general description which is used as fallback if
 one or more of the seasonal descriptions are not set when their
 time comes.
 
-An updated `@desc` command allows for setting seasonal descriptions.
+An updated `desc` command allows for setting seasonal descriptions.
 
 The room uses the `evennia.utils.gametime.GameTime` global script. This is
 started by default, but if you have deactivated it, you need to
@@ -45,13 +45,13 @@ at, without there having to be a database object created for it. The
 Details are simply stored in a dictionary on the room and if the look
 command cannot find an object match for a `look <target>` command it
 will also look through the available details at the current location
-if applicable. An extended `@desc` command is used to set details.
+if applicable. An extended `desc` command is used to set details.
 
 
 4) Extra commands
 
   CmdExtendedLook - look command supporting room details
-  CmdExtendedDesc - @desc command allowing to add seasonal descs and details,
+  CmdExtendedDesc - desc command allowing to add seasonal descs and details,
                     as well as listing them
   CmdGameTime     - A simple `time` command, displaying the current
                     time and season.
@@ -63,7 +63,7 @@ Installation/testing:
    (see Wiki for how to do this).
 2) `@dig` a room of type `contrib.extended_room.ExtendedRoom` (or make it the
    default room type)
-3) Use `@desc` and `@detail` to customize the room, then play around!
+3) Use `desc` and `detail` to customize the room, then play around!
 
 """
 from __future__ import division
@@ -333,26 +333,26 @@ class CmdExtendedLook(default_cmds.CmdLook):
 
 class CmdExtendedDesc(default_cmds.CmdDesc):
     """
-    `@desc` - describe an object or room.
+    `desc` - describe an object or room.
 
     Usage:
-      @desc[/switch] [<obj> =] <description>
-      @detail[/del] [<key> = <description>]
+      desc[/switch] [<obj> =] <description>
+      detail[/del] [<key> = <description>]
 
 
-    Switches for `@desc`:
+    Switches for `desc`:
       spring  - set description for <season> in current room.
       summer
       autumn
       winter
 
-    Switch for `@detail`:
+    Switch for `detail`:
       del   - delete a named detail.
 
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
 
-    The alias `@detail` allows to assign a "detail" (a non-object
+    The alias `detail` allows to assign a "detail" (a non-object
     target for the `look` command) to the current room (only).
 
     You can also embed special time markers in your room description, like this:
@@ -364,11 +364,11 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     Text marked this way will only display when the server is truly at the given
     timeslot. The available times are night, morning, afternoon and evening.
 
-    Note that `@detail`, seasons and time-of-day slots only work on rooms in this
-    version of the `@desc` command.
+    Note that `detail`, seasons and time-of-day slots only work on rooms in this
+    version of the `desc` command.
 
     """
-    aliases = ["@describe", "@detail"]
+    aliases = ["describe", "detail"]
 
     def reset_times(self, obj):
         """By deleteting the caches we force a re-load."""
@@ -416,7 +416,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             self.reset_times(location)
             return
         else:
-            # we are doing a @desc call
+            # we are doing a desc call
             if not self.args:
                 if location:
                     string = "|wDescriptions on %s|n:\n" % location.key
