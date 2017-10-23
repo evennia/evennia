@@ -374,7 +374,10 @@ function onNewLine(text, originator) {
     document.title = "(" + unread + ") " + originalTitle;
     if ("Notification" in window){
       if (("notification_popup" in options) && (options["notification_popup"])) {
-          Notification.requestPermission().then(function(result) {
+          // There is a Promise-based API for this, but it’s not supported
+          // in Safari and some older browsers:
+          // https://developer.mozilla.org/en-US/docs/Web/API/Notification/requestPermission#Browser_compatibility
+          Notification.requestPermission(function(result) {
               if(result === "granted") {
               var title = originalTitle === "" ? "Evennia" : originalTitle;
               var options = {
