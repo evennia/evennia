@@ -284,9 +284,7 @@ def is_in_combat(character):
     Returns:
         (bool): True if in combat or False if not in combat
     """
-    if character.db.combat_turnhandler:
-        return True
-    return False
+    return bool(character.db.combat_turnhandler)
 
 
 def is_turn(character):
@@ -301,9 +299,7 @@ def is_turn(character):
     """
     turnhandler = character.db.combat_turnhandler
     currentchar = turnhandler.db.fighters[turnhandler.db.turn]
-    if character == currentchar:
-        return True
-    return False
+    return bool(character == currentchar)
 
 
 def spend_action(character, actions, action_name=None):
