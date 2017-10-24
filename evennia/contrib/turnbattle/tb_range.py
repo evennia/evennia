@@ -310,6 +310,21 @@ def get_range(obj1, obj2):
         return None
     # Return the range between the two objects.
     return obj1.db.combat_range[obj2]
+    
+def distance_inc(mover, target):
+    """
+    Function that increases distance in range field between mover and target.
+    
+    Args:
+        mover (obj): The object moving
+        target (obj): The object to be moved away from
+    """
+    mover.db.combat_range[target] += 1
+    target.db.combat_range[mover] = mover.db.combat_range[target]
+    # Set a cap of 2:
+    if get_range(mover, target) > 2:
+        target.db.combat_range[mover] = 2
+        mover.db.combat_range[target] = 2
                 
 def approach(mover, target):
     """
@@ -370,20 +385,6 @@ def withdraw(mover, target):
         of their withdrawl. The mover will never inadvertently move toward anything else while
         withdrawing - they can be considered to be moving to open space.
     """
-    def distance_inc(mover, target):
-        """
-        Helper function that increases distance in range field between mover and target.
-        
-        Args:
-            mover (obj): The object moving
-            target (obj): The object to be moved away from
-        """
-        mover.db.combat_range[target] += 1
-        target.db.combat_range[mover] = mover.db.combat_range[target]
-        # Set a cap of 2:
-        if get_range(mover, target) > 2:
-            target.db.combat_range[mover] = 2
-            mover.db.combat_range[target] = 2
 
     contents = mover.location.contents
     
