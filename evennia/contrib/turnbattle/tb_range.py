@@ -287,6 +287,29 @@ def resolve_attack(attacker, defender, attack_type, attack_value=None, defense_v
         # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
             at_defeat(defender)
+            
+def get_range(obj1, obj2):
+    """
+    Gets the combat range between two objects.
+    
+    Args:
+        obj1 (obj): First object
+        obj2 (obj): Second object
+        
+    Returns:
+        range (int or None): Distance between two objects or None if not applicable
+    """
+    # Return None if not applicable.
+    if not obj1.db.combat_range:
+        return None
+    if not obj2.db.combat_range:
+        return None
+    if obj1 not in obj2.db.combat_range:
+        return None
+    if obj2 not in obj1.db.combat_range:
+        return None
+    # Return the range between the two objects.
+    return obj1.db.combat_range[obj2]
                 
 def approach(mover, target):
     """
@@ -312,7 +335,7 @@ def approach(mover, target):
         mover.db.combat_range[target] -= 1
         target.db.combat_range[mover] = mover.db.combat_range[target]
         # If this brings mover to range 0 (Engaged):
-        if mover.db.combat_range[target] <= 0:
+        if get_range(mover, target) <= 0:
             # Reset range to each other to 0 and copy target's ranges to mover.
             target.db.combat_range[mover] = 0
             mover.db.combat_range = target.db.combat_range
@@ -326,10 +349,10 @@ def approach(mover, target):
     for thing in contents:
         if thing != mover and thing != target:
             # Move closer to each object closer to the target than you.
-            if mover.db.combat_range[thing] > target.db.combat_range[thing]:
+            if get_range(mover, thing) > get_range(target, thing):
                 distance_dec(mover, thing)
             # Move further from each object that's further from you than from the target.
-            if mover.db.combat_range[thing] < target.db.combat_range[thing]:
+            if get_range(mover, thing) < get_range(target, thing):
                 distance_inc(mover, thing)
     # Lastly, move closer to your target.
     distance_dec(mover, target)
@@ -358,7 +381,7 @@ def withdraw(mover, target):
         mover.db.combat_range[target] += 1
         target.db.combat_range[mover] = mover.db.combat_range[target]
         # Set a cap of 2:
-        if mover.db.combat_range[target] > 2:
+        if get_range(mover, target) > 2:
             target.db.combat_range[mover] = 2
             mover.db.combat_range[target] = 2
 
@@ -367,39 +390,16 @@ def withdraw(mover, target):
     for thing in contents:
         if thing != mover and thing != target:
             # Move away from each object closer to the target than you, if it's also closer to you than you are to the target.
-            if mover.db.combat_range[thing] >= target.db.combat_range[thing] and mover.db.combat_range[thing] < mover.db.combat_range[thing]:
+            if get_range(mover, thing) >= get_range(target, thing) and get_range(mover, thing) < get_range(mover, target):
                 distance_inc(mover, thing)
             # Move away from anything your target is engaged with
-            if target.db.combat_range[thing] == 0:
+            if get_range(target, thing) == 0:
                 distance_inc(mover, thing)
             # Move away from anything you're engaged with.
-            if mover.db.combat_range[thing] == 0:
+            if get_range(mover, thing) == 0:
                 distance_inc(mover, thing)
     # Then, move away from your target.
     distance_inc(mover, target)
-    
-def get_range(obj1, obj2):
-    """
-    Gets the combat range between two objects.
-    
-    Args:
-        obj1 (obj): First object
-        obj2 (obj): Second object
-        
-    Returns:
-        range (int or None): Distance between two objects or None if not applicable
-    """
-    # Return None if not applicable.
-    if not obj1.db.combat_range:
-        return None
-    if not obj2.db.combat_range:
-        return None
-    if obj1 not in obj2.db.combat_range:
-        return None
-    if obj2 not in obj1.db.combat_range:
-        return None
-    # Return the range between the two objects.
-    return obj1.db.combat_range[obj2]
 
 def combat_cleanup(character):
     """
