@@ -60,10 +60,18 @@ from evennia.commands.default.help import CmdHelp
 
 """
 ----------------------------------------------------------------------------
-COMBAT FUNCTIONS START HERE
+OPTIONS
 ----------------------------------------------------------------------------
 """
 
+TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
+ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
+
+"""
+----------------------------------------------------------------------------
+COMBAT FUNCTIONS START HERE
+----------------------------------------------------------------------------
+"""
 
 def roll_init(character):
     """
@@ -377,7 +385,7 @@ class TBEquipTurnHandler(DefaultScript):
 
         # Set up the current turn and turn timeout delay.
         self.db.turn = 0
-        self.db.timer = 30  # 30 seconds
+        self.db.timer = TURN_TIMEOUT  # Set timer to turn timeout specified in options
 
     def at_stop(self):
         """
@@ -431,7 +439,7 @@ class TBEquipTurnHandler(DefaultScript):
             separated for movement, by adding "character.db.combat_movesleft = 3" or
             something similar.
         """
-        character.db.combat_actionsleft = 1  # 1 action per turn.
+        character.db.combat_actionsleft = ACTIONS_PER_TURN  # Replenish actions
         # Prompt the character for their turn and give some information.
         character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
 
@@ -469,7 +477,7 @@ class TBEquipTurnHandler(DefaultScript):
         if self.db.turn > len(self.db.fighters) - 1:
             self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
         newchar = self.db.fighters[self.db.turn]  # Note the new character
-        self.db.timer = 30 + self.time_until_next_repeat()  # Reset the timer.
+        self.db.timer = TURN_TIMEOUT + self.time_until_next_repeat()  # Reset the timer.
         self.db.timeout_warning_given = False  # Reset the timeout warning.
         self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
         self.start_turn(newchar)  # Start the new character's turn.
