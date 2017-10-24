@@ -491,7 +491,240 @@ def combat_status_message(fighter):
     fighter.msg(status_msg)
     return
         
+"""
+----------------------------------------------------------------------------
+SCRIPTS START HERE
+----------------------------------------------------------------------------
+"""
+
+
+class TBRangeTurnHandler(DefaultScript):
+    """
+    This is the script that handles the progression of combat through turns.
+    On creation (when a fight is started) it adds all combat-ready characters
+    to its roster and then sorts them into a turn order. There can only be one
+    fight going on in a single room at a time, so the script is assigned to a
+    room as its object.
+
+    Fights persist until only one participant is left with any HP or all
+    remaining participants choose to end the combat with the 'disengage' command.
+    """
+
+    def at_script_creation(self):
+        """
+        Called once, when the script is created.
+        """
+        self.key = "Combat Turn Handler"
+        self.interval = 5  # Once every 5 seconds
+        self.persistent = True
+        self.db.fighters = []
+
+        # Add all fighters in the room with at least 1 HP to the combat."
+        for object in self.obj.contents:
+            if object.db.hp:
+                self.db.fighters.append(object)
+
+        # Initialize each fighter for combat
+        for fighter in self.db.fighters:
+            self.initialize_for_combat(fighter)
+
+        # Add a reference to this script to the room
+        self.obj.db.combat_turnhandler = self
         
+        # Initialize range field for all objects in the room
+        for object in self.obj.contents:
+            self.init_range(object)
+
+        # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
+        # The initiative roll is determined by the roll_init function and can be customized easily.
+        ordered_by_roll = sorted(self.db.fighters, key=roll_init, reverse=True)
+        self.db.fighters = ordered_by_roll
+
+        # Announce the turn order.
+        self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
+        
+        # Start first fighter's turn.
+        self.start_turn(self.db.fighters[0])
+
+        # Set up the current turn and turn timeout delay.
+        self.db.turn = 0
+        self.db.timer = 30  # 30 seconds
+
+    def at_stop(self):
+        """
+        Called at script termination.
+        """
+        for object in self.obj.contents:
+            combat_cleanup(object)  # Clean up the combat attributes for every object in the room.
+        self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
+
+    def at_repeat(self):
+        """
+        Called once every self.interval seconds.
+        """
+        currentchar = self.db.fighters[self.db.turn]  # Note the current character in the turn order.
+        self.db.timer -= self.interval  # Count down the timer.
+
+        if self.db.timer <= 0:
+            # Force current character to disengage if timer runs out.
+            self.obj.msg_contents("%s's turn timed out!" % currentchar)
+            spend_action(currentchar, 'all', action_name="disengage")  # Spend all remaining actions.
+            return
+        elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
+            # Warn the current character if they're about to time out.
+            currentchar.msg("WARNING: About to time out!")
+            self.db.timeout_warning_given = True
+            
+    def init_range(self, to_init):
+        """
+        Initializes range values for an object at the start of a fight.
+        
+        Args:
+            to_init (object): Object to initialize range field for.
+        """
+        rangedict = {}
+        # Get a list of objects in the room.
+        objectlist = self.obj.contents
+        for object in objectlist:
+            # Object always at distance 0 from itself
+            if object == to_init:
+                rangedict.update({object:0})
+            else:
+                if object.destination or to_init.destination:
+                    # Start exits at range 2 to put them at the 'edges'
+                    rangedict.update({object:2})
+                else:
+                    # Start objects at range 1 from other objects
+                    rangedict.update({object:1})
+        to_init.db.combat_range = rangedict
+
+    def join_rangefield(self, to_init, anchor_obj=None, add_distance=0):
+        """
+        Adds a new object to the range field of a fight in progress.
+        
+        Args:
+            to_init (object): Object to initialize range field for.
+        
+        Kwargs:
+            anchor_obj (object): Object to copy range values from, or None for a random object.
+            add_distance (int): Distance to put between to_init object and anchor object.
+            
+        """
+        # Get a list of room's contents without to_init object.
+        contents = self.obj.contents
+        contents.remove(to_init)
+        # If no anchor object given, pick one in the room at random.
+        if not anchor_obj:
+            anchor_obj = contents[randint(0, (len(contents)-1))]
+        # Copy the range values from the anchor object.
+        to_init.db.combat_range = anchor_obj.db.combat_range
+        # Add the new object to everyone else's ranges.
+        for object in contents:
+            new_objects_range = object.db.combat_range[anchor_obj]
+            object.db.combat_range.update({to_init:new_objects_range})
+        # Set the new object's range to itself to 0.
+        to_init.db.combat_range.update({to_init:0})
+        # Add additional distance from anchor object, if any.
+        for n in range(add_distance):
+            withdraw(to_init, anchor_obj)
+
+    def initialize_for_combat(self, character):
+        """
+        Prepares a character for combat when starting or entering a fight.
+
+        Args:
+            character (obj): Character to initialize for combat.
+        """
+        combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
+        character.db.combat_actionsleft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        character.db.combat_turnhandler = self  # Add a reference to this turn handler script to the character
+        character.db.combat_lastaction = "null"  # Track last action taken in combat
+
+    def start_turn(self, character):
+        """
+        Readies a character for the start of their turn by replenishing their
+        available actions and notifying them that their turn has come up.
+
+        Args:
+            character (obj): Character to be readied.
+
+        Notes:
+            In this example, characters are given two actions per turn. This allows
+            characters to both move and attack in the same turn (or, alternately,
+            move twice or attack twice).
+        """
+        character.db.combat_actionsleft = 2  # 2 actions per turn.
+        # Prompt the character for their turn and give some information.
+        character.msg("|wIt's your turn!|n")
+        combat_status_message(character)
+
+    def next_turn(self):
+        """
+        Advances to the next character in the turn order.
+        """
+
+        # Check to see if every character disengaged as their last action. If so, end combat.
+        disengage_check = True
+        for fighter in self.db.fighters:
+            if fighter.db.combat_lastaction != "disengage":  # If a character has done anything but disengage
+                disengage_check = False
+        if disengage_check:  # All characters have disengaged
+            self.obj.msg_contents("All fighters have disengaged! Combat is over!")
+            self.stop()  # Stop this script and end combat.
+            return
+
+        # Check to see if only one character is left standing. If so, end combat.
+        defeated_characters = 0
+        for fighter in self.db.fighters:
+            if fighter.db.HP == 0:
+                defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
+        if defeated_characters == (len(self.db.fighters) - 1):  # If only one character isn't defeated
+            for fighter in self.db.fighters:
+                if fighter.db.HP != 0:
+                    LastStanding = fighter  # Pick the one fighter left with HP remaining
+            self.obj.msg_contents("Only %s remains! Combat is over!" % LastStanding)
+            self.stop()  # Stop this script and end combat.
+            return
+
+        # Cycle to the next turn.
+        currentchar = self.db.fighters[self.db.turn]
+        self.db.turn += 1  # Go to the next in the turn order.
+        if self.db.turn > len(self.db.fighters) - 1:
+            self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
+        newchar = self.db.fighters[self.db.turn]  # Note the new character
+        self.db.timer = 30 + self.time_until_next_repeat()  # Reset the timer.
+        self.db.timeout_warning_given = False  # Reset the timeout warning.
+        self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
+        self.start_turn(newchar)  # Start the new character's turn.
+
+    def turn_end_check(self, character):
+        """
+        Tests to see if a character's turn is over, and cycles to the next turn if it is.
+
+        Args:
+            character (obj): Character to test for end of turn
+        """
+        if not character.db.combat_actionsleft:  # Character has no actions remaining
+            self.next_turn()
+            return
+
+    def join_fight(self, character):
+        """
+        Adds a new character to a fight already in progress.
+
+        Args:
+            character (obj): Character to be added to the fight.
+        """
+        # Inserts the fighter to the turn order, right behind whoever's turn it currently is.
+        self.db.fighters.insert(self.db.turn, character)
+        # Tick the turn counter forward one to compensate.
+        self.db.turn += 1
+        # Initialize the character like you do at the start.
+        self.initialize_for_combat(character)
+        # Add the character to the rangefield, at range from everyone, if they're not on it already.
+        if not character.db.combat_range:
+            self.join_rangefield(character, add_distance=2)
+
 
 """
 ----------------------------------------------------------------------------
@@ -1129,238 +1362,3 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdWithdraw())
         self.add(CmdStatus())
         self.add(CmdCombatHelp())
-
-
-"""
-----------------------------------------------------------------------------
-SCRIPTS START HERE
-----------------------------------------------------------------------------
-"""
-
-
-class TBRangeTurnHandler(DefaultScript):
-    """
-    This is the script that handles the progression of combat through turns.
-    On creation (when a fight is started) it adds all combat-ready characters
-    to its roster and then sorts them into a turn order. There can only be one
-    fight going on in a single room at a time, so the script is assigned to a
-    room as its object.
-
-    Fights persist until only one participant is left with any HP or all
-    remaining participants choose to end the combat with the 'disengage' command.
-    """
-
-    def at_script_creation(self):
-        """
-        Called once, when the script is created.
-        """
-        self.key = "Combat Turn Handler"
-        self.interval = 5  # Once every 5 seconds
-        self.persistent = True
-        self.db.fighters = []
-
-        # Add all fighters in the room with at least 1 HP to the combat."
-        for object in self.obj.contents:
-            if object.db.hp:
-                self.db.fighters.append(object)
-
-        # Initialize each fighter for combat
-        for fighter in self.db.fighters:
-            self.initialize_for_combat(fighter)
-
-        # Add a reference to this script to the room
-        self.obj.db.combat_turnhandler = self
-        
-        # Initialize range field for all objects in the room
-        for object in self.obj.contents:
-            self.init_range(object)
-
-        # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
-        # The initiative roll is determined by the roll_init function and can be customized easily.
-        ordered_by_roll = sorted(self.db.fighters, key=roll_init, reverse=True)
-        self.db.fighters = ordered_by_roll
-
-        # Announce the turn order.
-        self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
-        
-        # Start first fighter's turn.
-        self.start_turn(self.db.fighters[0])
-
-        # Set up the current turn and turn timeout delay.
-        self.db.turn = 0
-        self.db.timer = 30  # 30 seconds
-
-    def at_stop(self):
-        """
-        Called at script termination.
-        """
-        for object in self.obj.contents:
-            combat_cleanup(object)  # Clean up the combat attributes for every object in the room.
-        self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
-
-    def at_repeat(self):
-        """
-        Called once every self.interval seconds.
-        """
-        currentchar = self.db.fighters[self.db.turn]  # Note the current character in the turn order.
-        self.db.timer -= self.interval  # Count down the timer.
-
-        if self.db.timer <= 0:
-            # Force current character to disengage if timer runs out.
-            self.obj.msg_contents("%s's turn timed out!" % currentchar)
-            spend_action(currentchar, 'all', action_name="disengage")  # Spend all remaining actions.
-            return
-        elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
-            # Warn the current character if they're about to time out.
-            currentchar.msg("WARNING: About to time out!")
-            self.db.timeout_warning_given = True
-            
-    def init_range(self, to_init):
-        """
-        Initializes range values for an object at the start of a fight.
-        
-        Args:
-            to_init (object): Object to initialize range field for.
-        """
-        rangedict = {}
-        # Get a list of objects in the room.
-        objectlist = self.obj.contents
-        for object in objectlist:
-            # Object always at distance 0 from itself
-            if object == to_init:
-                rangedict.update({object:0})
-            else:
-                if object.destination or to_init.destination:
-                    # Start exits at range 2 to put them at the 'edges'
-                    rangedict.update({object:2})
-                else:
-                    # Start objects at range 1 from other objects
-                    rangedict.update({object:1})
-        to_init.db.combat_range = rangedict
-
-    def join_rangefield(self, to_init, anchor_obj=None, add_distance=0):
-        """
-        Adds a new object to the range field of a fight in progress.
-        
-        Args:
-            to_init (object): Object to initialize range field for.
-        
-        Kwargs:
-            anchor_obj (object): Object to copy range values from, or None for a random object.
-            add_distance (int): Distance to put between to_init object and anchor object.
-            
-        """
-        # Get a list of room's contents without to_init object.
-        contents = self.obj.contents
-        contents.remove(to_init)
-        # If no anchor object given, pick one in the room at random.
-        if not anchor_obj:
-            anchor_obj = contents[randint(0, (len(contents)-1))]
-        # Copy the range values from the anchor object.
-        to_init.db.combat_range = anchor_obj.db.combat_range
-        # Add the new object to everyone else's ranges.
-        for object in contents:
-            new_objects_range = object.db.combat_range[anchor_obj]
-            object.db.combat_range.update({to_init:new_objects_range})
-        # Set the new object's range to itself to 0.
-        to_init.db.combat_range.update({to_init:0})
-        # Add additional distance from anchor object, if any.
-        for n in range(add_distance):
-            withdraw(to_init, anchor_obj)
-
-    def initialize_for_combat(self, character):
-        """
-        Prepares a character for combat when starting or entering a fight.
-
-        Args:
-            character (obj): Character to initialize for combat.
-        """
-        combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
-        character.db.combat_actionsleft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
-        character.db.combat_turnhandler = self  # Add a reference to this turn handler script to the character
-        character.db.combat_lastaction = "null"  # Track last action taken in combat
-
-    def start_turn(self, character):
-        """
-        Readies a character for the start of their turn by replenishing their
-        available actions and notifying them that their turn has come up.
-
-        Args:
-            character (obj): Character to be readied.
-
-        Notes:
-            In this example, characters are given two actions per turn. This allows
-            characters to both move and attack in the same turn (or, alternately,
-            move twice or attack twice).
-        """
-        character.db.combat_actionsleft = 2  # 2 actions per turn.
-        # Prompt the character for their turn and give some information.
-        character.msg("|wIt's your turn!|n")
-        combat_status_message(character)
-
-    def next_turn(self):
-        """
-        Advances to the next character in the turn order.
-        """
-
-        # Check to see if every character disengaged as their last action. If so, end combat.
-        disengage_check = True
-        for fighter in self.db.fighters:
-            if fighter.db.combat_lastaction != "disengage":  # If a character has done anything but disengage
-                disengage_check = False
-        if disengage_check:  # All characters have disengaged
-            self.obj.msg_contents("All fighters have disengaged! Combat is over!")
-            self.stop()  # Stop this script and end combat.
-            return
-
-        # Check to see if only one character is left standing. If so, end combat.
-        defeated_characters = 0
-        for fighter in self.db.fighters:
-            if fighter.db.HP == 0:
-                defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
-        if defeated_characters == (len(self.db.fighters) - 1):  # If only one character isn't defeated
-            for fighter in self.db.fighters:
-                if fighter.db.HP != 0:
-                    LastStanding = fighter  # Pick the one fighter left with HP remaining
-            self.obj.msg_contents("Only %s remains! Combat is over!" % LastStanding)
-            self.stop()  # Stop this script and end combat.
-            return
-
-        # Cycle to the next turn.
-        currentchar = self.db.fighters[self.db.turn]
-        self.db.turn += 1  # Go to the next in the turn order.
-        if self.db.turn > len(self.db.fighters) - 1:
-            self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
-        newchar = self.db.fighters[self.db.turn]  # Note the new character
-        self.db.timer = 30 + self.time_until_next_repeat()  # Reset the timer.
-        self.db.timeout_warning_given = False  # Reset the timeout warning.
-        self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
-        self.start_turn(newchar)  # Start the new character's turn.
-
-    def turn_end_check(self, character):
-        """
-        Tests to see if a character's turn is over, and cycles to the next turn if it is.
-
-        Args:
-            character (obj): Character to test for end of turn
-        """
-        if not character.db.combat_actionsleft:  # Character has no actions remaining
-            self.next_turn()
-            return
-
-    def join_fight(self, character):
-        """
-        Adds a new character to a fight already in progress.
-
-        Args:
-            character (obj): Character to be added to the fight.
-        """
-        # Inserts the fighter to the turn order, right behind whoever's turn it currently is.
-        self.db.fighters.insert(self.db.turn, character)
-        # Tick the turn counter forward one to compensate.
-        self.db.turn += 1
-        # Initialize the character like you do at the start.
-        self.initialize_for_combat(character)
-        # Add the character to the rangefield, at range from everyone, if they're not on it already.
-        if not character.db.combat_range:
-            self.join_rangefield(character, add_distance=2)
