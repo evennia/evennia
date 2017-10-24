@@ -78,6 +78,11 @@ And change your game's character typeclass to inherit from TBRangeCharacter
 instead of the default:
 
     class Character(TBRangeCharacter):
+        
+Do the same thing in your game's objects.py module for TBRangeObject:
+
+    from evennia.contrib.turnbattle.tb_range import TBRangeObject
+    class Object(TBRangeObject):
 
 Next, import this module into your default_cmdsets.py module:
 
@@ -106,7 +111,7 @@ OPTIONS
 """
 
 TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
-ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
+ACTIONS_PER_TURN = 2 # Number of actions allowed per turn
 
 """
 ----------------------------------------------------------------------------
@@ -282,41 +287,6 @@ def resolve_attack(attacker, defender, attack_type, attack_value=None, defense_v
         # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
             at_defeat(defender)
-            
-def distance_dec(mover, target):
-    """
-    Decreases distance in range field between mover and target.
-    
-    Args:
-        mover (obj): The object moving
-        target (obj): The object to be moved toward
-    """
-    mover.db.combat_range[target] -= 1
-    target.db.combat_range[mover] = mover.db.combat_range[target]
-    # If this brings mover to range 0 (Engaged):
-    if mover.db.combat_range[target] <= 0:
-        # Reset range to each other to 0 and copy target's ranges to mover.
-        target.db.combat_range[mover] = 0
-        mover.db.combat_range = target.db.combat_range
-        # Assure everything else has the same distance from the mover and target, now that they're together
-        for object in mover.location.contents:
-            if object != mover and object != target:
-                object.db.combat_range[mover] = object.db.combat_range[target]
-                
-def distance_inc(mover, target):
-    """
-    Increases distance in range field between mover and target.
-    
-    Args:
-        mover (obj): The object moving
-        target (obj): The object to be moved away from
-    """
-    mover.db.combat_range[target] += 1
-    target.db.combat_range[mover] = mover.db.combat_range[target]
-    # Set a cap of 2:
-    if mover.db.combat_range[target] > 2:
-        target.db.combat_range[mover] = 2
-        mover.db.combat_range[target] = 2
                 
 def approach(mover, target):
     """
@@ -331,6 +301,26 @@ def approach(mover, target):
         target than the mover is. The mover will also move away from anything they started
         out close to.
     """
+    def distance_dec(mover, target):
+        """
+        Helper function that decreases distance in range field between mover and target.
+        
+        Args:
+            mover (obj): The object moving
+            target (obj): The object to be moved toward
+        """
+        mover.db.combat_range[target] -= 1
+        target.db.combat_range[mover] = mover.db.combat_range[target]
+        # If this brings mover to range 0 (Engaged):
+        if mover.db.combat_range[target] <= 0:
+            # Reset range to each other to 0 and copy target's ranges to mover.
+            target.db.combat_range[mover] = 0
+            mover.db.combat_range = target.db.combat_range
+            # Assure everything else has the same distance from the mover and target, now that they're together
+            for object in mover.location.contents:
+                if object != mover and object != target:
+                    object.db.combat_range[mover] = object.db.combat_range[target]
+
     objects = mover.location.contents
     
     for thing in objects:
@@ -358,7 +348,23 @@ def withdraw(mover, target):
         of their withdrawl. The mover will never inadvertently move toward anything else while
         withdrawing - they can be considered to be moving to open space.
     """
+    def distance_inc(mover, target):
+        """
+        Helper function that increases distance in range field between mover and target.
+        
+        Args:
+            mover (obj): The object moving
+            target (obj): The object to be moved away from
+        """
+        mover.db.combat_range[target] += 1
+        target.db.combat_range[mover] = mover.db.combat_range[target]
+        # Set a cap of 2:
+        if mover.db.combat_range[target] > 2:
+            target.db.combat_range[mover] = 2
+            mover.db.combat_range[target] = 2
+
     objects = mover.location.contents
+    
     for thing in objects:
         if thing != mover and thing != target:
             # Move away from each object closer to the target than you, if it's also closer to you than you are to the target.
