@@ -370,9 +370,9 @@ class TBBasicTurnHandler(DefaultScript):
         self.db.fighters = []
 
         # Add all fighters in the room with at least 1 HP to the combat."
-        for object in self.obj.contents:
-            if object.db.hp:
-                self.db.fighters.append(object)
+        for thing in self.obj.contents:
+            if thing.db.hp:
+                self.db.fighters.append(thing)
 
         # Initialize each fighter for combat
         for fighter in self.db.fighters:

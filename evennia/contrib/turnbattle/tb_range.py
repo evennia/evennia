@@ -317,13 +317,13 @@ def approach(mover, target):
             target.db.combat_range[mover] = 0
             mover.db.combat_range = target.db.combat_range
             # Assure everything else has the same distance from the mover and target, now that they're together
-            for object in mover.location.contents:
-                if object != mover and object != target:
-                    object.db.combat_range[mover] = object.db.combat_range[target]
+            for thing in mover.location.contents:
+                if thing != mover and thing != target:
+                    thing.db.combat_range[mover] = thing.db.combat_range[target]
 
-    objects = mover.location.contents
+    contents = mover.location.contents
     
-    for thing in objects:
+    for thing in contents:
         if thing != mover and thing != target:
             # Move closer to each object closer to the target than you.
             if mover.db.combat_range[thing] > target.db.combat_range[thing]:
@@ -363,9 +363,9 @@ def withdraw(mover, target):
             target.db.combat_range[mover] = 2
             mover.db.combat_range[target] = 2
 
-    objects = mover.location.contents
+    contents = mover.location.contents
     
-    for thing in objects:
+    for thing in contents:
         if thing != mover and thing != target:
             # Move away from each object closer to the target than you, if it's also closer to you than you are to the target.
             if mover.db.combat_range[thing] >= target.db.combat_range[thing] and mover.db.combat_range[thing] < mover.db.combat_range[thing]:
@@ -486,14 +486,14 @@ def combat_status_message(fighter):
     reach_obj = []
     range_obj = []
     
-    for object in fighter.db.combat_range:
-        if object != fighter:
-            if fighter.db.combat_range[object] == 0:
-                engaged_obj.append(object)
-            if fighter.db.combat_range[object] == 1:
-                reach_obj.append(object)
-            if fighter.db.combat_range[object] > 1:
-                range_obj.append(object)
+    for thing in fighter.db.combat_range:
+        if thing != fighter:
+            if fighter.db.combat_range[thing] == 0:
+                engaged_obj.append(thing)
+            if fighter.db.combat_range[thing] == 1:
+                reach_obj.append(thing)
+            if fighter.db.combat_range[thing] > 1:
+                range_obj.append(thing)
     
     if engaged_obj:
         status_msg += "|/Engaged targets: %s" % ", ".join(obj.key for obj in engaged_obj)
@@ -534,9 +534,9 @@ class TBRangeTurnHandler(DefaultScript):
         self.db.fighters = []
 
         # Add all fighters in the room with at least 1 HP to the combat."
-        for object in self.obj.contents:
-            if object.db.hp:
-                self.db.fighters.append(object)
+        for thing in self.obj.contents:
+            if thing.db.hp:
+                self.db.fighters.append(thing)
 
         # Initialize each fighter for combat
         for fighter in self.db.fighters:
@@ -546,8 +546,8 @@ class TBRangeTurnHandler(DefaultScript):
         self.obj.db.combat_turnhandler = self
         
         # Initialize range field for all objects in the room
-        for object in self.obj.contents:
-            self.init_range(object)
+        for thing in self.obj.contents:
+            self.init_range(thing)
 
         # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
         # The initiative roll is determined by the roll_init function and can be customized easily.
@@ -568,8 +568,8 @@ class TBRangeTurnHandler(DefaultScript):
         """
         Called at script termination.
         """
-        for object in self.obj.contents:
-            combat_cleanup(object)  # Clean up the combat attributes for every object in the room.
+        for thing in self.obj.contents:
+            combat_cleanup(thing)  # Clean up the combat attributes for every object in the room.
         self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
 
     def at_repeat(self):
@@ -599,17 +599,17 @@ class TBRangeTurnHandler(DefaultScript):
         rangedict = {}
         # Get a list of objects in the room.
         objectlist = self.obj.contents
-        for object in objectlist:
+        for thing in objectlist:
             # Object always at distance 0 from itself
-            if object == to_init:
-                rangedict.update({object:0})
+            if thing == to_init:
+                rangedict.update({thing:0})
             else:
-                if object.destination or to_init.destination:
+                if thing.destination or to_init.destination:
                     # Start exits at range 2 to put them at the 'edges'
-                    rangedict.update({object:2})
+                    rangedict.update({thing:2})
                 else:
                     # Start objects at range 1 from other objects
-                    rangedict.update({object:1})
+                    rangedict.update({thing:1})
         to_init.db.combat_range = rangedict
 
     def join_rangefield(self, to_init, anchor_obj=None, add_distance=0):
@@ -633,9 +633,9 @@ class TBRangeTurnHandler(DefaultScript):
         # Copy the range values from the anchor object.
         to_init.db.combat_range = anchor_obj.db.combat_range
         # Add the new object to everyone else's ranges.
-        for object in contents:
-            new_objects_range = object.db.combat_range[anchor_obj]
-            object.db.combat_range.update({to_init:new_objects_range})
+        for thing in contents:
+            new_objects_range = thing.db.combat_range[anchor_obj]
+            thing.db.combat_range.update({to_init:new_objects_range})
         # Set the new object's range to itself to 0.
         to_init.db.combat_range.update({to_init:0})
         # Add additional distance from anchor object, if any.
@@ -888,10 +888,10 @@ class TBRangeObject(DefaultObject):
         if self.db.combat_range:
             del self.db.combat_range
         # Remove this object from everyone's range fields
-        for object in getter.location.contents:
-            if object.db.combat_range:
-                if self in object.db.combat_range:
-                    object.db.combat_range.pop(self, None)
+        for thing in getter.location.contents:
+            if thing.db.combat_range:
+                if self in thing.db.combat_range:
+                    thing.db.combat_range.pop(self, None)
         # If in combat, getter spends an action
         if is_in_combat(getter):
             spend_action(getter, 1, action_name="get")  # Use up one action.
