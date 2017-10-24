@@ -203,6 +203,20 @@ def apply_damage(defender, damage):
     if defender.db.hp <= 0:
         defender.db.hp = 0
 
+def at_defeat(defeated):
+    """
+    Announces the defeat of a fighter in combat.
+    
+    Args:
+        defeated (obj): Fighter that's been defeated.
+    
+    Notes:
+        All this does is announce a defeat message by default, but if you
+        want anything else to happen to defeated fighters (like putting them
+        into a dying state or something similar) then this is the place to
+        do it.
+    """
+    defeated.location.msg_contents("%s has been defeated!" % defeated)
 
 def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     """
@@ -239,9 +253,9 @@ def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
         else:
             attacker.location.msg_contents("%s's %s bounces harmlessly off %s!" % (attacker, attackers_weapon, defender))
         apply_damage(defender, damage_value)
-        # If defender HP is reduced to 0 or less, announce defeat.
+        # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
-            attacker.location.msg_contents("%s has been defeated!" % defender)
+            at_defeat(defender)
 
 
 def combat_cleanup(character):
@@ -270,7 +284,7 @@ def is_in_combat(character):
     Returns:
         (bool): True if in combat or False if not in combat
     """
-    if character.db.Combat_TurnHandler:
+    if character.db.combat_turnhandler:
         return True
     return False
 
@@ -285,7 +299,7 @@ def is_turn(character):
     Returns:
         (bool): True if it is their turn or False otherwise
     """
-    turnhandler = character.db.Combat_TurnHandler
+    turnhandler = character.db.combat_turnhandler
     currentchar = turnhandler.db.fighters[turnhandler.db.turn]
     if character == currentchar:
         return True
@@ -305,14 +319,14 @@ def spend_action(character, actions, action_name=None):
         combat to provided string
     """
     if action_name:
-        character.db.Combat_LastAction = action_name
+        character.db.combat_lastaction = action_name
     if actions == 'all':  # If spending all actions
-        character.db.Combat_ActionsLeft = 0  # Set actions to 0
+        character.db.combat_actionsleft = 0  # Set actions to 0
     else:
-        character.db.Combat_ActionsLeft -= actions  # Use up actions.
-        if character.db.Combat_ActionsLeft < 0:
-            character.db.Combat_ActionsLeft = 0  # Can't have fewer than 0 actions
-    character.db.Combat_TurnHandler.turn_end_check(character)  # Signal potential end of turn.
+        character.db.combat_actionsleft -= actions  # Use up actions.
+        if character.db.combat_actionsleft < 0:
+            character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
+    character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
 
 
 """
@@ -482,9 +496,9 @@ class CmdFight(Command):
         if len(fighters) <= 1:  # If you're the only able fighter in the room
             self.caller.msg("There's nobody here to fight!")
             return
-        if here.db.Combat_TurnHandler:  # If there's already a fight going on...
+        if here.db.combat_turnhandler:  # If there's already a fight going on...
             here.msg_contents("%s joins the fight!" % self.caller)
-            here.db.Combat_TurnHandler.join_fight(self.caller)  # Join the fight!
+            here.db.combat_turnhandler.join_fight(self.caller)  # Join the fight!
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
@@ -873,7 +887,7 @@ class TBEquipTurnHandler(DefaultScript):
             self.initialize_for_combat(fighter)
 
         # Add a reference to this script to the room
-        self.obj.db.Combat_TurnHandler = self
+        self.obj.db.combat_turnhandler = self
 
         # Roll initiative and sort the list of fighters depending on who rolls highest to determine turn order.
         # The initiative roll is determined by the roll_init function and can be customized easily.
@@ -896,7 +910,7 @@ class TBEquipTurnHandler(DefaultScript):
         """
         for fighter in self.db.fighters:
             combat_cleanup(fighter)  # Clean up the combat attributes for every fighter.
-        self.obj.db.Combat_TurnHandler = None  # Remove reference to turn handler in location
+        self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
 
     def at_repeat(self):
         """
@@ -923,9 +937,9 @@ class TBEquipTurnHandler(DefaultScript):
             character (obj): Character to initialize for combat.
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
-        character.db.Combat_ActionsLeft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
-        character.db.Combat_TurnHandler = self  # Add a reference to this turn handler script to the character
-        character.db.Combat_LastAction = "null"  # Track last action taken in combat
+        character.db.combat_actionsleft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        character.db.combat_turnhandler = self  # Add a reference to this turn handler script to the character
+        character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):
         """
@@ -939,10 +953,10 @@ class TBEquipTurnHandler(DefaultScript):
             Here, you only get one action per turn, but you might want to allow more than
             one per turn, or even grant a number of actions based on a character's
             attributes. You can even add multiple different kinds of actions, I.E. actions
-            separated for movement, by adding "character.db.Combat_MovesLeft = 3" or
+            separated for movement, by adding "character.db.combat_movesleft = 3" or
             something similar.
         """
-        character.db.Combat_ActionsLeft = 1  # 1 action per turn.
+        character.db.combat_actionsleft = 1  # 1 action per turn.
         # Prompt the character for their turn and give some information.
         character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
 
@@ -954,7 +968,7 @@ class TBEquipTurnHandler(DefaultScript):
         # Check to see if every character disengaged as their last action. If so, end combat.
         disengage_check = True
         for fighter in self.db.fighters:
-            if fighter.db.Combat_LastAction != "disengage":  # If a character has done anything but disengage
+            if fighter.db.combat_lastaction != "disengage":  # If a character has done anything but disengage
                 disengage_check = False
         if disengage_check:  # All characters have disengaged
             self.obj.msg_contents("All fighters have disengaged! Combat is over!")
@@ -992,7 +1006,7 @@ class TBEquipTurnHandler(DefaultScript):
         Args:
             character (obj): Character to test for end of turn
         """
-        if not character.db.Combat_ActionsLeft:  # Character has no actions remaining
+        if not character.db.combat_actionsleft:  # Character has no actions remaining
             self.next_turn()
             return
 

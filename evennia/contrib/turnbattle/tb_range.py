@@ -228,6 +228,20 @@ def apply_damage(defender, damage):
     if defender.db.hp <= 0:
         defender.db.hp = 0
 
+def at_defeat(defeated):
+    """
+    Announces the defeat of a fighter in combat.
+    
+    Args:
+        defeated (obj): Fighter that's been defeated.
+    
+    Notes:
+        All this does is announce a defeat message by default, but if you
+        want anything else to happen to defeated fighters (like putting them
+        into a dying state or something similar) then this is the place to
+        do it.
+    """
+    defeated.location.msg_contents("%s has been defeated!" % defeated)
 
 def resolve_attack(attacker, defender, attack_type, attack_value=None, defense_value=None):
     """
@@ -257,9 +271,9 @@ def resolve_attack(attacker, defender, attack_type, attack_value=None, defense_v
         # Announce damage dealt and apply damage.
         attacker.location.msg_contents("%s hits %s with a %s attack for %i damage!" % (attacker, defender, attack_type, damage_value))
         apply_damage(defender, damage_value)
-        # If defender HP is reduced to 0 or less, announce defeat.
+        # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
-            attacker.location.msg_contents("%s has been defeated!" % defender)
+            at_defeat(defender)
             
 def distance_dec(mover, target):
     """
@@ -269,17 +283,17 @@ def distance_dec(mover, target):
         mover (obj): The object moving
         target (obj): The object to be moved toward
     """
-    mover.db.Combat_Range[target] -= 1
-    target.db.Combat_Range[mover] = mover.db.Combat_Range[target]
+    mover.db.combat_range[target] -= 1
+    target.db.combat_range[mover] = mover.db.combat_range[target]
     # If this brings mover to range 0 (Engaged):
-    if mover.db.Combat_Range[target] <= 0:
+    if mover.db.combat_range[target] <= 0:
         # Reset range to each other to 0 and copy target's ranges to mover.
-        target.db.Combat_Range[mover] = 0
-        mover.db.Combat_Range = target.db.Combat_Range
+        target.db.combat_range[mover] = 0
+        mover.db.combat_range = target.db.combat_range
         # Assure everything else has the same distance from the mover and target, now that they're together
         for object in mover.location.contents:
             if object != mover and object != target:
-                object.db.Combat_Range[mover] = object.db.Combat_Range[target]
+                object.db.combat_range[mover] = object.db.combat_range[target]
                 
 def distance_inc(mover, target):
     """
@@ -289,12 +303,12 @@ def distance_inc(mover, target):
         mover (obj): The object moving
         target (obj): The object to be moved away from
     """
-    mover.db.Combat_Range[target] += 1
-    target.db.Combat_Range[mover] = mover.db.Combat_Range[target]
+    mover.db.combat_range[target] += 1
+    target.db.combat_range[mover] = mover.db.combat_range[target]
     # Set a cap of 2:
-    if mover.db.Combat_Range[target] > 2:
-        target.db.Combat_Range[mover] = 2
-        mover.db.Combat_Range[target] = 2
+    if mover.db.combat_range[target] > 2:
+        target.db.combat_range[mover] = 2
+        mover.db.combat_range[target] = 2
                 
 def approach(mover, target):
     """
@@ -314,10 +328,10 @@ def approach(mover, target):
     for thing in objects:
         if thing != mover and thing != target:
             # Move closer to each object closer to the target than you.
-            if mover.db.Combat_Range[thing] > target.db.Combat_Range[thing]:
+            if mover.db.combat_range[thing] > target.db.combat_range[thing]:
                 distance_dec(mover, thing)
             # Move further from each object that's further from you than from the target.
-            if mover.db.Combat_Range[thing] < target.db.Combat_Range[thing]:
+            if mover.db.combat_range[thing] < target.db.combat_range[thing]:
                 distance_inc(mover, thing)
     # Lastly, move closer to your target.
     distance_dec(mover, target)
@@ -340,13 +354,13 @@ def withdraw(mover, target):
     for thing in objects:
         if thing != mover and thing != target:
             # Move away from each object closer to the target than you, if it's also closer to you than you are to the target.
-            if mover.db.Combat_Range[thing] >= target.db.Combat_Range[thing] and mover.db.Combat_Range[thing] < mover.db.Combat_Range[thing]:
+            if mover.db.combat_range[thing] >= target.db.combat_range[thing] and mover.db.combat_range[thing] < mover.db.combat_range[thing]:
                 distance_inc(mover, thing)
             # Move away from anything your target is engaged with
-            if target.db.Combat_Range[thing] == 0:
+            if target.db.combat_range[thing] == 0:
                 distance_inc(mover, thing)
             # Move away from anything you're engaged with.
-            if mover.db.Combat_Range[thing] == 0:
+            if mover.db.combat_range[thing] == 0:
                 distance_inc(mover, thing)
     # Then, move away from your target.
     distance_inc(mover, target)
@@ -364,16 +378,16 @@ def get_range(obj1, obj2):
         range (int or None): Distance between two objects or None if not applicable
     """
     # Return None if not applicable.
-    if not obj1.db.Combat_Range:
+    if not obj1.db.combat_range:
         return None
-    if not obj2.db.Combat_Range:
+    if not obj2.db.combat_range:
         return None
-    if obj1 not in obj2.db.Combat_Range:
+    if obj1 not in obj2.db.combat_range:
         return None
-    if obj2 not in obj1.db.Combat_Range:
+    if obj2 not in obj1.db.combat_range:
         return None
     # Return the range between the two objects.
-    return obj1.db.Combat_Range[obj2]
+    return obj1.db.combat_range[obj2]
 
 def combat_cleanup(character):
     """
@@ -401,7 +415,7 @@ def is_in_combat(character):
     Returns:
         (bool): True if in combat or False if not in combat
     """
-    if character.db.Combat_TurnHandler:
+    if character.db.combat_turnhandler:
         return True
     return False
 
@@ -416,7 +430,7 @@ def is_turn(character):
     Returns:
         (bool): True if it is their turn or False otherwise
     """
-    turnhandler = character.db.Combat_TurnHandler
+    turnhandler = character.db.combat_turnhandler
     currentchar = turnhandler.db.fighters[turnhandler.db.turn]
     if character == currentchar:
         return True
@@ -436,14 +450,14 @@ def spend_action(character, actions, action_name=None):
         combat to provided string
     """
     if action_name:
-        character.db.Combat_LastAction = action_name
+        character.db.combat_lastaction = action_name
     if actions == 'all':  # If spending all actions
-        character.db.Combat_ActionsLeft = 0  # Set actions to 0
+        character.db.combat_actionsleft = 0  # Set actions to 0
     else:
-        character.db.Combat_ActionsLeft -= actions  # Use up actions.
-        if character.db.Combat_ActionsLeft < 0:
-            character.db.Combat_ActionsLeft = 0  # Can't have fewer than 0 actions
-    character.db.Combat_TurnHandler.turn_end_check(character)  # Signal potential end of turn.
+        character.db.combat_actionsleft -= actions  # Use up actions.
+        if character.db.combat_actionsleft < 0:
+            character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
+    character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
 
 def combat_status_message(fighter):
     """
@@ -462,13 +476,13 @@ def combat_status_message(fighter):
     reach_obj = []
     range_obj = []
     
-    for object in fighter.db.Combat_Range:
+    for object in fighter.db.combat_range:
         if object != fighter:
-            if fighter.db.Combat_Range[object] == 0:
+            if fighter.db.combat_range[object] == 0:
                 engaged_obj.append(object)
-            if fighter.db.Combat_Range[object] == 1:
+            if fighter.db.combat_range[object] == 1:
                 reach_obj.append(object)
-            if fighter.db.Combat_Range[object] > 1:
+            if fighter.db.combat_range[object] > 1:
                 range_obj.append(object)
     
     if engaged_obj:
@@ -582,10 +596,10 @@ class TBRangeObject(DefaultObject):
 
         """
         # If dropper is currently in combat
-        if dropper.location.db.Combat_TurnHandler:
+        if dropper.location.db.combat_turnhandler:
             # Object joins the range field
-            self.db.Combat_Range = {}
-            dropper.location.db.Combat_TurnHandler.join_rangefield(self, anchor_obj=dropper)
+            self.db.combat_range = {}
+            dropper.location.db.combat_turnhandler.join_rangefield(self, anchor_obj=dropper)
     def at_before_get(self, getter):
         """
         Called by the default `get` command before this object has been
@@ -628,13 +642,13 @@ class TBRangeObject(DefaultObject):
 
         """
         # If gotten, erase range values
-        if self.db.Combat_Range:
-            del self.db.Combat_Range
+        if self.db.combat_range:
+            del self.db.combat_range
         # Remove this object from everyone's range fields
         for object in getter.location.contents:
-            if object.db.Combat_Range:
-                if self in object.db.Combat_Range:
-                    object.db.Combat_Range.pop(self, None)
+            if object.db.combat_range:
+                if self in object.db.combat_range:
+                    object.db.combat_range.pop(self, None)
         # If in combat, getter spends an action
         if is_in_combat(getter):
             spend_action(getter, 1, action_name="get")  # Use up one action.
@@ -726,9 +740,9 @@ class CmdFight(Command):
         if len(fighters) <= 1:  # If you're the only able fighter in the room
             self.caller.msg("There's nobody here to fight!")
             return
-        if here.db.Combat_TurnHandler:  # If there's already a fight going on...
+        if here.db.combat_turnhandler:  # If there's already a fight going on...
             here.msg_contents("%s joins the fight!" % self.caller)
-            here.db.Combat_TurnHandler.join_fight(self.caller)  # Join the fight!
+            here.db.combat_turnhandler.join_fight(self.caller)  # Join the fight!
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
@@ -839,7 +853,7 @@ class CmdShoot(Command):
             
         # Test to see if there are any nearby enemy targets.
         in_melee = []
-        for target in attacker.db.Combat_Range:
+        for target in attacker.db.combat_range:
             # Object is engaged and has HP
             if get_range(attacker, defender) == 0 and target.db.hp and target != self.caller:
                 in_melee.append(target) # Add to list of targets in melee
@@ -887,7 +901,7 @@ class CmdApproach(Command):
         if not target:  # No valid target given.
             return
 
-        if not target.db.Combat_Range:  # Target object is not on the range field
+        if not target.db.combat_range:  # Target object is not on the range field
             self.caller.msg("You can't move toward that!")
             return
 
@@ -938,7 +952,7 @@ class CmdWithdraw(Command):
         if not target:  # No valid target given.
             return
 
-        if not target.db.Combat_Range:  # Target object is not on the range field
+        if not target.db.combat_range:  # Target object is not on the range field
             self.caller.msg("You can't move away from that!")
             return
 
@@ -946,7 +960,7 @@ class CmdWithdraw(Command):
             self.caller.msg("You can't move away from yourself!")
             return
             
-        if mover.db.Combat_Range[target] >= 3: # Already at maximum distance
+        if mover.db.combat_range[target] >= 3: # Already at maximum distance
             self.caller.msg("You're as far as you can get from that target!")
             return
 
@@ -1159,7 +1173,7 @@ class TBRangeTurnHandler(DefaultScript):
             self.initialize_for_combat(fighter)
 
         # Add a reference to this script to the room
-        self.obj.db.Combat_TurnHandler = self
+        self.obj.db.combat_turnhandler = self
         
         # Initialize range field for all objects in the room
         for object in self.obj.contents:
@@ -1186,7 +1200,7 @@ class TBRangeTurnHandler(DefaultScript):
         """
         for object in self.obj.contents:
             combat_cleanup(object)  # Clean up the combat attributes for every object in the room.
-        self.obj.db.Combat_TurnHandler = None  # Remove reference to turn handler in location
+        self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
 
     def at_repeat(self):
         """
@@ -1226,7 +1240,7 @@ class TBRangeTurnHandler(DefaultScript):
                 else:
                     # Start objects at range 1 from other objects
                     rangedict.update({object:1})
-        to_init.db.Combat_Range = rangedict
+        to_init.db.combat_range = rangedict
 
     def join_rangefield(self, to_init, anchor_obj=None, add_distance=0):
         """
@@ -1247,13 +1261,13 @@ class TBRangeTurnHandler(DefaultScript):
         if not anchor_obj:
             anchor_obj = contents[randint(0, (len(contents)-1))]
         # Copy the range values from the anchor object.
-        to_init.db.Combat_Range = anchor_obj.db.Combat_Range
+        to_init.db.combat_range = anchor_obj.db.combat_range
         # Add the new object to everyone else's ranges.
         for object in contents:
-            new_objects_range = object.db.Combat_Range[anchor_obj]
-            object.db.Combat_Range.update({to_init:new_objects_range})
+            new_objects_range = object.db.combat_range[anchor_obj]
+            object.db.combat_range.update({to_init:new_objects_range})
         # Set the new object's range to itself to 0.
-        to_init.db.Combat_Range.update({to_init:0})
+        to_init.db.combat_range.update({to_init:0})
         # Add additional distance from anchor object, if any.
         for n in range(add_distance):
             withdraw(to_init, anchor_obj)
@@ -1266,9 +1280,9 @@ class TBRangeTurnHandler(DefaultScript):
             character (obj): Character to initialize for combat.
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
-        character.db.Combat_ActionsLeft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
-        character.db.Combat_TurnHandler = self  # Add a reference to this turn handler script to the character
-        character.db.Combat_LastAction = "null"  # Track last action taken in combat
+        character.db.combat_actionsleft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        character.db.combat_turnhandler = self  # Add a reference to this turn handler script to the character
+        character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):
         """
@@ -1283,7 +1297,7 @@ class TBRangeTurnHandler(DefaultScript):
             characters to both move and attack in the same turn (or, alternately,
             move twice or attack twice).
         """
-        character.db.Combat_ActionsLeft = 2  # 2 actions per turn.
+        character.db.combat_actionsleft = 2  # 2 actions per turn.
         # Prompt the character for their turn and give some information.
         character.msg("|wIt's your turn!|n")
         combat_status_message(character)
@@ -1296,7 +1310,7 @@ class TBRangeTurnHandler(DefaultScript):
         # Check to see if every character disengaged as their last action. If so, end combat.
         disengage_check = True
         for fighter in self.db.fighters:
-            if fighter.db.Combat_LastAction != "disengage":  # If a character has done anything but disengage
+            if fighter.db.combat_lastaction != "disengage":  # If a character has done anything but disengage
                 disengage_check = False
         if disengage_check:  # All characters have disengaged
             self.obj.msg_contents("All fighters have disengaged! Combat is over!")
@@ -1334,7 +1348,7 @@ class TBRangeTurnHandler(DefaultScript):
         Args:
             character (obj): Character to test for end of turn
         """
-        if not character.db.Combat_ActionsLeft:  # Character has no actions remaining
+        if not character.db.combat_actionsleft:  # Character has no actions remaining
             self.next_turn()
             return
 
@@ -1352,5 +1366,5 @@ class TBRangeTurnHandler(DefaultScript):
         # Initialize the character like you do at the start.
         self.initialize_for_combat(character)
         # Add the character to the rangefield, at range from everyone, if they're not on it already.
-        if not character.db.Combat_Range:
+        if not character.db.combat_range:
             self.join_rangefield(character, add_distance=2)
