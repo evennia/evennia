@@ -333,7 +333,6 @@ def approach(mover, target):
                 distance_inc(mover, thing)
     # Lastly, move closer to your target.
     distance_dec(mover, target)
-    return 
 
 def withdraw(mover, target):
     """
@@ -378,7 +377,6 @@ def withdraw(mover, target):
                 distance_inc(mover, thing)
     # Then, move away from your target.
     distance_inc(mover, target)
-    return
     
 def get_range(obj1, obj2):
     """
@@ -503,7 +501,6 @@ def combat_status_message(fighter):
         status_msg += "|/Ranged targets: %s" % ", ".join(obj.key for obj in range_obj)
         
     fighter.msg(status_msg)
-    return
         
 """
 ----------------------------------------------------------------------------
@@ -823,6 +820,7 @@ class TBRangeObject(DefaultObject):
             dropper.msg("You can only drop things on your turn!")
             return False
         return True
+
     def at_drop(self, dropper):
         """
         Called by the default `drop` command when this object has been
@@ -843,6 +841,7 @@ class TBRangeObject(DefaultObject):
             # Object joins the range field
             self.db.combat_range = {}
             dropper.location.db.combat_turnhandler.join_rangefield(self, anchor_obj=dropper)
+
     def at_before_get(self, getter):
         """
         Called by the default `get` command before this object has been
@@ -869,6 +868,7 @@ class TBRangeObject(DefaultObject):
                 getter.msg("You aren't close enough to get that! (see: help approach)")
                 return False
         return True
+
     def at_get(self, getter):
         """
         Called by the default `get` command when this object has been
@@ -895,6 +895,7 @@ class TBRangeObject(DefaultObject):
         # If in combat, getter spends an action
         if is_in_combat(getter):
             spend_action(getter, 1, action_name="get")  # Use up one action.
+
     def at_before_give(self, giver, getter):
         """
         Called by the default `give` command before this object has been
@@ -923,6 +924,7 @@ class TBRangeObject(DefaultObject):
                 giver.msg("You aren't close enough to give things to %s! (see: help approach)" % getter)
                 return False
         return True
+
     def at_give(self, giver, getter):
         """
         Called by the default `give` command when this object has been
