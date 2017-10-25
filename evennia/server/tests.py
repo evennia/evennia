@@ -45,6 +45,15 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
 
 
+class MockSettings(object):
+    def __init__(self, setting, value=True):
+        self.setting = value
+        if setting == "WEBSERVER_PORTS":
+            self.WEBSERVER_ENABLED = True
+        else:
+            self.WEBSERVER_ENABLED = False
+
+
 class TestDeprecations(TestCase):
     deprecated_strings = ("CMDSET_DEFAULT", "CMDSET_OOC", "BASE_COMM_TYPECLASS", "COMM_TYPECLASS_PATHS",
                           "CHARACTER_DEFAULT_HOME", "OBJECT_TYPECLASS_PATHS", "SCRIPT_TYPECLASS_PATHS",
@@ -61,8 +70,7 @@ class TestDeprecations(TestCase):
 
     def test_check_errors(self):
         for setting in self.deprecated_strings:
-            self.assertTrue(self.warning_raised_for_setting({setting: True, "WEBSERVER_ENABLED": False}),
+            self.assertTrue(self.warning_raised_for_setting(MockSettings(setting)),
                             "Deprecated setting %s did not raise warning." % setting)
-        self.assertTrue(self.warning_raised_for_setting({"WEBSERVER_ENABLED": True,
-                                                         "WEBSERVER_PORTS": ["not a tuple"]}),
+        self.assertTrue(self.warning_raised_for_setting(MockSetting("WEBSERVER_PORTS", value=["not a tuple"])),
                         "WEBSERVER_PORTS being invalid type (Not a tuple) did not raise a warning.")
