@@ -15,11 +15,6 @@ Guidelines:
  used as test methods by the runner. Inside the test methods, special member
  methods assert*() are used to test the behaviour.
 """
-
-import os
-import sys
-import glob
-
 try:
     from django.utils.unittest import TestCase
 except ImportError:
@@ -30,6 +25,8 @@ except ImportError:
     import unittest
 
 from django.test.runner import DiscoverRunner
+
+from .deprecations import check_errors
 
 
 class EvenniaTestSuiteRunner(DiscoverRunner):
@@ -46,3 +43,26 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         import evennia
         evennia._init()
         return super(EvenniaTestSuiteRunner, self).build_suite(test_labels, extra_tests=extra_tests, **kwargs)
+
+
+class TestDeprecations(TestCase):
+    deprecated_strings = ("CMDSET_DEFAULT", "CMDSET_OOC", "BASE_COMM_TYPECLASS", "COMM_TYPECLASS_PATHS",
+                          "CHARACTER_DEFAULT_HOME", "OBJECT_TYPECLASS_PATHS", "SCRIPT_TYPECLASS_PATHS",
+                          "ACCOUNT_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS", "SEARCH_MULTIMATCH_SEPARATOR")
+
+    @staticmethod
+    def warning_raised_for_setting(settings):
+        try:
+            check_errors(settings)
+        except DeprecationWarning:
+            return True
+        else:
+            return False
+
+    def test_check_errors(self):
+        for setting in self.deprecated_strings:
+            self.assertTrue(self.warning_raised_for_setting({setting: True, "WEBSERVER_ENABLED": False}),
+                            "Deprecated setting %s did not raise warning." % setting)
+        self.assertTrue(self.warning_raised_for_setting({"WEBSERVER_ENABLED": True,
+                                                         "WEBSERVER_PORTS": ["not a tuple"]}),
+                        "WEBSERVER_PORTS being invalid type (Not a tuple) did not raise a warning.")
