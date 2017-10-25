@@ -1,0 +1,93 @@
+from django.test import TestCase
+from mock import Mock
+from .dummyrunner_settings import (c_creates_button, c_creates_obj, c_digs, c_examines, c_help, c_idles, c_login,
+                                   c_login_nodig, c_logout, c_looks, c_moves, c_moves_n, c_moves_s, c_socialize)
+
+
+class TestDummyrunnerSettings(TestCase):
+    def setUp(self):
+        self.client = Mock()
+        self.client.cid = 1
+        self.client.counter = Mock(return_value=1)
+        self.client.gid = "20171025161153-1"
+        self.client.name = "Dummy-%s" % self.client.gid
+        self.client.password = "password-%s" % self.client.gid
+        self.client.start_room = "testing_room_start_%s" % self.client.gid
+        self.client.objs = []
+        self.client.exits = []
+
+    def clear_client_lists(self):
+        self.client.objs = []
+        self.client.exits = []
+
+    def test_c_login(self):
+        self.assertEqual(c_login(self.client), ('create %s %s' % (self.client.name, self.client.password),
+                                                'connect %s %s' % (self.client.name, self.client.password),
+                                                '@dig %s' % self.client.start_room,
+                                                '@teleport %s' % self.client.start_room,
+                                                "@dig testing_room_1 = exit_1, exit_1"))
+
+    def test_c_login_no_dig(self):
+        self.assertEqual(c_login_nodig(self.client), ('create %s %s' % (self.client.name, self.client.password),
+                                                      'connect %s %s' % (self.client.name, self.client.password)))
+
+    def test_c_logout(self):
+        self.assertEqual(c_logout(self.client), "@quit")
+
+    def perception_method_tests(self, func, verb, alone_suffix=""):
+        self.assertEqual(func(self.client), "%s%s" % (verb, alone_suffix))
+        self.client.exits = ["exit1", "exit2"]
+        self.assertEqual(func(self.client), ["%s exit1" % verb, "%s exit2" % verb])
+        self.client.objs = ["foo", "bar"]
+        self.assertEqual(func(self.client), ["%s foo" % verb, "%s bar" % verb])
+        self.clear_client_lists()
+
+    def test_c_looks(self):
+        self.perception_method_tests(c_looks, "look")
+
+    def test_c_examines(self):
+        self.perception_method_tests(c_examines, "examine", " me")
+
+    def test_idles(self):
+        self.assertEqual(c_idles(self.client), ('idle', 'idle'))
+
+    def test_c_help(self):
+        self.assertEqual(c_help(self.client), ('help', 'help @teleport', 'help look', 'help @tunnel', 'help @dig'))
+
+    def test_c_digs(self):
+        self.assertEqual(c_digs(self.client), ('@dig/tel testing_room_1 = exit_1, exit_1'))
+        self.assertEqual(self.client.exits, ['exit_1', 'exit_1'])
+        self.clear_client_lists()
+
+    def test_c_creates_obj(self):
+        objname = "testing_obj_1"
+        self.assertEqual(c_creates_obj(self.client), ('@create %s' % objname,
+                                                      '@desc %s = "this is a test object' % objname,
+                                                      '@set %s/testattr = this is a test attribute value.' % objname,
+                                                      '@set %s/testattr2 = this is a second test attribute.' % objname))
+        self.assertEqual(self.client.objs, [objname])
+        self.clear_client_lists()
+
+    def test_c_creates_button(self):
+        objname = "testing_button_1"
+        typeclass_name = "contrib.tutorial_examples.red_button.RedButton"
+        self.assertEqual(c_creates_button(self.client), ('@create %s:%s' % (objname, typeclass_name),
+                                                         '@desc %s = test red button!' % objname))
+        self.assertEqual(self.client.objs, [objname])
+        self.clear_client_lists()
+
+    def test_c_socialize(self):
+        self.assertEqual(c_socialize(self.client), ('ooc Hello!', 'ooc Testing ...', 'ooc Testing ... times 2',
+                                                    'say Yo!', 'emote stands looking around.'))
+
+    def test_c_moves(self):
+        self.assertEqual(c_moves(self.client), "look")
+        self.client.exits = ["south", "north"]
+        self.assertEqual(c_moves(self.client), ["south", "north"])
+        self.clear_client_lists()
+
+    def test_c_move_n(self):
+        self.assertEqual(c_moves_n(self.client), "north")
+
+    def test_c_move_s(self):
+        self.assertEqual(c_moves_s(self.client), "south")
