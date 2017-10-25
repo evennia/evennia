@@ -57,7 +57,9 @@ class MockSettings(object):
 class TestDeprecations(TestCase):
     deprecated_strings = ("CMDSET_DEFAULT", "CMDSET_OOC", "BASE_COMM_TYPECLASS", "COMM_TYPECLASS_PATHS",
                           "CHARACTER_DEFAULT_HOME", "OBJECT_TYPECLASS_PATHS", "SCRIPT_TYPECLASS_PATHS",
-                          "ACCOUNT_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS", "SEARCH_MULTIMATCH_SEPARATOR")
+                          "ACCOUNT_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS", "SEARCH_MULTIMATCH_SEPARATOR",
+                          "TIME_SEC_PER_MIN", "TIME_MIN_PER_HOUR", "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK",
+                          "TIME_WEEK_PER_MONTH","TIME_MONTH_PER_YEAR")
 
     def test_check_errors(self):
         for setting in self.deprecated_strings:
