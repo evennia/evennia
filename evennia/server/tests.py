@@ -46,8 +46,8 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
 
 
 class MockSettings(object):
-    def __init__(self, setting, value=True):
-        self.setting = value
+    def __init__(self, setting, value=None):
+        setattr(self, setting, value)
         if setting == "WEBSERVER_PORTS":
             self.WEBSERVER_ENABLED = True
         else:
@@ -59,18 +59,7 @@ class TestDeprecations(TestCase):
                           "CHARACTER_DEFAULT_HOME", "OBJECT_TYPECLASS_PATHS", "SCRIPT_TYPECLASS_PATHS",
                           "ACCOUNT_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS", "SEARCH_MULTIMATCH_SEPARATOR")
 
-    @staticmethod
-    def warning_raised_for_setting(settings):
-        try:
-            check_errors(settings)
-        except DeprecationWarning:
-            return True
-        else:
-            return False
-
     def test_check_errors(self):
         for setting in self.deprecated_strings:
-            self.assertTrue(self.warning_raised_for_setting(MockSettings(setting)),
-                            "Deprecated setting %s did not raise warning." % setting)
-        self.assertTrue(self.warning_raised_for_setting(MockSetting("WEBSERVER_PORTS", value=["not a tuple"])),
-                        "WEBSERVER_PORTS being invalid type (Not a tuple) did not raise a warning.")
+            self.assertRaises(DeprecationWarning, check_errors, MockSettings(setting))
+        self.assertRaises(DeprecationWarning, check_errors, MockSettings("WEBSERVER_PORTS", value=["not a tuple"]))
