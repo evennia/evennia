@@ -46,6 +46,10 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
 
 
 class MockSettings(object):
+    """
+    Class for simulating django.conf.settings. Created with a single value, and then sets the required
+    WEBSERVER_ENABLED setting to True or False depending if we're testing WEBSERVER_PORTS.
+    """
     def __init__(self, setting, value=None):
         setattr(self, setting, value)
         if setting == "WEBSERVER_PORTS":
@@ -55,13 +59,21 @@ class MockSettings(object):
 
 
 class TestDeprecations(TestCase):
-    deprecated_strings = ("CMDSET_DEFAULT", "CMDSET_OOC", "BASE_COMM_TYPECLASS", "COMM_TYPECLASS_PATHS",
-                          "CHARACTER_DEFAULT_HOME", "OBJECT_TYPECLASS_PATHS", "SCRIPT_TYPECLASS_PATHS",
-                          "ACCOUNT_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS", "SEARCH_MULTIMATCH_SEPARATOR",
-                          "TIME_SEC_PER_MIN", "TIME_MIN_PER_HOUR", "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK",
-                          "TIME_WEEK_PER_MONTH","TIME_MONTH_PER_YEAR")
+    """
+    Class for testing deprecations.check_errors.
+    """
+    deprecated_settings = ("CMDSET_DEFAULT", "CMDSET_OOC", "BASE_COMM_TYPECLASS", "COMM_TYPECLASS_PATHS",
+                           "CHARACTER_DEFAULT_HOME", "OBJECT_TYPECLASS_PATHS", "SCRIPT_TYPECLASS_PATHS",
+                           "ACCOUNT_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS", "SEARCH_MULTIMATCH_SEPARATOR",
+                           "TIME_SEC_PER_MIN", "TIME_MIN_PER_HOUR", "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK",
+                           "TIME_WEEK_PER_MONTH", "TIME_MONTH_PER_YEAR")
 
     def test_check_errors(self):
-        for setting in self.deprecated_strings:
+        """
+        All settings in deprecated_settings should raise a DeprecationWarning if they exist. WEBSERVER_PORTS
+        raises an error if the iterable value passed does not have a tuple as its first element.
+        """
+        for setting in self.deprecated_settings:
             self.assertRaises(DeprecationWarning, check_errors, MockSettings(setting))
+        # test check for WEBSERVER_PORTS having correct value
         self.assertRaises(DeprecationWarning, check_errors, MockSettings("WEBSERVER_PORTS", value=["not a tuple"]))
