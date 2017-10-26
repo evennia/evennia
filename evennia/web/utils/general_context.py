@@ -10,17 +10,18 @@ from django.conf import settings
 from evennia.utils.utils import get_evennia_version
 
 # Determine the site name and server version
-
-try:
-    GAME_NAME = settings.SERVERNAME.strip()
-except AttributeError:
-    GAME_NAME = "Evennia"
-SERVER_VERSION = get_evennia_version()
-try:
-    GAME_SLOGAN = settings.GAME_SLOGAN.strip()
-except AttributeError:
-    GAME_SLOGAN = SERVER_VERSION
-
+def set_game_name_and_slogan():
+    global GAME_NAME, GAME_SLOGAN, SERVER_VERSION
+    try:
+        GAME_NAME = settings.SERVERNAME.strip()
+    except AttributeError:
+        GAME_NAME = "Evennia"
+    SERVER_VERSION = get_evennia_version()
+    try:
+        GAME_SLOGAN = settings.GAME_SLOGAN.strip()
+    except AttributeError:
+        GAME_SLOGAN = SERVER_VERSION
+set_game_name_and_slogan()
 
 # Setup lists of the most relevant apps so
 # the adminsite becomes more readable.
@@ -33,10 +34,13 @@ WEBSITE = ['Flatpages', 'News', 'Sites']
 
 
 # The main context processor function
-WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
-WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
-WEBSOCKET_PORT = settings.WEBSOCKET_CLIENT_PORT
-WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
+def set_webclient_settings():
+    global WEBCLIENT_ENABLED, WEBSOCKET_CLIENT_ENABLED, WEBSOCKET_PORT, WEBSOCKET_URL
+    WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
+    WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
+    WEBSOCKET_PORT = settings.WEBSOCKET_CLIENT_PORT
+    WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
+set_webclient_settings()
 
 
 def general_context(request):
