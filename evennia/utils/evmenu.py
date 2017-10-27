@@ -426,6 +426,15 @@ class EvMenu(object):
         for key, val in kwargs.iteritems():
             setattr(self, key, val)
 
+        #
+        if self.caller.ndb._menutree:
+            # an evmenu already exists - we try to close it cleanly. Note that this will
+            # not fire the previous menu's end node.
+            try:
+                self.caller.ndb._menutree.close_menu()
+            except Exception:
+                pass
+
         # store ourself on the object
         self.caller.ndb._menutree = self
 
@@ -441,17 +450,7 @@ class EvMenu(object):
                         "persistent": persistent}
             calldict.update(kwargs)
             try:
-                caller.attributes.add("_menutree_saved",
-                                      ((menudata, ),
-                                       {"startnode": startnode,
-                                        "cmdset_mergetype": cmdset_mergetype,
-                                        "cmdset_priority": cmdset_priority,
-                                        "auto_quit": auto_quit, "auto_look": auto_look, "auto_help": auto_help,
-                                        "cmd_on_exit": cmd_on_exit,
-                                        "nodetext_formatter": nodetext_formatter,
-                                        "options_formatter": options_formatter,
-                                        "node_formatter": node_formatter, "input_parser": input_parser,
-                                        "persistent": persistent, }))
+                caller.attributes.add("_menutree_saved", (self.__class__, (menudata, ), calldict))
                 caller.attributes.add("_menutree_saved_startnode", (startnode, startnode_input))
             except Exception as err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err), session=self._session)
