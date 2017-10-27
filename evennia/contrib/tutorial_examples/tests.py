@@ -18,14 +18,20 @@ class TestBodyFunctions(EvenniaTest):
         self.script.stop()
 
     def test_at_repeat(self, mock_random):
+        """test that no message will be sent when below the 66% threshold"""
         mock_random.random = Mock(return_value=0.5)
         old_func = self.script.send_random_message
         self.script.send_random_message = Mock()
         self.script.at_repeat()
         self.script.send_random_message.assert_not_called()
+        # test that random message will be sent
+        mock_random.random = Mock(return_value=0.7)
+        self.script.at_repeat()
+        self.script.send_random_message.assert_called()
         self.script.send_random_message = old_func
 
     def test_send_random_message(self, mock_random):
+        """Test that correct message is sent for each random value"""
         old_func = self.char1.msg
         self.char1.msg = Mock()
         # test each of the values
