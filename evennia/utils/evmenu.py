@@ -429,7 +429,12 @@ class EvMenu(object):
         self.nodetext = None
         self.helptext = None
         self.options = None
+        self.nodename = None
         self.node_kwargs = {}
+
+        # used for testing
+        self.test_options = {}
+        self.test_nodetext = ""
 
         # assign kwargs as initialization vars on ourselves.
         if set(("_startnode", "_menutree", "_session", "_persistent",
@@ -605,6 +610,11 @@ class EvMenu(object):
         except Exception:
             self.caller.msg(_ERR_GENERAL.format(nodename=nodename), session=self._session)
             raise
+
+        # store options to make them easier to test
+        self.test_options = options
+        self.test_nodetext = nodetext
+
         return nodetext, options
 
     def run_exec(self, nodename, raw_string, **kwargs):
@@ -750,6 +760,8 @@ class EvMenu(object):
                                     (goto, goto_kwargs, execute, exec_kwargs)
 
         self.nodetext = self._format_node(nodetext, display_options)
+        self.node_kwargs = kwargs
+        self.nodename = nodename
 
         # handle the helptext
         if helptext:
@@ -815,7 +827,7 @@ class EvMenu(object):
             should also report errors directly to the user.
 
         """
-        cmd = raw_string.strip().lower()
+        cmd = strip_ansi(raw_string.strip().lower())
 
         if cmd in self.options:
             # this will take precedence over the default commands
@@ -1124,7 +1136,7 @@ def test_start_node(caller):
 
 
 def test_look_node(caller):
-    text = ""
+    text = "This is a custom look location!"
     options = {"key": ("|yL|nook", "l"),
                "desc": "Go back to the previous menu.",
                "goto": "test_start_node"}
