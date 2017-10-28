@@ -5,13 +5,15 @@ This sets up a testing parent for testing EvMenu trees. It is configured by subc
 `TestEvMenu` class from this module and setting the class variables to point to the menu that should
 be tested and how it should be called.
 
-Without adding any further test methods, the tester will process all nodes of the menu, width first,
-by stepping through all options for every node. It will check to make sure all are visited. It will
-create a hierarchical list of node names that describes the tree structure.  Easiest way to use this
-is to run the test once to see how the structure looks.
+Without adding any further test methods, the tester will process all nodes of the menu, depth first,
+by stepping through all options for every node. Optionally, it can check that all nodes are visited.
+It will create a hierarchical list of node names that describes the tree structure. This can then be
+compared against a template to make sure the menu structure is sound. Easiest way to use this is to
+run the test once to see how the structure looks.
 
-The system also allows for testing the returns of each node as part of the parsing. To help debug
-the menu, turn on `debug_output`, which will print the traversal process in detail.
+The system also allows for testing the returns of each node as part of the parsing.
+
+To help debug the menu, turn on `debug_output`, which will print the traversal process in detail.
 
 """
 
