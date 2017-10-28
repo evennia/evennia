@@ -733,15 +733,14 @@ class EvMenu(object):
             for inum, dic in enumerate(options):
                 # fix up the option dicts
                 keys = make_iter(dic.get("key"))
+                desc = dic.get("desc", dic.get("text", None))
                 if "_default" in keys:
                     keys = [key for key in keys if key != "_default"]
-                    desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
                     goto, goto_kwargs, execute, exec_kwargs = _extract_goto_exec(dic)
                     self.default = (goto, goto_kwargs, execute, exec_kwargs)
                 else:
                     # use the key (only) if set, otherwise use the running number
                     keys = list(make_iter(dic.get("key", str(inum + 1).strip())))
-                    desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
                     goto, goto_kwargs, execute, exec_kwargs = _extract_goto_exec(dic)
                 if keys:
                     display_options.append((keys[0], desc))
@@ -887,16 +886,17 @@ class EvMenu(object):
         for key, desc in optionlist:
             if not (key or desc):
                 continue
+            desc_string = ": %s" % desc if desc else ""
             table_width_max = max(table_width_max,
                                   max(m_len(p) for p in key.split("\n")) +
-                                  max(m_len(p) for p in desc.split("\n")) + colsep)
+                                  max(m_len(p) for p in desc_string.split("\n")) + colsep)
             raw_key = strip_ansi(key)
             if raw_key != key:
                 # already decorations in key definition
-                table.append(" |lc%s|lt%s|le: %s" % (raw_key, key, desc))
+                table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
             else:
                 # add a default white color to key
-                table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
+                table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
 
         ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
 
@@ -1151,7 +1151,6 @@ def test_set_node(caller):
     """)
 
     options = {"key": ("back (default)", "_default"),
-               "desc": "back to main",
                "goto": "test_start_node"}
     return text, options
 
