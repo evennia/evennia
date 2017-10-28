@@ -270,7 +270,7 @@ class CmdEvMenuNode(Command):
                     err = "Menu object not found as %s.ndb._menutree!" % orig_caller
                     orig_caller.msg(err)  # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
-        # we must do this after the caller with the menui has been correctly identified since it
+        # we must do this after the caller with the menu has been correctly identified since it
         # can be either Account, Object or Session (in the latter case this info will be superfluous).
         caller.ndb._menutree._session = self.session
         # we have a menu, use it.
@@ -369,9 +369,10 @@ class EvMenu(object):
                 re-run with the same input arguments - so be careful if you are counting
                 up some persistent counter or similar - the counter may be run twice if
                 reload happens on the node that does that.
-            startnode_input (str, optional): Send an input text to `startnode` as if
-                a user input text from a fictional previous node. When the server reloads,
-                the latest visited node will be re-run using this kwarg.
+            startnode_input (str or (str, dict), optional): Send an input text to `startnode` as if
+                a user input text from a fictional previous node. If including the dict, this will
+                be passed as **kwargs to that node. When the server reloads,
+                the latest visited node will be re-run as `node(caller, raw_string, **kwargs)`.
             session (Session, optional): This is useful when calling EvMenu from an account
                 in multisession mode > 2. Note that this session only really relevant
                 for the very first display of the first node - after that, EvMenu itself
@@ -428,6 +429,7 @@ class EvMenu(object):
         self.nodetext = None
         self.helptext = None
         self.options = None
+        self.node_kwargs = {}
 
         # assign kwargs as initialization vars on ourselves.
         if set(("_startnode", "_menutree", "_session", "_persistent",
@@ -474,8 +476,13 @@ class EvMenu(object):
         menu_cmdset.priority = int(cmdset_priority)
         self.caller.cmdset.add(menu_cmdset, permanent=persistent)
 
+        startnode_kwargs = {}
+        if isinstance(startnode_input, (tuple, list)) and len(startnode_input) > 1:
+            startnode_input, startnode_kwargs = startnode_input[:2]
+            if not isinstance(startnode_kwargs, dict):
+                raise EvMenuError("startnode_input must be either a str or a tuple (str, dict).")
         # start the menu
-        self.goto(self._startnode, startnode_input)
+        self.goto(self._startnode, startnode_input, **startnode_kwargs)
 
     def _parse_menudata(self, menudata):
         """
@@ -704,7 +711,8 @@ class EvMenu(object):
             return
 
         if self._persistent:
-            self.caller.attributes.add("_menutree_saved_startnode", (nodename, raw_string))
+            self.caller.attributes.add("_menutree_saved_startnode",
+                                       (nodename, (raw_string, kwargs)))
 
         # validation of the node return values
         helptext = ""
