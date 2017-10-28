@@ -1,7 +1,17 @@
 """
 Unit tests for the EvMenu system
 
-TODO: This need expansion.
+This sets up a testing parent for testing EvMenu trees. It is configured by subclassing the
+`TestEvMenu` class from this module and setting the class variables to point to the menu that should
+be tested and how it should be called.
+
+Without adding any further test methods, the tester will process all nodes of the menu, width first,
+by stepping through all options for every node. It will check to make sure all are visited. It will
+create a hierarchical list of node names that describes the tree structure.  Easiest way to use this
+is to run the test once to see how the structure looks.
+
+The system also allows for testing the returns of each node as part of the parsing. To help debug
+the menu, turn on `debug_output`, which will print the traversal process in detail.
 
 """
 
@@ -25,6 +35,11 @@ class TestEvMenu(TestCase):
     persistent = False
     startnode_input = ""
     kwargs = {}
+
+    # if all nodes must be visited for the test to pass. This is not on
+    # by default since there may be exec-nodes that are made to not be
+    # visited.
+    expect_all_nodes = False
 
     # this is compared against the full tree structure generated
     expected_tree = []
@@ -136,7 +151,8 @@ class TestEvMenu(TestCase):
         traversal_tree = [menu.nodename]
         _depth_first(menu, traversal_tree, visited_nodes, 1)
 
-        self.assertGreaterEqual(len(menu._menutree), len(visited_nodes))
+        if self.expect_all_nodes:
+            self.assertGreaterEqual(len(menu._menutree), len(visited_nodes))
         self.assertEqual(traversal_tree, self.expected_tree)
 
     def setUp(self):
