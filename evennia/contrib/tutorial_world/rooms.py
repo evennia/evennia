@@ -8,7 +8,7 @@ commands needed to control them. Those commands could also have been
 in a separate module (e.g. if they could have been re-used elsewhere.)
 
 """
-from __future__ import print_function
+
 
 import random
 from evennia import TICKER_HANDLER

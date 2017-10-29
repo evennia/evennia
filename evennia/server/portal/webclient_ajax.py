@@ -87,7 +87,7 @@ class AjaxWebClient(resource.Resource):
         now = time.time()
         to_remove = []
         keep_alives = ((csessid, remove) for csessid, (t, remove)
-                       in self.last_alive.iteritems() if now - t > _KEEPALIVE)
+                       in self.last_alive.items() if now - t > _KEEPALIVE)
         for csessid, remove in keep_alives:
             if remove:
                 # keepalive timeout. Line is dead.

@@ -15,8 +15,8 @@ class ANSIStringTestCase(TestCase):
         Verifies the raw and clean strings of an ANSIString match expected
         output.
         """
-        self.assertEqual(unicode(ansi.clean()), clean)
-        self.assertEqual(unicode(ansi.raw()), raw)
+        self.assertEqual(str(ansi.clean()), clean)
+        self.assertEqual(str(ansi.raw()), raw)
 
     def table_check(self, ansi, char, code):
         """
@@ -29,8 +29,8 @@ class ANSIStringTestCase(TestCase):
         """
         Make sure the ANSIString is always constructed correctly.
         """
-        clean = u'This isA|r testTest'
-        encoded = u'\x1b[1m\x1b[32mThis is\x1b[1m\x1b[31mA|r test\x1b[0mTest\x1b[0m'
+        clean = 'This isA|r testTest'
+        encoded = '\x1b[1m\x1b[32mThis is\x1b[1m\x1b[31mA|r test\x1b[0mTest\x1b[0m'
         target = ANSIString(r'|gThis is|rA||r test|nTest|n')
         char_table = [9, 10, 11, 12, 13, 14, 15, 25, 26, 27, 28, 29, 30, 31, 32, 37, 38, 39, 40]
         code_table = [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 17, 18, 19, 20, 21, 22, 23, 24, 33, 34, 35, 36, 41, 42, 43, 44]
@@ -41,9 +41,9 @@ class ANSIStringTestCase(TestCase):
         self.checker(ANSIString(encoded, decoded=True), encoded, clean)
         self.table_check(ANSIString(encoded, decoded=True), char_table,
                          code_table)
-        self.checker(ANSIString('Test'), u'Test', u'Test')
+        self.checker(ANSIString('Test'), 'Test', 'Test')
         self.table_check(ANSIString('Test'), [0, 1, 2, 3], [])
-        self.checker(ANSIString(''), u'', u'')
+        self.checker(ANSIString(''), '', '')
 
     def test_slice(self):
         """
@@ -52,24 +52,24 @@ class ANSIStringTestCase(TestCase):
         """
         target = ANSIString(r'|gTest|rTest|n')
         result = target[:3]
-        self.checker(result, u'\x1b[1m\x1b[32mTes', u'Tes')
+        self.checker(result, '\x1b[1m\x1b[32mTes', 'Tes')
         result = target[:4]
-        self.checker(result, u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[31m', u'Test')
+        self.checker(result, '\x1b[1m\x1b[32mTest\x1b[1m\x1b[31m', 'Test')
         result = target[:]
         self.checker(
             result,
-            u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[31mTest\x1b[0m',
-            u'TestTest')
+            '\x1b[1m\x1b[32mTest\x1b[1m\x1b[31mTest\x1b[0m',
+            'TestTest')
         result = target[:-1]
         self.checker(
             result,
-            u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[31mTes',
-            u'TestTes')
+            '\x1b[1m\x1b[32mTest\x1b[1m\x1b[31mTes',
+            'TestTes')
         result = target[0:0]
         self.checker(
             result,
-            u'',
-            u'')
+            '',
+            '')
 
     def test_split(self):
         """
@@ -77,9 +77,9 @@ class ANSIStringTestCase(TestCase):
         codes end up where they should.
         """
         target = ANSIString("|gThis is |nA split string|g")
-        first = (u'\x1b[1m\x1b[32mThis is \x1b[0m', u'This is ')
-        second = (u'\x1b[1m\x1b[32m\x1b[0m split string\x1b[1m\x1b[32m',
-                  u' split string')
+        first = ('\x1b[1m\x1b[32mThis is \x1b[0m', 'This is ')
+        second = ('\x1b[1m\x1b[32m\x1b[0m split string\x1b[1m\x1b[32m',
+                  ' split string')
         re_split = re.split('A', target)
         normal_split = target.split('A')
         self.assertEqual(re_split, normal_split)
@@ -97,11 +97,11 @@ class ANSIStringTestCase(TestCase):
         l = [ANSIString("|gTest|r") for _ in range(0, 3)]
         # Force the generator to be evaluated.
         result = "".join(l)
-        self.assertEqual(unicode(result), u'TestTestTest')
+        self.assertEqual(str(result), 'TestTestTest')
         result = ANSIString("").join(l)
-        self.checker(result, u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[31m\x1b[1m\x1b'
-                             u'[32mTest\x1b[1m\x1b[31m\x1b[1m\x1b[32mTest'
-                             u'\x1b[1m\x1b[31m', u'TestTestTest')
+        self.checker(result, '\x1b[1m\x1b[32mTest\x1b[1m\x1b[31m\x1b[1m\x1b'
+                             '[32mTest\x1b[1m\x1b[31m\x1b[1m\x1b[32mTest'
+                             '\x1b[1m\x1b[31m', 'TestTestTest')
 
     def test_len(self):
         """
@@ -116,8 +116,8 @@ class ANSIStringTestCase(TestCase):
         _transform functions.
         """
         target = ANSIString('|gtest|n')
-        result = u'\x1b[1m\x1b[32mTest\x1b[0m'
-        self.checker(target.capitalize(), result, u'Test')
+        result = '\x1b[1m\x1b[32mTest\x1b[0m'
+        self.checker(target.capitalize(), result, 'Test')
 
     def test_mxp_agnostic(self):
         """
@@ -131,7 +131,7 @@ class ANSIStringTestCase(TestCase):
         self.assertEqual(len(ANSIString(mxp1)), len(ANSIString(mxp1).split("\n")[0]))
         self.assertEqual(len(ANSIString(mxp2)), len(ANSIString(mxp2).split("\n")[0]))
         self.assertEqual(mxp1, ANSIString(mxp1))
-        self.assertEqual(mxp2, unicode(ANSIString(mxp2)))
+        self.assertEqual(mxp2, str(ANSIString(mxp2)))
 
     def test_add(self):
         """
@@ -140,8 +140,8 @@ class ANSIStringTestCase(TestCase):
         a = ANSIString("|gTest")
         b = ANSIString("|cString|n")
         c = a + b
-        result = u'\x1b[1m\x1b[32mTest\x1b[1m\x1b[36mString\x1b[0m'
-        self.checker(c, result, u'TestString')
+        result = '\x1b[1m\x1b[32mTest\x1b[1m\x1b[36mString\x1b[0m'
+        self.checker(c, result, 'TestString')
         char_table = [9, 10, 11, 12, 22, 23, 24, 25, 26, 27]
         code_table = [0, 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 29, 30, 31]
         self.table_check(c, char_table, code_table)

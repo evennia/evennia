@@ -246,7 +246,7 @@ def make_hybi07_frame_dwim(buf):
     # TODO: eliminate magic numbers.
     if isinstance(buf, str):
         return make_hybi07_frame(buf, opcode=0x2)
-    elif isinstance(buf, unicode):
+    elif isinstance(buf, str):
         return make_hybi07_frame(buf.encode("utf-8"), opcode=0x1)
     else:
         raise TypeError("In binary support mode, frame data must be either str or unicode")
@@ -510,7 +510,7 @@ class WebSocketProtocol(ProtocolWrapper):
         elif "Sec-WebSocket-Protocol" in self.headers:
             protocols = self.headers["Sec-WebSocket-Protocol"]
 
-        if isinstance(protocols, basestring):
+        if isinstance(protocols, str):
             protocols = [p.strip() for p in protocols.split(',')]
 
             for protocol in protocols:

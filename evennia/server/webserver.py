@@ -11,8 +11,8 @@ application.
 a great example/aid on how to do this.)
 
 """
-import urlparse
-from urllib import quote as urlquote
+import urllib.parse
+from urllib.parse import quote as urlquote
 from twisted.web import resource, http, server
 from twisted.internet import reactor
 from twisted.application import internet
@@ -117,7 +117,7 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         # RFC 2616 tells us that we can omit the port if it's the default port,
         # but we have to provide it otherwise
         request.content.seek(0, 0)
-        qs = urlparse.urlparse(request.uri)[4]
+        qs = urllib.parse.urlparse(request.uri)[4]
         if qs:
             rest = self.path + '?' + qs
         else:

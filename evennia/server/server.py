@@ -7,7 +7,7 @@ sets up all the networking features.  (this is done automatically
 by evennia/server/server_runner.py).
 
 """
-from __future__ import print_function
+
 from builtins import object
 import time
 import sys
@@ -131,7 +131,7 @@ def _server_maintenance():
     # handle idle timeouts
     if _IDLE_TIMEOUT > 0:
         reason = _("idle timeout exceeded")
-        for session in (sess for sess in SESSIONS.values()
+        for session in (sess for sess in list(SESSIONS.values())
                         if (now - sess.cmd_last) > _IDLE_TIMEOUT):
             if not session.account or not \
                     session.account.access(session.account, "noidletimeout", default=False):
@@ -237,8 +237,8 @@ class Evennia(object):
                           "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS",
                           "BASE_CHANNEL_TYPECLASS")
         # get previous and current settings so they can be compared
-        settings_compare = zip([ServerConfig.objects.conf(name) for name in settings_names],
-                               [settings.__getattr__(name) for name in settings_names])
+        settings_compare = list(zip([ServerConfig.objects.conf(name) for name in settings_names],
+                               [settings.__getattr__(name) for name in settings_names]))
         mismatches = [i for i, tup in enumerate(settings_compare) if tup[0] and tup[1] and tup[0] != tup[1]]
         if len(mismatches):  # can't use any() since mismatches may be [0] which reads as False for any()
             # we have a changed default. Import relevant objects and

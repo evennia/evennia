@@ -65,7 +65,7 @@ def _init_command(cls, **kwargs):
         temp.append(lockstring)
     cls.lock_storage = ";".join(temp)
 
-    if hasattr(cls, 'arg_regex') and isinstance(cls.arg_regex, basestring):
+    if hasattr(cls, 'arg_regex') and isinstance(cls.arg_regex, str):
         cls.arg_regex = re.compile(r"%s" % cls.arg_regex, re.I + re.UNICODE)
     if not hasattr(cls, "auto_help"):
         cls.auto_help = True
@@ -266,7 +266,7 @@ class Command(with_metaclass(CommandMeta, object)):
             caches are properly updated as well.
 
         """
-        if isinstance(new_aliases, basestring):
+        if isinstance(new_aliases, str):
             new_aliases = new_aliases.split(';')
         aliases = (str(alias).strip().lower() for alias in make_iter(new_aliases))
         self.aliases = list(set(alias for alias in aliases if alias != self.key))

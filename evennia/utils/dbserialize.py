@@ -24,7 +24,7 @@ from functools import update_wrapper
 from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
 from collections import OrderedDict, deque
 try:
-    from cPickle import dumps, loads
+    from pickle import dumps, loads
 except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
@@ -157,7 +157,7 @@ class _SaverMutable(object):
         self._db_obj = kwargs.pop("_db_obj", None)
         self._data = None
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Make sure to evaluate as False if empty"""
         return bool(self._data)
 
@@ -183,7 +183,7 @@ class _SaverMutable(object):
         def process_tree(item, parent):
             """recursively populate the tree, storing parents"""
             dtype = type(item)
-            if dtype in (basestring, int, float, bool, tuple):
+            if dtype in (str, int, float, bool, tuple):
                 return item
             elif dtype == list:
                 dat = _SaverList(_parent=parent)
@@ -191,7 +191,7 @@ class _SaverMutable(object):
                 return dat
             elif dtype == dict:
                 dat = _SaverDict(_parent=parent)
-                dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
+                dat._data.update((key, process_tree(val, dat)) for key, val in list(item.items()))
                 return dat
             elif dtype == set:
                 dat = _SaverSet(_parent=parent)
@@ -493,18 +493,18 @@ def to_pickle(data):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (basestring, int, float, bool):
+        if dtype in (str, int, float, bool):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype in (list, _SaverList):
             return [process_item(val) for val in item]
         elif dtype in (dict, _SaverDict):
-            return dict((process_item(key), process_item(val)) for key, val in item.items())
+            return dict((process_item(key), process_item(val)) for key, val in list(item.items()))
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif dtype in (OrderedDict, _SaverOrderedDict):
-            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
+            return OrderedDict((process_item(key), process_item(val)) for key, val in list(item.items()))
         elif dtype in (deque, _SaverDeque):
             return deque(process_item(val) for val in item)
 
@@ -545,7 +545,7 @@ def from_pickle(data, db_obj=None):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (basestring, int, float, bool):
+        if dtype in (str, int, float, bool):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -555,11 +555,11 @@ def from_pickle(data, db_obj=None):
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
-            return dict((process_item(key), process_item(val)) for key, val in item.items())
+            return dict((process_item(key), process_item(val)) for key, val in list(item.items()))
         elif dtype == set:
             return set(process_item(val) for val in item)
         elif dtype == OrderedDict:
-            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
+            return OrderedDict((process_item(key), process_item(val)) for key, val in list(item.items()))
         elif dtype == deque:
             return deque(process_item(val) for val in item)
         elif hasattr(item, '__iter__'):
@@ -574,7 +574,7 @@ def from_pickle(data, db_obj=None):
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
         dtype = type(item)
-        if dtype in (basestring, int, float, bool):
+        if dtype in (str, int, float, bool):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -588,7 +588,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == dict:
             dat = _SaverDict(_parent=parent)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in item.items())
+                             for key, val in list(item.items()))
             return dat
         elif dtype == set:
             dat = _SaverSet(_parent=parent)
@@ -597,7 +597,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_parent=parent)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in item.items())
+                             for key, val in list(item.items()))
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_parent=parent)
@@ -625,7 +625,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == dict:
             dat = _SaverDict(_db_obj=db_obj)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in data.items())
+                             for key, val in list(data.items()))
             return dat
         elif dtype == set:
             dat = _SaverSet(_db_obj=db_obj)
@@ -634,7 +634,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_db_obj=db_obj)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in data.items())
+                             for key, val in list(data.items()))
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_db_obj=db_obj)

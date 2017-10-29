@@ -7,7 +7,7 @@ sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
-from __future__ import print_function
+
 from builtins import object
 
 import time

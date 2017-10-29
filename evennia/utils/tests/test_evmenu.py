@@ -58,7 +58,7 @@ class TestEvMenu(TestCase):
 
     def _debug_output(self, indent, msg):
         if self.debug_output:
-            print(" " * indent + msg)
+            print((" " * indent + msg))
 
     def _test_menutree(self, menu):
         """

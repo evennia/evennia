@@ -3,7 +3,7 @@ Bots are a special child typeclasses of
 Account that are  controlled by the server.
 
 """
-from __future__ import print_function
+
 import time
 from django.conf import settings
 from evennia.accounts.accounts import DefaultAccount

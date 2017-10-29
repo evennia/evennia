@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
 
 def remove_manage_scripts(apps, schema_editor):
     ScriptDB = apps.get_model("scripts", "ScriptDB")
-    for script in ScriptDB.objects.filter(db_typeclass_path__in=(u'src.scripts.scripts.CheckSessions',
-                                                                 u'src.scripts.scripts.ValidateScripts',
-                                                                 u'src.scripts.scripts.ValidateChannelHandler',
-                                                                 u'src.scripts.scripts.ValidateIdmapperCache',
-                                                                 u'src.utils.gametime.GameTime')):
+    for script in ScriptDB.objects.filter(db_typeclass_path__in=('src.scripts.scripts.CheckSessions',
+                                                                 'src.scripts.scripts.ValidateScripts',
+                                                                 'src.scripts.scripts.ValidateChannelHandler',
+                                                                 'src.scripts.scripts.ValidateIdmapperCache',
+                                                                 'src.utils.gametime.GameTime')):
         script.delete()
 
 

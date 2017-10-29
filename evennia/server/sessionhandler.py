@@ -26,7 +26,7 @@ from evennia.utils.utils import (variable_from_module, is_iter,
 from evennia.utils.inlinefuncs import parse_inlinefunc
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 
@@ -145,7 +145,7 @@ class SessionHandler(dict):
         if include_unloggedin:
             return listvalues(self)
         else:
-            return [session for session in self.values() if session.logged_in]
+            return [session for session in list(self.values()) if session.logged_in]
 
     def get_all_sync_data(self):
         """
@@ -156,7 +156,7 @@ class SessionHandler(dict):
             syncdata (dict): A dict of sync data.
 
         """
-        return dict((sessid, sess.get_sync_data()) for sessid, sess in self.items())
+        return dict((sessid, sess.get_sync_data()) for sessid, sess in list(self.items()))
 
     def clean_senddata(self, session, kwargs):
         """
@@ -189,12 +189,12 @@ class SessionHandler(dict):
             "Helper function to convert data to AMP-safe (picketable) values"
             if isinstance(data, dict):
                 newdict = {}
-                for key, part in data.items():
+                for key, part in list(data.items()):
                     newdict[key] = _validate(part)
                 return newdict
             elif hasattr(data, "__iter__"):
                 return [_validate(part) for part in data]
-            elif isinstance(data, basestring):
+            elif isinstance(data, str):
                 # make sure strings are in a valid encoding
                 try:
                     data = data and to_str(to_unicode(data), encoding=session.protocol_flags["ENCODING"])
@@ -214,12 +214,12 @@ class SessionHandler(dict):
             elif hasattr(data, "id") and hasattr(data, "db_date_created") \
                     and hasattr(data, '__dbclass__'):
                 # convert database-object to their string representation.
-                return _validate(unicode(data))
+                return _validate(str(data))
             else:
                 return data
 
         rkwargs = {}
-        for key, data in kwargs.iteritems():
+        for key, data in kwargs.items():
             key = _validate(key)
             if not data:
                 if key == "text":
@@ -347,12 +347,12 @@ class ServerSessionHandler(SessionHandler):
         delayed_import()
         global _ServerSession, _AccountDB, _ServerConfig, _ScriptDB
 
-        for sess in self.values():
+        for sess in list(self.values()):
             # we delete the old session to make sure to catch eventual
             # lingering references.
             del sess
 
-        for sessid, sessdict in portalsessionsdata.items():
+        for sessid, sessdict in list(portalsessionsdata.items()):
             sess = _ServerSession()
             sess.sessionhandler = self
             sess.load_sync_data(sessdict)
@@ -565,7 +565,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = curr_session.uid
-        doublet_sessions = [sess for sess in self.values()
+        doublet_sessions = [sess for sess in list(self.values())
                             if sess.logged_in and
                             sess.uid == uid and
                             sess != curr_session]
@@ -580,7 +580,7 @@ class ServerSessionHandler(SessionHandler):
         """
         tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")
-        for session in (session for session in self.values()
+        for session in (session for session in list(self.values())
                         if session.logged_in and _IDLE_TIMEOUT > 0 and
                         (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
@@ -595,7 +595,7 @@ class ServerSessionHandler(SessionHandler):
             naccount (int): Number of connected accounts
 
         """
-        return len(set(session.uid for session in self.values() if session.logged_in))
+        return len(set(session.uid for session in list(self.values()) if session.logged_in))
 
     def all_connected_accounts(self):
         """
@@ -606,7 +606,7 @@ class ServerSessionHandler(SessionHandler):
                 amount of Sessions due to multi-playing).
 
         """
-        return list(set(session.account for session in self.values() if session.logged_in and session.account))
+        return list(set(session.account for session in list(self.values()) if session.logged_in and session.account))
 
     def session_from_sessid(self, sessid):
         """
@@ -653,7 +653,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = account.uid
-        return [session for session in self.values() if session.logged_in and session.uid == uid]
+        return [session for session in list(self.values()) if session.logged_in and session.uid == uid]
 
     def sessions_from_puppet(self, puppet):
         """
@@ -680,7 +680,7 @@ class ServerSessionHandler(SessionHandler):
             csessid (str): The session hash
 
         """
-        return [session for session in self.values()
+        return [session for session in list(self.values())
                 if session.csessid and session.csessid == csessid]
 
     def announce_all(self, message):
@@ -691,7 +691,7 @@ class ServerSessionHandler(SessionHandler):
             message (str): Message to send.
 
         """
-        for session in self.values():
+        for session in list(self.values()):
             self.data_out(session, text=message)
 
     def data_out(self, session, **kwargs):
@@ -754,7 +754,7 @@ class ServerSessionHandler(SessionHandler):
         # distribute incoming data to the correct receiving methods.
         if session:
             input_debug = session.protocol_flags.get("INPUTDEBUG", False)
-            for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
+            for cmdname, (cmdargs, cmdkwargs) in kwargs.items():
                 cname = cmdname.strip().lower()
                 try:
                     cmdkwargs.pop("options", None)

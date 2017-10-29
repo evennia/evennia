@@ -502,13 +502,13 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     options["SCREENWIDTH"] = options["SCREENWIDTH"][0]
                 else:
                     options["SCREENWIDTH"] = "  \n".join("%s : %s" % (screenid, size)
-                                                         for screenid, size in options["SCREENWIDTH"].iteritems())
+                                                         for screenid, size in options["SCREENWIDTH"].items())
             if "SCREENHEIGHT" in options:
                 if len(options["SCREENHEIGHT"]) == 1:
                     options["SCREENHEIGHT"] = options["SCREENHEIGHT"][0]
                 else:
                     options["SCREENHEIGHT"] = "  \n".join("%s : %s" % (screenid, size)
-                                                          for screenid, size in options["SCREENHEIGHT"].iteritems())
+                                                          for screenid, size in options["SCREENHEIGHT"].items())
             options.pop("TTYPE", None)
 
             header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")

@@ -754,7 +754,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
         recobjs = []
         for receiver in set(receivers):
-            if isinstance(receiver, basestring):
+            if isinstance(receiver, str):
                 pobj = caller.search(receiver)
             elif hasattr(receiver, 'character'):
                 pobj = receiver

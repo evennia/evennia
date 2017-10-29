@@ -139,7 +139,7 @@ def example1_build_mountains(x, y, **kwargs):
     room.db.desc = random.choice(room_desc)
 
     # Create a random number of objects to populate the room.
-    for i in xrange(randint(0, 3)):
+    for i in range(randint(0, 3)):
         rock = create_object(key="Rock", location=room)
         rock.db.desc = "An ordinary rock."
 
@@ -286,7 +286,7 @@ def _map_to_list(game_map):
 
     """
     list_map = game_map.split('\n')
-    return [character.decode('UTF-8') if isinstance(character, basestring)
+    return [character.decode('UTF-8') if isinstance(character, str)
             else character for character in list_map]
 
 
@@ -321,9 +321,9 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
     room_dict = {}
 
     caller.msg("Creating Landmass...")
-    for iteration in xrange(iterations):
-        for y in xrange(len(game_map)):
-            for x in xrange(len(game_map[y])):
+    for iteration in range(iterations):
+        for y in range(len(game_map)):
+            for x in range(len(game_map[y])):
                 for key in legend:
                     # obs - we must use == for unicode
                     if utils.to_unicode(game_map[y][x]) == utils.to_unicode(key):
@@ -336,7 +336,7 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
     if build_exits:
         # Creating exits. Assumes single room object in dict entry
         caller.msg("Connecting Areas...")
-        for loc_key, location in room_dict.iteritems():
+        for loc_key, location in room_dict.items():
             x = loc_key[0]
             y = loc_key[1]
 

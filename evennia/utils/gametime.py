@@ -5,7 +5,7 @@ It also supplies some useful methods to convert between
 in-mud time and real-world time as well allows to get the
 total runtime of the server and the current uptime.
 """
-from __future__ import division
+
 import time
 from calendar import monthrange
 from datetime import datetime, timedelta

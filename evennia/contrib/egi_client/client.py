@@ -1,4 +1,4 @@
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import platform
 import warnings
 
@@ -107,7 +107,7 @@ class EvenniaGameIndexClient(object):
             'django_version': django.get_version(),
             'server_platform': platform.platform(),
         }
-        data = urllib.urlencode(values)
+        data = urllib.parse.urlencode(values)
 
         d = agent.request(
             'POST', self.report_url,

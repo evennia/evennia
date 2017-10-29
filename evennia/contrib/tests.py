@@ -355,14 +355,14 @@ class TestWilderness(EvenniaTest):
         wilderness.enter_wilderness(self.char1)
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEquals(w.db.itemcoordinates[self.char1], (0, 0))
+        self.assertEqual(w.db.itemcoordinates[self.char1], (0, 0))
 
     def test_enter_wilderness_custom_coordinates(self):
         wilderness.create_wilderness()
         wilderness.enter_wilderness(self.char1, coordinates=(1, 2))
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEquals(w.db.itemcoordinates[self.char1], (1, 2))
+        self.assertEqual(w.db.itemcoordinates[self.char1], (1, 2))
 
     def test_enter_wilderness_custom_name(self):
         name = "customnname"
@@ -381,7 +381,7 @@ class TestWilderness(EvenniaTest):
                      i.access(self.char1, "view") or
                      i.access(self.char1, "traverse"))]
 
-        self.assertEquals(len(exits), 3)
+        self.assertEqual(len(exits), 3)
         exitsok = ["north", "northeast", "east"]
         for each_exit in exitsok:
             self.assertTrue(any([e for e in exits if e.key == each_exit]))
@@ -393,7 +393,7 @@ class TestWilderness(EvenniaTest):
                  if i.destination and (
                      i.access(self.char1, "view") or
                      i.access(self.char1, "traverse"))]
-        self.assertEquals(len(exits), 8)
+        self.assertEqual(len(exits), 8)
         exitsok = ["north", "northeast", "east", "southeast", "south",
                    "southwest", "west", "northwest"]
         for each_exit in exitsok:
@@ -410,25 +410,25 @@ class TestWilderness(EvenniaTest):
         w = self.get_wilderness_script()
 
         # We should have no unused room after moving the first account in.
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertEqual(len(w.db.unused_rooms), 0)
         w.move_obj(self.char1, (0, 0))
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertEqual(len(w.db.unused_rooms), 0)
 
         # And also no unused room after moving the second one in.
         w.move_obj(self.char2, (1, 1))
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertEqual(len(w.db.unused_rooms), 0)
 
         # But if char2 moves into char1's room, we should have one unused room
         # Which should be char2's old room that got created.
         w.move_obj(self.char2, (0, 0))
-        self.assertEquals(len(w.db.unused_rooms), 1)
-        self.assertEquals(self.char1.location, self.char2.location)
+        self.assertEqual(len(w.db.unused_rooms), 1)
+        self.assertEqual(self.char1.location, self.char2.location)
 
         # And if char2 moves back out, that unused room should be put back to
         # use again.
         w.move_obj(self.char2, (1, 1))
-        self.assertNotEquals(self.char1.location, self.char2.location)
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertNotEqual(self.char1.location, self.char2.location)
+        self.assertEqual(len(w.db.unused_rooms), 0)
 
     def test_get_new_coordinates(self):
         loc = (1, 1)
@@ -440,9 +440,9 @@ class TestWilderness(EvenniaTest):
                       "southwest": (0, 0),
                       "west": (0, 1),
                       "northwest": (0, 2)}
-        for direction, correct_loc in directions.iteritems():  # Not compatible with Python 3
+        for direction, correct_loc in directions.items():  # Not compatible with Python 3
             new_loc = wilderness.get_new_coordinates(loc, direction)
-            self.assertEquals(new_loc, correct_loc, direction)
+            self.assertEqual(new_loc, correct_loc, direction)
 
 
 # Testing chargen contrib

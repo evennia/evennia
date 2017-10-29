@@ -232,7 +232,7 @@ class LanguageHandler(DefaultScript):
         translation = {}
 
         if auto_translations:
-            if isinstance(auto_translations, basestring):
+            if isinstance(auto_translations, str):
                 # path to a file rather than a list
                 with open(auto_translations, 'r') as f:
                     auto_translations = f.readlines()
@@ -254,7 +254,7 @@ class LanguageHandler(DefaultScript):
 
         if manual_translations:
             # update with manual translations
-            translation.update(dict((key.lower(), value.lower()) for key, value in manual_translations.items()))
+            translation.update(dict((key.lower(), value.lower()) for key, value in list(manual_translations.items())))
 
         # store data
         storage = {"translation": translation,

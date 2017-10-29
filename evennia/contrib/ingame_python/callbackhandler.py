@@ -36,7 +36,7 @@ class CallbackHandler(object):
         handler = type(self).script
         if handler:
             dicts = handler.get_callbacks(self.obj)
-            for callback_name, in_list in dicts.items():
+            for callback_name, in_list in list(dicts.items()):
                 new_list = []
                 for callback in in_list:
                     callback = self.format_callback(callback)

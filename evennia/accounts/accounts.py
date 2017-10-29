@@ -491,7 +491,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         """
         # handle me, self and *me, *self
-        if isinstance(searchdata, basestring):
+        if isinstance(searchdata, str):
             # handle wrapping of common terms
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
@@ -983,7 +983,7 @@ class DefaultGuest(DefaultAccount):
         characters = self.db._playable_characters
         for character in characters:
             if character:
-                print "deleting Character:", character
+                print("deleting Character:", character)
                 character.delete()
 
     def at_post_disconnect(self, **kwargs):

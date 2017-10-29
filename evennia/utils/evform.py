@@ -134,7 +134,7 @@ into (when including its borders and at least one line of text), the
 form will raise an error.
 
 """
-from __future__ import print_function
+
 from builtins import object, range
 
 import re
@@ -155,12 +155,12 @@ _ANSI_ESCAPE = re.compile(r"\|\|")
 
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
-    if isinstance(obj, basestring):
+    if isinstance(obj, str):
         # since ansi will be parsed twice (here and in the normal ansi send), we have to
         # escape the |-structure twice.
         obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
-        return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
+        return dict((key, _to_ansi(value, regexable=regexable)) for key, value in list(obj.items()))
     elif hasattr(obj, "__iter__"):
         return [_to_ansi(o) for o in obj]
     else:
@@ -196,8 +196,8 @@ class EvForm(object):
         self.filename = filename
         self.input_form_dict = form
 
-        self.cells_mapping = dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells else {}
-        self.tables_mapping = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
+        self.cells_mapping = dict((to_str(key, force_string=True), value) for key, value in list(cells.items())) if cells else {}
+        self.tables_mapping = dict((to_str(key, force_string=True), value) for key, value in list(tables.items())) if tables else {}
 
         self.cellchar = "x"
         self.tablechar = "c"
@@ -259,7 +259,7 @@ class EvForm(object):
                     break
 
         # get rectangles and assign EvCells
-        for key, (iy, leftix, rightix) in cell_coords.items():
+        for key, (iy, leftix, rightix) in list(cell_coords.items()):
 
             # scan up to find top of rectangle
             dy_up = 0
@@ -295,7 +295,7 @@ class EvForm(object):
             mapping[key] = (iyup, leftix, width, height, EvCell(data, width=width, height=height, **options))
 
         # get rectangles and assign Tables
-        for key, (iy, leftix, rightix) in table_coords.items():
+        for key, (iy, leftix, rightix) in list(table_coords.items()):
 
             # scan up to find top of rectangle
             dy_up = 0
@@ -341,7 +341,7 @@ class EvForm(object):
 
         """
         form = copy.copy(raw_form)
-        for key, (iy0, ix0, width, height, cell_or_table) in mapping.items():
+        for key, (iy0, ix0, width, height, cell_or_table) in list(mapping.items()):
             # rect is a list of <height> lines, each <width> wide
             rect = cell_or_table.get()
             for il, rectline in enumerate(rect):
@@ -368,8 +368,8 @@ class EvForm(object):
         kwargs.pop("width", None)
         kwargs.pop("height", None)
 
-        new_cells = dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells else {}
-        new_tables = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
+        new_cells = dict((to_str(key, force_string=True), value) for key, value in list(cells.items())) if cells else {}
+        new_tables = dict((to_str(key, force_string=True), value) for key, value in list(tables.items())) if tables else {}
 
         self.cells_mapping.update(new_cells)
         self.tables_mapping.update(new_tables)
@@ -424,7 +424,7 @@ class EvForm(object):
 
     def __unicode__(self):
         "prints the form"
-        return unicode(ANSIString("\n").join([line for line in self.form]))
+        return str(ANSIString("\n").join([line for line in self.form]))
 
 
 def _test():
@@ -453,4 +453,4 @@ def _test():
     form.map(tables={"A": tableA,
                      "B": tableB})
     # unicode is required since the example contains non-ascii characters
-    return unicode(form)
+    return str(form)

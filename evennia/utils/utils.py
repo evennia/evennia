@@ -6,7 +6,7 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
-from __future__ import division, print_function
+
 from builtins import object, range
 from future.utils import viewkeys, raise_
 
@@ -33,7 +33,7 @@ _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 
@@ -595,12 +595,12 @@ def dbref(inp, reqhash=True):
 
     """
     if reqhash:
-        num = (int(inp.lstrip('#')) if (isinstance(inp, basestring) and
+        num = (int(inp.lstrip('#')) if (isinstance(inp, str) and
                                         inp.startswith("#") and
                                         inp.lstrip('#').isdigit())
                else None)
         return num if num > 0 else None
-    elif isinstance(inp, basestring):
+    elif isinstance(inp, str):
         inp = inp.lstrip('#')
         return int(inp) if inp.isdigit() and int(inp) > 0 else None
     else:
@@ -723,7 +723,7 @@ def to_unicode(obj, encoding='utf-8', force_string=False):
 
     """
 
-    if force_string and not isinstance(obj, basestring):
+    if force_string and not isinstance(obj, str):
         # some sort of other object. Try to
         # convert it to a string representation.
         if hasattr(obj, '__str__'):
@@ -734,14 +734,14 @@ def to_unicode(obj, encoding='utf-8', force_string=False):
             # last resort
             obj = str(obj)
 
-    if isinstance(obj, basestring) and not isinstance(obj, unicode):
+    if isinstance(obj, str) and not isinstance(obj, str):
         try:
-            obj = unicode(obj, encoding)
+            obj = str(obj, encoding)
             return obj
         except UnicodeDecodeError:
             for alt_encoding in ENCODINGS:
                 try:
-                    obj = unicode(obj, alt_encoding)
+                    obj = str(obj, alt_encoding)
                     return obj
                 except UnicodeDecodeError:
                     # if we still have an error, give up
@@ -768,15 +768,15 @@ def to_str(obj, encoding='utf-8', force_string=False):
         conversion of objects to strings.
 
     """
-    if force_string and not isinstance(obj, basestring):
+    if force_string and not isinstance(obj, str):
         # some sort of other object. Try to
         # convert it to a string representation.
         try:
             obj = str(obj)
         except Exception:
-            obj = unicode(obj)
+            obj = str(obj)
 
-    if isinstance(obj, basestring) and isinstance(obj, unicode):
+    if isinstance(obj, str) and isinstance(obj, str):
         try:
             obj = obj.encode(encoding)
             return obj
@@ -872,7 +872,7 @@ def inherits_from(obj, parent):
     else:
         obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()]
 
-    if isinstance(parent, basestring):
+    if isinstance(parent, str):
         # a given string path, for direct matching
         parent_path = parent
     elif callable(parent):
@@ -1266,7 +1266,7 @@ def variable_from_module(module, variable=None, default=None):
                 result.append(mod.__dict__.get(var, default))
     else:
         # get all
-        result = [val for key, val in mod.__dict__.items()
+        result = [val for key, val in list(mod.__dict__.items())
                   if not (key.startswith("_") or ismodule(val))]
 
     if len(result) == 1:
@@ -1298,7 +1298,7 @@ def string_from_module(module, variable=None, default=None):
         if variable:
             return val
         else:
-            result = [v for v in make_iter(val) if isinstance(v, basestring)]
+            result = [v for v in make_iter(val) if isinstance(v, str)]
             return result if result else default
     return default
 
@@ -1635,7 +1635,7 @@ def deepsize(obj, max_depth=4):
                 _recurse(ref, dct, depth + 1)
     sizedict = {}
     _recurse(obj, sizedict, 0)
-    size = getsizeof(obj) + sum([p[1] for p in sizedict.values()])
+    size = getsizeof(obj) + sum([p[1] for p in list(sizedict.values())])
     return size
 
 
@@ -1682,7 +1682,7 @@ class lazy_property(object):
 
 
 _STRIP_ANSI = None
-_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0, 32)])))  # + range(127,160)])))
+_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([chr(c) for c in range(0, 32)])))  # + range(127,160)])))
 
 
 def strip_control_sequences(string):
@@ -1741,7 +1741,7 @@ def m_len(target):
     """
     # Would create circular import if in module root.
     from evennia.utils.ansi import ANSI_PARSER
-    if inherits_from(target, basestring) and "|lt" in target:
+    if inherits_from(target, str) and "|lt" in target:
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
 

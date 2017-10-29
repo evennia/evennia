@@ -14,13 +14,13 @@ upon returning, or not. A process returning != 0 will always stop, no
 matter the value of this file.
 
 """
-from __future__ import print_function
+
 import os
 import sys
 from argparse import ArgumentParser
 from subprocess import Popen
-import Queue
-import thread
+import queue
+import _thread
 import evennia
 
 try:
@@ -143,7 +143,7 @@ def start_services(server_argv, portal_argv, doexit=False):
     and then restarts them when they finish.
     """
     global SERVER, PORTAL
-    processes = Queue.Queue()
+    processes = queue.Queue()
 
     def server_waiter(queue):
         try:
@@ -167,7 +167,7 @@ def start_services(server_argv, portal_argv, doexit=False):
         try:
             if not doexit and get_restart_mode(PORTAL_RESTART) == "True":
                 # start portal as interactive, reloadable thread
-                PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
+                PORTAL = _thread.start_new_thread(portal_waiter, (processes, ))
             else:
                 # normal operation: start portal as a daemon;
                 # we don't care to monitor it for restart
@@ -182,7 +182,7 @@ def start_services(server_argv, portal_argv, doexit=False):
                 SERVER = Popen(server_argv, env=getenv())
             else:
                 # start server as a reloadable thread
-                SERVER = thread.start_new_thread(server_waiter, (processes, ))
+                SERVER = _thread.start_new_thread(server_waiter, (processes, ))
     except IOError as e:
         print(PROCESS_IOERROR.format(component="Server", traceback=e))
         return
@@ -207,14 +207,14 @@ def start_services(server_argv, portal_argv, doexit=False):
             if (message == "server_stopped" and int(rc) == 0 and
                     get_restart_mode(SERVER_RESTART) in ("True", "reload", "reset")):
                 print(PROCESS_RESTART.format(component="Server"))
-                SERVER = thread.start_new_thread(server_waiter, (processes, ))
+                SERVER = _thread.start_new_thread(server_waiter, (processes, ))
                 continue
 
             # normally the portal is not reloaded since it's run as a daemon.
             if (message == "portal_stopped" and int(rc) == 0 and
                     get_restart_mode(PORTAL_RESTART) == "True"):
                 print(PROCESS_RESTART.format(component="Portal"))
-                PORTAL = thread.start_new_thread(portal_waiter, (processes, ))
+                PORTAL = _thread.start_new_thread(portal_waiter, (processes, ))
                 continue
             break
         except ReactorNotRunning:

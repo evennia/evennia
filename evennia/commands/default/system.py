@@ -3,7 +3,7 @@
 System commands
 
 """
-from __future__ import division
+
 
 import traceback
 import os
@@ -440,7 +440,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="table", align="l")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
-        for path, count in dbtotals.items():
+        for path, count in list(dbtotals.items()):
             typetable.add_row(path, count, "%.2f" % ((float(count) / nobjs) * 100))
 
         # last N table
@@ -487,7 +487,7 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
         # typeclass table
         dbtotals = AccountDB.objects.object_totals()
         typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
-        for path, count in dbtotals.items():
+        for path, count in list(dbtotals.items()):
             typetable.add_row(path, count, "%.2f" % ((float(count) / naccounts) * 100))
         # last N table
         plyrs = AccountDB.objects.all().order_by("db_date_created")[max(0, naccounts - nlim):]
@@ -544,7 +544,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             table = EvTable("|wService|n (use @services/start|stop|delete)", "|wstatus", align="l")
             for service in service_collection.services:
                 table.add_row(service.name, service.running and "|gRunning" or "|rNot Running")
-            caller.msg(unicode(table))
+            caller.msg(str(table))
             return
 
         # Get the service to start / stop
@@ -663,7 +663,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
         table2.add_row("Total time passed:", utils.time_format(gametime.gametime(), 2))
         table2.add_row("Current time ", datetime.datetime.fromtimestamp(gametime.gametime(absolute=True)))
         table2.reformat_column(0, width=30)
-        self.caller.msg(unicode(table1) + "\n" + unicode(table2))
+        self.caller.msg(str(table1) + "\n" + str(table2))
 
 
 class CmdServerLoad(COMMAND_DEFAULT_CLASS):
@@ -799,7 +799,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
         # object cache count (note that sys.getsiseof is not called so this works for pypy too.
         total_num, cachedict = _IDMAPPER.cache_size()
-        sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
+        sorted_cache = sorted([(key, num) for key, num in list(cachedict.items()) if num > 0],
                               key=lambda tup: tup[1], reverse=True)
         memtable = EvTable("entity name", "number", "idmapper %", align="l")
         for tup in sorted_cache:
@@ -841,4 +841,4 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
                           sub[1] if sub[1] else sub[2],
                           sub[4] or "[Unset]",
                           "*" if sub[5] else "-")
-        self.caller.msg("|wActive tickers|n:\n" + unicode(table))
+        self.caller.msg("|wActive tickers|n:\n" + str(table))

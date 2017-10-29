@@ -1,7 +1,7 @@
 """
 Trace a message through the messaging system
 """
-from __future__ import print_function
+
 import time
 
 

@@ -105,7 +105,7 @@ class Session(object):
                 the keys given by self._attrs_to_sync.
 
         """
-        return dict((key, value) for key, value in self.__dict__.items()
+        return dict((key, value) for key, value in list(self.__dict__.items())
                     if key in self._attrs_to_sync)
 
     def load_sync_data(self, sessdata):
@@ -117,7 +117,7 @@ class Session(object):
             sessdata (dict): Session data dictionary.
 
         """
-        for propname, value in sessdata.items():
+        for propname, value in list(sessdata.items()):
             setattr(self, propname, value)
 
     def at_sync(self):

@@ -15,16 +15,16 @@ Server - (AMP server) Handles all mud operations. The server holds its own list
          at startup and when a session connects/disconnects
 
 """
-from __future__ import print_function
+
 
 # imports needed on both server and portal side
 import os
 import time
 from collections import defaultdict, namedtuple
 from itertools import count
-from cStringIO import StringIO
+from io import StringIO
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 from twisted.protocols import amp

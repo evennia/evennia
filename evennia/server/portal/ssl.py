@@ -3,7 +3,7 @@ This is a simple context factory for auto-creating
 SSL keys and certificates.
 
 """
-from __future__ import print_function
+
 
 import os
 import sys

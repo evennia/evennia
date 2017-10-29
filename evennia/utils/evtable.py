@@ -114,7 +114,7 @@ you need to re-set the color to have it appear on both sides of the
 table string.
 
 """
-from __future__ import print_function
+
 from builtins import object, range
 from future.utils import listitems
 
@@ -141,7 +141,7 @@ def _to_ansi(obj):
         return ANSIString(to_unicode(obj))
 
 
-_unicode = unicode
+_unicode = str
 _whitespace = '\t\n\x0b\x0c\r '
 
 
@@ -810,7 +810,7 @@ class EvCell(object):
         self.trim_vertical = kwargs.pop("trim_vertical", self.trim_vertical)
 
         # fill all other properties
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             setattr(self, key, value)
 
         # Handle sizes
@@ -841,17 +841,17 @@ class EvCell(object):
 
     def __repr__(self):
         self.formatted = self._reformat()
-        return unicode(ANSIString("<EvCel %s>" % self.formatted))
+        return str(ANSIString("<EvCel %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
         self.formatted = self._reformat()
-        return str(unicode(ANSIString("\n").join(self.formatted)))
+        return str(str(ANSIString("\n").join(self.formatted)))
 
     def __unicode__(self):
         "returns cell contents"
         self.formatted = self._reformat()
-        return unicode(ANSIString("\n").join(self.formatted))
+        return str(ANSIString("\n").join(self.formatted))
 
 
 # EvColumn class
@@ -1424,7 +1424,7 @@ class EvTable(object):
 
         header = kwargs.get("header", None)
         if header:
-            column.add_rows(unicode(header), ypos=0, **options)
+            column.add_rows(str(header), ypos=0, **options)
             self.header = True
         elif self.header:
             # we have a header already. Offset
@@ -1519,7 +1519,7 @@ class EvTable(object):
         """
         self.width = kwargs.pop("width", self.width)
         self.height = kwargs.pop("height", self.height)
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             setattr(self, key, value)
 
         hchar = kwargs.pop("header_line_char", self.header_line_char)
@@ -1569,10 +1569,10 @@ class EvTable(object):
 
     def __str__(self):
         """print table (this also balances it)"""
-        return str(unicode(ANSIString("\n").join([line for line in self._generate_lines()])))
+        return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
 
     def __unicode__(self):
-        return unicode(ANSIString("\n").join([line for line in self._generate_lines()]))
+        return str(ANSIString("\n").join([line for line in self._generate_lines()]))
 
 
 def _test():
@@ -1580,11 +1580,11 @@ def _test():
     table = EvTable("|yHeading1|n", "|gHeading2|n", table=[[1, 2, 3], [4, 5, 6], [7, 8, 9]], border="cells", align="l")
     table.add_column("|rThis is long data|n", "|bThis is even longer data|n")
     table.add_row("This is a single row")
-    print(unicode(table))
+    print(str(table))
     table.reformat(width=50)
-    print(unicode(table))
+    print(str(table))
     table.reformat_column(3, width=30, align='r')
-    print(unicode(table))
+    print(str(table))
     return table
 
 

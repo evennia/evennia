@@ -190,7 +190,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
 
     try:
         if response is None:
-            value = generator.next()
+            value = next(generator)
         else:
             value = generator.send(response)
     except StopIteration:
@@ -198,7 +198,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
     else:
         if isinstance(value, (int, float)):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
         else:
             raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
@@ -443,7 +443,7 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                         tempmergers[prio] = cmdset
 
                 # sort cmdsets after reverse priority (highest prio are merged in last)
-                cmdsets = yield sorted(tempmergers.values(), key=lambda x: x.priority)
+                cmdsets = yield sorted(list(tempmergers.values()), key=lambda x: x.priority)
 
                 # Merge all command sets into one, beginning with the lowest-prio one
                 cmdset = cmdsets[0]
@@ -567,7 +567,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 returnValue(cmd)
 
             # assign custom kwargs to found cmd object
-            for key, val in kwargs.items():
+            for key, val in list(kwargs.items()):
                 setattr(cmd, key, val)
 
             _COMMAND_NESTING[called_by] += 1

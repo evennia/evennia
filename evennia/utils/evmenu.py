@@ -156,7 +156,7 @@ your default cmdset. Run it with this module, like `testmenu
 evennia.utils.evmenu`.
 
 """
-from __future__ import print_function
+
 import random
 from builtins import object, range
 
@@ -441,7 +441,7 @@ class EvMenu(object):
                 "cmd_on_exit", "default", "nodetext", "helptext",
                 "options", "cmdset_mergetype", "auto_quit")).intersection(set(kwargs.keys())):
             raise RuntimeError("One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use.")
-        for key, val in kwargs.iteritems():
+        for key, val in kwargs.items():
             setattr(self, key, val)
 
         #
@@ -511,7 +511,7 @@ class EvMenu(object):
         else:
             # a python path of a module
             module = mod_import(menudata)
-            return dict((key, func) for key, func in module.__dict__.items()
+            return dict((key, func) for key, func in list(module.__dict__.items())
                         if isfunction(func) and not key.startswith("_"))
 
     def _format_node(self, nodetext, optionlist):
@@ -663,7 +663,7 @@ class EvMenu(object):
             logger.log_trace(errmsg)
             return
 
-        if isinstance(ret, basestring):
+        if isinstance(ret, str):
             # only return a value if a string (a goto target), ignore all other returns
             return ret, kwargs
         return None
@@ -934,7 +934,7 @@ class EvMenu(object):
             table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
 
         # format the table into columns
-        return unicode(EvTable(table=table, border="none"))
+        return str(EvTable(table=table, border="none"))
 
     def node_formatter(self, nodetext, optionstext):
         """

@@ -1,8 +1,8 @@
 """
 Sessionhandler for portal sessions
 """
-from __future__ import print_function
-from __future__ import division
+
+
 
 import time
 from collections import deque, namedtuple
@@ -141,7 +141,7 @@ class PortalSessionHandler(SessionHandler):
             if self.portal.amp_protocol:
                 # we only send sessdata that should not have changed
                 # at the server level at this point
-                sessdata = dict((key, val) for key, val in sessdata.items() if key in ("protocol_key",
+                sessdata = dict((key, val) for key, val in list(sessdata.items()) if key in ("protocol_key",
                                                                                        "address",
                                                                                        "sessid",
                                                                                        "csessid",
@@ -188,7 +188,7 @@ class PortalSessionHandler(SessionHandler):
             # we set a watchdog to stop self.disconnect from deleting
             # sessions while we are looping over them.
             sessionhandler._disconnect_all = True
-            for session in sessionhandler.values():
+            for session in list(sessionhandler.values()):
                 session.disconnect()
             del sessionhandler._disconnect_all
 
@@ -253,7 +253,7 @@ class PortalSessionHandler(SessionHandler):
             reason (str, optional): Motivation for disconnect.
 
         """
-        for session in self.values():
+        for session in list(self.values()):
             session.disconnect(reason)
             del session
         self.clear()
@@ -336,7 +336,7 @@ class PortalSessionHandler(SessionHandler):
             send command.
 
         """
-        for session in self.values():
+        for session in list(self.values()):
             self.data_out(session, text=[[message], {}])
 
     def data_in(self, session, **kwargs):
@@ -412,7 +412,7 @@ class PortalSessionHandler(SessionHandler):
 
         # distribute outgoing data to the correct session methods.
         if session:
-            for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
+            for cmdname, (cmdargs, cmdkwargs) in kwargs.items():
                 funcname = "send_%s" % cmdname.strip().lower()
                 if hasattr(session, funcname):
                     # better to use hassattr here over try..except

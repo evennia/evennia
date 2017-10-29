@@ -359,7 +359,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             messaging is assumed to be handled by the caller.
 
         """
-        is_string = isinstance(searchdata, basestring)
+        is_string = isinstance(searchdata, str)
 
 
         if is_string:
@@ -436,7 +436,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       matching Accounts.
 
         """
-        if isinstance(searchdata, basestring):
+        if isinstance(searchdata, str):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
                 return [self.account] if quiet else self.account
@@ -615,7 +615,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if mapping:
                 substitutions = {t: sub.get_display_name(obj)
                                  if hasattr(sub, 'get_display_name')
-                                 else str(sub) for t, sub in mapping.items()}
+                                 else str(sub) for t, sub in list(mapping.items())}
                 outmessage = inmessage.format(**substitutions)
             else:
                 outmessage = inmessage
@@ -959,7 +959,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.attributes.batch_add(*cdict["attributes"])
             if cdict.get("nattributes"):
                 # this should be a dict of nattrname:value
-                for key, value in cdict["nattributes"].items():
+                for key, value in list(cdict["nattributes"].items()):
                     self.nattributes.add(key, value)
 
             del self._createdict

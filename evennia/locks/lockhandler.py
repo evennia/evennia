@@ -103,7 +103,7 @@ restricted @perm command sets them, but otherwise they are identical
 to any other identifier you can use.
 
 """
-from __future__ import print_function
+
 from builtins import object
 
 import re
@@ -269,7 +269,7 @@ class LockHandler(object):
         """
         Store locks to obj
         """
-        self.obj.lock_storage = ";".join([tup[2] for tup in self.locks.values()])
+        self.obj.lock_storage = ";".join([tup[2] for tup in list(self.locks.values())])
 
     def cache_lock_bypass(self, obj):
         """
@@ -302,7 +302,7 @@ class LockHandler(object):
                 error.
 
         """
-        if isinstance(lockstring, basestring):
+        if isinstance(lockstring, str):
             lockdefs = lockstring.split(";")
         else:
             lockdefs = [lockdef for locks in lockstring for lockdef in locks.split(";")]

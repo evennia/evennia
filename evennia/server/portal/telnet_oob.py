@@ -208,7 +208,7 @@ class TelnetOOB(object):
                                msdp_kwargs="".join("%s%s%s%s"
                                                    % (MSDP_VAR, key, MSDP_VAL,
                                                       json.dumps(val))
-                                                   for key, val in kwargs.iteritems()))
+                                                   for key, val in kwargs.items()))
 
         msdp_string = msdp_args + msdp_kwargs
 
@@ -316,7 +316,7 @@ class TelnetOOB(object):
 
         cmds = {}
         # merge matching table/array/variables together
-        for key, table in tables.iteritems():
+        for key, table in tables.items():
             args, kwargs = [], table
             if key in arrays:
                 args.extend(arrays.pop(key))
@@ -324,13 +324,13 @@ class TelnetOOB(object):
                 args.append(variables.pop(key))
             cmds[key] = [args, kwargs]
 
-        for key, arr in arrays.iteritems():
+        for key, arr in arrays.items():
             args, kwargs = arr, {}
             if key in variables:
                 args.append(variables.pop(key))
             cmds[key] = [args, kwargs]
 
-        for key, var in variables.iteritems():
+        for key, var in variables.items():
             cmds[key] = [[var], {}]
 
         # print("msdp data in:", cmds)  # DEBUG
@@ -374,7 +374,7 @@ class TelnetOOB(object):
             args, kwargs = [], {}
             if hasattr(structure, "__iter__"):
                 if isinstance(structure, dict):
-                    kwargs = {key: value for key, value in structure.iteritems() if key}
+                    kwargs = {key: value for key, value in structure.items() if key}
                 else:
                     args = list(structure)
             else:
