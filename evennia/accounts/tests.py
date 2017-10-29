@@ -4,10 +4,12 @@ from unittest import TestCase
 
 from evennia.accounts.accounts import AccountSessionHandler
 from evennia.accounts.accounts import DefaultAccount
+from evennia.accounts.accounts import DefaultGuest
 from evennia.server.session import Session
 from evennia.utils import create
 
 from django.conf import settings
+from django.test.utils import override_settings
 
 
 class TestAccountSessionHandler(TestCase):
@@ -50,6 +52,7 @@ class TestAccountSessionHandler(TestCase):
     def test_count(self):
         "Check count method"
         self.assertEqual(self.handler.count(), len(self.handler.get()))
+
 
 class TestDefaultAccount(TestCase):
     "Check DefaultAccount class"
@@ -158,3 +161,122 @@ class TestDefaultAccount(TestCase):
         account.puppet_object(self.s1, obj)
         self.assertTrue(self.s1.data_out.call_args[1]['text'].endswith("is already puppeted by another Account."))
         self.assertIsNone(obj.at_post_puppet.call_args)
+
+    def test_at_look(self):
+        "Check at_look method called"
+
+        import evennia.server.sessionhandler
+
+        account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.s1.uid = account.uid
+        evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
+
+        self.s1.logged_in = True
+        self.s1.protocol_key = 'dummy protocol key'
+        self.s1.address = 'dummy address'
+
+        account.at_look()
+
+    def test_at_look_simple_target(self):
+        "Check at_look method called with simple target"
+
+        import evennia.server.sessionhandler
+
+        account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.s1.uid = account.uid
+        evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
+
+        self.s1.logged_in = True
+        self.s1.protocol_key = 'dummy protocol key'
+        self.s1.address = 'dummy address'
+
+        target = Mock()
+        account.at_look(target)
+
+    def test_at_look_not_superuser(self):
+        "Check at_look method called without being superuser"
+
+        import evennia.server.sessionhandler
+
+        account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.s1.uid = account.uid
+        evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
+
+        self.s1.logged_in = True
+        self.s1.protocol_key = 'dummy protocol key'
+        self.s1.address = 'dummy address'
+        # self.s1.data_out = Mock(return_value=None)
+
+        # obj = Mock()
+        # obj.access = Mock(return_value=True)
+        # obj.account = Mock()
+        # obj.at_post_puppet = Mock()
+
+        # account.puppet_object(self.s1, obj)
+        # self.assertTrue(self.s1.data_out.call_args[1]['text'].endswith("is already puppeted by another Account."))
+        # self.assertIsNone(obj.at_post_puppet.call_args)
+        account.is_superuser = False
+        character_mock = Mock()
+
+        character_sessions_mock = Mock()
+        character_sessions_mock.all = Mock(return_value=['dummy csession'])
+        character_mock.sessions = character_sessions_mock
+
+        character_permissions_mock = Mock()
+        character_permissions_mock.all = Mock(return_value=['dummy permission'])
+        character_mock.permissions = character_permissions_mock
+
+        target = [character_mock]
+        account.at_look(target)
+
+
+class TestDefaultGuest(TestCase):
+    "Check DefaultGuest class"
+
+    @override_settings(GUEST_ENABLED=True)
+    def setUp(self):
+        self.account_name = "TestAccount%s" % randint(0, 999999)
+        self.guest = create.create_account(self.account_name, email="test@test.com", password="testpassword", typeclass=DefaultGuest)
+
+    def test_at_post_login(self):
+        "Check at_post_login method"
+
+        self.guest._send_to_connect_channel = Mock(return_value=None)
+        self.guest.puppet_object = Mock(return_value=None)
+
+        self.guest.at_post_login()
+        # self.guest.at_post_disconnect()
+
+        self.guest._send_to_connect_channel.assert_called_with("|G%s connected|n" % self.account_name)
+        self.guest.puppet_object.assert_called_with(None, None)
+
+    def test_at_server_shutdown(self):
+        "Check at_server_shutdown method"
+
+        self.guest._send_to_connect_channel = Mock(return_value=None)
+        self.guest.puppet_object = Mock(return_value=None)
+
+        # db = Mock()
+        # self.guest.db = db
+
+        playable_character = Mock()
+        # playable_character.delete = Mock(return_value=123)
+        self.guest.db._playable_characters.append(playable_character)
+
+        self.guest.at_server_shutdown()
+
+    def test_at_post_disconnect(self):
+        "Check at_post_disconnect method"
+
+        self.guest._send_to_connect_channel = Mock(return_value=None)
+        self.guest.puppet_object = Mock(return_value=None)
+
+        # db = Mock()
+        # self.guest.db = db
+
+        playable_character = Mock()
+        # playable_character.delete = Mock(return_value=123)
+        self.guest.db._playable_characters.append(playable_character)
+
+        self.guest.at_post_disconnect()
+
