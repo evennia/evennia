@@ -22,11 +22,8 @@ import os
 import time
 from collections import defaultdict, namedtuple
 from itertools import count
-from io import StringIO
-try:
-    import pickle as pickle
-except ImportError:
-    import pickle
+from io import BytesIO
+import pickle
 from twisted.protocols import amp
 from twisted.internet import protocol
 from twisted.internet.defer import Deferred
@@ -39,17 +36,17 @@ DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
 # communication bits
 # (chr(9) and chr(10) are \t and \n, so skipping them)
 
-PCONN = chr(1)         # portal session connect
-PDISCONN = chr(2)      # portal session disconnect
-PSYNC = chr(3)         # portal session sync
-SLOGIN = chr(4)        # server session login
-SDISCONN = chr(5)      # server session disconnect
-SDISCONNALL = chr(6)   # server session disconnect all
-SSHUTD = chr(7)        # server shutdown
-SSYNC = chr(8)         # server session sync
-SCONN = chr(11)        # server creating new connection (for irc bots and etc)
-PCONNSYNC = chr(12)    # portal post-syncing a session
-PDISCONNALL = chr(13)  # portal session disconnect all
+PCONN = b'\x01'         # portal session connect
+PDISCONN = b'\x02'      # portal session disconnect
+PSYNC = b'\x03'         # portal session sync
+SLOGIN = b'\x04'        # server session login
+SDISCONN = b'\x05'      # server session disconnect
+SDISCONNALL = b'\x06'   # server session disconnect all
+SSHUTD = b'\x07'        # server shutdown
+SSYNC = b'\x08'         # server session sync
+SCONN = b'\x0b'        # server creating new connection (for irc bots and etc)
+PCONNSYNC = b'\x0c'    # portal post-syncing a session
+PDISCONNALL = b'\x0d'  # portal session disconnect all
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
 BATCH_RATE = 250     # max commands/sec before switching to batch-sending
@@ -214,28 +211,28 @@ class Compressed(amp.String):
         Converts from box representation to python. We
         group very long data into batches.
         """
-        value = StringIO()
+        value = BytesIO()
         value.write(strings.get(name))
         for counter in count(2):
             # count from 2 upwards
-            chunk = strings.get("%s.%d" % (name, counter))
+            chunk = strings.get(b"%s.%d" % (name, counter))
             if chunk is None:
                 break
             value.write(chunk)
-        objects[name] = value.getvalue()
+        objects[name.decode()] = value.getvalue()
 
     def toBox(self, name, strings, objects, proto):
         """
         Convert from data to box. We handled too-long
         batched data and put it together here.
         """
-        value = StringIO(objects[name])
+        value = BytesIO(objects[name.decode()])
         strings[name] = value.read(AMP_MAXLEN)
         for counter in count(2):
             chunk = value.read(AMP_MAXLEN)
             if not chunk:
                 break
-            strings["%s.%d" % (name, counter)] = chunk
+            strings[b"%s.%d" % (name, counter)] = chunk
 
     def toString(self, inObject):
         """
@@ -256,8 +253,8 @@ class MsgPortal2Server(amp.Command):
 
     """
     key = "MsgPortal2Server"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -267,8 +264,8 @@ class MsgServer2Portal(amp.Command):
 
     """
     key = "MsgServer2Portal"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -281,8 +278,8 @@ class AdminPortal2Server(amp.Command):
 
     """
     key = "AdminPortal2Server"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -295,8 +292,8 @@ class AdminServer2Portal(amp.Command):
 
     """
     key = "AdminServer2Portal"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -309,22 +306,22 @@ class FunctionCall(amp.Command):
 
     """
     key = "FunctionCall"
-    arguments = [('module', amp.String()),
-                 ('function', amp.String()),
-                 ('args', amp.String()),
-                 ('kwargs', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
-    response = [('result', amp.String())]
+    arguments = [(b'module', amp.String()),
+                 (b'function', amp.String()),
+                 (b'args', amp.String()),
+                 (b'kwargs', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
+    response = [(b'result', amp.String())]
 
 
 # Helper functions for pickling.
 
 def dumps(data):
-    return to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
+    return pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
 
 
 def loads(data):
-    return pickle.loads(to_str(data))
+    return pickle.loads(data)
 
 
 # -------------------------------------------------------------
@@ -483,7 +480,7 @@ class AMPProtocol(amp.AMP):
 
         Args:
             session (Session): Unique Session.
-            kwargs (any, optiona): Extra data.
+            kwargs (any, optional): Extra data.
 
         """
         return self.send_data(MsgServer2Portal, session.sessid, **kwargs)
