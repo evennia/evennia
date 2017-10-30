@@ -14,7 +14,7 @@ http://www.faqs.org/rfcs/rfc858.html
 
 """
 from builtins import object
-SUPPRESS_GA = chr(3)
+SUPPRESS_GA = b'\x03'
 
 # default taken from telnet specification
 

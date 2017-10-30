@@ -18,7 +18,7 @@ from builtins import object
 import zlib
 
 # negotiations for v1 and v2 of the protocol
-MCCP = chr(86)
+MCCP = b'\x56'
 FLUSH = zlib.Z_SYNC_FLUSH
 
 
@@ -85,6 +85,6 @@ class Mccp(object):
 
         """
         self.protocol.protocol_flags['MCCP'] = True
-        self.protocol.requestNegotiation(MCCP, '')
+        self.protocol.requestNegotiation(MCCP, b'')
         self.protocol.zlib = zlib.compressobj(9)
         self.protocol.handshake_done()

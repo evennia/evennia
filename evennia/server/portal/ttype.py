@@ -13,9 +13,9 @@ under the 'TTYPE' key.
 from builtins import object
 
 # telnet option codes
-TTYPE = chr(24)
-IS = chr(0)
-SEND = chr(1)
+TTYPE = b'\x18'
+IS = b'\x00'
+SEND = b'\x01'
 
 # terminal capabilities and their codes
 MTTS = [(128, 'PROXY'),
@@ -89,7 +89,7 @@ class Ttype(object):
             return
 
         try:
-            option = "".join(option).lstrip(IS)
+            option = b"".join(option).lstrip(IS).decode()
         except TypeError:
             # option is not on a suitable form for joining
             pass

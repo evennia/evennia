@@ -20,10 +20,10 @@ from evennia.utils import ansi
 from evennia.utils.utils import to_str
 
 _RE_N = re.compile(r"\|n$")
-_RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
-_RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
+_RE_LEND = re.compile(br"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
+_RE_LINEBREAK = re.compile(br"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
-_IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
+_IDLE_COMMAND = str.encode(settings.IDLE_COMMAND + "\n")
 
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
@@ -43,7 +43,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         # initialize the session
-        self.line_buffer = ""
+        self.line_buffer = b""
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
@@ -208,18 +208,18 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             if self.line_buffer and len(data) > 1:
                 # buffer exists, it is terminated by the first line feed
                 data[0] = self.line_buffer + data[0]
-                self.line_buffer = ""
+                self.line_buffer = b""
             # if the last data split is empty, it means all splits have
             # line breaks, if not, it is unterminated and must be
             # buffered.
             self.line_buffer += data.pop()
         # send all data chunks
         for dat in data:
-            self.data_in(text=dat + "\n")
+            self.data_in(text=dat + b"\n")
 
     def _write(self, data):
         """hook overloading the one used in plain telnet"""
-        data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
+        data = data.replace(b'\n', b'\r\n').replace(b'\r\r\n', b'\r\n')
         super(TelnetProtocol, self)._write(mccp_compress(self, data))
 
     def sendLine(self, line):
@@ -231,8 +231,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         # escape IAC in line mode, and correctly add \r\n
+        line = line.encode()
         line += self.delimiter
-        line = line.replace(IAC, IAC + IAC).replace('\n', '\r\n')
+        line = line.replace(IAC, IAC + IAC).replace(b'\n', b'\r\n')
         if not self.protocol_flags.get("NOGOAHEAD", True):
             line += IAC + GA
         return self.transport.write(mccp_compress(self, line))
@@ -327,7 +328,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                                          strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
-            prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
+            prompt = prompt.encode()
+            prompt = prompt.replace(IAC, IAC + IAC).replace(b'\n', b'\r\n')
             prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
         else:
