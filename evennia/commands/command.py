@@ -201,6 +201,19 @@ class Command(with_metaclass(CommandMeta, object)):
             # probably got a string
             return cmd in self._matchset
 
+    def __hash__(self):
+        """
+        Python 3 requires that any class which implements __eq__ must also
+        implement __hash__ and that the corresponding hashes for equivalent
+        instances are themselves equivalent.
+
+        Technically, the following implementation is only valid for comparison
+        against other Commands, as our __eq__ supports comparison against
+        str, too.
+
+        """
+        return hash('\n'.join(self._matchset))
+
     def __ne__(self, cmd):
         """
         The logical negation of __eq__. Since this is one of the most
