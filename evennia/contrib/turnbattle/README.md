@@ -21,9 +21,22 @@ implemented and customized:
             the battle system, including commands for wielding weapons and
             donning armor, and modifiers to accuracy and damage based on
             currently used equipment.
-            
+    
+    tb_range.py - Adds a system for abstract positioning and movement, which
+            tracks the distance between different characters and objects in
+            combat, as well as differentiates between melee and ranged
+            attacks.
+
 This system is meant as a basic framework to start from, and is modeled
 after the combat systems of popular tabletop role playing games rather than
 the real-time battle systems that many MMOs and some MUDs use. As such, it
 may be better suited to role-playing or more story-oriented games, or games
 meant to closely emulate the experience of playing a tabletop RPG.
+
+Each of these modules contains the full functionality of the battle system
+with different customizations added in - the instructions to install each
+one is contained in the module itself. It's recommended that you install
+and test tb_basic first, so you can better understand how the other
+modules expand on it and get a better idea of how you can customize the
+system to your liking and integrate the subsystems presented here into
+your own combat system.
