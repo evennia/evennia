@@ -140,7 +140,7 @@ from builtins import object, range
 import re
 import copy
 from evennia.utils.evtable import EvCell, EvTable
-from evennia.utils.utils import all_from_module, to_str, to_unicode
+from evennia.utils.utils import all_from_module, to_str, to_unicode, is_iter
 from evennia.utils.ansi import ANSIString
 
 # non-valid form-identifying characters (which can thus be
@@ -161,7 +161,7 @@ def _to_ansi(obj, regexable=False):
         obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
         return dict((key, _to_ansi(value, regexable=regexable)) for key, value in list(obj.items()))
-    elif hasattr(obj, "__iter__"):
+    elif is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
         return ANSIString(to_unicode(obj), regexable=regexable)
@@ -260,7 +260,6 @@ class EvForm(object):
 
         # get rectangles and assign EvCells
         for key, (iy, leftix, rightix) in list(cell_coords.items()):
-
             # scan up to find top of rectangle
             dy_up = 0
             if iy > 0:
@@ -420,7 +419,7 @@ class EvForm(object):
 
     def __str__(self):
         "Prints the form"
-        return ANSIString("\n").join([line for line in self.form])
+        return str(ANSIString("\n").join([line for line in self.form]))
 
     def __unicode__(self):
         "prints the form"
