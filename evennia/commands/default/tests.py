@@ -239,9 +239,113 @@ class TestBuilding(CommandTest):
 
     def test_set_obj_alias(self):
         self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to testobj1b.")
+        self.call(building.CmdSetObjAlias(), "", "Usage: @alias <obj> [= [alias[,alias ...]]]")
+
+    def test_set_obj_alias_caller_finds_nothing(self):
+        alias = building.CmdSetObjAlias()
+        alias.caller = Mock()
+        alias.caller.search = Mock(return_value=None)
+        alias.caller.msg = Mock()
+        alias.lhs = 'dummy lhs'
+        alias.func()
+        alias.caller.assert_not_called()
+
+    def test_set_obj_alias_rhs_none(self):
+        alias = building.CmdSetObjAlias()
+        alias.caller = Mock()
+        mock_obj = Mock()
+        mock_obj.aliases = Mock()
+        mock_obj.aliases.all = Mock(return_value=["alias a", "alias b"])
+        alias.caller.search = Mock(return_value=mock_obj)
+        alias.caller.msg = Mock()
+        alias.lhs = 'dummy lhs'
+        alias.rhs = None
+        alias.func()
+        self.assertTrue(alias.caller.msg.call_args[0][0].endswith("alias a, alias b"))
+
+    def test_set_obj_alias_no_access(self):
+        alias = building.CmdSetObjAlias()
+        alias.caller = Mock()
+        mock_obj = Mock()
+        mock_obj.access = Mock(return_value=False)
+        mock_obj.aliases = Mock()
+        mock_obj.aliases.all = Mock(return_value=["alias a", "alias b"])
+        alias.caller.search = Mock(return_value=mock_obj)
+        alias.caller.msg = Mock()
+        alias.lhs = 'dummy lhs'
+        alias.rhs = 'not None'
+        alias.func()
+        self.assertTrue(alias.caller.msg.call_args[0][0] == "You don't have permission to do that.")
+
+    def test_set_obj_alias_rhs_empty_string(self):
+        alias = building.CmdSetObjAlias()
+        alias.caller = Mock()
+        mock_obj = Mock()
+        mock_obj.access = Mock(return_value=True)
+        mock_obj.aliases = Mock()
+        mock_obj.aliases.all = Mock(return_value=["alias a", "alias b"])
+        alias.caller.search = Mock(return_value=mock_obj)
+        alias.caller.msg = Mock()
+        alias.lhs = 'dummy lhs'
+        alias.rhs = ''
+        alias.func()
+        self.assertTrue(alias.caller.msg.call_args[0][0].startswith("Cleared aliases from"))
 
     def test_copy(self):
         self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
+
+    def test_copy_no_args(self):
+        cmd_copy = building.CmdCopy()
+
+        cmd_copy.caller = Mock()
+        cmd_copy.args = None
+        cmd_copy.caller.msg = Mock(return_value=None)
+
+        cmd_copy.func()
+        self.assertTrue(cmd_copy.caller.msg.call_args[0][0].startswith("Usage:"))
+
+    def test_copy_no_rhs(self):
+        cmd_copy = building.CmdCopy()
+
+        # cmd_copy.lhs_objs = Mock()
+        cmd_copy.rhs = None
+        cmd_copy.caller = Mock()
+        from_obj = Mock()
+        from_obj.aliases = Mock()
+        from_obj.aliases.all = Mock(return_value=["alias a", "alias b"])
+        from_obj.attributes = Mock()
+        from_obj.attributes.all = Mock(return_value=[])
+        from_obj.cmdset.all = Mock(return_value=[])
+        from_obj.scripts.all = Mock(return_value=[])
+        cmd_copy.caller.search = Mock(return_value=from_obj)
+        cmd_copy.args = 'dummy args'
+        cmd_copy.caller.msg = Mock(return_value=None)
+
+        cmd_copy.func()
+        self.assertTrue(cmd_copy.caller.msg.call_args[0][0].startswith("Identical copy of"))
+
+    def test_copy_yes_rhs(self):
+        cmd_copy = building.CmdCopy()
+
+        # cmd_copy.lhs_objs = Mock()
+        cmd_copy.rhs = 'not None'
+        cmd_copy.lhs_objs = [{'name': 'dummy name'}]
+        cmd_copy.rhs_objs = [{'name': 'dummy name', 'aliases': 'dummy aliases', 'option': 'dummy option'}]
+
+        from_obj = Mock()
+        from_obj.attributes = Mock()
+        from_obj.attributes.all = Mock(return_value=[])
+        from_obj.cmdset.all = Mock(return_value=[])
+        from_obj.scripts.all = Mock(return_value=[])
+
+        cmd_copy.caller = Mock()
+        cmd_copy.caller.search = Mock(return_value=from_obj)
+
+        cmd_copy.args = 'dummy args'
+        cmd_copy.caller.msg = Mock(return_value=None)
+
+        cmd_copy.func()
+        print cmd_copy.caller.msg.call_args[0][0]
 
     def test_attribute_commands(self):
         self.call(building.CmdSetAttribute(), "Obj/test1=\"value1\"", "Created attribute Obj/test1 = 'value1'")
