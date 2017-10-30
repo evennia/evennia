@@ -66,6 +66,9 @@ class Tag(models.Model):
         unique_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
         index_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
 
+    def __lt__(self, other):
+        return str(self) < str(other)
+
     def __unicode__(self):
         return "<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
 
