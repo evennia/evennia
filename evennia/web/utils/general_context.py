@@ -11,6 +11,13 @@ from evennia.utils.utils import get_evennia_version
 
 # Determine the site name and server version
 def set_game_name_and_slogan():
+    """
+    Sets global variables GAME_NAME and GAME_SLOGAN which are used by
+    general_context.
+
+    Notes:
+        This function is used for unit testing the values of the globals.
+    """
     global GAME_NAME, GAME_SLOGAN, SERVER_VERSION
     try:
         GAME_NAME = settings.SERVERNAME.strip()
@@ -33,8 +40,15 @@ CONNECTIONS = ['Irc']
 WEBSITE = ['Flatpages', 'News', 'Sites']
 
 
-# The main context processor function
+
 def set_webclient_settings():
+    """
+    As with set_game_name_and_slogan above, this sets global variables pertaining
+    to webclient settings.
+
+    Notes:
+        Used for unit testing.
+    """
     global WEBCLIENT_ENABLED, WEBSOCKET_CLIENT_ENABLED, WEBSOCKET_PORT, WEBSOCKET_URL
     WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
     WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
@@ -42,7 +56,7 @@ def set_webclient_settings():
     WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
 set_webclient_settings()
 
-
+# The main context processor function
 def general_context(request):
     """
     Returns common Evennia-related context stuff, which
