@@ -412,7 +412,7 @@ def evennia_version():
     try:
         rev = check_output(
             "git rev-parse --short HEAD",
-            shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
+            shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip().decode()
         version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError):
         # move on if git is not answering
@@ -502,7 +502,7 @@ def create_secret_key():
     """
     import random
     import string
-    secret_key = list((string.letters +
+    secret_key = list((string.ascii_letters +
                        string.digits + string.punctuation).replace("\\", "")
                       .replace("'", '"').replace("{", "_").replace("}", "-"))
     random.shuffle(secret_key)
