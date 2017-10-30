@@ -24,11 +24,9 @@ from evennia.utils.utils import (variable_from_module, is_iter,
                                  make_iter,
                                  callables_from_module)
 from evennia.utils.inlinefuncs import parse_inlinefunc
+from codecs import decode as codecs_decode
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 _INLINEFUNC_ENABLED = settings.INLINEFUNC_ENABLED
 
@@ -39,6 +37,8 @@ _ServerConfig = None
 _ScriptDB = None
 _OOB_HANDLER = None
 
+_ERR_BAD_UTF8 = 'Your client sent an incorrect UTF-8 sequence.'
+
 
 class DummySession(object):
     sessid = 0
@@ -47,17 +47,8 @@ class DummySession(object):
 DUMMYSESSION = DummySession()
 
 # AMP signals
-PCONN = chr(1)        # portal session connect
-PDISCONN = chr(2)     # portal session disconnect
-PSYNC = chr(3)        # portal session sync
-SLOGIN = chr(4)       # server session login
-SDISCONN = chr(5)     # server session disconnect
-SDISCONNALL = chr(6)  # server session disconnect all
-SSHUTD = chr(7)       # server shutdown
-SSYNC = chr(8)        # server session sync
-SCONN = chr(11)        # server portal connection (for bots)
-PCONNSYNC = chr(12)   # portal post-syncing session
-PDISCONNALL = chr(13)  # portal session discnnect all
+from .amp import (PCONN, PDISCONN, PSYNC, SLOGIN, SDISCONN, SDISCONNALL,
+                  SSHUTD, SSYNC, SCONN, PCONNSYNC, PDISCONNALL, )
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -145,7 +136,7 @@ class SessionHandler(dict):
         if include_unloggedin:
             return listvalues(self)
         else:
-            return [session for session in self.values() if session.logged_in]
+            return [session for session in list(self.values()) if session.logged_in]
 
     def get_all_sync_data(self):
         """
@@ -156,7 +147,7 @@ class SessionHandler(dict):
             syncdata (dict): A dict of sync data.
 
         """
-        return dict((sessid, sess.get_sync_data()) for sessid, sess in self.items())
+        return dict((sessid, sess.get_sync_data()) for sessid, sess in list(self.items()))
 
     def clean_senddata(self, session, kwargs):
         """
@@ -185,41 +176,47 @@ class SessionHandler(dict):
         raw = options.get("raw", False)
         strip_inlinefunc = options.get("strip_inlinefunc", False)
 
+        def _utf8(data):
+            if isinstance(data, bytes):
+                try:
+                    data = codecs_decode(data, session.protocol_flags["ENCODING"])
+                except LookupError:
+                    # wrong encoding set on the session. Set it to a safe one
+                    session.protocol_flags["ENCODING"] = "utf-8"
+                    data = codecs_decode(data, "utf-8")
+                except UnicodeDecodeError:
+                    # incorrect unicode sequence
+                    session.sendLine(_ERR_BAD_UTF8)
+                    data = ''
+
+            return data
+
         def _validate(data):
             "Helper function to convert data to AMP-safe (picketable) values"
             if isinstance(data, dict):
                 newdict = {}
-                for key, part in data.items():
+                for key, part in list(data.items()):
                     newdict[key] = _validate(part)
                 return newdict
-            elif hasattr(data, "__iter__"):
+            elif is_iter(data):
                 return [_validate(part) for part in data]
-            elif isinstance(data, basestring):
-                # make sure strings are in a valid encoding
-                try:
-                    data = data and to_str(to_unicode(data), encoding=session.protocol_flags["ENCODING"])
-                except LookupError:
-                    # wrong encoding set on the session. Set it to a safe one
-                    session.protocol_flags["ENCODING"] = "utf-8"
-                    data = to_str(to_unicode(data), encoding=session.protocol_flags["ENCODING"])
+            elif isinstance(data, (str, bytes, )):
+                data = _utf8(data)
+
                 if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
                     # only parse inlinefuncs on the outgoing path (sessionhandler->)
                     data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
-                # At this point the object is certainly the right encoding, but may still be a unicode object--
-                # to_str does not actually force objects to become bytestrings.
-                # If the unicode object is a subclass of unicode, such as ANSIString, this can cause a problem,
-                # as special behavior for that class will still be in play. Since we're now transferring raw data,
-                # we must now force this to be a proper bytestring.
+
                 return str(data)
             elif hasattr(data, "id") and hasattr(data, "db_date_created") \
                     and hasattr(data, '__dbclass__'):
                 # convert database-object to their string representation.
-                return _validate(unicode(data))
+                return _validate(str(data))
             else:
                 return data
 
         rkwargs = {}
-        for key, data in kwargs.iteritems():
+        for key, data in kwargs.items():
             key = _validate(key)
             if not data:
                 if key == "text":
@@ -229,10 +226,10 @@ class SessionHandler(dict):
                 rkwargs[key] = [[], {}]
             elif isinstance(data, dict):
                 rkwargs[key] = [[], _validate(data)]
-            elif hasattr(data, "__iter__"):
+            elif is_iter(data):
                 if isinstance(data[-1], dict):
                     if len(data) == 2:
-                        if hasattr(data[0], "__iter__"):
+                        if is_iter(data[0]):
                             rkwargs[key] = [_validate(data[0]), _validate(data[1])]
                         else:
                             rkwargs[key] = [[_validate(data[0])], _validate(data[1])]
@@ -347,12 +344,12 @@ class ServerSessionHandler(SessionHandler):
         delayed_import()
         global _ServerSession, _AccountDB, _ServerConfig, _ScriptDB
 
-        for sess in self.values():
+        for sess in list(self.values()):
             # we delete the old session to make sure to catch eventual
             # lingering references.
             del sess
 
-        for sessid, sessdict in portalsessionsdata.items():
+        for sessid, sessdict in list(portalsessionsdata.items()):
             sess = _ServerSession()
             sess.sessionhandler = self
             sess.load_sync_data(sessdict)
@@ -565,7 +562,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = curr_session.uid
-        doublet_sessions = [sess for sess in self.values()
+        doublet_sessions = [sess for sess in list(self.values())
                             if sess.logged_in and
                             sess.uid == uid and
                             sess != curr_session]
@@ -580,7 +577,7 @@ class ServerSessionHandler(SessionHandler):
         """
         tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")
-        for session in (session for session in self.values()
+        for session in (session for session in list(self.values())
                         if session.logged_in and _IDLE_TIMEOUT > 0 and
                         (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
@@ -595,7 +592,7 @@ class ServerSessionHandler(SessionHandler):
             naccount (int): Number of connected accounts
 
         """
-        return len(set(session.uid for session in self.values() if session.logged_in))
+        return len(set(session.uid for session in list(self.values()) if session.logged_in))
 
     def all_connected_accounts(self):
         """
@@ -606,7 +603,7 @@ class ServerSessionHandler(SessionHandler):
                 amount of Sessions due to multi-playing).
 
         """
-        return list(set(session.account for session in self.values() if session.logged_in and session.account))
+        return list(set(session.account for session in list(self.values()) if session.logged_in and session.account))
 
     def session_from_sessid(self, sessid):
         """
@@ -653,7 +650,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = account.uid
-        return [session for session in self.values() if session.logged_in and session.uid == uid]
+        return [session for session in list(self.values()) if session.logged_in and session.uid == uid]
 
     def sessions_from_puppet(self, puppet):
         """
@@ -680,7 +677,7 @@ class ServerSessionHandler(SessionHandler):
             csessid (str): The session hash
 
         """
-        return [session for session in self.values()
+        return [session for session in list(self.values())
                 if session.csessid and session.csessid == csessid]
 
     def announce_all(self, message):
@@ -691,7 +688,7 @@ class ServerSessionHandler(SessionHandler):
             message (str): Message to send.
 
         """
-        for session in self.values():
+        for session in list(self.values()):
             self.data_out(session, text=message)
 
     def data_out(self, session, **kwargs):
@@ -754,7 +751,7 @@ class ServerSessionHandler(SessionHandler):
         # distribute incoming data to the correct receiving methods.
         if session:
             input_debug = session.protocol_flags.get("INPUTDEBUG", False)
-            for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
+            for cmdname, (cmdargs, cmdkwargs) in kwargs.items():
                 cname = cmdname.strip().lower()
                 try:
                     cmdkwargs.pop("options", None)

@@ -41,13 +41,13 @@ class TaskHandler(object):
         """
         to_save = False
         value = ServerConfig.objects.conf("delayed_tasks", default={})
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             tasks = dbunserialize(value)
         else:
             tasks = value
 
         # At this point, `tasks` contains a dictionary of still-serialized tasks
-        for task_id, value in tasks.items():
+        for task_id, value in list(tasks.items()):
             date, callback, args, kwargs = dbunserialize(value)
             if isinstance(callback, tuple):
                 # `callback` can be an object and name for instance methods
@@ -64,7 +64,7 @@ class TaskHandler(object):
 
     def save(self):
         """Save the tasks in ServerConfig."""
-        for task_id, (date, callback, args, kwargs) in self.tasks.items():
+        for task_id, (date, callback, args, kwargs) in list(self.tasks.items()):
             if task_id in self.to_save:
                 continue
 
@@ -111,7 +111,7 @@ class TaskHandler(object):
             # Choose a free task_id
             safe_args = []
             safe_kwargs = {}
-            used_ids = self.tasks.keys()
+            used_ids = list(self.tasks.keys())
             task_id = 1
             while task_id in used_ids:
                 task_id += 1
@@ -127,7 +127,7 @@ class TaskHandler(object):
                 else:
                     safe_args.append(arg)
 
-            for key, value in kwargs.items():
+            for key, value in list(kwargs.items()):
                 try:
                     dbserialize(value)
                 except (TypeError, AttributeError):
@@ -187,7 +187,7 @@ class TaskHandler(object):
 
         """
         now = datetime.now()
-        for task_id, (date, callbac, args, kwargs) in self.tasks.items():
+        for task_id, (date, callbac, args, kwargs) in list(self.tasks.items()):
             seconds = max(0, (date - now).total_seconds())
             task.deferLater(reactor, seconds, self.do_task, task_id)
 

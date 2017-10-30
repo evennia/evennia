@@ -66,8 +66,11 @@ class Tag(models.Model):
         unique_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
         index_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
 
+    def __lt__(self, other):
+        return str(self) < str(other)
+
     def __unicode__(self):
-        return u"<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
+        return "<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
 
     def __str__(self):
         return str("<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else ""))
@@ -166,7 +169,7 @@ class TagHandler(object):
             # for this category before
             catkey = "-%s" % category
             if _TYPECLASS_AGGRESSIVE_CACHE and catkey in self._catcache:
-                return [tag for key, tag in self._cache.items() if key.endswith(catkey)]
+                return [tag for key, tag in list(self._cache.items()) if key.endswith(catkey)]
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model: self._objid,
@@ -394,14 +397,14 @@ class TagHandler(object):
             else:
                 keys[tup[1]].append(tup[0])
                 data[tup[1]] = tup[2]  # overwrite previous
-        for category, key in keys.iteritems():
+        for category, key in keys.items():
             self.add(tag=key, category=category, data=data.get(category, None))
 
     def __str__(self):
         return ",".join(self.all())
 
     def __unicode(self):
-        return u",".join(self.all())
+        return ",".join(self.all())
 
 
 class AliasHandler(TagHandler):

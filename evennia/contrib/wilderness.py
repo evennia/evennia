@@ -249,10 +249,10 @@ class WildernessScript(DefaultScript):
         """
         Called when the script is started and also after server reloads.
         """
-        for coordinates, room in self.db.rooms.items():
+        for coordinates, room in list(self.db.rooms.items()):
             room.ndb.wildernessscript = self
             room.ndb.active_coordinates = coordinates
-        for item in self.db.itemcoordinates.keys():
+        for item in list(self.db.itemcoordinates.keys()):
             # Items deleted from the wilderness leave None type 'ghosts'
             # that must be cleaned out
             if item is None:
@@ -302,7 +302,7 @@ class WildernessScript(DefaultScript):
             [Object, ]: list of Objects at coordinates
         """
         result = []
-        for item, item_coordinates in self.itemcoordinates.items():
+        for item, item_coordinates in list(self.itemcoordinates.items()):
             # Items deleted from the wilderness leave None type 'ghosts'
             # that must be cleaned out
             if item is None:

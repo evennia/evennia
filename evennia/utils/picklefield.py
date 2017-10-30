@@ -54,7 +54,7 @@ except ImportError:
 
 # python 3.x does not have cPickle module
 try:
-    from cPickle import loads, dumps  # cpython 2.x
+    from pickle import loads, dumps  # cpython 2.x
 except ImportError:
     from pickle import loads, dumps  # cpython 3.x, other interpreters
 

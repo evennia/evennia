@@ -5,7 +5,7 @@ replacing cmdparser function. The replacement parser must accept the
 same inputs as the default one.
 
 """
-from __future__ import division
+
 
 import re
 from django.conf import settings
@@ -70,7 +70,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
                 the `raw_cmdname` is the cmdname unmodified by eventual prefix-stripping.
 
         """
-        cmdlen, strlen = len(unicode(cmdname)), len(unicode(string))
+        cmdlen, strlen = len(str(cmdname)), len(str(string))
         mratio = 1 - (strlen - cmdlen) / (1.0 * strlen)
         args = string[cmdlen:]
         return (cmdname, args, cmdobj, cmdlen, mratio, raw_cmdname)

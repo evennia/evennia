@@ -141,7 +141,7 @@ class ScriptDB(TypedObject):
         except AttributeError:
             # deprecated ...
             pass
-        if isinstance(value, (basestring, int)):
+        if isinstance(value, (str, int)):
             from evennia.objects.models import ObjectDB
             value = to_str(value, force_string=True)
             if (value.isdigit() or value.startswith("#")):

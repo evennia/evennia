@@ -185,11 +185,11 @@ def client_options(session, *args, **kwargs):
         return {0: int(val)}
 
     def validate_bool(val):
-        if isinstance(val, basestring):
+        if isinstance(val, str):
             return True if val.lower() in ("true", "on", "1") else False
         return bool(val)
 
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
         key = key.lower()
         if key == "client":
             flags["CLIENTNAME"] = to_str(value)
@@ -254,7 +254,7 @@ def get_inputfuncs(session, *args, **kwargs):
     So we get it from the sessionhandler.
     """
     inputfuncsdict = dict((key, func.__doc__) for key, func
-                          in session.sessionhandler.get_inputfuncs().iteritems())
+                          in session.sessionhandler.get_inputfuncs().items())
     session.msg(get_inputfuncs=inputfuncsdict)
 
 
@@ -463,5 +463,5 @@ def webclient_options(session, *args, **kwargs):
                             session=session)
     else:
         # kwargs provided: persist them to the account object
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             clientoptions[key] = value

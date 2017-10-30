@@ -224,13 +224,13 @@ class TestEventHandler(EvenniaTest):
         self.assertEqual(callback.code, "pass")
         self.assertEqual(callback.author, self.char1)
         self.assertEqual(callback.valid, True)
-        self.assertIn([callback], self.room1.callbacks.all().values())
+        self.assertIn([callback], list(self.room1.callbacks.all().values()))
 
         # Edit this very callback
         new = self.room1.callbacks.edit("dummy", 0, "character.db.say = True",
                                         author=self.char1, valid=True)
-        self.assertIn([new], self.room1.callbacks.all().values())
-        self.assertNotIn([callback], self.room1.callbacks.all().values())
+        self.assertIn([new], list(self.room1.callbacks.all().values()))
+        self.assertNotIn([callback], list(self.room1.callbacks.all().values()))
 
         # Try to call this callback
         self.assertTrue(self.room1.callbacks.call("dummy",

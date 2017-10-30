@@ -139,7 +139,7 @@ class AccountDB(TypedObject, AbstractUser):
         return smart_str("%s(account %s)" % (self.name, self.dbid))
 
     def __unicode__(self):
-        return u"%s(account#%s)" % (self.name, self.dbid)
+        return "%s(account#%s)" % (self.name, self.dbid)
 
     #@property
     def __username_get(self):

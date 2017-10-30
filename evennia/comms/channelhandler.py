@@ -271,7 +271,7 @@ class ChannelHandler(object):
         if channelname:
             channel = self._cached_channels.get(channelname.lower(), None)
             return [channel] if channel else []
-        return self._cached_channels.values()
+        return list(self._cached_channels.values())
 
     def get_cmdset(self, source_object):
         """
@@ -292,7 +292,7 @@ class ChannelHandler(object):
         else:
             # create a new cmdset holding all viable channels
             chan_cmdset = None
-            chan_cmds = [channelcmd for channel, channelcmd in self._cached_channel_cmds.iteritems()
+            chan_cmds = [channelcmd for channel, channelcmd in self._cached_channel_cmds.items()
                          if channel.subscriptions.has(source_object) and
                          channelcmd.access(source_object, 'send')]
             if chan_cmds:

@@ -9,7 +9,7 @@ and portal through the evennia_runner. Run without arguments to get a
 menu. Run the script with the -h flag to see usage information.
 
 """
-from __future__ import print_function
+
 from builtins import input, range
 
 import os
@@ -412,7 +412,7 @@ def evennia_version():
     try:
         rev = check_output(
             "git rev-parse --short HEAD",
-            shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
+            shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip().decode()
         version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError):
         # move on if git is not answering
@@ -502,7 +502,7 @@ def create_secret_key():
     """
     import random
     import string
-    secret_key = list((string.letters +
+    secret_key = list((string.ascii_letters +
                        string.digits + string.punctuation).replace("\\", "")
                       .replace("'", '"').replace("{", "_").replace("}", "-"))
     random.shuffle(secret_key)
@@ -535,7 +535,7 @@ def create_settings_file(init=True, secret_settings=False):
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = input("%s already exists. Do you want to reset it? y/[N]> " % settings_path)
+            inp = eval(input("%s already exists. Do you want to reset it? y/[N]> " % settings_path))
             if not inp.lower() == 'y':
                 print ("Aborted.")
                 return
@@ -601,9 +601,9 @@ def check_database():
     # Check so a database exists and is accessible
     from django.db import connection
     tables = connection.introspection.get_table_list(connection.cursor())
-    if not tables or not isinstance(tables[0], basestring):  # django 1.8+
+    if not tables or not isinstance(tables[0], str):  # django 1.8+
         tables = [tableinfo.name for tableinfo in tables]
-    if tables and u'accounts_accountdb' in tables:
+    if tables and 'accounts_accountdb' in tables:
         # database exists and seems set up. Initialize evennia.
         evennia._init()
     # Try to get Account#1
@@ -632,7 +632,7 @@ def check_database():
             res = ""
             while res.upper() != "Y":
                 # ask for permission
-                res = input("Continue [Y]/N: ")
+                res = eval(input("Continue [Y]/N: "))
                 if res.upper() == "N":
                     sys.exit()
                 elif not res:
@@ -993,9 +993,9 @@ def list_settings(keys):
         # a specific key
         table = evtable.EvTable(width=131)
         keys = [key.upper() for key in keys]
-        confs = dict((key, var) for key, var in evsettings.__dict__.items()
+        confs = dict((key, var) for key, var in list(evsettings.__dict__.items())
                      if key in keys)
-        for key, val in confs.items():
+        for key, val in list(confs.items()):
             table.add_row(key, str(val))
     print(table)
 
@@ -1009,18 +1009,18 @@ def run_menu():
         # menu loop
 
         print(MENU)
-        inp = input(" option > ")
+        inp = eval(input(" option > "))
 
         # quitting and help
         if inp.lower() == 'q':
             return
         elif inp.lower() == 'h':
             print(HELP_ENTRY)
-            input("press <return> to continue ...")
+            eval(input("press <return> to continue ..."))
             continue
         elif inp.lower() in ('v', 'i', 'a'):
             print(show_version_info(about=True))
-            input("press <return> to continue ...")
+            eval(input("press <return> to continue ..."))
             continue
 
         # options

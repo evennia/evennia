@@ -14,9 +14,9 @@ from builtins import object
 from django.conf import settings
 from evennia.utils import utils
 
-MSSP = chr(70)
-MSSP_VAR = chr(1)
-MSSP_VAL = chr(2)
+MSSP = b'\x46'
+MSSP_VAR = b'\x01'
+MSSP_VAL = b'\x02'
 
 
 # try to get the customized mssp info, if it exists.
@@ -191,7 +191,7 @@ class Mssp(object):
             self.mssp_table.update(MSSPTable_CUSTOM)
 
         varlist = ''
-        for variable, value in self.mssp_table.items():
+        for variable, value in list(self.mssp_table.items()):
             if callable(value):
                 value = value()
             if utils.is_iter(value):

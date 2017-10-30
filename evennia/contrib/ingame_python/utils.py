@@ -50,7 +50,7 @@ def register_events(path_or_typeclass):
         temporary storage, waiting for the script to be initialized.
 
     """
-    if isinstance(path_or_typeclass, basestring):
+    if isinstance(path_or_typeclass, str):
         typeclass = class_from_module(path_or_typeclass)
     else:
         typeclass = path_or_typeclass
@@ -65,7 +65,7 @@ def register_events(path_or_typeclass):
 
     # If the script is started, add the event directly.
     # Otherwise, add it to the temporary storage.
-    for name, tup in getattr(typeclass, "_events", {}).items():
+    for name, tup in list(getattr(typeclass, "_events", {}).items()):
         if len(tup) == 4:
             variables, help_text, custom_call, custom_add = tup
         elif len(tup) == 3:
@@ -116,7 +116,7 @@ def get_next_wait(format):
         units = ["min", "hour", "day", "month", "year"]
     elif calendar == "custom":
         rsu = custom_rsu
-        back = dict([(value, name) for name, value in UNITS.items()])
+        back = dict([(value, name) for name, value in list(UNITS.items())])
         sorted_units = sorted(back.items())
         del sorted_units[0]
         units = [n for v, n in sorted_units]

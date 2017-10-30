@@ -335,9 +335,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             either a string '#N' or an integer N.
 
         """
-        if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
+        if reqhash and not (isinstance(dbref, str) and dbref.startswith("#")):
             return None
-        if isinstance(dbref, basestring):
+        if isinstance(dbref, str):
             dbref = dbref.lstrip('#')
         try:
             if int(dbref) < 0:
@@ -438,7 +438,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if callable(typeclass):
             cls = typeclass.__class__
             typeclass = "%s.%s" % (cls.__module__, cls.__name__)
-        elif not isinstance(typeclass, basestring) and hasattr(typeclass, "path"):
+        elif not isinstance(typeclass, str) and hasattr(typeclass, "path"):
             typeclass = typeclass.path
 
         # query objects of exact typeclass

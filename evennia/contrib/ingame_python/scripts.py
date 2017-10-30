@@ -3,7 +3,7 @@ Scripts for the in-game Python system.
 """
 
 from datetime import datetime, timedelta
-from Queue import Queue
+from queue import Queue
 import re
 import sys
 import traceback
@@ -129,7 +129,7 @@ class EventHandler(DefaultScript):
         while not classes.empty():
             typeclass = classes.get()
             typeclass_name = typeclass.__module__ + "." + typeclass.__name__
-            for key, etype in all_events.get(typeclass_name, {}).items():
+            for key, etype in list(all_events.get(typeclass_name, {}).items()):
                 if key in invalid:
                     continue
                 if etype[0] is None:  # Invalidate
@@ -186,7 +186,7 @@ class EventHandler(DefaultScript):
         """
         obj_callbacks = self.db.callbacks.get(obj, {})
         callbacks = {}
-        for callback_name, callback_list in obj_callbacks.items():
+        for callback_name, callback_list in list(obj_callbacks.items()):
             new_list = []
             for i, callback in enumerate(callback_list):
                 callback = dict(callback)
@@ -436,7 +436,7 @@ class EventHandler(DefaultScript):
                                                                 type(obj), variable, i))
                     return False
         else:
-            locals = {key: value for key, value in locals.items()}
+            locals = {key: value for key, value in list(locals.items())}
 
         callbacks = self.get_callbacks(obj).get(callback_name, [])
         if event:
@@ -576,7 +576,7 @@ class EventHandler(DefaultScript):
 
         # Collect and freeze current locals
         locals = {}
-        for key, value in self.ndb.current_locals.items():
+        for key, value in list(self.ndb.current_locals.items()):
             try:
                 dbserialize(value)
             except TypeError:

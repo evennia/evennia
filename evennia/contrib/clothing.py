@@ -187,7 +187,7 @@ def clothing_type_count(clothes_list):
     for garment in clothes_list:
         if garment.db.clothing_type:
             type = garment.db.clothing_type
-            if type not in types_count.keys():
+            if type not in list(types_count.keys()):
                 types_count[type] = 1
             else:
                 types_count[type] += 1
@@ -380,7 +380,7 @@ class CmdWear(MuxCommand):
         # Apply individual clothing type limits.
         if clothing.db.clothing_type and not clothing.db.worn:
             type_count = single_type_count(get_worn_clothes(self.caller), clothing.db.clothing_type)
-            if clothing.db.clothing_type in CLOTHING_TYPE_LIMIT.keys():
+            if clothing.db.clothing_type in list(CLOTHING_TYPE_LIMIT.keys()):
                 if type_count >= CLOTHING_TYPE_LIMIT[clothing.db.clothing_type]:
                     self.caller.msg("You can't wear any more clothes of the type '%s'." % clothing.db.clothing_type)
                     return

@@ -97,7 +97,7 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     tags = make_iter(tags) if tags is not None else None
 
 
-    if isinstance(typeclass, basestring):
+    if isinstance(typeclass, str):
         # a path is given. Load the actual typeclass
         typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
@@ -181,7 +181,7 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
 
     typeclass = typeclass if typeclass else settings.BASE_SCRIPT_TYPECLASS
 
-    if isinstance(typeclass, basestring):
+    if isinstance(typeclass, str):
         # a path is given. Load the actual typeclass
         typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
@@ -353,7 +353,7 @@ def create_channel(key, aliases=None, desc=None,
     """
     typeclass = typeclass if typeclass else settings.BASE_CHANNEL_TYPECLASS
 
-    if isinstance(typeclass, basestring):
+    if isinstance(typeclass, str):
         # a path is given. Load the actual typeclass
         typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
@@ -418,7 +418,7 @@ def create_account(key, email, password,
     locks = make_iter(locks) if locks is not None else None
     permissions = make_iter(permissions) if permissions is not None else None
 
-    if isinstance(typeclass, basestring):
+    if isinstance(typeclass, str):
         # a path is given. Load the actual typeclass.
         typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 

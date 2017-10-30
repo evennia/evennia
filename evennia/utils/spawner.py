@@ -87,7 +87,7 @@ otherwise have the same spells as a *goblin wizard* who in turn shares
 many traits with a normal *goblin*.
 
 """
-from __future__ import print_function
+
 
 import copy
 from django.conf import settings
@@ -235,10 +235,10 @@ def spawn(*prototypes, **kwargs):
         protmodules = make_iter(settings.PROTOTYPE_MODULES)
     for prototype_module in protmodules:
         protparents.update(dict((key, val) for key, val in
-                                all_from_module(prototype_module).items() if isinstance(val, dict)))
+                                list(all_from_module(prototype_module).items()) if isinstance(val, dict)))
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
-    for key, prototype in protparents.items():
+    for key, prototype in list(protparents.items()):
         _validate_prototype(key, prototype, protparents, [])
 
     if "return_prototypes" in kwargs:
@@ -288,11 +288,11 @@ def spawn(*prototypes, **kwargs):
 
         # extract ndb assignments
         nattributes = dict((key.split("_", 1)[1], value() if callable(value) else value)
-                           for key, value in prot.items() if key.startswith("ndb_"))
+                           for key, value in list(prot.items()) if key.startswith("ndb_"))
 
         # the rest are attributes
         simple_attributes = [(key, value()) if callable(value) else (key, value)
-                             for key, value in prot.items() if not key.startswith("ndb_")]
+                             for key, value in list(prot.items()) if not key.startswith("ndb_")]
         attributes = attributes + simple_attributes
         attributes = [tup for tup in attributes if not tup[0] in _CREATE_OBJECT_KWARGS]
 

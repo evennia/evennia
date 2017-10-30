@@ -511,7 +511,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
             process_language = receiver.process_language
         except AttributeError:
             process_language = _dummy_process
-        for key, (langname, saytext) in language_mapping.iteritems():
+        for key, (langname, saytext) in language_mapping.items():
             # color says
             receiver_lang_mapping[key] = process_language(saytext, sender, langname)
         # map the language {##num} markers. This will convert the escaped sdesc markers on
@@ -531,11 +531,11 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
 
         try:
             recog_get = receiver.recog.get
-            receiver_sdesc_mapping = dict((ref, process_recog(recog_get(obj), obj)) for ref, obj in obj_mapping.items())
+            receiver_sdesc_mapping = dict((ref, process_recog(recog_get(obj), obj)) for ref, obj in list(obj_mapping.items()))
         except AttributeError:
             receiver_sdesc_mapping = dict((ref, process_sdesc(obj.sdesc.get(), obj)
                                            if hasattr(obj, "sdesc") else process_sdesc(obj.key, obj))
-                                          for ref, obj in obj_mapping.items())
+                                          for ref, obj in list(obj_mapping.items()))
         # make sure receiver always sees their real name
         rkey = "#%i" % receiver.id
         if rkey in receiver_sdesc_mapping:
@@ -684,9 +684,9 @@ class RecogHandler(object):
         obj2regex = self.obj.attributes.get("_recog_obj2regex", default={})
         obj2recog = self.obj.attributes.get("_recog_obj2recog", default={})
         self.obj2regex = dict((obj, re.compile(regex, _RE_FLAGS))
-                              for obj, regex in obj2regex.items() if obj)
+                              for obj, regex in list(obj2regex.items()) if obj)
         self.obj2recog = dict((obj, recog)
-                              for obj, recog in obj2recog.items() if obj)
+                              for obj, recog in list(obj2recog.items()) if obj)
 
     def add(self, obj, recog, max_length=60):
         """
@@ -981,7 +981,7 @@ class CmdPose(RPCommand):  # set current pose and default pose
             # set the pose. We do one-time ref->sdesc mapping here.
             parsed, mapping = parse_sdescs_and_recogs(caller, caller.location.contents, pose)
             mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
-                           for ref, obj in mapping.iteritems())
+                           for ref, obj in mapping.items())
             pose = parsed.format(**mapping)
 
             if len(target_name) + len(pose) > 60:
@@ -1223,7 +1223,7 @@ class ContribRPObject(DefaultObject):
             messaging is assumed to be handled by the caller.
 
         """
-        is_string = isinstance(searchdata, basestring)
+        is_string = isinstance(searchdata, str)
 
         if is_string:
             # searchdata is a string; wrap some common self-references

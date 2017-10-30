@@ -6,7 +6,7 @@ the script will append to this file if it already exists.
 
 Call this module directly to plot the log (requires matplotlib and numpy).
 """
-from __future__ import division
+
 import os
 import sys
 import time

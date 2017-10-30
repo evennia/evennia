@@ -168,7 +168,7 @@ class Attribute(SharedMemoryModel):
         return smart_str("%s(%s)" % (self.db_key, self.id))
 
     def __unicode__(self):
-        return u"%s(%s)" % (self.db_key, self.id)
+        return "%s(%s)" % (self.db_key, self.id)
 
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
@@ -299,7 +299,7 @@ class AttributeHandler(object):
             # for this category before
             catkey = "-%s" % category
             if _TYPECLASS_AGGRESSIVE_CACHE and catkey in self._catcache:
-                return [attr for key, attr in self._cache.items() if key.endswith(catkey) and attr]
+                return [attr for key, attr in list(self._cache.items()) if key.endswith(catkey) and attr]
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model: self._objid,
@@ -350,7 +350,7 @@ class AttributeHandler(object):
             self._cache.pop(cachekey, None)
         else:
             self._cache = {key: attrobj for key, attrobj in
-                           self._cache.items() if not key.endswith(catkey)}
+                           list(self._cache.items()) if not key.endswith(catkey)}
         # mark that the category cache is no longer up-to-date
         self._catcache.pop(catkey, None)
         self._cache_complete = False
@@ -655,10 +655,10 @@ class AttributeHandler(object):
         if not self._cache_complete:
             self._fullcache()
         if accessing_obj:
-            [attr.delete() for attr in self._cache.values()
+            [attr.delete() for attr in list(self._cache.values())
              if attr and attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
-            [attr.delete() for attr in self._cache.values() if attr and attr.pk]
+            [attr.delete() for attr in list(self._cache.values()) if attr and attr.pk]
         self._cache = {}
         self._catcache = {}
         self._cache_complete = False
@@ -682,7 +682,7 @@ class AttributeHandler(object):
         """
         if not self._cache_complete:
             self._fullcache()
-        attrs = sorted([attr for attr in self._cache.values() if attr],
+        attrs = sorted([attr for attr in list(self._cache.values()) if attr],
                        key=lambda o: o.id)
         if accessing_obj:
             return [attr for attr in attrs
@@ -753,7 +753,9 @@ def initialize_nick_templates(in_template, out_template):
     # create the regex for in_template
     regex_string = fnmatch.translate(in_template)
     # we must account for a possible line break coming over the wire
-    regex_string = regex_string[:-7] + r"(?:[\n\r]*?)\Z(?ms)"
+
+    # NOTE-PYTHON3: fnmatch.translate format changed since Python2
+    regex_string = regex_string[:-2] + r"(?:[\n\r]*?)\Z"
 
     # validate the templates
     regex_args = [match.group(2) for match in _RE_NICK_ARG.finditer(regex_string)]
@@ -903,7 +905,7 @@ class NickHandler(AttributeHandler):
             for category in make_iter(categories):
                 nicks.update({nick.key: nick for nick in make_iter(self.obj.account.nicks.get(
                     category=category, return_obj=True)) if nick and nick.key})
-        for key, nick in nicks.iteritems():
+        for key, nick in nicks.items():
             nick_regex, template, _, _ = nick.value
             regex = self._regex_cache.get(nick_regex)
             if not regex:
@@ -1001,5 +1003,5 @@ class NAttributeHandler(object):
 
         """
         if return_tuples:
-            return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
+            return [(key, value) for (key, value) in list(self._store.items()) if not key.startswith("_")]
         return [key for key in self._store if not key.startswith("_")]
