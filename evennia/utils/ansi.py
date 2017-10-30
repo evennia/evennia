@@ -708,7 +708,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
         if not isinstance(string, str):
             string = string.decode('utf-8')
 
-        ansi_string = super(ANSIString, cls).__new__(ANSIString, to_str(clean_string), "utf-8")
+        ansi_string = super(ANSIString, cls).__new__(ANSIString, to_str(clean_string))
         ansi_string._raw_string = string
         ansi_string._clean_string = clean_string
         ansi_string._code_indexes = code_indexes
@@ -716,7 +716,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
         return ansi_string
 
     def __str__(self):
-        return self._raw_string.encode('utf-8')
+        return self._raw_string
 
     def __unicode__(self):
         """
@@ -849,7 +849,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
         if not slice_indexes:
             return ANSIString('')
         try:
-            string = self[slc.start]._raw_string
+            string = self[slc.start or 0]._raw_string
         except IndexError:
             return ANSIString('')
         last_mark = slice_indexes[0]

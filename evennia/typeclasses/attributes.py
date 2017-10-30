@@ -753,7 +753,9 @@ def initialize_nick_templates(in_template, out_template):
     # create the regex for in_template
     regex_string = fnmatch.translate(in_template)
     # we must account for a possible line break coming over the wire
-    regex_string = regex_string[:-7] + r"(?:[\n\r]*?)\Z(?ms)"
+
+    # NOTE-PYTHON3: fnmatch.translate format changed since Python2
+    regex_string = regex_string[:-2] + r"(?:[\n\r]*?)\Z"
 
     # validate the templates
     regex_args = [match.group(2) for match in _RE_NICK_ARG.finditer(regex_string)]
