@@ -993,6 +993,8 @@ class TestTurnBattleFunc(EvenniaTest):
         attacker.location.scripts.add(tb_basic.TBBasicTurnHandler)
         turnhandler = attacker.db.combat_TurnHandler
         self.assertTrue(attacker.db.combat_TurnHandler)
+        # Set the turn handler's interval very high to keep it from repeating during tests.
+        turnhandler.interval = 10000
         # Force turn order
         turnhandler.db.fighters = [attacker, defender]
         turnhandler.db.turn = 0
@@ -1070,6 +1072,8 @@ class TestTurnBattleFunc(EvenniaTest):
         attacker.location.scripts.add(tb_equip.TBEquipTurnHandler)
         turnhandler = attacker.db.combat_TurnHandler
         self.assertTrue(attacker.db.combat_TurnHandler)
+        # Set the turn handler's interval very high to keep it from repeating during tests.
+        turnhandler.interval = 10000
         # Force turn order
         turnhandler.db.fighters = [attacker, defender]
         turnhandler.db.turn = 0
@@ -1145,6 +1149,8 @@ class TestTurnBattleFunc(EvenniaTest):
         attacker.location.scripts.add(tb_range.TBRangeTurnHandler)
         turnhandler = attacker.db.combat_TurnHandler
         self.assertTrue(attacker.db.combat_TurnHandler)
+        # Set the turn handler's interval very high to keep it from repeating during tests.
+        turnhandler.interval = 10000
         # Force turn order
         turnhandler.db.fighters = [attacker, defender]
         turnhandler.db.turn = 0
