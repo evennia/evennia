@@ -797,6 +797,11 @@ class TestTutorialWorldMob(EvenniaTest):
 
 from evennia.contrib.tutorial_world import objects as tutobjects
 
+def _ignoreCancelled(err, *args, **kwargs):
+    # Ignore the cancelled errors that we intend to occur.
+    from twisted.internet.defer import CancelledError
+    if not issubclass(err.type, CancelledError):
+        err.raiseException()
 
 class TestTutorialWorldObjects(CommandTest):
     def test_tutorialobj(self):
@@ -823,6 +828,7 @@ class TestTutorialWorldObjects(CommandTest):
         self.call(tutobjects.CmdLight(), "", "You light torch.", obj=light)
         light._burnout()
         if hasattr(light, "deferred"):
+            light.deferred.addErrback(_ignoreCancelled)
             light.deferred.cancel()
         self.assertFalse(light.pk)
 
@@ -845,6 +851,7 @@ class TestTutorialWorldObjects(CommandTest):
         self.assertTrue(wall.db.exit_open)
         wall.reset()
         if hasattr(wall, "deferred"):
+            wall.deferred.addErrback(_ignoreCancelled)
             wall.deferred.cancel()
         wall.delete()
 
@@ -920,7 +927,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_basic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
-        
+
     # Test equipment commands
     def test_turnbattleequipcmd(self):
         # Start with equip module specific commands.
@@ -938,7 +945,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_equip.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
-        
+
 
 class TestTurnBattleFunc(EvenniaTest):
 
@@ -1018,7 +1025,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
-        
+
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_turnbattlefunc(self):
         attacker = create_object(tb_equip.TBEquipCharacter, key="Attacker")
