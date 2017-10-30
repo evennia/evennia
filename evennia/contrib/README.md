@@ -50,8 +50,6 @@ things you want from here into your game folder and change them there.
   time to pass depending on if you are walking/running etc.
 * Talking NPC (Griatch 2011) - A talking NPC object that offers a
   menu-driven conversation tree.
-* Turnbattle (FlutterSprite 2017) - A turn-based combat engine meant
-  as a start to build from. Has attack/disengage and turn timeouts.
 * Wilderness (titeuf87 2017) - Make infinitely large wilderness areas
   with dynamically created locations.
 * UnixCommand (Vincent Le Geoff 2017) - Add commands with UNIX-style syntax.
@@ -62,6 +60,9 @@ things you want from here into your game folder and change them there.
   to the Evennia game index (games.evennia.com)
 * In-game Python (Vincent Le Goff 2017) - Allow trusted builders to script
   objects and events using Python from in-game.
+* Turnbattle (FlutterSprite 2017) - A turn-based combat engine meant
+  as a start to build from. Has attack/disengage and turn timeouts,
+  and includes optional expansions for equipment and combat movement.
 * Tutorial examples (Griatch 2011, 2015) - A folder of basic
   example objects, commands and scripts.
 * Tutorial world (Griatch 2011, 2015) - A folder containing the
