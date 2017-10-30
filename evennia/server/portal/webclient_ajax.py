@@ -23,7 +23,6 @@ import time
 from twisted.web import server, resource
 from twisted.internet.task import LoopingCall
 from django.utils.functional import Promise
-from django.utils.encoding import force_unicode
 from django.conf import settings
 from evennia.utils.ansi import parse_ansi
 from evennia.utils import utils
@@ -44,7 +43,7 @@ _KEEPALIVE = 30  # how often to check keepalive
 class LazyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Promise):
-            return force_unicode(obj)
+            return str(obj)
         return super(LazyEncoder, self).default(obj)
 
 
