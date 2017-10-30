@@ -44,9 +44,9 @@ SDISCONN = b'\x05'      # server session disconnect
 SDISCONNALL = b'\x06'   # server session disconnect all
 SSHUTD = b'\x07'        # server shutdown
 SSYNC = b'\x08'         # server session sync
-SCONN = b'\x0b'        # server creating new connection (for irc bots and etc)
-PCONNSYNC = b'\x0c'    # portal post-syncing a session
-PDISCONNALL = b'\x0d'  # portal session disconnect all
+SCONN = b'\x0b'         # server creating new connection (for irc bots and etc)
+PCONNSYNC = b'\x0c'     # portal post-syncing a session
+PDISCONNALL = b'\x0d'   # portal session disconnect all
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
 BATCH_RATE = 250     # max commands/sec before switching to batch-sending
