@@ -19,7 +19,7 @@ things you want from here into your game folder and change them there.
   for any game. Allows safe trading of any godds (including coin)
 * CharGen (Griatch 2011) - A simple Character creator for OOC mode.
   Meant as a starting point for a more fleshed-out system.
-* Clothing (BattleJenkins 2017) - A layered clothing system with
+* Clothing (FlutterSprite 2017) - A layered clothing system with
   slots for different types of garments auto-showing in description.
 * Color-markups (Griatch, 2017) - Alternative in-game color markups.
 * Custom gametime (Griatch, vlgeoff 2017) - Implements Evennia's
@@ -50,7 +50,7 @@ things you want from here into your game folder and change them there.
   time to pass depending on if you are walking/running etc.
 * Talking NPC (Griatch 2011) - A talking NPC object that offers a
   menu-driven conversation tree.
-* Turnbattle (BattleJenkins 2017) - A turn-based combat engine meant
+* Turnbattle (FlutterSprite 2017) - A turn-based combat engine meant
   as a start to build from. Has attack/disengage and turn timeouts.
 * Wilderness (titeuf87 2017) - Make infinitely large wilderness areas
   with dynamically created locations.
