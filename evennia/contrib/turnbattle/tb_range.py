@@ -474,7 +474,10 @@ def combat_status_message(fighter):
     distances to other fighters and objects. Called at turn
     start and by the 'status' command.
     """
-    
+    if not fighter.db.max_hp:
+        fighter.db.hp = 100
+        fighter.db.max_hp = 100
+
     status_msg = ("HP Remaining: %i / %i" % (fighter.db.hp, fighter.db.max_hp))
     
     if not is_in_combat(fighter):
@@ -1326,7 +1329,6 @@ class CmdStatus(Command):
 
     def func(self):
         "This performs the actual command."
-
         combat_status_message(self.caller)
         
 
