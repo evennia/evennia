@@ -276,7 +276,7 @@ COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # Helper function for readability.
 def _map_to_list(game_map):
     """
-    Splits multi line map string into list of rows, treats for UTF-8 encoding.
+    Splits multi line map string into list of rows.
 
     Args:
         game_map (str): An ASCII map
@@ -285,9 +285,7 @@ def _map_to_list(game_map):
         list (list): The map split into rows
 
     """
-    list_map = game_map.split('\n')
-    return [character.decode('UTF-8') if isinstance(character, str)
-            else character for character in list_map]
+    return game_map.split('\n')
 
 
 def build_map(caller, game_map, legend, iterations=1, build_exits=True):
