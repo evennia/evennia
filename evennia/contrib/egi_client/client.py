@@ -11,7 +11,7 @@ from twisted.internet.defer import inlineCallbacks
 from twisted.web.client import Agent, _HTTP11ClientFactory, HTTPConnectionPool
 from twisted.web.http_headers import Headers
 from twisted.web.iweb import IBodyProducer
-from zope.interface import implements
+from zope.interface import implementer
 
 from evennia.accounts.models import AccountDB
 from evennia.server.sessionhandler import SESSIONS
@@ -144,12 +144,11 @@ class SimpleResponseReceiver(protocol.Protocol):
     def connectionLost(self, reason=protocol.connectionDone):
         self.d.callback((self.status_code, self.buf))
 
-
+@implementer(IBodyProducer)
 class StringProducer(object):
     """
     Used for feeding a request body to the tx HTTP client.
     """
-    implements(IBodyProducer)
 
     def __init__(self, body):
         self.body = body
