@@ -52,7 +52,7 @@ Categories can be nested in other categories as well - just go another '-' deepe
 can do this as many times as you like. There's no hard limit to the number of
 categories you can go down.
 
-For example, let's add some more options to our menu, turning 'Foo' into a category.
+For example, let's add some more options to our menu, turning 'Bar' into a category.
 
     TEST_MENU = '''Foo
     Bar
@@ -63,7 +63,7 @@ For example, let's add some more options to our menu, turning 'Foo' into a categ
     Baz
     Qux'''
     
-Now when we call the menu, we can see that 'Foo' has become a category instead of a
+Now when we call the menu, we can see that 'Bar' has become a category instead of a
 selectable option.
 
     _______________________________
