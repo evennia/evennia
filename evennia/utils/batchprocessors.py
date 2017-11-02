@@ -382,7 +382,7 @@ class BatchCodeProcessor(object):
         """
         # define the execution environment
         environdict = {"settings_module": settings, "DEBUG": debug}
-        for key, value in list(extra_environ.items()):
+        for key, value in extra_environ.items():
             environdict[key] = value
 
         # initializing the django settings at the top of code

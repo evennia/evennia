@@ -65,7 +65,7 @@ def register_events(path_or_typeclass):
 
     # If the script is started, add the event directly.
     # Otherwise, add it to the temporary storage.
-    for name, tup in list(getattr(typeclass, "_events", {}).items()):
+    for name, tup in getattr(typeclass, "_events", {}).items():
         if len(tup) == 4:
             variables, help_text, custom_call, custom_add = tup
         elif len(tup) == 3:

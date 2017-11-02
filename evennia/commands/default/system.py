@@ -440,7 +440,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="table", align="l")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
-        for path, count in list(dbtotals.items()):
+        for path, count in dbtotals.items():
             typetable.add_row(path, count, "%.2f" % ((float(count) / nobjs) * 100))
 
         # last N table
@@ -487,7 +487,7 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
         # typeclass table
         dbtotals = AccountDB.objects.object_totals()
         typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
-        for path, count in list(dbtotals.items()):
+        for path, count in dbtotals.items():
             typetable.add_row(path, count, "%.2f" % ((float(count) / naccounts) * 100))
         # last N table
         plyrs = AccountDB.objects.all().order_by("db_date_created")[max(0, naccounts - nlim):]

@@ -689,7 +689,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
                       "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could "
                       "try to |wshift|n or |wmove|n them.\n"]
             # display the root positions to help with the puzzle
-            for key, pos in list(self.db.root_pos.items()):
+            for key, pos in self.db.root_pos.items():
                 result.append("\n" + self._translate_position(key, pos))
         self.db.desc = "".join(result)
 

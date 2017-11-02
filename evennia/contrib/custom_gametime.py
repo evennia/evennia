@@ -105,7 +105,7 @@ def gametime_to_realtime(format=False, **kwargs):
     """
     # Dynamically creates the list of units based on kwarg names and UNITs list
     rtime = 0
-    for name, value in list(kwargs.items()):
+    for name, value in kwargs.items():
         # Allow plural names (like mins instead of min)
         if name not in UNITS and name.endswith("s"):
             name = name[:-1]
@@ -197,7 +197,7 @@ def real_seconds_until(**kwargs):
     # For each keyword, add in the unit's
     units.append(1)
     higher_unit = None
-    for unit, value in list(kwargs.items()):
+    for unit, value in kwargs.items():
         # Get the unit's index
         if unit not in UNITS:
             raise ValueError("unknown unit".format(unit))

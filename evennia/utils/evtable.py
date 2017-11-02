@@ -816,7 +816,7 @@ class EvCell(object):
         self.trim_vertical = kwargs.pop("trim_vertical", self.trim_vertical)
 
         # fill all other properties
-        for key, value in list(kwargs.items()):
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
         # Handle sizes
@@ -1525,7 +1525,7 @@ class EvTable(object):
         """
         self.width = kwargs.pop("width", self.width)
         self.height = kwargs.pop("height", self.height)
-        for key, value in list(kwargs.items()):
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
         hchar = kwargs.pop("header_line_char", self.header_line_char)

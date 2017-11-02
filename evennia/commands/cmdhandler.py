@@ -567,7 +567,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 returnValue(cmd)
 
             # assign custom kwargs to found cmd object
-            for key, val in list(kwargs.items()):
+            for key, val in kwargs.items():
                 setattr(cmd, key, val)
 
             _COMMAND_NESTING[called_by] += 1

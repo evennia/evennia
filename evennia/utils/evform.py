@@ -259,7 +259,7 @@ class EvForm(object):
                     break
 
         # get rectangles and assign EvCells
-        for key, (iy, leftix, rightix) in list(cell_coords.items()):
+        for key, (iy, leftix, rightix) in cell_coords.items():
             # scan up to find top of rectangle
             dy_up = 0
             if iy > 0:
@@ -294,7 +294,7 @@ class EvForm(object):
             mapping[key] = (iyup, leftix, width, height, EvCell(data, width=width, height=height, **options))
 
         # get rectangles and assign Tables
-        for key, (iy, leftix, rightix) in list(table_coords.items()):
+        for key, (iy, leftix, rightix) in table_coords.items():
 
             # scan up to find top of rectangle
             dy_up = 0
@@ -340,7 +340,7 @@ class EvForm(object):
 
         """
         form = copy.copy(raw_form)
-        for key, (iy0, ix0, width, height, cell_or_table) in list(mapping.items()):
+        for key, (iy0, ix0, width, height, cell_or_table) in mapping.items():
             # rect is a list of <height> lines, each <width> wide
             rect = cell_or_table.get()
             for il, rectline in enumerate(rect):

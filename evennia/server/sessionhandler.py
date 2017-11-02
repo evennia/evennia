@@ -195,7 +195,7 @@ class SessionHandler(dict):
             "Helper function to convert data to AMP-safe (picketable) values"
             if isinstance(data, dict):
                 newdict = {}
-                for key, part in list(data.items()):
+                for key, part in data.items():
                     newdict[key] = _validate(part)
                 return newdict
             elif is_iter(data):
@@ -349,7 +349,7 @@ class ServerSessionHandler(SessionHandler):
             # lingering references.
             del sess
 
-        for sessid, sessdict in list(portalsessionsdata.items()):
+        for sessid, sessdict in portalsessionsdata.items():
             sess = _ServerSession()
             sess.sessionhandler = self
             sess.load_sync_data(sessdict)
@@ -688,7 +688,7 @@ class ServerSessionHandler(SessionHandler):
             message (str): Message to send.
 
         """
-        for session in list(self.values()):
+        for session in self.values():
             self.data_out(session, text=message)
 
     def data_out(self, session, **kwargs):

@@ -238,7 +238,7 @@ def spawn(*prototypes, **kwargs):
                                 list(all_from_module(prototype_module).items()) if isinstance(val, dict)))
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
-    for key, prototype in list(protparents.items()):
+    for key, prototype in protparents.items():
         _validate_prototype(key, prototype, protparents, [])
 
     if "return_prototypes" in kwargs:

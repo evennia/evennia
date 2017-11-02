@@ -261,7 +261,7 @@ def rename_in_file(path, in_list, out_list, is_interactive):
                     break
                 elif ret == "a":
                     # save result
-                    for iline, renamed_line in list(renamed.items()):
+                    for iline, renamed_line in renamed.items():
                         org_lines[iline] = renamed_line
 
                     if FAKE_MODE:

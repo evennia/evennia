@@ -286,7 +286,7 @@ class TickerPool(object):
         if interval and interval in self.tickers:
             self.tickers[interval].stop()
         else:
-            for ticker in list(self.tickers.values()):
+            for ticker in self.tickers.values():
                 ticker.stop()
 
 
@@ -395,7 +395,7 @@ class TickerHandler(object):
                            store_key[2])}  # a path given
 
             # update the timers for the tickers
-            for store_key, (args, kwargs) in list(to_save.items()):
+            for store_key, (args, kwargs) in to_save.items():
                 interval = store_key[1]
                 # this is a mutable, so it's updated in-place in ticker_storage
                 kwargs["_start_delay"] = start_delays.get(interval, None)

@@ -959,7 +959,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.attributes.batch_add(*cdict["attributes"])
             if cdict.get("nattributes"):
                 # this should be a dict of nattrname:value
-                for key, value in list(cdict["nattributes"].items()):
+                for key, value in cdict["nattributes"].items():
                     self.nattributes.add(key, value)
 
             del self._createdict

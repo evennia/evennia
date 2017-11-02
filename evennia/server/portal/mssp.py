@@ -191,7 +191,7 @@ class Mssp(object):
             self.mssp_table.update(MSSPTable_CUSTOM)
 
         varlist = ''
-        for variable, value in list(self.mssp_table.items()):
+        for variable, value in self.mssp_table.items():
             if callable(value):
                 value = value()
             if utils.is_iter(value):

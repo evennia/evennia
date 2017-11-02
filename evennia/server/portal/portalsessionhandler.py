@@ -188,7 +188,7 @@ class PortalSessionHandler(SessionHandler):
             # we set a watchdog to stop self.disconnect from deleting
             # sessions while we are looping over them.
             sessionhandler._disconnect_all = True
-            for session in list(sessionhandler.values()):
+            for session in sessionhandler.values():
                 session.disconnect()
             del sessionhandler._disconnect_all
 
@@ -336,7 +336,7 @@ class PortalSessionHandler(SessionHandler):
             send command.
 
         """
-        for session in list(self.values()):
+        for session in self.values():
             self.data_out(session, text=[[message], {}])
 
     def data_in(self, session, **kwargs):

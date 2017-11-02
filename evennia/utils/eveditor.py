@@ -965,7 +965,7 @@ class EvEditor(object):
 
         # If the line begins by one of the given keywords
         indent = self._indent
-        if any(line.startswith(kw) for kw in list(keywords.keys())):
+        if any(line.startswith(kw) for kw in keywords.keys()):
             # Get the keyword and matching begin tags
             keyword = [kw for kw in keywords if line.startswith(kw)][0]
             begin_tags = keywords[keyword]

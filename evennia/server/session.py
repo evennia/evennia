@@ -117,7 +117,7 @@ class Session(object):
             sessdata (dict): Session data dictionary.
 
         """
-        for propname, value in list(sessdata.items()):
+        for propname, value in sessdata.items():
             setattr(self, propname, value)
 
     def at_sync(self):
