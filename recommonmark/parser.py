@@ -1,6 +1,7 @@
 """Docutils CommonMark parser"""
 
 import sys
+from os.path import splitext
 
 from docutils import parsers, nodes
 from sphinx import addnodes
@@ -126,7 +127,16 @@ class CommonMarkParser(parsers.Parser):
 
     def visit_link(self, mdnode):
         ref_node = nodes.reference()
-        ref_node['refuri'] = mdnode.destination
+        # Check destination is supported for cross-linking and remove extension
+        destination = mdnode.destination
+        _, ext = splitext(destination)
+        # TODO check for other supported extensions, such as those specified in
+        # the Sphinx conf.py file but how to access this information?
+        # TODO this should probably only remove the extension for local paths,
+        # i.e. not uri's starting with http or other external prefix.
+        if ext.replace('.', '') in self.supported:
+            destination = destination.replace(ext, '')
+        ref_node['refuri'] = destination
         # TODO okay, so this is acutally not always the right line number, but
         # these mdnodes won't have sourcepos on them for whatever reason. This
         # is better than 0 though.
@@ -136,11 +146,12 @@ class CommonMarkParser(parsers.Parser):
             ref_node['title'] = mdnode.title
         next_node = ref_node
 
-        url_check = urlparse(mdnode.destination)
+        url_check = urlparse(destination)
         if not url_check.scheme and not url_check.fragment:
             wrap_node = addnodes.pending_xref(
-                reftarget=mdnode.destination,
+                reftarget=destination,
                 reftype='any',
+                refdomain=None,  # Added to enable cross-linking
                 refexplicit=True,
                 refwarn=True
             )

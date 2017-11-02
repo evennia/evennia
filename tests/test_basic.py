@@ -183,7 +183,7 @@ class TestParsing(unittest.TestCase):
             <?xml version="1.0" ?>
             <document source="&lt;string&gt;">
               <paragraph>
-                <pending_xref refexplicit="True" reftarget="/foo" reftype="any" refwarn="True">
+                <pending_xref refdomain="None" refexplicit="True" reftarget="/foo" reftype="any" refwarn="True">
                   <reference refuri="/foo">link</reference>
                 </pending_xref>
               </paragraph>
@@ -198,7 +198,7 @@ class TestParsing(unittest.TestCase):
             <?xml version="1.0" ?>
             <document source="&lt;string&gt;">
               <paragraph>
-                <pending_xref refexplicit="True" reftarget="foo" reftype="any" refwarn="True">
+                <pending_xref refdomain="None" refexplicit="True" reftarget="foo" reftype="any" refwarn="True">
                   <reference refuri="foo">link</reference>
                 </pending_xref>
               </paragraph>
@@ -274,21 +274,21 @@ class TestParsing(unittest.TestCase):
               <bullet_list>
                 <list_item>
                   <paragraph>
-                    <pending_xref refexplicit="True" reftarget="/1" reftype="any" refwarn="True">
+                    <pending_xref refdomain="None" refexplicit="True" reftarget="/1" reftype="any" refwarn="True">
                       <reference refuri="/1">List item 1</reference>
                     </pending_xref>
                   </paragraph>
                 </list_item>
                 <list_item>
                   <paragraph>
-                    <pending_xref refexplicit="True" reftarget="/2" reftype="any" refwarn="True">
+                    <pending_xref refdomain="None" refexplicit="True" reftarget="/2" reftype="any" refwarn="True">
                       <reference refuri="/2">List item 2</reference>
                     </pending_xref>
                   </paragraph>
                 </list_item>
                 <list_item>
                   <paragraph>
-                    <pending_xref refexplicit="True" reftarget="/3" reftype="any" refwarn="True">
+                    <pending_xref refdomain="None" refexplicit="True" reftarget="/3" reftype="any" refwarn="True">
                       <reference refuri="/3">List item 3</reference>
                     </pending_xref>
                   </paragraph>
