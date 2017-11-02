@@ -338,7 +338,7 @@ class AccountDBPasswordChecker(object):
 
         """
         self.factory = factory
-        super(AccountDBPasswordChecker, self).__init__()
+        super().__init__()
 
     def requestAvatarId(self, c):
         """

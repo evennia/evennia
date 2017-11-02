@@ -381,7 +381,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
-        super(DefaultAccount, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
     # methods inherited from database model
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
@@ -529,7 +529,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             result (bool): Result of access check.
 
         """
-        result = super(DefaultAccount, self).access(accessing_obj, access_type=access_type,
+        result = super().access(accessing_obj, access_type=access_type,
                                                     default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
@@ -979,7 +979,7 @@ class DefaultGuest(DefaultAccount):
         We repeat the functionality of `at_disconnect()` here just to
         be on the safe side.
         """
-        super(DefaultGuest, self).at_server_shutdown()
+        super().at_server_shutdown()
         characters = self.db._playable_characters
         for character in characters:
             if character:
@@ -995,7 +995,7 @@ class DefaultGuest(DefaultAccount):
                 overriding the call (unused by default).
 
         """
-        super(DefaultGuest, self).at_post_disconnect()
+        super().at_post_disconnect()
         characters = self.db._playable_characters
         for character in characters:
             if character:

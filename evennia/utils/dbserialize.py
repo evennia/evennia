@@ -233,7 +233,7 @@ class _SaverList(_SaverMutable, MutableSequence):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverList, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = list()
 
     @_save
@@ -268,7 +268,7 @@ class _SaverDict(_SaverMutable, MutableMapping):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = dict()
 
     def has_key(self, key):
@@ -281,7 +281,7 @@ class _SaverSet(_SaverMutable, MutableSet):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = set()
 
     def __contains__(self, value):
@@ -302,7 +302,7 @@ class _SaverOrderedDict(_SaverMutable, MutableMapping):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverOrderedDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = OrderedDict()
 
     def has_key(self, key):
@@ -315,7 +315,7 @@ class _SaverDeque(_SaverMutable):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverDeque, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = deque()
 
     @_save

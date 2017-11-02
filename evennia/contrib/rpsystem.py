@@ -76,7 +76,7 @@ Verbose Installation Instructions:
            Change "class Character(DefaultCharacter):" to
            `class Character(ContribRPCharacter):`
        If you have any overriden calls in `at_object_creation(self)`:
-           Add `super(Character,self).at_object_creation()` as the top line.
+           Add `super().at_object_creation()` as the top line.
     2. In `typeclasses/rooms.py`:
            Import the `ContribRPRoom` class:
            `from evennia.contrib.rpsystem import ContribRPRoom`
@@ -1139,7 +1139,7 @@ class ContribRPObject(DefaultObject):
         """
         Called at initial creation.
         """
-        super(ContribRPObject, self).at_object_creation
+        super().at_object_creation()
 
         # emoting/recog data
         self.db.pose = ""
@@ -1423,7 +1423,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         """
         Called at initial creation.
         """
-        super(ContribRPCharacter, self).at_object_creation()
+        super().at_object_creation()
 
         self.db._sdesc = ""
         self.db._sdesc_regex = ""

@@ -70,7 +70,7 @@ class Command(BaseCommand):
 #         We just show it here for completeness - we
 #         are satisfied using the default check in Command.
 #         """
-#         return super(MuxCommand, self).has_perm(srcobj)
+#         return super().has_perm(srcobj)
 #
 #     def at_pre_cmd(self):
 #         """

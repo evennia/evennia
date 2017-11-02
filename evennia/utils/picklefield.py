@@ -151,7 +151,7 @@ class PickledFormField(CharField):
     def __init__(self, *args, **kwargs):
         # This needs to fall through to literal_eval.
         kwargs['required'] = False
-        super(PickledFormField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self, value):
         try:
@@ -184,7 +184,7 @@ class PickledObjectField(models.Field):
     def __init__(self, *args, **kwargs):
         self.compress = kwargs.pop('compress', False)
         self.protocol = kwargs.pop('protocol', DEFAULT_PROTOCOL)
-        super(PickledObjectField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_default(self):
         """
@@ -203,7 +203,7 @@ class PickledObjectField(models.Field):
                 return self.default()
             return self.default
         # If the field doesn't have a default, then we punt to models.Field.
-        return super(PickledObjectField, self).get_default()
+        return super().get_default()
 
     # def to_python(self, value):
     def from_db_value(self, value, *args):
@@ -233,7 +233,7 @@ class PickledObjectField(models.Field):
         return PickledFormField(**kwargs)
 
     def pre_save(self, model_instance, add):
-        value = super(PickledObjectField, self).pre_save(model_instance, add)
+        value = super().pre_save(model_instance, add)
         return wrap_conflictual_object(value)
 
     def get_db_prep_value(self, value, connection=None, prepared=False):
@@ -269,5 +269,5 @@ class PickledObjectField(models.Field):
             raise TypeError('Lookup type %s is not supported.' % lookup_type)
         # The Field model already calls get_db_prep_value before doing the
         # actual lookup, so all we need to do is limit the lookup types.
-        return super(PickledObjectField, self).get_db_prep_lookup(
+        return super().get_db_prep_lookup(
             lookup_type, value, connection=connection, prepared=prepared)

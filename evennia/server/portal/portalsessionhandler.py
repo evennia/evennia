@@ -50,7 +50,7 @@ class PortalSessionHandler(SessionHandler):
         Init the handler
 
         """
-        super(PortalSessionHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.portal = None
         self.latest_sessid = 0
         self.uptime = time.time()

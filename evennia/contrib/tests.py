@@ -25,7 +25,7 @@ text = "Automated testing is advantageous for a number of reasons:" \
 
 class TestLanguage(EvenniaTest):
     def setUp(self):
-        super(TestLanguage, self).setUp()
+        super().setUp()
         rplanguage.add_language(key="testlang",
                                 word_length_variance=1,
                                 noun_prefix="bara",
@@ -35,7 +35,7 @@ class TestLanguage(EvenniaTest):
                                 force=True)
 
     def tearDown(self):
-        super(TestLanguage, self).tearDown()
+        super().tearDown()
         rplanguage._LANGUAGE_HANDLER.delete()
         rplanguage._LANGUAGE_HANDLER = None
 
@@ -79,7 +79,7 @@ emote = "With a flair, /me looks at /first and /colliding sdesc-guy. She says \"
 
 class TestRPSystem(EvenniaTest):
     def setUp(self):
-        super(TestRPSystem, self).setUp()
+        super().setUp()
         self.room = create_object(rpsystem.ContribRPRoom, key="Location")
         self.speaker = create_object(rpsystem.ContribRPCharacter, key="Sender", location=self.room)
         self.receiver1 = create_object(rpsystem.ContribRPCharacter, key="Receiver1", location=self.room)
@@ -197,7 +197,7 @@ class TestExtendedRoom(CommandTest):
     settings.TIME_ZONE = "UTC"
 
     def setUp(self):
-        super(TestExtendedRoom, self).setUp()
+        super().setUp()
         self.room1.ndb.last_timeslot = "afternoon"
         self.room1.ndb.last_season = "winter"
         self.room1.db.details = {'testdetail': self.DETAIL_DESC}
@@ -244,7 +244,7 @@ from evennia.contrib import barter
 class TestBarter(CommandTest):
 
     def setUp(self):
-        super(TestBarter, self).setUp()
+        super().setUp()
         self.tradeitem1 = create_object(key="TradeItem1", location=self.char1)
         self.tradeitem2 = create_object(key="TradeItem2", location=self.char1)
         self.tradeitem3 = create_object(key="TradeItem3", location=self.char2)
@@ -331,7 +331,7 @@ from evennia import DefaultCharacter
 class TestWilderness(EvenniaTest):
 
     def setUp(self):
-        super(TestWilderness, self).setUp()
+        super().setUp()
         self.char1 = create_object(DefaultCharacter, key="char1")
         self.char2 = create_object(DefaultCharacter, key="char2")
 
@@ -564,7 +564,7 @@ def _testcallback():
 
 class TestCustomGameTime(EvenniaTest):
     def setUp(self):
-        super(TestCustomGameTime, self).setUp()
+        super().setUp()
         gametime.gametime = Mock(return_value=2975000898.46)  # does not seem to work
 
     def tearDown(self):

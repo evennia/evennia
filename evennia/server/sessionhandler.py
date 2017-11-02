@@ -104,22 +104,22 @@ class SessionHandler(dict):
         "Clean out None-sessions automatically."
         if None in self:
             del self[None]
-        return super(SessionHandler, self).__getitem__(key)
+        return super().__getitem__(key)
 
     def get(self, key, default=None):
         "Clean out None-sessions automatically."
         if None in self:
             del self[None]
-        return super(SessionHandler, self).get(key, default)
+        return super().get(key, default)
 
     def __setitem__(self, key, value):
         "Don't assign None sessions"
         if key is not None:
-            super(SessionHandler, self).__setitem__(key, value)
+            super().__setitem__(key, value)
 
     def __contains__(self, key):
         "None-keys are not accepted."
-        return False if key is None else super(SessionHandler, self).__contains__(key)
+        return False if key is None else super().__contains__(key)
 
     def get_sessions(self, include_unloggedin=False):
         """
@@ -267,7 +267,7 @@ class ServerSessionHandler(SessionHandler):
         Init the handler.
 
         """
-        super(ServerSessionHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.server = None
         self.server_data = {"servername": _SERVERNAME}
 

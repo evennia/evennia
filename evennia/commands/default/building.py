@@ -71,7 +71,7 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
         the cases, see the module doc.
         """
         # get all the normal parsing done (switches etc)
-        super(ObjManipCommand, self).parse()
+        super().parse()
 
         obj_defs = ([], [])    # stores left- and right-hand side of '='
         obj_attrs = ([], [])  # "
@@ -1079,7 +1079,7 @@ class CmdUnLink(CmdLink):
         self.rhs = ""
 
         # call the @link functionality
-        super(CmdUnLink, self).func()
+        super().func()
 
 
 class CmdSetHome(CmdLink):

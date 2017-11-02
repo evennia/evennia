@@ -684,7 +684,7 @@ class ClothedCharacterCmdSet(default_cmds.CharacterCmdSet):
         """
         Populates the cmdset
         """
-        super(ClothedCharacterCmdSet, self).at_cmdset_creation()
+        super().at_cmdset_creation()
         #
         # any commands you add below will overload the default ones.
         #

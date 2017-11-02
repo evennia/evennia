@@ -48,7 +48,7 @@ class TagForm(forms.ModelForm):
          the corresponding tag fields. The initial data of the form fields will similarly be
          populated.
         """
-        super(TagForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         tagkey = None
         tagcategory = None
         tagtype = None
@@ -75,7 +75,7 @@ class TagForm(forms.ModelForm):
         we'll try to make sure that empty form fields will be None, rather than ''.
         """
         # we are spoofing a tag for the Handler that will be called
-        # instance = super(TagForm, self).save(commit=False)
+        # instance = super().save(commit=False)
         instance = self.instance
         instance.tag_key = self.cleaned_data['tag_key']
         instance.tag_category = self.cleaned_data['tag_category'] or None
@@ -109,7 +109,7 @@ class TagFormSet(forms.BaseInlineFormSet):
             else:
                 handler_name = "tags"
             return getattr(related, handler_name)
-        instances = super(TagFormSet, self).save(commit=False)
+        instances = super().save(commit=False)
         # self.deleted_objects is a list created when super of save is called, we'll remove those
         for obj in self.deleted_objects:
             handler = get_handler(obj)
@@ -143,7 +143,7 @@ class TagInline(admin.TabularInline):
         a proxy isn't threadsafe, since it'd be the base class and would change if multiple
         people used the admin at the same time
         """
-        formset = super(TagInline, self).get_formset(request, obj, **kwargs)
+        formset = super().get_formset(request, obj, **kwargs)
 
         class ProxyFormset(formset):
             pass
@@ -190,7 +190,7 @@ class AttributeForm(forms.ModelForm):
          similarly be populated.
 
         """
-        super(AttributeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         attr_key = None
         attr_category = None
         attr_value = None
@@ -255,7 +255,7 @@ class AttributeFormSet(forms.BaseInlineFormSet):
             else:
                 handler_name = "attributes"
             return getattr(related, handler_name)
-        instances = super(AttributeFormSet, self).save(commit=False)
+        instances = super().save(commit=False)
         # self.deleted_objects is a list created when super of save is called, we'll remove those
         for obj in self.deleted_objects:
             handler = get_handler(obj)
@@ -297,7 +297,7 @@ class AttributeInline(admin.TabularInline):
         a proxy isn't threadsafe, since it'd be the base class and would change if multiple
         people used the admin at the same time
         """
-        formset = super(AttributeInline, self).get_formset(request, obj, **kwargs)
+        formset = super().get_formset(request, obj, **kwargs)
 
         class ProxyFormset(formset):
             pass

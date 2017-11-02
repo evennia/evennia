@@ -31,7 +31,7 @@ class SharedMemorysTest(TestCase):
     # TODO: test for cross model relation (singleton to regular)
 
     def setUp(self):
-        super(SharedMemorysTest, self).setUp()
+        super().setUp()
         n = 0
         category = Category.objects.create(name="Category %d" % (n,))
         regcategory = RegularCategory.objects.create(name="Category %d" % (n,))

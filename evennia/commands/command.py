@@ -82,7 +82,7 @@ class CommandMeta(type):
     """
     def __init__(cls, *args, **kwargs):
         _init_command(cls, **kwargs)
-        super(CommandMeta, cls).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 #    The Command class is the basic unit of an Evennia command; when
 #    defining new commands, the admin subclass this class and

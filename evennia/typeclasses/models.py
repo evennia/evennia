@@ -256,7 +256,7 @@ class TypedObject(SharedMemoryModel):
 
         """
         typeclass_path = kwargs.pop("typeclass", None)
-        super(TypedObject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.set_class_from_typeclass(typeclass_path=typeclass_path)
 
     # initialize all handlers in a lazy fashion
@@ -604,7 +604,7 @@ class TypedObject(SharedMemoryModel):
             self.nicks.clear()
         # scrambling properties
         self.delete = self._deleted
-        super(TypedObject, self).delete()
+        super().delete()
 
     #
     # Attribute storage

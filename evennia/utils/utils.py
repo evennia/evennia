@@ -1807,13 +1807,13 @@ class LimitedSizeOrderedDict(OrderedDict):
                 in FIFO order. If `False`, remove in FILO order.
 
         """
-        super(LimitedSizeOrderedDict, self).__init__()
+        super().__init__()
         self.size_limit = kwargs.get("size_limit", None)
         self.filo = not kwargs.get("fifo", True)  # FIFO inverse of FILO
         self._check_size()
 
     def __eq__(self, other):
-        ret = super(LimitedSizeOrderedDict, self).__eq__(other)
+        ret = super().__eq__(other)
         if ret:
             return (ret and
                     hasattr(other, 'size_limit') and self.size_limit == other.size_limit and
@@ -1830,11 +1830,11 @@ class LimitedSizeOrderedDict(OrderedDict):
                 self.popitem(last=filo)
 
     def __setitem__(self, key, value):
-        super(LimitedSizeOrderedDict, self).__setitem__(key, value)
+        super().__setitem__(key, value)
         self._check_size()
 
     def update(self, *args, **kwargs):
-        super(LimitedSizeOrderedDict, self).update(*args, **kwargs)
+        super().update(*args, **kwargs)
         self._check_size()
 
 

@@ -369,7 +369,7 @@ class TestBuilding(CommandTest):
 class TestComms(CommandTest):
 
     def setUp(self):
-        super(CommandTest, self).setUp()
+        super().setUp()
         self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.", receiver=self.account)
 
     def test_toggle_com(self):

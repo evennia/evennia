@@ -29,7 +29,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         """
         Populates the cmdset
         """
-        super(CharacterCmdSet, self).at_cmdset_creation()
+        super().at_cmdset_creation()
         #
         # any commands you add below will overload the default ones.
         #
@@ -48,7 +48,7 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         """
         Populates the cmdset
         """
-        super(AccountCmdSet, self).at_cmdset_creation()
+        super().at_cmdset_creation()
         #
         # any commands you add below will overload the default ones.
         #
@@ -65,7 +65,7 @@ class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
         """
         Populates the cmdset
         """
-        super(UnloggedinCmdSet, self).at_cmdset_creation()
+        super().at_cmdset_creation()
         #
         # any commands you add below will overload the default ones.
         #
@@ -86,7 +86,7 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
         As and example we just add the empty base `Command` object.
         It prints some info.
         """
-        super(SessionCmdSet, self).at_cmdset_creation()
+        super().at_cmdset_creation()
         #
         # any commands you add below will overload the default ones.
         #

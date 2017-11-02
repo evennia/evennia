@@ -44,7 +44,7 @@ class LazyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Promise):
             return str(obj)
-        return super(LazyEncoder, self).default(obj)
+        return super().default(obj)
 
 
 def jsonify(obj):
@@ -298,7 +298,7 @@ class AjaxWebClientSession(session.Session):
 
     def __init__(self, *args, **kwargs):
         self.protocol_name = "ajax/comet"
-        super(AjaxWebClientSession, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_client_session(self):
         """

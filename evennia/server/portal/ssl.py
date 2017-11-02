@@ -52,7 +52,7 @@ class SSLProtocol(TelnetProtocol):
     """
 
     def __init__(self, *args, **kwargs):
-        super(SSLProtocol, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.protocol_name = "ssl"
 
 

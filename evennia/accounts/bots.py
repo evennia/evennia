@@ -118,14 +118,14 @@ class Bot(DefaultAccount):
         Evennia -> outgoing protocol
 
         """
-        super(Bot, self).msg(text=text, from_obj=from_obj, session=session, options=options, **kwargs)
+        super().msg(text=text, from_obj=from_obj, session=session, options=options, **kwargs)
 
     def execute_cmd(self, raw_string, session=None):
         """
         Incoming protocol -> Evennia
 
         """
-        super(Bot, self).msg(raw_string, session=session)
+        super().msg(raw_string, session=session)
 
     def at_server_shutdown(self):
         """
@@ -226,7 +226,7 @@ class IRCBot(Bot):
         if not hasattr(self, "_nicklist_callers"):
             self._nicklist_callers = []
         self._nicklist_callers.append(caller)
-        super(IRCBot, self).msg(request_nicklist="")
+        super().msg(request_nicklist="")
         return
 
     def ping(self, caller):
@@ -240,7 +240,7 @@ class IRCBot(Bot):
         if not hasattr(self, "_ping_callers"):
             self._ping_callers = []
         self._ping_callers.append(caller)
-        super(IRCBot, self).msg(ping="")
+        super().msg(ping="")
 
     def reconnect(self):
         """
@@ -248,7 +248,7 @@ class IRCBot(Bot):
         having to destroy/recreate the bot "account".
 
         """
-        super(IRCBot, self).msg(reconnect="")
+        super().msg(reconnect="")
 
     def msg(self, text=None, **kwargs):
         """
@@ -270,7 +270,7 @@ class IRCBot(Bot):
             self.ndb.ev_channel = self.db.ev_channel
         if "from_channel" in options and text and self.ndb.ev_channel.dbid == options["from_channel"]:
             if not from_obj or from_obj != [self]:
-                super(IRCBot, self).msg(channel=text)
+                super().msg(channel=text)
 
     def execute_cmd(self, session=None, txt=None, **kwargs):
         """
@@ -336,7 +336,7 @@ class IRCBot(Bot):
                 text = "This is an Evennia IRC bot connecting from '%s'." % settings.SERVERNAME
             else:
                 text = "I understand 'who' and 'about'."
-            super(IRCBot, self).msg(privmsg=((text,), {"user": user}))
+            super().msg(privmsg=((text,), {"user": user}))
         else:
             # something to send to the main channel
             if kwargs["type"] == "action":

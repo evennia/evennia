@@ -877,7 +877,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.location = None  # this updates contents_cache for our location
 
         # Perform the deletion of the object
-        super(DefaultObject, self).delete()
+        super().delete()
         return True
 
     def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
@@ -896,7 +896,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
           Passed on to the at_access hook along with the result of the access check.
 
         """
-        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type,
+        result = super().access(accessing_obj, access_type=access_type,
                                                    default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
@@ -1760,7 +1760,7 @@ class DefaultCharacter(DefaultObject):
         Character object works).
 
         """
-        super(DefaultCharacter, self).basetype_setup()
+        super().basetype_setup()
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
                                  "call:false()"]))  # no commands can be called on character from outside
         # add the default cmdset
@@ -1874,7 +1874,7 @@ class DefaultRoom(DefaultObject):
 
         """
 
-        super(DefaultRoom, self).basetype_setup()
+        super().basetype_setup()
         self.locks.add(";".join(["get:false()",
                                  "puppet:false()"]))  # would be weird to puppet a room ...
         self.location = None
@@ -1990,7 +1990,7 @@ class DefaultExit(DefaultObject):
         sure you include all the functionality in this method.
 
         """
-        super(DefaultExit, self).basetype_setup()
+        super().basetype_setup()
 
         # setting default locks (overload these in at_object_creation()
         self.locks.add(";".join(["puppet:false()",  # would be weird to puppet an exit ...

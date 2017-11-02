@@ -541,7 +541,7 @@ class CmdCombatHelp(CmdHelp):
                             "|wPass:|n Pass your turn without further action.|/" +
                             "|wDisengage:|n End your turn and attempt to end combat.|/")
         else:
-            super(CmdCombatHelp, self).func()  # Call the default help command
+            super().func()  # Call the default help command
 
 
 class BattleCmdSet(default_cmds.CharacterCmdSet):

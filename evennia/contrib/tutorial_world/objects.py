@@ -51,7 +51,7 @@ class TutorialObject(DefaultObject):
 
     def at_object_creation(self):
         """Called when the object is first created."""
-        super(TutorialObject, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "No tutorial info is available for this object."
 
     def reset(self):
@@ -124,7 +124,7 @@ class Readable(TutorialObject):
         Called when object is created. We make sure to set the needed
         Attribute and add the readable cmdset.
         """
-        super(Readable, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "This is an object with a 'read' command defined in a command set on itself."
         self.db.readable_text = "There is no text written on %s." % self.key
         # define a command on the object.
@@ -222,7 +222,7 @@ class Obelisk(TutorialObject):
 
     def at_object_creation(self):
         """Called when object is created."""
-        super(Obelisk, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "This object changes its desc randomly, and makes sure to remember which one you saw."
         self.db.puzzle_descs = ["You see a normal stone slab"]
         # make sure this can never be picked up
@@ -246,7 +246,7 @@ class Obelisk(TutorialObject):
         caller.db.puzzle_clue = clueindex
         # call the parent function as normal (this will use
         # the new desc Attribute we just set)
-        return super(Obelisk, self).return_appearance(caller)
+        return super().return_appearance(caller)
 
 
 # -------------------------------------------------------------
@@ -320,7 +320,7 @@ class LightSource(TutorialObject):
 
     def at_object_creation(self):
         """Called when object is first created."""
-        super(LightSource, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "This object can be lit to create light. It has a timeout for how long it burns."
         self.db.is_giving_light = False
         self.db.burntime = 60 * 3  # 3 minutes
@@ -602,7 +602,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
 
     def at_object_creation(self):
         """called when the object is first created."""
-        super(CrumblingWall, self).at_object_creation()
+        super().at_object_creation()
 
         self.aliases.add(["secret passage", "passage",
                           "crack", "opening", "secret door"])
@@ -694,7 +694,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.db.desc = "".join(result)
 
         # call the parent to continue execution (will use the desc we just set)
-        return super(CrumblingWall, self).return_appearance(caller)
+        return super().return_appearance(caller)
 
     def at_after_traverse(self, traverser, source_location):
         """
@@ -863,7 +863,7 @@ class Weapon(TutorialObject):
 
     def at_object_creation(self):
         """Called at first creation of the object"""
-        super(Weapon, self).at_object_creation()
+        super().at_object_creation()
         self.db.hit = 0.4    # hit chance
         self.db.parry = 0.8  # parry chance
         self.db.damage = 1.0

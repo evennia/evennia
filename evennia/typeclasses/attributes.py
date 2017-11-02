@@ -800,7 +800,7 @@ class NickHandler(AttributeHandler):
     _attrtype = "nick"
 
     def __init__(self, *args, **kwargs):
-        super(NickHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._regex_cache = {}
 
     def has(self, key, category="inputline"):
@@ -816,7 +816,7 @@ class NickHandler(AttributeHandler):
                 is a list of booleans.
 
         """
-        return super(NickHandler, self).has(key, category=category)
+        return super().has(key, category=category)
 
     def get(self, key=None, category="inputline", return_tuple=False, **kwargs):
         """
@@ -836,9 +836,9 @@ class NickHandler(AttributeHandler):
 
         """
         if return_tuple or "return_obj" in kwargs:
-            return super(NickHandler, self).get(key=key, category=category, **kwargs)
+            return super().get(key=key, category=category, **kwargs)
         else:
-            retval = super(NickHandler, self).get(key=key, category=category, **kwargs)
+            retval = super().get(key=key, category=category, **kwargs)
             if retval:
                 return retval[3] if isinstance(retval, tuple) else \
                     [tup[3] for tup in make_iter(retval)]
@@ -861,7 +861,7 @@ class NickHandler(AttributeHandler):
             nick_regex, nick_template = initialize_nick_templates(key + " $1", replacement + " $1")
         else:
             nick_regex, nick_template = initialize_nick_templates(key, replacement)
-        super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement),
+        super().add(key, (nick_regex, nick_template, key, replacement),
                                      category=category, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
@@ -876,7 +876,7 @@ class NickHandler(AttributeHandler):
             kwargs (any, optional): These are passed on to `AttributeHandler.get`.
 
         """
-        super(NickHandler, self).remove(key, category=category, **kwargs)
+        super().remove(key, category=category, **kwargs)
 
     def nickreplace(self, raw_string, categories=("inputline", "channel"), include_account=True):
         """

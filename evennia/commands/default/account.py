@@ -46,7 +46,7 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
     def parse(self):
         """Custom parsing"""
 
-        super(MuxAccountLookCommand, self).parse()
+        super().parse()
 
         if _MULTISESSION_MODE < 2:
             # only one character allowed - not used in this mode

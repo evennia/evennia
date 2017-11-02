@@ -116,7 +116,7 @@ class CmdOOCLook(default_cmds.CmdLook):
             # not ooc mode - leave back to normal look
             # we have to put this back for normal look to work.
             self.caller = self.character
-            super(CmdOOCLook, self).func()
+            super().func()
 
 
 class CmdOOCCharacterCreate(Command):

@@ -630,7 +630,7 @@ class ANSIMeta(type):
         for func_name in [
                 'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
             setattr(cls, func_name, _transform(func_name))
-        super(ANSIMeta, cls).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class ANSIString(with_metaclass(ANSIMeta, str)):
@@ -708,7 +708,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
         if not isinstance(string, str):
             string = string.decode('utf-8')
 
-        ansi_string = super(ANSIString, cls).__new__(ANSIString, to_str(clean_string))
+        ansi_string = super().__new__(ANSIString, to_str(clean_string))
         ansi_string._raw_string = string
         ansi_string._clean_string = clean_string
         ansi_string._code_indexes = code_indexes
@@ -764,7 +764,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
 
         """
         self.parser = kwargs.pop('parser', ANSI_PARSER)
-        super(ANSIString, self).__init__()
+        super().__init__()
         if self._code_indexes is None:
             self._code_indexes, self._char_indexes = self._get_indexes()
 

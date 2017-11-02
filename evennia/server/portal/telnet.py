@@ -35,7 +35,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def __init__(self, *args, **kwargs):
         self.protocol_name = "telnet"
-        super(TelnetProtocol, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def connectionMade(self):
         """
@@ -169,7 +169,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.mccp.no_mccp(option)
             return True
         else:
-            return super(TelnetProtocol, self).disableLocal(option)
+            return super().disableLocal(option)
 
     def connectionLost(self, reason):
         """
@@ -220,7 +220,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def _write(self, data):
         """hook overloading the one used in plain telnet"""
         data = data.replace(b'\n', b'\r\n').replace(b'\r\r\n', b'\r\n')
-        super(TelnetProtocol, self)._write(mccp_compress(self, data))
+        super()._write(mccp_compress(self, data))
 
     def sendLine(self, line):
         """

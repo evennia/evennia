@@ -120,7 +120,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         """
         if not obj:
             return self.add_fieldsets
-        return super(ObjectDBAdmin, self).get_fieldsets(request, obj)
+        return super().get_fieldsets(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
         """
@@ -138,7 +138,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
                 'fields': flatten_fieldsets(self.add_fieldsets),
             })
             defaults.update(kwargs)
-        return super(ObjectDBAdmin, self).get_form(request, obj, **defaults)
+        return super().get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
         """
@@ -166,7 +166,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
             from django.http import HttpResponseRedirect
             from django.core.urlresolvers import reverse
             return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.id]))
-        return super(ObjectDBAdmin, self).response_add(request, obj, post_url_continue)
+        return super().response_add(request, obj, post_url_continue)
 
 
 admin.site.register(ObjectDB, ObjectDBAdmin)

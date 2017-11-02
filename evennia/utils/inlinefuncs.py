@@ -224,14 +224,14 @@ class ParseStack(list):
     """
 
     def __init__(self, *args, **kwargs):
-        super(ParseStack, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # always start stack with the empty string
         list.append(self, "")
         # indicates if the top of the stack is a string or not
         self._string_last = True
 
     def __eq__(self, other):
-        return (super(ParseStack).__eq__(other) and
+        return (super().__eq__(other) and
                 hasattr(other, "_string_last") and self._string_last == other._string_last)
 
     def __ne__(self, other):

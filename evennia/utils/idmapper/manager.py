@@ -33,5 +33,5 @@ class SharedMemoryManager(Manager):
                 except Exception:
                     pass
         if inst is None:
-            inst = super(SharedMemoryManager, self).get(*args, **kwargs)
+            inst = super().get(*args, **kwargs)
         return inst

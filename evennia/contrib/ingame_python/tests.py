@@ -30,7 +30,7 @@ class TestEventHandler(EvenniaTest):
 
     def setUp(self):
         """Create the event handler."""
-        super(TestEventHandler, self).setUp()
+        super().setUp()
         self.handler = create_script(
             "evennia.contrib.ingame_python.scripts.EventHandler")
 
@@ -51,7 +51,7 @@ class TestEventHandler(EvenniaTest):
         OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         CallbackHandler.script = None
-        super(TestEventHandler, self).tearDown()
+        super().tearDown()
 
     def test_start(self):
         """Simply make sure the handler runs with proper initial values."""
@@ -248,7 +248,7 @@ class TestCmdCallback(CommandTest):
 
     def setUp(self):
         """Create the callback handler."""
-        super(TestCmdCallback, self).setUp()
+        super().setUp()
         self.handler = create_script(
             "evennia.contrib.ingame_python.scripts.EventHandler")
 
@@ -273,7 +273,7 @@ class TestCmdCallback(CommandTest):
             script.stop()
 
         CallbackHandler.script = None
-        super(TestCmdCallback, self).tearDown()
+        super().tearDown()
 
     def test_list(self):
         """Test listing callbacks with different rights."""
@@ -413,7 +413,7 @@ class TestDefaultCallbacks(CommandTest):
 
     def setUp(self):
         """Create the callback handler."""
-        super(TestDefaultCallbacks, self).setUp()
+        super().setUp()
         self.handler = create_script(
             "evennia.contrib.ingame_python.scripts.EventHandler")
 
@@ -434,7 +434,7 @@ class TestDefaultCallbacks(CommandTest):
         OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         CallbackHandler.script = None
-        super(TestDefaultCallbacks, self).tearDown()
+        super().tearDown()
 
     def test_exit(self):
         """Test the callbacks of an exit."""
