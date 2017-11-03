@@ -191,7 +191,7 @@ class _SaverMutable(object):
                 return dat
             elif dtype == dict:
                 dat = _SaverDict(_parent=parent)
-                dat._data.update((key, process_tree(val, dat)) for key, val in list(item.items()))
+                dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
             elif dtype == set:
                 dat = _SaverSet(_parent=parent)
@@ -500,11 +500,11 @@ def to_pickle(data):
         elif dtype in (list, _SaverList):
             return [process_item(val) for val in item]
         elif dtype in (dict, _SaverDict):
-            return dict((process_item(key), process_item(val)) for key, val in list(item.items()))
+            return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif dtype in (OrderedDict, _SaverOrderedDict):
-            return OrderedDict((process_item(key), process_item(val)) for key, val in list(item.items()))
+            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype in (deque, _SaverDeque):
             return deque(process_item(val) for val in item)
 
@@ -555,11 +555,11 @@ def from_pickle(data, db_obj=None):
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
-            return dict((process_item(key), process_item(val)) for key, val in list(item.items()))
+            return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == set:
             return set(process_item(val) for val in item)
         elif dtype == OrderedDict:
-            return OrderedDict((process_item(key), process_item(val)) for key, val in list(item.items()))
+            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == deque:
             return deque(process_item(val) for val in item)
         elif hasattr(item, '__iter__'):
@@ -588,7 +588,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == dict:
             dat = _SaverDict(_parent=parent)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in list(item.items()))
+                             for key, val in item.items())
             return dat
         elif dtype == set:
             dat = _SaverSet(_parent=parent)
@@ -597,7 +597,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_parent=parent)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in list(item.items()))
+                             for key, val in item.items())
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_parent=parent)
@@ -625,7 +625,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == dict:
             dat = _SaverDict(_db_obj=db_obj)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in list(data.items()))
+                             for key, val in data.items())
             return dat
         elif dtype == set:
             dat = _SaverSet(_db_obj=db_obj)
@@ -634,7 +634,7 @@ def from_pickle(data, db_obj=None):
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_db_obj=db_obj)
             dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in list(data.items()))
+                             for key, val in data.items())
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_db_obj=db_obj)

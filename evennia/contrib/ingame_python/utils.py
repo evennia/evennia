@@ -116,7 +116,7 @@ def get_next_wait(format):
         units = ["min", "hour", "day", "month", "year"]
     elif calendar == "custom":
         rsu = custom_rsu
-        back = dict([(value, name) for name, value in list(UNITS.items())])
+        back = dict([(value, name) for name, value in UNITS.items()])
         sorted_units = sorted(back.items())
         del sorted_units[0]
         units = [n for v, n in sorted_units]

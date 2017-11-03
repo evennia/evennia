@@ -328,7 +328,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         if force:
             cls.__dbclass__.__instance_cache__ = {}
         else:
-            cls.__dbclass__.__instance_cache__ = dict((key, obj) for key, obj in list(cls.__dbclass__.__instance_cache__.items())
+            cls.__dbclass__.__instance_cache__ = dict((key, obj) for key, obj in cls.__dbclass__.__instance_cache__.items()
                                                       if not obj.at_idmapper_flush())
     #flush_instance_cache = classmethod(flush_instance_cache)
 

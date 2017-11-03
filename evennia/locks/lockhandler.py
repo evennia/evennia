@@ -269,7 +269,7 @@ class LockHandler(object):
         """
         Store locks to obj
         """
-        self.obj.lock_storage = ";".join([tup[2] for tup in list(self.locks.values())])
+        self.obj.lock_storage = ";".join([tup[2] for tup in self.locks.values()])
 
     def cache_lock_bypass(self, obj):
         """

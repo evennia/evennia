@@ -141,7 +141,7 @@ class PortalSessionHandler(SessionHandler):
             if self.portal.amp_protocol:
                 # we only send sessdata that should not have changed
                 # at the server level at this point
-                sessdata = dict((key, val) for key, val in list(sessdata.items()) if key in ("protocol_key",
+                sessdata = dict((key, val) for key, val in sessdata.items() if key in ("protocol_key",
                                                                                        "address",
                                                                                        "sessid",
                                                                                        "csessid",

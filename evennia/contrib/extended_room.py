@@ -398,7 +398,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 # No args given. Return all details on location
                 string = "|wDetails on %s|n:" % location
                 details = "\n".join(" |w%s|n: %s"
-                                    % (key, utils.crop(text)) for key, text in list(location.db.details.items()))
+                                    % (key, utils.crop(text)) for key, text in location.db.details.items())
                 caller.msg("%s\n%s" % (string, details) if details else "%s None." % string)
                 return
             if not self.rhs:

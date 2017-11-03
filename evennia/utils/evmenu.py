@@ -511,7 +511,7 @@ class EvMenu(object):
         else:
             # a python path of a module
             module = mod_import(menudata)
-            return dict((key, func) for key, func in list(module.__dict__.items())
+            return dict((key, func) for key, func in module.__dict__.items()
                         if isfunction(func) and not key.startswith("_"))
 
     def _format_node(self, nodetext, optionlist):

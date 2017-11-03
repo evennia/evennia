@@ -386,10 +386,10 @@ class TickerHandler(object):
         if self.ticker_storage:
             # get the current times so the tickers can be restarted with a delay later
             start_delays = dict((interval, ticker.task.next_call_time())
-                                for interval, ticker in list(self.ticker_pool.tickers.items()))
+                                for interval, ticker in self.ticker_pool.tickers.items())
 
             # remove any subscriptions that lost its object in the interim
-            to_save = {store_key: (args, kwargs) for store_key, (args, kwargs) in list(self.ticker_storage.items())
+            to_save = {store_key: (args, kwargs) for store_key, (args, kwargs) in self.ticker_storage.items()
                        if ((store_key[1] and ("_obj" in kwargs and kwargs["_obj"].pk) and
                             hasattr(kwargs["_obj"], store_key[1])) or    # a valid method with existing obj
                            store_key[2])}  # a path given

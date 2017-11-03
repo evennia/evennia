@@ -288,11 +288,11 @@ def spawn(*prototypes, **kwargs):
 
         # extract ndb assignments
         nattributes = dict((key.split("_", 1)[1], value() if callable(value) else value)
-                           for key, value in list(prot.items()) if key.startswith("ndb_"))
+                           for key, value in prot.items() if key.startswith("ndb_"))
 
         # the rest are attributes
         simple_attributes = [(key, value()) if callable(value) else (key, value)
-                             for key, value in list(prot.items()) if not key.startswith("ndb_")]
+                             for key, value in prot.items() if not key.startswith("ndb_")]
         attributes = attributes + simple_attributes
         attributes = [tup for tup in attributes if not tup[0] in _CREATE_OBJECT_KWARGS]
 

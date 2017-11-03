@@ -1242,7 +1242,7 @@ def variable_from_module(module, variable=None, default=None):
                 result.append(mod.__dict__.get(var, default))
     else:
         # get all
-        result = [val for key, val in list(mod.__dict__.items())
+        result = [val for key, val in mod.__dict__.items()
                   if not (key.startswith("_") or ismodule(val))]
 
     if len(result) == 1:
@@ -1612,7 +1612,7 @@ def deepsize(obj, max_depth=4):
                 _recurse(ref, dct, depth + 1)
     sizedict = {}
     _recurse(obj, sizedict, 0)
-    size = getsizeof(obj) + sum([p[1] for p in list(sizedict.values())])
+    size = getsizeof(obj) + sum([p[1] for p in sizedict.values()])
     return size
 
 

@@ -299,7 +299,7 @@ class AttributeHandler(object):
             # for this category before
             catkey = "-%s" % category
             if _TYPECLASS_AGGRESSIVE_CACHE and catkey in self._catcache:
-                return [attr for key, attr in list(self._cache.items()) if key.endswith(catkey) and attr]
+                return [attr for key, attr in self._cache.items() if key.endswith(catkey) and attr]
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model: self._objid,
@@ -655,10 +655,10 @@ class AttributeHandler(object):
         if not self._cache_complete:
             self._fullcache()
         if accessing_obj:
-            [attr.delete() for attr in list(self._cache.values())
+            [attr.delete() for attr in self._cache.values()
              if attr and attr.access(accessing_obj, self._attredit, default=default_access)]
         else:
-            [attr.delete() for attr in list(self._cache.values()) if attr and attr.pk]
+            [attr.delete() for attr in self._cache.values() if attr and attr.pk]
         self._cache = {}
         self._catcache = {}
         self._cache_complete = False
@@ -682,7 +682,7 @@ class AttributeHandler(object):
         """
         if not self._cache_complete:
             self._fullcache()
-        attrs = sorted([attr for attr in list(self._cache.values()) if attr],
+        attrs = sorted([attr for attr in self._cache.values() if attr],
                        key=lambda o: o.id)
         if accessing_obj:
             return [attr for attr in attrs
@@ -1003,5 +1003,5 @@ class NAttributeHandler(object):
 
         """
         if return_tuples:
-            return [(key, value) for (key, value) in list(self._store.items()) if not key.startswith("_")]
+            return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
         return [key for key in self._store if not key.startswith("_")]

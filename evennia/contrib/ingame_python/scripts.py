@@ -436,7 +436,7 @@ class EventHandler(DefaultScript):
                                                                 type(obj), variable, i))
                     return False
         else:
-            locals = {key: value for key, value in list(locals.items())}
+            locals = {key: value for key, value in locals.items()}
 
         callbacks = self.get_callbacks(obj).get(callback_name, [])
         if event:

@@ -615,7 +615,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if mapping:
                 substitutions = {t: sub.get_display_name(obj)
                                  if hasattr(sub, 'get_display_name')
-                                 else str(sub) for t, sub in list(mapping.items())}
+                                 else str(sub) for t, sub in mapping.items()}
                 outmessage = inmessage.format(**substitutions)
             else:
                 outmessage = inmessage

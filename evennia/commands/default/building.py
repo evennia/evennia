@@ -2058,7 +2058,7 @@ class CmdExamine(ObjManipCommand):
                 except (TypeError, AttributeError):
                     # an error means we are merging an object without a session
                     pass
-            all_cmdsets = [cmdset for cmdset in list(dict(all_cmdsets).values())]
+            all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
             string += "\n|wMerged Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % (
                 cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority) for cmdset in all_cmdsets))

@@ -169,7 +169,7 @@ class TagHandler(object):
             # for this category before
             catkey = "-%s" % category
             if _TYPECLASS_AGGRESSIVE_CACHE and catkey in self._catcache:
-                return [tag for key, tag in list(self._cache.items()) if key.endswith(catkey)]
+                return [tag for key, tag in self._cache.items() if key.endswith(catkey)]
             else:
                 # we have to query to make this category up-date in the cache
                 query = {"%s__id" % self._model: self._objid,

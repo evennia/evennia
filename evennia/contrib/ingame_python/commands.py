@@ -503,7 +503,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         obj = self.obj
         callback_name = self.callback_name
         handler = self.handler
-        tasks = [(k, v[0], v[1], v[2]) for k, v in list(handler.db.tasks.items())]
+        tasks = [(k, v[0], v[1], v[2]) for k, v in handler.db.tasks.items()]
         if obj:
             tasks = [task for task in tasks if task[2] is obj]
         if callback_name:

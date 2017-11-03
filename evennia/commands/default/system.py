@@ -799,7 +799,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
         # object cache count (note that sys.getsiseof is not called so this works for pypy too.
         total_num, cachedict = _IDMAPPER.cache_size()
-        sorted_cache = sorted([(key, num) for key, num in list(cachedict.items()) if num > 0],
+        sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
                               key=lambda tup: tup[1], reverse=True)
         memtable = EvTable("entity name", "number", "idmapper %", align="l")
         for tup in sorted_cache:

@@ -531,11 +531,11 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
 
         try:
             recog_get = receiver.recog.get
-            receiver_sdesc_mapping = dict((ref, process_recog(recog_get(obj), obj)) for ref, obj in list(obj_mapping.items()))
+            receiver_sdesc_mapping = dict((ref, process_recog(recog_get(obj), obj)) for ref, obj in obj_mapping.items())
         except AttributeError:
             receiver_sdesc_mapping = dict((ref, process_sdesc(obj.sdesc.get(), obj)
                                            if hasattr(obj, "sdesc") else process_sdesc(obj.key, obj))
-                                          for ref, obj in list(obj_mapping.items()))
+                                          for ref, obj in obj_mapping.items())
         # make sure receiver always sees their real name
         rkey = "#%i" % receiver.id
         if rkey in receiver_sdesc_mapping:
@@ -684,9 +684,9 @@ class RecogHandler(object):
         obj2regex = self.obj.attributes.get("_recog_obj2regex", default={})
         obj2recog = self.obj.attributes.get("_recog_obj2recog", default={})
         self.obj2regex = dict((obj, re.compile(regex, _RE_FLAGS))
-                              for obj, regex in list(obj2regex.items()) if obj)
+                              for obj, regex in obj2regex.items() if obj)
         self.obj2recog = dict((obj, recog)
-                              for obj, recog in list(obj2recog.items()) if obj)
+                              for obj, recog in obj2recog.items() if obj)
 
     def add(self, obj, recog, max_length=60):
         """

@@ -993,7 +993,7 @@ def list_settings(keys):
         # a specific key
         table = evtable.EvTable(width=131)
         keys = [key.upper() for key in keys]
-        confs = dict((key, var) for key, var in list(evsettings.__dict__.items())
+        confs = dict((key, var) for key, var in evsettings.__dict__.items()
                      if key in keys)
         for key, val in confs.items():
             table.add_row(key, str(val))

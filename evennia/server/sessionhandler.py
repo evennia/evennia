@@ -136,7 +136,7 @@ class SessionHandler(dict):
         if include_unloggedin:
             return listvalues(self)
         else:
-            return [session for session in list(self.values()) if session.logged_in]
+            return [session for session in self.values() if session.logged_in]
 
     def get_all_sync_data(self):
         """
@@ -147,7 +147,7 @@ class SessionHandler(dict):
             syncdata (dict): A dict of sync data.
 
         """
-        return dict((sessid, sess.get_sync_data()) for sessid, sess in list(self.items()))
+        return dict((sessid, sess.get_sync_data()) for sessid, sess in self.items())
 
     def clean_senddata(self, session, kwargs):
         """
@@ -562,7 +562,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = curr_session.uid
-        doublet_sessions = [sess for sess in list(self.values())
+        doublet_sessions = [sess for sess in self.values()
                             if sess.logged_in and
                             sess.uid == uid and
                             sess != curr_session]
@@ -577,7 +577,7 @@ class ServerSessionHandler(SessionHandler):
         """
         tcurr = time.time()
         reason = _("Idle timeout exceeded, disconnecting.")
-        for session in (session for session in list(self.values())
+        for session in (session for session in self.values()
                         if session.logged_in and _IDLE_TIMEOUT > 0 and
                         (tcurr - session.cmd_last) > _IDLE_TIMEOUT):
             self.disconnect(session, reason=reason)
@@ -592,7 +592,7 @@ class ServerSessionHandler(SessionHandler):
             naccount (int): Number of connected accounts
 
         """
-        return len(set(session.uid for session in list(self.values()) if session.logged_in))
+        return len(set(session.uid for session in self.values() if session.logged_in))
 
     def all_connected_accounts(self):
         """
@@ -603,7 +603,7 @@ class ServerSessionHandler(SessionHandler):
                 amount of Sessions due to multi-playing).
 
         """
-        return list(set(session.account for session in list(self.values()) if session.logged_in and session.account))
+        return list(set(session.account for session in self.values() if session.logged_in and session.account))
 
     def session_from_sessid(self, sessid):
         """
@@ -650,7 +650,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = account.uid
-        return [session for session in list(self.values()) if session.logged_in and session.uid == uid]
+        return [session for session in self.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_puppet(self, puppet):
         """
@@ -677,7 +677,7 @@ class ServerSessionHandler(SessionHandler):
             csessid (str): The session hash
 
         """
-        return [session for session in list(self.values())
+        return [session for session in self.values()
                 if session.csessid and session.csessid == csessid]
 
     def announce_all(self, message):

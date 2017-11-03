@@ -254,7 +254,7 @@ class LanguageHandler(DefaultScript):
 
         if manual_translations:
             # update with manual translations
-            translation.update(dict((key.lower(), value.lower()) for key, value in list(manual_translations.items())))
+            translation.update(dict((key.lower(), value.lower()) for key, value in manual_translations.items()))
 
         # store data
         storage = {"translation": translation,
