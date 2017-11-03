@@ -21,6 +21,7 @@ settings.INPUT_FUNC_MODULES.
 from future.utils import viewkeys
 
 import importlib
+from codecs import lookup as codecs_lookup
 from django.conf import settings
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.accounts.models import AccountDB
@@ -176,7 +177,7 @@ def client_options(session, *args, **kwargs):
     def validate_encoding(val):
         # helper: change encoding
         try:
-            b"test-string".decode(val)
+            codecs_lookup(val)
         except LookupError:
             raise RuntimeError("The encoding '|w%s|n' is invalid. " % val)
         return val

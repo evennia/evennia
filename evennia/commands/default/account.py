@@ -21,6 +21,7 @@ method. Otherwise all text will be returned to all connected sessions.
 from builtins import range
 
 import time
+from codecs import lookup as codecs_lookup
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import utils, create, search, evtable
@@ -533,7 +534,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
         def validate_encoding(new_encoding):
             # helper: change encoding
             try:
-                b"test-string".decode(new_encoding)
+                codecs_lookup(new_encoding)
             except LookupError:
                 raise RuntimeError("The encoding '|w%s|n' is invalid. " % new_encoding)
             return val
