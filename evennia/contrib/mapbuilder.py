@@ -324,7 +324,7 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
             for x in range(len(game_map[y])):
                 for key in legend:
                     # obs - we must use == for unicode
-                    if utils.to_unicode(game_map[y][x]) == utils.to_unicode(key):
+                    if game_map[y][x] == key:
                         room = legend[key](x, y, iteration=iteration,
                                            room_dict=room_dict,
                                            caller=caller)

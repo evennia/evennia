@@ -481,7 +481,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
             old_encoding = self.session.protocol_flags.get("ENCODING", None)
             encoding = self.args
             try:
-                utils.to_str(utils.to_unicode("test-string"), encoding=encoding)
+                utils.to_str(b"test-string".decode(encoding))
             except LookupError:
                 string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n"\
                          % (encoding, old_encoding)

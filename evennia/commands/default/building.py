@@ -1940,7 +1940,6 @@ class CmdExamine(ObjManipCommand):
             if not isinstance(value, str):
                 value = utils.to_str(value, force_string=True)
             value = utils.crop(value)
-            value = utils.to_unicode(value)
 
         string = "\n %s = %s" % (attr, value)
         string = raw(string)

@@ -120,7 +120,7 @@ from future.utils import listitems
 from django.conf import settings
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from evennia.utils.utils import to_unicode, m_len, is_iter
+from evennia.utils.utils import m_len, is_iter
 from evennia.utils.ansi import ANSIString
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
@@ -137,7 +137,7 @@ def _to_ansi(obj):
     if is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(to_unicode(obj))
+        return ANSIString(obj)
 
 
 _unicode = str

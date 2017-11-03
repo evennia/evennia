@@ -96,7 +96,6 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
     """
     if not text:
         return ""
-    text = to_unicode(text)
     indent = " " * indent
     return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 
@@ -149,14 +148,13 @@ def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
 
     """
 
-    utext = to_unicode(text)
-    ltext = len(utext)
+    ltext = len(text)
     if ltext <= width:
         return text
     else:
         lsuffix = len(suffix)
-        utext = utext[:width] if lsuffix >= width else "%s%s" % (utext[:width - lsuffix], suffix)
-        return to_str(utext)
+        text = text[:width] if lsuffix >= width else "%s%s" % (text[:width - lsuffix], suffix)
+        return to_str(text)
 
 
 def dedent(text):
@@ -700,44 +698,6 @@ def latinify(unicode_string, default='?', pure_ascii=False):
                     ch = default
         converted.append(chr(ord(ch)))
     return ''.join(converted)
-
-
-def to_unicode(obj, encoding='utf-8', force_string=False):
-    """
-    This function is deprecated in the Python 3 version of Evennia and is
-    likely to be phased out in future releases.
-
-    ---
-    This decodes a suitable object to the unicode format.
-
-    Args:
-        obj (any): Object to decode to unicode.
-        encoding (str, optional): The encoding type to use for the
-            dedoding.
-        force_string (bool, optional): Always convert to string, no
-            matter what type `obj` is initially.
-
-    Returns:
-        result (unicode or any): Will return a unicode object if input
-            was a string. If input was not a string, the original will be
-            returned unchanged unless `force_string` is also set.
-
-    Notes:
-        One needs to encode the obj back to utf-8 before writing to disk
-        or printing. That non-string objects are let through without
-        conversion is important for e.g. Attributes.
-
-    """
-
-    if isinstance(obj, (str, bytes, )):
-        return obj
-
-    if force_string:
-        # some sort of other object. Try to
-        # convert it to a string representation.
-        obj = str(obj)
-
-    return obj
 
 
 def to_str(obj, encoding='utf-8', force_string=False):

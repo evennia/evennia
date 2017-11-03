@@ -7,7 +7,7 @@ all Attributes and TypedObjects).
 import shlex
 from django.db.models import Q
 from evennia.utils import idmapper
-from evennia.utils.utils import make_iter, variable_from_module, to_unicode
+from evennia.utils.utils import make_iter, variable_from_module
 
 __all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
@@ -494,7 +494,7 @@ class TypeclassManager(TypedObjectManager):
 
         """
         # shlex splits by spaces unless escaped by quotes
-        querysplit = shlex.split(to_unicode(query, force_string=True))
+        querysplit = shlex.split(query)
         queries, plustags, plusattrs, negtags, negattrs = [], [], [], [], []
         for ipart, part in enumerate(querysplit):
             key, rest = part, ""

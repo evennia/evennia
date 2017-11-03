@@ -23,7 +23,7 @@ from django.conf import settings
 from evennia.utils import utils
 from evennia.utils import logger
 
-from evennia.utils.utils import to_str, to_unicode
+from evennia.utils.utils import to_str
 from future.utils import with_metaclass
 
 
@@ -690,7 +690,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
             decoded = True
         if not decoded:
             # Completely new ANSI String
-            clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True, mxp=True))
+            clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=True)
             string = parser.parse_ansi(string, xterm256=True, mxp=True)
         elif clean_string is not None:
             # We have an explicit clean string.

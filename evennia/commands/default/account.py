@@ -533,7 +533,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
         def validate_encoding(new_encoding):
             # helper: change encoding
             try:
-                utils.to_str(utils.to_unicode("test-string"), encoding=new_encoding)
+                b"test-string".decode(new_encoding)
             except LookupError:
                 raise RuntimeError("The encoding '|w%s|n' is invalid. " % new_encoding)
             return val

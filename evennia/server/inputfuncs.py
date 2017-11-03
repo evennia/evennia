@@ -25,7 +25,7 @@ from django.conf import settings
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.accounts.models import AccountDB
 from evennia.utils.logger import log_err
-from evennia.utils.utils import to_str, to_unicode
+from evennia.utils.utils import to_str
 
 BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
@@ -176,7 +176,7 @@ def client_options(session, *args, **kwargs):
     def validate_encoding(val):
         # helper: change encoding
         try:
-            to_str(to_unicode("test-string"), encoding=val)
+            b"test-string".decode(val)
         except LookupError:
             raise RuntimeError("The encoding '|w%s|n' is invalid. " % val)
         return val

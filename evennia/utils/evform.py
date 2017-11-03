@@ -140,7 +140,7 @@ from builtins import object, range
 import re
 import copy
 from evennia.utils.evtable import EvCell, EvTable
-from evennia.utils.utils import all_from_module, to_str, to_unicode, is_iter
+from evennia.utils.utils import all_from_module, to_str, is_iter
 from evennia.utils.ansi import ANSIString
 
 # non-valid form-identifying characters (which can thus be
@@ -164,7 +164,7 @@ def _to_ansi(obj, regexable=False):
     elif is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(to_unicode(obj), regexable=regexable)
+        return ANSIString(obj, regexable=regexable)
 
 
 class EvForm(object):
@@ -407,7 +407,7 @@ class EvForm(object):
         self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
 
         # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        self.raw_form = _to_ansi(to_unicode(datadict.get("FORM", "")).split("\n"))
+        self.raw_form = _to_ansi(datadict.get("FORM", "").split("\n"))
         # strip first line
         self.raw_form = self.raw_form[1:] if self.raw_form else self.raw_form
 

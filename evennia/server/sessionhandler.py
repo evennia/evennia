@@ -20,7 +20,7 @@ from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import (variable_from_module, is_iter,
-                                 to_str, to_unicode,
+                                 to_str,
                                  make_iter,
                                  callables_from_module)
 from evennia.utils.inlinefuncs import parse_inlinefunc

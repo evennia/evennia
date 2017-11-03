@@ -22,7 +22,7 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (lazy_property,
-                                 make_iter, to_unicode, is_iter,
+                                 make_iter, is_iter,
                                  variable_from_module)
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
@@ -446,7 +446,6 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 commands at run-time.
 
         """
-        raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=False)
         if not session and _MULTISESSION_MODE in (0, 1):
             # for these modes we use the first/only session

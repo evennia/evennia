@@ -22,7 +22,7 @@ from evennia.commands import cmdhandler
 from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, is_iter)
+                                 make_iter, is_iter)
 from django.utils.translation import ugettext as _
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -479,7 +479,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         # nick replacement - we require full-word matching.
         # do text encoding conversion
-        raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=True)
         return cmdhandler.cmdhandler(self, raw_string, callertype="object", session=session, **kwargs)
 

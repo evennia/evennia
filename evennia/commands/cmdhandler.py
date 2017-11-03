@@ -46,7 +46,7 @@ from django.conf import settings
 from evennia.commands.command import InterruptCommand
 from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import logger, utils
-from evennia.utils.utils import string_suggestions, to_unicode
+from evennia.utils.utils import string_suggestions
 
 from django.utils.translation import ugettext as _
 
@@ -617,8 +617,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             raise ErrorReported(raw_string)
         finally:
             _COMMAND_NESTING[called_by] -= 1
-
-    raw_string = to_unicode(raw_string, force_string=True)
 
     session, account, obj = session, None, None
     if callertype == "session":
