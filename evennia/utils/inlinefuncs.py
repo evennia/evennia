@@ -224,14 +224,14 @@ class ParseStack(list):
     """
 
     def __init__(self, *args, **kwargs):
-        super(ParseStack, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # always start stack with the empty string
         list.append(self, "")
         # indicates if the top of the stack is a string or not
         self._string_last = True
 
     def __eq__(self, other):
-        return (super(ParseStack).__eq__(other) and
+        return (super().__eq__(other) and
                 hasattr(other, "_string_last") and self._string_last == other._string_last)
 
     def __ne__(self, other):
@@ -241,7 +241,7 @@ class ParseStack(list):
         """
         The stack will merge strings, add other things as normal
         """
-        if isinstance(item, basestring):
+        if isinstance(item, str):
             if self._string_last:
                 self[-1] += item
             else:
@@ -439,7 +439,7 @@ def initialize_nick_templates(in_template, out_template):
     # validate the tempaltes - they should at least have the same number of args
     n_outargs = len(_RE_NICK_TEMPLATE_ARG.findall(out_template))
     if n_inargs != n_outargs:
-        print n_inargs, n_outargs
+        print(n_inargs, n_outargs)
         raise NickTemplateInvalid
 
     return re.compile(regex_string), template_string

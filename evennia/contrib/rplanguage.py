@@ -232,7 +232,7 @@ class LanguageHandler(DefaultScript):
         translation = {}
 
         if auto_translations:
-            if isinstance(auto_translations, basestring):
+            if isinstance(auto_translations, str):
                 # path to a file rather than a list
                 with open(auto_translations, 'r') as f:
                     auto_translations = f.readlines()

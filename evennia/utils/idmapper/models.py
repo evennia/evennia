@@ -6,7 +6,7 @@ leave caching unexpectedly (no use of WeakRefs).
 
 Also adds `cache_size()` for monitoring the size of the cache.
 """
-from __future__ import absolute_import, division
+
 from builtins import object
 from future.utils import listitems, listvalues, with_metaclass
 
@@ -85,7 +85,7 @@ class SharedMemoryModelBase(ModelBase):
         if not hasattr(dbmodel, "__instance_cache__"):
             # we store __instance_cache__ only on the dbmodel base
             dbmodel.__instance_cache__ = {}
-        super(SharedMemoryModelBase, cls)._prepare()
+        super()._prepare()
 
     def __new__(cls, name, bases, attrs):
         """
@@ -141,7 +141,7 @@ class SharedMemoryModelBase(ModelBase):
                 "Setter only used on foreign key relations, allows setting with #dbref"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
-                if isinstance(value, (basestring, int)):
+                if isinstance(value, (str, int)):
                     value = to_str(value, force_string=True)
                     if (value.isdigit() or value.startswith("#")):
                         # we also allow setting using dbrefs, if so we try to load the matching object.
@@ -203,7 +203,7 @@ class SharedMemoryModelBase(ModelBase):
                 # makes sure not to overload manually created wrappers on the model
                 create_wrapper(cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey)
 
-        return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
@@ -364,7 +364,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         """
         self.flush_from_cache()
         self._is_deleted = True
-        super(SharedMemoryModel, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         """
@@ -390,11 +390,11 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
 
         if _IS_MAIN_THREAD:
             # in main thread - normal operation
-            super(SharedMemoryModel, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
         else:
             # in another thread; make sure to save in reactor thread
             def _save_callback(cls, *args, **kwargs):
-                super(SharedMemoryModel, cls).save(*args, **kwargs)
+                super().save(*args, **kwargs)
             callFromThread(_save_callback, self, *args, **kwargs)
 
         # update field-update hooks and eventual OOB watchers
@@ -429,7 +429,7 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
 
     """
     def _prepare(cls):
-        super(WeakSharedMemoryModelBase, cls)._prepare()
+        super()._prepare()
         cls.__dbclass__.__instance_cache__ = WeakValueDictionary()
 
 

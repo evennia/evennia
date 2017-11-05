@@ -6,7 +6,7 @@ Created for the Player->Account renaming
 Griatch 2017, released under the BSD license.
 
 """
-from __future__ import print_function
+
 
 import re
 import sys
@@ -130,7 +130,7 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
             replacements in each file.
 
     """
-    repl_mapping = zip(in_list, out_list)
+    repl_mapping = list(zip(in_list, out_list))
 
     for root, dirs, files in os.walk(path):
 
@@ -155,13 +155,13 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
             for src, dst in repl_mapping:
                 new_file = _case_sensitive_replace(new_file, src, dst)
             if new_file != file:
-                inp = raw_input(_green("Rename %s\n   ->  %s\n Y/[N]? > " % (file, new_file)))
+                inp = input(_green("Rename %s\n   ->  %s\n Y/[N]? > " % (file, new_file)))
                 if inp.upper() == 'Y':
                     new_full_path = os.path.join(root, new_file)
                     try:
                         os.rename(full_path, new_full_path)
                     except OSError as err:
-                        raw_input(_red("Could not rename - %s (return to skip)" % err))
+                        input(_red("Could not rename - %s (return to skip)" % err))
                     else:
                         print("... Renamed.")
                 else:
@@ -171,12 +171,12 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
         for src, dst in repl_mapping:
             new_root = _case_sensitive_replace(new_root, src, dst)
         if new_root != root:
-            inp = raw_input(_green("Dir Rename %s\n       ->  %s\n Y/[N]? > " % (root, new_root)))
+            inp = input(_green("Dir Rename %s\n       ->  %s\n Y/[N]? > " % (root, new_root)))
             if inp.upper() == 'Y':
                 try:
                     os.rename(root, new_root)
                 except OSError as err:
-                    raw_input(_red("Could not rename - %s (return to skip)" % err))
+                    input(_red("Could not rename - %s (return to skip)" % err))
                 else:
                     print("... Renamed.")
             else:
@@ -204,7 +204,7 @@ def rename_in_file(path, in_list, out_list, is_interactive):
     with open(path, 'r') as fil:
         org_text = fil.read()
 
-    repl_mapping = zip(in_list, out_list)
+    repl_mapping = list(zip(in_list, out_list))
 
     if not is_interactive:
         # just replace everything immediately
@@ -239,12 +239,12 @@ def rename_in_file(path, in_list, out_list, is_interactive):
 
             while True:
 
-                for iline, renamed_line in sorted(renamed.items(), key=lambda tup: tup[0]):
+                for iline, renamed_line in sorted(list(renamed.items()), key=lambda tup: tup[0]):
                     print("%3i orig: %s" % (iline + 1, org_lines[iline]))
                     print("    new : %s" % (_yellow(renamed_line)))
                 print(_green("%s (%i lines changed)" % (path, len(renamed))))
 
-                ret = raw_input(_green("Choose: "
+                ret = input(_green("Choose: "
                                        "[q]uit, "
                                        "[h]elp, "
                                        "[s]kip file, "
@@ -275,12 +275,12 @@ def rename_in_file(path, in_list, out_list, is_interactive):
                     print("Quit renaming program.")
                     sys.exit()
                 elif ret == "h":
-                    raw_input(_HELP_TEXT.format(sources=in_list, targets=out_list))
+                    input(_HELP_TEXT.format(sources=in_list, targets=out_list))
                 elif ret.startswith("i"):
                     # ignore one or more lines
                     ignores = [int(ind) - 1 for ind in ret[1:].split(',') if ind.strip().isdigit()]
                     if not ignores:
-                        raw_input("Ignore example: i 2,7,34,133\n (return to continue)")
+                        input("Ignore example: i 2,7,34,133\n (return to continue)")
                         continue
                     for ign in ignores:
                         renamed.pop(ign, None)

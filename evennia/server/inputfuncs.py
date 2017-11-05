@@ -21,11 +21,12 @@ settings.INPUT_FUNC_MODULES.
 from future.utils import viewkeys
 
 import importlib
+from codecs import lookup as codecs_lookup
 from django.conf import settings
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.accounts.models import AccountDB
 from evennia.utils.logger import log_err
-from evennia.utils.utils import to_str, to_unicode
+from evennia.utils.utils import to_str
 
 BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
@@ -176,7 +177,7 @@ def client_options(session, *args, **kwargs):
     def validate_encoding(val):
         # helper: change encoding
         try:
-            to_str(to_unicode("test-string"), encoding=val)
+            codecs_lookup(val)
         except LookupError:
             raise RuntimeError("The encoding '|w%s|n' is invalid. " % val)
         return val
@@ -185,11 +186,11 @@ def client_options(session, *args, **kwargs):
         return {0: int(val)}
 
     def validate_bool(val):
-        if isinstance(val, basestring):
+        if isinstance(val, str):
             return True if val.lower() in ("true", "on", "1") else False
         return bool(val)
 
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
         key = key.lower()
         if key == "client":
             flags["CLIENTNAME"] = to_str(value)
@@ -254,7 +255,7 @@ def get_inputfuncs(session, *args, **kwargs):
     So we get it from the sessionhandler.
     """
     inputfuncsdict = dict((key, func.__doc__) for key, func
-                          in session.sessionhandler.get_inputfuncs().iteritems())
+                          in session.sessionhandler.get_inputfuncs().items())
     session.msg(get_inputfuncs=inputfuncsdict)
 
 
@@ -463,5 +464,5 @@ def webclient_options(session, *args, **kwargs):
                             session=session)
     else:
         # kwargs provided: persist them to the account object
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             clientoptions[key] = value

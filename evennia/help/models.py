@@ -97,7 +97,7 @@ class HelpEntry(SharedMemoryModel):
         return self.key
 
     def __unicode__(self):
-        return u'%s' % self.key
+        return '%s' % self.key
 
     def access(self, accessing_obj, access_type='read', default=False):
         """

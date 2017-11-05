@@ -7,7 +7,7 @@ sets up all the networking features.  (this is done automatically
 by evennia/server/server_runner.py).
 
 """
-from __future__ import print_function
+
 from builtins import object
 import time
 import sys
@@ -237,8 +237,8 @@ class Evennia(object):
                           "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS",
                           "BASE_CHANNEL_TYPECLASS")
         # get previous and current settings so they can be compared
-        settings_compare = zip([ServerConfig.objects.conf(name) for name in settings_names],
-                               [settings.__getattr__(name) for name in settings_names])
+        settings_compare = list(zip([ServerConfig.objects.conf(name) for name in settings_names],
+                               [settings.__getattr__(name) for name in settings_names]))
         mismatches = [i for i, tup in enumerate(settings_compare) if tup[0] and tup[1] and tup[0] != tup[1]]
         if len(mismatches):  # can't use any() since mismatches may be [0] which reads as False for any()
             # we have a changed default. Import relevant objects and
@@ -569,9 +569,9 @@ if WEBSERVER_ENABLED:
 
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
-    web_root.putChild("media", static.File(settings.MEDIA_ROOT))
+    web_root.putChild(b"media", static.File(settings.MEDIA_ROOT))
     # point our static resources to url /static
-    web_root.putChild("static", static.File(settings.STATIC_ROOT))
+    web_root.putChild(b"static", static.File(settings.STATIC_ROOT))
     EVENNIA.web_root = web_root
 
     if WEB_PLUGINS_MODULE:

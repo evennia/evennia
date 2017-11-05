@@ -21,6 +21,7 @@ method. Otherwise all text will be returned to all connected sessions.
 from builtins import range
 
 import time
+from codecs import lookup as codecs_lookup
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import utils, create, search, evtable
@@ -46,7 +47,7 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
     def parse(self):
         """Custom parsing"""
 
-        super(MuxAccountLookCommand, self).parse()
+        super().parse()
 
         if _MULTISESSION_MODE < 2:
             # only one character allowed - not used in this mode
@@ -502,13 +503,13 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     options["SCREENWIDTH"] = options["SCREENWIDTH"][0]
                 else:
                     options["SCREENWIDTH"] = "  \n".join("%s : %s" % (screenid, size)
-                                                         for screenid, size in options["SCREENWIDTH"].iteritems())
+                                                         for screenid, size in options["SCREENWIDTH"].items())
             if "SCREENHEIGHT" in options:
                 if len(options["SCREENHEIGHT"]) == 1:
                     options["SCREENHEIGHT"] = options["SCREENHEIGHT"][0]
                 else:
                     options["SCREENHEIGHT"] = "  \n".join("%s : %s" % (screenid, size)
-                                                          for screenid, size in options["SCREENHEIGHT"].iteritems())
+                                                          for screenid, size in options["SCREENHEIGHT"].items())
             options.pop("TTYPE", None)
 
             header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
@@ -533,7 +534,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
         def validate_encoding(new_encoding):
             # helper: change encoding
             try:
-                utils.to_str(utils.to_unicode("test-string"), encoding=new_encoding)
+                codecs_lookup(new_encoding)
             except LookupError:
                 raise RuntimeError("The encoding '|w%s|n' is invalid. " % new_encoding)
             return val

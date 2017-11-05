@@ -110,7 +110,7 @@ class UnixCommandParser(argparse.ArgumentParser):
 
         """
         prog = prog or command.key
-        super(UnixCommandParser, self).__init__(
+        super().__init__(
             prog=prog, description=description,
             conflict_handler='resolve', add_help=False, **kwargs)
         self.command = command
@@ -133,7 +133,7 @@ class UnixCommandParser(argparse.ArgumentParser):
             in order to avoid unintentional color codes.
 
         """
-        return raw(super(UnixCommandParser, self).format_usage())
+        return raw(super().format_usage())
 
     def format_help(self):
         """Return the parser help, including its epilog.
@@ -144,7 +144,7 @@ class UnixCommandParser(argparse.ArgumentParser):
             in the epilog (the command docstring) are supported.
 
         """
-        autohelp = raw(super(UnixCommandParser, self).format_help())
+        autohelp = raw(super().format_help())
         return "\n" + autohelp + "\n" + self.post_help
 
     def print_usage(self, file=None):
@@ -234,7 +234,7 @@ class UnixCommand(Command):
         overloading evential same-named class properties.
 
         """
-        super(UnixCommand, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # Create the empty UnixCommandParser, inheriting argparse.ArgumentParser
         lines = dedent(self.__doc__.strip("\n")).splitlines()

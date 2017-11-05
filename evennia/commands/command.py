@@ -65,7 +65,7 @@ def _init_command(cls, **kwargs):
         temp.append(lockstring)
     cls.lock_storage = ";".join(temp)
 
-    if hasattr(cls, 'arg_regex') and isinstance(cls.arg_regex, basestring):
+    if hasattr(cls, 'arg_regex') and isinstance(cls.arg_regex, str):
         cls.arg_regex = re.compile(r"%s" % cls.arg_regex, re.I + re.UNICODE)
     if not hasattr(cls, "auto_help"):
         cls.auto_help = True
@@ -82,7 +82,7 @@ class CommandMeta(type):
     """
     def __init__(cls, *args, **kwargs):
         _init_command(cls, **kwargs)
-        super(CommandMeta, cls).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 #    The Command class is the basic unit of an Evennia command; when
 #    defining new commands, the admin subclass this class and
@@ -201,6 +201,19 @@ class Command(with_metaclass(CommandMeta, object)):
             # probably got a string
             return cmd in self._matchset
 
+    def __hash__(self):
+        """
+        Python 3 requires that any class which implements __eq__ must also
+        implement __hash__ and that the corresponding hashes for equivalent
+        instances are themselves equivalent.
+
+        Technically, the following implementation is only valid for comparison
+        against other Commands, as our __eq__ supports comparison against
+        str, too.
+
+        """
+        return hash('\n'.join(self._matchset))
+
     def __ne__(self, cmd):
         """
         The logical negation of __eq__. Since this is one of the most
@@ -266,7 +279,7 @@ class Command(with_metaclass(CommandMeta, object)):
             caches are properly updated as well.
 
         """
-        if isinstance(new_aliases, basestring):
+        if isinstance(new_aliases, str):
             new_aliases = new_aliases.split(';')
         aliases = (str(alias).strip().lower() for alias in make_iter(new_aliases))
         self.aliases = list(set(alias for alias in aliases if alias != self.key))

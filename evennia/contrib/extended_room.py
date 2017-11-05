@@ -66,7 +66,7 @@ Installation/testing:
 3) Use `desc` and `detail` to customize the room, then play around!
 
 """
-from __future__ import division
+
 
 import datetime
 import re
@@ -264,7 +264,7 @@ class ExtendedRoom(DefaultRoom):
             # and re-save the description again.
             self.db.desc = self.replace_timeslots(self.db.raw_desc, curr_timeslot)
         # run the normal return_appearance method, now that desc is updated.
-        return super(ExtendedRoom, self).return_appearance(looker)
+        return super().return_appearance(looker)
 
 
 # Custom Look command supporting Room details. Add this to

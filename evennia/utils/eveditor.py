@@ -336,7 +336,7 @@ def _load_editor(caller):
             setattr(eveditor, "_undo_pos", len(saved_undo) - 1)
             setattr(eveditor, "_unsaved", unsaved)
             setattr(eveditor, "_indent", indent)
-        for key, value in saved_options[1].iteritems():
+        for key, value in saved_options[1].items():
             setattr(eveditor, key, value)
     else:
         # something went wrong. Cleanup.
@@ -800,7 +800,7 @@ class EvEditor(object):
         """
         try:
             self._buffer = self._loadfunc(self._caller)
-            if not isinstance(self._buffer, basestring):
+            if not isinstance(self._buffer, str):
                 self._buffer = to_str(self._buffer, force_string=True)
                 self._caller.msg("|rNote: input buffer was converted to a string.|n")
         except Exception as e:

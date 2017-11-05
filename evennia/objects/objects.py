@@ -22,7 +22,7 @@ from evennia.commands import cmdhandler
 from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, is_iter)
+                                 make_iter, is_iter)
 from django.utils.translation import ugettext as _
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -359,7 +359,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             messaging is assumed to be handled by the caller.
 
         """
-        is_string = isinstance(searchdata, basestring)
+        is_string = isinstance(searchdata, str)
 
 
         if is_string:
@@ -436,7 +436,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       matching Accounts.
 
         """
-        if isinstance(searchdata, basestring):
+        if isinstance(searchdata, str):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
                 return [self.account] if quiet else self.account
@@ -479,7 +479,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         # nick replacement - we require full-word matching.
         # do text encoding conversion
-        raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=True)
         return cmdhandler.cmdhandler(self, raw_string, callertype="object", session=session, **kwargs)
 
@@ -877,7 +876,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.location = None  # this updates contents_cache for our location
 
         # Perform the deletion of the object
-        super(DefaultObject, self).delete()
+        super().delete()
         return True
 
     def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
@@ -896,7 +895,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
           Passed on to the at_access hook along with the result of the access check.
 
         """
-        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type,
+        result = super().access(accessing_obj, access_type=access_type,
                                                    default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
@@ -1760,7 +1759,7 @@ class DefaultCharacter(DefaultObject):
         Character object works).
 
         """
-        super(DefaultCharacter, self).basetype_setup()
+        super().basetype_setup()
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
                                  "call:false()"]))  # no commands can be called on character from outside
         # add the default cmdset
@@ -1874,7 +1873,7 @@ class DefaultRoom(DefaultObject):
 
         """
 
-        super(DefaultRoom, self).basetype_setup()
+        super().basetype_setup()
         self.locks.add(";".join(["get:false()",
                                  "puppet:false()"]))  # would be weird to puppet a room ...
         self.location = None
@@ -1990,7 +1989,7 @@ class DefaultExit(DefaultObject):
         sure you include all the functionality in this method.
 
         """
-        super(DefaultExit, self).basetype_setup()
+        super().basetype_setup()
 
         # setting default locks (overload these in at_object_creation()
         self.locks.add(";".join(["puppet:false()",  # would be weird to puppet an exit ...

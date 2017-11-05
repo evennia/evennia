@@ -26,7 +26,7 @@ class EvenniaGameIndexService(Service):
         self.loop = LoopingCall(self.client.send_game_details)
 
     def startService(self):
-        super(EvenniaGameIndexService, self).startService()
+        super().startService()
         # TODO: Check to make sure that the client is configured.
         # Start the loop, but only after a short delay. This allows the
         # portal and the server time to sync up as far as total player counts.
@@ -38,7 +38,7 @@ class EvenniaGameIndexService(Service):
         if self.running == 0:
             # @reload errors if we've stopped this service.
             return
-        super(EvenniaGameIndexService, self).stopService()
+        super().stopService()
         if self.loop.running:
             self.loop.stop()
 

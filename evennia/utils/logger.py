@@ -13,7 +13,7 @@ log_typemsg(). This is for historical, back-compatible reasons.
 
 """
 
-from __future__ import division
+
 
 import os
 import time

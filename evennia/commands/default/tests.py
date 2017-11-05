@@ -78,7 +78,7 @@ class CommandTest(EvenniaTest):
             cmdobj.parse()
             ret = cmdobj.func()
             if isinstance(ret, types.GeneratorType):
-                ret.next()
+                next(ret)
             cmdobj.at_post_cmd()
         except StopIteration:
             pass
@@ -128,9 +128,9 @@ class TestGeneral(CommandTest):
         self.call(general.CmdNick(), "testalias = testaliasedstring1", "Nick 'testalias' mapped to 'testaliasedstring1'.")
         self.call(general.CmdNick(), "/account testalias = testaliasedstring2", "Nick 'testalias' mapped to 'testaliasedstring2'.")
         self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Nick 'testalias' mapped to 'testaliasedstring3'.")
-        self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
-        self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
-        self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
+        self.assertEqual("testaliasedstring1", self.char1.nicks.get("testalias"))
+        self.assertEqual("testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
+        self.assertEqual("testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
 
     def test_get_and_drop(self):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")
@@ -369,7 +369,7 @@ class TestBuilding(CommandTest):
 class TestComms(CommandTest):
 
     def setUp(self):
-        super(CommandTest, self).setUp()
+        super().setUp()
         self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.", receiver=self.account)
 
     def test_toggle_com(self):

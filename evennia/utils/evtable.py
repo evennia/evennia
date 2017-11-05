@@ -114,14 +114,13 @@ you need to re-set the color to have it appear on both sides of the
 table string.
 
 """
-from __future__ import print_function
-from builtins import object, range
+
 from future.utils import listitems
 
 from django.conf import settings
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from evennia.utils.utils import to_unicode, m_len
+from evennia.utils.utils import m_len, is_iter
 from evennia.utils.ansi import ANSIString
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
@@ -135,13 +134,13 @@ def _to_ansi(obj):
         obj (str): Convert incoming text to
             be ANSI aware ANSIStrings.
     """
-    if hasattr(obj, "__iter__"):
+    if is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(to_unicode(obj))
+        return ANSIString(obj)
 
 
-_unicode = unicode
+_unicode = str
 _whitespace = '\t\n\x0b\x0c\r '
 
 
@@ -187,13 +186,20 @@ class ANSITextWrapper(TextWrapper):
           'use', ' ', 'the', ' ', '-b', ' ', option!'
         otherwise.
         """
-        # only use unicode wrapper
-        if self.break_on_hyphens:
-            pat = self.wordsep_re_uni
-        else:
-            pat = self.wordsep_simple_re_uni
-        chunks = pat.split(_to_ansi(text))
-        return [chunk for chunk in chunks if chunk]  # remove empty chunks
+        # NOTE-PYTHON3: The following code only roughly approximates what this
+        #               function used to do. Regex splitting on ANSIStrings is
+        #               dropping ANSI codes, so we're using ANSIString.split
+        #               for the time being.
+        #
+        #               A less hackier solution would be appreciated.
+        chunks = _to_ansi(text).split()
+
+        chunks = [chunk+' ' for chunk in chunks if chunk]  # remove empty chunks
+
+        if len(chunks) > 1:
+            chunks[-1] = chunks[-1][0:-1]
+
+        return chunks
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
@@ -841,17 +847,17 @@ class EvCell(object):
 
     def __repr__(self):
         self.formatted = self._reformat()
-        return unicode(ANSIString("<EvCel %s>" % self.formatted))
+        return str(ANSIString("<EvCel %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
         self.formatted = self._reformat()
-        return str(unicode(ANSIString("\n").join(self.formatted)))
+        return str(str(ANSIString("\n").join(self.formatted)))
 
     def __unicode__(self):
         "returns cell contents"
         self.formatted = self._reformat()
-        return unicode(ANSIString("\n").join(self.formatted))
+        return str(ANSIString("\n").join(self.formatted))
 
 
 # EvColumn class
@@ -1424,7 +1430,7 @@ class EvTable(object):
 
         header = kwargs.get("header", None)
         if header:
-            column.add_rows(unicode(header), ypos=0, **options)
+            column.add_rows(str(header), ypos=0, **options)
             self.header = True
         elif self.header:
             # we have a header already. Offset
@@ -1569,10 +1575,10 @@ class EvTable(object):
 
     def __str__(self):
         """print table (this also balances it)"""
-        return str(unicode(ANSIString("\n").join([line for line in self._generate_lines()])))
+        return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
 
     def __unicode__(self):
-        return unicode(ANSIString("\n").join([line for line in self._generate_lines()]))
+        return str(ANSIString("\n").join([line for line in self._generate_lines()]))
 
 
 def _test():
@@ -1580,11 +1586,11 @@ def _test():
     table = EvTable("|yHeading1|n", "|gHeading2|n", table=[[1, 2, 3], [4, 5, 6], [7, 8, 9]], border="cells", align="l")
     table.add_column("|rThis is long data|n", "|bThis is even longer data|n")
     table.add_row("This is a single row")
-    print(unicode(table))
+    print(str(table))
     table.reformat(width=50)
-    print(unicode(table))
+    print(str(table))
     table.reformat_column(3, width=30, align='r')
-    print(unicode(table))
+    print(str(table))
     return table
 
 

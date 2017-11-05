@@ -8,12 +8,7 @@ Config values should usually be set through the
 manager's conf() method.
 
 """
-from builtins import object
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 from django.db import models
 from evennia.utils.idmapper.models import WeakSharedMemoryModel
@@ -48,7 +43,7 @@ class ServerConfig(WeakSharedMemoryModel):
     # main name of the database entry
     db_key = models.CharField(max_length=64, unique=True)
     # config value
-    db_value = models.TextField(blank=True)
+    db_value = models.BinaryField(blank=True)
 
     objects = ServerConfigManager()
     _is_deleted = False
@@ -83,7 +78,7 @@ class ServerConfig(WeakSharedMemoryModel):
     #@property
     def __value_get(self):
         "Getter. Allows for value = self.value"
-        return pickle.loads(str(self.db_value))
+        return pickle.loads(self.db_value)
 
     #@value.setter
     def __value_set(self, value):

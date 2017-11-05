@@ -22,7 +22,7 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.utils import logger
 from evennia.utils.utils import (lazy_property,
-                                 make_iter, to_unicode, is_iter,
+                                 make_iter, is_iter,
                                  variable_from_module)
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
@@ -381,7 +381,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         self.attributes.clear()
         self.nicks.clear()
         self.aliases.clear()
-        super(DefaultAccount, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
     # methods inherited from database model
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
@@ -446,7 +446,6 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 commands at run-time.
 
         """
-        raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=False)
         if not session and _MULTISESSION_MODE in (0, 1):
             # for these modes we use the first/only session
@@ -491,7 +490,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         """
         # handle me, self and *me, *self
-        if isinstance(searchdata, basestring):
+        if isinstance(searchdata, str):
             # handle wrapping of common terms
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
@@ -529,7 +528,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             result (bool): Result of access check.
 
         """
-        result = super(DefaultAccount, self).access(accessing_obj, access_type=access_type,
+        result = super().access(accessing_obj, access_type=access_type,
                                                     default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
@@ -979,11 +978,11 @@ class DefaultGuest(DefaultAccount):
         We repeat the functionality of `at_disconnect()` here just to
         be on the safe side.
         """
-        super(DefaultGuest, self).at_server_shutdown()
+        super().at_server_shutdown()
         characters = self.db._playable_characters
         for character in characters:
             if character:
-                print "deleting Character:", character
+                print("deleting Character:", character)
                 character.delete()
 
     def at_post_disconnect(self, **kwargs):
@@ -995,7 +994,7 @@ class DefaultGuest(DefaultAccount):
                 overriding the call (unused by default).
 
         """
-        super(DefaultGuest, self).at_post_disconnect()
+        super().at_post_disconnect()
         characters = self.db._playable_characters
         for character in characters:
             if character:

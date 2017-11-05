@@ -185,8 +185,8 @@ class RandomStringGenerator(object):
         tree = re.sre_parse.parse(regex).data
         # `tree` contains a list of elements in the regular expression
         for element in tree:
-            # `eleemnt` is also a list, the first element is a string
-            name = element[0]
+            # `element` is also a list, the first element is a string
+            name = str(element[0]).lower()
             desc = {"min": 1, "max": 1}
 
             # If `.`, break here
@@ -213,10 +213,11 @@ class RandomStringGenerator(object):
 
     def _find_literal(self, element):
         """Find the literal corresponding to a piece of regular expression."""
+        name = str(element[0]).lower()
         chars = []
-        if element[0] == "literal":
+        if name == "literal":
             chars.append(chr(element[1]))
-        elif element[0] == "in":
+        elif name == "in":
             negate = False
             if element[1][0][0] == "negate":
                 negate = True
@@ -233,10 +234,10 @@ class RandomStringGenerator(object):
                             chars.remove(char)
                     else:
                         chars.append(char)
-        elif element[0] == "range":
+        elif name == "range":
             chars = [chr(i) for i in range(element[1][0], element[1][1] + 1)]
-        elif element[0] == "category":
-            category = element[1]
+        elif name == "category":
+            category = str(element[1]).lower()
             if category == "category_digit":
                 chars = list(string.digits)
             elif category == "category_word":

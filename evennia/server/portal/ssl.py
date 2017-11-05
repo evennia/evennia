@@ -3,7 +3,7 @@ This is a simple context factory for auto-creating
 SSL keys and certificates.
 
 """
-from __future__ import print_function
+
 
 import os
 import sys
@@ -52,7 +52,7 @@ class SSLProtocol(TelnetProtocol):
     """
 
     def __init__(self, *args, **kwargs):
-        super(SSLProtocol, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.protocol_name = "ssl"
 
 

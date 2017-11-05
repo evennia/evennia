@@ -24,7 +24,7 @@ from functools import update_wrapper
 from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
 from collections import OrderedDict, deque
 try:
-    from cPickle import dumps, loads
+    from pickle import dumps, loads
 except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
@@ -157,7 +157,7 @@ class _SaverMutable(object):
         self._db_obj = kwargs.pop("_db_obj", None)
         self._data = None
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Make sure to evaluate as False if empty"""
         return bool(self._data)
 
@@ -183,7 +183,7 @@ class _SaverMutable(object):
         def process_tree(item, parent):
             """recursively populate the tree, storing parents"""
             dtype = type(item)
-            if dtype in (basestring, int, float, bool, tuple):
+            if dtype in (str, int, float, bool, tuple):
                 return item
             elif dtype == list:
                 dat = _SaverList(_parent=parent)
@@ -233,7 +233,7 @@ class _SaverList(_SaverMutable, MutableSequence):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverList, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = list()
 
     @_save
@@ -268,7 +268,7 @@ class _SaverDict(_SaverMutable, MutableMapping):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = dict()
 
     def has_key(self, key):
@@ -281,7 +281,7 @@ class _SaverSet(_SaverMutable, MutableSet):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = set()
 
     def __contains__(self, value):
@@ -302,7 +302,7 @@ class _SaverOrderedDict(_SaverMutable, MutableMapping):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverOrderedDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = OrderedDict()
 
     def has_key(self, key):
@@ -315,7 +315,7 @@ class _SaverDeque(_SaverMutable):
     """
 
     def __init__(self, *args, **kwargs):
-        super(_SaverDeque, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._data = deque()
 
     @_save
@@ -493,7 +493,7 @@ def to_pickle(data):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (basestring, int, float, bool):
+        if dtype in (str, int, float, bool):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
@@ -545,7 +545,7 @@ def from_pickle(data, db_obj=None):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (basestring, int, float, bool):
+        if dtype in (str, int, float, bool):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -574,7 +574,7 @@ def from_pickle(data, db_obj=None):
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
         dtype = type(item)
-        if dtype in (basestring, int, float, bool):
+        if dtype in (str, int, float, bool):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple

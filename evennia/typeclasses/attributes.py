@@ -168,7 +168,7 @@ class Attribute(SharedMemoryModel):
         return smart_str("%s(%s)" % (self.db_key, self.id))
 
     def __unicode__(self):
-        return u"%s(%s)" % (self.db_key, self.id)
+        return "%s(%s)" % (self.db_key, self.id)
 
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):
         """
@@ -350,7 +350,7 @@ class AttributeHandler(object):
             self._cache.pop(cachekey, None)
         else:
             self._cache = {key: attrobj for key, attrobj in
-                           self._cache.items() if not key.endswith(catkey)}
+                           list(self._cache.items()) if not key.endswith(catkey)}
         # mark that the category cache is no longer up-to-date
         self._catcache.pop(catkey, None)
         self._cache_complete = False
@@ -753,7 +753,9 @@ def initialize_nick_templates(in_template, out_template):
     # create the regex for in_template
     regex_string = fnmatch.translate(in_template)
     # we must account for a possible line break coming over the wire
-    regex_string = regex_string[:-7] + r"(?:[\n\r]*?)\Z(?ms)"
+
+    # NOTE-PYTHON3: fnmatch.translate format changed since Python2
+    regex_string = regex_string[:-2] + r"(?:[\n\r]*?)\Z"
 
     # validate the templates
     regex_args = [match.group(2) for match in _RE_NICK_ARG.finditer(regex_string)]
@@ -798,7 +800,7 @@ class NickHandler(AttributeHandler):
     _attrtype = "nick"
 
     def __init__(self, *args, **kwargs):
-        super(NickHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._regex_cache = {}
 
     def has(self, key, category="inputline"):
@@ -814,7 +816,7 @@ class NickHandler(AttributeHandler):
                 is a list of booleans.
 
         """
-        return super(NickHandler, self).has(key, category=category)
+        return super().has(key, category=category)
 
     def get(self, key=None, category="inputline", return_tuple=False, **kwargs):
         """
@@ -834,9 +836,9 @@ class NickHandler(AttributeHandler):
 
         """
         if return_tuple or "return_obj" in kwargs:
-            return super(NickHandler, self).get(key=key, category=category, **kwargs)
+            return super().get(key=key, category=category, **kwargs)
         else:
-            retval = super(NickHandler, self).get(key=key, category=category, **kwargs)
+            retval = super().get(key=key, category=category, **kwargs)
             if retval:
                 return retval[3] if isinstance(retval, tuple) else \
                     [tup[3] for tup in make_iter(retval)]
@@ -859,7 +861,7 @@ class NickHandler(AttributeHandler):
             nick_regex, nick_template = initialize_nick_templates(key + " $1", replacement + " $1")
         else:
             nick_regex, nick_template = initialize_nick_templates(key, replacement)
-        super(NickHandler, self).add(key, (nick_regex, nick_template, key, replacement),
+        super().add(key, (nick_regex, nick_template, key, replacement),
                                      category=category, **kwargs)
 
     def remove(self, key, category="inputline", **kwargs):
@@ -874,7 +876,7 @@ class NickHandler(AttributeHandler):
             kwargs (any, optional): These are passed on to `AttributeHandler.get`.
 
         """
-        super(NickHandler, self).remove(key, category=category, **kwargs)
+        super().remove(key, category=category, **kwargs)
 
     def nickreplace(self, raw_string, categories=("inputline", "channel"), include_account=True):
         """
@@ -903,7 +905,7 @@ class NickHandler(AttributeHandler):
             for category in make_iter(categories):
                 nicks.update({nick.key: nick for nick in make_iter(self.obj.account.nicks.get(
                     category=category, return_obj=True)) if nick and nick.key})
-        for key, nick in nicks.iteritems():
+        for key, nick in nicks.items():
             nick_regex, template, _, _ = nick.value
             regex = self._regex_cache.get(nick_regex)
             if not regex:

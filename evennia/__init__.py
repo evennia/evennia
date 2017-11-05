@@ -17,9 +17,8 @@ to launch such a shell (using python or ipython depending on your install).
 See www.evennia.com for full documentation.
 
 """
-from __future__ import print_function
-from __future__ import absolute_import
-from builtins import object
+
+
 
 # Delayed loading of properties
 
@@ -104,7 +103,10 @@ def _create_version():
     except IOError as err:
         print(err)
     try:
-        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT).strip())
+        rev = check_output(
+            "git rev-parse --short HEAD",
+            shell=True, cwd=root, stderr=STDOUT).strip().decode()
+        version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError):
         # ignore if we cannot get to git
         pass
@@ -314,8 +316,3 @@ def _init():
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
-
-
-del object
-del absolute_import
-del print_function

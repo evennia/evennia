@@ -166,7 +166,7 @@ class Msg(SharedMemoryModel):
         for sender in make_iter(senders):
             if not sender:
                 continue
-            if isinstance(sender, basestring):
+            if isinstance(sender, str):
                 self.db_sender_external = sender
                 self.extra_senders.append(sender)
                 self.save(update_fields=["db_sender_external"])
@@ -203,7 +203,7 @@ class Msg(SharedMemoryModel):
         for sender in make_iter(senders):
             if not sender:
                 continue
-            if isinstance(sender, basestring):
+            if isinstance(sender, str):
                 self.db_sender_external = ""
                 self.save(update_fields=["db_sender_external"])
             if not hasattr(sender, "__dbclass__"):

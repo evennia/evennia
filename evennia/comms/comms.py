@@ -220,7 +220,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         self.attributes.clear()
         self.aliases.clear()
-        super(DefaultChannel, self).delete()
+        super().delete()
         from evennia.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
 
@@ -325,7 +325,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         """
         senders = make_iter(senders) if senders else []
-        if isinstance(msgobj, basestring):
+        if isinstance(msgobj, str):
             # given msgobj is a string - convert to msgobject (always TempMsg)
             msgobj = TempMsg(senders=senders, header=header, message=msgobj, channels=[self])
         # we store the logging setting for use in distribute_message()

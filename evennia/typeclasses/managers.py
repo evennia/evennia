@@ -7,7 +7,7 @@ all Attributes and TypedObjects).
 import shlex
 from django.db.models import Q
 from evennia.utils import idmapper
-from evennia.utils.utils import make_iter, variable_from_module, to_unicode
+from evennia.utils.utils import make_iter, variable_from_module
 
 __all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
@@ -335,9 +335,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             either a string '#N' or an integer N.
 
         """
-        if reqhash and not (isinstance(dbref, basestring) and dbref.startswith("#")):
+        if reqhash and not (isinstance(dbref, str) and dbref.startswith("#")):
             return None
-        if isinstance(dbref, basestring):
+        if isinstance(dbref, str):
             dbref = dbref.lstrip('#')
         try:
             if int(dbref) < 0:
@@ -390,7 +390,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 the given dbref ranges.
 
         """
-        retval = super(TypedObjectManager, self).all()
+        retval = super().all()
         if min_dbref is not None:
             retval = retval.filter(id__gte=self.dbref(min_dbref, reqhash=False))
         if max_dbref is not None:
@@ -438,7 +438,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if callable(typeclass):
             cls = typeclass.__class__
             typeclass = "%s.%s" % (cls.__module__, cls.__name__)
-        elif not isinstance(typeclass, basestring) and hasattr(typeclass, "path"):
+        elif not isinstance(typeclass, str) and hasattr(typeclass, "path"):
             typeclass = typeclass.path
 
         # query objects of exact typeclass
@@ -494,7 +494,7 @@ class TypeclassManager(TypedObjectManager):
 
         """
         # shlex splits by spaces unless escaped by quotes
-        querysplit = shlex.split(to_unicode(query, force_string=True))
+        querysplit = shlex.split(query)
         queries, plustags, plusattrs, negtags, negattrs = [], [], [], [], []
         for ipart, part in enumerate(querysplit):
             key, rest = part, ""
@@ -545,7 +545,7 @@ class TypeclassManager(TypedObjectManager):
 
         """
         kwargs.update({"db_typeclass_path": self.model.path})
-        return super(TypeclassManager, self).get(**kwargs)
+        return super().get(**kwargs)
 
     def filter(self, *args, **kwargs):
         """
@@ -563,7 +563,7 @@ class TypeclassManager(TypedObjectManager):
 
         """
         kwargs.update({"db_typeclass_path": self.model.path})
-        return super(TypeclassManager, self).filter(*args, **kwargs)
+        return super().filter(*args, **kwargs)
 
     def all(self):
         """
@@ -573,7 +573,7 @@ class TypeclassManager(TypedObjectManager):
             objects (queryset): The objects found.
 
         """
-        return super(TypeclassManager, self).all().filter(db_typeclass_path=self.model.path)
+        return super().all().filter(db_typeclass_path=self.model.path)
 
     def first(self):
         """
@@ -587,7 +587,7 @@ class TypeclassManager(TypedObjectManager):
                 on the model base used.
 
         """
-        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).first()
+        return super().filter(db_typeclass_path=self.model.path).first()
 
     def last(self):
         """
@@ -601,7 +601,7 @@ class TypeclassManager(TypedObjectManager):
                 on the model base used.
 
         """
-        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).last()
+        return super().filter(db_typeclass_path=self.model.path).last()
 
     def count(self):
         """
@@ -611,7 +611,7 @@ class TypeclassManager(TypedObjectManager):
             integer : Number of objects found.
 
         """
-        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).count()
+        return super().filter(db_typeclass_path=self.model.path).count()
 
     def _get_subclasses(self, cls):
         """
@@ -644,7 +644,7 @@ class TypeclassManager(TypedObjectManager):
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
                                      for cls in self._get_subclasses(self.model)]
         kwargs.update({"db_typeclass_path__in": paths})
-        return super(TypeclassManager, self).get(**kwargs)
+        return super().get(**kwargs)
 
     def filter_family(self, *args, **kwargs):
         """
@@ -665,7 +665,7 @@ class TypeclassManager(TypedObjectManager):
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
                                      for cls in self._get_subclasses(self.model)]
         kwargs.update({"db_typeclass_path__in": paths})
-        return super(TypeclassManager, self).filter(*args, **kwargs)
+        return super().filter(*args, **kwargs)
 
     def all_family(self):
         """
@@ -678,4 +678,4 @@ class TypeclassManager(TypedObjectManager):
         """
         paths = [self.model.path] + ["%s.%s" % (cls.__module__, cls.__name__)
                                      for cls in self._get_subclasses(self.model)]
-        return super(TypeclassManager, self).all().filter(db_typeclass_path__in=paths)
+        return super().all().filter(db_typeclass_path__in=paths)

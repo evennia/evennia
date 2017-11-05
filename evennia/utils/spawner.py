@@ -87,7 +87,7 @@ otherwise have the same spells as a *goblin wizard* who in turn shares
 many traits with a normal *goblin*.
 
 """
-from __future__ import print_function
+
 
 import copy
 from django.conf import settings
@@ -235,7 +235,7 @@ def spawn(*prototypes, **kwargs):
         protmodules = make_iter(settings.PROTOTYPE_MODULES)
     for prototype_module in protmodules:
         protparents.update(dict((key, val) for key, val in
-                                all_from_module(prototype_module).items() if isinstance(val, dict)))
+                                list(all_from_module(prototype_module).items()) if isinstance(val, dict)))
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
     for key, prototype in protparents.items():
