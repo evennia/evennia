@@ -6,8 +6,6 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
-from __future__ import division, print_function
-from builtins import object, range
 from future.utils import viewkeys, raise_
 
 import os
@@ -20,6 +18,7 @@ import textwrap
 import random
 from os.path import join as osjoin
 from importlib import import_module
+from importlib.util import find_spec, module_from_spec
 from inspect import ismodule, trace, getmembers, getmodule
 from collections import defaultdict, OrderedDict
 from twisted.internet import threads, reactor, task
@@ -32,10 +31,7 @@ _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 ENCODINGS = settings.ENCODINGS
 _GA = object.__getattribute__
@@ -45,15 +41,15 @@ _DA = object.__delattr__
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 
-def is_iter(iterable):
+def is_iter(obj):
     """
     Checks if an object behaves iterably.
 
     Args:
-        iterable (any): Entity to check for iterability.
+        obj (any): Entity to check for iterability.
 
     Returns:
-        is_iterable (bool): If `iterable` is iterable or not.
+        is_iterable (bool): If `obj` is iterable or not.
 
     Notes:
         Strings are *not* accepted as iterable (although they are
@@ -61,7 +57,13 @@ def is_iter(iterable):
         what we want to do with a string.
 
     """
-    return hasattr(iterable, '__iter__')
+    if isinstance(obj, (str, bytes, )):
+        return False
+
+    try:
+        return iter(obj) and True
+    except TypeError:
+        return False
 
 
 def make_iter(obj):
@@ -76,7 +78,7 @@ def make_iter(obj):
             passed-through or made iterable.
 
     """
-    return not hasattr(obj, '__iter__') and [obj] or obj
+    return not is_iter(obj) and [obj] or obj
 
 
 def wrap(text, width=_DEFAULT_WIDTH, indent=0):
@@ -94,7 +96,6 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
     """
     if not text:
         return ""
-    text = to_unicode(text)
     indent = " " * indent
     return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 
@@ -147,14 +148,13 @@ def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
 
     """
 
-    utext = to_unicode(text)
-    ltext = len(utext)
+    ltext = len(text)
     if ltext <= width:
         return text
     else:
         lsuffix = len(suffix)
-        utext = utext[:width] if lsuffix >= width else "%s%s" % (utext[:width - lsuffix], suffix)
-        return to_str(utext)
+        text = text[:width] if lsuffix >= width else "%s%s" % (text[:width - lsuffix], suffix)
+        return to_str(text)
 
 
 def dedent(text):
@@ -595,12 +595,12 @@ def dbref(inp, reqhash=True):
 
     """
     if reqhash:
-        num = (int(inp.lstrip('#')) if (isinstance(inp, basestring) and
+        num = (int(inp.lstrip('#')) if (isinstance(inp, str) and
                                         inp.startswith("#") and
                                         inp.lstrip('#').isdigit())
                else None)
-        return num if num > 0 else None
-    elif isinstance(inp, basestring):
+        return num if isinstance(num, int) and num > 0 else None
+    elif isinstance(inp, str):
         inp = inp.lstrip('#')
         return int(inp) if inp.isdigit() and int(inp) > 0 else None
     else:
@@ -700,58 +700,12 @@ def latinify(unicode_string, default='?', pure_ascii=False):
     return ''.join(converted)
 
 
-def to_unicode(obj, encoding='utf-8', force_string=False):
-    """
-    This decodes a suitable object to the unicode format.
-
-    Args:
-        obj (any): Object to decode to unicode.
-        encoding (str, optional): The encoding type to use for the
-            dedoding.
-        force_string (bool, optional): Always convert to string, no
-            matter what type `obj` is initially.
-
-    Returns:
-        result (unicode or any): Will return a unicode object if input
-            was a string. If input was not a string, the original will be
-            returned unchanged unless `force_string` is also set.
-
-    Notes:
-        One needs to encode the obj back to utf-8 before writing to disk
-        or printing. That non-string objects are let through without
-        conversion is important for e.g. Attributes.
-
-    """
-
-    if force_string and not isinstance(obj, basestring):
-        # some sort of other object. Try to
-        # convert it to a string representation.
-        if hasattr(obj, '__str__'):
-            obj = obj.__str__()
-        elif hasattr(obj, '__unicode__'):
-            obj = obj.__unicode__()
-        else:
-            # last resort
-            obj = str(obj)
-
-    if isinstance(obj, basestring) and not isinstance(obj, unicode):
-        try:
-            obj = unicode(obj, encoding)
-            return obj
-        except UnicodeDecodeError:
-            for alt_encoding in ENCODINGS:
-                try:
-                    obj = unicode(obj, alt_encoding)
-                    return obj
-                except UnicodeDecodeError:
-                    # if we still have an error, give up
-                    pass
-        raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
-    return obj
-
-
 def to_str(obj, encoding='utf-8', force_string=False):
     """
+    This function is deprecated in the Python 3 version of Evennia and is
+    likely to be phased out in future releases.
+
+    ---
     This encodes a unicode string back to byte-representation,
     for printing, writing to disk etc.
 
@@ -768,32 +722,14 @@ def to_str(obj, encoding='utf-8', force_string=False):
         conversion of objects to strings.
 
     """
-    if force_string and not isinstance(obj, basestring):
+    if isinstance(obj, (str, bytes, )):
+        return obj
+
+    if force_string:
         # some sort of other object. Try to
         # convert it to a string representation.
-        try:
-            obj = str(obj)
-        except Exception:
-            obj = unicode(obj)
+        obj = str(obj)
 
-    if isinstance(obj, basestring) and isinstance(obj, unicode):
-        try:
-            obj = obj.encode(encoding)
-            return obj
-        except UnicodeEncodeError:
-            for alt_encoding in ENCODINGS:
-                try:
-                    obj = obj.encode(alt_encoding)
-                    return obj
-                except UnicodeEncodeError:
-                    # if we still have an error, give up
-                    pass
-
-        # if we get to this point we have not found any way to convert this string. Try to parse it manually,
-        try:
-            return latinify(obj, '?')
-        except Exception as err:
-            raise Exception("%s, Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (err, obj, encoding))
     return obj
 
 
@@ -872,7 +808,7 @@ def inherits_from(obj, parent):
     else:
         obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()]
 
-    if isinstance(parent, basestring):
+    if isinstance(parent, str):
         # a given string path, for direct matching
         parent_path = parent
     elif callable(parent):
@@ -1298,7 +1234,7 @@ def string_from_module(module, variable=None, default=None):
         if variable:
             return val
         else:
-            result = [v for v in make_iter(val) if isinstance(v, basestring)]
+            result = [v for v in make_iter(val) if isinstance(v, str)]
             return result if result else default
     return default
 
@@ -1355,7 +1291,7 @@ def class_from_module(path, defaultpaths=None):
 
     Args:
         path (str): Full Python dot-path to module.
-        defaultpaths (iterable, optional): If a direc import from `path` fails,
+        defaultpaths (iterable, optional): If a direct import from `path` fails,
             try subsequent imports by prepending those paths to `path`.
 
     Returns:
@@ -1376,17 +1312,18 @@ def class_from_module(path, defaultpaths=None):
             testpath, clsname = testpath.rsplit(".", 1)
         else:
             raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
+
         try:
-            mod = import_module(testpath, package="evennia")
-        except ImportError:
-            if len(trace()) > 2:
-                # this means the error happened within the called module and
-                # we must not hide it.
-                exc = sys.exc_info()
-                raise_(exc[1], None, exc[2])
-            else:
-                # otherwise, try the next suggested path
+            if not find_spec(testpath, package='evennia'):
                 continue
+        except ModuleNotFoundError:
+            continue
+
+        try:
+            mod = import_module(testpath, package='evennia')
+        except ModuleNotFoundError:
+            break
+
         try:
             cls = getattr(mod, clsname)
             break
@@ -1682,7 +1619,7 @@ class lazy_property(object):
 
 
 _STRIP_ANSI = None
-_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0, 32)])))  # + range(127,160)])))
+_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([chr(c) for c in range(0, 32)])))  # + range(127,160)])))
 
 
 def strip_control_sequences(string):
@@ -1741,7 +1678,7 @@ def m_len(target):
     """
     # Would create circular import if in module root.
     from evennia.utils.ansi import ANSI_PARSER
-    if inherits_from(target, basestring) and "|lt" in target:
+    if inherits_from(target, str) and "|lt" in target:
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
 
@@ -1830,13 +1767,13 @@ class LimitedSizeOrderedDict(OrderedDict):
                 in FIFO order. If `False`, remove in FILO order.
 
         """
-        super(LimitedSizeOrderedDict, self).__init__()
+        super().__init__()
         self.size_limit = kwargs.get("size_limit", None)
         self.filo = not kwargs.get("fifo", True)  # FIFO inverse of FILO
         self._check_size()
 
     def __eq__(self, other):
-        ret = super(LimitedSizeOrderedDict, self).__eq__(other)
+        ret = super().__eq__(other)
         if ret:
             return (ret and
                     hasattr(other, 'size_limit') and self.size_limit == other.size_limit and
@@ -1853,11 +1790,11 @@ class LimitedSizeOrderedDict(OrderedDict):
                 self.popitem(last=filo)
 
     def __setitem__(self, key, value):
-        super(LimitedSizeOrderedDict, self).__setitem__(key, value)
+        super().__setitem__(key, value)
         self._check_size()
 
     def update(self, *args, **kwargs):
-        super(LimitedSizeOrderedDict, self).update(*args, **kwargs)
+        super().update(*args, **kwargs)
         self._check_size()
 
 

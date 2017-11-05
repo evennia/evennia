@@ -77,8 +77,8 @@ class SimpleDoor(DefaultExit):
         """
         # we have to be careful to avoid a delete-loop.
         if self.db.return_exit:
-            super(SimpleDoor, self.db.return_exit).delete()
-        super(SimpleDoor, self).delete()
+            super().delete()
+        super().delete()
         return True
 
     def at_failed_traverse(self, traversing_object):
@@ -103,7 +103,7 @@ class CmdOpen(default_cmds.CmdOpen):
         Simple wrapper for the default CmdOpen.create_exit
         """
         # create a new exit as normal
-        new_exit = super(CmdOpen, self).create_exit(exit_name, location, destination,
+        new_exit = super().create_exit(exit_name, location, destination,
                                                     exit_aliases=exit_aliases, typeclass=typeclass)
         if hasattr(self, "return_exit_already_created"):
             # we don't create a return exit if it was already created (because

@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.db.models.fields import exceptions
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
-from evennia.utils.utils import to_unicode, is_iter, make_iter, string_partial_matching
+from evennia.utils.utils import is_iter, make_iter, string_partial_matching
 from builtins import int
 
 __all__ = ("ObjectManager",)
@@ -72,7 +72,7 @@ class ObjectDBManager(TypedObjectManager):
             match (Object or list): One or more matching results.
 
         """
-        ostring = to_unicode(ostring).lstrip('*')
+        ostring = str(ostring).lstrip('*')
         # simplest case - search by dbref
         dbref = self.dbref(ostring)
         if dbref:
@@ -151,7 +151,7 @@ class ObjectDBManager(TypedObjectManager):
 
         # This doesn't work if attribute_value is an object. Workaround below
 
-        if isinstance(attribute_value, (basestring, int, float, bool)):
+        if isinstance(attribute_value, (str, int, float, bool)):
             return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name,
                                                                        db_attributes__db_value=attribute_value))
         else:
@@ -196,9 +196,7 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list, optional): List of typeclass-path strings to restrict matches with
 
         """
-        if isinstance(property_value, basestring):
-            property_value = to_unicode(property_value)
-        if isinstance(property_name, basestring):
+        if isinstance(property_name, str):
             if not property_name.startswith('db_'):
                 property_name = "db_%s" % property_name
         querykwargs = {property_name: property_value}
@@ -244,7 +242,7 @@ class ObjectDBManager(TypedObjectManager):
         Returns:
             matches (list): A list of matches of length 0, 1 or more.
         """
-        if not isinstance(ostring, basestring):
+        if not isinstance(ostring, str):
             if hasattr(ostring, "key"):
                 ostring = ostring.key
             else:
@@ -365,9 +363,9 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses = make_iter(typeclass)
             for i, typeclass in enumerate(make_iter(typeclasses)):
                 if callable(typeclass):
-                    typeclasses[i] = u"%s.%s" % (typeclass.__module__, typeclass.__name__)
+                    typeclasses[i] = "%s.%s" % (typeclass.__module__, typeclass.__name__)
                 else:
-                    typeclasses[i] = u"%s" % typeclass
+                    typeclasses[i] = "%s" % typeclass
             typeclass = typeclasses
 
         if candidates is not None:

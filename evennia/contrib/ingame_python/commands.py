@@ -253,7 +253,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
                     row.append("Yes" if callback.get("valid") else "No")
                 table.add_row(*row)
 
-            self.msg(unicode(table))
+            self.msg(str(table))
         else:
             names = list(set(list(types.keys()) + list(callbacks.keys())))
             table = EvTable("Callback name", "Number", "Description",
@@ -269,7 +269,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
                 description = description.strip("\n").splitlines()[0]
                 table.add_row(name, no, description)
 
-            self.msg(unicode(table))
+            self.msg(str(table))
 
     def add_callback(self):
         """Add a callback."""
@@ -457,7 +457,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
                     updated_on = "|gUnknown|n"
 
                 table.add_row(obj.id, type_name, obj, name, by, updated_on)
-            self.msg(unicode(table))
+            self.msg(str(table))
             return
 
         # An object was specified
@@ -518,7 +518,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
             delta = time_format((future - now).total_seconds(), 1)
             table.add_row(task_id, key, callback_name, delta)
 
-        self.msg(unicode(table))
+        self.msg(str(table))
 
 # Private functions to handle editing
 

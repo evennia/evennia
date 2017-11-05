@@ -134,13 +134,13 @@ into (when including its borders and at least one line of text), the
 form will raise an error.
 
 """
-from __future__ import print_function
+
 from builtins import object, range
 
 import re
 import copy
 from evennia.utils.evtable import EvCell, EvTable
-from evennia.utils.utils import all_from_module, to_str, to_unicode
+from evennia.utils.utils import all_from_module, to_str, is_iter
 from evennia.utils.ansi import ANSIString
 
 # non-valid form-identifying characters (which can thus be
@@ -155,16 +155,16 @@ _ANSI_ESCAPE = re.compile(r"\|\|")
 
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
-    if isinstance(obj, basestring):
+    if isinstance(obj, str):
         # since ansi will be parsed twice (here and in the normal ansi send), we have to
         # escape the |-structure twice.
         obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
         return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
-    elif hasattr(obj, "__iter__"):
+    elif is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(to_unicode(obj), regexable=regexable)
+        return ANSIString(obj, regexable=regexable)
 
 
 class EvForm(object):
@@ -260,7 +260,6 @@ class EvForm(object):
 
         # get rectangles and assign EvCells
         for key, (iy, leftix, rightix) in cell_coords.items():
-
             # scan up to find top of rectangle
             dy_up = 0
             if iy > 0:
@@ -408,7 +407,7 @@ class EvForm(object):
         self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
 
         # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        self.raw_form = _to_ansi(to_unicode(datadict.get("FORM", "")).split("\n"))
+        self.raw_form = _to_ansi(datadict.get("FORM", "").split("\n"))
         # strip first line
         self.raw_form = self.raw_form[1:] if self.raw_form else self.raw_form
 
@@ -420,11 +419,11 @@ class EvForm(object):
 
     def __str__(self):
         "Prints the form"
-        return ANSIString("\n").join([line for line in self.form])
+        return str(ANSIString("\n").join([line for line in self.form]))
 
     def __unicode__(self):
         "prints the form"
-        return unicode(ANSIString("\n").join([line for line in self.form]))
+        return str(ANSIString("\n").join([line for line in self.form]))
 
 
 def _test():
@@ -453,4 +452,4 @@ def _test():
     form.map(tables={"A": tableA,
                      "B": tableB})
     # unicode is required since the example contains non-ascii characters
-    return unicode(form)
+    return str(form)

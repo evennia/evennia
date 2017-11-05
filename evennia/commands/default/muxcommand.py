@@ -30,7 +30,7 @@ class MuxCommand(Command):
         We just show it here for completeness - we
         are satisfied using the default check in Command.
         """
-        return super(MuxCommand, self).has_perm(srcobj)
+        return super().has_perm(srcobj)
 
     def at_pre_cmd(self):
         """
@@ -197,7 +197,7 @@ class MuxAccountCommand(MuxCommand):
         """
         We run the parent parser as usual, then fix the result
         """
-        super(MuxAccountCommand, self).parse()
+        super().parse()
 
         if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
             # caller is an Object/Character

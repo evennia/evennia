@@ -23,7 +23,7 @@ from django.conf import settings
 from evennia.utils import utils
 from evennia.utils import logger
 
-from evennia.utils.utils import to_str, to_unicode
+from evennia.utils.utils import to_str
 from future.utils import with_metaclass
 
 
@@ -538,7 +538,7 @@ def _spacing_preflight(func):
     def wrapped(self, width, fillchar=None):
         if fillchar is None:
             fillchar = " "
-        if (len(fillchar) != 1) or (not isinstance(fillchar, basestring)):
+        if (len(fillchar) != 1) or (not isinstance(fillchar, str)):
             raise TypeError("must be char, not %s" % type(fillchar))
         if not isinstance(width, int):
             raise TypeError("integer argument expected, got %s" % type(width))
@@ -579,7 +579,7 @@ def _on_raw(func_name):
             # just skip out if there are no more strings
             pass
         result = getattr(self._raw_string, func_name)(*args, **kwargs)
-        if isinstance(result, basestring):
+        if isinstance(result, str):
             return ANSIString(result, decoded=True)
         return result
     return wrapped
@@ -630,10 +630,10 @@ class ANSIMeta(type):
         for func_name in [
                 'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
             setattr(cls, func_name, _transform(func_name))
-        super(ANSIMeta, cls).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
-class ANSIString(with_metaclass(ANSIMeta, unicode)):
+class ANSIString(with_metaclass(ANSIMeta, str)):
     """
     Unicode-like object that is aware of ANSI codes.
 
@@ -674,7 +674,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
         """
         string = args[0]
-        if not isinstance(string, basestring):
+        if not isinstance(string, str):
             string = to_str(string, force_string=True)
         parser = kwargs.get('parser', ANSI_PARSER)
         decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
@@ -690,7 +690,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             decoded = True
         if not decoded:
             # Completely new ANSI String
-            clean_string = to_unicode(parser.parse_ansi(string, strip_ansi=True, mxp=True))
+            clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=True)
             string = parser.parse_ansi(string, xterm256=True, mxp=True)
         elif clean_string is not None:
             # We have an explicit clean string.
@@ -705,10 +705,10 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
             # It's a string that has been pre-ansi decoded.
             clean_string = parser.strip_raw_codes(string)
 
-        if not isinstance(string, unicode):
+        if not isinstance(string, str):
             string = string.decode('utf-8')
 
-        ansi_string = super(ANSIString, cls).__new__(ANSIString, to_str(clean_string), "utf-8")
+        ansi_string = super().__new__(ANSIString, to_str(clean_string))
         ansi_string._raw_string = string
         ansi_string._clean_string = clean_string
         ansi_string._code_indexes = code_indexes
@@ -716,7 +716,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         return ansi_string
 
     def __str__(self):
-        return self._raw_string.encode('utf-8')
+        return self._raw_string
 
     def __unicode__(self):
         """
@@ -764,7 +764,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
         """
         self.parser = kwargs.pop('parser', ANSI_PARSER)
-        super(ANSIString, self).__init__()
+        super().__init__()
         if self._code_indexes is None:
             self._code_indexes, self._char_indexes = self._get_indexes()
 
@@ -803,7 +803,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         interpreted literally.
 
         """
-        if not isinstance(other, basestring):
+        if not isinstance(other, str):
             return NotImplemented
         if not isinstance(other, ANSIString):
             other = ANSIString(other)
@@ -814,7 +814,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         Likewise, if we're on the other end.
 
         """
-        if not isinstance(other, basestring):
+        if not isinstance(other, str):
             return NotImplemented
         if not isinstance(other, ANSIString):
             other = ANSIString(other)
@@ -849,7 +849,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         if not slice_indexes:
             return ANSIString('')
         try:
-            string = self[slc.start]._raw_string
+            string = self[slc.start or 0]._raw_string
         except IndexError:
             return ANSIString('')
         last_mark = slice_indexes[0]
@@ -976,7 +976,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
 
         code_indexes = []
         for match in self.parser.ansi_regex.finditer(self._raw_string):
-            code_indexes.extend(range(match.start(), match.end()))
+            code_indexes.extend(list(range(match.start(), match.end())))
         if not code_indexes:
             # Plain string, no ANSI codes.
             return code_indexes, list(range(0, len(self._raw_string)))
@@ -1285,7 +1285,7 @@ class ANSIString(with_metaclass(ANSIMeta, unicode)):
         code_indexes = [i for i in range(0, len(prefix))]
         length = len(prefix) + len(line)
         code_indexes.extend([i for i in range(length, length + len(postfix))])
-        char_indexes = self._shifter(range(0, len(line)), len(prefix))
+        char_indexes = self._shifter(list(range(0, len(line))), len(prefix))
         raw_string = prefix + line + postfix
         return ANSIString(
             raw_string, clean_string=line, char_indexes=char_indexes,

@@ -25,7 +25,7 @@ text = "Automated testing is advantageous for a number of reasons:" \
 
 class TestLanguage(EvenniaTest):
     def setUp(self):
-        super(TestLanguage, self).setUp()
+        super().setUp()
         rplanguage.add_language(key="testlang",
                                 word_length_variance=1,
                                 noun_prefix="bara",
@@ -35,7 +35,7 @@ class TestLanguage(EvenniaTest):
                                 force=True)
 
     def tearDown(self):
-        super(TestLanguage, self).tearDown()
+        super().tearDown()
         rplanguage._LANGUAGE_HANDLER.delete()
         rplanguage._LANGUAGE_HANDLER = None
 
@@ -79,7 +79,7 @@ emote = "With a flair, /me looks at /first and /colliding sdesc-guy. She says \"
 
 class TestRPSystem(EvenniaTest):
     def setUp(self):
-        super(TestRPSystem, self).setUp()
+        super().setUp()
         self.room = create_object(rpsystem.ContribRPRoom, key="Location")
         self.speaker = create_object(rpsystem.ContribRPCharacter, key="Sender", location=self.room)
         self.receiver1 = create_object(rpsystem.ContribRPCharacter, key="Receiver1", location=self.room)
@@ -197,7 +197,7 @@ class TestExtendedRoom(CommandTest):
     settings.TIME_ZONE = "UTC"
 
     def setUp(self):
-        super(TestExtendedRoom, self).setUp()
+        super().setUp()
         self.room1.ndb.last_timeslot = "afternoon"
         self.room1.ndb.last_season = "winter"
         self.room1.db.details = {'testdetail': self.DETAIL_DESC}
@@ -244,7 +244,7 @@ from evennia.contrib import barter
 class TestBarter(CommandTest):
 
     def setUp(self):
-        super(TestBarter, self).setUp()
+        super().setUp()
         self.tradeitem1 = create_object(key="TradeItem1", location=self.char1)
         self.tradeitem2 = create_object(key="TradeItem2", location=self.char1)
         self.tradeitem3 = create_object(key="TradeItem3", location=self.char2)
@@ -331,7 +331,7 @@ from evennia import DefaultCharacter
 class TestWilderness(EvenniaTest):
 
     def setUp(self):
-        super(TestWilderness, self).setUp()
+        super().setUp()
         self.char1 = create_object(DefaultCharacter, key="char1")
         self.char2 = create_object(DefaultCharacter, key="char2")
 
@@ -355,14 +355,14 @@ class TestWilderness(EvenniaTest):
         wilderness.enter_wilderness(self.char1)
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEquals(w.db.itemcoordinates[self.char1], (0, 0))
+        self.assertEqual(w.db.itemcoordinates[self.char1], (0, 0))
 
     def test_enter_wilderness_custom_coordinates(self):
         wilderness.create_wilderness()
         wilderness.enter_wilderness(self.char1, coordinates=(1, 2))
         self.assertIsInstance(self.char1.location, wilderness.WildernessRoom)
         w = self.get_wilderness_script()
-        self.assertEquals(w.db.itemcoordinates[self.char1], (1, 2))
+        self.assertEqual(w.db.itemcoordinates[self.char1], (1, 2))
 
     def test_enter_wilderness_custom_name(self):
         name = "customnname"
@@ -381,7 +381,7 @@ class TestWilderness(EvenniaTest):
                      i.access(self.char1, "view") or
                      i.access(self.char1, "traverse"))]
 
-        self.assertEquals(len(exits), 3)
+        self.assertEqual(len(exits), 3)
         exitsok = ["north", "northeast", "east"]
         for each_exit in exitsok:
             self.assertTrue(any([e for e in exits if e.key == each_exit]))
@@ -393,7 +393,7 @@ class TestWilderness(EvenniaTest):
                  if i.destination and (
                      i.access(self.char1, "view") or
                      i.access(self.char1, "traverse"))]
-        self.assertEquals(len(exits), 8)
+        self.assertEqual(len(exits), 8)
         exitsok = ["north", "northeast", "east", "southeast", "south",
                    "southwest", "west", "northwest"]
         for each_exit in exitsok:
@@ -410,25 +410,25 @@ class TestWilderness(EvenniaTest):
         w = self.get_wilderness_script()
 
         # We should have no unused room after moving the first account in.
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertEqual(len(w.db.unused_rooms), 0)
         w.move_obj(self.char1, (0, 0))
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertEqual(len(w.db.unused_rooms), 0)
 
         # And also no unused room after moving the second one in.
         w.move_obj(self.char2, (1, 1))
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertEqual(len(w.db.unused_rooms), 0)
 
         # But if char2 moves into char1's room, we should have one unused room
         # Which should be char2's old room that got created.
         w.move_obj(self.char2, (0, 0))
-        self.assertEquals(len(w.db.unused_rooms), 1)
-        self.assertEquals(self.char1.location, self.char2.location)
+        self.assertEqual(len(w.db.unused_rooms), 1)
+        self.assertEqual(self.char1.location, self.char2.location)
 
         # And if char2 moves back out, that unused room should be put back to
         # use again.
         w.move_obj(self.char2, (1, 1))
-        self.assertNotEquals(self.char1.location, self.char2.location)
-        self.assertEquals(len(w.db.unused_rooms), 0)
+        self.assertNotEqual(self.char1.location, self.char2.location)
+        self.assertEqual(len(w.db.unused_rooms), 0)
 
     def test_get_new_coordinates(self):
         loc = (1, 1)
@@ -440,9 +440,9 @@ class TestWilderness(EvenniaTest):
                       "southwest": (0, 0),
                       "west": (0, 1),
                       "northwest": (0, 2)}
-        for direction, correct_loc in directions.iteritems():  # Not compatible with Python 3
+        for direction, correct_loc in directions.items():  # Not compatible with Python 3
             new_loc = wilderness.get_new_coordinates(loc, direction)
-            self.assertEquals(new_loc, correct_loc, direction)
+            self.assertEqual(new_loc, correct_loc, direction)
 
 
 # Testing chargen contrib
@@ -564,7 +564,7 @@ def _testcallback():
 
 class TestCustomGameTime(EvenniaTest):
     def setUp(self):
-        super(TestCustomGameTime, self).setUp()
+        super().setUp()
         gametime.gametime = Mock(return_value=2975000898.46)  # does not seem to work
 
     def tearDown(self):
@@ -797,6 +797,11 @@ class TestTutorialWorldMob(EvenniaTest):
 
 from evennia.contrib.tutorial_world import objects as tutobjects
 
+def _ignoreCancelled(err, *args, **kwargs):
+    # Ignore the cancelled errors that we intend to occur.
+    from twisted.internet.defer import CancelledError
+    if not issubclass(err.type, CancelledError):
+        err.raiseException()
 
 class TestTutorialWorldObjects(CommandTest):
     def test_tutorialobj(self):
@@ -823,6 +828,7 @@ class TestTutorialWorldObjects(CommandTest):
         self.call(tutobjects.CmdLight(), "", "You light torch.", obj=light)
         light._burnout()
         if hasattr(light, "deferred"):
+            light.deferred.addErrback(_ignoreCancelled)
             light.deferred.cancel()
         self.assertFalse(light.pk)
 
@@ -845,6 +851,7 @@ class TestTutorialWorldObjects(CommandTest):
         self.assertTrue(wall.db.exit_open)
         wall.reset()
         if hasattr(wall, "deferred"):
+            wall.deferred.addErrback(_ignoreCancelled)
             wall.deferred.cancel()
         wall.delete()
 
@@ -920,7 +927,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_basic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
-        
+
     # Test equipment commands
     def test_turnbattleequipcmd(self):
         # Start with equip module specific commands.
@@ -938,7 +945,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_equip.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
-        
+
     # Test range commands
     def test_turnbattlerangecmd(self):
         # Start with range module specific commands.
@@ -952,7 +959,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_range.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
-        
+
 
 class TestTurnBattleFunc(EvenniaTest):
 
@@ -1034,7 +1041,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
-        
+
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_tbequipfunc(self):
         attacker = create_object(tb_equip.TBEquipCharacter, key="Attacker")
@@ -1113,7 +1120,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
-        
+
     # Test combat functions in tb_range too.
     def test_tbrangefunc(self):
         testroom = create_object(DefaultRoom, key="Test Room")

@@ -256,7 +256,7 @@ class TypedObject(SharedMemoryModel):
 
         """
         typeclass_path = kwargs.pop("typeclass", None)
-        super(TypedObject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.set_class_from_typeclass(typeclass_path=typeclass_path)
 
     # initialize all handlers in a lazy fashion
@@ -340,7 +340,7 @@ class TypedObject(SharedMemoryModel):
         return smart_str("%s" % self.db_key)
 
     def __unicode__(self):
-        return u"%s" % self.db_key
+        return "%s" % self.db_key
 
     #@property
     def __dbid_get(self):
@@ -430,7 +430,7 @@ class TypedObject(SharedMemoryModel):
                 typeclass.
 
         """
-        if isinstance(typeclass, basestring):
+        if isinstance(typeclass, str):
             typeclass = [typeclass] + ["%s.%s" % (prefix, typeclass) for prefix in settings.TYPECLASS_PATHS]
         else:
             typeclass = [typeclass.path]
@@ -604,7 +604,7 @@ class TypedObject(SharedMemoryModel):
             self.nicks.clear()
         # scrambling properties
         self.delete = self._deleted
-        super(TypedObject, self).delete()
+        super().delete()
 
     #
     # Attribute storage

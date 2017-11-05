@@ -259,7 +259,7 @@ class CmdMail(default_cmds.MuxCommand):
                 table.reformat_column(4, width=7)
 
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
-                self.caller.msg(unicode(table))
+                self.caller.msg(str(table))
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
                 self.caller.msg("There are no messages in your inbox.")

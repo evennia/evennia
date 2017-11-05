@@ -65,4 +65,4 @@ class EvenniaTest(TestCase):
         del SESSIONS[self.session.sessid]
         self.account.delete()
         self.account2.delete()
-        super(EvenniaTest, self).tearDown()
+        super().tearDown()

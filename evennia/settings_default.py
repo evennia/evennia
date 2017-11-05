@@ -259,8 +259,8 @@ CONN_MAX_AGE = 3600 * 7
 # not be checked for models specified here. If new_natural_key does not exist,
 # `None` will be returned and stored back as if no replacement was set.
 ATTRIBUTE_STORED_MODEL_RENAME = [
-        ((u"players", u"playerdb"), (u"accounts", u"accountdb")),
-        ((u"typeclasses", u"defaultplayer"), (u"typeclasses", u"defaultaccount"))]
+        (("players", "playerdb"), ("accounts", "accountdb")),
+        (("typeclasses", "defaultplayer"), ("typeclasses", "defaultaccount"))]
 
 
 ######################################################################

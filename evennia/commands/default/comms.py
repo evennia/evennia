@@ -7,7 +7,6 @@ make sure to homogenize self.caller to always be the account object
 for easy handling.
 
 """
-from past.builtins import cmp
 from django.conf import settings
 from evennia.comms.models import ChannelDB, Msg
 from evennia.accounts.models import AccountDB
@@ -711,7 +710,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
         if not self.args or not self.rhs:
             pages = pages_we_sent + pages_we_got
-            pages.sort(lambda x, y: cmp(x.date_created, y.date_created))
+            pages = sorted(pages, key=lambda page: page.date_created)
 
             number = 5
             if self.args:
@@ -754,7 +753,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
         recobjs = []
         for receiver in set(receivers):
-            if isinstance(receiver, basestring):
+            if isinstance(receiver, str):
                 pobj = caller.search(receiver)
             elif hasattr(receiver, 'character'):
                 pobj = receiver

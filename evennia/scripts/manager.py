@@ -240,9 +240,9 @@ class ScriptDBManager(TypedObjectManager):
 
         if typeclass:
             if callable(typeclass):
-                typeclass = u"%s.%s" % (typeclass.__module__, typeclass.__name__)
+                typeclass = "%s.%s" % (typeclass.__module__, typeclass.__name__)
             else:
-                typeclass = u"%s" % typeclass
+                typeclass = "%s" % typeclass
 
         # not a dbref; normal search
         obj_restriction = obj and Q(db_obj=obj) or Q()

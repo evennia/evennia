@@ -8,7 +8,7 @@ commands needed to control them. Those commands could also have been
 in a separate module (e.g. if they could have been re-used elsewhere.)
 
 """
-from __future__ import print_function
+
 
 import random
 from evennia import TICKER_HANDLER
@@ -311,7 +311,7 @@ class WeatherRoom(TutorialRoom):
         the ticking of the room; the TickerHandler works fine for
         simple things like this though.
         """
-        super(WeatherRoom, self).at_object_creation()
+        super().at_object_creation()
         # subscribe ourselves to a ticker to repeatedly call the hook
         # "update_weather" on this object. The interval is randomized
         # so as to not have all weather rooms update at the same time.
@@ -362,7 +362,7 @@ class IntroRoom(TutorialRoom):
         """
         Called when the room is first created.
         """
-        super(IntroRoom, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "The first room of the tutorial. " \
                                 "This assigns the health Attribute to "\
                                 "the account."
@@ -633,7 +633,7 @@ class BridgeRoom(WeatherRoom):
         """Setups the room"""
         # this will start the weather room's ticker and tell
         # it to call update_weather regularly.
-        super(BridgeRoom, self).at_object_creation()
+        super().at_object_creation()
         # this identifies the exits from the room (should be the command
         # needed to leave through that exit). These are defaults, but you
         # could of course also change them after the room has been created.
@@ -836,7 +836,7 @@ class DarkRoom(TutorialRoom):
         """
         Called when object is first created.
         """
-        super(DarkRoom, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "This is a room with custom command sets on itself."
         # the room starts dark.
         self.db.is_lit = False
@@ -950,7 +950,7 @@ class TeleportRoom(TutorialRoom):
 
     def at_object_creation(self):
         """Called at first creation"""
-        super(TeleportRoom, self).at_object_creation()
+        super().at_object_creation()
         # what character.db.puzzle_clue must be set to, to avoid teleportation.
         self.db.puzzle_value = 1
         # target of successful teleportation. Can be a dbref or a
@@ -1016,7 +1016,7 @@ class OutroRoom(TutorialRoom):
         """
         Called when the room is first created.
         """
-        super(OutroRoom, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "The last room of the tutorial. " \
                                 "This cleans up all temporary Attributes " \
                                 "the tutorial may have assigned to the "\

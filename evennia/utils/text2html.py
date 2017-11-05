@@ -8,7 +8,7 @@ snippet #577349 on http://code.activestate.com.
 
 (extensively modified by Griatch 2010)
 """
-from __future__ import absolute_import
+
 from builtins import object
 
 import re
@@ -52,7 +52,7 @@ class TextToHTMLparser(object):
         ('color-013', hilite + ANSI_MAGENTA),
         ('color-014', hilite + ANSI_CYAN),
         ('color-015', hilite + ANSI_WHITE)  # pure white
-    ] + [("color-%03i" % (i + 16), XTERM256_FG % ("%i" % (i + 16))) for i in xrange(240)]
+    ] + [("color-%03i" % (i + 16), XTERM256_FG % ("%i" % (i + 16))) for i in range(240)]
 
     colorback = [
         ('bgcolor-000', ANSI_BACK_BLACK),  # pure black

@@ -8,7 +8,7 @@ login procedure of the game, tracks sessions etc.
 Using standard ssh client,
 
 """
-from __future__ import print_function
+
 from builtins import object
 import os
 import re
@@ -338,7 +338,7 @@ class AccountDBPasswordChecker(object):
 
         """
         self.factory = factory
-        super(AccountDBPasswordChecker, self).__init__()
+        super().__init__()
 
     def requestAvatarId(self, c):
         """

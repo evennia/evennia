@@ -231,7 +231,7 @@ class ObjectDB(TypedObject):
 
     def __location_set(self, location):
         """Set location, checking for loops and allowing dbref"""
-        if isinstance(location, (basestring, int)):
+        if isinstance(location, (str, int)):
             # allow setting of #dbref
             dbid = dbref(location, reqhash=False)
             if dbid:
