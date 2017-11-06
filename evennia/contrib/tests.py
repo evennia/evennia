@@ -651,6 +651,15 @@ class TestGenderSub(CommandTest):
         char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
         txt = "Test |p gender"
         self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender")
+              
+# test health bar contrib
+
+from evennia.contrib import health_bar
+
+class TestHealthBar(EvenniaTest):
+    def test_healthbar(self):
+        expected_bar_str = "|[G|w     |n|[B|w       test24 / 200test            |n"
+        self.assertTrue(health_bar.display_meter(24, 200, length=40, pre_text="test", post_text="test", align="center") == expected_bar_str)
 
 # test mail contrib
 
