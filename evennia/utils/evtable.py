@@ -1421,8 +1421,21 @@ class EvTable(object):
         column = EvColumn(*args, **options)
         wtable = self.ncols
         htable = self.nrows
-        excess = len(column) - htable
 
+        header = kwargs.get("header", None)
+        if header:
+            column.add_rows(unicode(header), ypos=0, **options)
+            self.header = True
+        elif self.header:
+            # we have a header already. Offset
+            column.add_rows("", ypos=0, **options)
+
+        # Calculate whether the new column needs to expand to the
+        # current table size, or if the table needs to expand to
+        # the column size.
+        # This needs to happen after the header rows have already been
+        # added to the column in order for the size calculations to match.
+        excess = len(column) - htable
         if excess > 0:
             # we need to add new rows to table
             for col in self.table:
@@ -1435,13 +1448,6 @@ class EvTable(object):
             column.add_rows(*empty_rows, **options)
             self.nrows -= excess
 
-        header = kwargs.get("header", None)
-        if header:
-            column.add_rows(unicode(header), ypos=0, **options)
-            self.header = True
-        elif self.header:
-            # we have a header already. Offset
-            column.add_rows("", ypos=0, **options)
         if xpos is None or xpos > wtable - 1:
             # add to the end
             self.table.append(column)

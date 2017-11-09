@@ -79,6 +79,7 @@ EvMenu = None
 EvTable = None
 EvForm = None
 EvEditor = None
+EvMore = None
 
 # Handlers
 SESSION_HANDLER = None
@@ -124,10 +125,11 @@ def _init():
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, AccountDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys, InterruptCommand
-    global search_object, search_script, search_account, search_channel, search_help, search_tag
+    global search_object, search_script, search_account, search_channel, search_help, search_tag, search_message
     global create_object, create_script, create_account, create_channel, create_message, create_help_entry
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER, TASK_HANDLER
+    global EvMenu, EvTable, EvForm, EvMore, EvEditor
 
     from .accounts.accounts import DefaultAccount
     from .accounts.accounts import DefaultGuest
