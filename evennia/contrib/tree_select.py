@@ -496,7 +496,7 @@ class CmdNameColor(Command):
 
     def func(self):
         # This is all you have to do to initialize a menu!
-        init_tree_selection(TEST_MENU, self.caller,
+        init_tree_selection(NAMECOLOR_MENU, self.caller,
                             change_name_color,
                             start_text="Name color options:")
 
