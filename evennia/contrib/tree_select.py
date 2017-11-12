@@ -432,7 +432,7 @@ def menunode_treeselect(caller, raw_string, **kwargs):
         selection = index_to_selection(treestr, index)
         try:
             callback(caller, treestr, index, selection)
-        except:
+        except Exception:
             log_trace("Error in tree selection callback.")
         
         # Returning None, None ends the menu.
