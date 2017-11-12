@@ -158,6 +158,7 @@ character's command set.
 """
 
 from evennia.utils import evmenu
+from evennia.utils.logger import log_trace
 from evennia import Command
 
 def init_tree_selection(treestr, caller, callback,
@@ -429,7 +430,10 @@ def menunode_treeselect(caller, raw_string, **kwargs):
     # If given index returns optlist as 'True', it's a selection. Pass to callback and end the menu.
     if optlist == True:
         selection = index_to_selection(treestr, index)
-        callback(caller, treestr, index, selection)
+        try:
+            callback(caller, treestr, index, selection)
+        except:
+            log_trace("Error in tree selection callback.")
         
         # Returning None, None ends the menu.
         return None, None
