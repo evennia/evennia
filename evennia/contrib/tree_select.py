@@ -131,7 +131,7 @@ Now we see that the Baz option has a description attached that's separate from i
 Once the player makes a selection - let's say, 'Foo' - the menu will terminate and call
 your specified callback with the selection, like so:
 
-    callback(TEST_MENU, caller, 0, "Foo")
+    callback(caller, TEST_MENU, 0, "Foo")
     
 The index of the selection is given along with a string containing the selection's key.
 That way, if you have two selections in the menu with the same key, you can still
@@ -171,8 +171,8 @@ def init_tree_selection(treestr, caller, callback,
         treestr (str): Multi-lne string representing menu options
         caller (obj): Player to initialize the menu for
         callback (callable): Function to run when a selection is made. Must take 4 args:
-            treestr (str): Menu tree string given above
             caller (obj): Caller given above
+            treestr (str): Menu tree string given above
             index (int): Index of final selection
             selection (str): Key of final selection
             
