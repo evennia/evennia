@@ -127,7 +127,16 @@ Now we see that the Baz option has a description attached that's separate from i
     Bar [+]                                  
     Baz: Look at this one: the best option.  
     Qux                                      
+
+Once the player makes a selection - let's say, 'Foo' - the menu will terminate and call
+your specified callback with the selection, like so:
+
+    callback(TEST_MENU, caller, 0, "Foo")
     
+The index of the selection is given along with a string containing the selection's key.
+That way, if you have two selections in the menu with the same key, you can still
+differentiate between them.
+
 And that's all there is to it! For simple branching-tree selections, using this system is
 much easier than manually creating EvMenu nodes. It also makes generating menus with dynamic
 options much easier - since the source of the menu tree is just a string, you could easily
