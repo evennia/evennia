@@ -753,10 +753,16 @@ class CmdCast(MuxCommand):
         """
         caller = self.caller
         
-        syntax_err = "Usage: cast <spell name> [= <target1, target2, etc.>]"
         if not self.lhs or len(self.lhs) < 3: # No spell name given
-            self.caller.msg(syntax_err)
-            return
+            caller.msg("Usage: cast <spell name> = <target>, <target2>, ...")
+            if not caller.db.spells_known:
+                caller.msg("You don't know any spells.")
+                return
+            else:
+                caller.db.spells_known = sorted(caller.db.spells_known)
+                spells_known_msg = "You know the following spells:|/" + "|/".join(caller.db.spells_known)
+                caller.msg(spells_known_msg) # List the spells the player knows
+                return
         
         spellname = self.lhs.lower()
         spell_to_cast = []
@@ -809,6 +815,7 @@ class CmdCast(MuxCommand):
         # If caster doesn't have enough MP to cover the spell's cost, give error and return
         if spelldata["cost"] > caller.db.mp:
             caller.msg("You don't have enough MP to cast '%s'." % spell_to_cast)
+            return
             
         # If in combat and the spell isn't a combat spell, give error message and return
         if spelldata["combat_spell"] == False and is_in_combat(caller):
@@ -894,13 +901,13 @@ class CmdCast(MuxCommand):
 
 class CmdRest(Command):
     """
-    Recovers damage.
+    Recovers damage and restores MP.
 
     Usage:
       rest
 
-    Resting recovers your HP to its maximum, but you can only
-    rest if you're not in a fight.
+    Resting recovers your HP and MP to their maximum, but you can
+    only rest if you're not in a fight.
     """
 
     key = "rest"
@@ -914,9 +921,10 @@ class CmdRest(Command):
             return
 
         self.caller.db.hp = self.caller.db.max_hp  # Set current HP to maximum
-        self.caller.location.msg_contents("%s rests to recover HP." % self.caller)
+        self.caller.db.mp = self.caller.db.max_mp  # Set current MP to maximum
+        self.caller.location.msg_contents("%s rests to recover HP and MP." % self.caller)
         """
-        You'll probably want to replace this with your own system for recovering HP.
+        You'll probably want to replace this with your own system for recovering HP and MP.
         """
 
 
@@ -974,8 +982,16 @@ def spell_cure_wounds(caster, spell_name, targets, cost, **kwargs):
     """
     spell_msg = "%s casts %s!" % (caster, spell_name)
     
+    min_healing = 20
+    max_healing = 40
+    
+    # Retrieve healing range from kwargs, if present
+    if "healing_range" in kwargs:
+        min_healing = kwargs["healing_range"][0]
+        max_healing = kwargs["healing_range"][1]
+    
     for character in targets:
-        to_heal = randint(20, 40) # Restore 20 to 40 hp
+        to_heal = randint(min_healing, max_healing) # Restore 20 to 40 hp
         if character.db.hp + to_heal > character.db.max_hp:
             to_heal = character.db.max_hp - character.db.hp # Cap healing to max HP
         character.db.hp += to_heal
@@ -986,7 +1002,91 @@ def spell_cure_wounds(caster, spell_name, targets, cost, **kwargs):
     caster.location.msg_contents(spell_msg) # Message the room with spell results
     
     if is_in_combat(caster): # Spend action if in combat
-        spend_action(caster, 1, action_name="cast")        
+        spend_action(caster, 1, action_name="cast")
+        
+def spell_attack(caster, spell_name, targets, cost, **kwargs):
+    """
+    Spell that deals damage in combat. Similar to resolve_attack.
+    """
+    spell_msg = "%s casts %s!" % (caster, spell_name)
+    
+    atkname_single = "The spell"
+    atkname_plural = "spells"
+    min_damage = 10
+    max_damage = 20
+    accuracy = 0
+    attack_count = 1
+    
+    # Retrieve some variables from kwargs, if present
+    if "attack_name" in kwargs:
+        atkname_single = kwargs["attack_name"][0]
+        atkname_plural = kwargs["attack_name"][1]
+    if "damage_range" in kwargs:
+        min_damage = kwargs["damage_range"][0]
+        max_damage = kwargs["damage_range"][1]
+    if "accuracy" in kwargs:
+        accuracy = kwargs["accuracy"]
+    if "attack_count" in kwargs:
+        attack_count = kwargs["attack_count"]
+        
+    to_attack = []
+    print targets
+    # If there are more attacks than targets given, attack first target multiple times
+    if len(targets) < attack_count:
+        to_attack = to_attack + targets
+        extra_attacks = attack_count - len(targets)
+        for n in range(extra_attacks):
+            to_attack.insert(0, targets[0])
+    else:
+        to_attack = targets
+            
+    print to_attack
+    print targets
+    
+    # Set up dictionaries to track number of hits and total damage
+    total_hits = {}
+    total_damage = {}
+    for fighter in targets:
+        total_hits.update({fighter:0})
+        total_damage.update({fighter:0})
+    
+    # Resolve attack for each target
+    for fighter in to_attack:
+        attack_value = randint(1, 100) + accuracy # Spell attack roll
+        defense_value = get_defense(caster, fighter)
+        if attack_value >= defense_value:
+            spell_dmg = randint(min_damage, max_damage) # Get spell damage
+            total_hits[fighter] += 1
+            total_damage[fighter] += spell_dmg
+            
+    print total_hits
+    print total_damage
+    print targets
+    
+    for fighter in targets:
+        # Construct combat message
+        if total_hits[fighter] == 0:
+            spell_msg += " The spell misses %s!" % fighter
+        elif total_hits[fighter] > 0:
+            attack_count_str = atkname_single + " hits"
+            if total_hits[fighter] > 1:
+                attack_count_str = "%i %s hit" % (total_hits[fighter], atkname_plural)
+            spell_msg += " %s %s for %i damage!" % (attack_count_str, fighter, total_damage[fighter])
+    
+    caster.db.mp -= cost # Deduct MP cost
+    
+    caster.location.msg_contents(spell_msg) # Message the room with spell results
+    
+    for fighter in targets:
+        # Apply damage
+        apply_damage(fighter, total_damage[fighter])
+        # If fighter HP is reduced to 0 or less, call at_defeat.
+        if fighter.db.hp <= 0:
+            at_defeat(fighter)
+    
+    if is_in_combat(caster): # Spend action if in combat
+        spend_action(caster, 1, action_name="cast")
+        
 
 """
 Required values for spells:
@@ -1002,7 +1102,7 @@ Required values for spells:
         "otherchar" - Any character excluding the caster
     spellfunc (callable): Function that performs the action of the spell.
         Must take the following arguments: caster (obj), spell_name (str), targets (list),
-        and cost(int), as well as **kwargs.
+        and cost (int), as well as **kwargs.
     
 Optional values for spells:
     
@@ -1012,11 +1112,17 @@ Optional values for spells:
         1 by default - unused if target is "none" or "self"
 
 Any other values specified besides the above will be passed as kwargs to the spellfunc.
-        
+You can use kwargs to effectively re-use the same function for different but similar
+spells.
 """
         
 SPELLS = {
-"magic missile":{"spellfunc":None, "target":"otherchar", "cost":3, "noncombat_spell":False, "max_targets":3},
-"cure wounds":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":5, "its_a_kwarg":"wow"},
+"magic missile":{"spellfunc":spell_attack, "target":"otherchar", "cost":3, "noncombat_spell":False, "max_targets":3,
+                 "attack_name":("A bolt", "bolts"), "damage_range":(4, 7), "accuracy":999, "attack_count":3},
+"flame shot":{"spellfunc":spell_attack, "target":"otherchar", "cost":3, "noncombat_spell":False,
+                 "attack_name":("A jet of flame", "jets of flame"), "damage_range":(25, 35)},
+"cure wounds":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":5},
+"mass cure wounds":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":10, "max_targets": 5},
+"full heal":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":12, "healing_range":(100, 100)}
 }
 
