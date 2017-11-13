@@ -312,6 +312,8 @@ class TBMagicCharacter(DefaultCharacter):
         self.db.max_hp = 100  # Set maximum HP to 100
         self.db.hp = self.db.max_hp  # Set current HP to maximum
         self.db.spells_known = [] # Set empty spells known list
+        self.db.max_mp = 20 # Set maximum MP to 20
+        self.db.mp = self.db.max_mp # Set current MP to maximum
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
@@ -733,6 +735,13 @@ class CmdLearnSpell(Command):
 class CmdCast(MuxCommand):
     """
     Cast a magic spell!
+    
+    Notes: This is a quite long command, since it has to cope with all
+       the different circumstances in which you may or may not be able
+       to cast a spell. None of the spell's effects are handled by the
+       command - all the command does is verify that the player's input
+       is valid for the spell being cast and then call the spell's
+       function.
     """
     
     key = "cast"
@@ -789,8 +798,29 @@ class CmdCast(MuxCommand):
             spelldata.update({"noncombat_spell":True})
         if "max_targets" not in spelldata:
             spelldata.update({"max_targets":1})
+            
+        # Store any superfluous options as kwargs to pass to the spell function
+        kwargs = {}
+        spelldata_opts = ["spellfunc", "target", "cost", "combat_spell", "noncombat_spell", "max_targets"]
+        for key in spelldata:
+            if key not in spelldata_opts:
+                kwargs.update({key:spelldata[key]})
+            
+        # If caster doesn't have enough MP to cover the spell's cost, give error and return
+        if spelldata["cost"] > caller.db.mp:
+            caller.msg("You don't have enough MP to cast '%s'." % spell_to_cast)
+            
+        # If in combat and the spell isn't a combat spell, give error message and return
+        if spelldata["combat_spell"] == False and is_in_combat(caller):
+            caller.msg("You can't use the spell '%s' in combat." % spell_to_cast)
+            return
+            
+        # If not in combat and the spell isn't a non-combat spell, error ms and return.
+        if spelldata["noncombat_spell"] == False and is_in_combat(caller) == False:
+            caller.msg("You can't use the spell '%s' outside of combat." % spell_to_cast)
+            return
         
-        # If spell takes no targets, give error message and return
+        # If spell takes no targets and one is given, give error message and return
         if len(spell_targets) > 0 and spelldata["target"] == "none":
             caller.msg("The spell '%s' isn't cast on a target.")
             return
@@ -798,7 +828,7 @@ class CmdCast(MuxCommand):
         # If no target is given and spell requires a target, give error message
         if spelldata["target"] not in ["self", "none"]:
             if len(spell_targets) == 0:
-                caller.msg("The spell %s requires a target." % spell_to_cast)
+                caller.msg("The spell '%s' requires a target." % spell_to_cast)
                 return
             
         # If more targets given than maximum, give error message
@@ -806,28 +836,32 @@ class CmdCast(MuxCommand):
             targplural = "target"
             if spelldata["max_targets"] > 1:
                 targplural = "targets"
-            caller.msg("The spell %s can only be cast on %i %s." % (spell_to_cast, spelldata["max_targets"], targplural))
+            caller.msg("The spell '%s' can only be cast on %i %s." % (spell_to_cast, spelldata["max_targets"], targplural))
             return
             
         # Set up our candidates for targets
         target_candidates = []
         
+        # If spell targets 'any' or 'other', any object in caster's inventory or location
+        # can be targeted by the spell.
         if spelldata["target"] in ["any", "other"]:
             target_candidates = caller.location.contents + caller.contents
         
+        # If spell targets 'anyobj', only non-character objects can be targeted.
         if spelldata["target"] == "anyobj":
             prefilter_candidates = caller.location.contents + caller.contents
             for thing in prefilter_candidates:
                 if not thing.attributes.has("max_hp"): # Has no max HP, isn't a fighter
                     target_candidates.append(thing)
                     
+        # If spell targets 'anychar' or 'otherchar', only characters can be targeted.
         if spelldata["target"] in ["anychar", "otherchar"]:
             prefilter_candidates = caller.location.contents
             for thing in prefilter_candidates:
                 if thing.attributes.has("max_hp"): # Has max HP, is a fighter
                     target_candidates.append(thing)
                     
-        # Now, match each entry in spell_targets to an object
+        # Now, match each entry in spell_targets to an object in the search candidates
         matched_targets = []
         for target in spell_targets:
             match = caller.search(target, candidates=target_candidates)
@@ -841,11 +875,12 @@ class CmdCast(MuxCommand):
         # Give error message if trying to cast an "other" target spell on yourself
         if spelldata["target"] in ["other", "otherchar"]:
             if caller in spell_targets:
-                caller.msg("You can't cast %s on yourself." % spell_to_cast)
+                caller.msg("You can't cast '%s' on yourself." % spell_to_cast)
                 return
                 
         # Return if "None" in target list, indicating failed match
         if None in spell_targets:
+            # No need to give an error message, as 'search' gives one by default.
             return
                 
         # Give error message if repeats in target list
@@ -853,7 +888,8 @@ class CmdCast(MuxCommand):
             caller.msg("You can't specify the same target more than once!")
             return
         
-        caller.msg("You cast %s! Fwooosh!" % spell_to_cast)
+        # Finally, we can cast the spell itself
+        spelldata["spellfunc"](caller, spell_to_cast, spell_targets, spelldata["cost"], **kwargs)
         
 
 class CmdRest(Command):
@@ -927,7 +963,31 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdCombatHelp())
         self.add(CmdLearnSpell())
         self.add(CmdCast())
-        
+
+"""
+SPELL FUNCTIONS START HERE
+"""
+
+def spell_cure_wounds(caster, spell_name, targets, cost, **kwargs):
+    """
+    Spell that restores HP to a target.
+    """
+    spell_msg = "%s casts %s!" % (caster, spell_name)
+    
+    for character in targets:
+        to_heal = randint(20, 40) # Restore 20 to 40 hp
+        if character.db.hp + to_heal > character.db.max_hp:
+            to_heal = character.db.max_hp - character.db.hp # Cap healing to max HP
+        character.db.hp += to_heal
+        spell_msg += " %s regains %i HP!" % (character, to_heal)
+    
+    caster.db.mp -= cost # Deduct MP cost
+    
+    caster.location.msg_contents(spell_msg) # Message the room with spell results
+    
+    if is_in_combat(caster): # Spend action if in combat
+        spend_action(caster, 1, action_name="cast")        
+
 """
 Required values for spells:
 
@@ -941,8 +1001,8 @@ Required values for spells:
         "other" - Any object excluding the caster
         "otherchar" - Any character excluding the caster
     spellfunc (callable): Function that performs the action of the spell.
-        Must take the following arguments: caster (obj), targets (list),
-        and cost(int).
+        Must take the following arguments: caster (obj), spell_name (str), targets (list),
+        and cost(int), as well as **kwargs.
     
 Optional values for spells:
     
@@ -957,5 +1017,6 @@ Any other values specified besides the above will be passed as kwargs to the spe
         
 SPELLS = {
 "magic missile":{"spellfunc":None, "target":"otherchar", "cost":3, "noncombat_spell":False, "max_targets":3},
-"cure wounds":{"spellfunc":None, "target":"anychar", "cost":5},
+"cure wounds":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":5, "its_a_kwarg":"wow"},
 }
+
