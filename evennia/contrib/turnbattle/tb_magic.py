@@ -769,7 +769,7 @@ class CmdLearnSpell(Command):
             caller.msg("You learn the spell '%s'!" % spell_to_learn)
             return
         if spell_to_learn in self.caller.db.spells_known: # Already has the spell specified
-            caller.msg("You already know the spell '%s'!" % spell_to_learn)  
+            caller.msg("You already know the spell '%s'!" % spell_to_learn)
         """
         You will almost definitely want to replace this with your own system
         for learning spells, perhaps tied to character advancement or finding
@@ -1257,9 +1257,13 @@ Optional values for spells:
     max_targets (int): Maximum number of objects that can be targeted by the spell.
         1 by default - unused if target is "none" or "self"
 
-Any other values specified besides the above will be passed as kwargs to the spellfunc.
+Any other values specified besides the above will be passed as kwargs to 'spellfunc'.
 You can use kwargs to effectively re-use the same function for different but similar
-spells.
+spells - for example, 'magic missile' and 'flame shot' use the same function, but
+behave differently, as they have different damage ranges, accuracy, amount of attacks
+made as part of the spell, and so forth. If you make your spell functions flexible
+enough, you can make a wide variety of spells just by adding more entries to this
+dictionary.
 """
 
 SPELLS = {
