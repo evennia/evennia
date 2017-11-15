@@ -714,6 +714,22 @@ class CmdLearnSpell(Command):
         learnspell <spell name>
         
     Adds a spell by name to your list of spells known.
+    
+    The following spells are provided as examples:
+    
+        |wmagic missile|n (3 MP): Fires three missiles that never miss. Can target
+            up to three different enemies.
+        
+        |wflame shot|n (3 MP): Shoots a high-damage jet of flame at one target.
+        
+        |wcure wounds|n (5 MP): Heals damage on one target.
+        
+        |wmass cure wounds|n (10 MP): Like 'cure wounds', but can heal up to 5
+            targets at once.
+
+        |wfull heal|n (12 MP): Heals one target back to full HP.
+        
+        |wcactus conjuration|n (2 MP): Creates a cactus.
     """
     
     key = "learnspell"
@@ -925,7 +941,10 @@ class CmdCast(MuxCommand):
             return
         
         # Finally, we can cast the spell itself. Note that MP is not deducted here!
-        spelldata["spellfunc"](caller, spell_to_cast, spell_targets, spelldata["cost"], **kwargs)
+        try:
+            spelldata["spellfunc"](caller, spell_to_cast, spell_targets, spelldata["cost"], **kwargs)
+        except Exception:
+            log_trace("Error in callback for spell: %s." % spell_to_cast)
         """
         Note: This is a quite long command, since it has to cope with all
         the different circumstances in which you may or may not be able
@@ -963,7 +982,25 @@ class CmdRest(Command):
         """
         You'll probably want to replace this with your own system for recovering HP and MP.
         """
+        
+class CmdStatus(Command):
+    """
+    Gives combat information.
 
+    Usage:
+      status
+
+    Shows your current and maximum HP and your distance from
+    other targets in combat.
+    """
+
+    key = "status"
+    help_category = "combat"
+
+    def func(self):
+        "This performs the actual command."
+        char = self.caller
+        char.msg("You have %i / %i HP and %i / %i MP." % (char.db.hp, char.db.max_hp, char.db.mp, char.db.max_mp))
 
 class CmdCombatHelp(CmdHelp):
     """
@@ -1008,6 +1045,7 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdCombatHelp())
         self.add(CmdLearnSpell())
         self.add(CmdCast())
+        self.add(CmdStatus())
 
 """
 ----------------------------------------------------------------------------
@@ -1182,6 +1220,7 @@ def spell_conjure(caster, spell_name, targets, cost, **kwargs):
     
     caster.db.mp -= cost # Deduct MP cost
     
+    # Message the room to announce the creation of the object
     caster.location.msg_contents("%s casts %s, and %s appears!" % (caster, spell_name, conjured_obj))
 
 """
