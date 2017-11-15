@@ -1,20 +1,38 @@
 """
-Simple turn-based combat system
+Simple turn-based combat system with spell casting
 
 Contrib - Tim Ashley Jenkins 2017
 
-This is a framework for a simple turn-based combat system, similar
-to those used in D&D-style tabletop role playing games. It allows
-any character to start a fight in a room, at which point initiative
-is rolled and a turn order is established. Each participant in combat
-has a limited time to decide their action for that turn (30 seconds by
-default), and combat progresses through the turn order, looping through
-the participants until the fight ends.
+This is a version of the 'turnbattle' contrib that includes a basic,
+expandable framework for a 'magic system', whereby players can spend
+a limited resource (MP) to achieve a wide variety of effects, both in
+and out of combat. This does not have to strictly be a system for
+magic - it can easily be re-flavored to any other sort of resource
+based mechanic, like psionic powers, special moves and stamina, and
+so forth.
 
-Only simple rolls for attacking are implemented here, but this system
-is easily extensible and can be used as the foundation for implementing
-the rules from your turn-based tabletop game of choice or making your
-own battle system.
+In this system, spells are learned by name with the 'learnspell'
+command, and then used with the 'cast' command. Spells can be cast in or
+out of combat - some spells can only be cast in combat, some can only be
+cast outside of combat, and some can be cast any time. However, if you
+are in combat, you can only cast a spell on your turn, and doing so will
+typically use an action (as specified in the spell's funciton).
+
+Spells are defined at the end of the module in a database that's a
+dictionary of dictionaries - each spell is matched by name to a function,
+along with various parameters that restrict when the spell can be used and
+what the spell can be cast on. Included is a small variety of spells that
+damage opponents and heal HP, as well as one that creates an object.
+
+Because a spell can call any function, a spell can be made to do just
+about anything at all. The SPELLS dictionary at the bottom of the module
+even allows kwargs to be passed to the spell function, so that the same
+function can be re-used for multiple similar spells.
+
+Spells in this system work on a very basic resource: MP, which is spent
+when casting spells and restored by resting. It shouldn't be too difficult
+to modify this system to use spell slots, some physical fuel or resource,
+or whatever else your game requires.
 
 To install and test, import this module's TBMagicCharacter object into
 your game's character.py module:
@@ -43,7 +61,7 @@ in your game and using it as-is.
 """
 
 from random import randint
-from evennia import DefaultCharacter, Command, default_cmds, DefaultScript
+from evennia import DefaultCharacter, Command, default_cmds, DefaultScript, create_object
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.default.help import CmdHelp
 
@@ -690,7 +708,12 @@ class CmdDisengage(Command):
         
 class CmdLearnSpell(Command):
     """
-    Learn a magic spell
+    Learn a magic spell.
+    
+    Usage:
+        learnspell <spell name>
+        
+    Adds a spell by name to your list of spells known.
     """
     
     key = "learnspell"
@@ -706,7 +729,7 @@ class CmdLearnSpell(Command):
         caller = self.caller
         spell_to_learn = []
         
-        if not args or len(args) < 3:
+        if not args or len(args) < 3: # No spell given
             caller.msg("Usage: learnspell <spell name>")
             return
         
@@ -725,23 +748,29 @@ class CmdLearnSpell(Command):
         if len(spell_to_learn) == 1: # If one match, extract the string
             spell_to_learn = spell_to_learn[0]
         
-        if spell_to_learn not in self.caller.db.spells_known:
-            caller.db.spells_known.append(spell_to_learn)
+        if spell_to_learn not in self.caller.db.spells_known: # If the spell isn't known...
+            caller.db.spells_known.append(spell_to_learn) # ...then add the spell to the character
             caller.msg("You learn the spell '%s'!" % spell_to_learn)
             return
-        if spell_to_learn in self.caller.db.spells_known:
-            caller.msg("You already know the spell '%s'!" % spell_to_learn)
+        if spell_to_learn in self.caller.db.spells_known: # Already has the spell specified
+            caller.msg("You already know the spell '%s'!" % spell_to_learn)  
+        """
+        You will almost definitely want to replace this with your own system
+        for learning spells, perhaps tied to character advancement or finding
+        items in the game world that spells can be learned from.
+        """
         
 class CmdCast(MuxCommand):
     """
-    Cast a magic spell!
+    Cast a magic spell that you know, provided you have the MP
+    to spend on its casting.
     
-    Notes: This is a quite long command, since it has to cope with all
-       the different circumstances in which you may or may not be able
-       to cast a spell. None of the spell's effects are handled by the
-       command - all the command does is verify that the player's input
-       is valid for the spell being cast and then call the spell's
-       function.
+    Usage:
+        cast <spellname> [= <target1>, <target2>, etc...]
+        
+    Some spells can be cast on multiple targets, some can be cast
+    on only yourself, and some don't need a target specified at all.
+    Typing 'cast' by itself will give you a list of spells you know.
     """
     
     key = "cast"
@@ -829,7 +858,7 @@ class CmdCast(MuxCommand):
         
         # If spell takes no targets and one is given, give error message and return
         if len(spell_targets) > 0 and spelldata["target"] == "none":
-            caller.msg("The spell '%s' isn't cast on a target.")
+            caller.msg("The spell '%s' isn't cast on a target." % spell_to_cast)
             return
             
         # If no target is given and spell requires a target, give error message
@@ -895,8 +924,16 @@ class CmdCast(MuxCommand):
             caller.msg("You can't specify the same target more than once!")
             return
         
-        # Finally, we can cast the spell itself
+        # Finally, we can cast the spell itself. Note that MP is not deducted here!
         spelldata["spellfunc"](caller, spell_to_cast, spell_targets, spelldata["cost"], **kwargs)
+        """
+        Note: This is a quite long command, since it has to cope with all
+        the different circumstances in which you may or may not be able
+        to cast a spell. None of the spell's effects are handled by the
+        command - all the command does is verify that the player's input
+        is valid for the spell being cast and then call the spell's
+        function.
+        """
         
 
 class CmdRest(Command):
@@ -973,12 +1010,32 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdCast())
 
 """
+----------------------------------------------------------------------------
 SPELL FUNCTIONS START HERE
+----------------------------------------------------------------------------
+
+These are the functions that are called by the 'cast' command to perform the
+effects of various spells. Which spells execute which functions and what
+parameters are passed to them are specified at the bottom of the module, in
+the 'SPELLS' dictionary.
+
+All of these functions take the same arguments:
+    caster (obj): Character casting the spell
+    spell_name (str): Name of the spell being cast
+    targets (list): List of objects targeted by the spell
+    cost (int): MP cost of casting the spell
+
+These functions also all accept **kwargs, and how these are used is specified
+in the docstring for each function.
 """
 
-def spell_cure_wounds(caster, spell_name, targets, cost, **kwargs):
+def spell_healing(caster, spell_name, targets, cost, **kwargs):
     """
-    Spell that restores HP to a target.
+    Spell that restores HP to a target or targets.
+    
+    kwargs:
+        healing_range (tuple): Minimum and maximum amount healed to
+            each target. (20, 40) by default.
     """
     spell_msg = "%s casts %s!" % (caster, spell_name)
     
@@ -1007,6 +1064,20 @@ def spell_cure_wounds(caster, spell_name, targets, cost, **kwargs):
 def spell_attack(caster, spell_name, targets, cost, **kwargs):
     """
     Spell that deals damage in combat. Similar to resolve_attack.
+    
+    kwargs:
+        attack_name (tuple): Single and plural describing the sort of
+            attack or projectile that strikes each enemy.
+        damage_range (tuple): Minimum and maximum damage dealt by the
+            spell. (10, 20) by default.
+        accuracy (int): Modifier to the spell's attack roll, determining
+            an increased or decreased chance to hit. 0 by default.
+        attack_count (int): How many individual attacks are made as part
+            of the spell. If the number of attacks exceeds the number of
+            targets, the first target specified will be attacked more
+            than once. Just 1 by default - if the attack_count is less
+            than the number targets given, each target will only be
+            attacked once.
     """
     spell_msg = "%s casts %s!" % (caster, spell_name)
     
@@ -1030,7 +1101,6 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
         attack_count = kwargs["attack_count"]
         
     to_attack = []
-    print targets
     # If there are more attacks than targets given, attack first target multiple times
     if len(targets) < attack_count:
         to_attack = to_attack + targets
@@ -1038,10 +1108,8 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
         for n in range(extra_attacks):
             to_attack.insert(0, targets[0])
     else:
-        to_attack = targets
+        to_attack = to_attack + targets
             
-    print to_attack
-    print targets
     
     # Set up dictionaries to track number of hits and total damage
     total_hits = {}
@@ -1058,10 +1126,6 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
             spell_dmg = randint(min_damage, max_damage) # Get spell damage
             total_hits[fighter] += 1
             total_damage[fighter] += spell_dmg
-            
-    print total_hits
-    print total_damage
-    print targets
     
     for fighter in targets:
         # Construct combat message
@@ -1087,11 +1151,54 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
     if is_in_combat(caster): # Spend action if in combat
         spend_action(caster, 1, action_name="cast")
         
+def spell_conjure(caster, spell_name, targets, cost, **kwargs):
+    """
+    Spell that creates an object.
+    
+    kwargs:
+        obj_key (str): Key of the created object.
+        obj_desc (str): Desc of the created object.
+        obj_typeclass (str): Typeclass path of the object.
+    
+    If you want to make more use of this particular spell funciton,
+    you may want to modify it to use the spawner (in evennia.utils.spawner)
+    instead of creating objects directly.
+    """
+    
+    obj_key = "a nondescript object"
+    obj_desc = "A perfectly generic object."
+    obj_typeclass = "evennia.objects.objects.DefaultObject"
+    
+    # Retrieve some variables from kwargs, if present
+    if "obj_key" in kwargs:
+        obj_key = kwargs["obj_key"]
+    if "obj_desc" in kwargs:
+        obj_desc = kwargs["obj_desc"]
+    if "obj_typeclass" in kwargs:
+        obj_typeclass = kwargs["obj_typeclass"]
+        
+    conjured_obj = create_object(obj_typeclass, key=obj_key, location=caster.location) # Create object
+    conjured_obj.db.desc = obj_desc # Add object desc
+    
+    caster.db.mp -= cost # Deduct MP cost
+    
+    caster.location.msg_contents("%s casts %s, and %s appears!" % (caster, spell_name, conjured_obj))
 
 """
+----------------------------------------------------------------------------
+SPELL DEFINITIONS START HERE
+----------------------------------------------------------------------------
+In this section, each spell is matched to a function, and given parameters
+that determine its MP cost, valid type and number of targets, and what
+function casting the spell executes.
+
+This data is given as a dictionary of dictionaries - the key of each entry
+is the spell's name, and the value is a dictionary of various options and
+parameters, some of which are required and others which are optional.
+
 Required values for spells:
 
-    cost (int): MP cost of casting the spell
+    cost (int): MP cost of casting the spell 
     target (str): Valid targets for the spell. Can be any of:
         "none" - No target needed
         "self" - Self only
@@ -1101,8 +1208,8 @@ Required values for spells:
         "other" - Any object excluding the caster
         "otherchar" - Any character excluding the caster
     spellfunc (callable): Function that performs the action of the spell.
-        Must take the following arguments: caster (obj), spell_name (str), targets (list),
-        and cost (int), as well as **kwargs.
+        Must take the following arguments: caster (obj), spell_name (str),
+        targets (list), and cost (int), as well as **kwargs.
     
 Optional values for spells:
     
@@ -1115,14 +1222,21 @@ Any other values specified besides the above will be passed as kwargs to the spe
 You can use kwargs to effectively re-use the same function for different but similar
 spells.
 """
-        
+
 SPELLS = {
 "magic missile":{"spellfunc":spell_attack, "target":"otherchar", "cost":3, "noncombat_spell":False, "max_targets":3,
                  "attack_name":("A bolt", "bolts"), "damage_range":(4, 7), "accuracy":999, "attack_count":3},
+
 "flame shot":{"spellfunc":spell_attack, "target":"otherchar", "cost":3, "noncombat_spell":False,
-                 "attack_name":("A jet of flame", "jets of flame"), "damage_range":(25, 35)},
-"cure wounds":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":5},
-"mass cure wounds":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":10, "max_targets": 5},
-"full heal":{"spellfunc":spell_cure_wounds, "target":"anychar", "cost":12, "healing_range":(100, 100)}
+              "attack_name":("A jet of flame", "jets of flame"), "damage_range":(25, 35)},
+
+"cure wounds":{"spellfunc":spell_healing, "target":"anychar", "cost":5},
+
+"mass cure wounds":{"spellfunc":spell_healing, "target":"anychar", "cost":10, "max_targets": 5},
+
+"full heal":{"spellfunc":spell_healing, "target":"anychar", "cost":12, "healing_range":(100, 100)},
+
+"cactus conjuration":{"spellfunc":spell_conjure, "target":"none", "cost":2, "combat_spell":False,
+                      "obj_key":"a cactus", "obj_desc":"An ordinary green cactus with little spines."}
 }
 
