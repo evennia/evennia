@@ -58,7 +58,7 @@ class ChannelAdmin(admin.ModelAdmin):
     save_on_top = True
     list_select_related = True
     fieldsets = (
-        (None, {'fields': (('db_key',), 'db_lock_storage', 'db_subscriptions')}),
+        (None, {'fields': (('db_key',), 'db_lock_storage', 'db_account_subscriptions', 'db_object_subscriptions')}),
     )
 
     def subscriptions(self, obj):
@@ -69,7 +69,7 @@ class ChannelAdmin(admin.ModelAdmin):
             obj (Channel): The channel to get subs from.
 
         """
-        return ", ".join([str(sub) for sub in obj.db_subscriptions.all()])
+        return ", ".join([str(sub) for sub in obj.subscriptions.all()])
 
     def save_model(self, request, obj, form, change):
         """
