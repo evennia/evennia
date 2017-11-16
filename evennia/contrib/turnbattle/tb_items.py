@@ -1,41 +1,48 @@
 """
-Simple turn-based combat system
+Simple turn-based combat system with items and status effects
 
 Contrib - Tim Ashley Jenkins 2017
 
-This is a framework for a simple turn-based combat system, similar
-to those used in D&D-style tabletop role playing games. It allows
-any character to start a fight in a room, at which point initiative
-is rolled and a turn order is established. Each participant in combat
-has a limited time to decide their action for that turn (30 seconds by
-default), and combat progresses through the turn order, looping through
-the participants until the fight ends.
+This is a version of the 'turnbattle' combat system that includes status
+effects and usable items, which can instill these status effects, cure
+them, or do just about anything else.
 
-Only simple rolls for attacking are implemented here, but this system
-is easily extensible and can be used as the foundation for implementing
-the rules from your turn-based tabletop game of choice or making your
-own battle system.
+Status effects are stored on characters as a dictionary, where the key
+is the name of the status effect and the value is a list of two items:
+an integer representing the number of turns left until the status runs
+out, and the character upon whose turn the condition timer is ticked
+down. Unlike most combat-related attributes, conditions aren't wiped
+once combat ends - if out of combat, they tick down in real time
+instead. 
 
-To install and test, import this module's TBBasicCharacter object into
+Items aren't given any sort of special typeclass - instead, whether or
+not an object counts as an item is determined by its attributes. To make
+an object into an item, it must have the attribute 'item_on_use', with
+the value given as a callable - this is the function that will be called
+when an item is used. Other properties of the item, such as how many
+uses it has, whether it's destroyed when its uses are depleted, and such
+can be specified on the item as well, but they are optional.
+
+To install and test, import this module's TBItemsCharacter object into
 your game's character.py module:
 
-    from evennia.contrib.turnbattle.tb_basic import TBBasicCharacter
+    from evennia.contrib.turnbattle.tb_items import TBItemsCharacter
 
-And change your game's character typeclass to inherit from TBBasicCharacter
+And change your game's character typeclass to inherit from TBItemsCharacter
 instead of the default:
 
-    class Character(TBBasicCharacter):
+    class Character(TBItemsCharacter):
 
 Next, import this module into your default_cmdsets.py module:
 
-    from evennia.contrib.turnbattle import tb_basic
+    from evennia.contrib.turnbattle import tb_items
 
 And add the battle command set to your default command set:
 
     #
     # any commands you add below will overload the default ones.
     #
-    self.add(tb_basic.BattleCmdSet())
+    self.add(tb_items.BattleCmdSet())
 
 This module is meant to be heavily expanded on, so you may want to copy it
 to your game's 'world' folder and modify it there rather than importing it
@@ -44,7 +51,9 @@ in your game and using it as-is.
 
 from random import randint
 from evennia import DefaultCharacter, Command, default_cmds, DefaultScript
+from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.default.help import CmdHelp
+from evennia.utils.spawner import spawn
 
 """
 ----------------------------------------------------------------------------
@@ -190,7 +199,7 @@ def at_defeat(defeated):
     """
     defeated.location.msg_contents("%s has been defeated!" % defeated)
 
-def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
+def resolve_attack(attacker, defender, attack_value=None, defense_value=None, damage_value=None):
     """
     Resolves an attack and outputs the result.
 
@@ -213,7 +222,8 @@ def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     if attack_value < defense_value:
         attacker.location.msg_contents("%s's attack misses %s!" % (attacker, defender))
     else:
-        damage_value = get_damage(attacker, defender)  # Calculate damage value.
+        if not damage_value:
+            damage_value = get_damage(attacker, defender)  # Calculate damage value.
         # Announce damage dealt and apply damage.
         attacker.location.msg_contents("%s hits %s for %i damage!" % (attacker, defender, damage_value))
         apply_damage(defender, damage_value)
@@ -287,6 +297,33 @@ def spend_action(character, actions, action_name=None):
             character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
     character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
 
+def spend_item_use(item):
+    """
+    Spends one use on an item with limited uses. If item.db.item_consumable
+    is 'True', the item is destroyed if it runs out of uses - if it's a string
+    instead of 'True', it will also spawn a new object as residue, using the
+    value of item.db.item_consumable as the name of the prototype to spawn.
+    
+    
+    """
+    if item.db.item_uses:
+        item.db.item_uses -= 1 # Spend one use
+        if item.db.item_uses > 0: # Has uses remaining
+            # Inform th eplayer
+            self.caller.msg("%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses))
+        else: # All uses spent
+            if not item.db.item_consumable:
+                # If not consumable, just inform the player that the uses are gone
+                self.caller.msg("%s has no uses remaining." % item.key.capitalize())
+            else: # If consumable
+                if item.db.item_consumable == True: # If the value is 'True', just destroy the item
+                    self.caller.msg("%s has been consumed." % item.key.capitalize())
+                    item.delete() # Delete the spent item
+                else: # If a string, use value of item_consumable to spawn an object in its place
+                    residue = spawn({"prototype":item.db.item_consumable})[0] # Spawn the residue
+                    residue.location = item.location # Move the residue to the same place as the item
+                    self.caller.msg("After using %s, you are left with %s." % (item, residue))
+                    item.delete() # Delete the spent item
 
 """
 ----------------------------------------------------------------------------
@@ -295,7 +332,7 @@ CHARACTER TYPECLASS
 """
 
 
-class TBBasicCharacter(DefaultCharacter):
+class TBItemsCharacter(DefaultCharacter):
     """
     A character able to participate in turn-based combat. Has attributes for current
     and maximum HP, and access to combat commands.
@@ -348,7 +385,7 @@ SCRIPTS START HERE
 """
 
 
-class TBBasicTurnHandler(DefaultScript):
+class TBItemsTurnHandler(DefaultScript):
     """
     This is the script that handles the progression of combat through turns.
     On creation (when a fight is started) it adds all combat-ready characters
@@ -563,7 +600,7 @@ class CmdFight(Command):
             return
         here.msg_contents("%s starts a fight!" % self.caller)
         # Add a turn handler script to the room, which starts combat.
-        here.scripts.add("contrib.turnbattle.tb_basic.TBBasicTurnHandler")
+        here.scripts.add("contrib.turnbattle.tb_items.TBItemsTurnHandler")
         # Remember you'll have to change the path to the script if you copy this code to your own modules!
 
 
@@ -736,6 +773,73 @@ class CmdCombatHelp(CmdHelp):
             super(CmdCombatHelp, self).func()  # Call the default help command
 
 
+class CmdUse(MuxCommand):
+    """
+    Use an item.
+
+    Usage:
+      use <item> [= target]
+
+    Items: you just GOTTA use them.
+    """
+
+    key = "use"
+    help_category = "combat"
+
+    def func(self):
+        """
+        This performs the actual command.
+        """
+        item = self.caller.search(self.lhs, candidates=self.caller.contents)
+        if not item:
+            return
+        
+        target = None
+        if self.rhs:
+            target = self.caller.search(self.rhs)
+            if not target:
+                return
+                
+        if is_in_combat(self.caller):
+            if not is_turn(self.caller):
+                self.caller.msg("You can only use items on your turn.")
+                return
+            
+        if not item.db.item_func: # Object has no item_func, not usable
+            self.caller.msg("'%s' is not a usable item." % item.key.capitalize())
+            return
+            
+        if item.attributes.has("item_uses"): # Item has limited uses
+            if item.db.item_uses <= 0: # Limited uses are spent
+                self.caller.msg("'%s' has no uses remaining." % item.key.capitalize())
+                return
+        
+        kwargs = {}
+        if item.db.item_kwargs: 
+            kwargs = item.db.item_kwargs # Set kwargs to pass to item_func
+            
+        # Match item_func string to function
+        try:
+            item_func = ITEMFUNCS[item.db.item_func]
+        except KeyError:
+            self.caller.msg("ERROR: %s not defined in ITEMFUNCS" % item.db.item_func)
+            return
+        
+        # Call the item function - abort if it returns False, indicating an error.
+        # Regardless of what the function returns (if anything), it's still executed.
+        if item_func(item, self.caller, target, **kwargs) == False:
+            return
+            
+        # If we haven't returned yet, we assume the item was used successfully.
+            
+        # Spend one use if item has limited uses
+        spend_item_use(item)
+            
+        # Spend an action if in combat
+        if is_in_combat(self.caller):
+            spend_action(self.caller, 1, action_name="item")
+
+
 class BattleCmdSet(default_cmds.CharacterCmdSet):
     """
     This command set includes all the commmands used in the battle system.
@@ -752,3 +856,121 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdPass())
         self.add(CmdDisengage())
         self.add(CmdCombatHelp())
+        self.add(CmdUse())
+        
+"""
+ITEM FUNCTIONS START HERE
+"""
+
+def itemfunc_heal(item, user, target, **kwargs):
+    """
+    Item function that heals HP.
+    """
+    if not target: 
+        target = user # Target user if none specified
+    
+    if not target.attributes.has("max_hp"): # Has no HP to speak of
+        user.msg("You can't use %s on that." % item)
+        return False
+        
+    if target.db.hp >= target.db.max_hp:
+        user.msg("%s is already at full health." % target)
+        return False
+    
+    min_healing = 20
+    max_healing = 40
+    
+    # Retrieve healing range from kwargs, if present
+    if "healing_range" in kwargs:
+        min_healing = kwargs["healing_range"][0]
+        max_healing = kwargs["healing_range"][1]
+
+    to_heal = randint(min_healing, max_healing) # Restore 20 to 40 hp
+    if target.db.hp + to_heal > target.db.max_hp:
+        to_heal = target.db.max_hp - target.db.hp # Cap healing to max HP
+    target.db.hp += to_heal
+    
+    user.location.msg_contents("%s uses %s! %s regains %i HP!" % (user, item, target, to_heal))
+    
+def itemfunc_attack(item, user, target, **kwargs):
+    """
+    Item function that attacks a target.
+    """
+    if not is_in_combat(user):
+        user.msg("You can only use that in combat.")
+        return False
+    
+    if not target: 
+        user.msg("You have to specify a target to use %s! (use <item> = <target>)" % item)
+        return False
+        
+    if target == user:
+        user.msg("You can't attack yourself!")
+        return False
+    
+    if not target.db.hp: # Has no HP
+        user.msg("You can't use %s on that." % item)
+        return False
+    
+    min_damage = 20
+    max_damage = 40
+    accuracy = 0
+    
+    # Retrieve values from kwargs, if present
+    if "damage_range" in kwargs:
+        min_damage = kwargs["damage_range"][0]
+        max_damage = kwargs["damage_range"][1]
+    if "accuracy" in kwargs:
+        accuracy = kwargs["accuracy"]
+        
+    # Roll attack and damage
+    attack_value = randint(1, 100) + accuracy
+    damage_value = randint(min_damage, max_damage)
+    
+    user.location.msg_contents("%s attacks %s with %s!" % (user, target, item))
+    resolve_attack(user, target, attack_value=attack_value, damage_value=damage_value)
+
+# Match strings to item functions here. We can't store callables on
+# prototypes, so we store a string instead, matching that string to
+# a callable in this dictionary.
+ITEMFUNCS = {
+    "heal":itemfunc_heal,
+    "attack":itemfunc_attack
+}
+
+"""
+ITEM PROTOTYPES START HERE
+"""
+
+MEDKIT = {
+ "key" : "a medical kit",
+ "aliases" : ["medkit"],
+ "desc" : "A standard medical kit. It can be used a few times to heal wounds.",
+ "item_func" : "heal",
+ "item_uses" : 3,
+ "item_consumable" : True,
+ "item_kwargs" : {"healing_range":(15, 25)}
+}
+
+GLASS_BOTTLE = {
+ "key" : "a glass bottle",
+ "desc" : "An empty glass bottle."
+}
+
+HEALTH_POTION = {
+ "key" : "a health potion",
+ "desc" : "A glass bottle full of a mystical potion that heals wounds when used.",
+ "item_func" : "heal",
+ "item_uses" : 1,
+ "item_consumable" : "GLASS_BOTTLE",
+ "item_kwargs" : {"healing_range":(35, 50)}
+}
+
+BOMB = {
+ "key" : "a rotund bomb",
+ "desc" : "A large black sphere with a fuse at the end. Can be used on enemies in combat.",
+ "item_func" : "attack",
+ "item_uses" : 1,
+ "item_consumable" : True,
+ "item_kwargs" : {"damage_range":(25, 40), "accuracy":25}
+}
