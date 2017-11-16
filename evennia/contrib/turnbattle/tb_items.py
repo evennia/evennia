@@ -17,7 +17,7 @@ instead.
 
 Items aren't given any sort of special typeclass - instead, whether or
 not an object counts as an item is determined by its attributes. To make
-an object into an item, it must have the attribute 'item_on_use', with
+an object into an item, it must have the attribute 'item_func', with
 the value given as a callable - this is the function that will be called
 when an item is used. Other properties of the item, such as how many
 uses it has, whether it's destroyed when its uses are depleted, and such
@@ -297,32 +297,30 @@ def spend_action(character, actions, action_name=None):
             character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
     character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
 
-def spend_item_use(item):
+def spend_item_use(item, user):
     """
     Spends one use on an item with limited uses. If item.db.item_consumable
     is 'True', the item is destroyed if it runs out of uses - if it's a string
     instead of 'True', it will also spawn a new object as residue, using the
     value of item.db.item_consumable as the name of the prototype to spawn.
-    
-    
     """
     if item.db.item_uses:
         item.db.item_uses -= 1 # Spend one use
         if item.db.item_uses > 0: # Has uses remaining
-            # Inform th eplayer
-            self.caller.msg("%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses))
+            # Inform the player
+            user.msg("%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses))
         else: # All uses spent
             if not item.db.item_consumable:
                 # If not consumable, just inform the player that the uses are gone
-                self.caller.msg("%s has no uses remaining." % item.key.capitalize())
+                user.msg("%s has no uses remaining." % item.key.capitalize())
             else: # If consumable
                 if item.db.item_consumable == True: # If the value is 'True', just destroy the item
-                    self.caller.msg("%s has been consumed." % item.key.capitalize())
+                    user.msg("%s has been consumed." % item.key.capitalize())
                     item.delete() # Delete the spent item
                 else: # If a string, use value of item_consumable to spawn an object in its place
                     residue = spawn({"prototype":item.db.item_consumable})[0] # Spawn the residue
                     residue.location = item.location # Move the residue to the same place as the item
-                    self.caller.msg("After using %s, you are left with %s." % (item, residue))
+                    user.msg("After using %s, you are left with %s." % (item, residue))
                     item.delete() # Delete the spent item
 
 """
@@ -790,16 +788,19 @@ class CmdUse(MuxCommand):
         """
         This performs the actual command.
         """
+        # Search for item
         item = self.caller.search(self.lhs, candidates=self.caller.contents)
         if not item:
             return
         
+        # Search for target, if any is given
         target = None
         if self.rhs:
             target = self.caller.search(self.rhs)
             if not target:
                 return
-                
+        
+        # If in combat, can only use items on your turn
         if is_in_combat(self.caller):
             if not is_turn(self.caller):
                 self.caller.msg("You can only use items on your turn.")
@@ -814,9 +815,10 @@ class CmdUse(MuxCommand):
                 self.caller.msg("'%s' has no uses remaining." % item.key.capitalize())
                 return
         
+        # Set kwargs to pass to item_func
         kwargs = {}
         if item.db.item_kwargs: 
-            kwargs = item.db.item_kwargs # Set kwargs to pass to item_func
+            kwargs = item.db.item_kwargs 
             
         # Match item_func string to function
         try:
@@ -826,14 +828,14 @@ class CmdUse(MuxCommand):
             return
         
         # Call the item function - abort if it returns False, indicating an error.
+        # This performs the actual action of using the item.
         # Regardless of what the function returns (if anything), it's still executed.
         if item_func(item, self.caller, target, **kwargs) == False:
             return
             
         # If we haven't returned yet, we assume the item was used successfully.
-            
         # Spend one use if item has limited uses
-        spend_item_use(item)
+        spend_item_use(item, self.caller)
             
         # Spend an action if in combat
         if is_in_combat(self.caller):
@@ -871,7 +873,7 @@ def itemfunc_heal(item, user, target, **kwargs):
     
     if not target.attributes.has("max_hp"): # Has no HP to speak of
         user.msg("You can't use %s on that." % item)
-        return False
+        return False # Returning false aborts the item use
         
     if target.db.hp >= target.db.max_hp:
         user.msg("%s is already at full health." % target)
@@ -898,7 +900,7 @@ def itemfunc_attack(item, user, target, **kwargs):
     """
     if not is_in_combat(user):
         user.msg("You can only use that in combat.")
-        return False
+        return False # Returning false aborts the item use
     
     if not target: 
         user.msg("You have to specify a target to use %s! (use <item> = <target>)" % item)
@@ -906,7 +908,7 @@ def itemfunc_attack(item, user, target, **kwargs):
         
     if target == user:
         user.msg("You can't attack yourself!")
-        return False
+        return False 
     
     if not target.db.hp: # Has no HP
         user.msg("You can't use %s on that." % item)
@@ -940,6 +942,8 @@ ITEMFUNCS = {
 
 """
 ITEM PROTOTYPES START HERE
+
+Copy these to your game's /world/prototypes.py module!
 """
 
 MEDKIT = {
