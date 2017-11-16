@@ -30,7 +30,7 @@ RUN apk update && apk add python py-pip python-dev py-setuptools gcc musl-dev jp
 ADD . /usr/src/evennia
 
 # install dependencies
-RUN pip install -e /usr/src/evennia --index-url=http://pypi.python.org/simple/ --trusted-host pypi.python.org
+RUN pip install -e /usr/src/evennia --trusted-host pypi.python.org
 
 # add the game source when rebuilding a new docker image from inside
 # a game dir 
