@@ -328,35 +328,35 @@ def spend_item_use(item, user):
                 item.delete() # Delete the spent item
           
 def use_item(user, item, target):
-        """
-        Performs the action of using an item.
-        """
-        # Set kwargs to pass to item_func
-        kwargs = {}
-        if item.db.item_kwargs: 
-            kwargs = item.db.item_kwargs 
-            
-        # Match item_func string to function
-        try:
-            item_func = ITEMFUNCS[item.db.item_func]
-        except KeyError:
-            user.msg("ERROR: %s not defined in ITEMFUNCS" % item.db.item_func)
-            return
+    """
+    Performs the action of using an item.
+    """
+    # Set kwargs to pass to item_func
+    kwargs = {}
+    if item.db.item_kwargs: 
+        kwargs = item.db.item_kwargs 
         
-        # Call the item function - abort if it returns False, indicating an error.
-        # This performs the actual action of using the item.
-        # Regardless of what the function returns (if anything), it's still executed.
-        if item_func(item, user, target, **kwargs) == False:
-            return
-            
-        # If we haven't returned yet, we assume the item was used successfully.
-        # Spend one use if item has limited uses
-        if item.db.item_uses:
-            spend_item_use(item, user)
-            
-        # Spend an action if in combat
-        if is_in_combat(user):
-            spend_action(user, 1, action_name="item")
+    # Match item_func string to function
+    try:
+        item_func = ITEMFUNCS[item.db.item_func]
+    except KeyError:
+        user.msg("ERROR: %s not defined in ITEMFUNCS" % item.db.item_func)
+        return
+        
+    # Call the item function - abort if it returns False, indicating an error.
+    # This performs the actual action of using the item.
+    # Regardless of what the function returns (if anything), it's still executed.
+    if item_func(item, user, target, **kwargs) == False:
+        return
+        
+    # If we haven't returned yet, we assume the item was used successfully.
+    # Spend one use if item has limited uses
+    if item.db.item_uses:
+        spend_item_use(item, user)
+        
+    # Spend an action if in combat
+    if is_in_combat(user):
+        spend_action(user, 1, action_name="item")
             
 def condition_tickdown(character, turnchar):
     """
