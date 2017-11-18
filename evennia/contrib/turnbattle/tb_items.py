@@ -304,24 +304,28 @@ def spend_item_use(item, user):
     instead of 'True', it will also spawn a new object as residue, using the
     value of item.db.item_consumable as the name of the prototype to spawn.
     """
-    if item.db.item_uses:
-        item.db.item_uses -= 1 # Spend one use
-        if item.db.item_uses > 0: # Has uses remaining
-            # Inform the player
-            user.msg("%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses))
-        else: # All uses spent
-            if not item.db.item_consumable:
-                # If not consumable, just inform the player that the uses are gone
-                user.msg("%s has no uses remaining." % item.key.capitalize())
-            else: # If consumable
-                if item.db.item_consumable == True: # If the value is 'True', just destroy the item
-                    user.msg("%s has been consumed." % item.key.capitalize())
-                    item.delete() # Delete the spent item
-                else: # If a string, use value of item_consumable to spawn an object in its place
-                    residue = spawn({"prototype":item.db.item_consumable})[0] # Spawn the residue
-                    residue.location = item.location # Move the residue to the same place as the item
-                    user.msg("After using %s, you are left with %s." % (item, residue))
-                    item.delete() # Delete the spent item
+    item.db.item_uses -= 1 # Spend one use
+    
+    if item.db.item_uses > 0: # Has uses remaining
+        # Inform the player
+        user.msg("%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses))
+    
+    else: # All uses spent
+    
+        if not item.db.item_consumable: # Item isn't consumable
+            # Just inform the player that the uses are gone
+            user.msg("%s has no uses remaining." % item.key.capitalize())
+        
+        else: # If item is consumable
+            if item.db.item_consumable == True: # If the value is 'True', just destroy the item
+                user.msg("%s has been consumed." % item.key.capitalize())
+                item.delete() # Delete the spent item
+           
+            else: # If a string, use value of item_consumable to spawn an object in its place
+                residue = spawn({"prototype":item.db.item_consumable})[0] # Spawn the residue
+                residue.location = item.location # Move the residue to the same place as the item
+                user.msg("After using %s, you are left with %s." % (item, residue))
+                item.delete() # Delete the spent item
           
 def use_item(user, item, target):
         """
@@ -347,11 +351,38 @@ def use_item(user, item, target):
             
         # If we haven't returned yet, we assume the item was used successfully.
         # Spend one use if item has limited uses
-        spend_item_use(item, user)
+        if item.db.item_uses:
+            spend_item_use(item, user)
             
         # Spend an action if in combat
         if is_in_combat(user):
             spend_action(user, 1, action_name="item")
+            
+def condition_tickdown(character, turnchar):
+    """
+    Ticks down the duration of conditions on a character at the end of a given character's turn.
+    """
+    
+    for key in character.db.conditions:
+        # The first value is the remaining turns - the second value is whose turn to count down on.
+        condition_duration = character.db.conditions[key][0]
+        condition_turnchar = character.db.conditions[key][1]
+        # Count down if the given turn character matches the condition's turn character.
+        if condition_turnchar == turnchar:
+            character.db.conditions[key][0] -= 1
+        if character.db.conditions[key][0] <= 0:
+            # If the duration is brought down to 0, remove the condition and inform everyone.
+            character.location.msg_contents("%s no longer has the '%s' condition." % (str(character), str(key)))
+            del character.db.conditions[key]
+            
+def add_condition(character, turnchar, condition, duration):
+    """
+    Adds a condition to a fighter.
+    """
+    # The first value is the remaining turns - the second value is whose turn to count down on.
+    character.db.conditions.update({condition:[duration, turnchar]})
+    # Tell everyone!
+    character.location.msg_contents("%s gains the '%s' condition." % (character, condition))
 
 """
 ----------------------------------------------------------------------------
@@ -373,6 +404,7 @@ class TBItemsCharacter(DefaultCharacter):
         """
         self.db.max_hp = 100  # Set maximum HP to 100
         self.db.hp = self.db.max_hp  # Set current HP to maximum
+        self.db.conditions = {} # Set empty dict for conditions
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
@@ -550,6 +582,11 @@ class TBItemsTurnHandler(DefaultScript):
         self.db.turn += 1  # Go to the next in the turn order.
         if self.db.turn > len(self.db.fighters) - 1:
             self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
+            
+        # Count down condition timers.
+        for fighter in self.db.fighters:
+            condition_tickdown(fighter, newchar)
+        
         newchar = self.db.fighters[self.db.turn]  # Note the new character
         self.db.timer = TURN_TIMEOUT + self.time_until_next_repeat()  # Reset the timer.
         self.db.timeout_warning_given = False  # Reset the timeout warning.
@@ -796,7 +833,8 @@ class CmdCombatHelp(CmdHelp):
             self.caller.msg("Available combat commands:|/" +
                             "|wAttack:|n Attack a target, attempting to deal damage.|/" +
                             "|wPass:|n Pass your turn without further action.|/" +
-                            "|wDisengage:|n End your turn and attempt to end combat.|/")
+                            "|wDisengage:|n End your turn and attempt to end combat.|/" +
+                            "|wUse:|n Use an item you're carrying.")
         else:
             super(CmdCombatHelp, self).func()  # Call the default help command
 
