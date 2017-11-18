@@ -473,8 +473,8 @@ class TBItemsCharacter(DefaultCharacter):
         if not is_in_combat(self): # Not in combat
             # Apply conditions that fire every turn
             self.apply_turn_conditions()
-        # Tick down condition durations
-        condition_tickdown(self, self)
+            # Tick down condition durations
+            condition_tickdown(self, self)
         
 
 """
