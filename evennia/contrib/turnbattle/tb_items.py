@@ -54,6 +54,7 @@ from evennia import DefaultCharacter, Command, default_cmds, DefaultScript
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.default.help import CmdHelp
 from evennia.utils.spawner import spawn
+from evennia import TICKER_HANDLER as tickerhandler
 
 """
 ----------------------------------------------------------------------------
@@ -360,7 +361,7 @@ def use_item(user, item, target):
             
 def condition_tickdown(character, turnchar):
     """
-    Ticks down the duration of conditions on a character at the end of a given character's turn.
+    Ticks down the duration of conditions on a character at the start of a given character's turn.
     """
     
     for key in character.db.conditions:
@@ -405,6 +406,8 @@ class TBItemsCharacter(DefaultCharacter):
         self.db.max_hp = 100  # Set maximum HP to 100
         self.db.hp = self.db.max_hp  # Set current HP to maximum
         self.db.conditions = {} # Set empty dict for conditions
+        # Subscribe character to the ticker handler
+        tickerhandler.add(30, self.at_update)
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
@@ -437,6 +440,42 @@ class TBItemsCharacter(DefaultCharacter):
             self.msg("You can't move, you've been defeated!")
             return False
         return True
+        
+    def at_turn_start(self):
+        """
+        Hook called at the beginning of this character's turn in combat.
+        """
+        # Prompt the character for their turn and give some information.
+        self.msg("|wIt's your turn! You have %i HP remaining.|n" % self.db.hp)
+        
+        # Apply conditions that fire at the start of each turn.
+        self.apply_turn_conditions()
+    
+    def apply_turn_conditions(self):
+        """
+        Applies the effect of conditions that occur at the start of each
+        turn in combat, or every 30 seconds out of combat.
+        """
+        if "Regeneration" in self.db.conditions:
+            to_heal = randint(4, 8) # Restore 4 to 8 HP
+            if self.db.hp + to_heal > self.db.max_hp:
+                to_heal = self.db.max_hp - self.db.hp # Cap healing to max HP
+            self.db.hp += to_heal
+            self.location.msg_contents("%s regains %i HP from Regeneration." % (self, to_heal))
+            
+    def at_update(self):
+        """
+        Fires every 30 seconds.
+        """
+        # Change all conditions to update on character's turn.
+        for key in self.db.conditions:
+            self.db.conditions[key][1] = self
+        if not is_in_combat(self): # Not in combat
+            # Apply conditions that fire every turn
+            self.apply_turn_conditions()
+        # Tick down condition durations
+        condition_tickdown(self, self)
+        
 
 """
 ----------------------------------------------------------------------------
@@ -546,8 +585,8 @@ class TBItemsTurnHandler(DefaultScript):
             something similar.
         """
         character.db.combat_actionsleft = ACTIONS_PER_TURN  # Replenish actions
-        # Prompt the character for their turn and give some information.
-        character.msg("|wIt's your turn! You have %i HP remaining.|n" % character.db.hp)
+        # Call character's at_turn_start() hook.
+        character.at_turn_start()
 
     def next_turn(self):
         """
@@ -582,16 +621,17 @@ class TBItemsTurnHandler(DefaultScript):
         self.db.turn += 1  # Go to the next in the turn order.
         if self.db.turn > len(self.db.fighters) - 1:
             self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
-            
-        # Count down condition timers.
-        for fighter in self.db.fighters:
-            condition_tickdown(fighter, newchar)
         
         newchar = self.db.fighters[self.db.turn]  # Note the new character
+        
         self.db.timer = TURN_TIMEOUT + self.time_until_next_repeat()  # Reset the timer.
         self.db.timeout_warning_given = False  # Reset the timeout warning.
         self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
         self.start_turn(newchar)  # Start the new character's turn.
+        
+        # Count down condition timers.
+        for fighter in self.db.fighters:
+            condition_tickdown(fighter, newchar)
 
     def turn_end_check(self, character):
         """
@@ -939,6 +979,32 @@ def itemfunc_heal(item, user, target, **kwargs):
     
     user.location.msg_contents("%s uses %s! %s regains %i HP!" % (user, item, target, to_heal))
     
+def itemfunc_add_condition(item, user, target, **kwargs):
+    """
+    Item function that gives the target a condition.
+    
+    Should mostly be used for beneficial conditions - use itemfunc_attack
+    for an item that can give an enemy a harmful condition.
+    """
+    condition = "Regeneration"
+    duration = 5
+    
+    if not target: 
+        target = user # Target user if none specified
+    
+    if not target.attributes.has("max_hp"): # Is not a fighter
+        user.msg("You can't use %s on that." % item)
+        return False # Returning false aborts the item use
+    
+    # Retrieve condition / duration from kwargs, if present
+    if "condition" in kwargs:
+        condition = kwargs["condition"]
+    if "duration" in kwargs:
+        duration = kwargs["duration"]
+    
+    user.location.msg_contents("%s uses %s!" % (user, item))
+    add_condition(target, user, condition, duration) # Add condition to the target
+    
 def itemfunc_attack(item, user, target, **kwargs):
     """
     Item function that attacks a target.
@@ -982,7 +1048,8 @@ def itemfunc_attack(item, user, target, **kwargs):
 # a callable in this dictionary.
 ITEMFUNCS = {
     "heal":itemfunc_heal,
-    "attack":itemfunc_attack
+    "attack":itemfunc_attack,
+    "add_condition":itemfunc_add_condition
 }
 
 """
@@ -1013,6 +1080,15 @@ HEALTH_POTION = {
  "item_uses" : 1,
  "item_consumable" : "GLASS_BOTTLE",
  "item_kwargs" : {"healing_range":(35, 50)}
+}
+
+REGEN_POTION = {
+ "key" : "a regeneration potion",
+ "desc" : "A glass bottle full of a mystical potion that regenerates wounds over time.",
+ "item_func" : "add_condition",
+ "item_uses" : 1,
+ "item_consumable" : "GLASS_BOTTLE",
+ "item_kwargs" : {"condition":"Regeneration", "duration":10}
 }
 
 BOMB = {
