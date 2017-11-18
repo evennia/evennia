@@ -192,7 +192,7 @@ if AMP_ENABLED:
 
     from evennia.server import amp
 
-    print('  amp (to Server): %s' % AMP_PORT)
+    print('  amp (to Server): %s (internal)' % AMP_PORT)
 
     factory = amp.AmpClientFactory(PORTAL)
     amp_client = internet.TCPClient(AMP_HOST, AMP_PORT, factory)
@@ -223,7 +223,7 @@ if TELNET_ENABLED:
             telnet_service.setName('EvenniaTelnet%s' % pstring)
             PORTAL.services.addService(telnet_service)
 
-            print('  telnet%s: %s' % (ifacestr, port))
+            print('  telnet%s: %s (external)' % (ifacestr, port))
 
 
 if SSL_ENABLED:
@@ -249,7 +249,7 @@ if SSL_ENABLED:
             ssl_service.setName('EvenniaSSL%s' % pstring)
             PORTAL.services.addService(ssl_service)
 
-            print("  ssl%s: %s" % (ifacestr, port))
+            print("  ssl%s: %s (external)" % (ifacestr, port))
 
 
 if SSH_ENABLED:
@@ -273,7 +273,7 @@ if SSH_ENABLED:
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
 
-            print("  ssh%s: %s" % (ifacestr, port))
+            print("  ssh%s: %s (external)" % (ifacestr, port))
 
 
 if WEBSERVER_ENABLED:
@@ -287,7 +287,6 @@ if WEBSERVER_ENABLED:
         if interface not in ('0.0.0.0', '::') or len(WEBSERVER_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for proxyport, serverport in WEBSERVER_PORTS:
-            pstring = "%s:%s<->%s" % (ifacestr, proxyport, serverport)
             web_root = EvenniaReverseProxyResource('127.0.0.1', serverport, '')
             webclientstr = ""
             if WEBCLIENT_ENABLED:
@@ -305,21 +304,20 @@ if WEBSERVER_ENABLED:
                     from evennia.server.portal import webclient
                     from evennia.utils.txws import WebSocketFactory
 
-                    interface = WEBSOCKET_CLIENT_INTERFACE
+                    w_interface = WEBSOCKET_CLIENT_INTERFACE
+                    w_ifacestr = ''
+                    if w_interface not in ('0.0.0.0', '::') or len(WEBSERVER_INTERFACES) > 1:
+                        w_ifacestr = "-%s" % interface
                     port = WEBSOCKET_CLIENT_PORT
-                    ifacestr = ""
-                    if interface not in ('0.0.0.0', '::'):
-                        ifacestr = "-%s" % interface
-                    pstring = "%s:%s" % (ifacestr, port)
                     factory = protocol.ServerFactory()
                     factory.noisy = False
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
-                    websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=interface)
-                    websocket_service.setName('EvenniaWebSocket%s' % pstring)
+                    websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=w_interface)
+                    websocket_service.setName('EvenniaWebSocket%s:%s' % (w_ifacestr, proxyport))
                     PORTAL.services.addService(websocket_service)
                     websocket_started = True
-                    webclientstr = "\n   + webclient%s" % pstring
+                    webclientstr = "\n   + webclient-websocket%s: %s (external)" % (w_ifacestr, proxyport)
 
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             proxy_service = internet.TCPServer(proxyport,
@@ -327,7 +325,7 @@ if WEBSERVER_ENABLED:
                                                interface=interface)
             proxy_service.setName('EvenniaWebProxy%s' % pstring)
             PORTAL.services.addService(proxy_service)
-            print("  webproxy%s:%s (<-> %s)%s" % (ifacestr, proxyport, serverport, webclientstr))
+            print("  website-proxy%s: %s (external) %s" % (ifacestr, proxyport, webclientstr))
 
 
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
