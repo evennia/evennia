@@ -192,12 +192,12 @@ def _batch_create_object(*objparams):
         # call all setup hooks on each object
         objparam = objparams[iobj]
         # setup
-        obj._createdict = {"permissions": objparam[1],
+        obj._createdict = {"permissions": make_iter(objparam[1]),
                            "locks": objparam[2],
-                           "aliases": objparam[3],
+                           "aliases": make_iter(objparam[3]),
                            "nattributes": objparam[4],
                            "attributes": objparam[5],
-                           "tags": objparam[6]}
+                           "tags": make_iter(objparam[6])}
         # this triggers all hooks
         obj.save()
         # run eventual extra code
