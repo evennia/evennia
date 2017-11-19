@@ -384,7 +384,7 @@ def use_item(user, item, target):
         target (obj): Target of the item use
     """
     # If item is self only, abort use
-    if item.db.item_selfonly and user == target:
+    if item.db.item_selfonly and user != target:
         user.msg("%s can only be used on yourself." % item)
         return
     
@@ -434,7 +434,7 @@ def condition_tickdown(character, turnchar):
         condition_duration = character.db.conditions[key][0]
         condition_turnchar = character.db.conditions[key][1]
         # If the duration is 'True', then the condition doesn't tick down - it lasts indefinitely.
-        if not condition_duration == True:
+        if not condition_duration is True:
             # Count down if the given turn character matches the condition's turn character.
             if condition_turnchar == turnchar:
                 character.db.conditions[key][0] -= 1
@@ -1109,18 +1109,17 @@ def itemfunc_heal(item, user, target, **kwargs):
     
 def itemfunc_add_condition(item, user, target, **kwargs):
     """
-    Item function that gives the target a condition.
+    Item function that gives the target one or more conditions.
     
     kwargs:
-        condition(str): Condition added by the item
-        duration(int): Number of turns the condition lasts, or True for indefinite
+        conditions (list): Conditions added by the item
+           formatted as a list of tuples: (condition (str), duration (int or True))
     
     Notes:
         Should mostly be used for beneficial conditions - use itemfunc_attack
         for an item that can give an enemy a harmful condition.
     """
-    condition = "Regeneration"
-    duration = 5
+    conditions = [("Regeneration", 5)]
     
     if not target: 
         target = user # Target user if none specified
@@ -1130,13 +1129,14 @@ def itemfunc_add_condition(item, user, target, **kwargs):
         return False # Returning false aborts the item use
     
     # Retrieve condition / duration from kwargs, if present
-    if "condition" in kwargs:
-        condition = kwargs["condition"]
-    if "duration" in kwargs:
-        duration = kwargs["duration"]
+    if "conditions" in kwargs:
+        conditions = kwargs["conditions"]
     
     user.location.msg_contents("%s uses %s!" % (user, item))
-    add_condition(target, user, condition, duration) # Add condition to the target
+    
+    # Add conditions to the target
+    for condition in conditions: 
+        add_condition(target, user, condition[0], condition[1])
     
 def itemfunc_cure_condition(item, user, target, **kwargs):
     """
@@ -1217,6 +1217,12 @@ def itemfunc_attack(item, user, target, **kwargs):
     attack_value = randint(1, 100) + accuracy
     damage_value = randint(min_damage, max_damage)
     
+    # Account for "Accuracy Up" and "Accuracy Down" conditions
+    if "Accuracy Up" in user.db.conditions:
+        attack_value += 25
+    if "Accuracy Down" in user.db.conditions:
+        attack_value -= 25
+    
     user.location.msg_contents("%s attacks %s with %s!" % (user, target, item))
     resolve_attack(user, target, attack_value=attack_value,
                    damage_value=damage_value, inflict_condition=inflict_condition)
@@ -1292,7 +1298,16 @@ REGEN_POTION = {
  "item_func" : "add_condition",
  "item_uses" : 1,
  "item_consumable" : "GLASS_BOTTLE",
- "item_kwargs" : {"condition":"Regeneration", "duration":10}
+ "item_kwargs" : {"conditions":[("Regeneration", 10)]}
+}
+
+HASTE_POTION = {
+ "key" : "a haste potion",
+ "desc" : "A glass bottle full of a mystical potion that hastens its user.",
+ "item_func" : "add_condition",
+ "item_uses" : 1,
+ "item_consumable" : "GLASS_BOTTLE",
+ "item_kwargs" : {"conditions":[("Haste", 10)]}
 }
 
 BOMB = {
@@ -1320,4 +1335,12 @@ ANTIDOTE_POTION = {
  "item_uses" : 1,
  "item_consumable" : "GLASS_BOTTLE",
  "item_kwargs" : {"to_cure":["Poisoned"]}
+}
+
+AMULET_OF_MIGHT = {
+ "key" : "The Amulet of Might",
+ "desc" : "The one who holds this amulet can call upon its power to gain great strength.",
+ "item_func" : "add_condition",
+ "item_selfonly" : True,
+ "item_kwargs" : {"conditions":[("Damage Up", 3), ("Accuracy Up", 3), ("Defense Up", 3)]}
 }
