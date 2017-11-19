@@ -372,13 +372,15 @@ def condition_tickdown(character, turnchar):
         # The first value is the remaining turns - the second value is whose turn to count down on.
         condition_duration = character.db.conditions[key][0]
         condition_turnchar = character.db.conditions[key][1]
-        # Count down if the given turn character matches the condition's turn character.
-        if condition_turnchar == turnchar:
-            character.db.conditions[key][0] -= 1
-        if character.db.conditions[key][0] <= 0:
-            # If the duration is brought down to 0, remove the condition and inform everyone.
-            character.location.msg_contents("%s no longer has the '%s' condition." % (str(character), str(key)))
-            del character.db.conditions[key]
+        # If the duration is 'True', then condition doesn't tick down - it lasts indefinitely.
+        if not condition_duration == True:
+            # Count down if the given turn character matches the condition's turn character.
+            if condition_turnchar == turnchar:
+                character.db.conditions[key][0] -= 1
+            if character.db.conditions[key][0] <= 0:
+                # If the duration is brought down to 0, remove the condition and inform everyone.
+                character.location.msg_contents("%s no longer has the '%s' condition." % (str(character), str(key)))
+                del character.db.conditions[key]
             
 def add_condition(character, turnchar, condition, duration):
     """
@@ -960,12 +962,35 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdUse())
         
 """
+----------------------------------------------------------------------------
 ITEM FUNCTIONS START HERE
+----------------------------------------------------------------------------
+
+These functions carry out the action of using an item - every item should
+contain a db entry "item_func", with its value being a string that is
+matched to one of these functions in the ITEMFUNCS dictionary below.
+
+Every item function must take the following arguments:
+    item (obj): The item being used
+    user (obj): The character using the item
+    target (obj): The target of the item use
+    
+Item functions must also accept **kwargs - these keyword arguments can be
+used to define how different items that use the same function can have
+different effects (for example, different attack items doing different
+amounts of damage).
+
+Each function below contains a description of what kwargs the function will
+take and the effect they have on the result.
 """
 
 def itemfunc_heal(item, user, target, **kwargs):
     """
     Item function that heals HP.
+    
+    kwargs:
+        min_healing(int): Minimum amount of HP recovered
+        max_healing(int): Maximum amount of HP recovered
     """
     if not target: 
         target = user # Target user if none specified
@@ -997,8 +1022,13 @@ def itemfunc_add_condition(item, user, target, **kwargs):
     """
     Item function that gives the target a condition.
     
-    Should mostly be used for beneficial conditions - use itemfunc_attack
-    for an item that can give an enemy a harmful condition.
+    kwargs:
+        condition(str): Condition added by the item
+        duration(int): Number of turns the condition lasts, or True for indefinite
+    
+    Notes:
+        Should mostly be used for beneficial conditions - use itemfunc_attack
+        for an item that can give an enemy a harmful condition.
     """
     condition = "Regeneration"
     duration = 5
@@ -1022,6 +1052,9 @@ def itemfunc_add_condition(item, user, target, **kwargs):
 def itemfunc_cure_condition(item, user, target, **kwargs):
     """
     Item function that'll remove given conditions from a target.
+    
+    kwargs:
+        to_cure(list): List of conditions (str) that the item cures when used
     """
     to_cure = ["Poisoned"]
     
@@ -1049,6 +1082,17 @@ def itemfunc_cure_condition(item, user, target, **kwargs):
 def itemfunc_attack(item, user, target, **kwargs):
     """
     Item function that attacks a target.
+    
+    kwargs:
+        min_damage(int): Minimum damage dealt by the attack
+        max_damage(int): Maximum damage dealth by the attack
+        accuracy(int): Bonus / penalty to attack accuracy roll
+        inflict_condition(list): List of conditions inflicted on hit,
+            formatted as a (str, int) tuple containing condition name
+            and duration.
+            
+    Notes:
+        Calls resolve_attack at the end.
     """
     if not is_in_combat(user):
         user.msg("You can only use that in combat.")
@@ -1099,9 +1143,14 @@ ITEMFUNCS = {
 }
 
 """
-ITEM PROTOTYPES START HERE
+----------------------------------------------------------------------------
+PROTOTYPES START HERE
+----------------------------------------------------------------------------
 
-Copy these to your game's /world/prototypes.py module!
+You can paste these prototypes into your game's prototypes.py module in your
+/world/ folder, and use the spawner to create them - they serve as examples
+of items you can make and a handy way to demonstrate the system for
+conditions as well.
 """
 
 MEDKIT = {
