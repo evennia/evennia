@@ -200,7 +200,8 @@ def at_defeat(defeated):
     """
     defeated.location.msg_contents("%s has been defeated!" % defeated)
 
-def resolve_attack(attacker, defender, attack_value=None, defense_value=None, damage_value=None):
+def resolve_attack(attacker, defender, attack_value=None, defense_value=None,
+                   damage_value=None, inflict_condition=[]):
     """
     Resolves an attack and outputs the result.
 
@@ -228,6 +229,9 @@ def resolve_attack(attacker, defender, attack_value=None, defense_value=None, da
         # Announce damage dealt and apply damage.
         attacker.location.msg_contents("%s hits %s for %i damage!" % (attacker, defender, damage_value))
         apply_damage(defender, damage_value)
+        # Inflict conditions on hit, if any specified
+        for condition in inflict_condition:
+            add_condition(defender, attacker, condition[0], condition[1])
         # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
             at_defeat(defender)
@@ -456,12 +460,22 @@ class TBItemsCharacter(DefaultCharacter):
         Applies the effect of conditions that occur at the start of each
         turn in combat, or every 30 seconds out of combat.
         """
+        # Regeneration: restores 4 to 8 HP at the start of character's turn
         if "Regeneration" in self.db.conditions:
             to_heal = randint(4, 8) # Restore 4 to 8 HP
             if self.db.hp + to_heal > self.db.max_hp:
                 to_heal = self.db.max_hp - self.db.hp # Cap healing to max HP
             self.db.hp += to_heal
             self.location.msg_contents("%s regains %i HP from Regeneration." % (self, to_heal))
+        
+        # Poisoned: does 4 to 8 damage at the start of character's turn
+        if "Poisoned" in self.db.conditions:
+            to_hurt = randint(4, 8) # Deal 4 to 8 damage
+            apply_damage(self, to_hurt)
+            self.location.msg_contents("%s takes %i damage from being Poisoned." % (self, to_hurt))
+            if self.db.hp <= 0:
+                # Call at_defeat if poison defeats the character
+                at_defeat(self)
             
     def at_update(self):
         """
@@ -1005,6 +1019,33 @@ def itemfunc_add_condition(item, user, target, **kwargs):
     user.location.msg_contents("%s uses %s!" % (user, item))
     add_condition(target, user, condition, duration) # Add condition to the target
     
+def itemfunc_cure_condition(item, user, target, **kwargs):
+    """
+    Item function that'll remove given conditions from a target.
+    """
+    to_cure = ["Poisoned"]
+    
+    if not target: 
+        target = user # Target user if none specified
+    
+    if not target.attributes.has("max_hp"): # Is not a fighter
+        user.msg("You can't use %s on that." % item)
+        return False # Returning false aborts the item use
+    
+    # Retrieve condition(s) to cure from kwargs, if present
+    if "to_cure" in kwargs:
+        to_cure = kwargs["to_cure"]
+        
+    item_msg = "%s uses %s! " % (user, item)
+    
+    for key in target.db.conditions:
+        if key in to_cure:
+            # If condition specified in to_cure, remove it.
+            item_msg += "%s no longer has the '%s' condition. " % (str(target), str(key))
+            del target.db.conditions[key]
+
+    user.location.msg_contents(item_msg)
+    
 def itemfunc_attack(item, user, target, **kwargs):
     """
     Item function that attacks a target.
@@ -1028,6 +1069,7 @@ def itemfunc_attack(item, user, target, **kwargs):
     min_damage = 20
     max_damage = 40
     accuracy = 0
+    inflict_condition = []
     
     # Retrieve values from kwargs, if present
     if "damage_range" in kwargs:
@@ -1035,13 +1077,16 @@ def itemfunc_attack(item, user, target, **kwargs):
         max_damage = kwargs["damage_range"][1]
     if "accuracy" in kwargs:
         accuracy = kwargs["accuracy"]
+    if "inflict_condition" in kwargs:
+        inflict_condition = kwargs["inflict_condition"]
         
     # Roll attack and damage
     attack_value = randint(1, 100) + accuracy
     damage_value = randint(min_damage, max_damage)
     
     user.location.msg_contents("%s attacks %s with %s!" % (user, target, item))
-    resolve_attack(user, target, attack_value=attack_value, damage_value=damage_value)
+    resolve_attack(user, target, attack_value=attack_value,
+                   damage_value=damage_value, inflict_condition=inflict_condition)
 
 # Match strings to item functions here. We can't store callables on
 # prototypes, so we store a string instead, matching that string to
@@ -1049,7 +1094,8 @@ def itemfunc_attack(item, user, target, **kwargs):
 ITEMFUNCS = {
     "heal":itemfunc_heal,
     "attack":itemfunc_attack,
-    "add_condition":itemfunc_add_condition
+    "add_condition":itemfunc_add_condition,
+    "cure_condition":itemfunc_cure_condition
 }
 
 """
@@ -1098,4 +1144,22 @@ BOMB = {
  "item_uses" : 1,
  "item_consumable" : True,
  "item_kwargs" : {"damage_range":(25, 40), "accuracy":25}
+}
+
+POISON_DART = {
+ "key" : "a poison dart",
+ "desc" : "A thin dart coated in deadly poison. Can be used on enemies in combat",
+ "item_func" : "attack",
+ "item_uses" : 1,
+ "item_consumable" : True,
+ "item_kwargs" : {"damage_range":(5, 10), "accuracy":25, "inflict_condition":[("Poisoned", 10)]}
+}
+
+ANTIDOTE_POTION = {
+ "key" : "an antidote potion",
+ "desc" : "A glass bottle full of a mystical potion that cures poison when used.",
+ "item_func" : "cure_condition",
+ "item_uses" : 1,
+ "item_consumable" : "GLASS_BOTTLE",
+ "item_kwargs" : {"to_cure":["Poisoned"]}
 }
