@@ -3,17 +3,34 @@ Simple turn-based combat system with items and status effects
 
 Contrib - Tim Ashley Jenkins 2017
 
-This is a version of the 'turnbattle' combat system that includes status
-effects and usable items, which can instill these status effects, cure
+This is a version of the 'turnbattle' combat system that includes
+conditions and usable items, which can instill these conditions, cure
 them, or do just about anything else.
 
-Status effects are stored on characters as a dictionary, where the key
-is the name of the status effect and the value is a list of two items:
-an integer representing the number of turns left until the status runs
-out, and the character upon whose turn the condition timer is ticked
-down. Unlike most combat-related attributes, conditions aren't wiped
-once combat ends - if out of combat, they tick down in real time
-instead. 
+Conditions are stored on characters as a dictionary, where the key
+is the name of the condition and the value is a list of two items:
+an integer representing the number of turns left until the condition
+runs out, and the character upon whose turn the condition timer is
+ticked down. Unlike most combat-related attributes, conditions aren't
+wiped once combat ends - if out of combat, they tick down in real time
+instead.
+
+This module includes a number of example conditions:
+
+    Regeneration: Character recovers HP every turn
+    Poisoned: Character loses HP every turn
+    Accuracy Up: +25 to character's attack rolls
+    Accuracy Down: -25 to character's attack rolls
+    Damage Up: +5 to character's damage
+    Damage Down: -5 to character's damage
+    Defense Up: +15 to character's defense
+    Defense Down: -15 to character's defense
+    Haste: +1 action per turn
+    Paralyzed: No actions per turn
+    Frightened: Character can't use the 'attack' command
+    
+Since conditions can have a wide variety of effects, their code is
+scattered throughout the other functions wherever they may apply.
 
 Items aren't given any sort of special typeclass - instead, whether or
 not an object counts as an item is determined by its attributes. To make
@@ -64,6 +81,7 @@ OPTIONS
 
 TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
 ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
+NONCOMBAT_TURN_TIME = 30 # Time per turn count out of combat
 
 """
 ----------------------------------------------------------------------------
@@ -111,15 +129,18 @@ def get_attack(attacker, defender):
             to determine whether an attack hits or misses.
 
     Notes:
-        By default, returns a random integer from 1 to 100 without using any
-        properties from either the attacker or defender.
-
-        This can easily be expanded to return a value based on characters stats,
-        equipment, and abilities. This is why the attacker and defender are passed
-        to this function, even though nothing from either one are used in this example.
+        This is where conditions affecting attack rolls are applied, as well.
+        Accuracy Up and Accuracy Down are also accounted for in itemfunc_attack(),
+        so that attack items' accuracy is affected as well.
     """
     # For this example, just return a random integer up to 100.
     attack_value = randint(1, 100)
+    # Add 25 to the roll if the attacker has the "Accuracy Up" condition.
+    if "Accuracy Up" in attacker.db.conditions:
+        attack_value += 25
+    # Subtract 25 from the roll if the attack has the "Accuracy Down" condition.
+    if "Accuracy Down" in attacker.db.conditions:
+        attack_value -= 25
     return attack_value
 
 
@@ -137,13 +158,16 @@ def get_defense(attacker, defender):
             to determine whether an attack hits or misses.
 
     Notes:
-        By default, returns 50, not taking any properties of the defender or
-        attacker into account.
-
-        As above, this can be expanded upon based on character stats and equipment.
+        This is where conditions affecting defense are accounted for.
     """
     # For this example, just return 50, for about a 50/50 chance of hit.
     defense_value = 50
+    # Add 15 to defense if the defender has the "Defense Up" condition.
+    if "Defense Up" in defender.db.conditions:
+        defense_value += 15
+    # Subtract 15 from defense if the defender has the "Defense Down" condition.
+    if "Defense Down" in defender.db.conditions:
+        defense_value -= 15
     return defense_value
 
 
@@ -161,13 +185,18 @@ def get_damage(attacker, defender):
             character's HP.
 
     Notes:
-        By default, returns a random integer from 15 to 25 without using any
-        properties from either the attacker or defender.
-
-        Again, this can be expanded upon.
+        This is where conditions affecting damage are accounted for. Since attack items
+        roll their own damage in itemfunc_attack(), their damage is unaffected by any
+        conditions.
     """
     # For this example, just generate a number between 15 and 25.
     damage_value = randint(15, 25)
+    # Add 5 to damage roll if attacker has the "Damage Up" condition.
+    if "Damage Up" in attacker.db.conditions:
+        damage_value += 5
+    # Subtract 5 from the roll if the attacker has the "Damage Down" condition.
+    if "Damage Down" in attacker.db.conditions:
+        damage_value -= 5
     return damage_value
 
 
@@ -208,11 +237,17 @@ def resolve_attack(attacker, defender, attack_value=None, defense_value=None,
     Args:
         attacker (obj): Character doing the attacking
         defender (obj): Character being attacked
+        
+    Options:
+        attack_value (int): Override for attack roll
+        defense_value (int): Override for defense value
+        damage_value (int): Override for damage value
+        inflict_condition (list): Conditions to inflict upon hit, a
+            list of tuples formated as (condition(str), duration(int))
 
     Notes:
-        Even though the attack and defense values are calculated
-        extremely simply, they are separated out into their own functions
-        so that they are easier to expand upon.
+        This function is called by normal attacks as well as attacks
+        made with items.
     """
     # Get an attack roll from the attacker.
     if not attack_value:
@@ -391,14 +426,14 @@ def condition_tickdown(character, turnchar):
     Notes:
         In combat, this is called on every fighter at the start of every character's turn. Out of
         combat, it's instead called when a character's at_update() hook is called, which is every
-        30 seconds.
+        30 seconds by default.
     """
     
     for key in character.db.conditions:
         # The first value is the remaining turns - the second value is whose turn to count down on.
         condition_duration = character.db.conditions[key][0]
         condition_turnchar = character.db.conditions[key][1]
-        # If the duration is 'True', then condition doesn't tick down - it lasts indefinitely.
+        # If the duration is 'True', then the condition doesn't tick down - it lasts indefinitely.
         if not condition_duration == True:
             # Count down if the given turn character matches the condition's turn character.
             if condition_turnchar == turnchar:
@@ -445,15 +480,16 @@ class TBItemsCharacter(DefaultCharacter):
         self.db.hp = self.db.max_hp  # Set current HP to maximum
         self.db.conditions = {} # Set empty dict for conditions
         # Subscribe character to the ticker handler
-        tickerhandler.add(30, self.at_update)
+        tickerhandler.add(NONCOMBAT_TURN_TIME, self.at_update)
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
         
         An empty dictionary is created to store conditions later,
         and the character is subscribed to the Ticker Handler, which
-        will call at_update() on the character every 30 seconds. This
-        is used to tick down conditions out of combat.
+        will call at_update() on the character, with the interval
+        specified by NONCOMBAT_TURN_TIME above. This is used to tick
+        down conditions out of combat.
 
         You may want to expand this to include various 'stats' that
         can be changed at creation and factor into combat calculations.
@@ -515,6 +551,16 @@ class TBItemsCharacter(DefaultCharacter):
             if self.db.hp <= 0:
                 # Call at_defeat if poison defeats the character
                 at_defeat(self)
+                
+        # Haste: Gain an extra action in combat.
+        if is_in_combat(self) and "Haste" in self.db.conditions:
+            self.db.combat_actionsleft += 1
+            self.msg("You gain an extra action this turn from Haste!")
+            
+        # Paralyzed: Have no actions in combat.
+        if is_in_combat(self) and "Paralyzed" in self.db.conditions:
+            self.db.combat_actionsleft = 0
+            self.msg("You're Paralyzed, and can't act this turn!")
             
     def at_update(self):
         """
@@ -791,6 +837,10 @@ class CmdAttack(Command):
         if not self.caller.db.hp:  # Can't attack if you have no HP.
             self.caller.msg("You can't attack, you've been defeated.")
             return
+            
+        if "Frightened" in self.caller.db.conditions: # Can't attack if frightened
+            self.caller.msg("You're too frightened to attack!")
+            return
 
         attacker = self.caller
         defender = self.caller.search(self.args)
@@ -939,7 +989,9 @@ class CmdUse(MuxCommand):
     Usage:
       use <item> [= target]
 
-    Items: you just GOTTA use them.
+    An item can have various function - looking at the item may
+    provide information as to its effects. Some items can be used
+    to attack others, and as such can only be used in combat.
     """
 
     key = "use"
