@@ -23,17 +23,17 @@ implemented and customized:
             currently used equipment.
 	
 	tb_items.py - Adds usable items and conditions/status effects, and gives
-	        a lot of examples for each. Items can perform nearly any sort of
-			function, including healing, adding or curing conditions, or
-			being used to attack. Conditions affect a fighter's attributes
-			and options in combat and persist outside of fights, counting
-			down per turn in combat and in real time outside combat.
+            a lot of examples for each. Items can perform nearly any sort of
+            function, including healing, adding or curing conditions, or
+            being used to attack. Conditions affect a fighter's attributes
+            and options in combat and persist outside of fights, counting
+            down per turn in combat and in real time outside combat.
 	
 	tb_magic.py - Adds a spellcasting system, allowing characters to cast
-	        spells with a variety of effects by spending MP. Spells are
-			linked to functions, and as such can perform any sort of action
-			the developer can imagine - spells for attacking, healing and
-			conjuring objects are included as examples.
+            spells with a variety of effects by spending MP. Spells are
+            linked to functions, and as such can perform any sort of action
+            the developer can imagine - spells for attacking, healing and
+            conjuring objects are included as examples.
     
     tb_range.py - Adds a system for abstract positioning and movement, which
             tracks the distance between different characters and objects in
