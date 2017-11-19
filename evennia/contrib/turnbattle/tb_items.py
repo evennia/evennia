@@ -383,7 +383,11 @@ def use_item(user, item, target):
         item (obj): Item being used
         target (obj): Target of the item use
     """
-    # If item is self only, abort use
+    # If item is self only and no target given, set target to self.
+    if item.db.item_selfonly and target == None:
+        target = user
+    
+    # If item is self only, abort use if used on others.
     if item.db.item_selfonly and user != target:
         user.msg("%s can only be used on yourself." % item)
         return
@@ -560,7 +564,8 @@ class TBItemsCharacter(DefaultCharacter):
         # Paralyzed: Have no actions in combat.
         if is_in_combat(self) and "Paralyzed" in self.db.conditions:
             self.db.combat_actionsleft = 0
-            self.msg("You're Paralyzed, and can't act this turn!")
+            self.location.msg_contents("%s is Paralyzed, and can't act this turn!" % self)
+            self.db.combat_turnhandler.turn_end_check(self)
             
     def at_update(self):
         """
@@ -1328,6 +1333,21 @@ POISON_DART = {
  "item_kwargs" : {"damage_range":(5, 10), "accuracy":25, "inflict_condition":[("Poisoned", 10)]}
 }
 
+TASER = {
+ "key" : "a taser",
+ "desc" : "A device that can be used to paralyze enemies in combat.",
+ "item_func" : "attack",
+ "item_kwargs" : {"damage_range":(10, 20), "accuracy":0, "inflict_condition":[("Paralyzed", 1)]}
+}
+
+GHOST_GUN = {
+ "key" : "a ghost gun",
+ "desc" : "A gun that fires scary ghosts at people. Anyone hit by a ghost becomes frightened.",
+ "item_func" : "attack",
+ "item_uses" : 6,
+ "item_kwargs" : {"damage_range":(5, 10), "accuracy":15, "inflict_condition":[("Frightened", 1)]}
+}
+
 ANTIDOTE_POTION = {
  "key" : "an antidote potion",
  "desc" : "A glass bottle full of a mystical potion that cures poison when used.",
@@ -1343,4 +1363,12 @@ AMULET_OF_MIGHT = {
  "item_func" : "add_condition",
  "item_selfonly" : True,
  "item_kwargs" : {"conditions":[("Damage Up", 3), ("Accuracy Up", 3), ("Defense Up", 3)]}
+}
+
+AMULET_OF_WEAKNESS = {
+ "key" : "The Amulet of Weakness",
+ "desc" : "The one who holds this amulet can call upon its power to gain great weakness. It's not a terribly useful artifact.",
+ "item_func" : "add_condition",
+ "item_selfonly" : True,
+ "item_kwargs" : {"conditions":[("Damage Down", 3), ("Accuracy Down", 3), ("Defense Down", 3)]}
 }
