@@ -304,10 +304,17 @@ def spend_action(character, actions, action_name=None):
 
 def spend_item_use(item, user):
     """
-    Spends one use on an item with limited uses. If item.db.item_consumable
-    is 'True', the item is destroyed if it runs out of uses - if it's a string
-    instead of 'True', it will also spawn a new object as residue, using the
-    value of item.db.item_consumable as the name of the prototype to spawn.
+    Spends one use on an item with limited uses.
+    
+    Args:
+        item (obj): Item being used
+        user (obj): Character using the item
+        
+    Notes:
+        If item.db.item_consumable is 'True', the item is destroyed if it
+        runs out of uses - if it's a string instead of 'True', it will also
+        spawn a new object as residue, using the value of item.db.item_consumable
+        as the name of the prototype to spawn.
     """
     item.db.item_uses -= 1 # Spend one use
     
@@ -335,7 +342,17 @@ def spend_item_use(item, user):
 def use_item(user, item, target):
     """
     Performs the action of using an item.
+    
+    Args:
+        user (obj): Character using the item
+        item (obj): Item being used
+        target (obj): Target of the item use
     """
+    # If item is self only, abort use
+    if item.db.item_selfonly and user == target:
+        user.msg("%s can only be used on yourself." % item)
+        return
+    
     # Set kwargs to pass to item_func
     kwargs = {}
     if item.db.item_kwargs: 
@@ -344,7 +361,7 @@ def use_item(user, item, target):
     # Match item_func string to function
     try:
         item_func = ITEMFUNCS[item.db.item_func]
-    except KeyError:
+    except KeyError: # If item_func string doesn't match to a function in ITEMFUNCS
         user.msg("ERROR: %s not defined in ITEMFUNCS" % item.db.item_func)
         return
         
@@ -366,6 +383,15 @@ def use_item(user, item, target):
 def condition_tickdown(character, turnchar):
     """
     Ticks down the duration of conditions on a character at the start of a given character's turn.
+    
+    Args:
+        character (obj): Character to tick down the conditions of
+        turnchar (obj): Character whose turn it currently is
+        
+    Notes:
+        In combat, this is called on every fighter at the start of every character's turn. Out of
+        combat, it's instead called when a character's at_update() hook is called, which is every
+        30 seconds.
     """
     
     for key in character.db.conditions:
@@ -385,6 +411,12 @@ def condition_tickdown(character, turnchar):
 def add_condition(character, turnchar, condition, duration):
     """
     Adds a condition to a fighter.
+    
+    Args:
+        character (obj): Character to give the condition to
+        turnchar (obj): Character whose turn to tick down the condition on in combat
+        condition (str): Name of the condition
+        duration (int or True): Number of turns the condition lasts, or True for indefinite
     """
     # The first value is the remaining turns - the second value is whose turn to count down on.
     character.db.conditions.update({condition:[duration, turnchar]})
@@ -417,6 +449,11 @@ class TBItemsCharacter(DefaultCharacter):
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
+        
+        An empty dictionary is created to store conditions later,
+        and the character is subscribed to the Ticker Handler, which
+        will call at_update() on the character every 30 seconds. This
+        is used to tick down conditions out of combat.
 
         You may want to expand this to include various 'stats' that
         can be changed at creation and factor into combat calculations.
@@ -483,10 +520,10 @@ class TBItemsCharacter(DefaultCharacter):
         """
         Fires every 30 seconds.
         """
-        # Change all conditions to update on character's turn.
-        for key in self.db.conditions:
-            self.db.conditions[key][1] = self
         if not is_in_combat(self): # Not in combat
+            # Change all conditions to update on character's turn.
+            for key in self.db.conditions:
+                self.db.conditions[key][1] = self
             # Apply conditions that fire every turn
             self.apply_turn_conditions()
             # Tick down condition durations
@@ -1151,6 +1188,26 @@ You can paste these prototypes into your game's prototypes.py module in your
 /world/ folder, and use the spawner to create them - they serve as examples
 of items you can make and a handy way to demonstrate the system for
 conditions as well.
+
+Items don't have any particular typeclass - any object with a db entry
+"item_func" that references one of the functions given above can be used as
+an item with the 'use' command.
+
+Only "item_func" is required, but item behavior can be further modified by
+specifying any of the following:
+
+    item_uses (int): If defined, item has a limited number of uses
+    
+    item_selfonly (bool): If True, user can only use the item on themself
+    
+    item_consumable(True or str): If True, item is destroyed when it runs
+        out of uses. If a string is given, the item will spawn a new
+        object as it's destroyed, with the string specifying what prototype
+        to spawn.
+    
+    item_kwargs (dict): Keyword arguments to pass to the function defined in
+        item_func. Unique to each function, and can be used to make multiple
+        items using the same function work differently.
 """
 
 MEDKIT = {
