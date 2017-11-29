@@ -1307,6 +1307,7 @@ class TestTurnBattleFunc(EvenniaTest):
         turnhandler.stop()
         # Now time to test item stuff.
         user = create_object(tb_items.TBItemsCharacter, key="User")
+        user.TICKER_HANDLER.remove(interval=30, callback=user.at_update)
         testroom = create_object(DefaultRoom, key="Test Room")
         user.location = testroom
         test_healpotion = create_object(key="healing potion")
@@ -1337,7 +1338,7 @@ class TestTurnBattleFunc(EvenniaTest):
         user.db.conditions = {"Poisoned":[5, user]}
         tb_items.itemfunc_cure_condition(test_healpotion, user, user)
         self.assertTrue(user.db.conditions == {})
-        # Delete the test character to prevent ticker handler problems
+        # Delete the test character
         user.delete()
 
 # Test tree select
