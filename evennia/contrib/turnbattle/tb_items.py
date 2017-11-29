@@ -83,6 +83,16 @@ TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
 ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
 NONCOMBAT_TURN_TIME = 30 # Time per turn count out of combat
 
+# Condition options start here
+REGEN_RATE = (4, 8) # Min and max HP regen for Regeneration
+POISON_RATE = (4, 8) # Min and max damage for Poisoned
+ACC_UP_MOD = 25 # Accuracy Up attack roll bonus
+ACC_DOWN_MOD = -25 # Accuracy Down attack roll penalty
+DMG_UP_MOD = 5 # Damage Up damage roll bonus
+DMG_DOWN_MOD = -5 # Damage Down damage roll penalty
+DEF_UP_MOD = 15 # Defense Up defense bonus
+DEF_DOWN_MOD = -15 # Defense Down defense penalty
+
 """
 ----------------------------------------------------------------------------
 COMBAT FUNCTIONS START HERE
@@ -135,12 +145,12 @@ def get_attack(attacker, defender):
     """
     # For this example, just return a random integer up to 100.
     attack_value = randint(1, 100)
-    # Add 25 to the roll if the attacker has the "Accuracy Up" condition.
+    # Add to the roll if the attacker has the "Accuracy Up" condition.
     if "Accuracy Up" in attacker.db.conditions:
-        attack_value += 25
-    # Subtract 25 from the roll if the attack has the "Accuracy Down" condition.
+        attack_value += ACC_UP_MOD
+    # Subtract from the roll if the attack has the "Accuracy Down" condition.
     if "Accuracy Down" in attacker.db.conditions:
-        attack_value -= 25
+        attack_value += ACC_DOWN_MOD
     return attack_value
 
 
@@ -162,12 +172,12 @@ def get_defense(attacker, defender):
     """
     # For this example, just return 50, for about a 50/50 chance of hit.
     defense_value = 50
-    # Add 15 to defense if the defender has the "Defense Up" condition.
+    # Add to defense if the defender has the "Defense Up" condition.
     if "Defense Up" in defender.db.conditions:
-        defense_value += 15
-    # Subtract 15 from defense if the defender has the "Defense Down" condition.
+        defense_value += DEF_UP_MOD
+    # Subtract from defense if the defender has the "Defense Down" condition.
     if "Defense Down" in defender.db.conditions:
-        defense_value -= 15
+        defense_value += DEF_DOWN_MOD
     return defense_value
 
 
@@ -191,12 +201,12 @@ def get_damage(attacker, defender):
     """
     # For this example, just generate a number between 15 and 25.
     damage_value = randint(15, 25)
-    # Add 5 to damage roll if attacker has the "Damage Up" condition.
+    # Add to damage roll if attacker has the "Damage Up" condition.
     if "Damage Up" in attacker.db.conditions:
-        damage_value += 5
-    # Subtract 5 from the roll if the attacker has the "Damage Down" condition.
+        damage_value += DMG_UP_MOD
+    # Subtract from the roll if the attacker has the "Damage Down" condition.
     if "Damage Down" in attacker.db.conditions:
-        damage_value -= 5
+        damage_value += DMG_DOWN_MOD
     return damage_value
 
 
@@ -541,7 +551,7 @@ class TBItemsCharacter(DefaultCharacter):
         """
         # Regeneration: restores 4 to 8 HP at the start of character's turn
         if "Regeneration" in self.db.conditions:
-            to_heal = randint(4, 8) # Restore 4 to 8 HP
+            to_heal = randint(REGEN_RATE[0], REGEN_RAGE[1]) # Restore HP
             if self.db.hp + to_heal > self.db.max_hp:
                 to_heal = self.db.max_hp - self.db.hp # Cap healing to max HP
             self.db.hp += to_heal
@@ -549,7 +559,7 @@ class TBItemsCharacter(DefaultCharacter):
         
         # Poisoned: does 4 to 8 damage at the start of character's turn
         if "Poisoned" in self.db.conditions:
-            to_hurt = randint(4, 8) # Deal 4 to 8 damage
+            to_hurt = randint(POISON_RATE[0], POISON_RATE[1]) # Deal damage
             apply_damage(self, to_hurt)
             self.location.msg_contents("%s takes %i damage from being Poisoned." % (self, to_hurt))
             if self.db.hp <= 0:
