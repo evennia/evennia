@@ -1307,7 +1307,7 @@ class TestTurnBattleFunc(EvenniaTest):
         turnhandler.stop()
         # Now time to test item stuff.
         user = create_object(tb_items.TBItemsCharacter, key="User")
-        tb_items.tickerhandler.remove(interval=30, callback=user.at_update)
+        tb_items.tickerhandler.remove(interval=30, callback=user.at_update, idstring="update")
         testroom = create_object(DefaultRoom, key="Test Room")
         user.location = testroom
         test_healpotion = create_object(key="healing potion")

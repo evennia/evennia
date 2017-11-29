@@ -497,7 +497,7 @@ class TBItemsCharacter(DefaultCharacter):
         self.db.hp = self.db.max_hp  # Set current HP to maximum
         self.db.conditions = {} # Set empty dict for conditions
         # Subscribe character to the ticker handler
-        tickerhandler.add(NONCOMBAT_TURN_TIME, self.at_update)
+        tickerhandler.add(NONCOMBAT_TURN_TIME, self.at_update, idstring="update")
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
