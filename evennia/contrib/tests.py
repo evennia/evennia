@@ -916,7 +916,7 @@ class TestTutorialWorldRooms(CommandTest):
 
 
 # test turnbattle
-from evennia.contrib.turnbattle import tb_basic, tb_equip, tb_range
+from evennia.contrib.turnbattle import tb_basic, tb_equip, tb_range, tb_items
 from evennia.objects.objects import DefaultRoom
 
 
@@ -961,6 +961,18 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_range.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
+        
+    # Test item commands
+    def test_turnbattlecmd(self):
+        testitem = create_object(key="test item")
+        testitem.move_to(self.char1)
+        self.call(tb_items.CmdUse(), "item", "'Test item' is not a usable item.")
+        # Also test the commands that are the same in the basic module
+        self.call(tb_items.CmdFight(), "", "You can't start a fight if you've been defeated!")
+        self.call(tb_items.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_items.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_items.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_items.CmdRest(), "", "Char rests to recover HP.")
         
 
 class TestTurnBattleFunc(EvenniaTest):
@@ -1214,6 +1226,117 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(tb_range.get_range(attacker, defender) == 1)
         # Remove the script at the end
         turnhandler.stop()
+        
+    # Test functions in tb_items.
+    def test_tbitemsfunc(self):
+        attacker = create_object(tb_items.TBItemsCharacter, key="Attacker")
+        defender = create_object(tb_items.TBItemsCharacter, key="Defender")
+        testroom = create_object(DefaultRoom, key="Test Room")
+        attacker.location = testroom
+        defender.loaction = testroom
+        # Initiative roll
+        initiative = tb_items.roll_init(attacker)
+        self.assertTrue(initiative >= 0 and initiative <= 1000)
+        # Attack roll
+        attack_roll = tb_items.get_attack(attacker, defender)
+        self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
+        # Defense roll
+        defense_roll = tb_items.get_defense(attacker, defender)
+        self.assertTrue(defense_roll == 50)
+        # Damage roll
+        damage_roll = tb_items.get_damage(attacker, defender)
+        self.assertTrue(damage_roll >= 15 and damage_roll <= 25)
+        # Apply damage
+        defender.db.hp = 10
+        tb_items.apply_damage(defender, 3)
+        self.assertTrue(defender.db.hp == 7)
+        # Resolve attack
+        defender.db.hp = 40
+        tb_items.resolve_attack(attacker, defender, attack_value=20, defense_value=10)
+        self.assertTrue(defender.db.hp < 40)
+        # Combat cleanup
+        attacker.db.Combat_attribute = True
+        tb_items.combat_cleanup(attacker)
+        self.assertFalse(attacker.db.combat_attribute)
+        # Is in combat
+        self.assertFalse(tb_items.is_in_combat(attacker))
+        # Set up turn handler script for further tests
+        attacker.location.scripts.add(tb_items.TBItemsTurnHandler)
+        turnhandler = attacker.db.combat_TurnHandler
+        self.assertTrue(attacker.db.combat_TurnHandler)
+        # Set the turn handler's interval very high to keep it from repeating during tests.
+        turnhandler.interval = 10000
+        # Force turn order
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        # Test is turn
+        self.assertTrue(tb_items.is_turn(attacker))
+        # Spend actions
+        attacker.db.Combat_ActionsLeft = 1
+        tb_items.spend_action(attacker, 1, action_name="Test")
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "Test")
+        # Initialize for combat
+        attacker.db.Combat_ActionsLeft = 983
+        turnhandler.initialize_for_combat(attacker)
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "null")
+        # Start turn
+        defender.db.Combat_ActionsLeft = 0
+        turnhandler.start_turn(defender)
+        self.assertTrue(defender.db.Combat_ActionsLeft == 1)
+        # Next turn
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.next_turn()
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Turn end check
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        attacker.db.Combat_ActionsLeft = 0
+        turnhandler.turn_end_check(attacker)
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Join fight
+        joiner = create_object(tb_items.TBItemsCharacter, key="Joiner")
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.join_fight(joiner)
+        self.assertTrue(turnhandler.db.turn == 1)
+        self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
+        # Remove the script at the end
+        turnhandler.stop()
+        # Now time to test item stuff.
+        user = create_object(tb_items.TBItemsCharacter, key="User")
+        testroom = create_object(DefaultRoom, key="Test Room")
+        user.location = testroom
+        test_healpotion = create_object(key="healing potion")
+        test_healpotion.db.item_func = "heal"
+        test_healpotion.db.item_uses = 3
+        # Spend item use
+        tb_items.spend_item_use(test_healpotion, user)
+        self.assertTrue(test_healpotion.db.item_uses == 2)
+        # Use item
+        user.db.hp = 2
+        tb_items.use_item(user, test_healpotion, user)
+        self.assertTrue(user.db.hp > 2)
+        # Add contition
+        tb_items.add_condition(user, user, "Test", 5)
+        self.assertTrue(user.db.conditions == {"Test":[5, user]})
+        # Condition tickdown
+        tb_items.condition_tickdown(user, user)
+        self.assertTrue(user.db.conditions == {"Test":[4, user]})
+        # Test item functions now!
+        # Item heal
+        user.db.hp = 2
+        tb_items.itemfunc_heal(test_healpotion, user, user)
+        # Item add condition
+        user.db.conditions = {}
+        tb_items.itemfunc_add_condition(test_healpotion, user, user)
+        self.assertTrue(user.db.conditions == {"Regeneration":[5, user]})
+        # Item cure condition
+        user.db.conditions = {"Poisoned":[5, user]}
+        tb_items.itemfunc_cure_condition(test_healpotion, user, user)
+        self.assertTrue(user.db.conditions == {})
 
 # Test tree select
 

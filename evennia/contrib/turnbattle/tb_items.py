@@ -83,7 +83,10 @@ TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
 ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
 NONCOMBAT_TURN_TIME = 30 # Time per turn count out of combat
 
-# Condition options start here
+# Condition options start here.
+# If you need to make changes to how your conditions work later,
+# it's best to put the easily tweakable values all in one place!
+
 REGEN_RATE = (4, 8) # Min and max HP regen for Regeneration
 POISON_RATE = (4, 8) # Min and max damage for Poisoned
 ACC_UP_MOD = 25 # Accuracy Up attack roll bonus
