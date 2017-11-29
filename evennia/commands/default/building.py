@@ -1087,7 +1087,7 @@ class CmdSetHome(CmdLink):
     set an object's home location
 
     Usage:
-      @home <obj> [= <home_location>]
+      @sethome <obj> [= <home_location>]
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
@@ -1098,13 +1098,13 @@ class CmdSetHome(CmdLink):
     """
 
     key = "@sethome"
-    locks = "cmd:perm(@home) or perm(Builder)"
+    locks = "cmd:perm(@sethome) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
         """implement the command"""
         if not self.args:
-            string = "Usage: @home <obj> [= <home_location>]"
+            string = "Usage: @sethome <obj> [= <home_location>]"
             self.caller.msg(string)
             return
 
