@@ -1337,6 +1337,8 @@ class TestTurnBattleFunc(EvenniaTest):
         user.db.conditions = {"Poisoned":[5, user]}
         tb_items.itemfunc_cure_condition(test_healpotion, user, user)
         self.assertTrue(user.db.conditions == {})
+        # Delete the test character to prevent ticker handler problems
+        user.delete()
 
 # Test tree select
 
