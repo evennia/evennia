@@ -636,8 +636,6 @@ RSS_UPDATE_INTERVAL = 60 * 10  # 10 minutes
 # browser to display. Note however that this will leak memory when
 # active, so make sure to turn it off for a production server!
 DEBUG = False
-# While true, show "pretty" error messages for template syntax errors.
-TEMPLATE_DEBUG = DEBUG
 # Emails are sent to these people if the above DEBUG value is False. If you'd
 # rather prefer nobody receives emails, leave this commented out or empty.
 ADMINS = ()  # 'Your Name', 'your_email@domain.com'),)
@@ -730,7 +728,9 @@ TEMPLATES = [{
             'django.template.context_processors.media',
             'django.template.context_processors.debug',
             'sekizai.context_processors.sekizai',
-            'evennia.web.utils.general_context.general_context']
+            'evennia.web.utils.general_context.general_context'],
+        # While true, show "pretty" error messages for template syntax errors.
+        "debug": DEBUG
     }
 }]
 
