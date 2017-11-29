@@ -651,6 +651,15 @@ class TestGenderSub(CommandTest):
         char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
         txt = "Test |p gender"
         self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender")
+              
+# test health bar contrib
+
+from evennia.contrib import health_bar
+
+class TestHealthBar(EvenniaTest):
+    def test_healthbar(self):
+        expected_bar_str = "|[G|w     |n|[B|w       test24 / 200test            |n"
+        self.assertTrue(health_bar.display_meter(24, 200, length=40, pre_text="test", post_text="test", align="center") == expected_bar_str)
 
 # test mail contrib
 
@@ -1206,6 +1215,36 @@ class TestTurnBattleFunc(EvenniaTest):
         # Remove the script at the end
         turnhandler.stop()
 
+# Test tree select
+
+from evennia.contrib import tree_select
+
+TREE_MENU_TESTSTR = """Foo
+Bar
+-Baz
+--Baz 1
+--Baz 2
+-Qux"""
+
+class TestTreeSelectFunc(EvenniaTest):
+    
+    def test_tree_functions(self):
+        # Dash counter
+        self.assertTrue(tree_select.dashcount("--test") == 2)
+        # Is category
+        self.assertTrue(tree_select.is_category(TREE_MENU_TESTSTR, 1) == True)
+        # Parse options
+        self.assertTrue(tree_select.parse_opts(TREE_MENU_TESTSTR, category_index=2) == [(3, "Baz 1"), (4, "Baz 2")])
+        # Index to selection
+        self.assertTrue(tree_select.index_to_selection(TREE_MENU_TESTSTR, 2) == "Baz")
+        # Go up one category
+        self.assertTrue(tree_select.go_up_one_category(TREE_MENU_TESTSTR, 4) == 2)
+        # Option list to menu options
+        test_optlist = tree_select.parse_opts(TREE_MENU_TESTSTR, category_index=2)
+        optlist_to_menu_expected_result = [{'goto': ['menunode_treeselect', {'newindex': 3}], 'key': 'Baz 1'},
+        {'goto': ['menunode_treeselect', {'newindex': 4}], 'key': 'Baz 2'}, 
+        {'goto': ['menunode_treeselect', {'newindex': 1}], 'key': ['<< Go Back', 'go back', 'back'], 'desc': 'Return to the previous menu.'}]
+        self.assertTrue(tree_select.optlist_to_menuoptions(TREE_MENU_TESTSTR, test_optlist, 2, True, True) == optlist_to_menu_expected_result)
 
 # Test of the unixcommand module
 
