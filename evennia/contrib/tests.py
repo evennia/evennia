@@ -1227,7 +1227,7 @@ class TestTurnBattleFunc(EvenniaTest):
         # Remove the script at the end
         turnhandler.stop()
     
-    """
+"""
     # Test functions in tb_items.
     def test_tbitemsfunc(self):
         attacker = create_object(tb_items.TBItemsCharacter, key="Attacker")
@@ -1343,7 +1343,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(user.db.conditions == {})
         # Delete the test character
         user.delete()
-    """"
+"""
 
 # Test tree select
 
