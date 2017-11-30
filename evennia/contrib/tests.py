@@ -1230,7 +1230,9 @@ class TestTurnBattleFunc(EvenniaTest):
     # Test functions in tb_items.
     def test_tbitemsfunc(self):
         attacker = create_object(tb_items.TBItemsCharacter, key="Attacker")
+        tb_items.tickerhandler.remove(interval=30, callback=attacker.at_update, idstring="update")
         defender = create_object(tb_items.TBItemsCharacter, key="Defender")
+        tb_items.tickerhandler.remove(interval=30, callback=defender.at_update, idstring="update")
         testroom = create_object(DefaultRoom, key="Test Room")
         attacker.location = testroom
         defender.loaction = testroom
@@ -1316,8 +1318,6 @@ class TestTurnBattleFunc(EvenniaTest):
         # Spend item use
         tb_items.spend_item_use(test_healpotion, user)
         self.assertTrue(test_healpotion.db.item_uses == 2)
-        # Commenting this stuff out just to make sure it's the problem.
-        """
         # Use item
         user.db.hp = 2
         tb_items.use_item(user, test_healpotion, user)
@@ -1342,7 +1342,6 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(user.db.conditions == {})
         # Delete the test character
         user.delete()
-        """
 
 # Test tree select
 
