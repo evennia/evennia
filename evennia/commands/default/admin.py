@@ -301,7 +301,7 @@ class CmdDelAccount(COMMAND_DEFAULT_CLASS):
 
         # one single match
 
-        account = accounts.pop()
+        account = accounts.first()
 
         if not account.access(caller, 'delete'):
             string = "You don't have the permissions to delete that account."
