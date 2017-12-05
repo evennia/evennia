@@ -110,7 +110,7 @@ _PHONEMES = "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y 
             "s z sh zh ch jh k ng g m n l r w"
 _VOWELS = "eaoiuy"
 # these must be able to be constructed from phonemes (so for example,
-# if you have v here, there must exixt at least one single-character
+# if you have v here, there must exist at least one single-character
 # vowel phoneme defined above)
 _GRAMMAR = "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv"
 
@@ -120,12 +120,12 @@ _RE_WORD = re.compile(r'\w+', _RE_FLAGS)
 _RE_EXTRA_CHARS = re.compile(r'\s+(?=\W)|[,.?;](?=[,.?;]|\s+[,.?;])', _RE_FLAGS)
 
 
-class LanguageExistsError(Exception):
-    message = "Language is already created. Re-adding it will re-build" \
-              " its dictionary map. Use 'force=True' keyword if you are sure."
+class LanguageError(RuntimeError):
+    pass
 
-    def __str__(self):
-        return self.message
+
+class LanguageExistsError(LanguageError):
+    pass
 
 
 class LanguageHandler(DefaultScript):
@@ -229,20 +229,27 @@ class LanguageHandler(DefaultScript):
 
         """
         if key in self.db.language_storage and not force:
-            raise LanguageExistsError
-
-        # allowed grammar are grouped by length
-        gramdict = defaultdict(list)
-        for gram in grammar.split():
-            gramdict[len(gram)].append(gram)
-        grammar = dict(gramdict)
+            raise LanguageExistsError(
+                "Language is already created. Re-adding it will re-build"
+                " its dictionary map. Use 'force=True' keyword if you are sure.")
 
         # create grammar_component->phoneme mapping
         # {"vv": ["ea", "oh", ...], ...}
         grammar2phonemes = defaultdict(list)
         for phoneme in phonemes.split():
+            if re.search("\W", phoneme):
+                raise LanguageError("The phoneme '%s' contains an invalid character" % phoneme)
             gram = "".join(["v" if char in vowels else "c" for char in phoneme])
             grammar2phonemes[gram].append(phoneme)
+
+        # allowed grammar are grouped by length
+        gramdict = defaultdict(list)
+        for gram in grammar.split():
+            if re.search("\W|(!=[cv])", gram):
+                raise LanguageError("The grammar '%s' is invalid (only 'c' and 'v' are allowed)" % gram)
+            gramdict[len(gram)].append(gram)
+        grammar = dict(gramdict)
+
 
         # create automatic translation
         translation = {}
