@@ -34,9 +34,8 @@ class TestLanguage(EvenniaTest):
                                 auto_translations=atrans,
                                 force=True)
         rplanguage.add_language(key="binary",
-                                phonemes="oo ii ck w b d t",
+                                phonemes="oo ii a ck w b d t",
                                 grammar="cvvv cvv cvvcv cvvcvv cvvvc cvvvcvv cvvc",
-                                vowels="oei",
                                 noun_prefix='beep-',
                                 word_length_variance=4)
 
@@ -50,13 +49,26 @@ class TestLanguage(EvenniaTest):
         self.assertEqual(result0, text)
         result1 = rplanguage.obfuscate_language(text, level=1.0, language="testlang")
         result2 = rplanguage.obfuscate_language(text, level=1.0, language="testlang")
+        result3 = rplanguage.obfuscate_language(text, level=1.0, language='binary')
+
         self.assertNotEqual(result1, text)
+        self.assertNotEqual(result3, text)
         result1, result2 = result1.split(), result2.split()
         self.assertEqual(result1[:4], result2[:4])
         self.assertEqual(result1[1], "1")
         self.assertEqual(result1[2], "2")
         self.assertEqual(result2[-1], result2[-1])
-        print(rplanguage.obfuscate_language(text, level=1.0, language='binary'))
+
+    def test_faulty_language(self):
+        self.assertRaises(
+            rplanguage.LanguageError,
+            rplanguage.add_language,
+            key='binary2',
+            phonemes="w b d t oe ee, oo e o a wh dw bw",  # erroneous comma
+            grammar="cvvv cvv cvvcv cvvcvvo cvvvc cvvvcvv cvvc c v cc vv ccvvc ccvvccvv ",
+            vowels="oea",
+            word_length_variance=4)
+
 
     def test_available_languages(self):
         self.assertEqual(rplanguage.available_languages(), ["testlang", "binary"])
