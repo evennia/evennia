@@ -1669,7 +1669,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             location_mapping = {"self": "You",
                                 "object": self,
                                 "location": location,
-                                "all_receivers": ", ".join(recv for recv in receivers) if receivers else None,
+                                "all_receivers": ", ".join(str(recv) for recv in receivers) if receivers else None,
                                 "receiver": None,
                                 "speech": message}
             location_mapping.update(custom_mapping)
