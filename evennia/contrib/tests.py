@@ -18,7 +18,7 @@ from evennia.contrib import rplanguage
 mtrans = {"testing": "1", "is": "2", "a": "3", "human": "4"}
 atrans = ["An", "automated", "advantageous", "repeatable", "faster"]
 
-text = "Automated testing is advantageous for a number of reasons:" \
+text = "Automated testing is advantageous for a number of reasons: " \
        "tests may be executed Continuously without the need for human " \
        "intervention, They are easily repeatable, and often faster."
 
@@ -33,6 +33,11 @@ class TestLanguage(EvenniaTest):
                                 manual_translations=mtrans,
                                 auto_translations=atrans,
                                 force=True)
+        rplanguage.add_language(key="binary",
+                                phonemes="oo ii a ck w b d t",
+                                grammar="cvvv cvv cvvcv cvvcvv cvvvc cvvvcvv cvvc",
+                                noun_prefix='beep-',
+                                word_length_variance=4)
 
     def tearDown(self):
         super(TestLanguage, self).tearDown()
@@ -44,22 +49,36 @@ class TestLanguage(EvenniaTest):
         self.assertEqual(result0, text)
         result1 = rplanguage.obfuscate_language(text, level=1.0, language="testlang")
         result2 = rplanguage.obfuscate_language(text, level=1.0, language="testlang")
+        result3 = rplanguage.obfuscate_language(text, level=1.0, language='binary')
+
         self.assertNotEqual(result1, text)
+        self.assertNotEqual(result3, text)
         result1, result2 = result1.split(), result2.split()
         self.assertEqual(result1[:4], result2[:4])
         self.assertEqual(result1[1], "1")
         self.assertEqual(result1[2], "2")
         self.assertEqual(result2[-1], result2[-1])
 
+    def test_faulty_language(self):
+        self.assertRaises(
+            rplanguage.LanguageError,
+            rplanguage.add_language,
+            key='binary2',
+            phonemes="w b d t oe ee, oo e o a wh dw bw",  # erroneous comma
+            grammar="cvvv cvv cvvcv cvvcvvo cvvvc cvvvcvv cvvc c v cc vv ccvvc ccvvccvv ",
+            vowels="oea",
+            word_length_variance=4)
+
+
     def test_available_languages(self):
-        self.assertEqual(rplanguage.available_languages(), ["testlang"])
+        self.assertEqual(rplanguage.available_languages(), ["testlang", "binary"])
 
     def test_obfuscate_whisper(self):
         self.assertEqual(rplanguage.obfuscate_whisper(text, level=0.0), text)
         assert (rplanguage.obfuscate_whisper(text, level=0.1).startswith(
-            '-utom-t-d t-sting is -dv-nt-g-ous for - numb-r of r--sons:t-sts m-y b- -x-cut-d Continuously'))
+            '-utom-t-d t-sting is -dv-nt-g-ous for - numb-r of r--sons: t-sts m-y b- -x-cut-d Continuously'))
         assert(rplanguage.obfuscate_whisper(text, level=0.5).startswith(
-            '--------- --s---- -s -----------s f-- - ------ -f ---s--s:--s-s '))
+            '--------- --s---- -s -----------s f-- - ------ -f ---s--s: --s-s '))
         self.assertEqual(rplanguage.obfuscate_whisper(text, level=1.0), "...")
 
 # Testing of emoting / sdesc / recog system
