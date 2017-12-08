@@ -21,30 +21,30 @@ in the game in various ways:
 Usage:
 
     ```python
-    from evennia.contrib import rplanguages
+    from evennia.contrib import rplanguage
 
     # need to be done once, here we create the "default" lang
-    rplanguages.add_language()
+    rplanguage.add_language()
 
     say = "This is me talking."
     whisper = "This is me whispering.
 
-    print rplanguages.obfuscate_language(say, level=0.0)
+    print rplanguage.obfuscate_language(say, level=0.0)
     <<< "This is me talking."
-    print rplanguages.obfuscate_language(say, level=0.5)
+    print rplanguage.obfuscate_language(say, level=0.5)
     <<< "This is me byngyry."
-    print rplanguages.obfuscate_language(say, level=1.0)
+    print rplanguage.obfuscate_language(say, level=1.0)
     <<< "Daly ly sy byngyry."
 
-    result = rplanguages.obfuscate_whisper(whisper, level=0.0)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.0)
     <<< "This is me whispering"
-    result = rplanguages.obfuscate_whisper(whisper, level=0.2)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.2)
     <<< "This is m- whisp-ring"
-    result = rplanguages.obfuscate_whisper(whisper, level=0.5)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.5)
     <<< "---s -s -- ---s------"
-    result = rplanguages.obfuscate_whisper(whisper, level=0.7)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.7)
     <<< "---- -- -- ----------"
-    result = rplanguages.obfuscate_whisper(whisper, level=1.0)
+    result = rplanguage.obfuscate_whisper(whisper, level=1.0)
     <<< "..."
 
     ```
@@ -71,7 +71,7 @@ Usage:
     manual_translations = {"the":"y'e", "we":"uyi", "she":"semi", "he":"emi",
                           "you": "do", 'me':'mi','i':'me', 'be':"hy'e", 'and':'y'}
 
-    rplanguages.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
+    rplanguage.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
                              word_length_variance=word_length_variance,
                              noun_postfix=noun_postfix, vowels=vowels,
                              manual_translations=manual_translations
