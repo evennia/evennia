@@ -1685,6 +1685,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             msg_type = 'whisper'
             msg_self = '{self} whisper to {all_receivers}, "{speech}"' if msg_self is True else msg_self
             msg_receivers = '{object} whispers: "{speech}"'
+            msg_receivers = msg_receivers or '{object} whispers: "{speech}"'
+            msg_location = None
         else:
             msg_self = '{self} say, "{speech}"' if msg_self is True else msg_self
             msg_location = msg_location or '{object} says, "{speech}"'
@@ -1727,7 +1729,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             location_mapping = {"self": "You",
                                 "object": self,
                                 "location": location,
-                                "all_receivers": ", ".join(recv for recv in receivers) if receivers else None,
+                                "all_receivers": ", ".join(str(recv) for recv in receivers) if receivers else None,
                                 "receiver": None,
                                 "speech": message}
             location_mapping.update(custom_mapping)
