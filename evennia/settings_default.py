@@ -83,7 +83,12 @@ WEBCLIENT_ENABLED = True
 # default webclient will use this and only use the ajax version if the browser
 # is too old to support websockets. Requires WEBCLIENT_ENABLED.
 WEBSOCKET_CLIENT_ENABLED = True
-# Server-side websocket port to open for the webclient.
+# Server-side websocket port to open for the webclient. Note that this value will
+# be dynamically encoded in the webclient html page to allow the webclient to call
+# home. If the external encoded value needs to be different than this, due to
+# working through a proxy or docker port-remapping, the environment variable
+# WEBCLIENT_CLIENT_PROXY_PORT can be used to override this port only for the
+# front-facing client's sake.
 WEBSOCKET_CLIENT_PORT = 4005
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
