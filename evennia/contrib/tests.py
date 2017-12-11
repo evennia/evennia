@@ -1229,8 +1229,8 @@ class TestTurnBattleFunc(EvenniaTest):
         
     # Test functions in tb_items.
     def test_tbitemsfunc(self):
-        attacker = create_object(tb_items.TBItemsCharacter, key="Attacker")
-        defender = create_object(tb_items.TBItemsCharacter, key="Defender")
+        attacker = create_object(tb_items.TBItemsCharacterTest, key="Attacker")
+        defender = create_object(tb_items.TBItemsCharacterTest, key="Defender")
         testroom = create_object(DefaultRoom, key="Test Room")
         attacker.location = testroom
         defender.loaction = testroom
@@ -1297,7 +1297,7 @@ class TestTurnBattleFunc(EvenniaTest):
         turnhandler.turn_end_check(attacker)
         self.assertTrue(turnhandler.db.turn == 1)
         # Join fight
-        joiner = create_object(tb_items.TBItemsCharacter, key="Joiner")
+        joiner = create_object(tb_items.TBItemsCharacterTest, key="Joiner")
         turnhandler.db.fighters = [attacker, defender]
         turnhandler.db.turn = 0
         turnhandler.join_fight(joiner)
@@ -1306,8 +1306,7 @@ class TestTurnBattleFunc(EvenniaTest):
         # Remove the script at the end
         turnhandler.stop()
         # Now time to test item stuff.
-        user = create_object(tb_items.TBItemsCharacter, key="User")
-        tb_items.tickerhandler.remove(interval=30, callback=user.at_update, idstring="update")
+        user = create_object(tb_items.TBItemsCharacterTest, key="User")
         testroom = create_object(DefaultRoom, key="Test Room")
         user.location = testroom
         test_healpotion = create_object(key="healing potion")
