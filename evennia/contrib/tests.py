@@ -916,7 +916,7 @@ class TestTutorialWorldRooms(CommandTest):
 
 
 # test turnbattle
-from evennia.contrib.turnbattle import tb_basic, tb_equip, tb_range, tb_items
+from evennia.contrib.turnbattle import tb_basic, tb_equip, tb_range, tb_items, tb_magic
 from evennia.objects.objects import DefaultRoom
 
 
@@ -963,7 +963,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
         
     # Test item commands
-    def test_turnbattlecmd(self):
+    def test_turnbattleitemcmd(self):
         testitem = create_object(key="test item")
         testitem.move_to(self.char1)
         self.call(tb_items.CmdUse(), "item", "'Test item' is not a usable item.")
@@ -973,6 +973,18 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_items.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_items.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_items.CmdRest(), "", "Char rests to recover HP.")
+        
+    # Test magic commands
+    def test_turnbattlemagiccmd(self):
+        self.call(tb_magic.CmdStatus(), "", "You have 100 / 100 HP and 20 / 20 MP.")
+        self.call(tb_magic.CmdLearnSpell(), "test spell", "There is no spell with that name.")
+        self.call(tb_magic.CmdCast(), "", "Usage: cast <spell name> = <target>, <target2>")
+        # Also test the commands that are the same in the basic module
+        self.call(tb_magic.CmdFight(), "", "There's nobody here to fight!")
+        self.call(tb_magic.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_magic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_magic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_magic.CmdRest(), "", "Char rests to recover HP and MP.")
         
 
 class TestTurnBattleFunc(EvenniaTest):
@@ -1339,6 +1351,86 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(user.db.conditions == {})
         # Delete the test character
         user.delete()
+        
+    # Test combat functions in tb_magic.
+    def test_tbbasicfunc(self):
+        attacker = create_object(tb_magic.TBMagicCharacter, key="Attacker")
+        defender = create_object(tb_magic.TBMagicCharacter, key="Defender")
+        testroom = create_object(DefaultRoom, key="Test Room")
+        attacker.location = testroom
+        defender.loaction = testroom
+        # Initiative roll
+        initiative = tb_magic.roll_init(attacker)
+        self.assertTrue(initiative >= 0 and initiative <= 1000)
+        # Attack roll
+        attack_roll = tb_magic.get_attack(attacker, defender)
+        self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
+        # Defense roll
+        defense_roll = tb_magic.get_defense(attacker, defender)
+        self.assertTrue(defense_roll == 50)
+        # Damage roll
+        damage_roll = tb_magic.get_damage(attacker, defender)
+        self.assertTrue(damage_roll >= 15 and damage_roll <= 25)
+        # Apply damage
+        defender.db.hp = 10
+        tb_magic.apply_damage(defender, 3)
+        self.assertTrue(defender.db.hp == 7)
+        # Resolve attack
+        defender.db.hp = 40
+        tb_magic.resolve_attack(attacker, defender, attack_value=20, defense_value=10)
+        self.assertTrue(defender.db.hp < 40)
+        # Combat cleanup
+        attacker.db.Combat_attribute = True
+        tb_magic.combat_cleanup(attacker)
+        self.assertFalse(attacker.db.combat_attribute)
+        # Is in combat
+        self.assertFalse(tb_magic.is_in_combat(attacker))
+        # Set up turn handler script for further tests
+        attacker.location.scripts.add(tb_magic.TBMagicTurnHandler)
+        turnhandler = attacker.db.combat_TurnHandler
+        self.assertTrue(attacker.db.combat_TurnHandler)
+        # Set the turn handler's interval very high to keep it from repeating during tests.
+        turnhandler.interval = 10000
+        # Force turn order
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        # Test is turn
+        self.assertTrue(tb_magic.is_turn(attacker))
+        # Spend actions
+        attacker.db.Combat_ActionsLeft = 1
+        tb_magic.spend_action(attacker, 1, action_name="Test")
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "Test")
+        # Initialize for combat
+        attacker.db.Combat_ActionsLeft = 983
+        turnhandler.initialize_for_combat(attacker)
+        self.assertTrue(attacker.db.Combat_ActionsLeft == 0)
+        self.assertTrue(attacker.db.Combat_LastAction == "null")
+        # Start turn
+        defender.db.Combat_ActionsLeft = 0
+        turnhandler.start_turn(defender)
+        self.assertTrue(defender.db.Combat_ActionsLeft == 1)
+        # Next turn
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.next_turn()
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Turn end check
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        attacker.db.Combat_ActionsLeft = 0
+        turnhandler.turn_end_check(attacker)
+        self.assertTrue(turnhandler.db.turn == 1)
+        # Join fight
+        joiner = create_object(tb_magic.TBMagicCharacter, key="Joiner")
+        turnhandler.db.fighters = [attacker, defender]
+        turnhandler.db.turn = 0
+        turnhandler.join_fight(joiner)
+        self.assertTrue(turnhandler.db.turn == 1)
+        self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
+        # Remove the script at the end
+        turnhandler.stop()
+        
 
 # Test tree select
 

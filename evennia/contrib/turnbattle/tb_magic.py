@@ -1000,6 +1000,14 @@ class CmdStatus(Command):
     def func(self):
         "This performs the actual command."
         char = self.caller
+        
+        if not char.db.max_hp: # Character not initialized, IE in unit tests
+            char.db.hp = 100
+            char.db.max_hp = 100
+            char.db.spells_known = []
+            char.db.max_mp = 20
+            char.db.mp = char.db.max_mp
+        
         char.msg("You have %i / %i HP and %i / %i MP." % (char.db.hp, char.db.max_hp, char.db.mp, char.db.max_mp))
 
 class CmdCombatHelp(CmdHelp):
