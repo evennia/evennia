@@ -592,7 +592,17 @@ class TBItemsCharacter(DefaultCharacter):
             self.apply_turn_conditions()
             # Tick down condition durations
             condition_tickdown(self, self)
-        
+
+class TBItemsCharacterTest(TBItemsCharacter):
+    """
+    Just like the TBItemsCharacter, but doesn't subscribe to the TickerHandler.
+    This makes it easier to run unit tests on.
+    """
+    def at_object_creation(self):
+        self.db.max_hp = 100  # Set maximum HP to 100
+        self.db.hp = self.db.max_hp  # Set current HP to maximum
+        self.db.conditions = {} # Set empty dict for conditions
+    
 
 """
 ----------------------------------------------------------------------------
