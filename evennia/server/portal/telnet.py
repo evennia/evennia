@@ -50,7 +50,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
         self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
         # change encoding to ENCODINGS[0] which reflects Telnet default encoding
-        self.protocol_flags["ENCODING"] = settings.ENCODINGS[0]
+        self.protocol_flags["ENCODING"] = settings.ENCODINGS[0] if settings.ENCODINGS else 'utf-8'
 
         # suppress go-ahead
         self.sga = suppress_ga.SuppressGA(self)
