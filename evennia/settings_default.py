@@ -166,17 +166,12 @@ IDLE_TIMEOUT = -1
 # command-name is given here; this is because the webclient needs a default
 # to send to avoid proxy timeouts.
 IDLE_COMMAND = "idle"
-# The encoding (character set) specific to Telnet. This will not influence
-# other encoding settings: namely, the webclient, the website, the
-# database encoding will remain (utf-8 by default).  This setting only
-# affects the telnet encoding and will be overridden by user settings
-# (through one of their client's supported protocol or their account options).
-TELNET_ENCODING = "utf-8"
 # The set of encodings tried. An Account object may set an attribute "encoding" on
 # itself to match the client used. If not set, or wrong encoding is
 # given, this list is tried, in order, aborting on the first match.
 # Add sets for languages/regions your accounts are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
+# Telnet default encoding, unless specified by the client, will be ENCODINGS[0].
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # Regular expression applied to all output to a given session in order
 # to strip away characters (usually various forms of decorations) for the benefit
