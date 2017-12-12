@@ -171,6 +171,7 @@ IDLE_COMMAND = "idle"
 # given, this list is tried, in order, aborting on the first match.
 # Add sets for languages/regions your accounts are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
+# Telnet default encoding, unless specified by the client, will be ENCODINGS[0].
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # Regular expression applied to all output to a given session in order
 # to strip away characters (usually various forms of decorations) for the benefit
