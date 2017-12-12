@@ -7,7 +7,6 @@ from builtins import object
 
 import time
 
-
 #------------------------------------------------------------
 # Server Session
 #------------------------------------------------------------
@@ -41,7 +40,7 @@ class Session(object):
                       'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
                       'protocol_flags', 'server_data', "cmdset_storage_string")
 
-    def init_session(self, protocol_key, address, sessionhandler, override_flags=None):
+    def init_session(self, protocol_key, address, sessionhandler):
         """
         Initialize the Session. This should be called by the protocol when
         a new session is established.
@@ -52,7 +51,6 @@ class Session(object):
             address (str): Client address.
             sessionhandler (SessionHandler): Reference to the
                 main sessionhandler instance.
-        override_flags (optional, dict): a dictionary of protocol flags to override.
 
         """
         # This is currently 'telnet', 'ssh', 'ssl' or 'web'
@@ -88,10 +86,6 @@ class Session(object):
                                "INPUTDEBUG": False,
                                "RAW": False,
                                "NOCOLOR": False}
-
-        if override_flags:
-            self.protocol_flags.update(override_flags)
-
         self.server_data = {}
 
         # map of input data to session methods
