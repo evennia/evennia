@@ -6,6 +6,23 @@
 #
 # from evennia.settings_default import *
 #
+#
+# Next, in your commandset, add in all building commands in your game's default_cmdsets module.
+# At the top of the file, add this import:
+#
+# from evennia.contrib.collab.commands import build_commands
+#
+# ...And then modify CharacterCmdSet's at_cmdset_creation to look something like:
+#
+# def at_cmdset_creation(self):
+#     """
+#     Populates the cmdset
+#     """
+#     super(CharacterCmdSet, self).at_cmdset_creation()
+#     for command in build_commands:
+#         self.add(command())
+#
+# Finally, reload the server and you will have the collaborative building commands with the default settings.
 
 # First, we need to overwrite some base typeclasses so objects become collab-aware.
 # If you have any custom typeclasses already made, you should change their parent classes
