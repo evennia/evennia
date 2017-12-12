@@ -24,7 +24,7 @@ _RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
 _RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
-
+_TELNET_ENCODING = settings.TELNET_ENCODING
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
@@ -49,7 +49,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
-        self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
+        self.init_session(self.protocol_name, client_address, self.factory.sessionhandler,
+                override_flags={"ENCODING": _TELNET_ENCODING})
 
         # suppress go-ahead
         self.sga = suppress_ga.SuppressGA(self)
