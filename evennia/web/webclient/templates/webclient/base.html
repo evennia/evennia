@@ -44,7 +44,7 @@ JQuery available.
         {% endif %}
 
         {% if websocket_url %}
-            var wsurl = "{{websocket_url}}:{{websocket_port}}";
+            var wsurl = "{{websocket_url}}";
         {% else %}
             var wsurl = "ws://" + this.location.hostname + ":{{websocket_port}}";
         {% endif %}
