@@ -36,20 +36,22 @@ All strings are recorded and stored in plaintext. This includes those strings
 which might contain sensitive data (create, connect, password).
 
 You are expected to implement proper masking/scrubbing of these and any
-other commands upon receipt and storing the recorded data securely.
+other commands upon receipt and storing the recorded data securely. Please do
+not store user passwords in plaintext, and be ethical-- this records even
+private communications.
 ***************
 
 Installation:
 
-Import this class to `settings.py` and designate it as the SERVER_SESSION_CLASS.
+Designate this class as the SERVER_SESSION_CLASS in `settings.py`.
 
 i.e. SERVER_SESSION_CLASS = "evennia.contrib.auditing.AuditedServerSession"
 
 There are three additional settings that govern operation-- whether you
 want to record inbound strings and/or outbound strings, and what method
-you want the parsed dicts sent to.
+you want the data sent to.
 
-AUDIT_METHOD = just_write_it (should accept (dict, **kwargs))
+AUDIT_METHOD = just_write_it
 AUDIT_IN = True or False
 AUDIT_OUT = True or False
 
