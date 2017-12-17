@@ -13,8 +13,13 @@ try:
 except ImportError as error:
     errstr = """
     {err}
-    SSL requires the PyOpenSSL library:
-        pip install pyopenssl
+    SSL requires the PyOpenSSL library and dependencies:
+
+        pip install pyopenssl pycrypto enum pyasn1 service_identity
+
+    Stop and start Evennia again. If no certificate can be generated, you'll
+    get a suggestion for a (linux) command to generate this locally.
+
     """
     raise ImportError(errstr.format(err=error))
 
