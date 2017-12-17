@@ -83,15 +83,20 @@ WEBCLIENT_ENABLED = True
 # default webclient will use this and only use the ajax version if the browser
 # is too old to support websockets. Requires WEBCLIENT_ENABLED.
 WEBSOCKET_CLIENT_ENABLED = True
-# Server-side websocket port to open for the webclient.
+# Server-side websocket port to open for the webclient. Note that this value will
+# be dynamically encoded in the webclient html page to allow the webclient to call
+# home. If the external encoded value needs to be different than this, due to
+# working through a proxy or docker port-remapping, the environment variable
+# WEBCLIENT_CLIENT_PROXY_PORT can be used to override this port only for the
+# front-facing client's sake.
 WEBSOCKET_CLIENT_PORT = 4005
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
 # Actual URL for webclient component to reach the websocket. You only need
 # to set this if you know you need it, like using some sort of proxy setup.
-# If given it must be on the form "ws://hostname" (WEBSOCKET_CLIENT_PORT will
-# be automatically appended). If left at None, the client will itself
-# figure out this url based on the server's hostname.
+# If given it must be on the form "ws[s]://hostname[:port]". If left at None, 
+# the client will itself figure out this url based on the server's hostname.
+# e.g. ws://external.example.com or wss://external.example.com:443
 WEBSOCKET_CLIENT_URL = None
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
@@ -166,6 +171,7 @@ IDLE_COMMAND = "idle"
 # given, this list is tried, in order, aborting on the first match.
 # Add sets for languages/regions your accounts are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
+# Telnet default encoding, unless specified by the client, will be ENCODINGS[0].
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # Regular expression applied to all output to a given session in order
 # to strip away characters (usually various forms of decorations) for the benefit
@@ -636,8 +642,6 @@ RSS_UPDATE_INTERVAL = 60 * 10  # 10 minutes
 # browser to display. Note however that this will leak memory when
 # active, so make sure to turn it off for a production server!
 DEBUG = False
-# While true, show "pretty" error messages for template syntax errors.
-TEMPLATE_DEBUG = DEBUG
 # Emails are sent to these people if the above DEBUG value is False. If you'd
 # rather prefer nobody receives emails, leave this commented out or empty.
 ADMINS = ()  # 'Your Name', 'your_email@domain.com'),)
@@ -730,7 +734,9 @@ TEMPLATES = [{
             'django.template.context_processors.media',
             'django.template.context_processors.debug',
             'sekizai.context_processors.sekizai',
-            'evennia.web.utils.general_context.general_context']
+            'evennia.web.utils.general_context.general_context'],
+        # While true, show "pretty" error messages for template syntax errors.
+        "debug": DEBUG
     }
 }]
 
