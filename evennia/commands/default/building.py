@@ -1458,8 +1458,10 @@ class CmdSetAttribute(ObjManipCommand):
         script: If we're trying to set an attribute on a script
         channel: If we're trying to set an attribute on a channel
         account: If we're trying to set an attribute on an account
-        (room, exit, char/character may all be used as well for global
-         searches)
+        room: Setting an attribute on a room (global search)
+        exit: Setting an attribute on an exit (global search)
+        char: Setting an attribute on a character (global search)
+        character: Alias for char, as above.
 
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
