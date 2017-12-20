@@ -912,7 +912,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 csessid = sess.sessid
                 addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and
                                     str(sess.address[0]) or str(sess.address))
-                result.append("\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1) or
+                result.append("\n %s %s" % ((session and session.sessid == csessid) and "|w* %s|n" % (isess + 1) or
                                             "  %s" % (isess + 1), addr))
             result.append("\n\n |whelp|n - more commands")
             result.append("\n |wooc <Text>|n - talk on public channel")
