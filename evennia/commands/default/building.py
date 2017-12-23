@@ -1455,6 +1455,13 @@ class CmdSetAttribute(ObjManipCommand):
 
     Switch:
         edit: Open the line editor (string values only)
+        script: If we're trying to set an attribute on a script
+        channel: If we're trying to set an attribute on a channel
+        account: If we're trying to set an attribute on an account
+        room: Setting an attribute on a room (global search)
+        exit: Setting an attribute on an exit (global search)
+        char: Setting an attribute on a character (global search)
+        character: Alias for char, as above.
 
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
@@ -1555,6 +1562,38 @@ class CmdSetAttribute(ObjManipCommand):
         # start the editor
         EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
 
+    def search_for_obj(self, objname):
+        """
+        Searches for an object matching objname. The object may be of different typeclasses.
+        Args:
+            objname: Name of the object we're looking for
+
+        Returns:
+            A typeclassed object, or None if nothing is found.
+        """
+        from evennia.utils.utils import variable_from_module
+        _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+        caller = self.caller
+        if objname.startswith('*') or "account" in self.switches:
+            found_obj = caller.search_account(objname.lstrip('*'))
+        elif "script" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_script(objname), caller)
+        elif "channel" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_channel(objname), caller)
+        else:
+            global_search = True
+            if "char" in self.switches or "character" in self.switches:
+                typeclass = settings.BASE_CHARACTER_TYPECLASS
+            elif "room" in self.switches:
+                typeclass = settings.BASE_ROOM_TYPECLASS
+            elif "exit" in self.switches:
+                typeclass = settings.BASE_EXIT_TYPECLASS
+            else:
+                global_search = False
+                typeclass = None
+            found_obj = caller.search(objname, global_search=global_search, typeclass=typeclass)
+        return found_obj
+
     def func(self):
         """Implement the set attribute - a limited form of @py."""
 
@@ -1568,10 +1607,7 @@ class CmdSetAttribute(ObjManipCommand):
         objname = self.lhs_objattr[0]['name']
         attrs = self.lhs_objattr[0]['attrs']
 
-        if objname.startswith('*'):
-            obj = caller.search_account(objname.lstrip('*'))
-        else:
-            obj = caller.search(objname)
+        obj = self.search_for_obj(objname)
         if not obj:
             return
 
