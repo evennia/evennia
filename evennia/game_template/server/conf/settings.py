@@ -1,4 +1,4 @@
-"""
+r"""
 Evennia settings file.
 
 The available options are found in the default settings file found
