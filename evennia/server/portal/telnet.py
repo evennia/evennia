@@ -25,7 +25,6 @@ _RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
 
-
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
     Each player connecting over telnet (ie using most traditional mud
@@ -50,6 +49,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
         self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
+        # change encoding to ENCODINGS[0] which reflects Telnet default encoding
+        self.protocol_flags["ENCODING"] = settings.ENCODINGS[0] if settings.ENCODINGS else 'utf-8'
 
         # suppress go-ahead
         self.sga = suppress_ga.SuppressGA(self)

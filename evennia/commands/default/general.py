@@ -67,7 +67,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
                 caller.msg("You have no location to look at!")
                 return
         else:
-            target = caller.search(self.args, use_dbref=caller.check_permstring("Builders"))
+            target = caller.search(self.args)
             if not target:
                 return
         self.msg(caller.at_look(target))
@@ -267,13 +267,17 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
                 caller.msg("You can't get that.")
             return
 
+        # calling at_before_get hook method
+        if not obj.at_before_get(caller):
+            return
+
         obj.move_to(caller, quiet=True)
         caller.msg("You pick up %s." % obj.name)
         caller.location.msg_contents("%s picks up %s." %
                                      (caller.name,
                                       obj.name),
                                      exclude=caller)
-        # calling hook method
+        # calling at_get hook method
         obj.at_get(caller)
 
 
@@ -306,6 +310,10 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
                             nofound_string="You aren't carrying %s." % self.args,
                             multimatch_string="You carry more than one %s:" % self.args)
         if not obj:
+            return
+
+        # Call the object script's at_before_drop() method.
+        if not obj.at_before_drop(caller):
             return
 
         obj.move_to(caller.location, quiet=True)
@@ -350,6 +358,11 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         if not to_give.location == caller:
             caller.msg("You are not holding %s." % to_give.key)
             return
+
+        # calling at_before_give hook method
+        if not to_give.at_before_give(caller, target):
+            return
+
         # give object
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         to_give.move_to(target, quiet=True)
@@ -417,7 +430,7 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
             return
 
         # Call the at_after_say hook on the character
-        caller.at_say(speech)
+        caller.at_say(speech, msg_self=True)
 
 
 class CmdWhisper(COMMAND_DEFAULT_CLASS):
@@ -425,10 +438,11 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
     Speak privately as your character to another
 
     Usage:
-      whisper <player> = <message>
+      whisper <character> = <message>
+      whisper <char1>, <char2> = <message?
 
-    Talk privately to those in your current location, without
-    others being informed.
+    Talk privately to one or more characters in your current location, without
+    others in the room being informed.
     """
 
     key = "whisper"
@@ -440,24 +454,25 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.lhs or not self.rhs:
-            caller.msg("Usage: whisper <account> = <message>")
+            caller.msg("Usage: whisper <character> = <message>")
             return
 
-        receiver = caller.search(self.lhs)
+        receivers = [recv.strip() for recv in self.lhs.split(",")]
 
-        if not receiver:
-            return
+        receivers = [caller.search(receiver) for receiver in receivers]
+        receivers = [recv for recv in receivers if recv]
 
         speech = self.rhs
-        # Call a hook to change the speech before whispering
-        speech = caller.at_before_say(speech, whisper=True, receiver=receiver)
-
         # If the speech is empty, abort the command
-        if not speech:
+        if not speech or not receivers:
             return
 
-        # Call the at_after_whisper hook for feedback
-        caller.at_say(speech, receiver=receiver, whisper=True)
+        # Call a hook to change the speech before whispering
+        speech = caller.at_before_say(speech, whisper=True, receivers=receivers)
+
+        # no need for self-message if we are whispering to ourselves (for some reason)
+        msg_self = None if caller in receivers else True
+        caller.at_say(speech, msg_self=msg_self, receivers=receivers, whisper=True)
 
 
 class CmdPose(COMMAND_DEFAULT_CLASS):

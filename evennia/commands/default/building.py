@@ -543,7 +543,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     describe an object or the current room.
 
     Usage:
-      @setdesc [<obj> =] <description>
+      @desc [<obj> =] <description>
 
     Switches:
       edit - Open up a line editor for more advanced editing.
@@ -551,7 +551,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
     """
-    key = "@setdesc"
+    key = "@desc"
     aliases = "@describe"
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
@@ -647,29 +647,32 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
         def delobj(obj):
             # helper function for deleting a single object
             string = ""
-            objname = obj.name
-            if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
-                return "\nYou don't have permission to delete %s." % objname
-            if obj.account and 'override' not in self.switches:
-                return "\nObject %s is controlled by an active account. Use /override to delete anyway." % objname
-            if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
-                return "\nYou are trying to delete |c%s|n, which is set as DEFAULT_HOME. " \
-                    "Re-point settings.DEFAULT_HOME to another " \
-                    "object before continuing." % objname
-
-            had_exits = hasattr(obj, "exits") and obj.exits
-            had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents
-                                                        if not (hasattr(obj, "exits") and obj not in obj.exits))
-            # do the deletion
-            okay = obj.delete()
-            if not okay:
-                string += "\nERROR: %s not deleted, probably because delete() returned False." % objname
+            if not obj.pk:
+                string = "\nObject %s was already deleted." % obj.db_key
             else:
-                string += "\n%s was destroyed." % objname
-                if had_exits:
-                    string += " Exits to and from %s were destroyed as well." % objname
-                if had_objs:
-                    string += " Objects inside %s were moved to their homes." % objname
+                objname = obj.name
+                if not (obj.access(caller, "control") or obj.access(caller, 'delete')):
+                    return "\nYou don't have permission to delete %s." % objname
+                if obj.account and 'override' not in self.switches:
+                    return "\nObject %s is controlled by an active account. Use /override to delete anyway." % objname
+                if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
+                    return "\nYou are trying to delete |c%s|n, which is set as DEFAULT_HOME. " \
+                        "Re-point settings.DEFAULT_HOME to another " \
+                        "object before continuing." % objname
+
+                had_exits = hasattr(obj, "exits") and obj.exits
+                had_objs = hasattr(obj, "contents") and any(obj for obj in obj.contents
+                                                            if not (hasattr(obj, "exits") and obj not in obj.exits))
+                # do the deletion
+                okay = obj.delete()
+                if not okay:
+                    string += "\nERROR: %s not deleted, probably because delete() returned False." % objname
+                else:
+                    string += "\n%s was destroyed." % objname
+                    if had_exits:
+                        string += " Exits to and from %s were destroyed as well." % objname
+                    if had_objs:
+                        string += " Objects inside %s were moved to their homes." % objname
             return string
 
         objs = []
@@ -706,10 +709,10 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
             else:
                 confirm += ", ".join(["#{}".format(obj.id) for obj in objs])
             confirm += " [yes]/no?" if self.default_confirm == 'yes' else " yes/[no]"
-            answer = yield(confirm)
-            answer = self.default_confirm if answer == '' else answer
+            answer = ""
             while answer.strip().lower() not in ("y", "yes", "n", "no"):
                 answer = yield(confirm)
+                answer = self.default_confirm if answer == '' else answer
 
             if answer.strip().lower() in ("n", "no"):
                 caller.msg("Cancelled: no object was destroyed.")
@@ -1084,7 +1087,7 @@ class CmdSetHome(CmdLink):
     set an object's home location
 
     Usage:
-      @home <obj> [= <home_location>]
+      @sethome <obj> [= <home_location>]
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
@@ -1095,13 +1098,13 @@ class CmdSetHome(CmdLink):
     """
 
     key = "@sethome"
-    locks = "cmd:perm(@home) or perm(Builder)"
+    locks = "cmd:perm(@sethome) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
         """implement the command"""
         if not self.args:
-            string = "Usage: @home <obj> [= <home_location>]"
+            string = "Usage: @sethome <obj> [= <home_location>]"
             self.caller.msg(string)
             return
 
@@ -1452,6 +1455,13 @@ class CmdSetAttribute(ObjManipCommand):
 
     Switch:
         edit: Open the line editor (string values only)
+        script: If we're trying to set an attribute on a script
+        channel: If we're trying to set an attribute on a channel
+        account: If we're trying to set an attribute on an account
+        room: Setting an attribute on a room (global search)
+        exit: Setting an attribute on an exit (global search)
+        char: Setting an attribute on a character (global search)
+        character: Alias for char, as above.
 
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
@@ -1552,6 +1562,38 @@ class CmdSetAttribute(ObjManipCommand):
         # start the editor
         EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
 
+    def search_for_obj(self, objname):
+        """
+        Searches for an object matching objname. The object may be of different typeclasses.
+        Args:
+            objname: Name of the object we're looking for
+
+        Returns:
+            A typeclassed object, or None if nothing is found.
+        """
+        from evennia.utils.utils import variable_from_module
+        _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+        caller = self.caller
+        if objname.startswith('*') or "account" in self.switches:
+            found_obj = caller.search_account(objname.lstrip('*'))
+        elif "script" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_script(objname), caller)
+        elif "channel" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_channel(objname), caller)
+        else:
+            global_search = True
+            if "char" in self.switches or "character" in self.switches:
+                typeclass = settings.BASE_CHARACTER_TYPECLASS
+            elif "room" in self.switches:
+                typeclass = settings.BASE_ROOM_TYPECLASS
+            elif "exit" in self.switches:
+                typeclass = settings.BASE_EXIT_TYPECLASS
+            else:
+                global_search = False
+                typeclass = None
+            found_obj = caller.search(objname, global_search=global_search, typeclass=typeclass)
+        return found_obj
+
     def func(self):
         """Implement the set attribute - a limited form of @py."""
 
@@ -1565,10 +1607,7 @@ class CmdSetAttribute(ObjManipCommand):
         objname = self.lhs_objattr[0]['name']
         attrs = self.lhs_objattr[0]['attrs']
 
-        if objname.startswith('*'):
-            obj = caller.search_account(objname.lstrip('*'))
-        else:
-            obj = caller.search(objname)
+        obj = self.search_for_obj(objname)
         if not obj:
             return
 
@@ -2321,6 +2360,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                Note that the only way to retrieve
                an object from a None location is by direct #dbref
                reference. A puppeted object cannot be moved to None.
+      loc - teleport object to the target's location instead of its contents
 
     Teleports an object somewhere. If no object is given, you yourself
     is teleported to the target location.     """
@@ -2340,6 +2380,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         # setting switches
         tel_quietly = "quiet" in switches
         to_none = "tonone" in switches
+        to_loc = "loc" in switches
 
         if to_none:
             # teleporting to None
@@ -2365,7 +2406,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
 
         # not teleporting to None location
         if not args and not to_none:
-            caller.msg("Usage: teleport[/switches] [<obj> =] <target_loc>|home")
+            caller.msg("Usage: teleport[/switches] [<obj> =] <target_loc>||home")
             return
 
         if rhs:
@@ -2381,6 +2422,11 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         if not destination:
             caller.msg("Destination not found.")
             return
+        if to_loc:
+            destination = destination.location
+            if not destination:
+                caller.msg("Destination has no location.")
+                return
         if obj_to_teleport == destination:
             caller.msg("You can't teleport an object inside of itself!")
             return
@@ -2715,7 +2761,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
             return
 
-        if "noloc" in self.switches and not "location" not in prototype:
+        if "noloc" not in self.switches and "location" not in prototype:
             prototype["location"] = self.caller.location
 
         for obj in spawn(prototype):

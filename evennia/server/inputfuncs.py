@@ -436,9 +436,12 @@ def webclient_options(session, *args, **kwargs):
     """
     account = session.account
 
-    clientoptions = settings.WEBCLIENT_OPTIONS.copy()
-    storedoptions = account.db._saved_webclient_options or {}
-    clientoptions.update(storedoptions)
+    clientoptions = account.db._saved_webclient_options
+    if not clientoptions:
+        # No saved options for this account, copy and save the default.
+        account.db._saved_webclient_options = settings.WEBCLIENT_OPTIONS.copy()
+        # Get the _SaverDict created by the database.
+        clientoptions = account.db._saved_webclient_options
 
     # The webclient adds a cmdid to every kwargs, but we don't need it.
     try:
@@ -448,7 +451,8 @@ def webclient_options(session, *args, **kwargs):
 
     if not kwargs:
         # No kwargs: we are getting the stored options
-        session.msg(webclient_options=clientoptions)
+        # Convert clientoptions to regular dict for sending.
+        session.msg(webclient_options=dict(clientoptions))
 
         # Create a monitor. If a monitor already exists then it will replace
         # the previous one since it would use the same idstring
@@ -461,5 +465,3 @@ def webclient_options(session, *args, **kwargs):
         # kwargs provided: persist them to the account object
         for key, value in kwargs.iteritems():
             clientoptions[key] = value
-
-        account.db._saved_webclient_options = clientoptions

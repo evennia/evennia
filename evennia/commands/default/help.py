@@ -17,6 +17,7 @@ from evennia.utils.utils import string_suggestions, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 HELP_MORE = settings.HELP_MORE
+CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
 # limit symbol import for API
 __all__ = ("CmdHelp", "CmdSetHelp")
@@ -74,7 +75,7 @@ class CmdHelp(Command):
                     pass
 
             if usemore:
-                evmore.msg(self.caller, text)
+                evmore.msg(self.caller, text, session=self.session)
                 return
 
         self.msg((text, {"type": "help"}))
@@ -231,6 +232,15 @@ class CmdHelp(Command):
 
         # try an exact command auto-help match
         match = [cmd for cmd in all_cmds if cmd == query]
+
+        if not match:
+            # try an inexact match with prefixes stripped from query and cmds
+            _query = query[1:] if query[0] in CMD_IGNORE_PREFIXES else query
+
+            match = [cmd for cmd in all_cmds
+                    for m in cmd._matchset if m == _query or
+                    m[0] in CMD_IGNORE_PREFIXES and m[1:] == _query]
+
         if len(match) == 1:
             formatted = self.format_help_entry(match[0].key,
                                                match[0].get_help(caller, cmdset),
@@ -257,7 +267,7 @@ class CmdHelp(Command):
             return
 
         # no exact matches found. Just give suggestions.
-        self.msg(self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions))
+        self.msg((self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions), {"type": "help"}))
 
 
 def _loadhelp(caller):

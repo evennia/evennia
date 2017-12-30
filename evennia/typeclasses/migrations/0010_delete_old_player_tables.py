@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, connection
 
+_ENGINE = None
 
 def _table_exists(db_cursor, tablename):
     "Returns bool if table exists or not"
@@ -11,9 +12,25 @@ def _table_exists(db_cursor, tablename):
 
 
 def _drop_table(db_cursor, table_name):
+    global _ENGINE
+    if not _ENGINE:
+        from django.conf import settings
+        try:
+            _ENGINE = settings.DATABASES["default"]["ENGINE"]
+        except KeyError:
+            _ENGINE = settings.DATABASE_ENGINE
+
     if _table_exists(db_cursor, table_name):
-        sql_drop = "DROP TABLE %s;" % table_name
-        db_cursor.execute(sql_drop)
+        if _ENGINE == "django.db.backends.mysql":
+            db_cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
+            db_cursor.execute("DROP TABLE {table};".format(table=table_name))
+            db_cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
+        elif _ENGINE == "postgresql_psycopg2":
+            db_cursor.execute("ALTER TABLE {table} DISABLE TRIGGER ALL;".format(table=table_name))
+            db_cursor.execute("DROP TABLE {table};".format(table=table_name))
+            db_cursor.execute("ALTER TABLE {table} ENABLE TRIGGER ALL;".format(table=table_name))
+        else:  # sqlite3, other databases
+            db_cursor.execute("DROP TABLE {table};".format(table=table_name))
 
 
 def drop_tables(apps, schema_migrator):
@@ -23,6 +40,9 @@ def drop_tables(apps, schema_migrator):
     _drop_table(db_cursor, "players_playerdb_db_tags")
     _drop_table(db_cursor, "players_playerdb_groups")
     _drop_table(db_cursor, "players_playerdb_user_permissions")
+    _drop_table(db_cursor, "comms_msg_db_sender_players")
+    _drop_table(db_cursor, "comms_msg_db_receivers_players")
+    _drop_table(db_cursor, "comms_msg_db_hide_from_players")
 
 
 class Migration(migrations.Migration):

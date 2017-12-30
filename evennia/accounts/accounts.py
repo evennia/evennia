@@ -566,7 +566,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         # A basic security setup
         lockstring = "examine:perm(Admin);edit:perm(Admin);" \
-                     "delete:perm(Admin);boot:perm(Admin);msg:all()"
+                     "delete:perm(Admin);boot:perm(Admin);msg:all();" \
+                     "noidletimeout:perm(Builder) or perm(noidletimeout)"
         self.locks.add(lockstring)
 
         # The ooc account cmdset
@@ -582,8 +583,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         """
         # set an (empty) attribute holding the characters this account has
         lockstring = "attrread:perm(Admins);attredit:perm(Admins);" \
-                     "attrcreate:perm(Admins);" \
-                     "noidletimeout:perm(Builder) or perm(noidletimeout)"
+                     "attrcreate:perm(Admins);"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
         self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 
@@ -761,7 +761,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the account.
-            # we make sure to clean up the _playable_characers list in case
+            # we make sure to clean up the _playable_characters list in case
             # any was deleted in the interim.
             self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(self.at_look(target=self.db._playable_characters,

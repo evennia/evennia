@@ -55,6 +55,7 @@ class CmdMail(default_cmds.MuxCommand):
         @mail/delete 6
         @mail/forward feend78 Griatch=4/You guys should read this.
         @mail/reply 9=Thanks for the info!
+
     """
     key = "@mail"
     aliases = ["mail"]
@@ -86,6 +87,7 @@ class CmdMail(default_cmds.MuxCommand):
 
         Returns:
             messages (list): list of Msg objects.
+
         """
         # mail_messages = Msg.objects.get_by_tag(category="mail")
         # messages = []
@@ -105,6 +107,7 @@ class CmdMail(default_cmds.MuxCommand):
             subject (str): The header or subject of the message to be delivered.
             message (str): The body of the message being sent.
             caller (obj): The object (or Account or Character) that is sending the message.
+
         """
         for recipient in recipients:
             recipient.msg("You have received a new @mail from %s" % caller)
@@ -130,7 +133,8 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
-                        mind = int(self.lhs) - 1
+                        mind_max = max(0, all_mail.count() - 1)
+                        mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
                             all_mail[mind].delete()
                             self.caller.msg("Message %s deleted" % self.lhs)
@@ -150,9 +154,10 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
+                        mind_max = max(0, all_mail.count() - 1)
                         if "/" in self.rhs:
-                            message_number, message = self.rhs.split("/")
-                            mind = int(message_number) - 1
+                            message_number, message = self.rhs.split("/", 1)
+                            mind = max(0, min(mind_max, int(message_number) - 1))
 
                             if all_mail[mind]:
                                 old_message = all_mail[mind]
@@ -164,7 +169,7 @@ class CmdMail(default_cmds.MuxCommand):
                             else:
                                 raise IndexError
                         else:
-                            mind = int(self.rhs) - 1
+                            mind = max(0, min(mind_max, int(self.rhs) - 1))
                             if all_mail[mind]:
                                 old_message = all_mail[mind]
                                 self.send_mail(self.search_targets(self.lhslist), "FWD: " + old_message.header,
@@ -188,7 +193,8 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
-                        mind = int(self.lhs) - 1
+                        mind_max = max(0, all_mail.count() - 1)
+                        mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
                             old_message = all_mail[mind]
                             self.send_mail(old_message.senders, "RE: " + old_message.header,
@@ -211,8 +217,11 @@ class CmdMail(default_cmds.MuxCommand):
                         body = self.rhs
                     self.send_mail(self.search_targets(self.lhslist), subject, body, self.caller)
                 else:
+                    all_mail = self.get_all_mail()
+                    mind_max = max(0, all_mail.count() - 1)
                     try:
-                        message = self.get_all_mail()[int(self.lhs) - 1]
+                        mind = max(0, min(mind_max, int(self.lhs) - 1))
+                        message = all_mail[mind]
                     except (ValueError, IndexError):
                         self.caller.msg("'%s' is not a valid mail id." % self.lhs)
                         return

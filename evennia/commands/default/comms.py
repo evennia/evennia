@@ -417,7 +417,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
             string = "You don't control this channel."
             self.msg(string)
             return
-        if account not in channel.db_subscriptions.all():
+        if not channel.subscriptions.has(account):
             string = "Account %s is not connected to channel %s." % (account.key, channel.key)
             self.msg(string)
             return

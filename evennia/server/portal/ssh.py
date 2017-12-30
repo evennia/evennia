@@ -20,9 +20,9 @@ from twisted.conch.interfaces import IConchUser
 _SSH_IMPORT_ERROR = """
 ERROR: Missing crypto library for SSH. Install it with
 
-       pip install cryptography
+       pip install cryptography pyasn1
 
-(On older Twisted versions you may have to do 'pip install pycrypto pyasn1 instead).
+(On older Twisted versions you may have to do 'pip install pycrypto pyasn1' instead).
 
 If you get a compilation error you must install a C compiler and the
 SSL dev headers (On Debian-derived systems this is the gcc and libssl-dev

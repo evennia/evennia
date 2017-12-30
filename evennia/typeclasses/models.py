@@ -575,6 +575,10 @@ class TypedObject(SharedMemoryModel):
             ppos = _PERMISSION_HIERARCHY.index(perm)
             return any(True for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                        if hperm in perms and hpos > ppos)
+        # we ignore pluralization (english only)
+        if perm.endswith("s"):
+            return self.check_permstring(perm[:-1])
+
         return False
 
     #
@@ -674,8 +678,9 @@ class TypedObject(SharedMemoryModel):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or account that is looking
-                at/getting inforamtion for this object.
+            looker (TypedObject, optional): The object or account that is looking
+                at/getting inforamtion for this object. If not given, some
+                'safe' minimum level should be returned.
 
         Returns:
             name (str): A string containing the name of the object,

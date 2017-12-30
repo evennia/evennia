@@ -100,7 +100,7 @@ _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 
 
 def _handle_dbref(inp):
-    dbid_to_obj(inp, ObjectDB)
+    return dbid_to_obj(inp, ObjectDB)
 
 
 def _validate_prototype(key, prototype, protparents, visited):
@@ -174,7 +174,7 @@ def _batch_create_object(*objparams):
         objects (list): A list of created objects
 
     Notes:
-        The `exec` list will execute arbitrary python code so don't allow this to be availble to
+        The `exec` list will execute arbitrary python code so don't allow this to be available to
         unprivileged users!
 
     """
@@ -192,12 +192,12 @@ def _batch_create_object(*objparams):
         # call all setup hooks on each object
         objparam = objparams[iobj]
         # setup
-        obj._createdict = {"permissions": objparam[1],
+        obj._createdict = {"permissions": make_iter(objparam[1]),
                            "locks": objparam[2],
-                           "aliases": objparam[3],
+                           "aliases": make_iter(objparam[3]),
                            "nattributes": objparam[4],
                            "attributes": objparam[5],
-                           "tags": objparam[6]}
+                           "tags": make_iter(objparam[6])}
         # this triggers all hooks
         obj.save()
         # run eventual extra code

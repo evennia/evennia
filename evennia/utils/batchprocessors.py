@@ -180,7 +180,7 @@ from django.conf import settings
 from evennia.utils import utils
 
 _ENCODINGS = settings.ENCODINGS
-_RE_INSERT = re.compile(r"^\#INSERT (.*)", re.MULTILINE)
+_RE_INSERT = re.compile(r"^\#INSERT (.*)$", re.MULTILINE)
 _RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
 _RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
 _RE_CODE_OR_HEADER = re.compile(r"((?:\A|^)#CODE|(?:/A|^)#HEADER|\A)(.*?)$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
@@ -273,15 +273,10 @@ class BatchCommandProcessor(object):
 
         def replace_insert(match):
             """Map replace entries"""
-            return "\n#".join(self.parse_file(match.group(1)))
+            return "\n#\n".join(self.parse_file(match.group(1)))
 
-        # insert commands from inserted files
         text = _RE_INSERT.sub(replace_insert, text)
-        #      re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
-        # get all commands
         commands = _RE_CMD_SPLIT.split(text)
-        #          re.split(r"^\#.*?$", text, flags=re.MULTILINE)
-        # remove eventual newline at the end of commands
         commands = [c.strip('\r\n') for c in commands]
         commands = [c for c in commands if c]
 
