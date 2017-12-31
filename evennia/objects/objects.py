@@ -335,7 +335,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 below.
             exact (bool): if unset (default) - prefers to match to beginning of
                 string rather than not matching at all. If set, requires
-                exact mathing of entire string.
+                exact matching of entire string.
             candidates (list of objects): this is an optional custom list of objects
                 to search (filter) between. It is ignored if `global_search`
                 is given. If not set, this list will automatically be defined
