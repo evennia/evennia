@@ -59,6 +59,22 @@ def timeformat(when=None):
         tz_sign, tz_hour, tz_mins)
 
 
+def log_msg(msg):
+    """
+    Wrapper around log.msg call to catch any exceptions that might
+    occur in logging. If an exception is raised, we'll print to
+    stdout instead.
+
+    Args:
+        msg: The message that was passed to log.msg
+
+    """
+    try:
+        log.msg(msg)
+    except Exception:
+        print("Exception raised while writing message to log. Original message: %s" % msg)
+
+
 def log_trace(errmsg=None):
     """
     Log a traceback to the log. This should be called from within an
@@ -80,9 +96,9 @@ def log_trace(errmsg=None):
             except Exception as e:
                 errmsg = str(e)
             for line in errmsg.splitlines():
-                log.msg('[EE] %s' % line)
+                log_msg('[EE] %s' % line)
     except Exception:
-        log.msg('[EE] %s' % errmsg)
+        log_msg('[EE] %s' % errmsg)
 
 
 log_tracemsg = log_trace
@@ -101,7 +117,7 @@ def log_err(errmsg):
     except Exception as e:
         errmsg = str(e)
     for line in errmsg.splitlines():
-        log.msg('[EE] %s' % line)
+        log_msg('[EE] %s' % line)
 
 
     # log.err('ERROR: %s' % (errmsg,))
@@ -121,7 +137,7 @@ def log_warn(warnmsg):
     except Exception as e:
         warnmsg = str(e)
     for line in warnmsg.splitlines():
-        log.msg('[WW] %s' % line)
+        log_msg('[WW] %s' % line)
 
 
     # log.msg('WARNING: %s' % (warnmsg,))
@@ -139,7 +155,7 @@ def log_info(infomsg):
     except Exception as e:
         infomsg = str(e)
     for line in infomsg.splitlines():
-        log.msg('[..] %s' % line)
+        log_msg('[..] %s' % line)
 
 
 log_infomsg = log_info
@@ -157,7 +173,7 @@ def log_dep(depmsg):
     except Exception as e:
         depmsg = str(e)
     for line in depmsg.splitlines():
-        log.msg('[DP] %s' % line)
+        log_msg('[DP] %s' % line)
 
 
 log_depmsg = log_dep
