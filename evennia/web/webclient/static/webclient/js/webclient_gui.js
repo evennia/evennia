@@ -175,8 +175,11 @@ function onKeydown (event) {
     }
 
     if (code === 27) { // Escape key
-        closePopup("#optionsdialog");
-        closePopup("#helpdialog");
+        if ($('#helpdialog').is(':visible')) {
+          closePopup("#helpdialog");
+        } else {
+          closePopup("#optionsdialog");
+        }
     }
 
     if (history_entry !== null) {
