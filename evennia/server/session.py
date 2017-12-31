@@ -118,9 +118,9 @@ class Session(object):
 
         """
         for propname, value in sessdata.items():
-            if (propname == "prototocol_flags" and isinstance(value, dict) and
+            if (propname == "protocol_flags" and isinstance(value, dict) and
                     hasattr(self, "protocol_flags") and
-                    isinstance(self.protocol_flags.propname, dict)):
+                    isinstance(self.protocol_flags, dict)):
                 # special handling to allow partial update of protocol flags
                 self.protocol_flags.update(value)
             else:
