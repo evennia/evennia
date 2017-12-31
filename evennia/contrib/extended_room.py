@@ -189,7 +189,7 @@ class ExtendedRoom(DefaultRoom):
             key (str): A detail identifier.
 
         Returns:
-            detail (str or None): A detail mathing the given key.
+            detail (str or None): A detail matching the given key.
 
         Notes:
             A detail is a way to offer more things to look at in a room
