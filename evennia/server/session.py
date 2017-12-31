@@ -118,7 +118,13 @@ class Session(object):
 
         """
         for propname, value in sessdata.items():
-            setattr(self, propname, value)
+            if (propname == "prototocol_flags" and isinstance(value, dict) and
+                    hasattr(self, "protocol_flags") and
+                    isinstance(self.protocol_flags.propname, dict)):
+                # special handling to allow partial update of protocol flags
+                self.protocol_flags.update(value)
+            else:
+                setattr(self, propname, value)
 
     def at_sync(self):
         """
