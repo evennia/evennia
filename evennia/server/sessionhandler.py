@@ -538,6 +538,22 @@ class ServerSessionHandler(SessionHandler):
                                                                 sessiondata=sessdata,
                                                                 clean=False)
 
+    def session_portal_partial_sync(self, session_data):
+        """
+        Call to make a partial update of the session, such as only a particular property.
+
+        Args:
+            session_data (dict): Store `{sessid: {property:value}, ...}` defining one or
+                more sessions in detail.
+
+        """
+        return self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
+                                                                operation=SSYNC,
+                                                                sessiondata=session_data,
+                                                                clean=False)
+
+
+
     def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
         Cleanly disconnect all of the connected sessions.

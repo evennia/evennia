@@ -72,7 +72,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         # timeout the handshakes in case the client doesn't reply at all
         from evennia.utils.utils import delay
-        delay(2, callback=self.handshake_done, force=True)
+        delay(2, callback=self.handshake_done, timeout=True)
 
         # TCP/IP keepalive watches for dead links
         self.transport.setTcpKeepAlive(1)
@@ -100,17 +100,18 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.nop_keep_alive = LoopingCall(self._send_nop_keepalive)
             self.nop_keep_alive.start(30, now=False)
 
-    def handshake_done(self, force=False):
+    def handshake_done(self, timeout=False):
         """
         This is called by all telnet extensions once they are finished.
         When all have reported, a sync with the server is performed.
         The system will force-call this sync after a small time to handle
         clients that don't reply to handshakes at all.
         """
-        if self.handshakes > 0:
-            if force:
+        if timeout:
+            if self.handshakes > 0:
+                self.handshakes = 0
                 self.sessionhandler.sync(self)
-                return
+        else:
             self.handshakes -= 1
             if self.handshakes <= 0:
                 # do the sync

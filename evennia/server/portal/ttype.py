@@ -66,7 +66,7 @@ class Ttype(object):
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags['TTYPE'] = True
+        self.protocol.protocol_flags['TTYPE'] = False
         self.protocol.handshake_done()
 
     def will_ttype(self, option):
