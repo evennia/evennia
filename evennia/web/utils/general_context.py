@@ -6,6 +6,7 @@
 # tuple.
 #
 
+import os
 from django.conf import settings
 from evennia.utils.utils import get_evennia_version
 
@@ -52,7 +53,11 @@ def set_webclient_settings():
     global WEBCLIENT_ENABLED, WEBSOCKET_CLIENT_ENABLED, WEBSOCKET_PORT, WEBSOCKET_URL
     WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
     WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
-    WEBSOCKET_PORT = settings.WEBSOCKET_CLIENT_PORT
+    # if we are working through a proxy or uses docker port-remapping, the webclient port encoded
+    # in the webclient should be different than the one the server expects. Use the environment
+    # variable WEBSOCKET_CLIENT_PROXY_PORT if this is the case.
+    WEBSOCKET_PORT = int(os.environ.get("WEBSOCKET_CLIENT_PROXY_PORT", settings.WEBSOCKET_CLIENT_PORT))
+    # this is determined dynamically by the client and is less of an issue
     WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
 set_webclient_settings()
 

@@ -50,9 +50,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
         self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
+
+        self.protocol_flags["ENCODING"] = settings.ENCODINGS[0] if settings.ENCODINGS else 'utf-8'
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
+        # change encoding to ENCODINGS[0] which reflects Telnet default encoding
 
         # suppress go-ahead
         self.sga = suppress_ga.SuppressGA(self)
