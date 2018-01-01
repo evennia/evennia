@@ -490,8 +490,13 @@ TIME_FACTOR = 2.0
 # The starting point of your game time (the epoch), in seconds.
 # In Python a value of 0 means Jan 1 1970 (use negatives for earlier
 # start date). This will affect the returns from the utils.gametime
-# module.
+# module. If None, the server's first start-time is used as the epoch.
 TIME_GAME_EPOCH = None
+# Normally, game time will only increase when the server runs. If this is True,
+# game time will not pause when the server reloads or goes offline. This setting
+# together with a time factor of 1 should keep the game in sync with
+# the real time (add a different epoch to shift time)
+TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
 # Inlinefunc
