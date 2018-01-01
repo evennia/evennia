@@ -310,7 +310,13 @@ class ServerSessionHandler(SessionHandler):
                 sess.uid = None
 
         # show the first login command
-        self.data_in(sess, text=[[CMD_LOGINSTART], {}])
+
+        # this delay is necessary notably for Mudlet, which will fail on the connection screen
+        # unless the MXP protocol has been negotiated. Unfortunately this may be too short for some
+        # networks, the symptom is that < and > are not parsed by mudlet on first connection.
+        from evennia.utils.utils import delay
+        delay(0.3, self.data_in, sess, text=[[CMD_LOGINSTART], {}])
+        # self.data_in(sess, text=[[CMD_LOGINSTART], {}])
 
     def portal_session_sync(self, portalsessiondata):
         """
