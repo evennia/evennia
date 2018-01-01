@@ -50,6 +50,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
         self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
+        # add this new connection to sessionhandler so
+        # the Server becomes aware of it.
+        self.sessionhandler.connect(self)
 
         # suppress go-ahead
         self.sga = suppress_ga.SuppressGA(self)
@@ -66,12 +69,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.oob = telnet_oob.TelnetOOB(self)
         # mxp support
         self.mxp = Mxp(self)
-        # add this new connection to sessionhandler so
-        # the Server becomes aware of it.
-        self.sessionhandler.connect(self)
 
-        # timeout the handshakes in case the client doesn't reply at all
         from evennia.utils.utils import delay
+        # timeout the handshakes in case the client doesn't reply at all
         delay(2, callback=self.handshake_done, timeout=True)
 
         # TCP/IP keepalive watches for dead links
@@ -306,8 +306,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # handle arguments
         options = kwargs.get("options", {})
         flags = self.protocol_flags
-        xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags["TTYPE"] else True)
-        useansi = options.get("ansi", flags.get('ANSI', False) if flags["TTYPE"] else True)
+        xterm256 = options.get("xterm256", flags.get('XTERM256', False) if flags.get("TTYPE", False) else True)
+        useansi = options.get("ansi", flags.get('ANSI', False) if flags.get("TTYPE", False) else True)
         raw = options.get("raw", flags.get("RAW", False))
         nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
         echo = options.get("echo", None)
