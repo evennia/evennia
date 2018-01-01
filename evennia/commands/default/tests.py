@@ -16,7 +16,7 @@ import re
 import types
 
 from django.conf import settings
-from mock import Mock
+from mock import Mock, mock
 
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
@@ -37,12 +37,14 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|(?:\s|$)", re.MULTILINE)
 # Command testing
 # ------------------------------------------------------------
 
+
+@mock.patch("evennia.utils.utils.delay")
 class CommandTest(EvenniaTest):
     """
     Tests a command
     """
-
-    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None, obj=None):
+    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None,
+             receiver=None, cmdstring=None, obj=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
