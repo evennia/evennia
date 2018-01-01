@@ -174,7 +174,7 @@ def _batch_create_object(*objparams):
         objects (list): A list of created objects
 
     Notes:
-        The `exec` list will execute arbitrary python code so don't allow this to be availble to
+        The `exec` list will execute arbitrary python code so don't allow this to be available to
         unprivileged users!
 
     """

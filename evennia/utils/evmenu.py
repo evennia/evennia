@@ -63,23 +63,31 @@ menu is immediately exited and the default "look" command is called.
     text (str, tuple or None): Text shown at this node. If a tuple, the
         second element in the tuple is a help text to display at this
         node when the user enters the menu help command there.
-    options (tuple, dict or None): (
-        {'key': name,   # can also be a list of aliases. A special key is
-                        # "_default", which marks this option as the default
-                        # fallback when no other option matches the user input.
-         'desc': description, # optional description
-         'goto': nodekey,  # node to go to when chosen. This can also be a callable with
-                           # caller and/or raw_string args. It must return a string
-                           # with the key pointing to the node to go to.
-         'exec': nodekey}, # node or callback to trigger as callback when chosen. This
-                           # will execute *before* going to the next node. Both node
-                           # and the explicit callback will be called as normal nodes
-                           # (with caller and/or raw_string args). If the callable/node
-                           # returns a single string (only), this will replace the current
-                           # goto location string in-place (if a goto callback, it will never fire).
-                           # Note that relying to much on letting exec assign the goto
-                           # location can make it hard to debug your menu logic.
-        {...}, ...)
+    options (tuple, dict or None): If `None`, this exits the menu.
+        If a single dict, this is a single-option node. If a tuple,
+        it should be a tuple of option dictionaries. Option dicts have
+        the following keys:
+            - `key` (str or tuple, optional): What to enter to choose this option.
+                If a tuple, it must be a tuple of strings, where the first string is the
+                key which will be shown to the user and the others are aliases.
+                If unset, the options' number will be used. The special key `_default`
+                marks this option as the default fallback when no other option matches
+                the user input. There can only be one `_default` option per node. It
+                will not be displayed in the list.
+            - `desc` (str, optional): This describes what choosing the option will do.
+            - `goto` (str, tuple or callable): If string, should be the name of node to go to
+                when this option is selected. If a callable, it has the signature
+                `callable(caller[,raw_input][,**kwargs]). If a tuple, the first element
+                is the callable and the second is a dict with the **kwargs to pass to
+                the callable. Those kwargs will also be passed into the next node if possible.
+                Such a callable should return either a str or a (str, dict), where the
+                string is the name of the next node to go to and the dict is the new,
+                (possibly modified) kwarg to pass into the next node.
+            - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above
+                and runs before it. If given a node name, the node will be executed but will not
+                be considered the next node. If node/callback returns str or (str, dict), these will
+                replace the `goto` step (`goto` callbacks will not fire), with the string being the
+                next node name and the optional dict acting as the kwargs-input for the next node.
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
@@ -95,7 +103,7 @@ Example:
                 "This is help text for this node")
         options = ({"key": "testing",
                     "desc": "Select this to go to node 2",
-                    "goto": "node2",
+                    "goto": ("node2", {"foo": "bar"}),
                     "exec": "callback1"},
                    {"desc": "Go to node 3.",
                     "goto": "node3"})
@@ -108,12 +116,13 @@ Example:
         # by the normal 'goto' option key above.
         caller.msg("Callback called!")
 
-    def node2(caller):
+    def node2(caller, **kwargs):
         text = '''
             This is node 2. It only allows you to go back
             to the original node1. This extra indent will
-            be stripped. We don't include a help text.
-            '''
+            be stripped. We don't include a help text but
+            here are the variables passed to us: {}
+            '''.format(kwargs)
         options = {"goto": "node1"}
         return text, options
 
@@ -148,6 +157,7 @@ evennia.utils.evmenu`.
 
 """
 from __future__ import print_function
+import random
 from builtins import object, range
 
 from textwrap import dedent
@@ -260,7 +270,7 @@ class CmdEvMenuNode(Command):
                     err = "Menu object not found as %s.ndb._menutree!" % orig_caller
                     orig_caller.msg(err)  # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
-        # we must do this after the caller with the menui has been correctly identified since it
+        # we must do this after the caller with the menu has been correctly identified since it
         # can be either Account, Object or Session (in the latter case this info will be superfluous).
         caller.ndb._menutree._session = self.session
         # we have a menu, use it.
@@ -359,9 +369,10 @@ class EvMenu(object):
                 re-run with the same input arguments - so be careful if you are counting
                 up some persistent counter or similar - the counter may be run twice if
                 reload happens on the node that does that.
-            startnode_input (str, optional): Send an input text to `startnode` as if
-                a user input text from a fictional previous node. When the server reloads,
-                the latest visited node will be re-run using this kwarg.
+            startnode_input (str or (str, dict), optional): Send an input text to `startnode` as if
+                a user input text from a fictional previous node. If including the dict, this will
+                be passed as **kwargs to that node. When the server reloads,
+                the latest visited node will be re-run as `node(caller, raw_string, **kwargs)`.
             session (Session, optional): This is useful when calling EvMenu from an account
                 in multisession mode > 2. Note that this session only really relevant
                 for the very first display of the first node - after that, EvMenu itself
@@ -391,6 +402,7 @@ class EvMenu(object):
         self._startnode = startnode
         self._menutree = self._parse_menudata(menudata)
         self._persistent = persistent
+        self._quitting = False
 
         if startnode not in self._menutree:
             raise EvMenuError("Start node '%s' not in menu tree!" % startnode)
@@ -417,6 +429,12 @@ class EvMenu(object):
         self.nodetext = None
         self.helptext = None
         self.options = None
+        self.nodename = None
+        self.node_kwargs = {}
+
+        # used for testing
+        self.test_options = {}
+        self.test_nodetext = ""
 
         # assign kwargs as initialization vars on ourselves.
         if set(("_startnode", "_menutree", "_session", "_persistent",
@@ -463,8 +481,13 @@ class EvMenu(object):
         menu_cmdset.priority = int(cmdset_priority)
         self.caller.cmdset.add(menu_cmdset, permanent=persistent)
 
+        startnode_kwargs = {}
+        if isinstance(startnode_input, (tuple, list)) and len(startnode_input) > 1:
+            startnode_input, startnode_kwargs = startnode_input[:2]
+            if not isinstance(startnode_kwargs, dict):
+                raise EvMenuError("startnode_input must be either a str or a tuple (str, dict).")
         # start the menu
-        self.goto(self._startnode, startnode_input)
+        self.goto(self._startnode, startnode_input, **startnode_kwargs)
 
     def _parse_menudata(self, menudata):
         """
@@ -519,7 +542,42 @@ class EvMenu(object):
         # format the entire node
         return self.node_formatter(nodetext, optionstext)
 
-    def _execute_node(self, nodename, raw_string):
+    def _safe_call(self, callback, raw_string, **kwargs):
+        """
+        Call a node-like callable, with a variable number of raw_string, *args, **kwargs, all of
+        which should work also if not present (only `caller` is always required). Return its result.
+
+        """
+        try:
+            try:
+                nargs = len(getargspec(callback).args)
+            except TypeError:
+                raise EvMenuError("Callable {} doesn't accept any arguments!".format(callback))
+            supports_kwargs = bool(getargspec(callback).keywords)
+            if nargs <= 0:
+                raise EvMenuError("Callable {} doesn't accept any arguments!".format(callback))
+
+            if supports_kwargs:
+                if nargs > 1:
+                    ret = callback(self.caller, raw_string, **kwargs)
+                    # callback accepting raw_string, **kwargs
+                else:
+                    # callback accepting **kwargs
+                    ret = callback(self.caller, **kwargs)
+            elif nargs > 1:
+                # callback accepting raw_string
+                ret = callback(self.caller, raw_string)
+            else:
+                # normal callback, only the caller as arg
+                ret = callback(self.caller)
+        except EvMenuError:
+            errmsg = _ERR_GENERAL.format(nodename=callback)
+            self.caller.msg(errmsg, self._session)
+            raise
+
+        return ret
+
+    def _execute_node(self, nodename, raw_string, **kwargs):
         """
         Execute a node.
 
@@ -528,6 +586,7 @@ class EvMenu(object):
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
+            kwargs (any, optional): Optional kwargs for the node.
 
         Returns:
             nodetext, options (tuple): The node text (a string or a
@@ -540,47 +599,25 @@ class EvMenu(object):
             self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
             raise EvMenuError
         try:
-            # the node should return data as (text, options)
-            if len(getargspec(node).args) > 1:
-                # a node accepting raw_string
-                nodetext, options = node(self.caller, raw_string)
+            ret = self._safe_call(node, raw_string, **kwargs)
+            if isinstance(ret, (tuple, list)) and len(ret) > 1:
+                nodetext, options = ret[:2]
             else:
-                # a normal node, only accepting caller
-                nodetext, options = node(self.caller)
+                nodetext, options = ret, None
         except KeyError:
             self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
             raise EvMenuError
         except Exception:
             self.caller.msg(_ERR_GENERAL.format(nodename=nodename), session=self._session)
             raise
+
+        # store options to make them easier to test
+        self.test_options = options
+        self.test_nodetext = nodetext
+
         return nodetext, options
 
-    def display_nodetext(self):
-        self.caller.msg(self.nodetext, session=self._session)
-
-    def display_helptext(self):
-        self.caller.msg(self.helptext, session=self._session)
-
-    def callback_goto(self, callback, goto, raw_string):
-        """
-        Call callback and goto in sequence.
-
-        Args:
-            callback (callable or str): Callback to run before goto. If
-                the callback returns a string, this is used to replace
-                the `goto` string before going to the next node.
-            goto (str): The target node to go to next (unless replaced
-                by `callable`)..
-            raw_string (str): The original user input.
-
-        """
-        if callback:
-            # replace goto only if callback returns
-            goto = self.callback(callback, raw_string) or goto
-        if goto:
-            self.goto(goto, raw_string)
-
-    def callback(self, nodename, raw_string):
+    def run_exec(self, nodename, raw_string, **kwargs):
         """
         Run a function or node as a callback (with the 'exec' option key).
 
@@ -592,6 +629,8 @@ class EvMenu(object):
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
+            kwargs (any): These are optional kwargs passed into goto
+
         Returns:
             new_goto (str or None): A replacement goto location string or
                 None (no replacement).
@@ -602,36 +641,36 @@ class EvMenu(object):
             relying on this.
 
         """
-        if callable(nodename):
-            # this is a direct callable - execute it directly
-            try:
-                if len(getargspec(nodename).args) > 1:
-                    # callable accepting raw_string
-                    ret = nodename(self.caller, raw_string)
-                else:
-                    # normal callable, only the caller as arg
-                    ret = nodename(self.caller)
-            except Exception:
-                self.caller.msg(_ERR_GENERAL.format(nodename=nodename), self._session)
-                raise
-        else:
-            # nodename is a string; lookup as node
-            try:
+        try:
+            if callable(nodename):
+                # this is a direct callable - execute it directly
+                ret = self._safe_call(nodename, raw_string, **kwargs)
+                if isinstance(ret, (tuple, list)):
+                    if not len(ret) > 1 or not isinstance(ret[1], dict):
+                        raise EvMenuError("exec callable must return either None, str or (str, dict)")
+                    ret, kwargs = ret[:2]
+            else:
+                # nodename is a string; lookup as node and run as node in-place (don't goto it)
                 # execute the node
-                ret = self._execute_node(nodename, raw_string)
-            except EvMenuError as err:
-                errmsg = "Error in exec '%s' (input: '%s'): %s" % (nodename, raw_string, err)
-                self.caller.msg("|r%s|n" % errmsg)
-                logger.log_trace(errmsg)
-                return
+                ret = self._execute_node(nodename, raw_string, **kwargs)
+                if isinstance(ret, (tuple, list)):
+                    if not len(ret) > 1 and ret[1] and not isinstance(ret[1], dict):
+                        raise EvMenuError("exec node must return either None, str or (str, dict)")
+                    ret, kwargs = ret[:2]
+        except EvMenuError as err:
+            errmsg = "Error in exec '%s' (input: '%s'): %s" % (nodename, raw_string.rstrip(), err)
+            self.caller.msg("|r%s|n" % errmsg)
+            logger.log_trace(errmsg)
+            return
+
         if isinstance(ret, basestring):
             # only return a value if a string (a goto target), ignore all other returns
-            return ret
+            return ret, kwargs
         return None
 
-    def goto(self, nodename, raw_string):
+    def goto(self, nodename, raw_string, **kwargs):
         """
-        Run a node by name
+        Run a node by name, optionally dynamically generating that name first.
 
         Args:
             nodename (str or callable): Name of node or a callable
@@ -642,24 +681,48 @@ class EvMenu(object):
                 argument)
 
         """
-        if callable(nodename):
-            try:
-                if len(getargspec(nodename).args) > 1:
-                    # callable accepting raw_string
-                    nodename = nodename(self.caller, raw_string)
+        def _extract_goto_exec(option_dict):
+            "Helper: Get callables and their eventual kwargs"
+            goto_kwargs, exec_kwargs = {}, {}
+            goto, execute = option_dict.get("goto", None), option_dict.get("exec", None)
+            if goto and isinstance(goto, (tuple, list)):
+                if len(goto) > 1:
+                    goto, goto_kwargs = goto[:2]  # ignore any extra arguments
+                    if not hasattr(goto_kwargs, "__getitem__"):
+                        #  not a dict-like structure
+                        raise EvMenuError("EvMenu node {}: goto kwargs is not a dict: {}".format(
+                                                                nodename, goto_kwargs))
                 else:
-                    nodename = nodename(self.caller)
-            except Exception:
-                self.caller.msg(_ERR_GENERAL.format(nodename=nodename), self._session)
-                raise
+                    goto = goto[0]
+            if execute and isinstance(execute, (tuple, list)):
+                if len(execute) > 1:
+                    execute, exec_kwargs = execute[:2]  # ignore any extra arguments
+                    if not hasattr(exec_kwargs, "__getitem__"):
+                        #  not a dict-like structure
+                        raise EvMenuError("EvMenu node {}: exec kwargs is not a dict: {}".format(
+                                                                nodename, goto_kwargs))
+                else:
+                    execute = execute[0]
+            return goto, goto_kwargs, execute, exec_kwargs
+
+        if callable(nodename):
+            # run the "goto" callable, if possible
+            inp_nodename = nodename
+            nodename = self._safe_call(nodename, raw_string, **kwargs)
+            if isinstance(nodename, (tuple, list)):
+                if not len(nodename) > 1 or not isinstance(nodename[1], dict):
+                    raise EvMenuError(
+                            "{}: goto callable must return str or (str, dict)".format(inp_nodename))
+                nodename, kwargs = nodename[:2]
         try:
-            # execute the node, make use of the returns.
-            nodetext, options = self._execute_node(nodename, raw_string)
+            # execute the found node, make use of the returns.
+            nodetext, options = self._execute_node(nodename, raw_string, **kwargs)
         except EvMenuError:
             return
 
         if self._persistent:
-            self.caller.attributes.add("_menutree_saved_startnode", (nodename, raw_string))
+            self.caller.attributes.add("_menutree_saved_startnode",
+                                       (nodename, (raw_string, kwargs)))
 
         # validation of the node return values
         helptext = ""
@@ -680,22 +743,25 @@ class EvMenu(object):
             for inum, dic in enumerate(options):
                 # fix up the option dicts
                 keys = make_iter(dic.get("key"))
+                desc = dic.get("desc", dic.get("text", None))
                 if "_default" in keys:
                     keys = [key for key in keys if key != "_default"]
-                    desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
-                    goto, execute = dic.get("goto", None), dic.get("exec", None)
-                    self.default = (goto, execute)
+                    goto, goto_kwargs, execute, exec_kwargs = _extract_goto_exec(dic)
+                    self.default = (goto, goto_kwargs, execute, exec_kwargs)
                 else:
+                    # use the key (only) if set, otherwise use the running number
                     keys = list(make_iter(dic.get("key", str(inum + 1).strip())))
-                    desc = dic.get("desc", dic.get("text", _ERR_NO_OPTION_DESC).strip())
-                    goto, execute = dic.get("goto", None), dic.get("exec", None)
+                    goto, goto_kwargs, execute, exec_kwargs = _extract_goto_exec(dic)
                 if keys:
                     display_options.append((keys[0], desc))
                     for key in keys:
                         if goto or execute:
-                            self.options[strip_ansi(key).strip().lower()] = (goto, execute)
+                            self.options[strip_ansi(key).strip().lower()] = \
+                                    (goto, goto_kwargs, execute, exec_kwargs)
 
         self.nodetext = self._format_node(nodetext, display_options)
+        self.node_kwargs = kwargs
+        self.nodename = nodename
 
         # handle the helptext
         if helptext:
@@ -709,17 +775,44 @@ class EvMenu(object):
         if not options:
             self.close_menu()
 
+    def run_exec_then_goto(self, runexec, goto, raw_string, runexec_kwargs=None, goto_kwargs=None):
+        """
+        Call 'exec' callback and goto (which may also be a callable) in sequence.
+
+        Args:
+            runexec (callable or str): Callback to run before goto. If
+                the callback returns a string, this is used to replace
+                the `goto` string/callable before being passed into the goto handler.
+            goto (str): The target node to go to next (may be replaced
+                by `runexec`)..
+            raw_string (str): The original user input.
+            runexec_kwargs (dict, optional): Optional kwargs for runexec.
+            goto_kwargs (dict, optional): Optional kwargs for goto.
+
+        """
+        if runexec:
+            # replace goto only if callback returns
+            goto, goto_kwargs = (
+                    self.run_exec(runexec, raw_string,
+                                  **(runexec_kwargs if runexec_kwargs else {})) or
+                    (goto, goto_kwargs))
+        if goto:
+            self.goto(goto, raw_string, **(goto_kwargs if goto_kwargs else {}))
+
     def close_menu(self):
         """
         Shutdown menu; occurs when reaching the end node or using the quit command.
         """
-        self.caller.cmdset.remove(EvMenuCmdSet)
-        del self.caller.ndb._menutree
-        if self._persistent:
-            self.caller.attributes.remove("_menutree_saved")
-            self.caller.attributes.remove("_menutree_saved_startnode")
-        if self.cmd_on_exit is not None:
-            self.cmd_on_exit(self.caller, self)
+        if not self._quitting:
+            # avoid multiple calls from different sources
+            self._quitting = True
+            self.caller.cmdset.remove(EvMenuCmdSet)
+            del self.caller.ndb._menutree
+            if self._persistent:
+                self.caller.attributes.remove("_menutree_saved")
+                self.caller.attributes.remove("_menutree_saved_startnode")
+            if self.cmd_on_exit is not None:
+                self.cmd_on_exit(self.caller, self)
 
     def parse_input(self, raw_string):
         """
@@ -734,13 +827,13 @@ class EvMenu(object):
             should also report errors directly to the user.
 
         """
-        cmd = raw_string.strip().lower()
+        cmd = strip_ansi(raw_string.strip().lower())
 
         if cmd in self.options:
             # this will take precedence over the default commands
             # below
-            goto, callback = self.options[cmd]
-            self.callback_goto(callback, goto, raw_string)
+            goto, goto_kwargs, execfunc, exec_kwargs = self.options[cmd]
+            self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
         elif self.auto_look and cmd in ("look", "l"):
             self.display_nodetext()
         elif self.auto_help and cmd in ("help", "h"):
@@ -748,14 +841,20 @@ class EvMenu(object):
         elif self.auto_quit and cmd in ("quit", "q", "exit"):
             self.close_menu()
         elif self.default:
-            goto, callback = self.default
-            self.callback_goto(callback, goto, raw_string)
+            goto, goto_kwargs, execfunc, exec_kwargs = self.default
+            self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
         else:
             self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
 
         if not (self.options or self.default):
             # no options - we are at the end of the menu.
             self.close_menu()
+
+    def display_nodetext(self):
+        self.caller.msg(self.nodetext, session=self._session)
+
+    def display_helptext(self):
+        self.caller.msg(self.helptext, session=self._session)
 
     # formatters - override in a child class
 
@@ -799,16 +898,17 @@ class EvMenu(object):
         for key, desc in optionlist:
             if not (key or desc):
                 continue
+            desc_string = ": %s" % desc if desc else ""
             table_width_max = max(table_width_max,
                                   max(m_len(p) for p in key.split("\n")) +
-                                  max(m_len(p) for p in desc.split("\n")) + colsep)
+                                  max(m_len(p) for p in desc_string.split("\n")) + colsep)
             raw_key = strip_ansi(key)
             if raw_key != key:
                 # already decorations in key definition
-                table.append(" |lc%s|lt%s|le: %s" % (raw_key, key, desc))
+                table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
             else:
                 # add a default white color to key
-                table.append(" |lc%s|lt|w%s|n|le: %s" % (raw_key, raw_key, desc))
+                table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
 
         ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
 
@@ -996,6 +1096,10 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
 #
 # -------------------------------------------------------------
 
+def _generate_goto(caller, **kwargs):
+    return kwargs.get("name", "test_dynamic_node"), {"name": "replaced!"}
+
+
 def test_start_node(caller):
     menu = caller.ndb._menutree
     text = """
@@ -1020,6 +1124,9 @@ def test_start_node(caller):
                {"key": ("|yV|niew", "v"),
                 "desc": "View your own name",
                 "goto": "test_view_node"},
+               {"key": ("|yD|nynamic", "d"),
+                "desc": "Dynamic node",
+                "goto": (_generate_goto, {"name": "test_dynamic_node"})},
                {"key": ("|yQ|nuit", "quit", "q", "Q"),
                 "desc": "Quit this menu example.",
                 "goto": "test_end_node"},
@@ -1029,7 +1136,7 @@ def test_start_node(caller):
 
 
 def test_look_node(caller):
-    text = ""
+    text = "This is a custom look location!"
     options = {"key": ("|yL|nook", "l"),
                "desc": "Go back to the previous menu.",
                "goto": "test_start_node"}
@@ -1056,12 +1163,11 @@ def test_set_node(caller):
     """)
 
     options = {"key": ("back (default)", "_default"),
-               "desc": "back to main",
                "goto": "test_start_node"}
     return text, options
 
 
-def test_view_node(caller):
+def test_view_node(caller, **kwargs):
     text = """
     Your name is |g%s|n!
 
@@ -1071,9 +1177,14 @@ def test_view_node(caller):
     -always- use numbers (1...N) to refer to listed options also if you
     don't see a string option key (try it!).
     """ % caller.key
-    options = {"desc": "back to main",
-               "goto": "test_start_node"}
-    return text, options
+    if kwargs.get("executed_from_dynamic_node", False):
+        # we are calling this node as a exec, skip return values
+        caller.msg("|gCalled from dynamic node:|n \n {}".format(text))
+        return
+    else:
+        options = {"desc": "back to main",
+                   "goto": "test_start_node"}
+        return text, options
 
 
 def test_displayinput_node(caller, raw_string):
@@ -1089,9 +1200,45 @@ def test_displayinput_node(caller, raw_string):
     makes it hidden from view. It catches all input (except the
     in-menu help/quit commands) and will, in this case, bring you back
     to the start node.
-    """ % raw_string
+    """ % raw_string.rstrip()
     options = {"key": "_default",
                "goto": "test_start_node"}
+    return text, options
+
+
+def _test_call(caller, raw_input, **kwargs):
+    mode = kwargs.get("mode", "exec")
+
+    caller.msg("\n|y'{}' |n_test_call|y function called with\n "
+               "caller: |n{}\n |yraw_input: \"|n{}|y\" \n kwargs: |n{}\n".format(
+                    mode, caller, raw_input.rstrip(), kwargs))
+
+    if mode == "exec":
+        kwargs = {"random": random.random()}
+        caller.msg("function modify kwargs to {}".format(kwargs))
+    else:
+        caller.msg("|ypassing function kwargs without modification.|n")
+
+    return "test_dynamic_node", kwargs
+
+
+def test_dynamic_node(caller, **kwargs):
+    text = """
+    This is a dynamic node with input:
+        {}
+    """.format(kwargs)
+    options = ({"desc": "pass a new random number to this node",
+                "goto": ("test_dynamic_node", {"random": random.random()})},
+               {"desc": "execute a func with kwargs",
+                "exec": (_test_call, {"mode": "exec", "test_random": random.random()})},
+               {"desc": "dynamic_goto",
+                "goto": (_test_call, {"mode": "goto", "goto_input": "test"})},
+               {"desc": "exec test_view_node with kwargs",
+                "exec": ("test_view_node", {"executed_from_dynamic_node": True}),
+                "goto": "test_dynamic_node"},
+               {"desc": "back to main",
+                "goto": "test_start_node"})
+
     return text, options
 
 

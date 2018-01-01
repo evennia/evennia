@@ -1497,6 +1497,25 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         pass
 
+    def at_before_get(self, getter, **kwargs):
+        """
+        Called by the default `get` command before this object has been
+        picked up.
+
+        Args:
+            getter (Object): The object about to get this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            shouldget (bool): If the object should be gotten or not.
+
+        Notes:
+            If this method returns False/None, the getting is cancelled
+            before it is even started.
+        """
+        return True
+
     def at_get(self, getter, **kwargs):
         """
         Called by the default `get` command when this object has been
@@ -1509,10 +1528,31 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Notes:
             This hook cannot stop the pickup from happening. Use
-            permissions for that.
+            permissions or the at_before_get() hook for that.
 
         """
         pass
+
+    def at_before_give(self, giver, getter, **kwargs):
+        """
+        Called by the default `give` command before this object has been
+        given.
+
+        Args:
+            giver (Object): The object about to give this object.
+            getter (Object): The object about to get this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            shouldgive (bool): If the object should be given or not.
+
+        Notes:
+            If this method returns False/None, the giving is cancelled
+            before it is even started.
+
+        """
+        return True
 
     def at_give(self, giver, getter, **kwargs):
         """
@@ -1527,10 +1567,30 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Notes:
             This hook cannot stop the give from happening. Use
-            permissions for that.
+            permissions or the at_before_give() hook for that.
 
         """
         pass
+
+    def at_before_drop(self, dropper, **kwargs):
+        """
+        Called by the default `drop` command before this object has been
+        dropped.
+
+        Args:
+            dropper (Object): The object which will drop this object.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            shoulddrop (bool): If the object should be dropped or not.
+
+        Notes:
+            If this method returns False/None, the dropping is cancelled
+            before it is even started.
+
+        """
+        return True
 
     def at_drop(self, dropper, **kwargs):
         """
@@ -1544,7 +1604,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         Notes:
             This hook cannot stop the drop from happening. Use
-            permissions from that.
+            permissions or the at_before_drop() hook for that.
 
         """
         pass
@@ -1624,11 +1684,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # whisper mode
             msg_type = 'whisper'
             msg_self = '{self} whisper to {all_receivers}, "{speech}"' if msg_self is True else msg_self
+            msg_receivers = '{object} whispers: "{speech}"'
             msg_receivers = msg_receivers or '{object} whispers: "{speech}"'
             msg_location = None
         else:
             msg_self = '{self} say, "{speech}"' if msg_self is True else msg_self
-            msg_receivers = None
             msg_location = msg_location or '{object} says, "{speech}"'
 
         custom_mapping = kwargs.get('mapping', {})
@@ -1673,9 +1733,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                 "receiver": None,
                                 "speech": message}
             location_mapping.update(custom_mapping)
+            exclude = []
+            if msg_self:
+                exclude.append(self)
+            if receivers:
+                exclude.extend(receivers)
             self.location.msg_contents(text=(msg_location, {"type": msg_type}),
                                        from_obj=self,
-                                       exclude=(self, ) if msg_self else None,
+                                       exclude=exclude,
                                        mapping=location_mapping)
 
 

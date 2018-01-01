@@ -51,9 +51,9 @@ class TestGeneralContext(TestCase):
         mock_settings.WEBCLIENT_ENABLED = "webclient"
         mock_settings.WEBSOCKET_CLIENT_URL = "websocket_url"
         mock_settings.WEBSOCKET_CLIENT_ENABLED = "websocket_client"
-        mock_settings.WEBSOCKET_CLIENT_PORT = "websocket_port"
+        mock_settings.WEBSOCKET_CLIENT_PORT = 5000
         general_context.set_webclient_settings()
         self.assertEqual(general_context.WEBCLIENT_ENABLED, "webclient")
         self.assertEqual(general_context.WEBSOCKET_URL, "websocket_url")
         self.assertEqual(general_context.WEBSOCKET_CLIENT_ENABLED, "websocket_client")
-        self.assertEqual(general_context.WEBSOCKET_PORT, "websocket_port")
+        self.assertEqual(general_context.WEBSOCKET_PORT, 5000)
