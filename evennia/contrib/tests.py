@@ -824,9 +824,30 @@ class TestTutorialWorldMob(EvenniaTest):
 
 
 from evennia.contrib.tutorial_world import objects as tutobjects
+from mock.mock import MagicMock
+from twisted.trial.unittest import TestCase as TwistedTestCase
+
+from twisted.internet.base import DelayedCall
+DelayedCall.debug = True
 
 
-class TestTutorialWorldObjects(CommandTest):
+def _mockdelay(tim, func, *args, **kwargs):
+    func(*args, **kwargs)
+    return MagicMock()
+
+
+def _mockdeferLater(reactor, timedelay, callback, *args, **kwargs):
+    callback(*args, **kwargs)
+    return MagicMock()
+
+
+class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
+
+    def setUp(self):
+        self.patch(sys.modules['evennia.contrib.tutorial_world.objects'], 'delay', _mockdelay)
+        self.patch(sys.modules['evennia.scripts.taskhandler'], 'deferLater', _mockdeferLater)
+        super(TestTutorialWorldObjects, self).setUp()
+
     def test_tutorialobj(self):
         obj1 = create_object(tutobjects.TutorialObject, key="tutobj")
         obj1.reset()
@@ -848,10 +869,7 @@ class TestTutorialWorldObjects(CommandTest):
 
     def test_lightsource(self):
         light = create_object(tutobjects.LightSource, key="torch", location=self.room1)
-        self.call(tutobjects.CmdLight(), "", "You light torch.", obj=light)
-        light._burnout()
-        if hasattr(light, "deferred"):
-            light.deferred.cancel()
+        self.call(tutobjects.CmdLight(), "", "A torch on the floor flickers and dies.|You light torch.", obj=light)
         self.assertFalse(light.pk)
 
     def test_crumblingwall(self):
@@ -869,12 +887,12 @@ class TestTutorialWorldObjects(CommandTest):
                   "You shift the weedy green root upwards.|Holding aside the root you think you notice something behind it ...", obj=wall)
         self.call(tutobjects.CmdPressButton(), "",
                   "You move your fingers over the suspicious depression, then gives it a decisive push. First", obj=wall)
-        self.assertTrue(wall.db.button_exposed)
-        self.assertTrue(wall.db.exit_open)
+        # we patch out the delay, so these are closed immediately
+        self.assertFalse(wall.db.button_exposed)
+        self.assertFalse(wall.db.exit_open)
         wall.reset()
-        if hasattr(wall, "deferred"):
-            wall.deferred.cancel()
         wall.delete()
+        return wall.deferred
 
     def test_weapon(self):
         weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
