@@ -948,7 +948,7 @@ def delay(timedelay, callback, *args, **kwargs):
             specified here.
 
     Note:
-        The task handler (`evennia.scripts.taskhandler.TASK_HANDLEr`) will
+        The task handler (`evennia.scripts.taskhandler.TASK_HANDLER`) will
         be called for persistent or non-persistent tasks.
         If persistent is set to True, the callback, its arguments
         and other keyword arguments will be saved in the database,

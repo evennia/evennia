@@ -38,7 +38,6 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|(?:\s|$)", re.MULTILINE)
 # ------------------------------------------------------------
 
 
-@mock.patch("evennia.utils.utils.delay")
 class CommandTest(EvenniaTest):
     """
     Tests a command
