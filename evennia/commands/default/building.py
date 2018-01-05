@@ -2686,7 +2686,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         def _show_prototypes(prototypes):
             """Helper to show a list of available prototypes"""
             prots = ", ".join(sorted(prototypes.keys()))
-            return "\nAvailable prototypes (case sensistive): %s" % (
+            return "\nAvailable prototypes (case sensitive): %s" % (
                     "\n" + utils.fill(prots) if prots else "None")
 
         prototypes = spawn(return_prototypes=True)
