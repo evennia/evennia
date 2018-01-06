@@ -65,6 +65,7 @@ from django.utils.translation import ugettext as _
 _SERVERNAME = settings.SERVERNAME
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_DELAY_CMD_LOGINSTART = settings.DELAY_CMD_LOGINSTART
 _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 _MODEL_MAP = None
@@ -319,12 +320,9 @@ class ServerSessionHandler(SessionHandler):
                 sess.logged_in = False
                 sess.uid = None
 
-        # show the first login command
-
-        # this delay is necessary notably for Mudlet, which will fail on the connection screen
-        # unless the MXP protocol has been negotiated. Unfortunately this may be too short for some
-        # networks, the symptom is that < and > are not parsed by mudlet on first connection.
-        delay(0.3, self._run_cmd_login, sess)
+        # show the first login command, may delay slightly to allow
+        # the handshakes to finish.
+        delay(_DELAY_CMD_LOGINSTART, self._run_cmd_login, sess)
 
     def portal_session_sync(self, portalsessiondata):
         """
