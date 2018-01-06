@@ -274,6 +274,16 @@ class ServerSessionHandler(SessionHandler):
         self.server = None
         self.server_data = {"servername": _SERVERNAME}
 
+    def _run_cmd_login(self, session):
+        """
+        Launch the CMD_LOGINSTART command. This is wrapped
+        for delays.
+
+        """
+        if not session.logged_in:
+            self.data_in(session, text=[[CMD_LOGINSTART], {}])
+
+
     def portal_connect(self, portalsessiondata):
         """
         Called by Portal when a new session has connected.
@@ -314,8 +324,7 @@ class ServerSessionHandler(SessionHandler):
         # this delay is necessary notably for Mudlet, which will fail on the connection screen
         # unless the MXP protocol has been negotiated. Unfortunately this may be too short for some
         # networks, the symptom is that < and > are not parsed by mudlet on first connection.
-        delay(0.3, self.data_in, sess, text=[[CMD_LOGINSTART], {}])
-        # self.data_in(sess, text=[[CMD_LOGINSTART], {}])
+        delay(0.3, self._run_cmd_login, sess)
 
     def portal_session_sync(self, portalsessiondata):
         """
