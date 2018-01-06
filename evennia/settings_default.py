@@ -313,6 +313,14 @@ CMD_IGNORE_PREFIXES = "@&/+"
 # This module should contain one or more variables
 # with strings defining the look of the screen.
 CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
+# Delay to use before sending the evennia.syscmdkeys.CMD_LOGINSTART Command
+# when a new session connects (this defaults the unloggedin-look for showing
+# the connection screen). The delay is useful mainly for telnet, to allow
+# client/server to establish client capabilities like color/mxp etc before
+# sending any text. A value of 0.3 should be enough. While a good idea, it may
+# cause issues with menu-logins and autoconnects since the menu will not have
+# started when the autoconnects starts sending menu commands.
+DELAY_CMD_LOGINSTART = 0.3
 # An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
