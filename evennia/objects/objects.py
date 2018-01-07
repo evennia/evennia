@@ -6,8 +6,10 @@ entities.
 
 """
 import time
+import inflect
 from builtins import object
 from future.utils import with_metaclass
+from collections import Counter
 
 from django.conf import settings
 
@@ -22,9 +24,10 @@ from evennia.commands import cmdhandler
 from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, is_iter)
+                                 make_iter, to_unicode, is_iter, list_to_string)
 from django.utils.translation import ugettext as _
 
+_INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _ScriptDB = None
@@ -281,9 +284,34 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
+    def get_plural_name(self, looker, **kwargs):
+        """
+        Return the plural form of this object's key. This is used for grouping multiple same-named
+        versions of this object.
+
+        Args:
+            looker (Object): Onlooker. Not used by default.
+        Kwargs:
+            key (str): Optional key to pluralize, use this instead of the object's key.
+            count (int): How many entities of this type are being counted (not used by default).
+        Returns:
+            plural (str): The determined plural form of the key.
+
+        """
+        key = kwargs.get("key", self.key)
+        plural = _INFLECT.plural(key, 2)
+        if not self.aliases.get(plural, category="plural_key"):
+            # we need to wipe any old plurals/an/a in case key changed in the interrim
+            self.aliases.clear(category="plural_key")
+            self.aliases.add(plural, category="plural_key")
+            # save the singular form as an alias here too so we can display "an egg" and also
+            # look at 'an egg'.
+            self.aliases.add(_INFLECT.an(key), category="plural_key")
+        return plural
+
     def search(self, searchdata,
                global_search=False,
-               use_nicks=True,  # should this default to off?
+               use_nicks=True,
                typeclass=None,
                location=None,
                attribute_name=None,
@@ -1441,16 +1469,23 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             elif con.has_account:
                 users.append("|c%s|n" % key)
             else:
-                things.append(key)
+                # things can be pluralized
+                things.append((key, con.get_plural_name(looker)))
         # get description, build string
         string = "|c%s|n\n" % self.get_display_name(looker)
         desc = self.db.desc
         if desc:
             string += "%s" % desc
         if exits:
-            string += "\n|wExits:|n " + ", ".join(exits)
+            string += "\n|wExits:|n " + list_to_string(exits)
         if users or things:
-            string += "\n|wYou see:|n " + ", ".join(users + things)
+            # handle pluralization
+            things = [("%s %s" % (_INFLECT.number_to_words(count, one=_INFLECT.an(key), threshold=12),
+                                  plural if count > 1 else "")).strip()
+                      for ikey, ((key, plural), count) in enumerate(Counter(things).iteritems())]
+
+            string += "\n|wYou see:|n " + list_to_string(users + things)
+
         return string
 
     def at_look(self, target, **kwargs):
