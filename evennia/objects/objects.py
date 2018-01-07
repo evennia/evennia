@@ -9,7 +9,7 @@ import time
 import inflect
 from builtins import object
 from future.utils import with_metaclass
-from collections import Counter
+from collections import defaultdict
 
 from django.conf import settings
 
@@ -284,30 +284,35 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
-    def get_plural_name(self, looker, **kwargs):
+    def get_numbered_name(self, count, looker, **kwargs):
         """
-        Return the plural form of this object's key. This is used for grouping multiple same-named
-        versions of this object.
+        Return the numbered (singular, plural) forms of this object's key. This is by default called
+        by return_appearance and is used for grouping multiple same-named of this object. Note that
+        this will be called on *every* member of a group even though the plural name will be only
+        shown once. Also the singular display version, such as 'an apple', 'a tree' is determined
+        from this method.
 
         Args:
+            count (int): Number of objects of this type
             looker (Object): Onlooker. Not used by default.
         Kwargs:
             key (str): Optional key to pluralize, use this instead of the object's key.
-            count (int): How many entities of this type are being counted (not used by default).
         Returns:
-            plural (str): The determined plural form of the key.
-
+            singular (str): The singular form to display.
+            plural (str): The determined plural form of the key, including the count.
         """
         key = kwargs.get("key", self.key)
         plural = _INFLECT.plural(key, 2)
+        plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
+        singular = _INFLECT.an(key)
         if not self.aliases.get(plural, category="plural_key"):
             # we need to wipe any old plurals/an/a in case key changed in the interrim
             self.aliases.clear(category="plural_key")
             self.aliases.add(plural, category="plural_key")
             # save the singular form as an alias here too so we can display "an egg" and also
             # look at 'an egg'.
-            self.aliases.add(_INFLECT.an(key), category="plural_key")
-        return plural
+            self.aliases.add(singular, category="plural_key")
+        return singular, plural
 
     def search(self, searchdata,
                global_search=False,
@@ -1461,7 +1466,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and
                    con.access(looker, "view"))
-        exits, users, things = [], [], []
+        exits, users, things = [], [], defaultdict(list)
         for con in visible:
             key = con.get_display_name(looker)
             if con.destination:
@@ -1470,7 +1475,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 users.append("|c%s|n" % key)
             else:
                 # things can be pluralized
-                things.append((key, con.get_plural_name(looker)))
+                things[key].append(con)
         # get description, build string
         string = "|c%s|n\n" % self.get_display_name(looker)
         desc = self.db.desc
@@ -1479,12 +1484,17 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if exits:
             string += "\n|wExits:|n " + list_to_string(exits)
         if users or things:
-            # handle pluralization
-            things = [("%s %s" % (_INFLECT.number_to_words(count, one=_INFLECT.an(key), threshold=12),
-                                  plural if count > 1 else "")).strip()
-                      for ikey, ((key, plural), count) in enumerate(Counter(things).iteritems())]
+            # handle pluralization of things (never pluralize users)
+            thing_strings = []
+            for key, itemlist in sorted(things.iteritems()):
+                nitem = len(itemlist)
+                if nitem == 1:
+                    key, _ = itemlist[0].get_numbered_name(nitem, looker, key=key)
+                else:
+                    key = [item.get_numbered_name(nitem, looker, key=key)[1] for item in itemlist][0]
+                thing_strings.append(key)
 
-            string += "\n|wYou see:|n " + list_to_string(users + things)
+            string += "\n|wYou see:|n " + list_to_string(users + thing_strings)
 
         return string
 
