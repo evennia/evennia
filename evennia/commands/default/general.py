@@ -113,7 +113,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
-    aliases = ["nickname", "nicks", "alias"]
+    aliases = ["nickname", "nicks"]
     locks = "cmd:all()"
 
     def func(self):

@@ -106,9 +106,15 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     Usage:
       @alias <obj> [= [alias[,alias,alias,...]]]
       @alias <obj> =
+      @alias/category <obj> = [alias[,alias,...]:<category>
+
+    Switches:
+      category - requires ending input with :category, to store the
+        given aliases with the given category.
 
     Assigns aliases to an object so it can be referenced by more
-    than one name. Assign empty to remove all aliases from object.
+    than one name. Assign empty to remove all aliases from object. If
+    assigning a category, all aliases given will be using this category.
 
     Observe that this is not the same thing as personal aliases
     created with the 'nick' command! Aliases set with @alias are
@@ -138,9 +144,12 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
         if self.rhs is None:
             # no =, so we just list aliases on object.
-            aliases = obj.aliases.all()
+            aliases = obj.aliases.all(return_key_and_category=True)
             if aliases:
-                caller.msg("Aliases for '%s': %s" % (obj.get_display_name(caller), ", ".join(aliases)))
+                caller.msg("Aliases for %s: %s" % (
+                    obj.get_display_name(caller),
+                    ", ".join("'%s'%s" % (alias, "" if category is None else "[category:'%s']" % category)
+                              for (alias, category) in aliases)))
             else:
                 caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
             return
@@ -159,17 +168,27 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 caller.msg("No aliases to clear.")
             return
 
+        category = None
+        if "category" in self.switches:
+            if ":" in self.rhs:
+                rhs, category = self.rhs.rsplit(':', 1)
+                category = category.strip()
+            else:
+                caller.msg("If specifying the /category switch, the category must be given "
+                           "as :category at the end.")
+        else:
+            rhs = self.rhs
+
         # merge the old and new aliases (if any)
-        old_aliases = obj.aliases.all()
-        new_aliases = [alias.strip().lower() for alias in self.rhs.split(',')
-                       if alias.strip()]
+        old_aliases = obj.aliases.get(category=category, return_list=True)
+        new_aliases = [alias.strip().lower() for alias in rhs.split(',') if alias.strip()]
 
         # make the aliases only appear once
         old_aliases.extend(new_aliases)
         aliases = list(set(old_aliases))
 
         # save back to object.
-        obj.aliases.add(aliases)
+        obj.aliases.add(aliases, category=category)
 
         # we need to trigger this here, since this will force
         # (default) Exits to rebuild their Exit commands with the new
@@ -177,7 +196,8 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
         obj.at_cmdset_get(force_init=True)
 
         # report all aliases on the object
-        caller.msg("Alias(es) for '%s' set to %s." % (obj.get_display_name(caller), str(obj.aliases)))
+        caller.msg("Alias(es) for '%s' set to '%s'%s." % (obj.get_display_name(caller),
+                   str(obj.aliases), " (category: '%s')" % category if category else ""))
 
 
 class CmdCopy(ObjManipCommand):
