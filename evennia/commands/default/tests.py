@@ -239,7 +239,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
 
     def test_set_obj_alias(self):
-        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to testobj1b.")
+        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj(#4)")
+        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to 'testobj1b'.")
 
     def test_copy(self):
         self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
