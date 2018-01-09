@@ -126,9 +126,9 @@ class TestGeneral(CommandTest):
         self.call(general.CmdPose(), "looks around", "Char looks around")
 
     def test_nick(self):
-        self.call(general.CmdNick(), "testalias = testaliasedstring1", "Nick 'testalias' mapped to 'testaliasedstring1'.")
-        self.call(general.CmdNick(), "/account testalias = testaliasedstring2", "Nick 'testalias' mapped to 'testaliasedstring2'.")
-        self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Nick 'testalias' mapped to 'testaliasedstring3'.")
+        self.call(general.CmdNick(), "testalias = testaliasedstring1", "Inputlinenick 'testalias' mapped to 'testaliasedstring1'.")
+        self.call(general.CmdNick(), "/account testalias = testaliasedstring2", "Accountnick 'testalias' mapped to 'testaliasedstring2'.")
+        self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Objectnick 'testalias' mapped to 'testaliasedstring3'.")
         self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
         self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
         self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
