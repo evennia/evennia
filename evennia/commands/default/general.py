@@ -1,6 +1,7 @@
 """
 General Character commands usually available to all characters
 """
+import re
 from django.conf import settings
 from evennia.utils import utils, evtable
 from evennia.typeclasses.attributes import NickTemplateInvalid
@@ -75,13 +76,14 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
     """
-    define a personal alias/nick
+    define a personal alias/nick by defining a string to
+    match and replace it with another on the fly
 
     Usage:
       nick[/switches] <string> [= [replacement_string]]
       nick[/switches] <template> = <replacement_template>
       nick/delete <string> or number
-      nick/test <test string>
+      nicks
 
     Switches:
       inputline - replace on the inputline (default)
@@ -90,22 +92,24 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
       delete    - remove nick by name or by index given by /list
       clearall  - clear all nicks
       list      - show all defined aliases (also "nicks" works)
-      test      - test input to see what it matches with
 
     Examples:
       nick hi = say Hello, I'm Sarah!
       nick/object tom = the tall man
-      nick build $1 $2 = @create/drop $1;$2     - (template)
-      nick tell $1 $2=@page $1=$2               - (template)
+      nick build $1 $2 = @create/drop $1;$2
+      nick tell $1 $2=@page $1=$2
+      nick tm?$1=@page tallman=$1
+      nick tm\=$1=@page tallman=$1
 
     A 'nick' is a personal string replacement. Use $1, $2, ... to catch arguments.
     Put the last $-marker without an ending space to catch all remaining text. You
-    can also use unix-glob matching:
+    can also use unix-glob matching for the left-hand side:
 
         * - matches everything
-        ? - matches a single character
-        [seq] - matches all chars in sequence
-        [!seq] - matches everything not in sequence
+        ? - matches 0 or 1 single characters
+        [abcd] - matches these chars in any order
+        [!abcd] - matches everything not among these chars
+        \= - use to have '=' in your matching string
 
     Note that no objects are actually renamed or changed by this command - your nicks
     are only available to you. If you want to permanently add keywords to an object
@@ -116,8 +120,26 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     aliases = ["nickname", "nicks", "alias"]
     locks = "cmd:all()"
 
+    def parse(self):
+        """
+        Support escaping of = with \=
+        """
+        args = self.args
+        super(CmdNick, self).parse()
+        parts = re.split(r"(?<!\\)=", args, 1)
+        self.rhs = None
+        if len(parts) < 2:
+            self.lhs = parts[0].strip()
+        else:
+            self.lhs, self.rhs = [part.strip() for part in parts]
+        self.lhs = self.lhs.replace("\=", "=")
+
     def func(self):
         """Create the nickname"""
+
+        def _cy(string):
+            "add color to the special markers"
+            return re.sub(r"(\$[0-9]+|\*|\?|\[.+?\])", r"|Y\1|n", string)
 
         caller = self.caller
         switches = self.switches
@@ -133,7 +155,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 table = evtable.EvTable("#", "Type", "Nick match", "Replacement")
                 for inum, nickobj in enumerate(nicklist):
                     _, _, nickvalue, replacement = nickobj.value
-                    table.add_row(str(inum + 1), nickobj.db_category, nickvalue, replacement)
+                    table.add_row(str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement))
                 string = "|wDefined Nicks:|n\n%s" % table
             caller.msg(string)
             return
@@ -182,12 +204,15 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     caller.nicks.remove(old_nickstring, category=nicktype)
                     string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
                 else:
-                    errstring += "\nNick '|w%s|n' was not deleted." % old_nickstring
+                    errstring += "\nNick '|w%s|n' was not deleted." % (old_nickstring)
             elif replstring:
                 # creating new nick
                 errstring = ""
                 if oldnick:
-                    string += "\nNick '|w%s|n' updated to map to '|w%s|n'." % (old_nickstring, replstring)
+                    if replstring == old_replstring:
+                        string += "\nIdentical nick already set."
+                    else:
+                        string += "\nNick '|w%s|n' updated to map to '|w%s|n'." % (old_nickstring, replstring)
                 else:
                     string += "\nNick '|w%s|n' mapped to '|w%s|n'." % (nickstring, replstring)
                 try:
@@ -200,7 +225,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 string += "\nNick '|w%s|n' maps to '|w%s|n'." % (old_nickstring, old_replstring)
                 errstring = ""
         string = errstring if errstring else string
-        caller.msg(string)
+        caller.msg(_cy(string))
 
 
 class CmdInventory(COMMAND_DEFAULT_CLASS):
