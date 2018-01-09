@@ -457,7 +457,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                                      callertype="account", session=session, **kwargs)
 
     def search(self, searchdata, return_puppet=False, search_object=False,
-               typeclass=None, nofound_string=None, multimatch_string=None, **kwargs):
+               typeclass=None, nofound_string=None, multimatch_string=None, use_nicks=True, **kwargs):
         """
         This is similar to `DefaultObject.search` but defaults to searching
         for Accounts only.
@@ -481,6 +481,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             multimatch_string (str, optional): A one-time error
                 message to echo if `searchdata` leads to multiple matches.
                 If not given, will fall back to the default handler.
+            use_nicks (bool, optional): Use account-level nick replacement.
 
         Return:
             match (Account, Object or None): A single Account or Object match.
@@ -496,8 +497,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
         if search_object:
-            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
+            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass, use_nicks=use_nicks)
         else:
+            searchdata = self.nicks.nickreplace(searchdata, categories=("account", ), include_account=False)
+
             matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
         matches = _AT_SEARCH_RESULT(matches, self, query=searchdata,
                                     nofound_string=nofound_string,
