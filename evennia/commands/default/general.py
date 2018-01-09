@@ -143,13 +143,14 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             return re.sub(r"(\$[0-9]+|\*|\?|\[.+?\])", r"|Y\1|n", string)
 
         caller = self.caller
+        account = self.caller.account or caller
         switches = self.switches
         nicktypes = [switch for switch in switches if switch in (
             "object", "account", "inputline")] or ["inputline"]
 
         nicklist = (utils.make_iter(caller.nicks.get(category="inputline", return_obj=True) or []) +
                     utils.make_iter(caller.nicks.get(category="object", return_obj=True) or []) +
-                    utils.make_iter(caller.nicks.get(category="account", return_obj=True) or []))
+                    utils.make_iter(account.nicks.get(category="account", return_obj=True) or []))
 
         if 'list' in switches or self.cmdstring in ("nicks", "@nicks"):
 
@@ -166,6 +167,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         if 'clearall' in switches:
             caller.nicks.clear()
+            caller.account.nicks.clear()
             caller.msg("Cleared all nicks.")
             return
 
@@ -187,7 +189,10 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 nicktype = oldnick.category
                 nicktypestr = "%s-nick" % nicktype.capitalize()
 
-                caller.nicks.remove(old_nickstring, category=nicktype)
+                if nicktype == "account":
+                    account.nicks.remove(old_nickstring, category=nicktype)
+                else:
+                    caller.nicks.remove(old_nickstring, category=nicktype)
                 caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
                            nicktypestr, old_nickstring, old_replstring))
                 return
@@ -209,11 +214,16 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         errstring = ""
         string = ""
         for nicktype in nicktypes:
+            if nicktype == "account":
+                obj = account
+            else:
+                obj = caller
+
             nicktypestr = "%s-nick" % nicktype.capitalize()
             old_nickstring = None
             old_replstring = None
 
-            oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
+            oldnick = obj.nicks.get(key=nickstring, category=nicktype, return_obj=True)
             if oldnick:
                 _, _, old_nickstring, old_replstring = oldnick.value
             if replstring:
@@ -228,7 +238,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 else:
                     string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (nicktypestr, nickstring, replstring)
                 try:
-                    caller.nicks.add(nickstring, replstring, category=nicktype)
+                    obj.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
                     caller.msg("You must use the same $-markers both in the nick and in the replacement.")
                     return
