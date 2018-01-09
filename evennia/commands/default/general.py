@@ -89,7 +89,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
       account    - replace on account-lookup
-      delete    - remove nick by name or by index given by /list
+      delete    - remove nick by name or by index in /list
       clearall  - clear all nicks
       list      - show all defined aliases (also "nicks" works)
 
@@ -125,7 +125,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         Support escaping of = with \=
         """
         super(CmdNick, self).parse()
-        args = (self.lhs or "") + " = %s" % self.rhs if self.rhs else ""
+        args = (self.lhs or "") + (" = %s" % self.rhs if self.rhs else "")
         parts = re.split(r"(?<!\\)=", args, 1)
         self.rhs = None
         if len(parts) < 2:
@@ -166,7 +166,10 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.args or not self.lhs:
-            caller.msg("Usage: nick[/switches] nickname = [realname]")
+            if "delete" in switches or "del" in switches:
+                caller.msg("usage nick/delete nickname or #1 (use nicks for list)")
+            else:
+                caller.msg("Usage: nick[/switches] nickname = [realname]")
             return
 
         nickstring = self.lhs
