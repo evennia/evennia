@@ -378,6 +378,12 @@ class PortalSessionHandler(SessionHandler):
             if self.command_overflow:
                 self.data_out(session, text=[[_ERROR_COMMAND_OVERFLOW], {}])
                 return
+            if not self.portal.amp_protocol:
+                # this can happen if someone connects before AMP connection
+                # was established (usually on first start)
+                reactor.callLater(1.0, self.data_in, session, **kwargs)
+                return
+
             # scrub data
             kwargs = self.clean_senddata(session, kwargs)
 
