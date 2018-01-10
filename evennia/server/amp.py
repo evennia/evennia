@@ -29,7 +29,7 @@ except ImportError:
     import pickle
 from twisted.protocols import amp
 from twisted.internet import protocol
-from twisted.internet.defer import Deferred
+from twisted.internet.defer import Deferred, DeferredList
 from evennia.utils import logger
 from evennia.utils.utils import to_str, variable_from_module
 import zlib  # Used in Compressed class
@@ -45,11 +45,13 @@ PSYNC = chr(3)         # portal session sync
 SLOGIN = chr(4)        # server session login
 SDISCONN = chr(5)      # server session disconnect
 SDISCONNALL = chr(6)   # server session disconnect all
-SSHUTD = chr(7)        # server shutdown
+SSHUTD = chr(7)        # server shutdown (shutdown portal too)
 SSYNC = chr(8)         # server session sync
 SCONN = chr(11)        # server creating new connection (for irc bots and etc)
 PCONNSYNC = chr(12)    # portal post-syncing a session
 PDISCONNALL = chr(13)  # portal session disconnect all
+SRELOAD = chr(14)      # server reloading (have portal start a new server)
+
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
 BATCH_RATE = 250     # max commands/sec before switching to batch-sending
@@ -97,6 +99,7 @@ class AmpServerFactory(protocol.ServerFactory):
         """
         self.server = server
         self.protocol = AMPProtocol
+        self.connections = []
 
     def buildProtocol(self, addr):
         """
@@ -112,6 +115,9 @@ class AmpServerFactory(protocol.ServerFactory):
         self.server.amp_protocol = AMPProtocol()
         self.server.amp_protocol.factory = self
         return self.server.amp_protocol
+
+
+_AMP_TRANSPORTS = []
 
 
 class AmpClientFactory(protocol.ReconnectingClientFactory):
@@ -327,6 +333,9 @@ def loads(data):
     return pickle.loads(to_str(data))
 
 
+def cmdline_input(data):
+    print("cmdline_input received:\n %s" % data)
+
 # -------------------------------------------------------------
 # Core AMP protocol for communication Server <-> Portal
 # -------------------------------------------------------------
@@ -356,6 +365,22 @@ class AMPProtocol(amp.AMP):
         self.send_mode = True
         self.send_task = None
 
+    def dataReceived(self, data):
+        if data[0] != b'\0':
+            cmdline_input(data)
+        else:
+            super(AMPProtocol, self).dataReceived(data)
+
+    def makeConnection(self, transport):
+        """
+        Copied from parent AMP protocol
+        """
+        global _AMP_TRANSPORTS
+        # this makes for a factor x10 faster sends across the wire
+        transport.setTcpNoDelay(True)
+        super(AMPProtocol, self).makeConnection(transport)
+        _AMP_TRANSPORTS.append(transport)
+
     def connectionMade(self):
         """
         This is called when an AMP connection is (re-)established
@@ -363,9 +388,6 @@ class AMPProtocol(amp.AMP):
         need to make sure to only trigger resync from the portal side.
 
         """
-        # this makes for a factor x10 faster sends across the wire
-        self.transport.setTcpNoDelay(True)
-
         if hasattr(self.factory, "portal"):
             # only the portal has the 'portal' property, so we know we are
             # on the portal side and can initialize the connection.
@@ -387,7 +409,8 @@ class AMPProtocol(amp.AMP):
         portal will continuously try to reconnect, showing the problem
         that way.
         """
-        pass
+        global _AMP_TRANSPORTS
+        _AMP_TRANSPORTS = [transport for transport in _AMP_TRANSPORTS if transport.connected == 1]
 
     # Error handling
 
@@ -421,9 +444,18 @@ class AMPProtocol(amp.AMP):
             (sessid, kwargs).
 
         """
-        return self.callRemote(command,
-                               packed_data=dumps((sessid, kwargs))
-                               ).addErrback(self.errback, command.key)
+        if hasattr(self.factory, "portal") or len(_AMP_TRANSPORTS) == 1:
+            return self.callRemote(command,
+                                   packed_data=dumps((sessid, kwargs))
+                                   ).addErrback(self.errback, command.key)
+
+        else:
+            deferreds = []
+            for transport in _AMP_TRANSPORTS:
+                self.transport = transport
+                deferreds.append(self.callRemote(command,
+                                           packed_data=dumps((sessid, kwargs))))
+            return DeferredList(deferreds, fireOnOneErrback=1).addErrback(self.errback, command.key)
 
     # Message definition + helper methods to call/create each message type
 
@@ -583,6 +615,9 @@ class AMPProtocol(amp.AMP):
         elif operation == SSHUTD:  # server_shutdown
             # the server orders the portal to shut down
             self.factory.portal.shutdown(restart=False)
+
+        elif operation == SRELOAD:  # server reload
+            self.factory.portal.server_reload(**kwargs)
 
         elif operation == SSYNC:  # server_session_sync
             # server wants to save session data to the portal,

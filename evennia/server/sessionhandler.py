@@ -58,6 +58,8 @@ SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server portal connection (for bots)
 PCONNSYNC = chr(12)   # portal post-syncing session
 PDISCONNALL = chr(13)  # portal session discnnect all
+SRELOAD = chr(14)      # server reloading (have portal start a new server)
+
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -432,9 +434,15 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SCONN,
                                                          protocol_path=protocol_path, config=configdict)
 
+    def portal_restart_server(self):
+        """
+        Called by server when reloading. We tell the portal to start a new server instance.
+
+        """
+
     def portal_shutdown(self):
         """
-        Called by server when shutting down the portal.
+        Called by server when shutting down the portal (usually because server is going down too).
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
