@@ -10,14 +10,11 @@ by game/evennia.py).
 from __future__ import print_function
 from builtins import object
 
-import time
 import sys
 import os
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
-from twisted.internet.task import LoopingCall
-from twisted.web import server
 import django
 django.setup()
 from django.conf import settings
