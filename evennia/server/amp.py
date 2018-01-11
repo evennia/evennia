@@ -93,22 +93,22 @@ def get_restart_mode(restart_file):
 
 class AmpServerFactory(protocol.ServerFactory):
     """
-    This factory creates the Server as a new AMPProtocol instance for accepting
-    connections from the Portal.
+    This factory creates AMP Server instance. This
+    is meant to sit on the Evennia Portal service.
     """
     noisy = False
 
-    def __init__(self, server):
+    def __init__(self, portal):
         """
         Initialize the factory.
 
         Args:
-            server (Server): The Evennia server service instance.
+            portal (Portal): The Evennia Portal service instance.
             protocol (Protocol): The protocol the factory creates
                 instances of.
 
         """
-        self.server = server
+        self.portal = portal
         self.protocol = AMPProtocol
         self.broadcasts = []
 
@@ -123,9 +123,9 @@ class AmpServerFactory(protocol.ServerFactory):
             protocol (Protocol): The created protocol.
 
         """
-        self.server.amp_protocol = AMPProtocol()
-        self.server.amp_protocol.factory = self
-        return self.server.amp_protocol
+        self.portal.amp_protocol = AMPProtocol()
+        self.portal.amp_protocol.factory = self
+        return self.portal.amp_protocol
 
 
 _AMP_TRANSPORTS = []
@@ -133,8 +133,8 @@ _AMP_TRANSPORTS = []
 
 class AmpClientFactory(protocol.ReconnectingClientFactory):
     """
-    This factory creates an instance of the Portal, an AMPProtocol
-    instances to use to connect
+    This factory creates an instance of an AMP client. This
+    is intended to be the Evennia 'Server' service.
 
     """
     # Initial reconnect delay in seconds.
@@ -143,16 +143,17 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
     maxDelay = 1
     noisy = False
 
-    def __init__(self, portal):
+    def __init__(self, server):
         """
         Initializes the client factory.
 
         Args:
-            portal (Portal): Portal instance.
+            server (server): server instance.
 
         """
-        self.portal = portal
+        self.server = server
         self.protocol = AMPProtocol
+        self.maxDelay = 10
         # not really used unless connecting to multiple servers, but
         # avoids having to check for its existence on the protocol
         self.broadcasts = []
@@ -177,9 +178,9 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
 
         """
         self.resetDelay()
-        self.portal.amp_protocol = AMPProtocol()
-        self.portal.amp_protocol.factory = self
-        return self.portal.amp_protocol
+        self.server.amp_protocol = AMPProtocol()
+        self.server.amp_protocol.factory = self
+        return self.server.amp_protocol
 
     def clientConnectionLost(self, connector, reason):
         """
@@ -191,13 +192,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection was lost.
 
         """
-        if hasattr(self, "server_restart_mode"):
-            self.portal.sessions.announce_all(" Server restarting ...")
-            self.maxDelay = 2
-        else:
-            # Don't translate this; avoid loading django on portal side.
-            self.maxDelay = 10
-            self.portal.sessions.announce_all(" ... Portal lost connection to Server.")
+        logger.log_info("Server lost connection to the Portal. Reconnecting ...")
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
@@ -210,11 +205,7 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection failed.
 
         """
-        if hasattr(self, "server_restart_mode"):
-            self.maxDelay = 2
-        else:
-            self.maxDelay = 10
-        self.portal.sessions.announce_all(" ...")
+        logger.log_info("Attempting to reconnect to Portal ...")
         protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 
@@ -411,8 +402,6 @@ class AMPProtocol(amp.AMP):
                                          PSYNC,
                                          sessiondata=sessdata)
             self.factory.portal.sessions.at_server_connection()
-            if hasattr(self.factory, "server_restart_mode"):
-                del self.factory.server_restart_mode
 
     def connectionLost(self, reason):
         """

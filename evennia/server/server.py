@@ -550,9 +550,9 @@ if AMP_ENABLED:
 
     from evennia.server import amp
 
-    factory = amp.AmpServerFactory(EVENNIA)
-    amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
-    amp_service.setName("EvenniaPortal")
+    factory = amp.AmpClientFactory(EVENNIA)
+    amp_service = internet.TCPClient(AMP_HOST, AMP_PORT, factory)
+    amp_service.setName('ServerAMPClient')
     EVENNIA.services.addService(amp_service)
 
 if WEBSERVER_ENABLED:
