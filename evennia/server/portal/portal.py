@@ -187,13 +187,13 @@ if AMP_ENABLED:
     # the portal and the mud server. Only reason to ever deactivate
     # it would be during testing and debugging.
 
-    from evennia.server import amp
+    from evennia.server.portal import amp_server
 
     print('  amp (to Server): %s (internal)' % AMP_PORT)
 
-    factory = amp.AmpServerFactory(PORTAL)
+    factory = amp_server.AMPServerFactory(PORTAL)
     amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
-    amp_service.setName("PortalAMPService")
+    amp_service.setName("PortalAMPServer")
     PORTAL.services.addService(amp_service)
 
 
