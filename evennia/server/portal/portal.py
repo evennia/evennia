@@ -191,10 +191,10 @@ if AMP_ENABLED:
 
     print('  amp (to Server): %s (internal)' % AMP_PORT)
 
-    factory = amp.AmpClientFactory(PORTAL)
-    amp_client = internet.TCPClient(AMP_HOST, AMP_PORT, factory)
-    amp_client.setName('evennia_amp')
-    PORTAL.services.addService(amp_client)
+    factory = amp.AmpServerFactory(PORTAL)
+    amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
+    amp_service.setName("PortalAMPService")
+    PORTAL.services.addService(amp_service)
 
 
 # We group all the various services under the same twisted app.
