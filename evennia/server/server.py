@@ -548,9 +548,9 @@ if AMP_ENABLED:
         ifacestr = "-%s" % AMP_INTERFACE
     print('  amp (to Portal)%s: %s (internal)' % (ifacestr, AMP_PORT))
 
-    from evennia.server import amp
+    from evennia.server import amp_client
 
-    factory = amp.AmpClientFactory(EVENNIA)
+    factory = amp_client.AMPClientFactory(EVENNIA)
     amp_service = internet.TCPClient(AMP_HOST, AMP_PORT, factory)
     amp_service.setName('ServerAMPClient')
     EVENNIA.services.addService(amp_service)
