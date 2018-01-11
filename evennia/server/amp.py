@@ -62,6 +62,17 @@ _SENDBATCH = defaultdict(list)
 _MSGBUFFER = defaultdict(list)
 
 
+_HTTP_WARNING = """
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+<html><body>
+This is Evennia's interal AMP port. It handles communication
+between Evennia's different processes.<h3><p>This port should NOT be
+publicly visible.</p></h3>
+</body></html>""".strip()
+
+
 def get_restart_mode(restart_file):
     """
     Parse the server/portal restart status
@@ -99,7 +110,7 @@ class AmpServerFactory(protocol.ServerFactory):
         """
         self.server = server
         self.protocol = AMPProtocol
-        self.connections = []
+        self.broadcasts = []
 
     def buildProtocol(self, addr):
         """
@@ -142,6 +153,9 @@ class AmpClientFactory(protocol.ReconnectingClientFactory):
         """
         self.portal = portal
         self.protocol = AMPProtocol
+        # not really used unless connecting to multiple servers, but
+        # avoids having to check for its existence on the protocol
+        self.broadcasts = []
 
     def startedConnecting(self, connector):
         """
@@ -336,6 +350,7 @@ def loads(data):
 def cmdline_input(data):
     print("cmdline_input received:\n %s" % data)
 
+
 # -------------------------------------------------------------
 # Core AMP protocol for communication Server <-> Portal
 # -------------------------------------------------------------
@@ -349,6 +364,11 @@ class AMPProtocol(amp.AMP):
     AMP specifies responder methods here and connect them to
     amp.Command subclasses that specify the datatypes of the
     input/output of these methods.
+
+    This version of the protocol is a broadcast-version: it can
+    accept multiple connections and will broadcast to all of them.
+    IT will also correctly intercept non-AMP messages to avoid them
+    interrupting the connection.
 
     """
 
@@ -366,20 +386,14 @@ class AMPProtocol(amp.AMP):
         self.send_task = None
 
     def dataReceived(self, data):
+        """
+        Handle non-AMP messages, such as HTTP communication.
+        """
         if data[0] != b'\0':
-            cmdline_input(data)
+            self.transport.write(_HTTP_WARNING)
+            self.transport.loseConnection()
         else:
             super(AMPProtocol, self).dataReceived(data)
-
-    def makeConnection(self, transport):
-        """
-        Copied from parent AMP protocol
-        """
-        global _AMP_TRANSPORTS
-        # this makes for a factor x10 faster sends across the wire
-        transport.setTcpNoDelay(True)
-        super(AMPProtocol, self).makeConnection(transport)
-        _AMP_TRANSPORTS.append(transport)
 
     def connectionMade(self):
         """
@@ -388,6 +402,7 @@ class AMPProtocol(amp.AMP):
         need to make sure to only trigger resync from the portal side.
 
         """
+        self.factory.broadcasts.append(self)
         if hasattr(self.factory, "portal"):
             # only the portal has the 'portal' property, so we know we are
             # on the portal side and can initialize the connection.
@@ -409,8 +424,7 @@ class AMPProtocol(amp.AMP):
         portal will continuously try to reconnect, showing the problem
         that way.
         """
-        global _AMP_TRANSPORTS
-        _AMP_TRANSPORTS = [transport for transport in _AMP_TRANSPORTS if transport.connected == 1]
+        self.factory.broadcasts.remove(self)
 
     # Error handling
 
@@ -444,18 +458,11 @@ class AMPProtocol(amp.AMP):
             (sessid, kwargs).
 
         """
-        if hasattr(self.factory, "portal") or len(_AMP_TRANSPORTS) == 1:
-            return self.callRemote(command,
-                                   packed_data=dumps((sessid, kwargs))
-                                   ).addErrback(self.errback, command.key)
-
-        else:
-            deferreds = []
-            for transport in _AMP_TRANSPORTS:
-                self.transport = transport
-                deferreds.append(self.callRemote(command,
-                                           packed_data=dumps((sessid, kwargs))))
-            return DeferredList(deferreds, fireOnOneErrback=1).addErrback(self.errback, command.key)
+        deferreds = []
+        for prot in self.factory.broadcasts:
+            deferreds.append(prot.callRemote(command,
+                                             packed_data=dumps((sessid, kwargs))))
+        return DeferredList(deferreds, fireOnOneErrback=1).addErrback(self.errback, command.key)
 
     # Message definition + helper methods to call/create each message type
 
