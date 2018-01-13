@@ -4,8 +4,25 @@ communication to the AMP clients connecting to it (by default
 these are the Evennia Server and the evennia launcher).
 
 """
+import os
+import sys
 from twisted.internet import protocol
 from evennia.server.portal import amp
+from subprocess import Popen
+
+
+def getenv():
+    """
+    Get current environment and add PYTHONPATH.
+
+    Returns:
+        env (dict): Environment global dict.
+
+    """
+    sep = ";" if os.name == 'nt' else ":"
+    env = os.environ.copy()
+    env['PYTHONPATH'] = sep.join(sys.path)
+    return env
 
 
 class AMPServerFactory(protocol.ServerFactory):
@@ -66,6 +83,20 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                                          sessiondata=sessdata)
             self.factory.portal.sessions.at_server_connection()
 
+    def start_server(self, server_twistd_cmd):
+        """
+        (Re-)Launch the Evennia server.
+
+        Args:
+            server_twisted_cmd (list): The server start instruction
+                to pass to POpen to start the server.
+
+        """
+        # start the server
+        process = Popen(server_twistd_cmd, env=getenv())
+        # store the pid for future reference
+        self.portal.server_process_id = process.pid
+
     # sending amp data
 
     def send_MsgPortal2Server(self, session, **kwargs):
@@ -103,16 +134,25 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
     @amp.catch_traceback
     def portal_receive_status(self, status):
         """
-        Check if Server is running
+        Returns run-status for the server/portal.
+
+        Args:
+            status (str): Not used.
+        Returns:
+            status (dict): The status is a tuple
+                (portal_running, server_running, portal_pid, server_pid).
+
         """
         # check if the server is connected
         server_connected = any(1 for prtcl in self.factory.broadcasts
                                if prtcl is not self and prtcl.transport.connected)
-        # return portal|server RUNNING/NOT RUNNING
+        server_pid = self.factory.portal.server_process_id
+        portal_pid = os.getpid()
+
         if server_connected:
-            return {"status": "RUNNING|RUNNING"}
+            return {"status": amp.dumps((True, True, portal_pid, server_pid))}
         else:
-            return {"status": "RUNNING|NOT RUNNING"}
+            return {"status": amp.dumps((True, False, portal_pid, server_pid))}
 
     @amp.MsgLauncher2Portal.responder
     @amp.catch_traceback
@@ -140,10 +180,10 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         print("AMP SERVER arguments: %s" % (amp.loads(arguments)))
         return {"result": "Received."}
 
-        if operation == amp.SSTART:   # portal start (server start or reload)
+        if operation == amp.SSTART:   # portal start
             # first, check if server is already running
             if server_connected:
-                return {"result": "Server already running (PID {}).".format(0)}  # TODO store and send PID
+                return {"result": "Server already running at PID={}"}
             else:
                 self.start_server(amp.loads(arguments))
                 return {"result": "Server started with PID {}.".format(0)}  # TODO

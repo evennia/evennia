@@ -173,6 +173,7 @@ class Evennia(object):
         self.amp_protocol = None  # set by amp factory
         self.sessions = SESSIONS
         self.sessions.server = self
+        self.process_id = os.getpid()
 
         # Database-specific startup optimizations.
         self.sqlite3_prep()

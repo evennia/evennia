@@ -105,6 +105,8 @@ class Portal(object):
         self.amp_protocol = None  # set by amp factory
         self.sessions = PORTAL_SESSIONS
         self.sessions.portal = self
+        self.process_id = os.getpid()
+        self.server_process_id = None
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
