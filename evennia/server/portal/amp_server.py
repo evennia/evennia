@@ -96,9 +96,48 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         return self.data_out(amp.AdminPortal2Server, session.sessid, operation=operation, **kwargs)
 
+    def sendPingPortal2Server(self, callback):
+        """
+        Send ping to check if Server is alive.
+
+        """
+
     # receive amp data
 
+    @amp.MsgLauncher2Portal.responder
+    @amp.catch_traceback
+    def portal_receive_launcher2portal(self, operation, argument):
+        """
+        Receives message arriving from evennia_launcher.
+        This method is executed on the Portal.
+
+        Args:
+            operation (str): The action to perform.
+            argument (str): A possible argument to the instruction, or the empty string.
+
+        Returns:
+            result (dict): The result back to the launcher.
+
+        Notes:
+            This is the entrypoint for controlling the entire Evennia system from the
+            evennia launcher.
+
+        """
+        if operation == amp.PPING:  # check portal and server status
+            pass
+        elif operation == amp.PSTART:   # portal start (server start or reload)
+            pass
+        elif operation == amp.SRELOAD:  # reload server
+            pass
+        elif operation == amp.PSHUTD:  # portal + server shutdown
+            pass
+        else:
+            raise Exception("operation %(op)s not recognized." % {'op': operation})
+        # fallback
+        return {"result": ""}
+
     @amp.MsgServer2Portal.responder
+    @amp.catch_traceback
     def portal_receive_server2portal(self, packed_data):
         """
         Receives message arriving to Portal from Server.
@@ -115,6 +154,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         return {}
 
     @amp.AdminServer2Portal.responder
+    @amp.catch_traceback
     def portal_receive_adminserver2portal(self, packed_data):
         """
 
