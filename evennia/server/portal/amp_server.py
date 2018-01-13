@@ -104,6 +104,10 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
     # receive amp data
 
+    @amp.MsgStatus.responder
+    def portal_receive_status(self, question):
+        return {"status": "All well"}
+
     @amp.MsgLauncher2Portal.responder
     @amp.catch_traceback
     def portal_receive_launcher2portal(self, operation, argument):
@@ -123,9 +127,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             evennia launcher.
 
         """
-        if operation == amp.PPING:  # check portal and server status
-            pass
-        elif operation == amp.PSTART:   # portal start (server start or reload)
+        if operation == amp.PSTART:   # portal start (server start or reload)
             pass
         elif operation == amp.SRELOAD:  # reload server
             pass

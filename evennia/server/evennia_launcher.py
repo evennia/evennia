@@ -20,6 +20,8 @@ import importlib
 from distutils.version import LooseVersion
 from argparse import ArgumentParser
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
+from twisted.protocols import amp
+from twisted.internet import reactor, endpoints
 import django
 
 # Signal processing
@@ -49,17 +51,31 @@ CURRENT_DIR = os.getcwd()
 GAMEDIR = CURRENT_DIR
 
 # Operational setup
+AMP_PORT = None
+AMP_HOST = None
+AMP_INTERFACE = None
+
 SERVER_LOGFILE = None
 PORTAL_LOGFILE = None
 HTTP_LOGFILE = None
+
 SERVER_PIDFILE = None
 PORTAL_PIDFILE = None
 SERVER_RESTART = None
 PORTAL_RESTART = None
+
 SERVER_PY_FILE = None
 PORTAL_PY_FILE = None
+
 TEST_MODE = False
 ENFORCED_SETTING = False
+
+# communication constants
+
+SRELOAD = chr(14)      # server reloading (have portal start a new server)
+PSTART = chr(15)       # server+portal start
+PSHUTD = chr(16)       # portal (+server) shutdown
+PSTATUS = chr(17)        # ping server or portal status
 
 # requirements
 PYTHON_MIN = '2.7'
@@ -303,6 +319,15 @@ MENU = \
     +---------------------------------------------------------------+
     """
 
+ERROR_AMP_UNCONFIGURED = \
+    """
+    Can't find server info for connecting. Either run this command from
+    the game dir (it will then use the game's settings file) or specify
+    the path to your game's settings file manually with the --settings
+    option.
+
+    """
+
 ERROR_LOGDIR_MISSING = \
     """
     ERROR: One or more log-file directory locations could not be
@@ -391,11 +416,94 @@ NOTE_TEST_CUSTOM = \
     on the game dir.)
     """
 
-#------------------------------------------------------------
+
+# ------------------------------------------------------------
 #
-# Functions
+#  Protocol Evennia launcher - Portal/Server communication
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
+
+class MsgStatus(amp.Command):
+    """
+    Ping between AMP services
+
+    """
+    key = "AMPPing"
+    arguments = [('question', amp.String())]
+    errors = {Exception: 'EXCEPTION'}
+    response = [('status', amp.String())]
+
+
+class MsgLauncher2Portal(amp.Command):
+    """
+    Message Launcher -> Portal
+
+    """
+    key = "MsgLauncher2Portal"
+    arguments = [('operation', amp.String()),
+                 ('argument', amp.String())]
+    errors = {Exception: 'EXCEPTION'}
+    response = [('result', amp.String())]
+
+
+def send_instruction(instruction, argument, callback, errback):
+    """
+    Send instruction and handle the response.
+
+    """
+    if None in (AMP_HOST, AMP_PORT, AMP_INTERFACE):
+        print(ERROR_AMP_UNCONFIGURED)
+        sys.exit()
+
+    def _on_connect(prot):
+        """
+        This fires with the protocol when connection is established. We
+        immediately send off the instruction then shut down.
+
+        """
+        def _callback(result):
+            callback(result)
+            prot.transport.loseConnection()
+            reactor.stop()
+
+        def _errback(fail):
+            errback(fail)
+            prot.transport.loseConnection()
+            reactor.stop()
+
+        if instruction == PSTATUS:
+            prot.callRemote(MsgStatus, question="").addCallbacks(_callback, _errback)
+        else:
+            prot.callRemote(MsgLauncher2Portal, instruction, argument).addCallbacks(
+                    _callback, _errback)
+
+    point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
+    deferred = endpoints.connectProtocol(point, amp.AMP())
+    deferred.addCallbacks(_on_connect, errback)
+    reactor.run()
+
+
+def send_status():
+    """
+    Send ping to portal
+
+    """
+    import time
+    t0 = time.time()
+    def _callback(status):
+        print("STATUS returned: %s (%gms)" % (status, (time.time()-t0) * 1000))
+
+    def _errback(err):
+        print("STATUS returned: %s" % err)
+
+    send_instruction(PSTATUS, None, _callback, _errback)
+
+# ------------------------------------------------------------
+#
+#  Helper functions
+#
+# ------------------------------------------------------------
 
 
 def evennia_version():
@@ -869,11 +977,16 @@ def init_game_directory(path, check_db=True):
         check_database()
 
     # set up the Evennia executables and log file locations
+    global AMP_PORT, AMP_HOST, AMP_INTERFACE
     global SERVER_PY_FILE, PORTAL_PY_FILE
     global SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE
     global SERVER_PIDFILE, PORTAL_PIDFILE
     global SERVER_RESTART, PORTAL_RESTART
     global EVENNIA_VERSION
+
+    AMP_PORT = settings.AMP_PORT
+    AMP_HOST = settings.AMP_HOST
+    AMP_INTERFACE = settings.AMP_INTERFACE
 
     SERVER_PY_FILE = os.path.join(EVENNIA_LIB, "server", "server.py")
     PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, "portal", "portal", "portal.py")
@@ -1239,6 +1352,9 @@ def main():
         "service", metavar="component", nargs='?', default="all",
         help=("Which component to operate on: "
               "'server', 'portal' or 'all' (default if not set)."))
+    parser.add_argument(
+        "--status", action='store_true', dest='get_status',
+        default=None, help='Get current server status.')
     parser.epilog = (
         "Common usage: evennia start|stop|reload. Django-admin database commands:"
         "evennia migration|flush|shell|dbshell (see the django documentation for more django-admin commands.)")
@@ -1287,6 +1403,11 @@ def main():
             print(RECREATED_SETTINGS)
         except IOError:
             print(ERROR_INITSETTINGS)
+        sys.exit()
+
+    if args.get_status:
+        init_game_directory(CURRENT_DIR, check_db=True)
+        send_status()
         sys.exit()
 
     if args.dummyrunner:
