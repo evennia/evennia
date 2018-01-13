@@ -96,43 +96,61 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         return self.data_out(amp.AdminPortal2Server, session.sessid, operation=operation, **kwargs)
 
-    def sendPingPortal2Server(self, callback):
-        """
-        Send ping to check if Server is alive.
-
-        """
-
     # receive amp data
 
     @amp.MsgStatus.responder
-    def portal_receive_status(self, question):
-        return {"status": "All well"}
+    @amp.catch_traceback
+    def portal_receive_status(self, status):
+        """
+        Check if Server is running
+        """
+        # check if the server is connected
+        server_connected = any(1 for prtcl in self.factory.broadcasts
+                               if prtcl is not self and prtcl.transport.connected)
+        # return portal|server RUNNING/NOT RUNNING
+        if server_connected:
+            return {"status": "RUNNING|RUNNING"}
+        else:
+            return {"status": "RUNNING|NOT RUNNING"}
 
     @amp.MsgLauncher2Portal.responder
     @amp.catch_traceback
-    def portal_receive_launcher2portal(self, operation, argument):
+    def portal_receive_launcher2portal(self, operation, arguments):
         """
         Receives message arriving from evennia_launcher.
         This method is executed on the Portal.
 
         Args:
             operation (str): The action to perform.
-            argument (str): A possible argument to the instruction, or the empty string.
+            arguments (str): Possible argument to the instruction, or the empty string.
 
         Returns:
             result (dict): The result back to the launcher.
 
         Notes:
-            This is the entrypoint for controlling the entire Evennia system from the
-            evennia launcher.
+            This is the entrypoint for controlling the entire Evennia system from the evennia
+            launcher. It can obviously only accessed when the Portal is already up and running.
 
         """
-        if operation == amp.PSTART:   # portal start (server start or reload)
-            pass
+        server_connected = any(1 for prtcl in self.factory.broadcasts
+                               if prtcl is not self and prtcl.transport.connected)
+
+        if operation == amp.SSTART:   # portal start (server start or reload)
+            # first, check if server is already running
+            if server_connected:
+                return {"result": "Server already running (PID {}).".format(0)}  # TODO store and send PID
+            else:
+                self.start_server(amp.loads(arguments))
+                return {"result": "Server started with PID {}.".format(0)}  # TODO
         elif operation == amp.SRELOAD:  # reload server
-            pass
+            if server_connected:
+                self.reload_server(amp.loads(arguments))
+            else:
+                self.start_server(amp.loads(arguments))
         elif operation == amp.PSHUTD:  # portal + server shutdown
-            pass
+            if server_connected:
+                self.stop_server(amp.loads(arguments))
+            self.factory.portal.shutdown(restart=False)
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
         # fallback

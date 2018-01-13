@@ -125,6 +125,10 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
 
     # receiving AMP data
 
+    @amp.MsgStatus.responder
+    def server_receive_status(self, question):
+        return {"status": "OK"}
+
     @amp.MsgPortal2Server.responder
     @amp.catch_traceback
     def server_receive_msgportal2server(self, packed_data):
