@@ -83,11 +83,12 @@ def catch_traceback(func):
     def decorator(*args, **kwargs):
         try:
             func(*args, **kwargs)
-        except Exception:
+        except Exception as err:
             global _LOGGER
             if not _LOGGER:
                 from evennia.utils import logger as _LOGGER
             _LOGGER.log_trace()
+            print("error", err)
             raise  # make sure the error is visible on the other side of the connection too
     return decorator
 
