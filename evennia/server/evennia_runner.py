@@ -63,10 +63,6 @@ CMDLINE_HELP = \
     are stored in the game's server/ directory.
     """
 
-PROCESS_ERROR = \
-    """
-    {component} process error: {traceback}.
-    """
 
 PROCESS_IOERROR = \
     """

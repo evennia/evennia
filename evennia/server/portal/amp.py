@@ -38,9 +38,10 @@ SCONN = chr(11)        # server creating new connection (for irc bots and etc)
 PCONNSYNC = chr(12)    # portal post-syncing a session
 PDISCONNALL = chr(13)  # portal session disconnect all
 SRELOAD = chr(14)      # server reloading (have portal start a new server)
-PSTART = chr(15)       # server+portal start
+SSTART = chr(15)       # server start (portal must already be running anyway)
 PSHUTD = chr(16)       # portal (+server) shutdown
-PSTATUS = chr(17)      # ping server or portal status
+SSHUTD = chr(17)       # server-only shutdown
+PSTATUS = chr(18)      # ping server or portal status
 
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 BATCH_RATE = 250     # max commands/sec before switching to batch-sending
@@ -150,7 +151,7 @@ class MsgLauncher2Portal(amp.Command):
     """
     key = "MsgLauncher2Portal"
     arguments = [('operation', amp.String()),
-                 ('argument', amp.String())]
+                 ('arguments', amp.String())]
     errors = {Exception: 'EXCEPTION'}
     response = [('result', amp.String())]
 
@@ -210,8 +211,8 @@ class MsgStatus(amp.Command):
     Check Status between AMP services
 
     """
-    key = "AMPPing"
-    arguments = [('question', amp.String())]
+    key = "MsgStatus"
+    arguments = [('status', amp.String())]
     errors = {Exception: 'EXCEPTION'}
     response = [('status', amp.String())]
 
@@ -340,23 +341,6 @@ class AMPMultiConnectionProtocol(amp.AMP):
             deferreds.append(protcl.callRemote(command,
                                                packed_data=dumps((sessid, kwargs))).addErrback(
                                                     self.errback, command.key))
-        return DeferredList(deferreds)
-
-    def send_status(self, port, callback, errback):
-        """
-        Ping to the given AMP port.
-
-        Args:
-            port (int): The port to ping
-            callback (callable): This will be called with the port that replied to the ping.
-            errback (callable0: This will be called with the port that failed to reply.
-
-        """
-        targets = [(protcl, protcl.getHost()[1]) for protcl in self.factory.broadcasts]
-        deferreds = []
-        for protcl, port in ((protcl, prt) for protcl, prt in targets if prt == port):
-            deferreds.append(protcl.callRemote(MsgStatus, status=True).addCallback(
-                callback, port).addErrback(errback, port))
         return DeferredList(deferreds)
 
     # generic function send/recvs
