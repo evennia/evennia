@@ -126,6 +126,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
     # receiving AMP data
 
     @amp.MsgPortal2Server.responder
+    @amp.catch_traceback
     def server_receive_msgportal2server(self, packed_data):
         """
         Receives message arriving to server. This method is executed
@@ -142,6 +143,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         return {}
 
     @amp.AdminPortal2Server.responder
+    @amp.catch_traceback
     def server_receive_adminportal2server(self, packed_data):
         """
         Receives admin data from the Portal (allows the portal to

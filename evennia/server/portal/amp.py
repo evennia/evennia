@@ -5,6 +5,7 @@ This module acts as a central place for AMP-servers and -clients to get commands
 
 """
 from __future__ import print_function
+from functools import wraps
 import time
 from twisted.protocols import amp
 from collections import defaultdict, namedtuple
@@ -17,9 +18,10 @@ except ImportError:
     import pickle
 
 from twisted.internet.defer import DeferredList, Deferred
-from evennia.utils import logger
 from evennia.utils.utils import to_str, variable_from_module
 
+# delayed import
+_LOGGER = None
 
 # communication bits
 # (chr(9) and chr(10) are \t and \n, so skipping them)
@@ -30,12 +32,15 @@ PSYNC = chr(3)         # portal session sync
 SLOGIN = chr(4)        # server session login
 SDISCONN = chr(5)      # server session disconnect
 SDISCONNALL = chr(6)   # server session disconnect all
-SSHUTD = chr(7)        # server shutdown (shutdown portal too)
+SSHUTD = chr(7)        # server shutdown
 SSYNC = chr(8)         # server session sync
 SCONN = chr(11)        # server creating new connection (for irc bots and etc)
 PCONNSYNC = chr(12)    # portal post-syncing a session
 PDISCONNALL = chr(13)  # portal session disconnect all
 SRELOAD = chr(14)      # server reloading (have portal start a new server)
+PSTART = chr(15)       # server+portal start
+PSHUTD = chr(16)       # portal (+server) shutdown
+PPING = chr(17)        # server or portal status
 
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 BATCH_RATE = 250     # max commands/sec before switching to batch-sending
@@ -69,6 +74,21 @@ def dumps(data):
 
 def loads(data):
     return pickle.loads(to_str(data))
+
+
+@wraps
+def catch_traceback(func):
+    "Helper decorator"
+    def decorator(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except Exception:
+            global _LOGGER
+            if not _LOGGER:
+                from evennia.utils import logger as _LOGGER
+            _LOGGER.log_trace()
+            raise  # make sure the error is visible on the other side of the connection too
+    return decorator
 
 
 # AMP Communication Command types
@@ -123,6 +143,18 @@ class Compressed(amp.String):
         return zlib.decompress(inString)
 
 
+class MsgLauncher2Portal(amp.Command):
+    """
+    Message Launcher -> Portal
+
+    """
+    key = "MsgLauncher2Portal"
+    arguments = [('operation', amp.String()),
+                 ('argument', amp.String())]
+    errors = {Exception: 'EXCEPTION'}
+    response = [('result', amp.String())]
+
+
 class MsgPortal2Server(amp.Command):
     """
     Message Portal -> Server
@@ -171,6 +203,17 @@ class AdminServer2Portal(amp.Command):
     arguments = [('packed_data', Compressed())]
     errors = {Exception: 'EXCEPTION'}
     response = []
+
+
+class MsgPing(amp.Command):
+    """
+    Ping between AMP services
+
+    """
+    key = "AMPPing"
+    arguments = [('ping', amp.Boolean())]
+    errors = {Exception: 'EXCEPTION'}
+    response = [('pong', amp.Boolean())]
 
 
 class FunctionCall(amp.Command):
@@ -259,9 +302,12 @@ class AMPMultiConnectionProtocol(amp.AMP):
             info (str): Error string.
 
         """
+        global _LOGGER
+        if not _LOGGER:
+            from evennia.utils import logger as _LOGGER
         e.trap(Exception)
-        logger.log_err("AMP Error for %(info)s: %(e)s" % {'info': info,
-                                                          'e': e.getErrorMessage()})
+        _LOGGER.log_err("AMP Error for %(info)s: %(e)s" % {'info': info,
+                                                           'e': e.getErrorMessage()})
 
     def data_in(self, packed_data):
         """
@@ -292,10 +338,28 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         deferreds = []
-        for prot in self.factory.broadcasts:
-            deferreds.append(prot.callRemote(command,
-                                             packed_data=dumps((sessid, kwargs))))
-        return DeferredList(deferreds, fireOnOneErrback=1).addErrback(self.errback, command.key)
+        for protcl in self.factory.broadcasts:
+            deferreds.append(protcl.callRemote(command,
+                                               packed_data=dumps((sessid, kwargs))).addErrback(
+                                                    self.errback, command.key))
+        return DeferredList(deferreds)
+
+    def send_ping(self, port, callback, errback):
+        """
+        Ping to the given AMP port.
+
+        Args:
+            port (int): The port to ping
+            callback (callable): This will be called with the port that replied to the ping.
+            errback (callable0: This will be called with the port that failed to reply.
+
+        """
+        targets = [(protcl, protcl.getHost()[1]) for protcl in self.factory.broadcasts]
+        deferreds = []
+        for protcl, port in ((protcl, prt) for protcl, prt in targets if prt == port):
+            deferreds.append(protcl.callRemote(MsgPing, ping=True).addCallback(
+                callback, port).addErrback(errback, port))
+        return DeferredList(deferreds)
 
     # generic function send/recvs
 
@@ -323,6 +387,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
             lambda r: loads(r["result"])).addErrback(self.errback, "FunctionCall")
 
     @FunctionCall.responder
+    @catch_traceback
     def receive_functioncall(self, module, function, func_args, func_kwargs):
         """
         This allows Portal- and Server-process to call an arbitrary
