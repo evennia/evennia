@@ -59,11 +59,12 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         super(AMPServerProtocol, self).connectionMade()
 
-        sessdata = self.factory.portal.sessions.get_all_sync_data()
-        self.send_AdminPortal2Server(amp.DUMMYSESSION,
-                                     amp.PSYNC,
-                                     sessiondata=sessdata)
-        self.factory.portal.sessions.at_server_connection()
+        if len(self.factory.broadcasts) < 2:
+            sessdata = self.factory.portal.sessions.get_all_sync_data()
+            self.send_AdminPortal2Server(amp.DUMMYSESSION,
+                                         amp.PSYNC,
+                                         sessiondata=sessdata)
+            self.factory.portal.sessions.at_server_connection()
 
     # sending amp data
 
@@ -134,6 +135,10 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         server_connected = any(1 for prtcl in self.factory.broadcasts
                                if prtcl is not self and prtcl.transport.connected)
+
+        print("AMP SERVER operation == %s received" % (ord(operation)))
+        print("AMP SERVER arguments: %s" % (amp.loads(arguments)))
+        return {"result": "Received."}
 
         if operation == amp.SSTART:   # portal start (server start or reload)
             # first, check if server is already running
