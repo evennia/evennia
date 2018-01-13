@@ -40,7 +40,7 @@ PDISCONNALL = chr(13)  # portal session disconnect all
 SRELOAD = chr(14)      # server reloading (have portal start a new server)
 PSTART = chr(15)       # server+portal start
 PSHUTD = chr(16)       # portal (+server) shutdown
-PPING = chr(17)        # server or portal status
+PSTATUS = chr(17)      # ping server or portal status
 
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 BATCH_RATE = 250     # max commands/sec before switching to batch-sending
@@ -205,15 +205,15 @@ class AdminServer2Portal(amp.Command):
     response = []
 
 
-class MsgPing(amp.Command):
+class MsgStatus(amp.Command):
     """
-    Ping between AMP services
+    Check Status between AMP services
 
     """
     key = "AMPPing"
-    arguments = [('ping', amp.Boolean())]
+    arguments = [('question', amp.String())]
     errors = {Exception: 'EXCEPTION'}
-    response = [('pong', amp.Boolean())]
+    response = [('status', amp.String())]
 
 
 class FunctionCall(amp.Command):
@@ -271,9 +271,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
     def connectionMade(self):
         """
-        This is called when an AMP connection is (re-)established
-        between server and portal. AMP calls it on both sides, so we
-        need to make sure to only trigger resync from the portal side.
+        This is called when an AMP connection is (re-)established AMP calls it on both sides.
 
         """
         self.factory.broadcasts.append(self)
@@ -344,7 +342,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
                                                     self.errback, command.key))
         return DeferredList(deferreds)
 
-    def send_ping(self, port, callback, errback):
+    def send_status(self, port, callback, errback):
         """
         Ping to the given AMP port.
 
@@ -357,7 +355,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         targets = [(protcl, protcl.getHost()[1]) for protcl in self.factory.broadcasts]
         deferreds = []
         for protcl, port in ((protcl, prt) for protcl, prt in targets if prt == port):
-            deferreds.append(protcl.callRemote(MsgPing, ping=True).addCallback(
+            deferreds.append(protcl.callRemote(MsgStatus, status=True).addCallback(
                 callback, port).addErrback(errback, port))
         return DeferredList(deferreds)
 
