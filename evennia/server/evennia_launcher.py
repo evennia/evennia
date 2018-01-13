@@ -81,6 +81,8 @@ ENFORCED_SETTING = False
 
 # communication constants
 
+AMP_CONNECTION = None
+
 SRELOAD = chr(14)      # server reloading (have portal start a new server)
 SSTART = chr(15)       # server start
 PSHUTD = chr(16)       # portal (+server) shutdown
@@ -461,11 +463,13 @@ class MsgLauncher2Portal(amp.Command):
     response = [('result', amp.String())]
 
 
-def send_instruction(instruction, arguments, callback, errback):
+def send_instruction(operation, arguments, callback=None, errback=None, autostop=False):
     """
     Send instruction and handle the response.
 
     """
+    global AMP_CONNECTION
+
     if None in (AMP_HOST, AMP_PORT, AMP_INTERFACE):
         print(ERROR_AMP_UNCONFIGURED)
         sys.exit()
@@ -477,36 +481,42 @@ def send_instruction(instruction, arguments, callback, errback):
 
         """
         def _callback(result):
-            callback(result)
+            if callback:
+                callback(result)
             prot.transport.loseConnection()
-            reactor.stop()
+            if autostop:
+                reactor.stop()
 
         def _errback(fail):
-            errback(fail)
+            if errback:
+                errback(fail)
             prot.transport.loseConnection()
-            reactor.stop()
+            if autostop:
+                reactor.stop()
 
-        if instruction == PSTATUS:
+        if operation == PSTATUS:
             prot.callRemote(MsgStatus, status="").addCallbacks(_callback, _errback)
         else:
+            print("callRemote MsgLauncher %s %s" % (ord(operation), arguments))
             prot.callRemote(
                 MsgLauncher2Portal,
-                instruction=instruction,
-                arguments=pickle.dumps(arguments, pickle.HIGHEST_PROTOCOL).addCallbacks(
-                    _callback, _errback))
+                operation=operation,
+                arguments=pickle.dumps(arguments, pickle.HIGHEST_PROTOCOL)).addCallbacks(
+                    _callback, _errback)
 
     def _on_connect_fail(fail):
         "This is called if portal is not reachable."
         errback(fail)
-        reactor.stop()
+        if autostop:
+            reactor.stop()
 
     point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
     deferred = endpoints.connectProtocol(point, amp.AMP())
     deferred.addCallbacks(_on_connect, _on_connect_fail)
-    reactor.run()
+    return deferred
 
 
-def send_status():
+def send_status(repeat=False):
     """
     Send ping to portal
 
@@ -519,24 +529,70 @@ def send_status():
         pstatus, sstatus = "NOT RUNNING", "NOT RUNNING"
         print("Portal:   {}\nServer:   {}".format(pstatus, sstatus))
 
-    send_instruction(PSTATUS, None, _callback, _errback)
+    send_instruction(PSTATUS, None, _callback, _errback, autostop=True)
+    reactor.run()
 
 
-def send_repeating_status(callback=None):
+def wait_for_status(portal_running=True, server_running=True, callback=None, errback=None,
+                    rate=0.5, retries=20):
     """
-    Repeat the status ping until a reply is returned or timeout is reached.
+    Repeat the status ping until the desired state combination is achieved.
 
     Args:
-        callback (callable): Takes the response on a successful status-reply
+        portal_running (bool or None): Desired portal run-state. If None, any state is accepted.
+        server_running (bool or None): Desired server run-state. If None, any state is accepted.
+            the portal must be running.
+        callback (callable): Will be called with portal_state, server_state when
+            condition is fulfilled.
+        errback (callable): Will be called with portal_state, server_state if the
+            request is timed out.
+        rate (float): How often to retry.
+        retries (int): How many times to retry before timing out and calling `errback`.
     """
     def _callback(response):
-        pstatus, sstatus = response['status'].split("|")
-        print("Portal:   {}\nServer:   {}".format(pstatus, sstatus))
+        prun, srun = [stat == 'RUNNING' for stat in response['status'].split("|")]
+        if ((portal_running is None or prun == portal_running) and
+            (server_running is None or srun == server_running)):
+            # the correct state was achieved
+            if callback:
+                callback(prun, srun)
+            else:
+                reactor.stop()
+        else:
+            if retries <= 0:
+                if errback:
+                    errback(prun, srun)
+                else:
+                    print("Timeout.")
+                    reactor.stop()
+            else:
+                reactor.callLater(rate, wait_for_status,
+                                  portal_running, server_running,
+                                  callback, errback, rate, retries - 1)
 
     def _errback(fail):
-        send_instruction(PSTATUS, None, _callback, _errback)
+        """
+        Portal not running
+        """
+        if not portal_running:
+            # this is what we want
+            if callback:
+                callback(portal_running, server_running)
+            else:
+                reactor.stop()
+        else:
+            if retries <= 0:
+                if errback:
+                    errback(portal_running, server_running)
+                else:
+                    print("Timeout.")
+                    reactor.stop()
+            else:
+                reactor.callLater(rate, wait_for_status,
+                                  portal_running, server_running,
+                                  callback, errback, rate, retries - 1)
 
-    send_instruction(PSTATUS, None, callback or _callback, _errback)
+    return send_instruction(PSTATUS, None, _callback, _errback)
 
 # ------------------------------------------------------------
 #
@@ -572,18 +628,22 @@ def start_evennia(pprofiler=False, sprofiler=False):
     """
     portal_cmd, server_cmd = get_twistd_cmdline(pprofiler, sprofiler)
 
+    def _server_started(*args):
+        print("... Server started.\nEvennia running.")
+        reactor.stop()
+
+    def _portal_started(*args):
+        send_instruction(SSTART, server_cmd, _server_started)
+
     def _portal_running(response):
         _, server_running = [stat == 'RUNNING' for stat in response['status'].split("|")]
         print("Portal is already running as process {pid}. Not restarted.".format(pid=0))  # TODO PID
         if server_running:
             print("Server is already running as process {pid}. Not restarted.".format(pid=0))  # TODO PID
+            reactor.stop()
         else:
             print("Server starting {}...".format("(under cProfile)" if pprofiler else ""))
-            send_instruction(SSTART, server_cmd, lambda x: 0, lambda e: 0)  # TODO
-
-    def _portal_cold_started(response):
-        "Called once the portal is up after a cold boot. It needs to know how to start the Server."
-        send_instruction(SSTART, server_cmd, lambda x: 0, lambda e: 0)  # TODO
+            send_instruction(SSTART, server_cmd, _server_started)
 
     def _portal_not_running(fail):
         print("Portal starting {}...".format("(under cProfile)" if sprofiler else ""))
@@ -591,10 +651,10 @@ def start_evennia(pprofiler=False, sprofiler=False):
             Popen(portal_cmd)
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))
-        send_repeating_status(_portal_cold_started)
+        wait_for_status(True, None, _portal_started)
 
-    # first, check if the portal/server is running already
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
+    reactor.run()
 
 
 def reload_evennia(sprofiler=False):
@@ -604,13 +664,22 @@ def reload_evennia(sprofiler=False):
     """
     _, server_cmd = get_twistd_cmdline(False, sprofiler)
 
+    def _server_restarted(*args):
+        print("... Server re-started.", args)
+        reactor.stop()
+
+    def _server_reloaded(*args):
+        print("... Server reloaded.", args)
+        reactor.stop()
+
     def _portal_running(response):
         _, server_running = [stat == 'RUNNING' for stat in response['status'].split("|")]
         if server_running:
             print("Server reloading ...")
+            send_instruction(SRELOAD, server_cmd, _server_reloaded)
         else:
-            print("Server down. Starting anew.")
-        send_instruction(SRELOAD, server_cmd, lambda x: 0, lambda e: 0)  # TODO
+            print("Server down. Re-starting ...")
+            send_instruction(SSTART, server_cmd, _server_restarted)
 
     def _portal_not_running(fail):
         print("Evennia not running. Starting from scratch ...")
@@ -618,6 +687,7 @@ def reload_evennia(sprofiler=False):
 
     # get portal status
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
+    reactor.run()
 
 
 def stop_evennia():
@@ -625,17 +695,29 @@ def stop_evennia():
     This instructs the Portal to stop the Server and then itself.
 
     """
+    def _portal_stopped(*args):
+        print("... Portal stopped.\nEvennia shut down.")
+        reactor.stop()
+
+    def _server_stopped(*args):
+        print("... Server stopped.", args)
+        send_instruction(PSHUTD, {})
+        wait_for_status(False, None, _portal_stopped)
+
     def _portal_running(response):
         _, server_running = [stat == 'RUNNING' for stat in response['status'].split("|")]
-        print("Portal stopping ...")
         if server_running:
             print("Server stopping ...")
-        send_instruction(PSHUTD, {}, lambda x: 0, lambda e: 0)  # TODO
+            send_instruction(SSHUTD, {}, _server_stopped)
+        else:
+            send_instruction(PSHUTD, {})
+            wait_for_status(False, False, _portal_stopped)
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
+    reactor.run()
 
 
 def stop_server_only():
@@ -643,11 +725,16 @@ def stop_server_only():
     Only stop the Server-component of Evennia (this is not useful except for debug)
 
     """
+    def _server_stopped(*args):
+        print("... Server stopped.")
+        reactor.stop()
+
     def _portal_running(response):
         _, server_running = [stat == 'RUNNING' for stat in response['status'].split("|")]
         if server_running:
             print("Server stopping ...")
-            send_instruction(SSHUTD, {}, lambda x: 0, lambda e: 0)  # TODO
+            send_instruction(SSHUTD, {})
+            wait_for_status(True, False, _server_stopped)
         else:
             print("Server is not running.")
 
@@ -655,6 +742,7 @@ def stop_server_only():
         print("Evennia is not running.")
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
+    reactor.run()
 
 
 def evennia_version():
