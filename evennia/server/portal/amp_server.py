@@ -72,6 +72,19 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
     Protocol subclass for the AMP-server run by the Portal.
 
     """
+
+    def connectionLost(self, reason):
+        """
+        Set up a simple callback mechanism to let the amp-server wait for a connection to close.
+
+        """
+        callback, args, kwargs = self.factory.disconnect_callbacks.pop(self, (None, None, None))
+        if callback:
+            try:
+                callback(*args, **kwargs)
+            except Exception:
+                logger.log_trace()
+
     def start_server(self, server_twistd_cmd):
         """
         (Re-)Launch the Evennia server.
@@ -97,18 +110,6 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         self.factory.portal.server_process_id = process.pid
         self.factory.portal.server_twistd_cmd = server_twistd_cmd
         return process.pid
-
-    def connectionLost(self, reason):
-        """
-        Set up a simple callback mechanism to let the amp-server wait for a connection to close.
-
-        """
-        callback, args, kwargs = self.factory.disconnect_callbacks.pop(self, (None, None, None))
-        if callback:
-            try:
-                callback(*args, **kwargs)
-            except Exception:
-                logger.log_trace()
 
     def wait_for_disconnect(self, callback, *args, **kwargs):
         """
@@ -319,20 +320,21 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         elif operation == amp.SRELOAD:  # server reload
                 self.factory.server_connection.wait_for_disconnect(
-                    self.start_server, self.factory.portal.server_twisted_cmd)
+                    self.start_server, self.factory.portal.server_twistd_cmd)
                 self.stop_server(mode='reload')
 
         elif operation == amp.SRESET:  # server reset
                 self.factory.server_connection.wait_for_disconnect(
-                    self.start_server, self.factory.portal.server_twisted_cmd)
+                    self.start_server, self.factory.portal.server_twistd_cmd)
                 self.stop_server(mode='reset')
 
         elif operation == amp.SSHUTD:  # server-only shutdown
             self.stop_server(mode='shutdown')
 
         elif operation == amp.PSHUTD:  # full server+server shutdown
+            self.factory.server_connection.wait_for_disconnect(
+                self.factory.portal.shutdown, restart=False)
             self.stop_server(mode='shutdown')
-            self.factory.portal.shutdown()
 
         elif operation == amp.PSYNC:  # portal sync
             # Server has (re-)connected and wants the session data from portal
