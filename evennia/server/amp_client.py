@@ -192,15 +192,21 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         elif operation == amp.PSYNC:  # portal_session_sync
             # force a resync of sessions from the portal side
             server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
+
         elif operation == amp.SRELOAD:  # server reload
             # shut down in reload mode
+            server_sessionhandler.all_sessions_portal_sync()
             server_sessionhandler.server.shutdown(mode='reload')
+
         elif operation == amp.SRESET:
             # shut down in reset mode
+            server_sessionhandler.all_sessions_portal_sync()
             server_sessionhandler.server.shutdown(mode='reset')
+
         elif operation == amp.SSHUTD:  # server shutdown
             # shutdown in stop mode
             server_sessionhandler.server.shutdown(mode='shutdown')
+
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
         return {}

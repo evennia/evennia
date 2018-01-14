@@ -346,6 +346,7 @@ def main():
             del portal_argv[-2]
 
     # Start processes
+    print("server_argv:", server_argv, portal_argv)
     start_services(server_argv, portal_argv, doexit=args.doexit)
 
 

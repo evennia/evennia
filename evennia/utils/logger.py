@@ -124,6 +124,15 @@ def log_err(errmsg):
 log_errmsg = log_err
 
 
+def log_server(servermsg):
+    try:
+        servermsg = str(servermsg)
+    except Exception as e:
+        servermsg = str(e)
+    for line in servermsg.splitlines():
+        log_msg('[SRV] %s' % line)
+
+
 def log_warn(warnmsg):
     """
     Prints/logs any warnings that aren't critical but should be noted.

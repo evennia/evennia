@@ -19,7 +19,7 @@ import shutil
 import importlib
 from distutils.version import LooseVersion
 from argparse import ArgumentParser
-from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
+from subprocess import Popen, check_output, call, CalledProcessError, STDOUT, PIPE
 
 try:
     import cPickle as pickle
@@ -88,6 +88,7 @@ SSTART = chr(15)       # server start
 PSHUTD = chr(16)       # portal (+server) shutdown
 SSHUTD = chr(17)       # server-only shutdown
 PSTATUS = chr(18)      # ping server or portal status
+SRESET = chr(19)      # shutdown server in reset mode
 
 # requirements
 PYTHON_MIN = '2.7'
@@ -519,13 +520,18 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
     Compile the command line for starting a Twisted application using the 'twistd' executable.
 
     """
-
     portal_cmd = [TWISTED_BINARY,
                   "--logfile={}".format(PORTAL_LOGFILE),
                   "--python={}".format(PORTAL_PY_FILE)]
     server_cmd = [TWISTED_BINARY,
-                  "--logfile={}".format(PORTAL_LOGFILE),
-                  "--python={}".format(PORTAL_PY_FILE)]
+                  "--logfile={}".format(SERVER_LOGFILE),
+                  "--python={}".format(SERVER_PY_FILE)]
+
+    if os.name != 'nt':
+        # PID files only for UNIX
+        portal_cmd.append("--pidfile={}".format(PORTAL_PIDFILE))
+        server_cmd.append("--pidfile={}".format(SERVER_PIDFILE))
+
     if pprofiler:
         portal_cmd.extend(["--savestats",
                            "--profiler=cprofiler",
@@ -534,6 +540,8 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
         server_cmd.extend(["--savestats",
                            "--profiler=cprofiler",
                            "--profile={}".format(SPROFILER_LOGFILE)])
+
+
     return portal_cmd, server_cmd
 
 
@@ -552,7 +560,6 @@ def query_status(repeat=False):
         reactor.stop()
 
     def _errback(fail):
-        print("status fail: %s", fail)
         pstatus, sstatus = False, False
         print("Portal:   {}\nServer:   {}".format(wmap[pstatus], wmap[sstatus]))
         reactor.stop()
@@ -591,7 +598,7 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
                 if errback:
                     errback(prun, srun)
                 else:
-                    print("Timeout.")
+                    print("Connection to Evennia timed out. Try again.")
                     reactor.stop()
             else:
                 reactor.callLater(rate, wait_for_status,
@@ -613,7 +620,7 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
                 if errback:
                     errback(portal_running, server_running)
                 else:
-                    print("Timeout.")
+                    print("Connection to Evennia timed out. Try again.")
                     reactor.stop()
             else:
                 reactor.callLater(rate, wait_for_status,
@@ -622,13 +629,12 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
 
     return send_instruction(PSTATUS, None, _callback, _errback)
 
-
-
 # ------------------------------------------------------------
 #
 #  Operational functions
 #
 # ------------------------------------------------------------
+
 
 def start_evennia(pprofiler=False, sprofiler=False):
     """
@@ -638,8 +644,12 @@ def start_evennia(pprofiler=False, sprofiler=False):
     """
     portal_cmd, server_cmd = _get_twistd_cmdline(pprofiler, sprofiler)
 
+    def _fail(fail):
+        print(fail)
+        reactor.stop()
+
     def _server_started(*args):
-        print("... Server started.\nEvennia running.", args)
+        print("... Server started.\nEvennia running.")
         reactor.stop()
 
     def _portal_started(*args):
@@ -653,21 +663,22 @@ def start_evennia(pprofiler=False, sprofiler=False):
             reactor.stop()
         else:
             print("Server starting {}...".format("(under cProfile)" if pprofiler else ""))
-            send_instruction(SSTART, server_cmd, _server_started)
+            send_instruction(SSTART, server_cmd, _server_started, _fail)
 
     def _portal_not_running(fail):
         print("Portal starting {}...".format("(under cProfile)" if sprofiler else ""))
         try:
-            Popen(portal_cmd, env=getenv())
+            Popen(portal_cmd, env=getenv(), bufsize=-1)
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))
+            reactor.stop()
         wait_for_status(True, None, _portal_started)
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
     reactor.run()
 
 
-def reload_evennia(sprofiler=False):
+def reload_evennia(sprofiler=False, reset=False):
     """
     This will instruct the Portal to reboot the Server component.
 
@@ -675,18 +686,23 @@ def reload_evennia(sprofiler=False):
     _, server_cmd = _get_twistd_cmdline(False, sprofiler)
 
     def _server_restarted(*args):
-        print("... Server re-started.", args)
+        print("... Server re-started.")
         reactor.stop()
 
     def _server_reloaded(*args):
-        print("... Server reloaded.", args)
+        print("... Server {}.".format("reset" if reset else "reloaded"))
         reactor.stop()
+
+    def _server_not_running(*args):
+        send_instruction(SSTART, server_cmd)
+        wait_for_status(True, True, _server_reloaded)
 
     def _portal_running(response):
         _, srun, _, _ = _parse_status(response)
         if srun:
-            print("Server reloading ...")
-            send_instruction(SRELOAD, server_cmd, _server_reloaded)
+            print("Server {}...".format("resetting" if reset else "reloading"))
+            send_instruction(SRESET if reset else SRELOAD, server_cmd)
+            wait_for_status(True, False, _server_not_running)
         else:
             print("Server down. Re-starting ...")
             send_instruction(SSTART, server_cmd, _server_restarted)
@@ -710,7 +726,7 @@ def stop_evennia():
         reactor.stop()
 
     def _server_stopped(*args):
-        print("... Server stopped.\nStopping Portal ...", args)
+        print("... Server stopped.\nStopping Portal ...")
         send_instruction(PSHUTD, {})
         wait_for_status(False, None, _portal_stopped)
 
@@ -718,7 +734,8 @@ def stop_evennia():
         prun, srun, ppid, spid = _parse_status(response)
         if srun:
             print("Server stopping ...")
-            send_instruction(SSHUTD, {}, _server_stopped)
+            send_instruction(SSHUTD, {})
+            wait_for_status(True, False, _server_stopped)
         else:
             print("Server already stopped.\nStopping Portal ...")
             send_instruction(PSHUTD, {})
@@ -726,6 +743,7 @@ def stop_evennia():
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
+        reactor.stop()
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
     reactor.run()
@@ -741,8 +759,8 @@ def stop_server_only():
         reactor.stop()
 
     def _portal_running(response):
-        _, server_running = [stat == 'RUNNING' for stat in response['status'].split("|")]
-        if server_running:
+        _, srun, _, _ = _parse_status(response)
+        if srun:
             print("Server stopping ...")
             send_instruction(SSHUTD, {})
             wait_for_status(True, False, _server_stopped)
@@ -1239,7 +1257,7 @@ def init_game_directory(path, check_db=True):
     AMP_INTERFACE = settings.AMP_INTERFACE
 
     SERVER_PY_FILE = os.path.join(EVENNIA_LIB, "server", "server.py")
-    PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, "portal", "portal", "portal.py")
+    PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, "server", "portal", "portal.py")
 
     SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
     PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")
@@ -1602,9 +1620,6 @@ def main():
         "service", metavar="component", nargs='?', default="all",
         help=("Which component to operate on: "
               "'server', 'portal' or 'all' (default if not set)."))
-    parser.add_argument(
-        "--status", action='store_true', dest='get_status',
-        default=None, help='Get current server status.')
     parser.epilog = (
         "Common usage: evennia start|stop|reload. Django-admin database commands:"
         "evennia migration|flush|shell|dbshell (see the django documentation for more "
@@ -1656,11 +1671,6 @@ def main():
             print(ERROR_INITSETTINGS)
         sys.exit()
 
-    if args.get_status:
-        init_game_directory(CURRENT_DIR, check_db=True)
-        query_status()
-        sys.exit()
-
     if args.dummyrunner:
         # launch the dummy runner
         init_game_directory(CURRENT_DIR, check_db=True)
@@ -1673,13 +1683,17 @@ def main():
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif option in ('sstart', 'sreload', 'sstop', 'ssstop', 'start', 'reload', 'stop'):
+    elif option in ('status', 'sstart', 'sreload', 'sreset', 'sstop', 'ssstop', 'start', 'reload', 'stop'):
         # operate the server directly
         init_game_directory(CURRENT_DIR, check_db=True)
+        if option == "status":
+            query_status()
         if option == "sstart":
             start_evennia(False, args.profiler)
         elif option == 'sreload':
             reload_evennia(args.profiler)
+        elif option == 'sreset':
+            reload_evennia(args.profiler, reset=True)
         elif option == 'sstop':
             stop_evennia()
         elif option == 'ssstop':
