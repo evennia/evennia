@@ -71,7 +71,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection was lost.
 
         """
-        logger.log_info("Server lost connection to the Portal. Reconnecting ...")
+        logger.log_info("Server disconnected from the portal.")
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):

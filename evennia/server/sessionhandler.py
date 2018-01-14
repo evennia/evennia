@@ -459,7 +459,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
-                                                         operation=SSHUTD)
+                                                         operation=PSHUTD)
 
     def login(self, session, account, force=False, testmode=False):
         """

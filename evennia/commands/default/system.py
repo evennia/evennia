@@ -119,7 +119,6 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
             announcement += "%s\n" % self.args
         logger.log_info('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)
-        SESSIONS.server.shutdown(mode='shutdown')
         SESSIONS.portal_shutdown()
 
 

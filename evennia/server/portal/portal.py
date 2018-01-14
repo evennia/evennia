@@ -148,6 +148,7 @@ class Portal(object):
         case it always needs to be restarted manually.
 
         """
+        print("portal.shutdown: restart=", restart)
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # we get here due to us calling reactor.stop below. No need
             # to do the shutdown procedure again.
