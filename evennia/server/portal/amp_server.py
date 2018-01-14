@@ -86,7 +86,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         self.factory.portal.server_twistd_cmd = server_twistd_cmd
         return process.pid
 
-    def stop_server(self, mode='reload'):
+    def stop_server(self, mode='shutdown'):
         """
         Shut down server in one or more modes.
 
@@ -96,10 +96,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         if mode == 'reload':
             self.send_AdminPortal2Server(amp.DUMMYSESSION, amp.SRELOAD)
-            return self.start_server(self.factory.portal.server_twistd_cmd)
         if mode == 'reset':
             self.send_AdminPortal2Server(amp.DUMMYSESSION, amp.SRESET)
-            return self.start_server(self.factory.portal.server_twistd_cmd)
         if mode == 'shutdown':
             self.send_AdminPortal2Server(amp.DUMMYSESSION, amp.SSHUTD)
 
@@ -199,23 +197,23 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 return _retval(True, "Server started with PID {spid}.".format(spid=spid))
         elif operation == amp.SRELOAD:  # reload server
             if server_connected:
-                spid = self.reload_server(amp.loads(arguments))
-                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
+                self.stop(mode='reload')
+                spid = self.start_server(amp.loads(arguments))
+                return _retval(True, "Server restarted with PID {spid}.".format(spid=spid))
             else:
-                self.start_server(amp.loads(arguments))
                 spid = self.start_server(amp.loads(arguments))
                 return _retval(True, "Server started with PID {spid}.".format(spid=spid))
         elif operation == amp.SRESET:  # reload server
             if server_connected:
-                spid = self.reload_server(amp.loads(arguments))
-                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
+                self.stop_server(mode='reset')
+                spid = self.start_server(amp.loads(arguments))
+                return _retval(True, "Server restarted with PID {spid}.".format(spid=spid))
             else:
-                self.start_server(amp.loads(arguments))
                 spid = self.start_server(amp.loads(arguments))
                 return _retval(True, "Server started with PID {spid}.".format(spid=spid))
         elif operation == amp.PSHUTD:  # portal + server shutdown
             if server_connected:
-                self.stop_server()
+                self.stop_server(mode='shutdown')
                 return _retval(True, "Server stopped.")
             self.factory.portal.shutdown(restart=False)
         else:
@@ -272,12 +270,20 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             # server orders all sessions to disconnect
             portal_sessionhandler.server_disconnect_all(reason=kwargs.get("reason"))
 
-        elif operation == amp.SSHUTD:  # server_shutdown
-            # the server orders the portal to shut down
-            self.factory.portal.shutdown(restart=False)
-
         elif operation == amp.SRELOAD:  # server reload
-            self.factory.portal.server_reload(**kwargs)
+            self.stop_server(mode='reload')
+            self.start(self.factory.portal.server_twisted_cmd)
+
+        elif operation == amp.SRESET:  # server reset
+            self.stop_server(mode='reset')
+            self.start(self.factory.portal.server_twisted_cmd)
+
+        elif operation == amp.SSHUTD:  # server-only shutdown
+            self.stop_server(mode='shutdown')
+
+        elif operation == amp.PSHUTD:  # full server+server shutdown
+            self.stop_server(mode='shutdown')
+            self.factory.portal.shutdown()
 
         elif operation == amp.PSYNC:  # portal sync
             # Server has (re-)connected and wants the session data from portal
