@@ -37,11 +37,12 @@ SSYNC = chr(8)         # server session sync
 SCONN = chr(11)        # server creating new connection (for irc bots and etc)
 PCONNSYNC = chr(12)    # portal post-syncing a session
 PDISCONNALL = chr(13)  # portal session disconnect all
-SRELOAD = chr(14)      # server reloading (have portal start a new server)
+SRELOAD = chr(14)      # server shutdown in reload mode
 SSTART = chr(15)       # server start (portal must already be running anyway)
 PSHUTD = chr(16)       # portal (+server) shutdown
-SSHUTD = chr(17)       # server-only shutdown
+SSHUTD = chr(17)       # server shutdown
 PSTATUS = chr(18)      # ping server or portal status
+SRESET = chr(19)       # server shutdown in reset mode
 
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 BATCH_RATE = 250     # max commands/sec before switching to batch-sending
@@ -271,9 +272,22 @@ class AMPMultiConnectionProtocol(amp.AMP):
         else:
             super(AMPMultiConnectionProtocol, self).dataReceived(data)
 
+    def makeConnection(self, transport):
+        """
+        Swallow connection log message here. Copied from original
+        in the amp protocol.
+
+        """
+        # copied from original, removing the log message
+        if not self._ampInitialized:
+            amp.AMP.__init__(self)
+        self._transportPeer = transport.getPeer()
+        self._transportHost = transport.getHost()
+        amp.BinaryBoxProtocol.makeConnection(self, transport)
+
     def connectionMade(self):
         """
-        This is called when an AMP connection is (re-)established AMP calls it on both sides.
+        This is called when an AMP connection is (re-)established. AMP calls it on both sides.
 
         """
         self.factory.broadcasts.append(self)

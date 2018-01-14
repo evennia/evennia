@@ -58,7 +58,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
         SESSIONS.announce_all(" Server restart initiated %s..." % reason)
-        SESSIONS.server.shutdown(mode='reload')
+        SESSIONS.portal_restart_server()
 
 
 class CmdReset(COMMAND_DEFAULT_CLASS):
@@ -91,7 +91,7 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
         Reload the system.
         """
         SESSIONS.announce_all(" Server resetting/restarting ...")
-        SESSIONS.server.shutdown(mode='reset')
+        SESSIONS.portal_reset_server()
 
 
 class CmdShutdown(COMMAND_DEFAULT_CLASS):
