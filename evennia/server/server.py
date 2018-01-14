@@ -366,6 +366,7 @@ class Evennia(object):
                              once - in both cases the reactor is
                              dead/stopping already.
         """
+        print("server.shutdown mode=", mode)
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # this means we have already passed through this method
             # once; we don't need to run the shutdown procedure again.

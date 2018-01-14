@@ -89,8 +89,8 @@ def catch_traceback(func):
             if not _LOGGER:
                 from evennia.utils import logger as _LOGGER
             _LOGGER.log_trace()
-            print("error", err)
             raise  # make sure the error is visible on the other side of the connection too
+            print(err)
     return decorator
 
 
