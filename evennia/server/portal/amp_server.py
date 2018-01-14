@@ -9,6 +9,7 @@ import sys
 from twisted.internet import protocol
 from evennia.server.portal import amp
 from subprocess import Popen
+from evennia.utils import logger
 
 
 def getenv():
@@ -69,20 +70,6 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
     Protocol subclass for the AMP-server run by the Portal.
 
     """
-    def connectionMade(self):
-        """
-        Called when a new connection is established.
-
-        """
-        super(AMPServerProtocol, self).connectionMade()
-
-        if len(self.factory.broadcasts) < 2:
-            sessdata = self.factory.portal.sessions.get_all_sync_data()
-            self.send_AdminPortal2Server(amp.DUMMYSESSION,
-                                         amp.PSYNC,
-                                         sessiondata=sessdata)
-            self.factory.portal.sessions.at_server_connection()
-
     def start_server(self, server_twistd_cmd):
         """
         (Re-)Launch the Evennia server.
@@ -92,10 +79,29 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 to pass to POpen to start the server.
 
         """
-        # start the server
+        # start the Server
         process = Popen(server_twistd_cmd, env=getenv())
         # store the pid for future reference
-        self.portal.server_process_id = process.pid
+        self.factory.portal.server_process_id = process.pid
+        self.factory.portal.server_twistd_cmd = server_twistd_cmd
+        return process.pid
+
+    def stop_server(self, mode='reload'):
+        """
+        Shut down server in one or more modes.
+
+        Args:
+            mode (str): One of 'shutdown', 'reload' or 'reset'.
+
+        """
+        if mode == 'reload':
+            self.send_AdminPortal2Server(amp.DUMMYSESSION, amp.SRELOAD)
+            return self.start_server(self.factory.portal.server_twistd_cmd)
+        if mode == 'reset':
+            self.send_AdminPortal2Server(amp.DUMMYSESSION, amp.SRESET)
+            return self.start_server(self.factory.portal.server_twistd_cmd)
+        if mode == 'shutdown':
+            self.send_AdminPortal2Server(amp.DUMMYSESSION, amp.SSHUTD)
 
     # sending amp data
 
@@ -173,28 +179,44 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             launcher. It can obviously only accessed when the Portal is already up and running.
 
         """
+        def _retval(success, txt):
+            return {"result": amp.dumps((success, txt))}
+
         server_connected = any(1 for prtcl in self.factory.broadcasts
                                if prtcl is not self and prtcl.transport.connected)
+        server_pid = self.factory.portal.server_process_id
 
-        print("AMP SERVER operation == %s received" % (ord(operation)))
-        print("AMP SERVER arguments: %s" % (amp.loads(arguments)))
-        return {"result": "Received."}
+        logger.log_msg("AMP SERVER operation == %s received" % (ord(operation)))
+        logger.log_msg("AMP SERVER arguments: %s" % (amp.loads(arguments)))
 
         if operation == amp.SSTART:   # portal start
             # first, check if server is already running
             if server_connected:
-                return {"result": "Server already running at PID={}"}
+                return _retval(False,
+                               "Server already running at PID={spid}".format(spid=server_pid))
             else:
-                self.start_server(amp.loads(arguments))
-                return {"result": "Server started with PID {}.".format(0)}  # TODO
+                spid = self.start_server(amp.loads(arguments))
+                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
         elif operation == amp.SRELOAD:  # reload server
             if server_connected:
-                self.reload_server(amp.loads(arguments))
+                spid = self.reload_server(amp.loads(arguments))
+                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
             else:
                 self.start_server(amp.loads(arguments))
+                spid = self.start_server(amp.loads(arguments))
+                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
+        elif operation == amp.SRESET:  # reload server
+            if server_connected:
+                spid = self.reload_server(amp.loads(arguments))
+                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
+            else:
+                self.start_server(amp.loads(arguments))
+                spid = self.start_server(amp.loads(arguments))
+                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
         elif operation == amp.PSHUTD:  # portal + server shutdown
             if server_connected:
-                self.stop_server(amp.loads(arguments))
+                self.stop_server()
+                return _retval(True, "Server stopped.")
             self.factory.portal.shutdown(restart=False)
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
@@ -256,6 +278,14 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         elif operation == amp.SRELOAD:  # server reload
             self.factory.portal.server_reload(**kwargs)
+
+        elif operation == amp.PSYNC:  # portal sync
+            # Server has (re-)connected and wants the session data from portal
+            sessdata = self.factory.portal.sessions.get_all_sync_data()
+            self.send_AdminPortal2Server(amp.DUMMYSESSION,
+                                         amp.PSYNC,
+                                         sessiondata=sessdata)
+            self.factory.portal.sessions.at_server_connection()
 
         elif operation == amp.SSYNC:  # server_session_sync
             # server wants to save session data to the portal,
