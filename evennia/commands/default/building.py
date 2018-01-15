@@ -2315,6 +2315,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             else:
                 result = result[0]
                 string += "\n|g   %s - %s|n" % (result.get_display_name(caller), result.path)
+                if self.cmdstring == "@locate" and not is_account and result.location:
+                    string += "  Location: {}".format(result.location.get_display_name(caller))
         else:
             # Not an account/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
@@ -2350,6 +2352,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 else:
                     string = "|wOne Match|n(#%i-#%i%s):" % (low, high, restrictions)
                     string += "\n   |g%s - %s|n" % (results[0].get_display_name(caller), results[0].path)
+                    if self.cmdstring == "@locate" and nresults == 1 and results[0].location:
+                        string += "  Location: {}".format(results[0].location.get_display_name(caller))
             else:
                 string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
                 string += "\n   |RNo matches found for '%s'|n" % searchstring
