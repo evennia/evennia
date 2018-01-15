@@ -106,6 +106,26 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         # back with the Server side
         self.send_AdminServer2Portal(amp.DUMMYSESSION, operation=amp.PSYNC)
 
+    def data_to_portal(self, command, sessid, **kwargs):
+        """
+        Send data across the wire to the Portal
+
+        Args:
+            command (AMP Command): A protocol send command.
+            sessid (int): A unique Session id.
+            kwargs (any): Any data to pickle into the command.
+
+        Returns:
+            deferred (deferred or None): A deferred with an errback.
+
+        Notes:
+            Data will be sent across the wire pickled as a tuple
+            (sessid, kwargs).
+
+        """
+        return self.callRemote(command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
+                self.errback, command.key)
+
     def send_MsgServer2Portal(self, session, **kwargs):
         """
         Access method - executed on the Server for sending data
@@ -116,7 +136,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             kwargs (any, optiona): Extra data.
 
         """
-        return self.data_out(amp.MsgServer2Portal, session.sessid, **kwargs)
+        return self.data_to_portal(amp.MsgServer2Portal, session.sessid, **kwargs)
 
     def send_AdminServer2Portal(self, session, operation="", **kwargs):
         """
@@ -131,7 +151,8 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             kwargs (dict, optional): Data going into the adminstrative.
 
         """
-        return self.data_out(amp.AdminServer2Portal, session.sessid, operation=operation, **kwargs)
+        return self.data_to_portal(amp.AdminServer2Portal, session.sessid,
+                                   operation=operation, **kwargs)
 
     # receiving AMP data
 

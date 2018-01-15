@@ -155,7 +155,7 @@ class MsgLauncher2Portal(amp.Command):
     arguments = [('operation', amp.String()),
                  ('arguments', amp.String())]
     errors = {Exception: 'EXCEPTION'}
-    response = [('result', amp.String())]
+    response = []
 
 
 class MsgPortal2Server(amp.Command):
@@ -335,9 +335,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
         """
         return loads(packed_data)
 
-    def data_out(self, command, sessid, **kwargs):
+    def broadcast(self, command, sessid, **kwargs):
         """
-        Send data across the wire. Always use this to send.
+        Send data across the wire to all connections.
 
         Args:
             command (AMP Command): A protocol send command.
@@ -353,9 +353,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
         """
         deferreds = []
         for protcl in self.factory.broadcasts:
-            deferreds.append(protcl.callRemote(command,
-                                               packed_data=dumps((sessid, kwargs))).addErrback(
-                                                    self.errback, command.key))
+            deferreds.append(protcl.callRemote(command, **kwargs).addErrback(
+                self.errback, command.key))
+
         return DeferredList(deferreds)
 
     # generic function send/recvs
