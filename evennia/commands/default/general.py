@@ -439,7 +439,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
 
     Usage:
       whisper <character> = <message>
-      whisper <char1>, <char2> = <message?
+      whisper <char1>, <char2> = <message>
 
     Talk privately to one or more characters in your current location, without
     others in the room being informed.
