@@ -19,7 +19,7 @@ import shutil
 import importlib
 from distutils.version import LooseVersion
 from argparse import ArgumentParser
-from subprocess import Popen, check_output, call, CalledProcessError, STDOUT, PIPE
+from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
 
 try:
     import cPickle as pickle
@@ -57,9 +57,6 @@ CURRENT_DIR = os.getcwd()
 GAMEDIR = CURRENT_DIR
 
 # Operational setup
-AMP_PORT = None
-AMP_HOST = None
-AMP_INTERFACE = None
 
 SERVER_LOGFILE = None
 PORTAL_LOGFILE = None
@@ -81,6 +78,9 @@ ENFORCED_SETTING = False
 
 # communication constants
 
+AMP_PORT = None
+AMP_HOST = None
+AMP_INTERFACE = None
 AMP_CONNECTION = None
 
 SRELOAD = chr(14)      # server reloading (have portal start a new server)
@@ -461,7 +461,35 @@ class MsgLauncher2Portal(amp.Command):
     arguments = [('operation', amp.String()),
                  ('arguments', amp.String())]
     errors = {Exception: 'EXCEPTION'}
-    response = [('result', amp.String())]
+    response = []
+
+
+class AMPLauncherProtocol(amp.AMP):
+    """
+    Defines callbacks to the launcher
+
+    """
+    def __init__(self):
+        self.on_status = []
+
+    def wait_for_status(self, callback):
+        """
+        Register a waiter for a status return.
+
+        """
+        self.on_status.append(callback)
+
+    @MsgStatus.responder
+    def receive_status_from_portal(self, status):
+        """
+        Get a status signal from portal - fire callbacks
+
+        """
+        status = pickle.loads(status)
+        for callback in self.on_status:
+            callback(status)
+        self.on_status = []
+        return {"status": ""}
 
 
 def send_instruction(operation, arguments, callback=None, errback=None):
@@ -475,39 +503,54 @@ def send_instruction(operation, arguments, callback=None, errback=None):
         print(ERROR_AMP_UNCONFIGURED)
         sys.exit()
 
+    def _timeout(*args):
+        print("Client timed out.")
+        reactor.stop()
+
+    def _callback(result):
+        if callback:
+            callback(result)
+        # prot.transport.loseConnection()
+
+    def _errback(fail):
+        if errback:
+            errback(fail)
+        # prot.transport.loseConnection()
+
     def _on_connect(prot):
         """
         This fires with the protocol when connection is established. We
-        immediately send off the instruction then shut down.
+        immediately send off the instruction
 
         """
-        def _callback(result):
-            if callback:
-                callback(result)
-            prot.transport.loseConnection()
-
-        def _errback(fail):
-            if errback:
-                errback(fail)
-            prot.transport.loseConnection()
-
-        if operation == PSTATUS:
-            prot.callRemote(MsgStatus, status="").addCallbacks(_callback, _errback)
-        else:
-            prot.callRemote(
-                MsgLauncher2Portal,
-                operation=operation,
-                arguments=pickle.dumps(arguments, pickle.HIGHEST_PROTOCOL)).addCallbacks(
-                    _callback, _errback)
+        global AMP_CONNECTION
+        AMP_CONNECTION = prot
+        _send()
 
     def _on_connect_fail(fail):
         "This is called if portal is not reachable."
         errback(fail)
 
-    point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
-    deferred = endpoints.connectProtocol(point, amp.AMP())
-    deferred.addCallbacks(_on_connect, _on_connect_fail)
-    return deferred
+    def _send():
+        if operation == PSTATUS:
+            return AMP_CONNECTION.callRemote(MsgStatus, status="").addCallbacks(_callback, _errback)
+        else:
+            return AMP_CONNECTION.callRemote(
+                MsgLauncher2Portal,
+                operation=operation,
+                arguments=pickle.dumps(arguments, pickle.HIGHEST_PROTOCOL)).addCallbacks(
+                    _callback, _errback)
+
+    if AMP_CONNECTION:
+        # already connected - send right away
+        _send()
+    else:
+        # we must connect first, send once connected
+        point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
+        deferred = endpoints.connectProtocol(point, AMPLauncherProtocol())
+        deferred.addCallbacks(_on_connect, _on_connect_fail)
+        if not reactor.running:
+            reactor.run()
 
 
 def _parse_status(response):
@@ -541,7 +584,6 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
                            "--profiler=cprofiler",
                            "--profile={}".format(SPROFILER_LOGFILE)])
 
-
     return portal_cmd, server_cmd
 
 
@@ -565,7 +607,16 @@ def query_status(repeat=False):
         reactor.stop()
 
     send_instruction(PSTATUS, None, _callback, _errback)
-    reactor.run()
+
+
+def wait_for_status_reply(callback):
+    """
+    Wait for an explicit STATUS signal to be sent back from Evennia.
+    """
+    if AMP_CONNECTION:
+        AMP_CONNECTION.wait_for_status(callback)
+    else:
+        print("No Evennia connection established.")
 
 
 def wait_for_status(portal_running=True, server_running=True, callback=None, errback=None,
@@ -587,7 +638,7 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
     def _callback(response):
         prun, srun, _, _ = _parse_status(response)
         if ((portal_running is None or prun == portal_running) and
-            (server_running is None or srun == server_running)):
+                (server_running is None or srun == server_running)):
             # the correct state was achieved
             if callback:
                 callback(prun, srun)
@@ -653,7 +704,8 @@ def start_evennia(pprofiler=False, sprofiler=False):
         reactor.stop()
 
     def _portal_started(*args):
-        send_instruction(SSTART, server_cmd, _server_started)
+        wait_for_status_reply(_server_started)
+        send_instruction(SSTART, server_cmd)
 
     def _portal_running(response):
         prun, srun, ppid, spid = _parse_status(response)
@@ -675,12 +727,14 @@ def start_evennia(pprofiler=False, sprofiler=False):
         wait_for_status(True, None, _portal_started)
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
-    reactor.run()
 
 
 def reload_evennia(sprofiler=False, reset=False):
     """
-    This will instruct the Portal to reboot the Server component.
+    This will instruct the Portal to reboot the Server component. We
+    do this manually by telling the server to shutdown (in reload mode)
+    and wait for the portal to report back, at which point we start the
+    server again. This way we control the process exactly.
 
     """
     _, server_cmd = _get_twistd_cmdline(False, sprofiler)
@@ -689,23 +743,24 @@ def reload_evennia(sprofiler=False, reset=False):
         print("... Server re-started.")
         reactor.stop()
 
-    def _server_reloaded(*args):
-        print("... Server {}.".format("reset" if reset else "reloaded"))
+    def _server_reloaded(status):
+        print("{} ... Server {}.".format(status, "reset" if reset else "reloaded"))
         reactor.stop()
 
-    def _server_not_running(*args):
+    def _server_stopped(status):
+        wait_for_status_reply(_server_reloaded)
         send_instruction(SSTART, server_cmd)
-        wait_for_status(True, True, _server_reloaded)
 
     def _portal_running(response):
         _, srun, _, _ = _parse_status(response)
         if srun:
             print("Server {}...".format("resetting" if reset else "reloading"))
-            send_instruction(SRESET if reset else SRELOAD, server_cmd)
-            wait_for_status(True, False, _server_not_running)
+            wait_for_status_reply(_server_stopped)
+            send_instruction(SRESET if reset else SRELOAD, {})
         else:
             print("Server down. Re-starting ...")
-            send_instruction(SSTART, server_cmd, _server_restarted)
+            wait_for_status_reply(_server_restarted)
+            send_instruction(SSTART, server_cmd)
 
     def _portal_not_running(fail):
         print("Evennia not running. Starting from scratch ...")
@@ -713,7 +768,6 @@ def reload_evennia(sprofiler=False, reset=False):
 
     # get portal status
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
-    reactor.run()
 
 
 def stop_evennia():
@@ -735,18 +789,17 @@ def stop_evennia():
         if srun:
             print("Server stopping ...")
             send_instruction(SSHUTD, {})
-            wait_for_status(True, False, _server_stopped)
+            wait_for_status_reply(_server_stopped)
         else:
             print("Server already stopped.\nStopping Portal ...")
             send_instruction(PSHUTD, {})
-            wait_for_status(False, False, _portal_stopped)
+            wait_for_status(False, None, _portal_stopped)
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
         reactor.stop()
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
-    reactor.run()
 
 
 def stop_server_only():
@@ -762,8 +815,8 @@ def stop_server_only():
         _, srun, _, _ = _parse_status(response)
         if srun:
             print("Server stopping ...")
+            wait_for_status_reply(_server_stopped)
             send_instruction(SSHUTD, {})
-            wait_for_status(True, False, _server_stopped)
         else:
             print("Server is not running.")
 
@@ -771,7 +824,6 @@ def stop_server_only():
         print("Evennia is not running.")
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
-    reactor.run()
 
 
 def evennia_version():

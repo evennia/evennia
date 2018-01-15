@@ -49,7 +49,9 @@ class AMPServerFactory(protocol.ServerFactory):
         self.protocol = AMPServerProtocol
         self.broadcasts = []
         self.server_connection = None
+        self.launcher_connection = None
         self.disconnect_callbacks = {}
+        self.server_connect_callbacks = []
 
     def buildProtocol(self, addr):
         """
@@ -72,18 +74,63 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
     Protocol subclass for the AMP-server run by the Portal.
 
     """
-
     def connectionLost(self, reason):
         """
         Set up a simple callback mechanism to let the amp-server wait for a connection to close.
 
         """
+        # wipe broadcast and data memory
+        super(AMPServerProtocol, self).connectionLost(reason)
+        if self.factory.server_connection == self:
+            self.factory.server_connection = None
+        if self.factory.launcher_connection == self:
+            self.factory.launcher_connection = None
+
         callback, args, kwargs = self.factory.disconnect_callbacks.pop(self, (None, None, None))
         if callback:
             try:
                 callback(*args, **kwargs)
             except Exception:
                 logger.log_trace()
+
+    def get_status(self):
+        """
+        Return status for the Evennia infrastructure.
+
+        Returns:
+            status (tuple): The portal/server status and pids
+                (portal_live, server_live, portal_PID, server_PID).
+
+        """
+        server_connected = bool(self.factory.server_connection and
+                                self.factory.server_connection.transport.connected)
+        server_pid = self.factory.portal.server_process_id
+        portal_pid = os.getpid()
+        return (True, server_connected, portal_pid, server_pid)
+
+    def data_to_server(self, command, sessid, **kwargs):
+        """
+        Send data across the wire to the Server.
+
+        Args:
+            command (AMP Command): A protocol send command.
+            sessid (int): A unique Session id.
+
+        Returns:
+            deferred (deferred or None): A deferred with an errback.
+
+        Notes:
+            Data will be sent across the wire pickled as a tuple
+            (sessid, kwargs).
+
+        """
+        if self.factory.server_connection:
+            return self.factory.server_connection.callRemote(
+                        command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
+                            self.errback, command.key)
+        else:
+            # if no server connection is available, broadcast
+            return self.broadcast(command, sessid, packed_data=amp.dumps((sessid, kwargs)))
 
     def start_server(self, server_twistd_cmd):
         """
@@ -122,6 +169,17 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         self.factory.disconnect_callbacks[self] = (callback, args, kwargs)
 
+    def wait_for_server_connect(self, callback, *args, **kwargs):
+        """
+        Add a callback for when the Server is sure to have connected.
+
+        Args:
+            callback (callable): Will be called with *args, **kwargs
+                once the Server handshake with Portal is complete.
+
+        """
+        self.factory.server_connect_callbacks.append((callback, args, kwargs))
+
     def stop_server(self, mode='shutdown'):
         """
         Shut down server in one or more modes.
@@ -139,6 +197,17 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
     # sending amp data
 
+    def send_Status2Launcher(self):
+        """
+        Send a status stanza to the launcher.
+
+        """
+        if self.factory.launcher_connection:
+            self.factory.launcher_connection.callRemote(
+                    amp.MsgStatus,
+                    status=amp.dumps(self.get_status())).addErrback(
+                            self.errback, amp.MsgStatus.key)
+
     def send_MsgPortal2Server(self, session, **kwargs):
         """
         Access method called by the Portal and executed on the Portal.
@@ -151,7 +220,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             deferred (Deferred): Asynchronous return.
 
         """
-        return self.data_out(amp.MsgPortal2Server, session.sessid, **kwargs)
+        return self.data_to_server(amp.MsgPortal2Server, session.sessid, **kwargs)
 
     def send_AdminPortal2Server(self, session, operation="", **kwargs):
         """
@@ -166,7 +235,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             data (str or dict, optional): Data used in the administrative operation.
 
         """
-        return self.data_out(amp.AdminPortal2Server, session.sessid, operation=operation, **kwargs)
+        return self.data_to_server(amp.AdminPortal2Server, session.sessid,
+                                   operation=operation, **kwargs)
 
     # receive amp data
 
@@ -183,16 +253,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 (portal_running, server_running, portal_pid, server_pid).
 
         """
-        # check if the server is connected
-        server_connected = (self.factory.server_connection and
-                            self.factory.server_connection.transport.connected)
-        server_pid = self.factory.portal.server_process_id
-        portal_pid = os.getpid()
-
-        if server_connected:
-            return {"status": amp.dumps((True, True, portal_pid, server_pid))}
-        else:
-            return {"status": amp.dumps((True, False, portal_pid, server_pid))}
+        return {"status": amp.dumps(self.get_status())}
 
     @amp.MsgLauncher2Portal.responder
     @amp.catch_traceback
@@ -213,58 +274,55 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             launcher. It can obviously only accessed when the Portal is already up and running.
 
         """
-        def _retval(success, txt):
-            return {"result": amp.dumps((success, txt))}
+        self.factory.launcher_connection = self
 
-        server_connected = (self.factory.server_connection and
-                            self.factory.server_connection.transport.connected)
-        server_pid = self.factory.portal.server_process_id
+        _, server_connected, _, _ = self.get_status()
 
         logger.log_msg("AMP SERVER operation == %s received" % (ord(operation)))
         logger.log_msg("AMP SERVER arguments: %s" % (amp.loads(arguments)))
 
         if operation == amp.SSTART:   # portal start  #15
             # first, check if server is already running
-            if server_connected:
-                return _retval(False,
-                               "Server already running at PID={spid}".format(spid=server_pid))
-            else:
-                spid = self.start_server(amp.loads(arguments))
-                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
+            if not server_connected:
+                self.wait_for_server_connect(self.send_Status2Launcher)
+                self.start_server(amp.loads(arguments))
 
         elif operation == amp.SRELOAD:  # reload server #14
             if server_connected:
-                # don't restart until the server connection goes down
+                # We let the launcher restart us once they get the signal
+                self.factory.server_connection.wait_for_disconnect(
+                    self.send_Status2Launcher)
                 self.stop_server(mode='reload')
             else:
-                spid = self.start_server(amp.loads(arguments))
-                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
+                self.wait_for_server_connect(self.send_Status2Launcher)
+                self.start_server(amp.loads(arguments))
 
         elif operation == amp.SRESET:  # reload server #19
             if server_connected:
+                self.factory.server_connection.wait_for_disconnect(
+                    self.send_Status2Launcher)
                 self.stop_server(mode='reset')
-                return _retval(True, "Server restarted with PID {spid}.".format(spid=spid))
             else:
-                spid = self.start_server(amp.loads(arguments))
-                return _retval(True, "Server started with PID {spid}.".format(spid=spid))
+                self.wait_for_server_connect(self.send_Status2Launcher)
+                self.start_server(amp.loads(arguments))
 
         elif operation == amp.SSHUTD:  # server-only shutdown #17
             if server_connected:
+                self.factory.server_connection.wait_for_disconnect(
+                    self.send_Status2Launcher)
                 self.stop_server(mode='shutdown')
-                return _retval(True, "Server stopped.")
-            else:
-                return _retval(False, "Server not running")
 
         elif operation == amp.PSHUTD:  # portal + server shutdown  #16
             if server_connected:
-                self.stop_server(mode='shutdown')
-                return _retval(True, "Server stopped.")
-            self.factory.portal.shutdown(restart=False)
+                self.factory.server_connection.wait_for_disconnect(
+                    self.factory.portal.shutdown, restart=False)
+            else:
+                self.factory.portal.shutdown(restart=False)
 
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
-        # fallback
-        return {"result": ""}
+
+        return {}
 
     @amp.MsgServer2Portal.responder
     @amp.catch_traceback
@@ -295,12 +353,11 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             packed_data (str): Data received, a pickled tuple (sessid, kwargs).
 
         """
+        self.factory.server_connection = self
+
         sessid, kwargs = self.data_in(packed_data)
         operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions
-
-        # store this transport since we know it comes from the Server
-        self.factory.server_connection = self
 
         if operation == amp.SLOGIN:  # server_session_login
             # a session has authenticated; sync it.
@@ -344,11 +401,23 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                                          sessiondata=sessdata)
             self.factory.portal.sessions.at_server_connection()
 
+            print("Portal PSYNC: %s" % self.factory.server_connection)
+            if self.factory.server_connection:
+                # this is an indication the server has successfully connected, so
+                # we trigger any callbacks (usually to tell the launcher server is up)
+                for callback, args, kwargs in self.factory.server_connect_callbacks:
+                    try:
+                        callback(*args, **kwargs)
+                    except Exception:
+                        logger.log_trace()
+                self.factory.server_connect_callbacks = []
+
         elif operation == amp.SSYNC:  # server_session_sync
             # server wants to save session data to the portal,
             # maybe because it's about to shut down.
             portal_sessionhandler.server_session_sync(kwargs.get("sessiondata"),
                                                       kwargs.get("clean", True))
+
             # set a flag in case we are about to shut down soon
             self.factory.server_restart_mode = True
 
