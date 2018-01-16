@@ -434,6 +434,66 @@ PROCESS_ERROR = \
     {component} process error: {traceback}.
     """
 
+PORTAL_INFO = \
+    """{servername} Portal {version}
+    external ports:
+        {telnet}
+        {telnet_ssl}
+        {ssh}
+        {webserver_proxy}
+        {webclient}
+    internal_ports (to Server):
+        {amp}
+        {webserver_internal}
+"""
+
+
+SERVER_INFO = \
+    """{servername} Server {version}
+    internal ports (to Portal):
+        {amp}
+        {webserver}
+    {irc_rss}
+    {info}
+    {errors}"""
+
+
+# Info formatting
+
+def print_info(portal_info_dict, server_info_dict):
+    """
+    Format info dicts from the Portal/Server for display
+
+    """
+    ind = " " * 7
+
+    def _prepare_dict(dct):
+        out = {}
+        for key, value in dct.iteritems():
+            if isinstance(value, list):
+                value = "\n{}".format(ind).join(value)
+            out[key] = value
+        return out
+
+    def _strip_empty_lines(string):
+        return "\n".join(line for line in string.split("\n") if line.strip())
+
+    pstr, sstr = "", ""
+    if portal_info_dict:
+        pdict = _prepare_dict(portal_info_dict)
+        pstr = _strip_empty_lines(PORTAL_INFO.format(**pdict))
+
+    if server_info_dict:
+        sdict = _prepare_dict(server_info_dict)
+        sstr = _strip_empty_lines(SERVER_INFO.format(**sdict))
+
+    info = pstr + ("\n\n" + sstr if sstr else "")
+    maxwidth = max(len(line) for line in info.split("\n"))
+    top_border = "-" * (maxwidth - 11) + " Evennia " + "--"
+    border = "-" * (maxwidth + 1)
+    print(top_border + "\n" + info + '\n' + border)
+
+
 # ------------------------------------------------------------
 #
 #  Protocol Evennia launcher - Portal/Server communication
@@ -482,13 +542,17 @@ class AMPLauncherProtocol(amp.AMP):
     @MsgStatus.responder
     def receive_status_from_portal(self, status):
         """
-        Get a status signal from portal - fire callbacks
+        Get a status signal from portal - fire next queued
+        callback
 
         """
-        status = pickle.loads(status)
-        for callback in self.on_status:
+        try:
+            callback = self.on_status.pop()
+        except IndexError:
+            pass
+        else:
+            status = pickle.loads(status)
             callback(status)
-        self.on_status = []
         return {"status": ""}
 
 
@@ -502,10 +566,6 @@ def send_instruction(operation, arguments, callback=None, errback=None):
     if None in (AMP_HOST, AMP_PORT, AMP_INTERFACE):
         print(ERROR_AMP_UNCONFIGURED)
         sys.exit()
-
-    def _timeout(*args):
-        print("Client timed out.")
-        reactor.stop()
 
     def _callback(result):
         if callback:
@@ -587,7 +647,7 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
     return portal_cmd, server_cmd
 
 
-def query_status(repeat=False):
+def query_status(callback=None):
     """
     Send status ping to portal
 
@@ -596,10 +656,13 @@ def query_status(repeat=False):
             False: "NOT RUNNING"}
 
     def _callback(response):
-        pstatus, sstatus, ppid, spid = _parse_status(response)
-        print("Portal:   {} (pid {})\nServer:   {} (pid {})".format(
-            wmap[pstatus], ppid, wmap[sstatus], spid))
-        reactor.stop()
+        if callback:
+            callback(response)
+        else:
+            pstatus, sstatus, ppid, spid, pinfo, sinfo = _parse_status(response)
+            print("Portal:   {} (pid {})\nServer:   {} (pid {})".format(
+                wmap[pstatus], ppid, wmap[sstatus], spid))
+            reactor.stop()
 
     def _errback(fail):
         pstatus, sstatus = False, False
@@ -636,7 +699,7 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
         retries (int): How many times to retry before timing out and calling `errback`.
     """
     def _callback(response):
-        prun, srun, _, _ = _parse_status(response)
+        prun, srun, _, _, _, _ = _parse_status(response)
         if ((portal_running is None or prun == portal_running) and
                 (server_running is None or srun == server_running)):
             # the correct state was achieved
@@ -699,8 +762,11 @@ def start_evennia(pprofiler=False, sprofiler=False):
         print(fail)
         reactor.stop()
 
-    def _server_started(*args):
+    def _server_started(response):
         print("... Server started.\nEvennia running.")
+        if response:
+            _, _, _, _, pinfo, sinfo = response
+            print_info(pinfo, sinfo)
         reactor.stop()
 
     def _portal_started(*args):
@@ -708,7 +774,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
         send_instruction(SSTART, server_cmd)
 
     def _portal_running(response):
-        prun, srun, ppid, spid = _parse_status(response)
+        prun, srun, ppid, spid, _, _ = _parse_status(response)
         print("Portal is already running as process {pid}. Not restarted.".format(pid=ppid))
         if srun:
             print("Server is already running as process {pid}. Not restarted.".format(pid=spid))
@@ -744,7 +810,7 @@ def reload_evennia(sprofiler=False, reset=False):
         reactor.stop()
 
     def _server_reloaded(status):
-        print("{} ... Server {}.".format(status, "reset" if reset else "reloaded"))
+        print("... Server {}.".format("reset" if reset else "reloaded"))
         reactor.stop()
 
     def _server_stopped(status):
@@ -752,7 +818,7 @@ def reload_evennia(sprofiler=False, reset=False):
         send_instruction(SSTART, server_cmd)
 
     def _portal_running(response):
-        _, srun, _, _ = _parse_status(response)
+        _, srun, _, _, _, _ = _parse_status(response)
         if srun:
             print("Server {}...".format("resetting" if reset else "reloading"))
             wait_for_status_reply(_server_stopped)
@@ -785,7 +851,7 @@ def stop_evennia():
         wait_for_status(False, None, _portal_stopped)
 
     def _portal_running(response):
-        prun, srun, ppid, spid = _parse_status(response)
+        prun, srun, ppid, spid, _, _ = _parse_status(response)
         if srun:
             print("Server stopping ...")
             send_instruction(SSHUTD, {})
@@ -812,13 +878,32 @@ def stop_server_only():
         reactor.stop()
 
     def _portal_running(response):
-        _, srun, _, _ = _parse_status(response)
+        _, srun, _, _, _, _ = _parse_status(response)
         if srun:
             print("Server stopping ...")
             wait_for_status_reply(_server_stopped)
             send_instruction(SSHUTD, {})
         else:
             print("Server is not running.")
+
+    def _portal_not_running(fail):
+        print("Evennia is not running.")
+
+    send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
+
+
+def query_info():
+    """
+    Display the info strings from the running Evennia
+
+    """
+    def _got_status(status):
+        _, _, _, _, pinfo, sinfo = _parse_status(status)
+        print_info(pinfo, sinfo)
+        reactor.stop()
+
+    def _portal_running(response):
+        query_status(_got_status)
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
@@ -1735,12 +1820,14 @@ def main():
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif option in ('status', 'sstart', 'sreload', 'sreset', 'sstop', 'ssstop', 'start', 'reload', 'stop'):
+    elif option in ('status', 'info', 'sstart', 'sreload', 'sreset', 'sstop', 'ssstop', 'start', 'reload', 'stop'):
         # operate the server directly
         init_game_directory(CURRENT_DIR, check_db=True)
         if option == "status":
             query_status()
-        if option == "sstart":
+        elif option == "info":
+            query_info()
+        elif option == "sstart":
             start_evennia(False, args.profiler)
         elif option == 'sreload':
             reload_evennia(args.profiler)

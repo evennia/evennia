@@ -49,6 +49,7 @@ class AMPServerFactory(protocol.ServerFactory):
         self.protocol = AMPServerProtocol
         self.broadcasts = []
         self.server_connection = None
+        self.server_info_dict = None
         self.launcher_connection = None
         self.disconnect_callbacks = {}
         self.server_connect_callbacks = []
@@ -83,6 +84,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         super(AMPServerProtocol, self).connectionLost(reason)
         if self.factory.server_connection == self:
             self.factory.server_connection = None
+            self.factory.server_info_dict = None
         if self.factory.launcher_connection == self:
             self.factory.launcher_connection = None
 
@@ -104,9 +106,11 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         server_connected = bool(self.factory.server_connection and
                                 self.factory.server_connection.transport.connected)
+        portal_info_dict = self.factory.portal.get_info_dict()
+        server_info_dict = self.factory.server_info_dict
         server_pid = self.factory.portal.server_process_id
         portal_pid = os.getpid()
-        return (True, server_connected, portal_pid, server_pid)
+        return (True, server_connected, portal_pid, server_pid, portal_info_dict, server_info_dict)
 
     def data_to_server(self, command, sessid, **kwargs):
         """
@@ -276,10 +280,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         self.factory.launcher_connection = self
 
-        _, server_connected, _, _ = self.get_status()
+        _, server_connected, _, _, _, _ = self.get_status()
 
-        logger.log_msg("AMP SERVER operation == %s received" % (ord(operation)))
-        logger.log_msg("AMP SERVER arguments: %s" % (amp.loads(arguments)))
+        logger.log_msg("Evennia Launcher->Portal operation %s received" % (ord(operation)))
 
         if operation == amp.SSTART:   # portal start  #15
             # first, check if server is already running
@@ -395,13 +398,13 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         elif operation == amp.PSYNC:  # portal sync
             # Server has (re-)connected and wants the session data from portal
+            self.factory.server_info_dict = kwargs.get("info_dict", {})
             sessdata = self.factory.portal.sessions.get_all_sync_data()
             self.send_AdminPortal2Server(amp.DUMMYSESSION,
                                          amp.PSYNC,
                                          sessiondata=sessdata)
             self.factory.portal.sessions.at_server_connection()
 
-            print("Portal PSYNC: %s" % self.factory.server_connection)
             if self.factory.server_connection:
                 # this is an indication the server has successfully connected, so
                 # we trigger any callbacks (usually to tell the launcher server is up)

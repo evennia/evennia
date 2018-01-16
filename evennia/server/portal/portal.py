@@ -7,7 +7,6 @@ sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
-from __future__ import print_function
 from builtins import object
 
 import sys
@@ -77,9 +76,13 @@ AMP_PORT = settings.AMP_PORT
 AMP_INTERFACE = settings.AMP_INTERFACE
 AMP_ENABLED = AMP_HOST and AMP_PORT and AMP_INTERFACE
 
+INFO_DICT = {"servername": SERVERNAME, "version": VERSION, "errors": "", "info": "",
+             "lockdown_mode": "", "amp": "", "telnet": [], "telnet_ssl": [], "ssh": [],
+             "webclient": [], "webserver_proxy": [], "webserver_internal": []}
 
 # -------------------------------------------------------------
 # Portal Service object
+
 # -------------------------------------------------------------
 class Portal(object):
 
@@ -114,6 +117,10 @@ class Portal(object):
 
         self.game_running = False
 
+    def get_info_dict(self):
+        "Return the Portal info, for display."
+        return INFO_DICT
+
     def set_restart_mode(self, mode=None):
         """
         This manages the flag file that tells the runner if the server
@@ -127,7 +134,6 @@ class Portal(object):
         if mode is None:
             return
         with open(PORTAL_RESTART, 'w') as f:
-            print("writing mode=%(mode)s to %(portal_restart)s" % {'mode': mode, 'portal_restart': PORTAL_RESTART})
             f.write(str(mode))
 
     def shutdown(self, restart=None, _reactor_stopping=False):
@@ -148,7 +154,6 @@ class Portal(object):
         case it always needs to be restarted manually.
 
         """
-        print("portal.shutdown: restart=", restart)
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # we get here due to us calling reactor.stop below. No need
             # to do the shutdown procedure again.
@@ -179,10 +184,9 @@ application = service.Application('Portal')
 # and is where we store all the other services.
 PORTAL = Portal(application)
 
-print('-' * 50)
-print(' %(servername)s Portal (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION})
 if LOCKDOWN_MODE:
-    print('  LOCKDOWN_MODE active: Only local connections.')
+
+    INFO_DICT["lockdown_mode"] = '  LOCKDOWN_MODE active: Only local connections.'
 
 if AMP_ENABLED:
 
@@ -192,7 +196,7 @@ if AMP_ENABLED:
 
     from evennia.server.portal import amp_server
 
-    print('  amp (to Server): %s (internal)' % AMP_PORT)
+    INFO_DICT["amp"] = 'amp: %s)' % AMP_PORT
 
     factory = amp_server.AMPServerFactory(PORTAL)
     amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
@@ -223,12 +227,12 @@ if TELNET_ENABLED:
             telnet_service.setName('EvenniaTelnet%s' % pstring)
             PORTAL.services.addService(telnet_service)
 
-            print('  telnet%s: %s (external)' % (ifacestr, port))
+            INFO_DICT["telnet"].append('telnet%s: %s' % (ifacestr, port))
 
 
 if SSL_ENABLED:
 
-    # Start SSL game connection (requires PyOpenSSL).
+    # Start Telnet+SSL game connection (requires PyOpenSSL).
 
     from evennia.server.portal import ssl
 
@@ -249,7 +253,7 @@ if SSL_ENABLED:
             ssl_service.setName('EvenniaSSL%s' % pstring)
             PORTAL.services.addService(ssl_service)
 
-            print("  ssl%s: %s (external)" % (ifacestr, port))
+            INFO_DICT["telnet_ssl"].append("telnet+ssl%s: %s" % (ifacestr, port))
 
 
 if SSH_ENABLED:
@@ -273,7 +277,7 @@ if SSH_ENABLED:
             ssh_service.setName('EvenniaSSH%s' % pstring)
             PORTAL.services.addService(ssh_service)
 
-            print("  ssh%s: %s (external)" % (ifacestr, port))
+            INFO_DICT["ssh"].append("ssh%s: %s" % (ifacestr, port))
 
 
 if WEBSERVER_ENABLED:
@@ -296,7 +300,7 @@ if WEBSERVER_ENABLED:
                 ajax_webclient = webclient_ajax.AjaxWebClient()
                 ajax_webclient.sessionhandler = PORTAL_SESSIONS
                 web_root.putChild("webclientdata", ajax_webclient)
-                webclientstr = "\n   + webclient (ajax only)"
+                webclientstr = "webclient (ajax only)"
 
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
@@ -314,10 +318,11 @@ if WEBSERVER_ENABLED:
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
                     websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=w_interface)
-                    websocket_service.setName('EvenniaWebSocket%s:%s' % (w_ifacestr, proxyport))
+                    websocket_service.setName('EvenniaWebSocket%s:%s' % (w_ifacestr, port))
                     PORTAL.services.addService(websocket_service)
                     websocket_started = True
-                    webclientstr = "\n   + webclient-websocket%s: %s (external)" % (w_ifacestr, proxyport)
+                    webclientstr = "webclient-websocket%s: %s" % (w_ifacestr, port)
+                INFO_DICT["webclient"].append(webclientstr)
 
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             proxy_service = internet.TCPServer(proxyport,
@@ -325,16 +330,10 @@ if WEBSERVER_ENABLED:
                                                interface=interface)
             proxy_service.setName('EvenniaWebProxy%s' % pstring)
             PORTAL.services.addService(proxy_service)
-            print("  website-proxy%s: %s (external) %s" % (ifacestr, proxyport, webclientstr))
+            INFO_DICT["webserver_proxy"].append("website%s: %s" % (ifacestr, proxyport))
+            INFO_DICT["webserver_internal"].append("webserver: %s" % serverport)
 
 
 for plugin_module in PORTAL_SERVICES_PLUGIN_MODULES:
     # external plugin services to start
     plugin_module.start_plugin_services(PORTAL)
-
-print('-' * 50)  # end of terminal output
-
-if os.name == 'nt':
-    # Windows only: Set PID file manually
-    with open(PORTAL_PIDFILE, 'w') as f:
-        f.write(str(os.getpid()))
