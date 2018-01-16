@@ -302,7 +302,10 @@ class AMPMultiConnectionProtocol(amp.AMP):
         portal will continuously try to reconnect, showing the problem
         that way.
         """
-        self.factory.broadcasts.remove(self)
+        try:
+            self.factory.broadcasts.remove(self)
+        except ValueError:
+            pass
 
     # Error handling
 

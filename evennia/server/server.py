@@ -7,7 +7,6 @@ sets up all the networking features.  (this is done automatically
 by evennia/server/server_runner.py).
 
 """
-from __future__ import print_function
 from builtins import object
 import time
 import sys
@@ -40,11 +39,6 @@ from django.utils.translation import ugettext as _
 
 _SA = object.__setattr__
 
-SERVER_PIDFILE = ""
-if os.name == 'nt':
-    # For Windows we need to handle pid files manually.
-    SERVER_PIDFILE = os.path.join(settings.GAME_DIR, "server", 'server.pid')
-
 # a file with a flag telling the server to restart after shutdown or not.
 SERVER_RESTART = os.path.join(settings.GAME_DIR, "server", 'server.restart')
 
@@ -53,12 +47,7 @@ SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 
 # modules containing plugin services
 SERVER_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)]
-try:
-    WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
-except ImportError:
-    WEB_PLUGINS_MODULE = None
-    print ("WARNING: settings.WEB_PLUGINS_MODULE not found - "
-           "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf.")
+
 
 #------------------------------------------------------------
 # Evennia Server settings
@@ -82,6 +71,17 @@ WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER
 IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
+
+INFO_DICT = {"servername": SERVERNAME, "version": VERSION,
+             "amp": "", "errors": "", "info": "", "webserver": "", "irc_rss": ""}
+
+try:
+    WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
+except ImportError:
+    WEB_PLUGINS_MODULE = None
+    INFO_DICT["errors"] = (
+            "WARNING: settings.WEB_PLUGINS_MODULE not found - "
+            "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf.")
 
 
 # Maintenance function - this is called repeatedly by the server
@@ -231,6 +231,8 @@ class Evennia(object):
         typeclasses in the settings file and have them auto-update all
         already existing objects.
         """
+        global INFO_DICT
+
         # setting names
         settings_names = ("CMDSET_CHARACTER", "CMDSET_ACCOUNT",
                           "BASE_ACCOUNT_TYPECLASS", "BASE_OBJECT_TYPECLASS",
@@ -249,7 +251,7 @@ class Evennia(object):
             #from evennia.accounts.models import AccountDB
             for i, prev, curr in ((i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches):
                 # update the database
-                print(" %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr))
+                INFO_DICT['info'] = " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (settings_names[i], prev, curr)
                 if i == 0:
                     ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(db_cmdset_storage=curr)
                 if i == 1:
@@ -279,29 +281,27 @@ class Evennia(object):
         It returns if this is not the first time the server starts.
         Once finished the last_initial_setup_step is set to -1.
         """
+        global INFO_DICT
         last_initial_setup_step = ServerConfig.objects.conf('last_initial_setup_step')
         if not last_initial_setup_step:
             # None is only returned if the config does not exist,
             # i.e. this is an empty DB that needs populating.
-            print(' Server started for the first time. Setting defaults.')
+            INFO_DICT['info'] = ' Server started for the first time. Setting defaults.'
             initial_setup.handle_setup(0)
-            print('-' * 50)
         elif int(last_initial_setup_step) >= 0:
             # a positive value means the setup crashed on one of its
             # modules and setup will resume from this step, retrying
             # the last failed module. When all are finished, the step
             # is set to -1 to show it does not need to be run again.
-            print(' Resuming initial setup from step %(last)s.' %
-                  {'last': last_initial_setup_step})
+            INFO_DICT['info'] = ' Resuming initial setup from step {last}.'.format(
+                  last=last_initial_setup_step)
             initial_setup.handle_setup(int(last_initial_setup_step))
-            print('-' * 50)
 
     def run_init_hooks(self):
         """
         Called every server start
         """
         from evennia.objects.models import ObjectDB
-        #from evennia.accounts.models import AccountDB
 
         # update eventual changed defaults
         self.update_defaults()
@@ -366,7 +366,6 @@ class Evennia(object):
                              once - in both cases the reactor is
                              dead/stopping already.
         """
-        print("server.shutdown mode=", mode)
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # this means we have already passed through this method
             # once; we don't need to run the shutdown procedure again.
@@ -414,10 +413,6 @@ class Evennia(object):
         # always called, also for a reload
         self.at_server_stop()
 
-        if os.name == 'nt' and os.path.exists(SERVER_PIDFILE):
-            # for Windows we need to remove pid files manually
-            os.remove(SERVER_PIDFILE)
-
         if hasattr(self, "web_root"):  # not set very first start
             yield self.web_root.empty_threadpool()
 
@@ -428,6 +423,10 @@ class Evennia(object):
 
         # we make sure the proper gametime is saved as late as possible
         ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.runtime())
+
+    def get_info_dict(self):
+        "Return the server info, for display."
+        return INFO_DICT
 
     # server start/stop hooks
 
@@ -536,9 +535,6 @@ application = service.Application('Evennia')
 # and is where we store all the other services.
 EVENNIA = Evennia(application)
 
-print('-' * 50)
-print(' %(servername)s Server (%(version)s) started.' % {'servername': SERVERNAME, 'version': VERSION})
-
 if AMP_ENABLED:
 
     # The AMP protocol handles the communication between
@@ -548,7 +544,8 @@ if AMP_ENABLED:
     ifacestr = ""
     if AMP_INTERFACE != '127.0.0.1':
         ifacestr = "-%s" % AMP_INTERFACE
-    print('  amp (to Portal)%s: %s (internal)' % (ifacestr, AMP_PORT))
+
+    INFO_DICT["amp"] = 'amp %s: %s' % (ifacestr, AMP_PORT)
 
     from evennia.server import amp_client
 
@@ -561,7 +558,6 @@ if WEBSERVER_ENABLED:
 
     # Start a django-compatible webserver.
 
-    #from twisted.python import threadpool
     from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website, LockableThreadPool
 
     # start a thread pool and define the root url (/) as a wsgi resource
@@ -582,13 +578,14 @@ if WEBSERVER_ENABLED:
 
     web_site = Website(web_root, logPath=settings.HTTP_LOG_FILE)
 
+    INFO_DICT["webserver"] = ""
     for proxyport, serverport in WEBSERVER_PORTS:
         # create the webserver (we only need the port for this)
         webserver = WSGIWebServer(threads, serverport, web_site, interface='127.0.0.1')
         webserver.setName('EvenniaWebServer%s' % serverport)
         EVENNIA.services.addService(webserver)
 
-        print("  webserver: %s (internal)" % serverport)
+        INFO_DICT["webserver"] += "webserver: %s" % serverport
 
 ENABLED = []
 if IRC_ENABLED:
@@ -600,18 +597,11 @@ if RSS_ENABLED:
     ENABLED.append('rss')
 
 if ENABLED:
-    print("  " + ", ".join(ENABLED) + " enabled.")
+    INFO_DICT["irc_rss"] = ", ".join(ENABLED) + " enabled."
 
 for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
     # external plugin protocols
     plugin_module.start_plugin_services(EVENNIA)
 
-print('-' * 50)  # end of terminal output
-
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)
-
-if os.name == 'nt':
-    # Windows only: Set PID file manually
-    with open(SERVER_PIDFILE, 'w') as f:
-        f.write(str(os.getpid()))

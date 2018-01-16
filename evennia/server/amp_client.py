@@ -101,10 +101,11 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         Called when a new connection is established.
 
         """
+        info_dict = self.factory.server.get_info_dict()
         super(AMPServerClientProtocol, self).connectionMade()
         # first thing we do is to request the Portal to sync all sessions
         # back with the Server side
-        self.send_AdminServer2Portal(amp.DUMMYSESSION, operation=amp.PSYNC)
+        self.send_AdminServer2Portal(amp.DUMMYSESSION, operation=amp.PSYNC, info_dict=info_dict)
 
     def data_to_portal(self, command, sessid, **kwargs):
         """
