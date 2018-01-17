@@ -64,14 +64,12 @@ HTTP_LOGFILE = None
 
 SERVER_PIDFILE = None
 PORTAL_PIDFILE = None
-SERVER_RESTART = None
-PORTAL_RESTART = None
 
 SERVER_PY_FILE = None
 PORTAL_PY_FILE = None
 
-SPROFILER_LOGFILE = os.path.join(GAMEDIR, SERVERDIR, "logs", "server.prof")
-PPROFILER_LOGFILE = os.path.join(GAMEDIR, SERVERDIR, "logs", "portal.prof")
+SPROFILER_LOGFILE = None
+PPROFILER_LOGFILE = None
 
 TEST_MODE = False
 ENFORCED_SETTING = False
@@ -134,6 +132,12 @@ ERROR_INPUT = \
     Command
       {args} {kwargs}
     raised an error: '{traceback}'.
+"""
+
+ERROR_NO_ALT_GAMEDIR = \
+        """
+    The path {gamedir} doesn't seem to exist.
+
 """
 
 ERROR_NO_GAMEDIR = \
@@ -292,40 +296,26 @@ ABOUT_INFO = \
 
 HELP_ENTRY = \
     """
-    Enter 'evennia -h' for command-line options.
+    This is a convenience launcher for the most common actions. For
+    more advanced ways to operate and manage Evennia, see  'evennia -h'.
 
-    Use option (1) in a production environment.  During development (2) is
-    usually enough, portal debugging is usually only useful if you are
-    adding new protocols or are debugging Evennia itself.
-
-    Reload with (5) to update the server with your changes without
-    disconnecting any accounts.
-
-    Note: Reload and stop are sometimes poorly supported in Windows. If you
-    have issues, log into the game to stop or restart the server instead.
+    Evennia's manual is found here: https://github.com/evennia/evennia/wiki
     """
 
 MENU = \
     """
     +----Evennia Launcher-------------------------------------------+
     |                                                               |
-    +--- Starting --------------------------------------------------+
+    +--- Common operations -----------------------------------------+
     |                                                               |
-    |  1) (normal):       All output to logfiles                    |
-    |  2) (server devel): Server logs to terminal (-i option)       |
-    |  3) (portal devel): Portal logs to terminal                   |
-    |  4) (full devel):   Both Server and Portal logs to terminal   |
+    |  1) Start Portal and Server    (also restart downed Server)   |
+    |  2) Reload Server                  (update on code changes)   |
+    |  3) Stop Portal and Server                  (full shutdown)   |
     |                                                               |
-    +--- Restarting ------------------------------------------------+
+    +--- Other -----------------------------------------------------+
     |                                                               |
-    |  5) Reload the Server                                         |
-    |  6) Reload the Portal (only works with portal/full debug)     |
-    |                                                               |
-    +--- Stopping --------------------------------------------------+
-    |                                                               |
-    |  7) Stopping both Portal and Server                           |
-    |  8) Stopping only Server                                      |
-    |  9) Stopping only Portal                                      |
+    |  4) Reset Server             (Server shutdown with restart)   |
+    |  5) Stop Server only                                          |
     |                                                               |
     +---------------------------------------------------------------+
     |  h) Help              i) About info               q) Abort    |
@@ -885,9 +875,11 @@ def stop_server_only():
             send_instruction(SSHUTD, {})
         else:
             print("Server is not running.")
+            reactor.stop()
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
+        reactor.stop()
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
@@ -990,7 +982,8 @@ def check_main_evennia_dependencies():
 def set_gamedir(path):
     """
     Set GAMEDIR based on path, by figuring out where the setting file
-    is inside the directory tree.
+    is inside the directory tree. This allows for running the launcher
+    from elsewhere than the top of the gamedir folder.
 
     """
     global GAMEDIR
@@ -998,7 +991,7 @@ def set_gamedir(path):
     Ndepth = 10
     settings_path = os.path.join("server", "conf", "settings.py")
     for i in range(Ndepth):
-        gpath = os.getcwd()
+        gpath = GAMEDIR
         if "server" in os.listdir(gpath):
             if os.path.isfile(settings_path):
                 GAMEDIR = gpath
@@ -1208,8 +1201,7 @@ def del_pid(pidfile):
         os.remove(pidfile)
 
 
-def kill(pidfile, killsignal=SIG, succmsg="", errmsg="",
-         restart_file=SERVER_RESTART, restart=False):
+def kill(pidfile, killsignal=SIG, succmsg="", errmsg="", restart=False):
     """
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
@@ -1220,23 +1212,12 @@ def kill(pidfile, killsignal=SIG, succmsg="", errmsg="",
         killsignal (int, optional): Signal identifier for signal to send.
         succmsg (str, optional): Message to log on success.
         errmsg (str, optional): Message to log on failure.
-        restart_file (str, optional): Restart file location.
-        restart (bool, optional): Are we in restart mode or not.
 
     """
     pid = get_pid(pidfile)
     if pid:
         if os.name == 'nt':
             os.remove(pidfile)
-        # set restart/norestart flag
-        if restart:
-            django.core.management.call_command(
-                'collectstatic', interactive=False, verbosity=0)
-            with open(restart_file, 'w') as f:
-                f.write("reload")
-        else:
-            with open(restart_file, 'w') as f:
-                f.write("shutdown")
         try:
             if os.name == 'nt':
                 from win32api import GenerateConsoleCtrlEvent, SetConsoleCtrlHandler
@@ -1386,7 +1367,7 @@ def init_game_directory(path, check_db=True):
     global SERVER_PY_FILE, PORTAL_PY_FILE
     global SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE
     global SERVER_PIDFILE, PORTAL_PIDFILE
-    global SERVER_RESTART, PORTAL_RESTART
+    global SPROFILER_LOGFILE, PPROFILER_LOGFILE
     global EVENNIA_VERSION
 
     AMP_PORT = settings.AMP_PORT
@@ -1399,8 +1380,8 @@ def init_game_directory(path, check_db=True):
     SERVER_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "server.pid")
     PORTAL_PIDFILE = os.path.join(GAMEDIR, SERVERDIR, "portal.pid")
 
-    SERVER_RESTART = os.path.join(GAMEDIR, SERVERDIR, "server.restart")
-    PORTAL_RESTART = os.path.join(GAMEDIR, SERVERDIR, "portal.restart")
+    SPROFILER_LOGFILE = os.path.join(GAMEDIR, SERVERDIR, "logs", "server.prof")
+    PPROFILER_LOGFILE = os.path.join(GAMEDIR, SERVERDIR, "logs", "portal.prof")
 
     SERVER_LOGFILE = settings.SERVER_LOG_FILE
     PORTAL_LOGFILE = settings.PORTAL_LOG_FILE
@@ -1548,158 +1529,19 @@ def run_menu():
             print("Not a valid option.")
             continue
         if inp == 1:
-            # start everything, log to log files
-            server_operation("start", "all", False, False)
+            start_evennia(False, False)
         elif inp == 2:
-            # start everything, server interactive start
-            server_operation("start", "all", True, False)
+            reload_evennia(False, False)
         elif inp == 3:
-            # start everything, portal interactive start
-            server_operation("start", "server", False, False)
-            server_operation("start", "portal", True, False)
+            stop_evennia()
         elif inp == 4:
-            # start both server and portal interactively
-            server_operation("start", "server", True, False)
-            server_operation("start", "portal", True, False)
+            reload_evennia(False, True)
         elif inp == 5:
-            # reload the server
-            server_operation("reload", "server", None, None)
-        elif inp == 6:
-            # reload the portal
-            server_operation("reload", "portal", None, None)
-        elif inp == 7:
-            # stop server and portal
-            server_operation("stop", "all", None, None)
-        elif inp == 8:
-            # stop server
-            server_operation("stop", "server", None, None)
-        elif inp == 9:
-            # stop portal
-            server_operation("stop", "portal", None, None)
+            stop_server_only()
         else:
             print("Not a valid option.")
             continue
         return
-
-
-def server_operation(mode, service, interactive, profiler, logserver=False, doexit=False):
-    """
-    Handle argument options given on the command line.
-
-    Args:
-        mode (str): Start/stop/restart and so on.
-        service (str): "server", "portal" or "all".
-        interactive (bool). Use interactive mode or daemon.
-        profiler (bool): Run the service under the profiler.
-        logserver (bool, optional): Log Server data to logfile
-            specified by settings.SERVER_LOG_FILE.
-        doexit (bool, optional): If True, immediately exit the runner after
-            starting the relevant processes. If the runner exits, Evennia
-            cannot be reloaded. This is meant to be used with an external
-            process manager like Linux' start-stop-daemon.
-
-    """
-
-    cmdstr = [sys.executable, EVENNIA_RUNNER]
-    errmsg = "The %s does not seem to be running."
-
-    if mode == 'start':
-
-        # launch the error checker. Best to catch the errors already here.
-        error_check_python_modules()
-
-        # starting one or many services
-        if service == 'server':
-            if profiler:
-                cmdstr.append('--pserver')
-            if interactive:
-                cmdstr.append('--iserver')
-            if logserver:
-                cmdstr.append('--logserver')
-            cmdstr.append('--noportal')
-        elif service == 'portal':
-            if profiler:
-                cmdstr.append('--pportal')
-            if interactive:
-                cmdstr.append('--iportal')
-            cmdstr.append('--noserver')
-            django.core.management.call_command(
-                'collectstatic', verbosity=1, interactive=False)
-        else:
-            # all
-            # for convenience we don't start logging of
-            # portal, only of server with this command.
-            if profiler:
-                # this is the common case
-                cmdstr.append('--pserver')
-            if interactive:
-                cmdstr.append('--iserver')
-            if logserver:
-                cmdstr.append('--logserver')
-            django.core.management.call_command(
-                'collectstatic', verbosity=1, interactive=False)
-        if doexit:
-            cmdstr.append('--doexit')
-        cmdstr.extend([
-            GAMEDIR, TWISTED_BINARY, SERVER_LOGFILE,
-            PORTAL_LOGFILE, HTTP_LOGFILE])
-        # start the server
-        process = Popen(cmdstr, env=getenv())
-
-        if interactive:
-            try:
-                process.wait()
-            except KeyboardInterrupt:
-                server_operation("stop", "portal", False, False)
-                return
-            finally:
-                print(NOTE_KEYBOARDINTERRUPT)
-
-    elif mode == 'reload':
-        # restarting services
-        if os.name == 'nt':
-            print(
-                "Restarting from command line is not supported under Windows. "
-                "Use the in-game command (@reload by default) "
-                "or use 'evennia stop && evennia start' for a cold reboot.")
-            return
-        if service == 'server':
-            kill(SERVER_PIDFILE, SIG, "Server reloaded.",
-                 errmsg % 'Server', SERVER_RESTART, restart=True)
-        elif service == 'portal':
-            print(
-                "Note: Portal usually doesnt't need to be reloaded unless you "
-                "are debugging in interactive mode. If Portal was running in "
-                "default Daemon mode, it cannot be restarted. In that case "
-                "you have to restart it manually with 'evennia.py "
-                "start portal'")
-            kill(PORTAL_PIDFILE, SIG,
-                 "Portal reloaded (or stopped, if it was in daemon mode).",
-                 errmsg % 'Portal', PORTAL_RESTART, restart=True)
-        else:
-            # all
-            # default mode, only restart server
-            kill(SERVER_PIDFILE, SIG,
-                 "Server reload.",
-                 errmsg % 'Server', SERVER_RESTART, restart=True)
-
-    elif mode == 'stop':
-        if os.name == "nt":
-            print(
-                "(Obs: You can use a single Ctrl-C to skip "
-                "Windows' annoying 'Terminate batch job (Y/N)?' prompts.)")
-        # stop processes, avoiding reload
-        if service == 'server':
-            kill(SERVER_PIDFILE, SIG,
-                 "Server stopped.", errmsg % 'Server', SERVER_RESTART)
-        elif service == 'portal':
-            kill(PORTAL_PIDFILE, SIG,
-                 "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
-        else:
-            kill(PORTAL_PIDFILE, SIG,
-                 "Portal stopped.", errmsg % 'Portal', PORTAL_RESTART)
-            kill(SERVER_PIDFILE, SIG,
-                 "Server stopped.", errmsg % 'Server', SERVER_RESTART)
 
 
 def main():
@@ -1716,14 +1558,6 @@ def main():
         dest='show_version', default=False,
         help="Show version info.")
     parser.add_argument(
-        '-i', '--interactive', action='store_true',
-        dest='interactive', default=False,
-        help="Start given processes in interactive mode.")
-    parser.add_argument(
-        '-l', '--log', action='store_true',
-        dest="logserver", default=False,
-        help="Log Server data to log file.")
-    parser.add_argument(
         '--init', action='store', dest="init", metavar="name",
         help="Creates a new game directory 'name' at the current location.")
     parser.add_argument(
@@ -1738,6 +1572,10 @@ def main():
         metavar="N",
         help="Test a running server by connecting N dummy accounts to it.")
     parser.add_argument(
+        '--gamedir', nargs=1, action='store', dest='altgamedir',
+        default=None, metavar="path/to/gamedir",
+        help="Supply path to gamedir, if not current location")
+    parser.add_argument(
         '--settings', nargs=1, action='store', dest='altsettings',
         default=None, metavar="filename.py",
         help=("Start evennia with alternative settings file from "
@@ -1747,16 +1585,9 @@ def main():
         default=False,
         help="Create a new, empty settings file as gamedir/server/conf/settings.py.")
     parser.add_argument(
-        '--external-runner', action='store_true', dest="doexit",
-        default=False,
-        help="Handle server restart with an external process manager.")
-    parser.add_argument(
         "operation", nargs='?', default="noop",
-        help="Operation to perform: 'start', 'stop', 'reload' or 'menu'.")
-    parser.add_argument(
-        "service", metavar="component", nargs='?', default="all",
-        help=("Which component to operate on: "
-              "'server', 'portal' or 'all' (default if not set)."))
+        metavar="start|stop|reload|reset|sstart|info|status|menu",
+        help="Operation to perform. Unregognized actions are passed on to Django.")
     parser.epilog = (
         "Common usage: evennia start|stop|reload. Django-admin database commands:"
         "evennia migration|flush|shell|dbshell (see the django documentation for more "
@@ -1765,7 +1596,7 @@ def main():
     args, unknown_args = parser.parse_known_args()
 
     # handle arguments
-    option, service = args.operation, args.service
+    option = args.operation
 
     # make sure we have everything
     check_main_evennia_dependencies()
@@ -1774,7 +1605,16 @@ def main():
         # show help pane
         print(CMDLINE_HELP)
         sys.exit()
-    elif args.init:
+
+    if args.altgamedir:
+        # use alternative gamedir path
+        global GAMEDIR
+        if not os.path.isdir(args.altgamedir) and not args.init:
+            print(ERROR_NO_ALT_GAMEDIR.format(args.altgamedir))
+            sys.exit()
+        GAMEDIR = args.altgamedir
+
+    if args.init:
         # initialization of game directory
         create_game_directory(args.init)
         print(CREATED_NEW_GAMEDIR.format(
@@ -1799,8 +1639,6 @@ def main():
 
     if args.initsettings:
         # create new settings file
-        global GAMEDIR
-        GAMEDIR = os.getcwd()
         try:
             create_settings_file(init=False)
             print(RECREATED_SETTINGS)
@@ -1820,29 +1658,28 @@ def main():
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif option in ('status', 'info', 'sstart', 'sreload', 'sreset', 'sstop', 'ssstop', 'start', 'reload', 'stop'):
+    elif option in ('status', 'info', 'start', 'reload', 'reset', 'stop', 'sstop'):
         # operate the server directly
         init_game_directory(CURRENT_DIR, check_db=True)
         if option == "status":
             query_status()
         elif option == "info":
             query_info()
-        elif option == "sstart":
+        elif option == "start":
             start_evennia(False, args.profiler)
-        elif option == 'sreload':
+        elif option == 'reload':
             reload_evennia(args.profiler)
-        elif option == 'sreset':
+        elif option == 'reset':
             reload_evennia(args.profiler, reset=True)
-        elif option == 'sstop':
+        elif option == 'stop':
             stop_evennia()
-        elif option == 'ssstop':
+        elif option == 'sstop':
             stop_server_only()
-        else:
-            server_operation(option, service, args.interactive,
-                             args.profiler, args.logserver, doexit=args.doexit)
     elif option != "noop":
         # pass-through to django manager
         check_db = False
+
+        # handle special django commands
         if option in ('runserver', 'testserver'):
             print(WARNING_RUNSERVER)
         if option in ("shell", "check"):
@@ -1852,12 +1689,12 @@ def main():
         if option == "test":
             global TEST_MODE
             TEST_MODE = True
+
         init_game_directory(CURRENT_DIR, check_db=check_db)
 
+        # pass on to the manager
         args = [option]
         kwargs = {}
-        if service not in ("all", "server", "portal"):
-            args.append(service)
         if unknown_args:
             for arg in unknown_args:
                 if arg.startswith("--"):
