@@ -136,8 +136,7 @@ ERROR_INPUT = \
 
 ERROR_NO_ALT_GAMEDIR = \
         """
-    The path {gamedir} doesn't seem to exist.
-
+    The path '{gamedir}' could not be found.
 """
 
 ERROR_NO_GAMEDIR = \
@@ -990,8 +989,9 @@ def set_gamedir(path):
 
     Ndepth = 10
     settings_path = os.path.join("server", "conf", "settings.py")
+    os.chdir(GAMEDIR)
     for i in range(Ndepth):
-        gpath = GAMEDIR
+        gpath = os.getcwd()
         if "server" in os.listdir(gpath):
             if os.path.isfile(settings_path):
                 GAMEDIR = gpath
@@ -1554,36 +1554,36 @@ def main():
 
     parser = ArgumentParser(description=CMDLINE_HELP)
     parser.add_argument(
-        '-v', '--version', action='store_true',
-        dest='show_version', default=False,
-        help="Show version info.")
+        '--gamedir', nargs=1, action='store', dest='altgamedir',
+        metavar="<path>",
+        help="Location of gamedir (default: current location)")
     parser.add_argument(
-        '--init', action='store', dest="init", metavar="name",
-        help="Creates a new game directory 'name' at the current location.")
+        '--init', action='store', dest="init", metavar="<gamename>",
+        help="Creates a new gamedir 'name' at current location.")
     parser.add_argument(
-        '--list', nargs='+', action='store', dest='listsetting', metavar="key",
+        '--list', nargs='+', action='store', dest='listsetting', metavar="all|<key>",
         help=("List values for server settings. Use 'all' to list all "
               "available keys."))
     parser.add_argument(
-        '--profiler', action='store_true', dest='profiler', default=False,
-        help="Start given server component under the Python profiler.")
-    parser.add_argument(
-        '--dummyrunner', nargs=1, action='store', dest='dummyrunner',
-        metavar="N",
-        help="Test a running server by connecting N dummy accounts to it.")
-    parser.add_argument(
-        '--gamedir', nargs=1, action='store', dest='altgamedir',
-        default=None, metavar="path/to/gamedir",
-        help="Supply path to gamedir, if not current location")
-    parser.add_argument(
         '--settings', nargs=1, action='store', dest='altsettings',
-        default=None, metavar="filename.py",
+        default=None, metavar="<path>",
         help=("Start evennia with alternative settings file from "
               "gamedir/server/conf/. (default is settings.py)"))
     parser.add_argument(
         '--initsettings', action='store_true', dest="initsettings",
         default=False,
         help="Create a new, empty settings file as gamedir/server/conf/settings.py.")
+    parser.add_argument(
+        '--profiler', action='store_true', dest='profiler', default=False,
+        help="Start given server component under the Python profiler.")
+    parser.add_argument(
+        '--dummyrunner', nargs=1, action='store', dest='dummyrunner',
+        metavar="<N>",
+        help="Test a server by connecting <N> dummy accounts to it.")
+    parser.add_argument(
+        '-v', '--version', action='store_true',
+        dest='show_version', default=False,
+        help="Show version info.")
     parser.add_argument(
         "operation", nargs='?', default="noop",
         metavar="start|stop|reload|reset|sstart|info|status|menu",
@@ -1609,10 +1609,11 @@ def main():
     if args.altgamedir:
         # use alternative gamedir path
         global GAMEDIR
-        if not os.path.isdir(args.altgamedir) and not args.init:
-            print(ERROR_NO_ALT_GAMEDIR.format(args.altgamedir))
+        altgamedir = args.altgamedir[0]
+        if not os.path.isdir(altgamedir) and not args.init:
+            print(ERROR_NO_ALT_GAMEDIR.format(gamedir=altgamedir))
             sys.exit()
-        GAMEDIR = args.altgamedir
+        GAMEDIR = altgamedir
 
     if args.init:
         # initialization of game directory
