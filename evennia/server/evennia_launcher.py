@@ -1212,7 +1212,7 @@ def del_pid(pidfile):
         os.remove(pidfile)
 
 
-def kill(pidfile, killsignal=SIG, succmsg="", errmsg=""):
+def kill(pidfile, component='Server', killsignal=SIG):
     """
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
@@ -1220,9 +1220,8 @@ def kill(pidfile, killsignal=SIG, succmsg="", errmsg=""):
 
     Args:
         pidfile (str): The path of the pidfile to get the PID from.
+        component (str, optional): Usually one of 'Server' or 'Portal'.
         killsignal (int, optional): Signal identifier for signal to send.
-        succmsg (str, optional): Message to log on success.
-        errmsg (str, optional): Message to log on failure.
 
     """
     pid = get_pid(pidfile)
@@ -1247,13 +1246,15 @@ def kill(pidfile, killsignal=SIG, succmsg="", errmsg=""):
                 os.kill(int(pid), killsignal)
 
         except OSError:
-            print("Process %(pid)s cannot be stopped. "
-                  "The PID file 'server/%(pidfile)s' seems stale. "
-                  "Try removing it." % {'pid': pid, 'pidfile': pidfile})
+            print("{component} ({pid}) cannot be stopped. "
+                  "The PID file '{pidfile}' seems stale. "
+                  "Try removing it manually.".format(
+                      component=component, pid=pid, pidfile=pidfile))
             return
-        print("Evennia:", succmsg)
+        print("Sent kill signal to {component}.".format(component=component))
         return
-    print("Evennia:", errmsg)
+    print("Could not send kill signal - {component} does "
+          "not appear to be running.".format(component=component))
 
 
 def show_version_info(about=False):
@@ -1669,7 +1670,7 @@ def main():
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif option in ('status', 'info', 'start', 'reload', 'reset', 'stop', 'sstop'):
+    elif option in ('status', 'info', 'start', 'reload', 'reset', 'stop', 'sstop', 'kill', 'skill'):
         # operate the server directly
         init_game_directory(CURRENT_DIR, check_db=True)
         if option == "status":
@@ -1686,6 +1687,11 @@ def main():
             stop_evennia()
         elif option == 'sstop':
             stop_server_only()
+        elif option == 'kill':
+            kill(PORTAL_PIDFILE, 'Portal')
+            kill(SERVER_PIDFILE, 'Server')
+        elif option == 'skill':
+            kill(SERVER_PIDFILE, 'Server')
     elif option != "noop":
         # pass-through to django manager
         check_db = False
