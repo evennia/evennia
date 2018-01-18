@@ -196,7 +196,7 @@ if AMP_ENABLED:
 
     from evennia.server.portal import amp_server
 
-    INFO_DICT["amp"] = 'amp: %s)' % AMP_PORT
+    INFO_DICT["amp"] = 'amp: %s' % AMP_PORT
 
     factory = amp_server.AMPServerFactory(PORTAL)
     amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
@@ -330,7 +330,7 @@ if WEBSERVER_ENABLED:
                                                interface=interface)
             proxy_service.setName('EvenniaWebProxy%s' % pstring)
             PORTAL.services.addService(proxy_service)
-            INFO_DICT["webserver_proxy"].append("website%s: %s" % (ifacestr, proxyport))
+            INFO_DICT["webserver_proxy"].append("webserver-proxy%s: %s" % (ifacestr, proxyport))
             INFO_DICT["webserver_internal"].append("webserver: %s" % serverport)
 
 

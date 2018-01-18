@@ -428,16 +428,16 @@ PORTAL_INFO = \
         {webserver_proxy}
         {webclient}
     internal_ports (to Server):
-        {amp}
         {webserver_internal}
+        {amp}
 """
 
 
 SERVER_INFO = \
     """{servername} Server {version}
     internal ports (to Portal):
-        {amp}
         {webserver}
+        {amp}
     {irc_rss}
     {info}
     {errors}"""
@@ -637,11 +637,11 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
 
     if pprofiler:
         portal_cmd.extend(["--savestats",
-                           "--profiler=cprofiler",
+                           "--profiler=cprofile",
                            "--profile={}".format(PPROFILER_LOGFILE)])
     if sprofiler:
         server_cmd.extend(["--savestats",
-                           "--profiler=cprofiler",
+                           "--profiler=cprofile",
                            "--profile={}".format(SPROFILER_LOGFILE)])
 
     return portal_cmd, server_cmd
@@ -770,6 +770,8 @@ def start_evennia(pprofiler=False, sprofiler=False):
         reactor.stop()
 
     def _portal_started(*args):
+        print("... Portal started.\nServer starting {} ...".format(
+            "(under cProfile)" if sprofiler else ""))
         wait_for_status_reply(_server_started)
         send_instruction(SSTART, server_cmd)
 
@@ -780,11 +782,11 @@ def start_evennia(pprofiler=False, sprofiler=False):
             print("Server is already running as process {pid}. Not restarted.".format(pid=spid))
             reactor.stop()
         else:
-            print("Server starting {}...".format("(under cProfile)" if pprofiler else ""))
+            print("Server starting {}...".format("(under cProfile)" if sprofiler else ""))
             send_instruction(SSTART, server_cmd, _server_started, _fail)
 
     def _portal_not_running(fail):
-        print("Portal starting {}...".format("(under cProfile)" if sprofiler else ""))
+        print("Portal starting {}...".format("(under cProfile)" if pprofiler else ""))
         try:
             Popen(portal_cmd, env=getenv(), bufsize=-1)
         except Exception as e:
@@ -1687,7 +1689,7 @@ def main():
         elif option == "info":
             query_info()
         elif option == "start":
-            start_evennia(False, args.profiler)
+            start_evennia(args.profiler, args.profiler)
         elif option == 'reload':
             reload_evennia(args.profiler)
         elif option == 'reset':

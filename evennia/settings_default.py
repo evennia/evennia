@@ -65,7 +65,7 @@ ALLOWED_HOSTS = ["*"]
 # the Portal proxy presents to the world. The serverports are
 # the internal ports the proxy uses to forward data to the Server-side
 # webserver (these should not be publicly open)
-WEBSERVER_PORTS = [(4001, 4002)]
+WEBSERVER_PORTS = [(4001, 4005)]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSERVER_INTERFACES = ['0.0.0.0']
 # IP addresses that may talk to the server in a reverse proxy configuration,
@@ -89,12 +89,12 @@ WEBSOCKET_CLIENT_ENABLED = True
 # working through a proxy or docker port-remapping, the environment variable
 # WEBCLIENT_CLIENT_PROXY_PORT can be used to override this port only for the
 # front-facing client's sake.
-WEBSOCKET_CLIENT_PORT = 4005
+WEBSOCKET_CLIENT_PORT = 4002
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
 # Actual URL for webclient component to reach the websocket. You only need
 # to set this if you know you need it, like using some sort of proxy setup.
-# If given it must be on the form "ws[s]://hostname[:port]". If left at None, 
+# If given it must be on the form "ws[s]://hostname[:port]". If left at None,
 # the client will itself figure out this url based on the server's hostname.
 # e.g. ws://external.example.com or wss://external.example.com:443
 WEBSOCKET_CLIENT_URL = None
