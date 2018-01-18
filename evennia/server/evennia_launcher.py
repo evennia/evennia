@@ -304,20 +304,20 @@ MENU = \
     +----Evennia Launcher-------------------------------------------+
     |                                                               |
     +--- Common operations -----------------------------------------+
-    |                                                               |
     |  1) Start Portal and Server    (also restart downed Server)   |
     |  2) Reload Server                  (update on code changes)   |
     |  3) Stop Portal and Server                  (full shutdown)   |
-    |                                                               |
     +--- Other -----------------------------------------------------+
-    |                                                               |
     |  4) Reset Server             (Server shutdown with restart)   |
     |  5) Stop Server only                                          |
-    |                                                               |
+    |  6) Kill Portal + Server      (send kill signal to process)   |
+    |  7) Kill Server only                                          |
+    +--- Information -----------------------------------------------+
+    |  8) Run status                                                |
+    |  9) Port info                                                 |
     +---------------------------------------------------------------+
     |  h) Help              i) About info               q) Abort    |
-    +---------------------------------------------------------------+
-    """
+    +---------------------------------------------------------------+"""
 
 ERROR_AMP_UNCONFIGURED = \
     """
@@ -325,7 +325,6 @@ ERROR_AMP_UNCONFIGURED = \
     the game dir (it will then use the game's settings file) or specify
     the path to your game's settings file manually with the --settings
     option.
-
     """
 
 ERROR_LOGDIR_MISSING = \
@@ -344,7 +343,6 @@ ERROR_LOGDIR_MISSING = \
     you used git to clone a pre-created game directory - since log
     files are in .gitignore they will not be cloned, which leads to
     the log directory also not being created.)
-
     """
 
 ERROR_PYTHON_VERSION = \
@@ -448,14 +446,16 @@ SERVER_INFO = \
 ARG_OPTIONS = \
     """Actions on installed server. One of:
  start  - launch server+portal if not running
- stop   - shutdown server+portal
  reload - restart server (code refresh)
+ stop   - shutdown server+portal
  reset  - mimic server shutdown but with auto-restart
  sstart - start only server (requires portal)
- status - server and portal run state
- info   - get server and portal port info
+ kill   - send kill signal to portal+server (force)
+ skill  = send kill signal only to server
+ status - show server and portal run state
+ info   - show server and portal port info
  menu   - show a menu of options
-Unregognized input is passed on to Django."""
+Other input, like migrate and shell is passed on to Django."""
 
 
 # Info formatting
@@ -1550,6 +1550,15 @@ def run_menu():
             reload_evennia(False, True)
         elif inp == 5:
             stop_server_only()
+        elif inp == 6:
+            kill(PORTAL_PIDFILE, 'Portal')
+            kill(SERVER_PIDFILE, 'Server')
+        elif inp == 7:
+            kill(SERVER_PIDFILE, 'Server')
+        elif inp == 8:
+            query_status()
+        elif inp == 9:
+            query_info()
         else:
             print("Not a valid option.")
             continue
