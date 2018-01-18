@@ -449,6 +449,19 @@ SERVER_INFO = \
     {errors}"""
 
 
+ARG_OPTIONS = \
+    """Actions on installed server. One of:
+ start  - launch server+portal if not running
+ stop   - shutdown server+portal
+ reload - restart server (code refresh)
+ reset  - mimic server shutdown but with auto-restart
+ sstart - start only server (requires portal)
+ status - server and portal run state
+ info   - get server and portal port info
+ menu   - show a menu of options
+Unregognized input is passed on to Django."""
+
+
 # Info formatting
 
 def print_info(portal_info_dict, server_info_dict):
@@ -1554,7 +1567,7 @@ def main():
 
     # set up argument parser
 
-    parser = ArgumentParser(description=CMDLINE_HELP)
+    parser = ArgumentParser(description=CMDLINE_HELP, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
         '--gamedir', nargs=1, action='store', dest='altgamedir',
         metavar="<path>",
@@ -1564,17 +1577,17 @@ def main():
         help="Creates a new gamedir 'name' at current location.")
     parser.add_argument(
         '--list', nargs='+', action='store', dest='listsetting', metavar="all|<key>",
-        help=("List values for one or more server settings. Use 'all' to list all "
+        help=("List values for one or more server settings. Use 'all' to \n list all "
               "available keys."))
     parser.add_argument(
         '--settings', nargs=1, action='store', dest='altsettings',
         default=None, metavar="<path>",
-        help=("Start evennia with alternative settings file from "
-              "gamedir/server/conf/. (default is settings.py)"))
+        help=("Start evennia with alternative settings file from\n"
+              " gamedir/server/conf/. (default is settings.py)"))
     parser.add_argument(
         '--initsettings', action='store_true', dest="initsettings",
         default=False,
-        help="Create a new, empty settings file as gamedir/server/conf/settings.py.")
+        help="Create a new, empty settings file as\n gamedir/server/conf/settings.py.")
     parser.add_argument(
         '--profiler', action='store_true', dest='profiler', default=False,
         help="Start given server component under the Python profiler.")
@@ -1589,10 +1602,9 @@ def main():
 
     parser.add_argument(
         "operation", nargs='?', default="noop",
-        help=("One of start, stop, reload, reset, sstart, info, status and menu. "
-              "Unregognized input is passed on to Django."))
+        help=ARG_OPTIONS)
     parser.epilog = (
-        "Common Django-admin commands are shell, dbshell, migrate and flush. "
+        "Common Django-admin commands are shell, dbshell, migrate and flush.\n"
         "See the django documentation for more django-admin commands.")
 
     args, unknown_args = parser.parse_known_args()
