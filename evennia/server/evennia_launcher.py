@@ -264,12 +264,8 @@ INFO_WINDOWS_BATFILE = \
     """
 
 CMDLINE_HELP = \
-    """
-    Starts or operates the Evennia MU* server.  Allows for
-    initializing a new game directory and manages the game's database.
-    Most standard django-admin arguments and options can also be
-    passed.
-    """
+    """Starts, initializes, manages and operates the Evennia MU* server.
+Most standard django management commands are also accepted."""
 
 
 VERSION_INFO = \
@@ -1605,7 +1601,7 @@ def main():
         help=ARG_OPTIONS)
     parser.epilog = (
         "Common Django-admin commands are shell, dbshell, migrate and flush.\n"
-        "See the django documentation for more django-admin commands.")
+        "See the Django documentation for more management commands.")
 
     args, unknown_args = parser.parse_known_args()
 
