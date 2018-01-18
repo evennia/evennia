@@ -1605,7 +1605,6 @@ def main():
 
     args, unknown_args = parser.parse_known_args()
 
-    print(args.rest)
     # handle arguments
     option = args.operation
 
