@@ -1,12 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 """
-EVENNIA SERVER LAUNCHER SCRIPT
+Evennia launcher program
 
 This is the start point for running Evennia.
 
-Sets the appropriate environmental variables and launches the server
-and portal through the evennia_runner. Run without arguments to get a
-menu. Run the script with the -h flag to see usage information.
+Sets the appropriate environmental variables for managing an Evennia game. It will start and connect
+to the Portal, through which the Server is also controlled. This pprogram
+
+Run the script with the -h flag to see usage information.
 
 """
 from __future__ import print_function
@@ -19,6 +20,7 @@ import shutil
 import importlib
 from distutils.version import LooseVersion
 from argparse import ArgumentParser
+import argparse
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
 
 try:
@@ -1201,7 +1203,7 @@ def del_pid(pidfile):
         os.remove(pidfile)
 
 
-def kill(pidfile, killsignal=SIG, succmsg="", errmsg="", restart=False):
+def kill(pidfile, killsignal=SIG, succmsg="", errmsg=""):
     """
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
@@ -1562,7 +1564,7 @@ def main():
         help="Creates a new gamedir 'name' at current location.")
     parser.add_argument(
         '--list', nargs='+', action='store', dest='listsetting', metavar="all|<key>",
-        help=("List values for server settings. Use 'all' to list all "
+        help=("List values for one or more server settings. Use 'all' to list all "
               "available keys."))
     parser.add_argument(
         '--settings', nargs=1, action='store', dest='altsettings',
@@ -1584,17 +1586,18 @@ def main():
         '-v', '--version', action='store_true',
         dest='show_version', default=False,
         help="Show version info.")
+
     parser.add_argument(
         "operation", nargs='?', default="noop",
-        metavar="start|stop|reload|reset|sstart|info|status|menu",
-        help="Operation to perform. Unregognized actions are passed on to Django.")
+        help=("One of start, stop, reload, reset, sstart, info, status and menu. "
+              "Unregognized input is passed on to Django."))
     parser.epilog = (
-        "Common usage: evennia start|stop|reload. Django-admin database commands:"
-        "evennia migration|flush|shell|dbshell (see the django documentation for more "
-        "django-admin commands.)")
+        "Common Django-admin commands are shell, dbshell, migrate and flush. "
+        "See the django documentation for more django-admin commands.")
 
     args, unknown_args = parser.parse_known_args()
 
+    print(args.rest)
     # handle arguments
     option = args.operation
 
