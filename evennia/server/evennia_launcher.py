@@ -75,6 +75,7 @@ PPROFILER_LOGFILE = None
 
 TEST_MODE = False
 ENFORCED_SETTING = False
+TAIL_LOG_MODE = False
 
 # communication constants
 
@@ -88,7 +89,7 @@ SSTART = chr(15)       # server start
 PSHUTD = chr(16)       # portal (+server) shutdown
 SSHUTD = chr(17)       # server-only shutdown
 PSTATUS = chr(18)      # ping server or portal status
-SRESET = chr(19)      # shutdown server in reset mode
+SRESET = chr(19)       # shutdown server in reset mode
 
 # requirements
 PYTHON_MIN = '2.7'
@@ -624,10 +625,8 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
 
     """
     portal_cmd = [TWISTED_BINARY,
-                  "--logfile={}".format(PORTAL_LOGFILE),
                   "--python={}".format(PORTAL_PY_FILE)]
     server_cmd = [TWISTED_BINARY,
-                  "--logfile={}".format(SERVER_LOGFILE),
                   "--python={}".format(SERVER_PY_FILE)]
 
     if os.name != 'nt':
@@ -913,6 +912,104 @@ def query_info():
         print("Evennia is not running.")
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
+
+
+def tail_server_log(filename, rate=1):
+    """
+    Tail the server logfile interactively, printing to stdout
+
+    When first starting, this will display the tail of the log file. After
+    that it will poll the log file repeatedly and display changes.
+
+    Args:
+        filename (str): Path to log file.
+        rate (int, optional): How often to poll the log file.
+
+    """
+    def _file_changed(filename, prev_size):
+        "Get size of file in bytes, get diff compared with previous size"
+        new_size = os.path.getsize(filename)
+        return new_size != prev_size, new_size
+
+
+    def _get_new_lines(filehandle, old_linecount):
+        "count lines, get the ones not counted before"
+
+        def _block(filehandle, size=65536):
+            "File block generator for quick traversal"
+            while True:
+                dat = filehandle.read(size)
+                if not dat:
+                    break
+                yield dat
+
+        # count number of lines in file
+        new_linecount = sum(blck.count("\n") for blck in _block(filehandle))
+
+        if new_linecount < old_linecount:
+            # this could happen if the file was manually deleted or edited
+            print("Log file has shrunk. Restart log reader.")
+            sys.exit()
+
+        lines_to_get = max(0, new_linecount - old_linecount)
+
+        if not lines_to_get:
+            return [], old_linecount
+
+        lines_found = []
+        buffer_size = 4098
+        block_count = -1
+
+        while len(lines_found) < lines_to_get:
+            try:
+                # scan backwards in file, starting from the end
+                filehandle.seek(block_count * buffer_size, os.SEEK_END)
+            except IOError:
+                # file too small for current seek, include entire file
+                filehandle.seek(0)
+                lines_found = filehandle.readlines()
+                break
+            lines_found = filehandle.readlines()
+            block_count -= 1
+
+        # only actually return the new lines
+        return lines_found[-lines_to_get:], new_linecount
+
+    def _tail_file(filename, file_size, line_count, max_lines=None):
+        """This will cycle repeatedly, printing new lines"""
+
+        # poll for changes
+        has_changed, file_size = _file_changed(filename, file_size)
+
+        if has_changed:
+            try:
+                with open(filename, 'r') as filehandle:
+                    new_lines, line_count = _get_new_lines(filehandle, line_count)
+            except IOError:
+                # the log file might not exist yet. Wait a little, then try again ...
+                pass
+            else:
+                if max_lines:
+                    # first startup
+                    print("   Tailing logfile {} ...".format(filename))
+                    new_lines = new_lines[-max_lines:]
+
+                # print to stdout without line break (log has its own line feeds)
+                sys.stdout.write("".join(new_lines))
+                sys.stdout.flush()
+
+        # set up the next poll
+        reactor.callLater(rate, _tail_file, filename, file_size, line_count, max_lines=100)
+
+    reactor.callLater(0, _tail_file, filename, 0, 0, max_lines=20)
+    reactor.run()
+
+
+# ------------------------------------------------------------
+#
+# Environment setup
+#
+# ------------------------------------------------------------
 
 
 def evennia_version():
@@ -1572,6 +1669,7 @@ def main():
     Run the evennia launcher main program.
 
     """
+    global TAIL_LOG_MODE
 
     # set up argument parser
 
@@ -1583,6 +1681,9 @@ def main():
     parser.add_argument(
         '--init', action='store', dest="init", metavar="<gamename>",
         help="Creates a new gamedir 'name' at current location.")
+    parser.add_argument(
+        '--log', '-l', action='store_true', dest='tail_log', default=False,
+        help="Tail the server logfile to standard out.")
     parser.add_argument(
         '--list', nargs='+', action='store', dest='listsetting', metavar="all|<key>",
         help=("List values for one or more server settings. Use 'all' to \n list all "
@@ -1622,6 +1723,8 @@ def main():
 
     # make sure we have everything
     check_main_evennia_dependencies()
+
+    TAIL_LOG_MODE = args.tail_log
 
     if not args:
         # show help pane
@@ -1740,9 +1843,18 @@ def main():
             args = ", ".join(args)
             kwargs = ", ".join(["--%s" % kw for kw in kwargs])
             print(ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs))
-    else:
+
+    elif not TAIL_LOG_MODE:
         # no input; print evennia info
         print(ABOUT_INFO)
+
+    if TAIL_LOG_MODE:
+        # start the log-tail last
+        if not SERVER_LOGFILE:
+            init_game_directory(CURRENT_DIR, check_db=False)
+        tail_server_log(SERVER_LOGFILE)
+
+
 
 
 if __name__ == '__main__':
