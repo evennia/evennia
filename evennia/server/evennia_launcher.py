@@ -489,7 +489,7 @@ def print_info(portal_info_dict, server_info_dict):
 
     info = pstr + ("\n\n" + sstr if sstr else "")
     maxwidth = max(len(line) for line in info.split("\n"))
-    top_border = "-" * (maxwidth - 11) + " Evennia " + "--"
+    top_border = "-" * (maxwidth - 11) + " Evennia " + "---"
     border = "-" * (maxwidth + 1)
     print(top_border + "\n" + info + '\n' + border)
 

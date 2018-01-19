@@ -39,7 +39,7 @@ from twisted.conch.ssh import common
 from twisted.conch.insults import insults
 from twisted.conch.manhole_ssh import TerminalRealm, _Glue, ConchFactory
 from twisted.conch.manhole import Manhole, recvline
-from twisted.internet import defer
+from twisted.internet import defer, protocol
 from twisted.conch import interfaces as iconch
 from twisted.python import components
 from django.conf import settings
@@ -57,6 +57,15 @@ CTRL_C = '\x03'
 CTRL_D = '\x04'
 CTRL_BACKSLASH = '\x1c'
 CTRL_L = '\x0c'
+
+
+# not used atm
+class SSHServerFactory(protocol.ServerFactory):
+    "This is only to name this better in logs"
+    noisy = False
+
+    def logPrefix(self):
+        return "SSH"
 
 
 class SshProtocol(Manhole, session.Session):

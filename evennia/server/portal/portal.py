@@ -14,6 +14,8 @@ import os
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
+from twisted.python.log import ILogObserver
+
 import django
 django.setup()
 from django.conf import settings
@@ -23,6 +25,7 @@ evennia._init()
 
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
+from evennia.utils import logger
 from evennia.server.webserver import EvenniaReverseProxyResource
 from django.db import connection
 
@@ -180,6 +183,11 @@ class Portal(object):
 # what to execute from.
 application = service.Application('Portal')
 
+# custom logging
+logfile = logger.WeeklyLogFile(os.path.basename(settings.PORTAL_LOG_FILE),
+                               os.path.dirname(settings.PORTAL_LOG_FILE))
+application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
+
 # The main Portal server program. This sets up the database
 # and is where we store all the other services.
 PORTAL = Portal(application)
@@ -219,7 +227,7 @@ if TELNET_ENABLED:
             ifacestr = "-%s" % interface
         for port in TELNET_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            factory = protocol.ServerFactory()
+            factory = telnet.TelnetServerFactory()
             factory.noisy = False
             factory.protocol = telnet.TelnetProtocol
             factory.sessionhandler = PORTAL_SESSIONS
@@ -242,7 +250,7 @@ if SSL_ENABLED:
             ifacestr = "-%s" % interface
         for port in SSL_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            factory = protocol.ServerFactory()
+            factory = ssl.SSLServerFactory()
             factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
             factory.protocol = ssl.SSLProtocol
@@ -313,7 +321,12 @@ if WEBSERVER_ENABLED:
                     if w_interface not in ('0.0.0.0', '::') or len(WEBSERVER_INTERFACES) > 1:
                         w_ifacestr = "-%s" % interface
                     port = WEBSOCKET_CLIENT_PORT
-                    factory = protocol.ServerFactory()
+
+                    class Websocket(protocol.ServerFactory):
+                        "Only here for better naming in logs"
+                        pass
+
+                    factory = Websocket()
                     factory.noisy = False
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
@@ -325,6 +338,7 @@ if WEBSERVER_ENABLED:
                 INFO_DICT["webclient"].append(webclientstr)
 
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
+            web_root.is_portal = True
             proxy_service = internet.TCPServer(proxyport,
                                                web_root,
                                                interface=interface)

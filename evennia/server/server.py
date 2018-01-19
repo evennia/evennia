@@ -16,6 +16,7 @@ from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
+from twisted.python.log import ILogObserver
 
 import django
 django.setup()
@@ -32,6 +33,7 @@ from evennia.server.models import ServerConfig
 from evennia.server import initial_setup
 
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
+from evennia.utils import logger
 from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
 
@@ -531,6 +533,11 @@ ServerConfig.objects.conf("server_starting_mode", True)
 # what to execute from.
 application = service.Application('Evennia')
 
+# custom logging
+logfile = logger.WeeklyLogFile(os.path.basename(settings.PORTAL_LOG_FILE),
+                               os.path.dirname(settings.PORTAL_LOG_FILE))
+application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
+
 # The main evennia server program. This sets up the database
 # and is where we store all the other services.
 EVENNIA = Evennia(application)
@@ -577,6 +584,7 @@ if WEBSERVER_ENABLED:
         web_root = WEB_PLUGINS_MODULE.at_webserver_root_creation(web_root)
 
     web_site = Website(web_root, logPath=settings.HTTP_LOG_FILE)
+    web_site.is_portal = False
 
     INFO_DICT["webserver"] = ""
     for proxyport, serverport in WEBSERVER_PORTS:
