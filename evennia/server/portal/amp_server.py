@@ -35,6 +35,10 @@ class AMPServerFactory(protocol.ServerFactory):
     """
     noisy = False
 
+    def logPrefix(self):
+        "How this is named in logs"
+        return "AMP"
+
     def __init__(self, portal):
         """
         Initialize the factory. This is called as the Portal service starts.
@@ -282,7 +286,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         _, server_connected, _, _, _, _ = self.get_status()
 
-        logger.log_msg("Evennia Launcher->Portal operation %s received" % (ord(operation)))
+        # logger.log_msg("Evennia Launcher->Portal operation %s received" % (ord(operation)))
 
         if operation == amp.SSTART:   # portal start  #15
             # first, check if server is already running

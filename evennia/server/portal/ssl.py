@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import os
 import sys
+from twisted.internet import protocol
 try:
     import OpenSSL
     from twisted.internet import ssl as twisted_ssl
@@ -48,6 +49,14 @@ manually using the commands valid  for your operating system, for
 example (linux, using the openssl program):
     {exestring}
 """
+
+
+class SSLServerFactory(protocol.ServerFactory):
+    "This is only to name this better in logs"
+    noisy = False
+
+    def logPrefix(self):
+        return "SSL"
 
 
 class SSLProtocol(TelnetProtocol):

@@ -20,6 +20,7 @@ import time
 from datetime import datetime
 from traceback import format_exc
 from twisted.python import log, logfile
+from twisted.python import util as twisted_util
 from twisted.internet.threads import deferToThread
 
 
@@ -27,6 +28,58 @@ _LOGDIR = None
 _LOG_ROTATE_SIZE = None
 _TIMEZONE = None
 _CHANNEL_LOG_NUM_TAIL_LINES = None
+
+
+class WeeklyLogFile(logfile.DailyLogFile):
+    """
+    Log file that rotates once per week
+
+    """
+    day_rotation = 7
+
+    def shouldRotate(self):
+        """Rotate when the date has changed since last write"""
+        # all dates here are tuples (year, month, day)
+        now = self.toDate()
+        then = self.lastDate
+        return now[0] > then[0] or now[1] > then[1] or now[2] > (then[2] + self.day_rotation)
+
+    def write(self, data):
+        "Write data to log file"
+        logfile.BaseLogFile.write(self, data)
+        self.lastDate = max(self.lastDate, self.toDate())
+
+
+class PortalLogObserver(log.FileLogObserver):
+    """
+    Reformat logging
+    """
+    timeFormat = None
+    prefix = '[P]'
+
+    def emit(self, eventDict):
+        """
+        Copied from Twisted parent, to change logging output
+
+        """
+        text = log.textFromEventDict(eventDict)
+        if text is None:
+            return
+
+        timeStr = self.formatTime(eventDict["time"])
+        if timeStr.startswith("20"):
+            timeStr = timeStr[2:]
+        fmtDict = {
+            "text": text.replace("\n", "\n\t")}
+
+        msgStr = log._safeFormat("%(text)s\n", fmtDict)
+
+        twisted_util.untilConcludes(self.write, timeStr + " %s " % self.prefix + msgStr)
+        twisted_util.untilConcludes(self.flush)
+
+
+class ServerLogObserver(PortalLogObserver):
+    prefix = "|S|"
 
 
 def timeformat(when=None):
