@@ -187,6 +187,11 @@ log_errmsg = log_err
 
 
 def log_server(servermsg):
+    """
+    This is for the Portal to log captured Server stdout messages (it's
+    usually only used during startup, before Server log is open)
+
+    """
     try:
         servermsg = str(servermsg)
     except Exception as e:

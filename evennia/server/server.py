@@ -534,8 +534,8 @@ ServerConfig.objects.conf("server_starting_mode", True)
 application = service.Application('Evennia')
 
 # custom logging
-logfile = logger.WeeklyLogFile(os.path.basename(settings.PORTAL_LOG_FILE),
-                               os.path.dirname(settings.PORTAL_LOG_FILE))
+logfile = logger.WeeklyLogFile(os.path.basename(settings.SERVER_LOG_FILE),
+                               os.path.dirname(settings.SERVER_LOG_FILE))
 application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
 
 # The main evennia server program. This sets up the database
