@@ -470,7 +470,7 @@ BASE_SCRIPT_TYPECLASS = "typeclasses.scripts.Script"
 DEFAULT_HOME = "#2"
 # The start position for new characters. Default is Limbo (#2).
 #  MULTISESSION_MODE = 0, 1 - used by default unloggedin create command
-#  MULTISESSION_MODE = 2,3 - used by default character_create command
+#  MULTISESSION_MODE = 2, 3 - used by default character_create command
 START_LOCATION = "#2"
 # Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
 # cached to avoid repeated database hits. This often gives noticeable
@@ -545,8 +545,8 @@ INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
 #  3 - like mode 2, except multiple sessions can puppet one character, each
 #      session getting the same data.
 MULTISESSION_MODE = 0
-# The maximum number of characters allowed for MULTISESSION_MODE 2,3. This is
-# checked by the default ooc char-creation command. Forced to 1 for
+# The maximum number of characters allowed for MULTISESSION_MODE 2, 3.
+# This is checked by the default ooc char-creation command. Forced to 1 for
 # MULTISESSION_MODE 0 and 1.
 MAX_NR_CHARACTERS = 1
 # The access hierarchy, in climbing order. A higher permission in the
