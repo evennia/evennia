@@ -38,7 +38,7 @@ def timeformat(when=None):
     This helper function will format the current time in the same
     way as the twisted logger does, including time zone info. Only
     difference from official logger is that we only use two digits
-    for the year.
+    for the year and don't show timezone for CET times.
 
     Args:
         when (int, optional): This is a time in POSIX seconds on the form
@@ -55,14 +55,19 @@ def timeformat(when=None):
     tz_offset = tz_offset.days * 86400 + tz_offset.seconds
     # correct given time to utc
     when = datetime.utcfromtimestamp(when - tz_offset)
-    tz_hour = abs(int(tz_offset // 3600))
-    tz_mins = abs(int(tz_offset // 60 % 60))
-    tz_sign = "-" if tz_offset >= 0 else "+"
 
-    return '%d-%02d-%02d %02d:%02d:%02d%s%02d%02d' % (
+    if tz_offset == 0:
+        tz = ""
+    else:
+        tz_hour = abs(int(tz_offset // 3600))
+        tz_mins = abs(int(tz_offset // 60 % 60))
+        tz_sign = "-" if tz_offset >= 0 else "+"
+        tz = "%s%02d%s" % (tz_sign, tz_hour,
+                           (":%02d" % tz_mins if tz_mins else ""))
+
+    return '%d-%02d-%02d %02d:%02d:%02d%s' % (
         when.year - 2000, when.month, when.day,
-        when.hour, when.minute, when.second,
-        tz_sign, tz_hour, tz_mins)
+        when.hour, when.minute, when.second, tz)
 
 
 class WeeklyLogFile(logfile.DailyLogFile):
