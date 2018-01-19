@@ -316,7 +316,7 @@ MENU = \
     |  6) Kill Portal + Server      (send kill signal to process)   |
     |  7) Kill Server only                                          |
     +--- Information -----------------------------------------------+
-    |  8) Tail log file
+    |  8) Tail log file                                             |
     |  9) Run status                                                |
     | 10) Port info                                                 |
     +---------------------------------------------------------------+
