@@ -316,8 +316,9 @@ MENU = \
     |  6) Kill Portal + Server      (send kill signal to process)   |
     |  7) Kill Server only                                          |
     +--- Information -----------------------------------------------+
-    |  8) Run status                                                |
-    |  9) Port info                                                 |
+    |  8) Tail log file
+    |  9) Run status                                                |
+    | 10) Port info                                                 |
     +---------------------------------------------------------------+
     |  h) Help              i) About info               q) Abort    |
     +---------------------------------------------------------------+"""
@@ -937,7 +938,6 @@ def tail_server_log(filename, rate=1):
         "Get size of file in bytes, get diff compared with previous size"
         new_size = os.path.getsize(filename)
         return new_size != prev_size, new_size
-
 
     def _get_new_lines(filehandle, old_linecount):
         "count lines, get the ones not counted before"
@@ -1661,8 +1661,13 @@ def run_menu():
         elif inp == 7:
             kill(SERVER_PIDFILE, 'Server')
         elif inp == 8:
-            query_status()
+            if not SERVER_LOGFILE:
+                init_game_directory(CURRENT_DIR, check_db=False)
+            tail_server_log(SERVER_LOGFILE)
+            print("   Tailing logfile {} ...".format(SERVER_LOGFILE))
         elif inp == 9:
+            query_status()
+        elif inp == 10:
             query_info()
         else:
             print("Not a valid option.")
