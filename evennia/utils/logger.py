@@ -30,6 +30,41 @@ _TIMEZONE = None
 _CHANNEL_LOG_NUM_TAIL_LINES = None
 
 
+# logging overrides
+
+
+def timeformat(when=None):
+    """
+    This helper function will format the current time in the same
+    way as the twisted logger does, including time zone info. Only
+    difference from official logger is that we only use two digits
+    for the year.
+
+    Args:
+        when (int, optional): This is a time in POSIX seconds on the form
+            given by time.time(). If not given, this function will
+            use the current time.
+
+    Returns:
+        timestring (str): A formatted string of the given time.
+    """
+    when = when if when else time.time()
+
+    # time zone offset: UTC - the actual offset
+    tz_offset = datetime.utcfromtimestamp(when) - datetime.fromtimestamp(when)
+    tz_offset = tz_offset.days * 86400 + tz_offset.seconds
+    # correct given time to utc
+    when = datetime.utcfromtimestamp(when - tz_offset)
+    tz_hour = abs(int(tz_offset // 3600))
+    tz_mins = abs(int(tz_offset // 60 % 60))
+    tz_sign = "-" if tz_offset >= 0 else "+"
+
+    return '%d-%02d-%02d %02d:%02d:%02d%s%02d%02d' % (
+        when.year - 2000, when.month, when.day,
+        when.hour, when.minute, when.second,
+        tz_sign, tz_hour, tz_mins)
+
+
 class WeeklyLogFile(logfile.DailyLogFile):
     """
     Log file that rotates once per week
@@ -55,7 +90,7 @@ class PortalLogObserver(log.FileLogObserver):
     Reformat logging
     """
     timeFormat = None
-    prefix = '[P]'
+    prefix = "  |Portal| "
 
     def emit(self, eventDict):
         """
@@ -66,50 +101,19 @@ class PortalLogObserver(log.FileLogObserver):
         if text is None:
             return
 
-        timeStr = self.formatTime(eventDict["time"])
-        if timeStr.startswith("20"):
-            timeStr = timeStr[2:]
+        # timeStr = self.formatTime(eventDict["time"])
+        timeStr = timeformat(eventDict["time"])
         fmtDict = {
             "text": text.replace("\n", "\n\t")}
 
         msgStr = log._safeFormat("%(text)s\n", fmtDict)
 
-        twisted_util.untilConcludes(self.write, timeStr + " %s " % self.prefix + msgStr)
+        twisted_util.untilConcludes(self.write, timeStr + "%s" % self.prefix + msgStr)
         twisted_util.untilConcludes(self.flush)
 
 
 class ServerLogObserver(PortalLogObserver):
-    prefix = "|S|"
-
-
-def timeformat(when=None):
-    """
-    This helper function will format the current time in the same
-    way as twisted's logger does, including time zone info.
-
-    Args:
-        when (int, optional): This is a time in POSIX seconds on the form
-            given by time.time(). If not given, this function will
-            use the current time.
-
-    Returns:
-        timestring (str): A formatted string of the given time.
-    """
-    when = when if when else time.time()
-
-    # time zone offset: UTC - the actual offset
-    tz_offset = datetime.utcfromtimestamp(when) - datetime.fromtimestamp(when)
-    tz_offset = tz_offset.days * 86400 + tz_offset.seconds
-    # correct given time to utc
-    when = datetime.utcfromtimestamp(when - tz_offset)
-    tz_hour = abs(int(tz_offset // 3600))
-    tz_mins = abs(int(tz_offset // 60 % 60))
-    tz_sign = "-" if tz_offset >= 0 else "+"
-
-    return '%d-%02d-%02d %02d:%02d:%02d%s%02d%02d' % (
-        when.year, when.month, when.day,
-        when.hour, when.minute, when.second,
-        tz_sign, tz_hour, tz_mins)
+    prefix = " "
 
 
 def log_msg(msg):
