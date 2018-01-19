@@ -75,7 +75,9 @@ PPROFILER_LOGFILE = None
 
 TEST_MODE = False
 ENFORCED_SETTING = False
-TAIL_LOG_MODE = False
+
+REACTOR_RUN = False
+NO_REACTOR_STOP = False
 
 # communication constants
 
@@ -557,12 +559,17 @@ class AMPLauncherProtocol(amp.AMP):
         return {"status": ""}
 
 
+def _reactor_stop():
+    if not NO_REACTOR_STOP:
+        reactor.stop()
+
+
 def send_instruction(operation, arguments, callback=None, errback=None):
     """
     Send instruction and handle the response.
 
     """
-    global AMP_CONNECTION
+    global AMP_CONNECTION, REACTOR_RUN
 
     if None in (AMP_HOST, AMP_PORT, AMP_INTERFACE):
         print(ERROR_AMP_UNCONFIGURED)
@@ -610,9 +617,7 @@ def send_instruction(operation, arguments, callback=None, errback=None):
         point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
         deferred = endpoints.connectProtocol(point, AMPLauncherProtocol())
         deferred.addCallbacks(_on_connect, _on_connect_fail)
-        if not reactor.running:
-            reactor.run()
-
+        REACTOR_RUN = True
 
 def _parse_status(response):
     "Unpack the status information"
@@ -661,12 +666,12 @@ def query_status(callback=None):
             pstatus, sstatus, ppid, spid, pinfo, sinfo = _parse_status(response)
             print("Portal:   {} (pid {})\nServer:   {} (pid {})".format(
                 wmap[pstatus], ppid, wmap[sstatus], spid))
-            reactor.stop()
+            _reactor_stop()
 
     def _errback(fail):
         pstatus, sstatus = False, False
         print("Portal:   {}\nServer:   {}".format(wmap[pstatus], wmap[sstatus]))
-        reactor.stop()
+        _reactor_stop()
 
     send_instruction(PSTATUS, None, _callback, _errback)
 
@@ -705,14 +710,14 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
             if callback:
                 callback(prun, srun)
             else:
-                reactor.stop()
+                _reactor_stop()
         else:
             if retries <= 0:
                 if errback:
                     errback(prun, srun)
                 else:
                     print("Connection to Evennia timed out. Try again.")
-                    reactor.stop()
+                    _reactor_stop()
             else:
                 reactor.callLater(rate, wait_for_status,
                                   portal_running, server_running,
@@ -727,14 +732,14 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
             if callback:
                 callback(portal_running, server_running)
             else:
-                reactor.stop()
+                _reactor_stop()
         else:
             if retries <= 0:
                 if errback:
                     errback(portal_running, server_running)
                 else:
                     print("Connection to Evennia timed out. Try again.")
-                    reactor.stop()
+                    _reactor_stop()
             else:
                 reactor.callLater(rate, wait_for_status,
                                   portal_running, server_running,
@@ -759,14 +764,14 @@ def start_evennia(pprofiler=False, sprofiler=False):
 
     def _fail(fail):
         print(fail)
-        reactor.stop()
+        _reactor_stop()
 
     def _server_started(response):
         print("... Server started.\nEvennia running.")
         if response:
             _, _, _, _, pinfo, sinfo = response
             print_info(pinfo, sinfo)
-        reactor.stop()
+        _reactor_stop()
 
     def _portal_started(*args):
         print("... Portal started.\nServer starting {} ...".format(
@@ -779,7 +784,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
         print("Portal is already running as process {pid}. Not restarted.".format(pid=ppid))
         if srun:
             print("Server is already running as process {pid}. Not restarted.".format(pid=spid))
-            reactor.stop()
+            _reactor_stop()
         else:
             print("Server starting {}...".format("(under cProfile)" if sprofiler else ""))
             send_instruction(SSTART, server_cmd, _server_started, _fail)
@@ -790,7 +795,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
             Popen(portal_cmd, env=getenv(), bufsize=-1)
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))
-            reactor.stop()
+            _reactor_stop()
         wait_for_status(True, None, _portal_started)
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
@@ -808,11 +813,11 @@ def reload_evennia(sprofiler=False, reset=False):
 
     def _server_restarted(*args):
         print("... Server re-started.")
-        reactor.stop()
+        _reactor_stop()
 
     def _server_reloaded(status):
         print("... Server {}.".format("reset" if reset else "reloaded"))
-        reactor.stop()
+        _reactor_stop()
 
     def _server_stopped(status):
         wait_for_status_reply(_server_reloaded)
@@ -844,7 +849,7 @@ def stop_evennia():
     """
     def _portal_stopped(*args):
         print("... Portal stopped.\nEvennia shut down.")
-        reactor.stop()
+        _reactor_stop()
 
     def _server_stopped(*args):
         print("... Server stopped.\nStopping Portal ...")
@@ -864,7 +869,7 @@ def stop_evennia():
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
-        reactor.stop()
+        _reactor_stop()
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
@@ -876,7 +881,7 @@ def stop_server_only():
     """
     def _server_stopped(*args):
         print("... Server stopped.")
-        reactor.stop()
+        _reactor_stop()
 
     def _portal_running(response):
         _, srun, _, _, _, _ = _parse_status(response)
@@ -886,11 +891,11 @@ def stop_server_only():
             send_instruction(SSHUTD, {})
         else:
             print("Server is not running.")
-            reactor.stop()
+            _reactor_stop()
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
-        reactor.stop()
+        _reactor_stop()
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
@@ -903,7 +908,7 @@ def query_info():
     def _got_status(status):
         _, _, _, _, pinfo, sinfo = _parse_status(status)
         print_info(pinfo, sinfo)
-        reactor.stop()
+        _reactor_stop()
 
     def _portal_running(response):
         query_status(_got_status)
@@ -926,6 +931,8 @@ def tail_server_log(filename, rate=1):
         rate (int, optional): How often to poll the log file.
 
     """
+    global REACTOR_RUN
+
     def _file_changed(filename, prev_size):
         "Get size of file in bytes, get diff compared with previous size"
         new_size = os.path.getsize(filename)
@@ -991,7 +998,6 @@ def tail_server_log(filename, rate=1):
             else:
                 if max_lines:
                     # first startup
-                    print("   Tailing logfile {} ...".format(filename))
                     new_lines = new_lines[-max_lines:]
 
                 # print to stdout without line break (log has its own line feeds)
@@ -1002,7 +1008,7 @@ def tail_server_log(filename, rate=1):
         reactor.callLater(rate, _tail_file, filename, file_size, line_count, max_lines=100)
 
     reactor.callLater(0, _tail_file, filename, 0, 0, max_lines=20)
-    reactor.run()
+    REACTOR_RUN = True
 
 
 # ------------------------------------------------------------
@@ -1669,8 +1675,6 @@ def main():
     Run the evennia launcher main program.
 
     """
-    global TAIL_LOG_MODE
-
     # set up argument parser
 
     parser = ArgumentParser(description=CMDLINE_HELP, formatter_class=argparse.RawTextHelpFormatter)
@@ -1724,8 +1728,6 @@ def main():
     # make sure we have everything
     check_main_evennia_dependencies()
 
-    TAIL_LOG_MODE = args.tail_log
-
     if not args:
         # show help pane
         print(CMDLINE_HELP)
@@ -1755,8 +1757,8 @@ def main():
 
     if args.altsettings:
         # use alternative settings file
-        sfile = args.altsettings[0]
         global SETTINGSFILE, SETTINGS_DOTPATH, ENFORCED_SETTING
+        sfile = args.altsettings[0]
         SETTINGSFILE = sfile
         ENFORCED_SETTING = True
         SETTINGS_DOTPATH = "server.conf.%s" % sfile.rstrip(".py")
@@ -1772,6 +1774,15 @@ def main():
             print(ERROR_INITSETTINGS)
         sys.exit()
 
+    if args.tail_log:
+        # set up for tailing the server log file
+        global NO_REACTOR_STOP
+        NO_REACTOR_STOP = True
+        if not SERVER_LOGFILE:
+            init_game_directory(CURRENT_DIR, check_db=False)
+        tail_server_log(SERVER_LOGFILE)
+        print("   Tailing logfile {} ...".format(SERVER_LOGFILE))
+
     if args.dummyrunner:
         # launch the dummy runner
         init_game_directory(CURRENT_DIR, check_db=True)
@@ -1786,7 +1797,8 @@ def main():
         run_menu()
     elif option in ('status', 'info', 'start', 'reload', 'reset', 'stop', 'sstop', 'kill', 'skill'):
         # operate the server directly
-        init_game_directory(CURRENT_DIR, check_db=True)
+        if not SERVER_LOGFILE:
+            init_game_directory(CURRENT_DIR, check_db=True)
         if option == "status":
             query_status()
         elif option == "info":
@@ -1844,17 +1856,12 @@ def main():
             kwargs = ", ".join(["--%s" % kw for kw in kwargs])
             print(ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs))
 
-    elif not TAIL_LOG_MODE:
-        # no input; print evennia info
+    elif not args.tail_log:
+        # no input; print evennia info (don't pring if we're tailing log)
         print(ABOUT_INFO)
 
-    if TAIL_LOG_MODE:
-        # start the log-tail last
-        if not SERVER_LOGFILE:
-            init_game_directory(CURRENT_DIR, check_db=False)
-        tail_server_log(SERVER_LOGFILE)
-
-
+    if REACTOR_RUN:
+        reactor.run()
 
 
 if __name__ == '__main__':
