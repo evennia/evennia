@@ -184,8 +184,8 @@ class Portal(object):
 application = service.Application('Portal')
 
 # custom logging
-logfile = logger.WeeklyLogFile(os.path.basename(settings.SERVER_LOG_FILE),
-                               os.path.dirname(settings.SERVER_LOG_FILE))
+logfile = settings.SERVER_LOG_FILE if settings.MERGE_LOGS else settings.PORTAL_LOG_FILE
+logfile = logger.WeeklyLogFile(os.path.basename(logfile), os.path.dirname(logfile))
 application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
 
 # The main Portal server program. This sets up the database
