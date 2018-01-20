@@ -288,8 +288,8 @@ ABOUT_INFO = \
     Web: http://www.evennia.com
     Irc: #evennia on FreeNode
     Forum: http://www.evennia.com/discussions
-    Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
     Maintainer (2006-10): Greg Taylor
+    Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
 
     Use -h for command line options.
     """
@@ -329,7 +329,7 @@ MENU = \
     | 11) Port info                                                 |
     +--- Testing ---------------------------------------------------+
     | 12) Test gamedir             (run gamedir test suite, if any) |
-    | 13) Test Evennia                     (run evennia test suite) |
+    | 13) Test Evennia                     (run Evennia test suite) |
     +---------------------------------------------------------------+
     |  h) Help               i) About info                q) Abort  |
     +---------------------------------------------------------------+"""
