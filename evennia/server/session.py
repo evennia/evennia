@@ -133,7 +133,8 @@ class Session(object):
         on uid etc).
 
         """
-        self.protocol_flags.update(self.account.attributs.get("_saved_protocol_flags"), {})
+        if self.account:
+            self.protocol_flags.update(self.account.attributes.get("_saved_protocol_flags"), {})
 
     # access hooks
 
