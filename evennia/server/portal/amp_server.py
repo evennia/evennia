@@ -202,6 +202,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SRESET)
         elif mode == 'shutdown':
             self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SSHUTD)
+        self.factory.portal.server_restart_mode = mode
 
     # sending amp data
 
@@ -233,8 +234,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
     def send_AdminPortal2Server(self, session, operation="", **kwargs):
         """
         Send Admin instructions from the Portal to the Server.
-        Executed
-        on the Portal.
+        Executed on the Portal.
 
         Args:
             session (Session): Session.
@@ -403,9 +403,13 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         elif operation == amp.PSYNC:  # portal sync
             # Server has (re-)connected and wants the session data from portal
             self.factory.server_info_dict = kwargs.get("info_dict", {})
+            # this defaults to 'shutdown' or whatever value set in server_stop
+            server_restart_mode = self.factory.portal.server_restart_mode
+
             sessdata = self.factory.portal.sessions.get_all_sync_data()
             self.send_AdminPortal2Server(amp.DUMMYSESSION,
                                          amp.PSYNC,
+                                         server_restart_mode=server_restart_mode,
                                          sessiondata=sessdata)
             self.factory.portal.sessions.at_server_connection()
 

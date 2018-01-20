@@ -203,11 +203,6 @@ class Evennia(object):
             reactor.callLater(1, d.callback, None)
         reactor.sigInt = _wrap_sigint_handler
 
-        self.game_running = True
-
-        # track the server time
-        self.run_init_hooks()
-
     # Server startup methods
 
     def sqlite3_prep(self):
@@ -299,9 +294,13 @@ class Evennia(object):
                   last=last_initial_setup_step)
             initial_setup.handle_setup(int(last_initial_setup_step))
 
-    def run_init_hooks(self):
+    def run_init_hooks(self, mode):
         """
-        Called every server start
+        Called by the amp client once receiving sync back from Portal
+
+        Args:
+            mode (str): One of shutdown, reload or reset
+
         """
         from evennia.objects.models import ObjectDB
 
@@ -311,47 +310,24 @@ class Evennia(object):
         [o.at_init() for o in ObjectDB.get_all_cached_instances()]
         [p.at_init() for p in AccountDB.get_all_cached_instances()]
 
-        mode = self.getset_restart_mode()
-
         # call correct server hook based on start file value
         if mode == 'reload':
-            # True was the old reload flag, kept for compatibilty
+            logger.log_msg("Server successfully reloaded.")
             self.at_server_reload_start()
         elif mode == 'reset':
             # only run hook, don't purge sessions
             self.at_server_cold_start()
-        elif mode in ('reset', 'shutdown'):
+            logger.log_msg("Evennia Server successfully restarted in 'reset' mode.")
+        elif mode == 'shutdown':
             self.at_server_cold_start()
             # clear eventual lingering session storages
             ObjectDB.objects.clear_all_sessids()
+            logger.log_msg("Evennia Server successfully started.")
         # always call this regardless of start type
         self.at_server_start()
 
-    def getset_restart_mode(self, mode=None):
-        """
-        This manages the flag file that tells the runner if the server is
-        reloading, resetting or shutting down.
-
-        Args:
-            mode (string or None, optional): Valid values are
-                'reload', 'reset', 'shutdown' and `None`. If mode is `None`,
-                no change will be done to the flag file.
-        Returns:
-            mode (str): The currently active restart mode, either just
-                set or previously set.
-
-        """
-        if mode is None:
-            with open(SERVER_RESTART, 'r') as f:
-                # mode is either shutdown, reset or reload
-                mode = f.read()
-        else:
-            with open(SERVER_RESTART, 'w') as f:
-                f.write(str(mode))
-        return mode
-
     @defer.inlineCallbacks
-    def shutdown(self, mode=None, _reactor_stopping=False):
+    def shutdown(self, mode='reload', _reactor_stopping=False):
         """
         Shuts down the server from inside it.
 
@@ -362,7 +338,6 @@ class Evennia(object):
                          at_shutdown hooks called but sessions will not
                          be disconnected.
                'shutdown' - like reset, but server will not auto-restart.
-               None - keep currently set flag from flag file.
         _reactor_stopping - this is set if server is stopped by a kill
                             command OR this method was already called
                              once - in both cases the reactor is
@@ -373,10 +348,7 @@ class Evennia(object):
             # once; we don't need to run the shutdown procedure again.
             defer.returnValue(None)
 
-        mode = self.getset_restart_mode(mode)
-
         from evennia.objects.models import ObjectDB
-        #from evennia.accounts.models import AccountDB
         from evennia.server.models import ServerConfig
         from evennia.utils import gametime as _GAMETIME_MODULE
 
@@ -455,13 +427,15 @@ class Evennia(object):
         if SERVER_STARTSTOP_MODULE:
             SERVER_STARTSTOP_MODULE.at_server_reload_start()
 
-    def at_post_portal_sync(self):
+    def at_post_portal_sync(self, mode):
         """
         This is called just after the portal has finished syncing back data to the server
         after reconnecting.
+
+        Args:
+            mode (str): One of reload, reset or shutdown.
+
         """
-        # one of reload, reset or shutdown
-        mode = self.getset_restart_mode()
 
         from evennia.scripts.monitorhandler import MONITOR_HANDLER
         MONITOR_HANDLER.restore(mode == 'reload')
