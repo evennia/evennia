@@ -85,8 +85,9 @@ INFO_DICT = {"servername": SERVERNAME, "version": VERSION, "errors": "", "info":
 
 # -------------------------------------------------------------
 # Portal Service object
-
 # -------------------------------------------------------------
+
+
 class Portal(object):
 
     """
@@ -113,12 +114,11 @@ class Portal(object):
         self.sessions.portal = self
         self.process_id = os.getpid()
         self.server_process_id = None
+        self.server_restart_mode = "shutdown"
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
         reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _reactor_stopping=True)
-
-        self.game_running = False
 
     def get_info_dict(self):
         "Return the Portal info, for display."

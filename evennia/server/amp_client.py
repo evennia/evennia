@@ -104,7 +104,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         info_dict = self.factory.server.get_info_dict()
         super(AMPServerClientProtocol, self).connectionMade()
         # first thing we do is to request the Portal to sync all sessions
-        # back with the Server side
+        # back with the Server side. We also need the startup mode (reload, reset, shutdown)
         self.send_AdminServer2Portal(amp.DUMMYSESSION, operation=amp.PSYNC, info_dict=info_dict)
 
     def data_to_portal(self, command, sessid, **kwargs):
@@ -212,7 +212,10 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             server_sessionhandler.portal_disconnect_all()
 
         elif operation == amp.PSYNC:  # portal_session_sync
-            # force a resync of sessions from the portal side
+            # force a resync of sessions from the portal side. This happens on
+            # first server-connect.
+            server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
+            self.factory.server.run_init_hooks(server_restart_mode)
             server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
 
         elif operation == amp.SRELOAD:  # server reload

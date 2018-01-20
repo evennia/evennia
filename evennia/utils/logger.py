@@ -197,7 +197,7 @@ def log_server(servermsg):
     except Exception as e:
         servermsg = str(e)
     for line in servermsg.splitlines():
-        log_msg('[SRV] %s' % line)
+        log_msg('[Server] %s' % line)
 
 
 def log_warn(warnmsg):

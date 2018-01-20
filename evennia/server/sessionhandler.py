@@ -379,8 +379,10 @@ class ServerSessionHandler(SessionHandler):
             self[sessid] = sess
             sess.at_sync()
 
+        mode = 'reload'
+
         # tell the server hook we synced
-        self.server.at_post_portal_sync()
+        self.server.at_post_portal_sync(mode)
         # announce the reconnection
         self.announce_all(_(" ... Server restarted."))
 
