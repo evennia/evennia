@@ -1363,7 +1363,7 @@ def del_pid(pidfile):
         os.remove(pidfile)
 
 
-def kill(pidfile, component='Server', killsignal=SIG):
+def kill(pidfile, component='Server', callback=None, errback=None, killsignal=SIG):
     """
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
@@ -1372,6 +1372,8 @@ def kill(pidfile, component='Server', killsignal=SIG):
     Args:
         pidfile (str): The path of the pidfile to get the PID from.
         component (str, optional): Usually one of 'Server' or 'Portal'.
+        errback (callable, optional): Called if signal failed to send.
+        callback (callable, optional): Called if kill signal was sent successfully.
         killsignal (int, optional): Signal identifier for signal to send.
 
     """
@@ -1402,10 +1404,16 @@ def kill(pidfile, component='Server', killsignal=SIG):
                   "Try removing it manually.".format(
                       component=component, pid=pid, pidfile=pidfile))
             return
-        print("Sent kill signal to {component}.".format(component=component))
-        return
-    print("Could not send kill signal - {component} does "
-          "not appear to be running.".format(component=component))
+        if callback:
+            callback()
+        else:
+            print("Sent kill signal to {component}.".format(component=component))
+            return
+    if errback:
+        errback()
+    else:
+        print("Could not send kill signal - {component} does "
+              "not appear to be running.".format(component=component))
 
 
 def show_version_info(about=False):
@@ -1715,8 +1723,10 @@ def run_menu():
         elif inp == 7:
             kill(SERVER_PIDFILE, 'Server')
         elif inp == 8:
-            kill(PORTAL_PIDFILE, 'Portal')
+            global REACTOR_RUN
             kill(SERVER_PIDFILE, 'Server')
+            reactor.callLater(5, kill, PORTAL_PIDFILE, 'Portal')
+            REACTOR_RUN = True
         elif inp == 9:
             if not SERVER_LOGFILE:
                 init_game_directory(CURRENT_DIR, check_db=False)
@@ -1878,7 +1888,7 @@ def main():
         elif option == 'sstop':
             stop_server_only()
         elif option == 'kill':
-            kill(PORTAL_PIDFILE, 'Portal')
+            kill(SERVER_PIDFILE, 'Server')
             kill(SERVER_PIDFILE, 'Server')
         elif option == 'skill':
             kill(SERVER_PIDFILE, 'Server')

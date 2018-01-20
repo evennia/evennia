@@ -5,7 +5,7 @@ Portal. This module sets up the Client-side communication.
 """
 
 from evennia.server.portal import amp
-from twisted.internet import protocol
+from twisted.internet import protocol, reactor
 from evennia.utils import logger
 
 
@@ -84,8 +84,9 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection failed.
 
         """
-        logger.log_info("Attempting to reconnect to Portal ...")
-        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
+        if reactor.running:
+            logger.log_info("Attempting to reconnect to Portal ...")
+            protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 
 class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
