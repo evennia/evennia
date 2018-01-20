@@ -461,17 +461,17 @@ SERVER_INFO = \
 ARG_OPTIONS = \
     """Actions on installed server. One of:
  start  - launch server+portal if not running
- reload - restart server (code refresh)
+ reload - restart server in 'reload' mode
  stop   - shutdown server+portal
  reboot - shutdown server+portal, then start again
- reset  - restart server in shutdown-mode (not reload mode)
+ reset  - restart server in 'shutdown' mode
  sstart - start only server (requires portal)
  kill   - send kill signal to portal+server (force)
  skill  = send kill signal only to server
  status - show server and portal run state
  info   - show server and portal port info
  menu   - show a menu of options
-Other input, like migrate and shell is passed on to Django."""
+Others, like migrate, test and shell is passed on to Django."""
 
 # ------------------------------------------------------------
 #
@@ -1800,7 +1800,7 @@ def main():
         "operation", nargs='?', default="noop",
         help=ARG_OPTIONS)
     parser.epilog = (
-        "Common Django-admin commands are shell, dbshell, migrate and flush.\n"
+        "Common Django-admin commands are shell, dbshell, test and migrate.\n"
         "See the Django documentation for more management commands.")
 
     args, unknown_args = parser.parse_known_args()
