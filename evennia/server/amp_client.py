@@ -5,7 +5,7 @@ Portal. This module sets up the Client-side communication.
 """
 
 from evennia.server.portal import amp
-from twisted.internet import protocol, reactor
+from twisted.internet import protocol
 from evennia.utils import logger
 
 
