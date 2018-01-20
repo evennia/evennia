@@ -484,7 +484,7 @@ def _print_info(portal_info_dict, server_info_dict):
     Format info dicts from the Portal/Server for display
 
     """
-    ind = " " * 7
+    ind = " " * 8
 
     def _prepare_dict(dct):
         out = {}
