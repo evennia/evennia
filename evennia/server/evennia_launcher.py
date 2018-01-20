@@ -296,10 +296,17 @@ ABOUT_INFO = \
 
 HELP_ENTRY = \
     """
-    This is a convenience launcher for the most common actions. For
-    more advanced ways to operate and manage Evennia, see  'evennia -h'.
+    Evennia has two processes, the 'Server' and the 'Portal'.
+    External users connect to the Portal while the Server runs the
+    game/database. Restarting the Server will refresh code but not
+    disconnect users.
 
-    Evennia's manual is found here: https://github.com/evennia/evennia/wiki
+    For more ways to operate and manage Evennia, use 'evennia -h'.
+
+    If you want to add unit tests to your game, see
+        https://github.com/evennia/evennia/wiki/Unit-Testing
+    Evennia's manual is found here:
+        https://github.com/evennia/evennia/wiki
     """
 
 MENU = \
@@ -307,24 +314,24 @@ MENU = \
     +----Evennia Launcher-------------------------------------------+
     {gameinfo}
     +--- Common operations -----------------------------------------+
-    |  1) Start                     (also restart stopped Server)   |
-    |  2) Reload             (stop/start Server in 'reload' mode)   |
-    |  3) Stop                       (shutdown Portal and Server)   |
-    |  4) Reboot                          (shutdown then restart)   |
+    |  1) Start                       (also restart stopped Server) |
+    |  2) Reload               (stop/start Server in 'reload' mode) |
+    |  3) Stop                         (shutdown Portal and Server) |
+    |  4) Reboot                            (shutdown then restart) |
     +--- Other -----------------------------------------------------+
-    |  5) Reset            (stop/start Server in 'shutdown' mode)   |
+    |  5) Reset              (stop/start Server in 'shutdown' mode) |
     |  6) Stop Server only                                          |
-    |  7) Kill Server only          (send kill signal to process)   |
+    |  7) Kill Server only            (send kill signal to process) |
     |  8) Kill Portal + Server                                      |
     +--- Information -----------------------------------------------+
-    |  9) Tail log file                                             |
-    | 10) Run status                                                |
+    |  9) Tail log file                        (quickly see errors) |
+    | 10) Status                                                    |
     | 11) Port info                                                 |
     +--- Testing ---------------------------------------------------+
-    | 12) Test gamedir           (run gamedir test suite, if any)   |
-    | 13) Test Evennia                   (run evennia test suite)   |
+    | 12) Test gamedir             (run gamedir test suite, if any) |
+    | 13) Test Evennia                     (run evennia test suite) |
     +---------------------------------------------------------------+
-    |  h) Help              i) About info               q) Abort    |
+    |  h) Help               i) About info                q) Abort  |
     +---------------------------------------------------------------+"""
 
 ERROR_AMP_UNCONFIGURED = \
@@ -672,8 +679,11 @@ def query_status(callback=None):
             callback(response)
         else:
             pstatus, sstatus, ppid, spid, pinfo, sinfo = _parse_status(response)
+            # note - the server reports its pid, but this is likely to be a
+            # thread and can't be relied on, so we use the pid file instead
             print("Portal:   {} (pid {})\nServer:   {} (pid {})".format(
-                wmap[pstatus], ppid, wmap[sstatus], spid))
+                wmap[pstatus], get_pid(PORTAL_PIDFILE),
+                wmap[sstatus], get_pid(SERVER_PIDFILE)))
             _reactor_stop()
 
     def _errback(fail):
@@ -1685,7 +1695,7 @@ def run_menu():
         # menu loop
         gamedir = "/{}".format(os.path.basename(GAMEDIR))
         leninfo = len(gamedir)
-        line = "|" + " " * (60 - leninfo) + gamedir + " " * 3 + "|"
+        line = "|" + " " * (61 - leninfo) + gamedir + " " * 2 + "|"
 
         print(MENU.format(gameinfo=line))
         inp = input(" option > ")
@@ -1723,10 +1733,8 @@ def run_menu():
         elif inp == 7:
             kill(SERVER_PIDFILE, 'Server')
         elif inp == 8:
-            global REACTOR_RUN
             kill(SERVER_PIDFILE, 'Server')
-            reactor.callLater(5, kill, PORTAL_PIDFILE, 'Portal')
-            REACTOR_RUN = True
+            kill(PORTAL_PIDFILE, 'Portal')
         elif inp == 9:
             if not SERVER_LOGFILE:
                 init_game_directory(CURRENT_DIR, check_db=False)
@@ -1736,6 +1744,10 @@ def run_menu():
             query_status()
         elif inp == 11:
             query_info()
+        elif inp == 12:
+            Popen(['evennia', '--settings', 'settings.py', 'test', '.'], env=getenv()).wait()
+        elif inp == 13:
+            Popen(['evennia', 'test', 'evennia'], env=getenv()).wait()
         else:
             print("Not a valid option.")
             continue
@@ -1889,7 +1901,7 @@ def main():
             stop_server_only()
         elif option == 'kill':
             kill(SERVER_PIDFILE, 'Server')
-            kill(SERVER_PIDFILE, 'Server')
+            kill(PORTAL_PIDFILE, 'Portal')
         elif option == 'skill':
             kill(SERVER_PIDFILE, 'Server')
     elif option != "noop":
