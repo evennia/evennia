@@ -196,9 +196,9 @@ class Evennia(object):
             from twisted.internet.defer import Deferred
             if hasattr(self, "web_root"):
                 d = self.web_root.empty_threadpool()
-                d.addCallback(lambda _: self.shutdown(_reactor_stopping=True))
+                d.addCallback(lambda _: self.shutdown("shutdown", _reactor_stopping=True))
             else:
-                d = Deferred(lambda _: self.shutdown(_reactor_stopping=True))
+                d = Deferred(lambda _: self.shutdown("shutdown", _reactor_stopping=True))
             d.addCallback(lambda _: reactor.stop())
             reactor.callLater(1, d.callback, None)
         reactor.sigInt = _wrap_sigint_handler
@@ -358,7 +358,8 @@ class Evennia(object):
             ServerConfig.objects.conf("server_restart_mode", "reload")
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in AccountDB.get_all_cached_instances()]
-            yield [(s.pause(manual_pause=False), s.at_server_reload()) for s in ScriptDB.get_all_cached_instances() if s.is_active]
+            yield [(s.pause(manual_pause=False), s.at_server_reload())
+                   for s in ScriptDB.get_all_cached_instances() if s.is_active]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
             # only save monitor state on reload, not on shutdown/reset

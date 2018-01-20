@@ -84,9 +84,8 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
             reason (str): Eventual text describing why connection failed.
 
         """
-        if reactor.running:
-            logger.log_info("Attempting to reconnect to Portal ...")
-            protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
+        logger.log_msg("Attempting to reconnect to Portal ...")
+        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 
 class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
