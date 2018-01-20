@@ -185,7 +185,7 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdPerm(), "Char2 = Builder", "Permission 'Builder' given to Char2 (the Object/Character).")
 
     def test_wall(self):
-        self.call(admin.CmdWall(), "Test", "Announcing to all connected accounts ...")
+        self.call(admin.CmdWall(), "Test", "Announcing to all connected sessions ...")
 
     def test_ban(self):
         self.call(admin.CmdBan(), "Char", "NameBan char was added.")
