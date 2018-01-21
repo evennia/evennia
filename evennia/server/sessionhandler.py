@@ -593,10 +593,14 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = curr_session.uid
+        # we can't compare sessions directly since this will compare addresses and
+        # mean connecting from the same host would not catch duplicates
+        sid = id(curr_session)
         doublet_sessions = [sess for sess in self.values()
                             if sess.logged_in and
                             sess.uid == uid and
-                            sess != curr_session]
+                            id(sess) != sid]
+
         for session in doublet_sessions:
             self.disconnect(session, reason)
 
