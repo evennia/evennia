@@ -130,7 +130,6 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % (3600 * 7) == 0:
         # drop database connection every 7 hrs to avoid default timeouts on MySQL
         # (see https://github.com/evennia/evennia/issues/1376)
-        print("Dropping database connection!")
         connection.close()
 
     # handle idle timeouts
