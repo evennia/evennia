@@ -227,13 +227,15 @@ class TelnetOOB(object):
             GMCP messages will be outgoing on the following
             form (the non-JSON cmdname at the start is what
             IRE games use, supposedly, and what clients appear
-            to have adopted):
+            to have adopted). A cmdname without Package will end
+            up in the Core package, while Core package names will
+            be stripped on the Evennia side.
 
             [cmd.name, [], {}]          -> Cmd.Name
             [cmd.name, [arg], {}]       -> Cmd.Name arg
             [cmd.name, [args],{}]       -> Cmd.Name [args]
             [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
-            [cmdname, [args, {kwargs}] -> Custom.Cmdname [[args],{kwargs}]
+            [cmdname, [args, {kwargs}] -> Core.Cmdname [[args],{kwargs}]
 
         Notes:
             There are also a few default mappings between evennia outputcmds and
@@ -251,7 +253,7 @@ class TelnetOOB(object):
         elif "_" in cmdname:
             gmcp_cmdname = ".".join(word.capitalize() for word in cmdname.split("_"))
         else:
-            gmcp_cmdname = "Custom.%s" % cmdname.capitalize()
+            gmcp_cmdname = "Core.%s" % cmdname.capitalize()
 
         if not (args or kwargs):
             gmcp_string = gmcp_cmdname
