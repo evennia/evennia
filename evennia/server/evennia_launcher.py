@@ -982,15 +982,18 @@ def query_info():
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
-def tail_server_log(filename, rate=1):
+def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=1):
     """
-    Tail the server logfile interactively, printing to stdout
+    Tail two logfiles interactively, combining their output to stdout
 
-    When first starting, this will display the tail of the log file. After
-    that it will poll the log file repeatedly and display changes.
+    When first starting, this will display the tail of the log files. After
+    that it will poll the log files repeatedly and display changes.
 
     Args:
-        filename (str): Path to log file.
+        filename1 (str): Path to first log file.
+        filename2 (str): Path to second log file.
+        start_lines1 (int): How many lines to show from existing first log.
+        start_lines2 (int): How many lines to show from existing second log.
         rate (int, optional): How often to poll the log file.
 
     """
@@ -1058,8 +1061,11 @@ def tail_server_log(filename, rate=1):
                 # the log file might not exist yet. Wait a little, then try again ...
                 pass
             else:
-                if max_lines:
-                    # first startup
+                if max_lines == 0:
+                    # don't show any lines from old file
+                    new_lines = []
+                elif max_lines:
+                    # show some lines from first startup
                     new_lines = new_lines[-max_lines:]
 
                 # print to stdout without line break (log has its own line feeds)
@@ -1069,7 +1075,9 @@ def tail_server_log(filename, rate=1):
         # set up the next poll
         reactor.callLater(rate, _tail_file, filename, file_size, line_count, max_lines=100)
 
-    reactor.callLater(0, _tail_file, filename, 0, 0, max_lines=20)
+    reactor.callLater(0, _tail_file, filename1, 0, 0, max_lines=start_lines1)
+    reactor.callLater(0, _tail_file, filename2, 0, 0, max_lines=start_lines2)
+
     REACTOR_RUN = True
 
 
@@ -1744,7 +1752,7 @@ def run_menu():
         elif inp == 9:
             if not SERVER_LOGFILE:
                 init_game_directory(CURRENT_DIR, check_db=False)
-            tail_server_log(SERVER_LOGFILE)
+            tail_log_files(PORTAL_LOGFILE, SERVER_LOGFILE, 20, 20)
             print("   Tailing logfile {} ...".format(SERVER_LOGFILE))
         elif inp == 10:
             query_status()
@@ -1864,12 +1872,18 @@ def main():
         sys.exit()
 
     if args.tail_log:
-        # set up for tailing the server log file
+        # set up for tailing the log files
         global NO_REACTOR_STOP
         NO_REACTOR_STOP = True
         if not SERVER_LOGFILE:
             init_game_directory(CURRENT_DIR, check_db=False)
-        tail_server_log(SERVER_LOGFILE)
+
+        # adjust how many lines we show from existing logs
+        start_lines1, start_lines2 = 20, 20
+        if option == 'start':
+            start_lines1, start_lines2 = 0, 0
+
+        tail_log_files(PORTAL_LOGFILE, SERVER_LOGFILE, start_lines1, start_lines2)
         print("   Tailing logfile {} ...".format(SERVER_LOGFILE))
 
     if args.dummyrunner:
