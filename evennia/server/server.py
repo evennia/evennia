@@ -51,9 +51,9 @@ SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 SERVER_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)]
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Evennia Server settings
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 SERVERNAME = settings.SERVERNAME
 VERSION = get_evennia_version()

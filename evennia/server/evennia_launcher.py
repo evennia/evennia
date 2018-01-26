@@ -679,16 +679,14 @@ def query_status(callback=None):
             callback(response)
         else:
             pstatus, sstatus, ppid, spid, pinfo, sinfo = _parse_status(response)
-            # note - the server reports its pid, but this is likely to be a
-            # thread and can't be relied on, so we use the pid file instead
-            print("Portal:   {} (pid {})\nServer:   {} (pid {})".format(
-                wmap[pstatus], get_pid(PORTAL_PIDFILE),
-                wmap[sstatus], get_pid(SERVER_PIDFILE)))
+            print("Evennia Portal: {}{}\n        Server: {}{}".format(
+                wmap[pstatus], " (pid {})".format(get_pid(PORTAL_PIDFILE, ppid)) if pstatus else "",
+                wmap[sstatus], " (pid {})".format(get_pid(SERVER_PIDFILE, spid)) if sstatus else ""))
             _reactor_stop()
 
     def _errback(fail):
         pstatus, sstatus = False, False
-        print("Portal:   {}\nServer:   {}".format(wmap[pstatus], wmap[sstatus]))
+        print("Portal: {}\nServer: {}".format(wmap[pstatus], wmap[sstatus]))
         _reactor_stop()
 
     send_instruction(PSTATUS, None, _callback, _errback)
@@ -1355,22 +1353,23 @@ def getenv():
     return env
 
 
-def get_pid(pidfile):
+def get_pid(pidfile, default=None):
     """
     Get the PID (Process ID) by trying to access an PID file.
 
     Args:
         pidfile (str): The path of the pid file.
+        default (int, optional): What to return if file does not exist.
 
     Returns:
-        pid (str or None): The process id.
+        pid (str): The process id or `default`.
 
     """
     if os.path.exists(pidfile):
         with open(pidfile, 'r') as f:
             pid = f.read()
             return pid
-    return None
+    return default
 
 
 def del_pid(pidfile):
@@ -1418,7 +1417,7 @@ def kill(pidfile, component='Server', callback=None, errback=None, killsignal=SI
                     # We must catch and ignore the interrupt sent.
                     pass
             else:
-                # Linux can send the SIGINT signal directly
+                # Linux/Unix can send the SIGINT signal directly
                 # to the specified PID.
                 os.kill(int(pid), killsignal)
 

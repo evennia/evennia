@@ -39,11 +39,6 @@ except Exception:
 PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE
 
-PORTAL_PIDFILE = ""
-if os.name == 'nt':
-    # For Windows we need to handle pid files manually.
-    PORTAL_PIDFILE = os.path.join(settings.GAME_DIR, "server", 'portal.pid')
-
 # -------------------------------------------------------------
 # Evennia Portal settings
 # -------------------------------------------------------------
@@ -113,8 +108,10 @@ class Portal(object):
         self.sessions = PORTAL_SESSIONS
         self.sessions.portal = self
         self.process_id = os.getpid()
+
         self.server_process_id = None
         self.server_restart_mode = "shutdown"
+        self.server_info_dict = {}
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
@@ -163,9 +160,7 @@ class Portal(object):
             return
         self.sessions.disconnect_all()
         self.set_restart_mode(restart)
-        if os.name == 'nt' and os.path.exists(PORTAL_PIDFILE):
-            # for Windows we need to remove pid files manually
-            os.remove(PORTAL_PIDFILE)
+
         if not _reactor_stopping:
             # shutting down the reactor will trigger another signal. We set
             # a flag to avoid loops.
