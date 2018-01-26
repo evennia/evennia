@@ -811,7 +811,13 @@ def start_evennia(pprofiler=False, sprofiler=False):
     def _portal_not_running(fail):
         print("Portal starting {}...".format("(under cProfile)" if pprofiler else ""))
         try:
-            Popen(portal_cmd, env=getenv(), bufsize=-1)
+            if os.name == 'nt':
+                # Windows requires special care
+                create_no_window = 0x08000000
+                Popen(portal_cmd, env=getenv(), bufsize=-1,
+                      createflags=create_no_window)
+            else:
+                Popen(portal_cmd, env=getenv(), bufsize=-1)
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))
             _reactor_stop()

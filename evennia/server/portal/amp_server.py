@@ -8,6 +8,7 @@ import os
 import sys
 from twisted.internet import protocol
 from evennia.server.portal import amp
+from django.conf import settings
 from subprocess import Popen, STDOUT, PIPE
 from evennia.utils import logger
 
@@ -150,21 +151,32 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # start the Server
-        try:
-            process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1, stdout=PIPE, stderr=STDOUT)
-        except Exception:
-            self.factory.portal.server_process_id = None
-            logger.log_trace()
-            return 0
-        # there is a short window before the server logger is up where we must
-        # catch the stdout of the Server or eventual tracebacks will be lost.
-        with process.stdout as out:
-            logger.log_server(out.read())
+        with open(settings.SERVER_LOG_FILE, 'a') as logfile:
+            try:
+                if os.name == 'nt':
+                    # Windows requires special care
+                    create_no_window = 0x08000000
+                    process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
+                                    stdout=logfile, stderr=STDOUT,
+                                    creationflags=create_no_window)
+                else:
+                    process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
+                                    stdout=logfile, stderr=STDOUT)
+            except Exception:
+                self.factory.portal.server_process_id = None
+                logger.log_trace()
+                logfile.flush()
+                return 0
+            # there is a short window before the server logger is up where we must
+            # catch the stdout of the Server or eventual tracebacks will be lost.
+            # with process.stdout as out:
+            #     logger.log_server(out.readlines())
 
-        # store the pid and launch argument for future reference
-        self.factory.portal.server_process_id = process.pid
-        self.factory.portal.server_twistd_cmd = server_twistd_cmd
-        return process.pid
+            # store the pid and launch argument for future reference
+            self.factory.portal.server_process_id = process.pid
+            self.factory.portal.server_twistd_cmd = server_twistd_cmd
+            logfile.flush()
+            return process.pid
 
     def wait_for_disconnect(self, callback, *args, **kwargs):
         """

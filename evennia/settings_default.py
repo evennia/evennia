@@ -134,8 +134,6 @@ LOG_DIR = os.path.join(GAME_DIR, 'server', 'logs')
 SERVER_LOG_FILE = os.path.join(LOG_DIR, 'server.log')
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, 'portal.log')
 HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
-# if this is true, merge logs into only the SERVER_LOG_FILE location.
-MERGE_LOGS = True
 # if this is set to the empty string, lockwarnings will be turned off.
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 # Rotate log files when server and/or portal stops. This will keep log
