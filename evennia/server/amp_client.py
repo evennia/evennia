@@ -4,6 +4,7 @@ Portal. This module sets up the Client-side communication.
 
 """
 
+import os
 from evennia.server.portal import amp
 from twisted.internet import protocol
 from evennia.utils import logger
@@ -105,7 +106,8 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         super(AMPServerClientProtocol, self).connectionMade()
         # first thing we do is to request the Portal to sync all sessions
         # back with the Server side. We also need the startup mode (reload, reset, shutdown)
-        self.send_AdminServer2Portal(amp.DUMMYSESSION, operation=amp.PSYNC, info_dict=info_dict)
+        self.send_AdminServer2Portal(
+                amp.DUMMYSESSION, operation=amp.PSYNC, spid=os.getpid(), info_dict=info_dict)
 
     def data_to_portal(self, command, sessid, **kwargs):
         """

@@ -54,7 +54,6 @@ class AMPServerFactory(protocol.ServerFactory):
         self.protocol = AMPServerProtocol
         self.broadcasts = []
         self.server_connection = None
-        self.server_info_dict = None
         self.launcher_connection = None
         self.disconnect_callbacks = {}
         self.server_connect_callbacks = []
@@ -89,7 +88,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         super(AMPServerProtocol, self).connectionLost(reason)
         if self.factory.server_connection == self:
             self.factory.server_connection = None
-            self.factory.server_info_dict = None
+            self.factory.portal.server_info_dict = {}
         if self.factory.launcher_connection == self:
             self.factory.launcher_connection = None
 
@@ -112,7 +111,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         server_connected = bool(self.factory.server_connection and
                                 self.factory.server_connection.transport.connected)
         portal_info_dict = self.factory.portal.get_info_dict()
-        server_info_dict = self.factory.server_info_dict
+        server_info_dict = self.factory.portal.server_info_dict
         server_pid = self.factory.portal.server_process_id
         portal_pid = os.getpid()
         return (True, server_connected, portal_pid, server_pid, portal_info_dict, server_info_dict)
@@ -151,7 +150,11 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # start the Server
+        process = None
         with open(settings.SERVER_LOG_FILE, 'a') as logfile:
+            # we link stdout to a file in order to catch
+            # eventual errors happening before the Server has
+            # opened its logger.
             try:
                 if os.name == 'nt':
                     # Windows requires special care
@@ -159,24 +162,20 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                     process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
                                     stdout=logfile, stderr=STDOUT,
                                     creationflags=create_no_window)
+
                 else:
                     process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
                                     stdout=logfile, stderr=STDOUT)
             except Exception:
-                self.factory.portal.server_process_id = None
                 logger.log_trace()
-                logfile.flush()
-                return 0
-            # there is a short window before the server logger is up where we must
-            # catch the stdout of the Server or eventual tracebacks will be lost.
-            # with process.stdout as out:
-            #     logger.log_server(out.readlines())
 
-            # store the pid and launch argument for future reference
-            self.factory.portal.server_process_id = process.pid
             self.factory.portal.server_twistd_cmd = server_twistd_cmd
             logfile.flush()
+        if process:
+            # avoid zombie-process
+            process.wait()
             return process.pid
+        return 0
 
     def wait_for_disconnect(self, callback, *args, **kwargs):
         """
@@ -414,7 +413,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         elif operation == amp.PSYNC:  # portal sync
             # Server has (re-)connected and wants the session data from portal
-            self.factory.server_info_dict = kwargs.get("info_dict", {})
+            self.factory.portal.server_info_dict = kwargs.get("info_dict", {})
+            self.factory.portal.server_process_id = kwargs.get("spid", None)
             # this defaults to 'shutdown' or whatever value set in server_stop
             server_restart_mode = self.factory.portal.server_restart_mode
 
