@@ -39,7 +39,7 @@ CTRL_C_EVENT = 0  # Windows SIGINT-like signal
 # Set up the main python paths to Evennia
 EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import evennia
+import evennia  # noqa
 EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
 EVENNIA_SERVER = os.path.join(EVENNIA_LIB, "server")
 EVENNIA_RUNNER = os.path.join(EVENNIA_SERVER, "evennia_runner.py")
@@ -687,8 +687,10 @@ def query_status(callback=None):
         else:
             pstatus, sstatus, ppid, spid, pinfo, sinfo = _parse_status(response)
             print("Portal: {}{}\nServer: {}{}".format(
-                wmap[pstatus], " (pid {})".format(get_pid(PORTAL_PIDFILE, ppid)) if pstatus else "",
-                wmap[sstatus], " (pid {})".format(get_pid(SERVER_PIDFILE, spid)) if sstatus else ""))
+                wmap[pstatus], " (pid {})".format(
+                    get_pid(PORTAL_PIDFILE, ppid)) if pstatus else "",
+                wmap[sstatus], " (pid {})".format(
+                    get_pid(SERVER_PIDFILE, spid)) if sstatus else ""))
             _reactor_stop()
 
     def _errback(fail):
@@ -1780,10 +1782,11 @@ def run_menu():
             query_info()
         elif inp == 12:
             print("Running 'evennia --settings settings.py test .' ...")
-            Popen(['evennia', '--settings', 'settings.py', 'test', '.'], env=getenv()).wait()
+            Popen([sys.executable, __file__, '--settings', 'settings.py', 'test', '.'],
+                  env=getenv()).wait()
         elif inp == 13:
             print("Running 'evennia test evennia' ...")
-            Popen(['evennia', 'test', 'evennia'], env=getenv()).wait()
+            Popen([sys.executable, __file__, 'test', 'evennia'], env=getenv()).wait()
         else:
             print("Not a valid option.")
             continue
