@@ -481,6 +481,11 @@ Others, like migrate, test and shell is passed on to Django."""
 #
 # ------------------------------------------------------------
 
+
+def _is_windows():
+    return os.name == 'nt'
+
+
 def _print_info(portal_info_dict, server_info_dict):
     """
     Format info dicts from the Portal/Server for display
@@ -811,7 +816,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
     def _portal_not_running(fail):
         print("Portal starting {}...".format("(under cProfile)" if pprofiler else ""))
         try:
-            if os.name == 'nt':
+            if _is_windows():
                 # Windows requires special care
                 create_no_window = 0x08000000
                 Popen(portal_cmd, env=getenv(), bufsize=-1,
@@ -1349,7 +1354,7 @@ def getenv():
         env (dict): Environment global dict.
 
     """
-    sep = ";" if os.name == 'nt' else ":"
+    sep = ";" if _is_windows() else ":"
     env = os.environ.copy()
     env['PYTHONPATH'] = sep.join(sys.path)
     return env
@@ -1409,7 +1414,7 @@ def kill(pidfile, component='Server', callback=None, errback=None, killsignal=SI
             Ignored on Windows.
 
     """
-    if os.name == 'nt':
+    if _is_windows():
         # Windows signal sending is very limited.
         from win32api import GenerateConsoleCtrlEvent, SetConsoleCtrlHandler
         try:
@@ -1427,7 +1432,7 @@ def kill(pidfile, component='Server', callback=None, errback=None, killsignal=SI
         # Linux/Unix/Mac can send kill signal directly to specific PIDs.
         pid = get_pid(pidfile)
         if pid:
-            if os.name == 'nt':
+            if _is_windows():
                 os.remove(pidfile)
             try:
                 os.kill(int(pid), killsignal)
@@ -1607,7 +1612,7 @@ def init_game_directory(path, check_db=True):
         print(ERROR_LOGDIR_MISSING.format(logfiles=errstr))
         sys.exit()
 
-    if os.name == 'nt':
+    if _is_windows():
         # We need to handle Windows twisted separately. We create a
         # batchfile in game/server, linking to the actual binary
 
@@ -1754,12 +1759,12 @@ def run_menu():
         elif inp == 6:
             stop_server_only()
         elif inp == 7:
-            if os.name == 'nt':
+            if _is_windows():
                 print("Windows can't send kill signals by PID. Use option 8 instead.")
             else:
                 kill(SERVER_PIDFILE, 'Server')
         elif inp == 8:
-            if os.name == 'nt':
+            if _is_windows():
                 kill(None)
             else:
                 kill(SERVER_PIDFILE, 'Server')
@@ -1937,10 +1942,16 @@ def main():
         elif option == 'sstop':
             stop_server_only()
         elif option == 'kill':
-            kill(SERVER_PIDFILE, 'Server')
-            kill(PORTAL_PIDFILE, 'Portal')
+            if _is_windows():
+                kill(None)
+            else:
+                kill(SERVER_PIDFILE, 'Server')
+                kill(PORTAL_PIDFILE, 'Portal')
         elif option == 'skill':
-            kill(SERVER_PIDFILE, 'Server')
+            if _is_windows():
+                print("This is not supported on Windows. Use 'evennia kill' instead.")
+            else:
+                kill(SERVER_PIDFILE, 'Server')
     elif option != "noop":
         # pass-through to django manager
         check_db = False

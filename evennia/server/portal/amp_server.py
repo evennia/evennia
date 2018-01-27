@@ -9,8 +9,12 @@ import sys
 from twisted.internet import protocol
 from evennia.server.portal import amp
 from django.conf import settings
-from subprocess import Popen, STDOUT, PIPE
+from subprocess import Popen, STDOUT
 from evennia.utils import logger
+
+
+def _is_windows():
+    return os.name == 'nt'
 
 
 def getenv():
@@ -21,7 +25,7 @@ def getenv():
         env (dict): Environment global dict.
 
     """
-    sep = ";" if os.name == 'nt' else ":"
+    sep = ";" if _is_windows() else ":"
     env = os.environ.copy()
     env['PYTHONPATH'] = sep.join(sys.path)
     return env
@@ -156,7 +160,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             # eventual errors happening before the Server has
             # opened its logger.
             try:
-                if os.name == 'nt':
+                if _is_windows():
                     # Windows requires special care
                     create_no_window = 0x08000000
                     process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
@@ -171,11 +175,10 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
             self.factory.portal.server_twistd_cmd = server_twistd_cmd
             logfile.flush()
-        if process:
-            # avoid zombie-process
+        if process and not _is_windows():
+            # avoid zombie-process on Unix/BSD
             process.wait()
-            return process.pid
-        return 0
+        return
 
     def wait_for_disconnect(self, callback, *args, **kwargs):
         """
