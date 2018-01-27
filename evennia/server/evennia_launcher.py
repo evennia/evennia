@@ -815,7 +815,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
                 # Windows requires special care
                 create_no_window = 0x08000000
                 Popen(portal_cmd, env=getenv(), bufsize=-1,
-                      createflags=create_no_window)
+                      creationflags=create_no_window)
             else:
                 Popen(portal_cmd, env=getenv(), bufsize=-1)
         except Exception as e:
