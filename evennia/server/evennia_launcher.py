@@ -301,10 +301,12 @@ HELP_ENTRY = \
     game/database. Restarting the Server will refresh code but not
     disconnect users.
 
-    For more ways to operate and manage Evennia, use 'evennia -h'.
+    To start a new game, use 'evennia --init mygame'.
+    For more ways to operate and manage Evennia, see 'evennia -h'.
 
     If you want to add unit tests to your game, see
         https://github.com/evennia/evennia/wiki/Unit-Testing
+
     Evennia's manual is found here:
         https://github.com/evennia/evennia/wiki
     """
@@ -318,7 +320,7 @@ MENU = \
     |  2) Reload               (stop/start Server in 'reload' mode) |
     |  3) Stop                         (shutdown Portal and Server) |
     |  4) Reboot                            (shutdown then restart) |
-    +--- Other -----------------------------------------------------+
+    +--- Other operations ------------------------------------------+
     |  5) Reset              (stop/start Server in 'shutdown' mode) |
     |  6) Stop Server only                                          |
     |  7) Kill Server only            (send kill signal to process) |
@@ -679,7 +681,7 @@ def query_status(callback=None):
             callback(response)
         else:
             pstatus, sstatus, ppid, spid, pinfo, sinfo = _parse_status(response)
-            print("Evennia Portal: {}{}\n        Server: {}{}".format(
+            print("Portal: {}{}\nServer: {}{}".format(
                 wmap[pstatus], " (pid {})".format(get_pid(PORTAL_PIDFILE, ppid)) if pstatus else "",
                 wmap[sstatus], " (pid {})".format(get_pid(SERVER_PIDFILE, spid)) if sstatus else ""))
             _reactor_stop()
@@ -1390,53 +1392,61 @@ def kill(pidfile, component='Server', callback=None, errback=None, killsignal=SI
     """
     Send a kill signal to a process based on PID. A customized
     success/error message will be returned. If clean=True, the system
-    will attempt to manually remove the pid file.
+    will attempt to manually remove the pid file. On Windows, no arguments
+    are useful since Windows has no ability to direct signals except to all
+    children of a console.
 
     Args:
-        pidfile (str): The path of the pidfile to get the PID from.
-        component (str, optional): Usually one of 'Server' or 'Portal'.
-        errback (callable, optional): Called if signal failed to send.
+        pidfile (str): The path of the pidfile to get the PID from. This is ignored
+            on Windows.
+        component (str, optional): Usually one of 'Server' or 'Portal'. This is
+            ignored on Windows.
+        errback (callable, optional): Called if signal failed to send. This
+            is ignored on Windows.
         callback (callable, optional): Called if kill signal was sent successfully.
-        killsignal (int, optional): Signal identifier for signal to send.
+            This is ignored on Windows.
+        killsignal (int, optional): Signal identifier for signal to send. This is
+            Ignored on Windows.
 
     """
-    pid = get_pid(pidfile)
-    if pid:
-        if os.name == 'nt':
-            os.remove(pidfile)
+    if os.name == 'nt':
+        # Windows signal sending is very limited.
+        from win32api import GenerateConsoleCtrlEvent, SetConsoleCtrlHandler
         try:
-            if os.name == 'nt':
-                from win32api import GenerateConsoleCtrlEvent, SetConsoleCtrlHandler
-                try:
-                    # Windows can only send a SIGINT-like signal to
-                    # *every* process spawned off the same console, so we must
-                    # avoid killing ourselves here.
-                    SetConsoleCtrlHandler(None, True)
-                    GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
-                except KeyboardInterrupt:
-                    # We must catch and ignore the interrupt sent.
-                    pass
-            else:
-                # Linux/Unix can send the SIGINT signal directly
-                # to the specified PID.
-                os.kill(int(pid), killsignal)
+            # Windows can only send a SIGINT-like signal to
+            # *every* process spawned off the same console, so we must
+            # avoid killing ourselves here.
+            SetConsoleCtrlHandler(None, True)
+            GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
+        except KeyboardInterrupt:
+            # We must catch and ignore the interrupt sent.
+            pass
+        print("Sent kill signal to all spawned processes")
 
-        except OSError:
-            print("{component} ({pid}) cannot be stopped. "
-                  "The PID file '{pidfile}' seems stale. "
-                  "Try removing it manually.".format(
-                      component=component, pid=pid, pidfile=pidfile))
-            return
-        if callback:
-            callback()
-        else:
-            print("Sent kill signal to {component}.".format(component=component))
-            return
-    if errback:
-        errback()
     else:
-        print("Could not send kill signal - {component} does "
-              "not appear to be running.".format(component=component))
+        # Linux/Unix/Mac can send kill signal directly to specific PIDs.
+        pid = get_pid(pidfile)
+        if pid:
+            if os.name == 'nt':
+                os.remove(pidfile)
+            try:
+                os.kill(int(pid), killsignal)
+            except OSError:
+                print("{component} ({pid}) cannot be stopped. "
+                      "The PID file '{pidfile}' seems stale. "
+                      "Try removing it manually.".format(
+                          component=component, pid=pid, pidfile=pidfile))
+                return
+            if callback:
+                callback()
+            else:
+                print("Sent kill signal to {component}.".format(component=component))
+                return
+        if errback:
+            errback()
+        else:
+            print("Could not send kill signal - {component} does "
+                  "not appear to be running.".format(component=component))
 
 
 def show_version_info(about=False):
@@ -1744,10 +1754,16 @@ def run_menu():
         elif inp == 6:
             stop_server_only()
         elif inp == 7:
-            kill(SERVER_PIDFILE, 'Server')
+            if os.name == 'nt':
+                print("Windows can't send kill signals by PID. Use option 8 instead.")
+            else:
+                kill(SERVER_PIDFILE, 'Server')
         elif inp == 8:
-            kill(SERVER_PIDFILE, 'Server')
-            kill(PORTAL_PIDFILE, 'Portal')
+            if os.name == 'nt':
+                kill(None)
+            else:
+                kill(SERVER_PIDFILE, 'Server')
+                kill(PORTAL_PIDFILE, 'Portal')
         elif inp == 9:
             if not SERVER_LOGFILE:
                 init_game_directory(CURRENT_DIR, check_db=False)
@@ -1758,8 +1774,10 @@ def run_menu():
         elif inp == 11:
             query_info()
         elif inp == 12:
+            print("Running 'evennia --settings settings.py test .' ...")
             Popen(['evennia', '--settings', 'settings.py', 'test', '.'], env=getenv()).wait()
         elif inp == 13:
+            print("Running 'evennia test evennia' ...")
             Popen(['evennia', 'test', 'evennia'], env=getenv()).wait()
         else:
             print("Not a valid option.")
@@ -1879,11 +1897,11 @@ def main():
 
         # adjust how many lines we show from existing logs
         start_lines1, start_lines2 = 20, 20
-        if option == 'start':
+        if option not in ('reload', 'reset', 'noop'):
             start_lines1, start_lines2 = 0, 0
 
         tail_log_files(PORTAL_LOGFILE, SERVER_LOGFILE, start_lines1, start_lines2)
-        print("   Tailing logfile {} ...".format(SERVER_LOGFILE))
+        print("   Tailing logfile {} (Ctrl-C to exit) ...".format(SERVER_LOGFILE))
 
     if args.dummyrunner:
         # launch the dummy runner
