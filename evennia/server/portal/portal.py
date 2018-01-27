@@ -10,14 +10,11 @@ by game/evennia.py).
 from __future__ import print_function
 from builtins import object
 
-import time
 import sys
 import os
 
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
-from twisted.internet.task import LoopingCall
-from twisted.web import server
 import django
 django.setup()
 from django.conf import settings
@@ -228,9 +225,9 @@ if TELNET_ENABLED:
 
 if SSL_ENABLED:
 
-    # Start SSL game connection (requires PyOpenSSL).
+    # Start Telnet SSL game connection (requires PyOpenSSL).
 
-    from evennia.server.portal import ssl
+    from evennia.server.portal import telnet_ssl
 
     for interface in SSL_INTERFACES:
         ifacestr = ""
@@ -241,15 +238,20 @@ if SSL_ENABLED:
             factory = protocol.ServerFactory()
             factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
-            factory.protocol = ssl.SSLProtocol
-            ssl_service = internet.SSLServer(port,
-                                             factory,
-                                             ssl.getSSLContext(),
-                                             interface=interface)
-            ssl_service.setName('EvenniaSSL%s' % pstring)
-            PORTAL.services.addService(ssl_service)
+            factory.protocol = telnet_ssl.SSLProtocol
 
-            print("  ssl%s: %s" % (ifacestr, port))
+            ssl_context = telnet_ssl.getSSLContext()
+            if ssl_context:
+                ssl_service = internet.SSLServer(port,
+                                                 factory,
+                                                 telnet_ssl.getSSLContext(),
+                                                 interface=interface)
+                ssl_service.setName('EvenniaSSL%s' % pstring)
+                PORTAL.services.addService(ssl_service)
+
+                print("  ssl%s: %s" % (ifacestr, port))
+            else:
+                print("  ssl%s: %s (deactivated - keys/certificate unset)" % (ifacestr, port))
 
 
 if SSH_ENABLED:
