@@ -67,7 +67,7 @@ class SSLProtocol(TelnetProtocol):
 
     def __init__(self, *args, **kwargs):
         super(SSLProtocol, self).__init__(*args, **kwargs)
-        self.protocol_name = "ssl"
+        self.protocol_key = "telnet/ssl"
 
 
 def verify_or_create_SSL_key_and_cert(keyfile, certfile):

@@ -47,8 +47,8 @@ class Session(object):
         a new session is established.
 
         Args:
-            protocol_key (str): By default, one of 'telnet', 'ssh',
-                'ssl' or 'web'.
+            protocol_key (str): By default, one of 'telnet', 'telnet/ssl', 'ssh',
+                'webclient/websocket' or 'webclient/ajax'.
             address (str): Client address.
             sessionhandler (SessionHandler): Reference to the
                 main sessionhandler instance.

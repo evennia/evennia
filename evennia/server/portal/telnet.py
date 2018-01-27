@@ -34,8 +34,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
 
     def __init__(self, *args, **kwargs):
-        self.protocol_name = "telnet"
         super(TelnetProtocol, self).__init__(*args, **kwargs)
+        self.protocol_key = "telnet"
 
     def connectionMade(self):
         """
@@ -49,7 +49,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
-        self.init_session(self.protocol_name, client_address, self.factory.sessionhandler)
+        self.init_session(self.protocol_key, client_address, self.factory.sessionhandler)
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)

@@ -90,6 +90,7 @@ class SshProtocol(Manhole, session.Session):
             starttuple (tuple): A (account, factory) tuple.
 
         """
+        self.protocol_key = "ssh"
         self.authenticated_account = starttuple[0]
         # obs must not be called self.factory, that gets overwritten!
         self.cfactory = starttuple[1]
