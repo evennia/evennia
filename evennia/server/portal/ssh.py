@@ -66,6 +66,7 @@ class SshProtocol(Manhole, session.Session):
     here.
 
     """
+    noisy = False
 
     def __init__(self, starttuple):
         """
@@ -104,7 +105,7 @@ class SshProtocol(Manhole, session.Session):
         # since we might have authenticated already, we might set this here.
         if self.authenticated_account:
             self.logged_in = True
-            self.uid = self.authenticated_account.user.id
+            self.uid = self.authenticated_account.id
         self.sessionhandler.connect(self)
 
     def connectionMade(self):
@@ -228,7 +229,7 @@ class SshProtocol(Manhole, session.Session):
 
         """
         if reason:
-            self.data_out(text=reason)
+            self.data_out(text=((reason, ), {}))
         self.connectionLost(reason)
 
     def data_out(self, **kwargs):
@@ -302,6 +303,9 @@ class SshProtocol(Manhole, session.Session):
 
 
 class ExtraInfoAuthServer(SSHUserAuthServer):
+
+    noisy = False
+
     def auth_password(self, packet):
         """
         Password authentication.
@@ -327,6 +331,7 @@ class AccountDBPasswordChecker(object):
     useful for the Realm.
 
     """
+    noisy = False
     credentialInterfaces = (credentials.IUsernamePassword,)
 
     def __init__(self, factory):
@@ -362,6 +367,8 @@ class PassAvatarIdTerminalRealm(TerminalRealm):
 
     """
 
+    noisy = False
+
     def _getAvatar(self, avatarId):
         comp = components.Componentized()
         user = self.userFactory(comp, avatarId)
@@ -382,6 +389,8 @@ class TerminalSessionTransport_getPeer(object):
     provide getPeer to the transport.  This one does.
 
     """
+
+    noisy = False
 
     def __init__(self, proto, chainedProtocol, avatar, width, height):
         self.proto = proto
@@ -440,7 +449,6 @@ def makeFactory(configdict):
     """
     Creates the ssh server factory.
     """
-
     pubkeyfile = os.path.join(_GAME_DIR, "server", "ssh-public.key")
     privkeyfile = os.path.join(_GAME_DIR, "server", "ssh-private.key")
 
