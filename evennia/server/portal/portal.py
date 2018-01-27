@@ -237,7 +237,7 @@ if SSL_ENABLED:
 
     # Start Telnet+SSL game connection (requires PyOpenSSL).
 
-    from evennia.server.portal import ssl
+    from evennia.server.portal import telnet_ssl
 
     for interface in SSL_INTERFACES:
         ifacestr = ""
@@ -245,18 +245,24 @@ if SSL_ENABLED:
             ifacestr = "-%s" % interface
         for port in SSL_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            factory = ssl.SSLServerFactory()
+            factory = telnet_ssl.SSLServerFactory()
             factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
-            factory.protocol = ssl.SSLProtocol
-            ssl_service = internet.SSLServer(port,
-                                             factory,
-                                             ssl.getSSLContext(),
-                                             interface=interface)
-            ssl_service.setName('EvenniaSSL%s' % pstring)
-            PORTAL.services.addService(ssl_service)
+            factory.protocol = telnet_ssl.SSLProtocol
+            ssl_context = telnet_ssl.getSSLContext()
+            if ssl_context:
+                ssl_service = internet.SSLServer(port,
+                                                 factory,
+                                                 telnet_ssl.getSSLContext(),
+                                                 interface=interface)
+                ssl_service.setName('EvenniaSSL%s' % pstring)
+                PORTAL.services.addService(ssl_service)
 
-            INFO_DICT["telnet_ssl"].append("telnet+ssl%s: %s" % (ifacestr, port))
+                INFO_DICT["telnet_ssl"].append("telnet+ssl%s: %s" % (ifacestr, port))
+                print("  ssl%s: %s" % (ifacestr, port))
+            else:
+                INFO_DICT["telnet_ssl"].append(
+                        "telnet+ssl%s: %s (deactivated - keys/cert unset)" % (ifacestr, port))
 
 
 if SSH_ENABLED:
