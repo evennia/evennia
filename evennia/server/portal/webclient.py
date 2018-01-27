@@ -31,6 +31,9 @@ class WebSocketClient(Protocol, Session):
     """
     Implements the server-side of the Websocket connection.
     """
+    def __init__(self, *args, **kwargs):
+        super(WebSocketClient, self).__init__(*args, **kwargs)
+        self.protocol_key = "webclient/websocket"
 
     def connectionMade(self):
         """
