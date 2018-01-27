@@ -1762,12 +1762,12 @@ def run_menu():
             stop_server_only()
         elif inp == 7:
             if _is_windows():
-                print("Windows can't send kill signals by PID. Use option 8 instead.")
+                print("This option is not supported on Windows.")
             else:
                 kill(SERVER_PIDFILE, 'Server')
         elif inp == 8:
             if _is_windows():
-                kill(None)
+                print("This option is not supported on Windows.")
             else:
                 kill(SERVER_PIDFILE, 'Server')
                 kill(PORTAL_PIDFILE, 'Portal')
@@ -1946,13 +1946,13 @@ def main():
             stop_server_only()
         elif option == 'kill':
             if _is_windows():
-                kill(None)
+                print("This option is not supported on Windows.")
             else:
                 kill(SERVER_PIDFILE, 'Server')
                 kill(PORTAL_PIDFILE, 'Portal')
         elif option == 'skill':
             if _is_windows():
-                print("This is not supported on Windows. Use 'evennia kill' instead.")
+                print("This option is not supported on Windows.")
             else:
                 kill(SERVER_PIDFILE, 'Server')
     elif option != "noop":
