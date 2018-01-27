@@ -245,10 +245,11 @@ if SSL_ENABLED:
             ifacestr = "-%s" % interface
         for port in SSL_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            factory = telnet_ssl.SSLServerFactory()
+            factory = protocol.ServerFactory()
             factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
             factory.protocol = telnet_ssl.SSLProtocol
+
             ssl_context = telnet_ssl.getSSLContext()
             if ssl_context:
                 ssl_service = internet.SSLServer(port,
@@ -259,7 +260,6 @@ if SSL_ENABLED:
                 PORTAL.services.addService(ssl_service)
 
                 INFO_DICT["telnet_ssl"].append("telnet+ssl%s: %s" % (ifacestr, port))
-                print("  ssl%s: %s" % (ifacestr, port))
             else:
                 INFO_DICT["telnet_ssl"].append(
                         "telnet+ssl%s: %s (deactivated - keys/cert unset)" % (ifacestr, port))
