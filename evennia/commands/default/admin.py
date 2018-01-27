@@ -544,7 +544,8 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
     Usage:
       @wall <message>
 
-    Announces a message to all connected accounts.
+    Announces a message to all connected sessions
+    including all currently unlogged in.
     """
     key = "@wall"
     locks = "cmd:perm(wall) or perm(Admin)"
@@ -556,5 +557,5 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
             self.caller.msg("Usage: @wall <message>")
             return
         message = "%s shouts \"%s\"" % (self.caller.name, self.args)
-        self.msg("Announcing to all connected accounts ...")
+        self.msg("Announcing to all connected sessions ...")
         SESSIONS.announce_all(message)

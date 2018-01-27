@@ -129,6 +129,10 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT % 3700 == 0:
         # validate channels off-sync with scripts
         evennia.CHANNEL_HANDLER.update()
+    if _MAINTENANCE_COUNT % (3600 * 7) == 0:
+        # drop database connection every 7 hrs to avoid default timeouts on MySQL
+        # (see https://github.com/evennia/evennia/issues/1376)
+        connection.close()
 
     # handle idle timeouts
     if _IDLE_TIMEOUT > 0:
@@ -139,11 +143,6 @@ def _server_maintenance():
                     session.account.access(session.account, "noidletimeout", default=False):
                 SESSIONS.disconnect(session, reason=reason)
 
-    # Commenting this out, it is probably not needed
-    # with CONN_MAX_AGE set. Keeping it as a reminder
-    # if database-gone-away errors appears again /Griatch
-    # if _MAINTENANCE_COUNT % 18000 == 0:
-    #    connection.close()
 maintenance_task = LoopingCall(_server_maintenance)
 maintenance_task.start(60, now=True)  # call every minute
 
