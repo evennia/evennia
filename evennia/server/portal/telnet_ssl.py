@@ -33,7 +33,7 @@ _GAME_DIR = settings.GAME_DIR
 
 _PRIVATE_KEY_LENGTH = 2048
 _PRIVATE_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssl.key")
-_PUBLIC_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssl_public.key")
+_PUBLIC_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssl-public.key")
 _CERTIFICATE_FILE = os.path.join(_GAME_DIR, "server", "ssl.cert")
 _CERTIFICATE_EXPIRE = 365 * 24 * 60 * 60 * 20  # 20 years
 _CERTIFICATE_ISSUER = {"C": "EV", "ST": "Evennia", "L": "Evennia", "O":
@@ -96,7 +96,7 @@ def verify_or_create_SSL_key_and_cert(keyfile, certfile):
 
             with open(_PUBLIC_KEY_FILE, 'wt') as pfile:
                 pfile.write(crypto.dump_publickey(crypto.FILETYPE_PEM, keypair))
-                print("Created SSL public key in '{}'.".format(_PRIVATE_KEY_FILE))
+                print("Created SSL public key in '{}'.".format(_PUBLIC_KEY_FILE))
 
         except Exception as err:
             print(NO_AUTOGEN.format(err=err))
@@ -120,7 +120,7 @@ def verify_or_create_SSL_key_and_cert(keyfile, certfile):
 
                 with open(_CERTIFICATE_FILE, 'wt') as cfile:
                     cfile.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
-                    print("Created SSL certificate in '{}'.".format(_PRIVATE_KEY_FILE))
+                    print("Created SSL certificate in '{}'.".format(_CERTIFICATE_FILE))
 
             except Exception as err:
                 print(NO_AUTOCERT.format(err=err))
