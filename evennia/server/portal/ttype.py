@@ -50,6 +50,8 @@ class Ttype(object):
         """
         self.ttype_step = 0
         self.protocol = protocol
+        # we set FORCEDENDLINE for clients not supporting ttype
+        self.protocol.protocol_flags["FORCEDENDLINE"] = True
         self.protocol.protocol_flags['TTYPE'] = False
         # is it a safe bet to assume ANSI is always supported?
         self.protocol.protocol_flags['ANSI'] = True
@@ -97,6 +99,10 @@ class Ttype(object):
         if self.ttype_step == 0:
             # just start the request chain
             self.protocol.requestNegotiation(TTYPE, SEND)
+
+            # for clients that support TTYPE we assume this is not needed
+            # (they can set it manually if so)
+            self.protocol.protocol_flags["FORCEDENDLINE"] = False
 
         elif self.ttype_step == 1:
             # this is supposed to be the name of the client/terminal.
