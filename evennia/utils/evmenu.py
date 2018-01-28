@@ -753,10 +753,6 @@ class EvMenu(object):
         else:
             self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
 
-        if not (self.options or self.default):
-            # no options - we are at the end of the menu.
-            self.close_menu()
-
     # formatters - override in a child class
 
     def nodetext_formatter(self, nodetext):
