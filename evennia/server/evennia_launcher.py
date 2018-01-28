@@ -326,7 +326,7 @@ MENU = \
     |  7) Kill Server only            (send kill signal to process) |
     |  8) Kill Portal + Server                                      |
     +--- Information -----------------------------------------------+
-    |  9) Tail log file                        (quickly see errors) |
+    |  9) Tail log files                       (quickly see errors) |
     | 10) Status                                                    |
     | 11) Port info                                                 |
     +--- Testing ---------------------------------------------------+
@@ -484,6 +484,17 @@ Others, like migrate, test and shell is passed on to Django."""
 
 def _is_windows():
     return os.name == 'nt'
+
+
+def _file_names_compact(filepath1, filepath2):
+    "Compact the output of filenames with same base dir"
+    dirname1 = os.path.dirname(filepath1)
+    dirname2 = os.path.dirname(filepath2)
+    if dirname1 == dirname2:
+        name2 = os.path.basename(filepath2)
+        return "{} and {}".format(filepath1, name2)
+    else:
+        return "{} and {}". format(filepath1, filepath2)
 
 
 def _print_info(portal_info_dict, server_info_dict):
@@ -1775,7 +1786,8 @@ def run_menu():
             if not SERVER_LOGFILE:
                 init_game_directory(CURRENT_DIR, check_db=False)
             tail_log_files(PORTAL_LOGFILE, SERVER_LOGFILE, 20, 20)
-            print("   Tailing logfile {} ...".format(SERVER_LOGFILE))
+            print("   Tailing logfiles {} (Ctrl-C to exit) ...".format(
+                _file_names_compact(SERVER_LOGFILE, PORTAL_LOGFILE)))
         elif inp == 10:
             query_status()
         elif inp == 11:
@@ -1810,7 +1822,7 @@ def main():
         help="creates a new gamedir 'name' at current location")
     parser.add_argument(
         '--log', '-l', action='store_true', dest='tail_log', default=False,
-        help="tail the server logfile to console")
+        help="tail the portal and server logfiles and print to stdout")
     parser.add_argument(
         '--list', nargs='+', action='store', dest='listsetting', metavar="all|<key>",
         help=("list settings, use 'all' to list all available keys"))
@@ -1909,8 +1921,8 @@ def main():
             start_lines1, start_lines2 = 0, 0
 
         tail_log_files(PORTAL_LOGFILE, SERVER_LOGFILE, start_lines1, start_lines2)
-        print("   Tailing logfile {} (Ctrl-C to exit) ...".format(SERVER_LOGFILE))
-
+        print("   Tailing logfiles {} (Ctrl-C to exit) ...".format(
+            _file_names_compact(SERVER_LOGFILE, PORTAL_LOGFILE)))
     if args.dummyrunner:
         # launch the dummy runner
         init_game_directory(CURRENT_DIR, check_db=True)
