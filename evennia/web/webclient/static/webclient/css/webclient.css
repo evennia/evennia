@@ -121,14 +121,7 @@ div {margin:0px;}
   height: 100%;
 }
 
-/* Input 'send' button */
-#inputsend {
-    float: right;
-    width: 3%;
-    max-width: 25px;
-    margin-right: 10px;
-    border: 0;
-    background: #555;
+#inputfield:focus {
 }
 
 /* prompt area above input field */
