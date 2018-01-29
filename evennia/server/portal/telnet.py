@@ -234,12 +234,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # escape IAC in line mode, and correctly add \r\n (the TELNET end-of-line)
         line = line.replace(IAC, IAC + IAC)
         line = line.replace('\n', '\r\n')
-        if not self.protocol_flags.get("NOGOAHEAD", True):
-            if self.protocol_flags.get("FORCEDENDLINE", False):
-                line += "\r\n"
-            line += IAC + GA
-        elif not line.endswith("\r\n"):
+        if not line.endswith("\r\n") and self.protocol_flags.get("FORCEDENDLINE", True):
             line += "\r\n"
+        if not self.protocol_flags.get("NOGOAHEAD", True):
+            line += IAC + GA
         return self.transport.write(mccp_compress(self, line))
 
     # Session hooks

@@ -113,6 +113,7 @@ class Ttype(object):
             # only support after a certain version, but all support
             # it since at least 4 years. We assume recent client here for now.
             cupper = clientname.upper()
+            xterm256 = False
             if cupper.startswith("MUDLET"):
                 # supports xterm256 stably since 1.1 (2010?)
                 xterm256 = cupper.split("MUDLET", 1)[1].strip() >= "1.1"
