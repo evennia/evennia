@@ -131,7 +131,9 @@ class Ttype(object):
                            "MUSHCLIENT",    # > 4.02 (apr 2007)
                            "PUTTY",         # > 0.58 (apr 2005)
                            "BEIP",          # > 2.00.206 (late 2009) (BeipMu)
-                           "POTATO")):      # > 2.00 (maybe earlier)
+                           "POTATO",        # > 2.00 (maybe earlier)
+                           "TINYFUGUE"      # > 4.x (maybe earlier)
+                           )):
                     xterm256 = True
 
             # all clients supporting TTYPE at all seem to support ANSI
