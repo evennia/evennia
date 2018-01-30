@@ -100,10 +100,6 @@ class Ttype(object):
             # just start the request chain
             self.protocol.requestNegotiation(TTYPE, SEND)
 
-            # for clients that support TTYPE we assume this is not needed
-            # (they can set it manually if so)
-            self.protocol.protocol_flags["FORCEDENDLINE"] = False
-
         elif self.ttype_step == 1:
             # this is supposed to be the name of the client/terminal.
             # For clients not supporting the extended TTYPE
@@ -117,10 +113,10 @@ class Ttype(object):
             if cupper.startswith("MUDLET"):
                 # supports xterm256 stably since 1.1 (2010?)
                 xterm256 = cupper.split("MUDLET", 1)[1].strip() >= "1.1"
+                self.protocol.protocol_flags["FORCEDENDLINE"] = False
 
-            if cupper.startswith("TINYFUGUE"):
-                # tinyfugue expects _GA + endline
-                self.protocol.protocol_flags["FORCEDENDLINE"] = True
+            if cupper.startswith("TINTIN++"):
+                self.protocol.protocol_flags["FORCEDENDLINE"] = False
 
             if (cupper.startswith("XTERM") or
                 cupper.endswith("-256COLOR") or
