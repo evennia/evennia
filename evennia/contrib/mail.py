@@ -7,12 +7,12 @@ A simple Brandymail style @mail system that uses the Msg class from Evennia Core
 
 Installation:
     import CmdMail from this module (from evennia.contrib.mail import CmdMail),
-    and add into the default Player or Character command set (self.add(CmdMail)).
+    and add into the default Account or Character command set (self.add(CmdMail)).
 
 """
 
 import re
-from evennia import ObjectDB, PlayerDB
+from evennia import ObjectDB, AccountDB
 from evennia import default_cmds
 from evennia.utils import create, evtable, make_iter
 from evennia.comms.models import Msg
@@ -22,22 +22,23 @@ _HEAD_CHAR = "|015-|n"
 _SUB_HEAD_CHAR = "-"
 _WIDTH = 78
 
+
 class CmdMail(default_cmds.MuxCommand):
     """
     Commands that allow either IC or OOC communications
 
     Usage:
-        @mail       - Displays all the mail a player has in their mailbox
+        @mail       - Displays all the mail an account has in their mailbox
 
         @mail <#>   - Displays a specific message
 
-        @mail <players>=<subject>/<message>
-                - Sends a message to the comma separated list of players.
+        @mail <accounts>=<subject>/<message>
+                - Sends a message to the comma separated list of accounts.
 
         @mail/delete <#> - Deletes a specific message
 
-        @mail/forward <player list>=<#>[/<Message>]
-                - Forwards an existing message to the specified list of players,
+        @mail/forward <account list>=<#>[/<Message>]
+                - Forwards an existing message to the specified list of accounts,
                   original message is delivered with optional Message prepended.
 
         @mail/reply <#>=<message>
@@ -54,6 +55,7 @@ class CmdMail(default_cmds.MuxCommand):
         @mail/delete 6
         @mail/forward feend78 Griatch=4/You guys should read this.
         @mail/reply 9=Thanks for the info!
+
     """
     key = "@mail"
     aliases = ["mail"]
@@ -65,7 +67,7 @@ class CmdMail(default_cmds.MuxCommand):
         Search a list of targets of the same type as caller.
 
         Args:
-            caller (Object or Player): The type of object to search.
+            caller (Object or Account): The type of object to search.
             namelist (list): List of strings for objects to search for.
 
         Returns:
@@ -73,10 +75,10 @@ class CmdMail(default_cmds.MuxCommand):
 
         """
         nameregex = r"|".join(r"^%s$" % re.escape(name) for name in make_iter(namelist))
-        if hasattr(self.caller, "player") and self.caller.player:
+        if hasattr(self.caller, "account") and self.caller.account:
             matches = list(ObjectDB.objects.filter(db_key__iregex=nameregex))
         else:
-            matches = list(PlayerDB.objects.filter(username__iregex=nameregex))
+            matches = list(AccountDB.objects.filter(username__iregex=nameregex))
         return matches
 
     def get_all_mail(self):
@@ -85,14 +87,15 @@ class CmdMail(default_cmds.MuxCommand):
 
         Returns:
             messages (list): list of Msg objects.
+
         """
         # mail_messages = Msg.objects.get_by_tag(category="mail")
         # messages = []
         try:
-            player = self.caller.player
+            account = self.caller.account
         except AttributeError:
-            player = self.caller
-        messages = Msg.objects.get_by_tag(category="mail", raw_queryset=True).filter(db_receivers_players=player)
+            account = self.caller
+        messages = Msg.objects.get_by_tag(category="mail").filter(db_receivers_accounts=account)
         return messages
 
     def send_mail(self, recipients, subject, message, caller):
@@ -100,10 +103,11 @@ class CmdMail(default_cmds.MuxCommand):
         Function for sending new mail.  Also useful for sending notifications from objects or systems.
 
         Args:
-            recipients (list): list of Player or character objects to receive the newly created mails.
+            recipients (list): list of Account or character objects to receive the newly created mails.
             subject (str): The header or subject of the message to be delivered.
             message (str): The body of the message being sent.
-            caller (obj): The object (or Player or Character) that is sending the message.
+            caller (obj): The object (or Account or Character) that is sending the message.
+
         """
         for recipient in recipients:
             recipient.msg("You have received a new @mail from %s" % caller)
@@ -114,7 +118,7 @@ class CmdMail(default_cmds.MuxCommand):
             caller.msg("You sent your message.")
             return
         else:
-            caller.msg("No valid players found.  Cannot send message.")
+            caller.msg("No valid accounts found.  Cannot send message.")
             return
 
     def func(self):
@@ -129,7 +133,8 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
-                        mind = int(self.lhs) - 1
+                        mind_max = max(0, all_mail.count() - 1)
+                        mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
                             all_mail[mind].delete()
                             self.caller.msg("Message %s deleted" % self.lhs)
@@ -142,16 +147,17 @@ class CmdMail(default_cmds.MuxCommand):
             elif "forward" in self.switches:
                 try:
                     if not self.rhs:
-                        self.caller.msg("Cannot forward a message without a player list.  Please try again.")
+                        self.caller.msg("Cannot forward a message without an account list.  Please try again.")
                         return
                     elif not self.lhs:
                         self.caller.msg("You must define a message to forward.")
                         return
                     else:
                         all_mail = self.get_all_mail()
+                        mind_max = max(0, all_mail.count() - 1)
                         if "/" in self.rhs:
-                            message_number, message = self.rhs.split("/")
-                            mind = int(message_number) - 1
+                            message_number, message = self.rhs.split("/", 1)
+                            mind = max(0, min(mind_max, int(message_number) - 1))
 
                             if all_mail[mind]:
                                 old_message = all_mail[mind]
@@ -163,7 +169,7 @@ class CmdMail(default_cmds.MuxCommand):
                             else:
                                 raise IndexError
                         else:
-                            mind = int(self.rhs) - 1
+                            mind = max(0, min(mind_max, int(self.rhs) - 1))
                             if all_mail[mind]:
                                 old_message = all_mail[mind]
                                 self.send_mail(self.search_targets(self.lhslist), "FWD: " + old_message.header,
@@ -176,7 +182,7 @@ class CmdMail(default_cmds.MuxCommand):
                 except IndexError:
                     self.caller.msg("Message does not exixt.")
                 except ValueError:
-                    self.caller.msg("Usage: @mail/forward <player list>=<#>[/<Message>]")
+                    self.caller.msg("Usage: @mail/forward <account list>=<#>[/<Message>]")
             elif "reply" in self.switches:
                 try:
                     if not self.rhs:
@@ -187,7 +193,8 @@ class CmdMail(default_cmds.MuxCommand):
                         return
                     else:
                         all_mail = self.get_all_mail()
-                        mind = int(self.lhs) - 1
+                        mind_max = max(0, all_mail.count() - 1)
+                        mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
                             old_message = all_mail[mind]
                             self.send_mail(old_message.senders, "RE: " + old_message.header,
@@ -210,8 +217,11 @@ class CmdMail(default_cmds.MuxCommand):
                         body = self.rhs
                     self.send_mail(self.search_targets(self.lhslist), subject, body, self.caller)
                 else:
+                    all_mail = self.get_all_mail()
+                    mind_max = max(0, all_mail.count() - 1)
                     try:
-                        message = self.get_all_mail()[int(self.lhs) - 1]
+                        mind = max(0, min(mind_max, int(self.lhs) - 1))
+                        message = all_mail[mind]
                     except (ValueError, IndexError):
                         self.caller.msg("'%s' is not a valid mail id." % self.lhs)
                         return
@@ -253,4 +263,3 @@ class CmdMail(default_cmds.MuxCommand):
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
                 self.caller.msg("There are no messages in your inbox.")
-

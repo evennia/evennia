@@ -19,7 +19,7 @@ Models covered:
  Help
  Message
  Channel
- Players
+ Accounts
 """
 from django.conf import settings
 from django.db import IntegrityError
@@ -35,8 +35,8 @@ _Script = None
 _ScriptDB = None
 _HelpEntry = None
 _Msg = None
-_Player = None
-_PlayerDB = None
+_Account = None
+_AccountDB = None
 _to_object = None
 _ChannelDB = None
 _channelhandler = None
@@ -44,7 +44,7 @@ _channelhandler = None
 
 # limit symbol import from API
 __all__ = ("create_object", "create_script", "create_help_entry",
-           "create_message", "create_channel", "create_player")
+           "create_message", "create_channel", "create_account")
 
 _GA = object.__getattribute__
 
@@ -65,10 +65,10 @@ def create_object(typeclass=None, key=None, location=None, home=None,
             #dbref will be set.
         home (Object or str): Obj or #dbref to use as the object's
             home location.
-        permissions (str): A comma-separated string of permissions.
+        permissions (list): A list of permission strings or tuples (permstring, category).
         locks (str): one or more lockstrings, separated by semicolons.
-        aliases (list): A list of alternative keys.
-        tags (list): List of tag keys (using no category).
+        aliases (list): A list of alternative keys or tuples (aliasstring, category).
+        tags (list): List of tag keys or tuples (tagkey, category).
         destination (Object or str): Obj or #dbref to use as an Exit's
             target.
         report_to (Object): The object to return error messages to.
@@ -89,6 +89,13 @@ def create_object(typeclass=None, key=None, location=None, home=None,
         from evennia.objects.models import ObjectDB as _ObjectDB
 
     typeclass = typeclass if typeclass else settings.BASE_OBJECT_TYPECLASS
+
+    # convenience converters to avoid common usage mistake
+    permissions = make_iter(permissions) if permissions is not None else None
+    locks = make_iter(locks) if locks is not None else None
+    aliases = make_iter(aliases) if aliases is not None else None
+    tags = make_iter(tags) if tags is not None else None
+
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass
@@ -122,6 +129,7 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     new_object.save()
     return new_object
 
+
 # alias for create_object
 object = create_object
 
@@ -129,7 +137,7 @@ object = create_object
 #
 # Script creation
 
-def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
+def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
                   interval=None, start_delay=None, repeats=None,
                   persistent=None, autostart=True, report_to=None, desc=None):
     """
@@ -145,7 +153,7 @@ def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
             #dbref will be set.
         obj (Object): The entity on which this Script sits. If this
             is `None`, we are creating a "global" script.
-        player (Player): The player on which this Script sits. It is
+        account (Account): The account on which this Script sits. It is
             exclusiv to `obj`.
         locks (str): one or more lockstrings, separated by semicolons.
         interval (int): The triggering interval for this Script, in
@@ -179,20 +187,28 @@ def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
 
     # validate input
     kwarg = {}
-    if key: kwarg["db_key"] = key
-    if player: kwarg["db_player"] = dbid_to_obj(player, _ScriptDB)
-    if obj: kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
-    if interval: kwarg["db_interval"] = interval
-    if start_delay: kwarg["db_start_delay"] = start_delay
-    if repeats: kwarg["db_repeats"] = repeats
-    if persistent: kwarg["db_persistent"] = persistent
-    if desc: kwarg["db_desc"] = desc
+    if key:
+        kwarg["db_key"] = key
+    if account:
+        kwarg["db_account"] = dbid_to_obj(account, _ScriptDB)
+    if obj:
+        kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
+    if interval:
+        kwarg["db_interval"] = interval
+    if start_delay:
+        kwarg["db_start_delay"] = start_delay
+    if repeats:
+        kwarg["db_repeats"] = repeats
+    if persistent:
+        kwarg["db_persistent"] = persistent
+    if desc:
+        kwarg["db_desc"] = desc
 
     # create new instance
     new_script = typeclass(**kwarg)
 
     # store the call signature for the signal
-    new_script._createdict = dict(key=key, obj=obj, player=player, locks=locks, interval=interval,
+    new_script._createdict = dict(key=key, obj=obj, account=account, locks=locks, interval=interval,
                                   start_delay=start_delay, repeats=repeats, persistent=persistent,
                                   autostart=autostart, report_to=report_to)
     # this will trigger the save signal which in turn calls the
@@ -200,6 +216,7 @@ def create_script(typeclass=None, key=None, obj=None, player=None, locks=None,
     # can be used.
     new_script.save()
     return new_script
+
 
 # alias
 script = create_script
@@ -250,6 +267,8 @@ def create_help_entry(key, entrytext, category="General", locks=None, aliases=No
     except Exception:
         logger.log_trace()
         return None
+
+
 # alias
 help_entry = create_help_entry
 
@@ -263,15 +282,15 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
     database-persistent communication between entites.
 
     Args:
-        senderobj (Object or Player): The entity sending the Msg.
+        senderobj (Object or Account): The entity sending the Msg.
         message (str): Text with the message. Eventual headers, titles
             etc should all be included in this text string. Formatting
             will be retained.
         channels (Channel, key or list): A channel or a list of channels to
             send to. The channels may be actual channel objects or their
             unique key strings.
-        receivers (Object, Player, str or list): A Player/Object to send
-            to, or a list of them. May be Player objects or playernames.
+        receivers (Object, Account, str or list): An Account/Object to send
+            to, or a list of them. May be Account objects or accountnames.
         locks (str): Lock definition string.
         header (str): Mime-type or other optional information for the message
 
@@ -301,6 +320,8 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
         new_message.locks.add(locks)
     new_message.save()
     return new_message
+
+
 message = create_message
 
 
@@ -310,7 +331,7 @@ def create_channel(key, aliases=None, desc=None,
     """
     Create A communication Channel. A Channel serves as a central hub
     for distributing Msgs to groups of people without specifying the
-    receivers explicitly. Instead players may 'connect' to the channel
+    receivers explicitly. Instead accounts may 'connect' to the channel
     and follow the flow of messages. By default the channel allows
     access to all old messages, but this can be turned off with the
     keep_log switch.
@@ -348,32 +369,32 @@ def create_channel(key, aliases=None, desc=None,
     new_channel.save()
     return new_channel
 
+
 channel = create_channel
 
 
 #
-# Player creation methods
+# Account creation methods
 #
 
 
-def create_player(key, email, password,
-                  typeclass=None,
-                  is_superuser=False,
-                  locks=None, permissions=None,
-                  report_to=None):
-
+def create_account(key, email, password,
+                   typeclass=None,
+                   is_superuser=False,
+                   locks=None, permissions=None,
+                   report_to=None):
     """
-    This creates a new player.
+    This creates a new account.
 
     Args:
-        key (str): The player's name. This should be unique.
+        key (str): The account's name. This should be unique.
         email (str): Email on valid addr@addr.domain form. This is
             technically required but if set to `None`, an email of
             `dummy@example.com` will be used as a placeholder.
         password (str): Password in cleartext.
 
     Kwargs:
-        is_superuser (bool): Wether or not this player is to be a superuser
+        is_superuser (bool): Wether or not this account is to be a superuser
         locks (str): Lockstring.
         permission (list): List of permission strings.
         report_to (Object): An object with a msg() method to report
@@ -389,42 +410,45 @@ def create_player(key, email, password,
         operations and is thus not suitable for play-testing the game.
 
     """
-    global _PlayerDB
-    if not _PlayerDB:
-        from evennia.players.models import PlayerDB as _PlayerDB
+    global _AccountDB
+    if not _AccountDB:
+        from evennia.accounts.models import AccountDB as _AccountDB
 
-    typeclass = typeclass if typeclass else settings.BASE_PLAYER_TYPECLASS
+    typeclass = typeclass if typeclass else settings.BASE_ACCOUNT_TYPECLASS
+    locks = make_iter(locks) if locks is not None else None
+    permissions = make_iter(permissions) if permissions is not None else None
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass.
         typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
 
-    # setup input for the create command. We use PlayerDB as baseclass
+    # setup input for the create command. We use AccountDB as baseclass
     # here to give us maximum freedom (the typeclasses will load
     # correctly when each object is recovered).
 
     if not email:
         email = "dummy@example.com"
-    if _PlayerDB.objects.filter(username__iexact=key):
-        raise ValueError("A Player with the name '%s' already exists." % key)
+    if _AccountDB.objects.filter(username__iexact=key):
+        raise ValueError("An Account with the name '%s' already exists." % key)
 
-    # this handles a given dbref-relocate to a player.
-    report_to = dbid_to_obj(report_to, _PlayerDB)
+    # this handles a given dbref-relocate to an account.
+    report_to = dbid_to_obj(report_to, _AccountDB)
 
-    # create the correct player entity, using the setup from
+    # create the correct account entity, using the setup from
     # base django auth.
     now = timezone.now()
     email = typeclass.objects.normalize_email(email)
-    new_player = typeclass(username=key, email=email,
-                           is_staff=is_superuser, is_superuser=is_superuser,
-                           last_login=now, date_joined=now)
-    new_player.set_password(password)
-    new_player._createdict = dict(locks=locks, permissions=permissions, report_to=report_to)
+    new_account = typeclass(username=key, email=email,
+                            is_staff=is_superuser, is_superuser=is_superuser,
+                            last_login=now, date_joined=now)
+    new_account.set_password(password)
+    new_account._createdict = dict(locks=locks, permissions=permissions, report_to=report_to)
     # saving will trigger the signal that calls the
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.
-    new_player.save()
-    return new_player
+    new_account.save()
+    return new_account
+
 
 # alias
-player = create_player
+account = create_account

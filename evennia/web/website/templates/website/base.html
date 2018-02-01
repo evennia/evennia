@@ -1,97 +1,62 @@
-{% load staticfiles %}<!DOCTYPE HTML>
-<html>
+{% load staticfiles sekizai_tags %}
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
-    <meta name="author" content="haran" />
-    <meta name="generator" content="haran" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="author" content="Evennia Contributors" />
+    <meta name="generator" content="Evennia" />
 
-    {% if sidebar %}
-    <link rel="stylesheet" type="text/css" href="{% static "website/css/prosimii-screen-alt.css" %}" media="screen" title="Prosimii (Sidebar)" />
-    {% else %}
-    <link rel="stylesheet" type="text/css" href="{% static "website/css/prosimii-screen.css" %}" media="screen" title="Prosimii" />
-    {% endif %}
-    <link rel="stylesheet alternative" type="text/css" href="{% static "website/css/prosimii-print.css" %}" media="screen" title="Print Preview" />
-    <link rel="stylesheet" type="text/css" href="{% static "website/css/prosimii-print.css" %}" media="print" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <link rel="icon" type="image/x-icon" href="/static/website/images/evennia_logo.png" />
 
-    <!-- Custom CSS -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+    <!-- Base CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "website/css/app.css" %}">
+
+    {% comment %}
+    Allows for loading custom styles without overriding the base site styles
+    {% endcomment %}
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/custom.css" %}">
 
     {% block header_ext %}
     {% endblock %}
 
     <title>{{game_name}} - {% if flatpage %}{{flatpage.title}}{% else %}{% block titleblock %}{{page_title}}{% endblock %}{% endif %}</title>
   </head>
-
   <body>
-    <!-- For non-visual user agents: -->
-      <div id="top"><a href="#main-copy" class="doNotDisplay doNotPrint">Skip to main content.</a></div>
-
-    <!-- ##### Header ##### -->
-
-    <div id="header">
-      <div class="superHeader">
-        <!--span>Sites:</span-->
-        <a href="http://evennia.com" title="The Python-based MUD server">Evennia.com</a>
-      </div>
-
-      <div class="midHeader">
-        <img src="{% static "website/images/evennia_logo.png" %}" align='left'/> <h1 class="headerTitle" lang="la">{{game_name}}</h1>
-        <div class="headerSubTitle" title="Slogan">
-        <!-- Insert a slogan here if you want -->
-        {{game_slogan}}			&nbsp;
+    <div id="top"><a href="#main-content" class="sr-only sr-only-focusable">Skip to main content.</a></div>
+    {% include "website/_menu.html" %}
+    <div class="container main-content mt-4" id="main-copy">
+      <div class="row">
+        {% if sidebar %}
+        <div class="col-4">
+          {% block sidebar %}
+          {% endblock %}
         </div>
-
-        <br class="doNotDisplay doNotPrint" />
-
-        <div class="headerLinks">
-          <span class="doNotDisplay">Tools:</span>
-          {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">Log Out &laquo;</a>
-            <span class="doNotDisplay">|</span>
-            Logged in as {{user.username}} &laquo;
-          {% else %}
-            <a href="{% url 'login' %}">Log In &laquo;</a>
-            <span class="doNotDisplay">|</span>
-            <a href="{% url 'to_be_implemented' %}">Register &laquo;</a>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="subHeader">
-        <!--span class="doNotDisplay">Navigation:</span-->
-        <a href="/">Home</a> |
-        <a href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a> |
-        <a href="https://github.com/evennia/evennia/wiki">Documentation</a> |
-        <a href="{% url 'admin:index' %}">Admin Interface</a>
-        {% if webclient_enabled %}
-         | <a href="{% url 'webclient:index' %}">Play Online</a>
         {% endif %}
-
+        <div class="{% if sidebar %}col-8{% else %}col{% endif %}">
+          {% block content %}
+          {% endblock %}
+        </div>
       </div>
     </div>
 
-    <!-- ##### Side Menu ##### -->
-    {% block sidebar %}{% endblock %}
-    <!-- ##### Main Copy ##### -->
+    <footer class="footer">
+    {% block footer %}
+        <div class="container">
+            <span class="text-white">Powered by <a class="text-white font-weight-bold" href="http://evennia.com">Evennia.</a></span>
+        </div>
+    {% endblock %}
+    </footer>
 
-    <div id="main-copy">
-      {% block content %}
-      {% endblock %}
-    </div>
-
-    <!-- ##### Footer ##### -->
-
-    <div id="footer">
-      <span class="doNotPrint">
-        Template design by
-        <a href="http://www.oswd.org/designs/search/designer/id/3013/"
-        title="Other designs by haran">haran</a>.
-        Powered by
-        <a href="http://evennia.com">Evennia.</a>
-        <br />
-      </span>
-    </div>
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
   </body>
 </html>

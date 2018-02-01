@@ -35,6 +35,7 @@ class LockableThreadPool(threadpool.ThreadPool):
     """
     Threadpool that can be locked from accepting new requests.
     """
+
     def __init__(self, *args, **kwargs):
         self._accept_new = True
         threadpool.ThreadPool.__init__(self, *args, **kwargs)
@@ -60,6 +61,7 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
     HTTP xforward class
 
     """
+
     def allHeadersReceived(self):
         """
         Check to see if this is a reverse proxied connection.
@@ -95,7 +97,8 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
             resource (EvenniaReverseProxyResource): A proxy resource.
 
         """
-        request.notifyFinish().addErrback(lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
+        request.notifyFinish().addErrback(
+                lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
         return EvenniaReverseProxyResource(
             self.host, self.port, self.path + '/' + urlquote(path, safe=""),
             self.reactor)
@@ -125,7 +128,8 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         clientFactory.noisy = False
         self.reactor.connectTCP(self.host, self.port, clientFactory)
         # don't trigger traceback if connection is lost before request finish.
-        request.notifyFinish().addErrback(lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
+        request.notifyFinish().addErrback(
+                lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
         return NOT_DONE_YET
 
 
@@ -208,6 +212,12 @@ class Website(server.Site):
     """
     noisy = False
 
+    def logPrefix(self):
+        "How to be named in logs"
+        if hasattr(self, "is_portal") and self.is_portal:
+            return "Webserver-proxy"
+        return "Webserver"
+
     def log(self, request):
         """Conditional logging"""
         if _DEBUG:
@@ -227,6 +237,7 @@ class WSGIWebServer(internet.TCPServer):
     call with WSGIWebServer(threadpool, port, wsgi_resource)
 
     """
+
     def __init__(self, pool, *args, **kwargs):
         """
         This just stores the threadpool.

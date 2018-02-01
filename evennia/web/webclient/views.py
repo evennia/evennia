@@ -8,7 +8,7 @@ from __future__ import print_function
 from django.shortcuts import render
 from django.contrib.auth import login, authenticate
 
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.utils import logger
 
 
@@ -18,26 +18,30 @@ def _shared_login(request):
 
     """
     csession = request.session
-    player = request.user
-    sesslogin = csession.get("logged_in", None)
+    account = request.user
+    # these can have 3 values:
+    #   None - previously unused (auto-login)
+    #   False - actively logged out (don't auto-login)
+    #   <uid> - logged in User/Account id
+    website_uid = csession.get("website_authenticated_uid", None)
+    webclient_uid = csession.get("webclient_authenticated_uid", None)
 
     # check if user has authenticated to website
-    if csession.session_key is None:
+    if not csession.session_key:
         # this is necessary to build the sessid key
         csession.save()
-    elif player.is_authenticated():
-        if not sesslogin:
-            # User has already authenticated to website
-            csession["logged_in"] = player.id
-    elif sesslogin:
+
+    if webclient_uid:
         # The webclient has previously registered a login to this browser_session
-        player = PlayerDB.objects.get(id=sesslogin)
-        try:
-            # calls our custom authenticate in web/utils/backends.py
-            player = authenticate(autologin=player)
-            login(request, player)
-        except AttributeError:
-            logger.log_trace()
+        if not account.is_authenticated() and not website_uid:
+            account = AccountDB.objects.get(id=webclient_uid)
+            try:
+                # calls our custom authenticate in web/utils/backends.py
+                account = authenticate(autologin=account)
+                login(request, account)
+                csession["website_authenticated_uid"] = webclient_uid
+            except AttributeError:
+                logger.log_trace()
 
 
 def webclient(request):

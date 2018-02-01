@@ -13,6 +13,7 @@ from evennia import Command, CmdSet
 from evennia import logger
 from evennia.contrib.tutorial_world import objects as tut_objects
 
+
 class CmdMobOnOff(Command):
     """
     Activates/deactivates Mob
@@ -51,8 +52,10 @@ class MobCmdSet(CmdSet):
     """
     Holds the admin command controlling the mob
     """
+
     def at_cmdset_creation(self):
         self.add(CmdMobOnOff())
+
 
 class Mob(tut_objects.TutorialObject):
     """
@@ -91,6 +94,7 @@ class Mob(tut_objects.TutorialObject):
            happen to roam into a room with no exits.
 
     """
+
     def at_init(self):
         """
         When initialized from cache (after a server reboot), set up
@@ -122,7 +126,7 @@ class Mob(tut_objects.TutorialObject):
         self.db.patrolling_pace = 6
         self.db.aggressive_pace = 2
         self.db.hunting_pace = 1
-        self.db.death_pace = 100 # stay dead for 100 seconds
+        self.db.death_pace = 100  # stay dead for 100 seconds
 
         # we store the call to the tickerhandler
         # so we can easily deactivate the last
@@ -179,19 +183,19 @@ class Mob(tut_objects.TutorialObject):
         we need to remember this across reloads.
 
         """
-        idstring = "tutorial_mob" # this doesn't change
+        idstring = "tutorial_mob"  # this doesn't change
         last_interval = self.db.last_ticker_interval
         last_hook_key = self.db.last_hook_key
         if last_interval and last_hook_key:
              # we have a previous subscription, kill this first.
             TICKER_HANDLER.remove(interval=last_interval,
-                    callback=getattr(self, last_hook_key), idstring=idstring)
+                                  callback=getattr(self, last_hook_key), idstring=idstring)
         self.db.last_ticker_interval = interval
         self.db.last_hook_key = hook_key
         if not stop:
             # set the new ticker
             TICKER_HANDLER.add(interval=interval,
-                    callback=getattr(self, hook_key), idstring=idstring)
+                               callback=getattr(self, hook_key), idstring=idstring)
 
     def _find_target(self, location):
         """
@@ -206,7 +210,7 @@ class Mob(tut_objects.TutorialObject):
 
         """
         targets = [obj for obj in location.contents_get(exclude=self)
-                    if obj.has_player and not obj.is_superuser]
+                   if obj.has_account and not obj.is_superuser]
         return targets[0] if targets else None
 
     def set_alive(self, *args, **kwargs):
@@ -290,9 +294,9 @@ class Mob(tut_objects.TutorialObject):
         """
         Called repeatedly during patrolling mode.  In this mode, the
         mob scans its surroundings and randomly chooses a viable exit.
-        One should lock exits with the traverse:has_player() lock in
+        One should lock exits with the traverse:has_account() lock in
         order to block the mob from moving outside its area while
-        allowing player-controlled characters to move normally.
+        allowing account-controlled characters to move normally.
         """
         if random.random() < 0.01 and self.db.irregular_msgs:
             self.location.msg_contents(random.choice(self.db.irregular_msgs))
@@ -378,7 +382,6 @@ class Mob(tut_objects.TutorialObject):
                 target.move_to(send_defeated_to[0], quiet=True)
             else:
                 logger.log_err("Mob: mob.db.send_defeated_to not found: %s" % self.db.send_defeated_to)
-
 
     # response methods - called by other objects
 

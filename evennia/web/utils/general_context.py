@@ -6,38 +6,62 @@
 # tuple.
 #
 
+import os
 from django.conf import settings
 from evennia.utils.utils import get_evennia_version
 
 # Determine the site name and server version
+def set_game_name_and_slogan():
+    """
+    Sets global variables GAME_NAME and GAME_SLOGAN which are used by
+    general_context.
 
-try:
-    GAME_NAME = settings.SERVERNAME.strip()
-except AttributeError:
-    GAME_NAME = "Evennia"
-SERVER_VERSION = get_evennia_version()
-try:
-    GAME_SLOGAN = settings.GAME_SLOGAN.strip()
-except AttributeError:
-    GAME_SLOGAN = SERVER_VERSION
-
+    Notes:
+        This function is used for unit testing the values of the globals.
+    """
+    global GAME_NAME, GAME_SLOGAN, SERVER_VERSION
+    try:
+        GAME_NAME = settings.SERVERNAME.strip()
+    except AttributeError:
+        GAME_NAME = "Evennia"
+    SERVER_VERSION = get_evennia_version()
+    try:
+        GAME_SLOGAN = settings.GAME_SLOGAN.strip()
+    except AttributeError:
+        GAME_SLOGAN = SERVER_VERSION
+set_game_name_and_slogan()
 
 # Setup lists of the most relevant apps so
 # the adminsite becomes more readable.
 
-PLAYER_RELATED = ['Players']
+ACCOUNT_RELATED = ['Accounts']
 GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
 GAME_SETUP = ['Permissions', 'Config']
 CONNECTIONS = ['Irc']
 WEBSITE = ['Flatpages', 'News', 'Sites']
 
 
-# The main context processor function
-WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
-WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
-WEBSOCKET_PORT = settings.WEBSOCKET_CLIENT_PORT
-WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
 
+def set_webclient_settings():
+    """
+    As with set_game_name_and_slogan above, this sets global variables pertaining
+    to webclient settings.
+
+    Notes:
+        Used for unit testing.
+    """
+    global WEBCLIENT_ENABLED, WEBSOCKET_CLIENT_ENABLED, WEBSOCKET_PORT, WEBSOCKET_URL
+    WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
+    WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED
+    # if we are working through a proxy or uses docker port-remapping, the webclient port encoded
+    # in the webclient should be different than the one the server expects. Use the environment
+    # variable WEBSOCKET_CLIENT_PROXY_PORT if this is the case.
+    WEBSOCKET_PORT = int(os.environ.get("WEBSOCKET_CLIENT_PROXY_PORT", settings.WEBSOCKET_CLIENT_PORT))
+    # this is determined dynamically by the client and is less of an issue
+    WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
+set_webclient_settings()
+
+# The main context processor function
 def general_context(request):
     """
     Returns common Evennia-related context stuff, which
@@ -46,13 +70,13 @@ def general_context(request):
     return {
         'game_name': GAME_NAME,
         'game_slogan': GAME_SLOGAN,
-        'evennia_userapps': PLAYER_RELATED,
+        'evennia_userapps': ACCOUNT_RELATED,
         'evennia_entityapps': GAME_ENTITIES,
         'evennia_setupapps': GAME_SETUP,
         'evennia_connectapps': CONNECTIONS,
-        'evennia_websiteapps':WEBSITE,
-        "webclient_enabled" : WEBCLIENT_ENABLED,
-        "websocket_enabled" : WEBSOCKET_CLIENT_ENABLED,
-        "websocket_port" : WEBSOCKET_PORT,
-        "websocket_url" : WEBSOCKET_URL
+        'evennia_websiteapps': WEBSITE,
+        "webclient_enabled": WEBCLIENT_ENABLED,
+        "websocket_enabled": WEBSOCKET_CLIENT_ENABLED,
+        "websocket_port": WEBSOCKET_PORT,
+        "websocket_url": WEBSOCKET_URL
     }

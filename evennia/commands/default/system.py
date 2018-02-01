@@ -17,7 +17,7 @@ from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
-from evennia.players.models import PlayerDB
+from evennia.accounts.models import AccountDB
 from evennia.utils import logger, utils, gametime, create
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
@@ -47,7 +47,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
     @reset to purge) and at_reload() hooks will be called.
     """
     key = "@reload"
-    locks = "cmd:perm(reload) or perm(Immortals)"
+    locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -58,7 +58,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
         SESSIONS.announce_all(" Server restart initiated %s..." % reason)
-        SESSIONS.server.shutdown(mode='reload')
+        SESSIONS.portal_restart_server()
 
 
 class CmdReset(COMMAND_DEFAULT_CLASS):
@@ -83,7 +83,7 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
     """
     key = "@reset"
     aliases = ['@reboot']
-    locks = "cmd:perm(reload) or perm(Immortals)"
+    locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -91,7 +91,7 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
         Reload the system.
         """
         SESSIONS.announce_all(" Server resetting/restarting ...")
-        SESSIONS.server.shutdown(mode='reset')
+        SESSIONS.portal_reset_server()
 
 
 class CmdShutdown(COMMAND_DEFAULT_CLASS):
@@ -105,7 +105,7 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
     Gracefully shut down both Server and Portal.
     """
     key = "@shutdown"
-    locks = "cmd:perm(shutdown) or perm(Immortals)"
+    locks = "cmd:perm(shutdown) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -119,7 +119,6 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
             announcement += "%s\n" % self.args
         logger.log_info('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)
-        SESSIONS.server.shutdown(mode='shutdown')
         SESSIONS.portal_shutdown()
 
 
@@ -133,11 +132,11 @@ def _py_code(caller, buf):
     """
     measure_time = caller.db._py_measure_time
     string = "Executing code%s ..." % (
-                " (measure timing)" if measure_time else "")
+        " (measure timing)" if measure_time else "")
     caller.msg(string)
     _run_code_snippet(caller, buf, mode="exec",
-                 measure_time=measure_time,
-                 show_input=False)
+                      measure_time=measure_time,
+                      show_input=False)
     return True
 
 
@@ -147,7 +146,7 @@ def _py_quit(caller):
 
 
 def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
-        show_input=True):
+                      show_input=True):
     """
     Run code and try to display information to the caller.
 
@@ -161,25 +160,26 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
     # Try to retrieve the session
     session = caller
     if hasattr(caller, "sessions"):
-        session = caller.sessions.get()[0]
+        sessions = caller.sessions.all()
 
     # import useful variables
     import evennia
     available_vars = {
-            'self': caller,
-            'me': caller,
-            'here': getattr(caller, "location", None),
-            'evennia': evennia,
-            'ev': evennia,
-            'inherits_from': utils.inherits_from,
+        'self': caller,
+        'me': caller,
+        'here': getattr(caller, "location", None),
+        'evennia': evennia,
+        'ev': evennia,
+        'inherits_from': utils.inherits_from,
     }
 
     if show_input:
-        try:
-            caller.msg(">>> %s" % pycode, session=session,
-                    options={"raw": True})
-        except TypeError:
-            caller.msg(">>> %s" % pycode, options={"raw": True})
+        for session in sessions:
+            try:
+                caller.msg(">>> %s" % pycode, session=session,
+                           options={"raw": True})
+            except TypeError:
+                caller.msg(">>> %s" % pycode, options={"raw": True})
 
     try:
         try:
@@ -206,10 +206,11 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
             errlist = errlist[4:]
         ret = "\n".join("%s" % line for line in errlist if line)
 
-    try:
-        caller.msg(ret, session=session, options={"raw": True})
-    except TypeError:
-        caller.msg(ret, options={"raw": True})
+    for session in sessions:
+        try:
+            caller.msg(ret, session=session, options={"raw": True})
+        except TypeError:
+            caller.msg(ret, options={"raw": True})
 
 
 class CmdPy(COMMAND_DEFAULT_CLASS):
@@ -244,7 +245,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     """
     key = "@py"
     aliases = ["!"]
-    locks = "cmd:perm(py) or perm(Immortals)"
+    locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -256,8 +257,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         if "edit" in self.switches:
             caller.db._py_measure_time = "time" in self.switches
             EvEditor(self.caller, loadfunc=_py_load, savefunc=_py_code,
-                    quitfunc=_py_quit, key="Python exec: :w  or :!", persistent=True,
-                    codefunc=_py_code)
+                     quitfunc=_py_quit, key="Python exec: :w  or :!", persistent=True,
+                     codefunc=_py_code)
             return
 
         if not pycode:
@@ -327,7 +328,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     """
     key = "@scripts"
     aliases = ["@globalscript", "@listscripts"]
-    locks = "cmd:perm(listscripts) or perm(Wizards)"
+    locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
     def func(self):
@@ -409,7 +410,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
     """
     key = "@objects"
     aliases = ["@listobjects", "@listobjs", '@stats', '@db']
-    locks = "cmd:perm(listobjects) or perm(Builders)"
+    locks = "cmd:perm(listobjects) or perm(Builder)"
     help_category = "System"
 
     def func(self):
@@ -455,24 +456,24 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         caller.msg(string)
 
 
-class CmdPlayers(COMMAND_DEFAULT_CLASS):
+class CmdAccounts(COMMAND_DEFAULT_CLASS):
     """
-    list all registered players
+    list all registered accounts
 
     Usage:
-      @players [nr]
+      @accounts [nr]
 
-    Lists statistics about the Players registered with the game.
-    It will list the <nr> amount of latest registered players
+    Lists statistics about the Accounts registered with the game.
+    It will list the <nr> amount of latest registered accounts
     If not given, <nr> defaults to 10.
     """
-    key = "@players"
-    aliases = ["@listplayers"]
-    locks = "cmd:perm(listplayers) or perm(Wizards)"
+    key = "@accounts"
+    aliases = ["@listaccounts"]
+    locks = "cmd:perm(listaccounts) or perm(Admin)"
     help_category = "System"
 
     def func(self):
-        """List the players"""
+        """List the accounts"""
 
         caller = self.caller
         if self.args and self.args.isdigit():
@@ -480,21 +481,21 @@ class CmdPlayers(COMMAND_DEFAULT_CLASS):
         else:
             nlim = 10
 
-        nplayers = PlayerDB.objects.count()
+        naccounts = AccountDB.objects.count()
 
         # typeclass table
-        dbtotals = PlayerDB.objects.object_totals()
+        dbtotals = AccountDB.objects.object_totals()
         typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
         for path, count in dbtotals.items():
-            typetable.add_row(path, count, "%.2f" % ((float(count) / nplayers) * 100))
+            typetable.add_row(path, count, "%.2f" % ((float(count) / naccounts) * 100))
         # last N table
-        plyrs = PlayerDB.objects.all().order_by("db_date_created")[max(0, nplayers - nlim):]
+        plyrs = AccountDB.objects.all().order_by("db_date_created")[max(0, naccounts - nlim):]
         latesttable = EvTable("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l")
         for ply in plyrs:
             latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.path)
 
-        string = "\n|wPlayer typeclass distribution:|n\n%s" % typetable
-        string += "\n|wLast %s Players created:|n\n%s" % (min(nplayers, nlim), latesttable)
+        string = "\n|wAccount typeclass distribution:|n\n%s" % typetable
+        string += "\n|wLast %s Accounts created:|n\n%s" % (min(naccounts, nlim), latesttable)
         caller.msg(string)
 
 
@@ -520,7 +521,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
 
     key = "@service"
     aliases = ["@services"]
-    locks = "cmd:perm(service) or perm(Immortals)"
+    locks = "cmd:perm(service) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -610,25 +611,25 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
         """Display information about server or target"""
 
         string = """
-         |cEvennia|n %s|n
-         MUD/MUX/MU* development system
+         |cEvennia|n {version}|n
+         MU* development system
 
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wWeb|n http://www.evennia.com
-         |wIrc|n #evennia on FreeNode
+         |wIrc|n #evennia on irc.freenode.net:6667
          |wForum|n http://www.evennia.com/discussions
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
          |wMaintainer|n (2006-10) Greg Taylor
 
-         |wOS|n %s
-         |wPython|n %s
-         |wTwisted|n %s
-         |wDjango|n %s
-        """ % (utils.get_evennia_version(),
-               os.name,
-               sys.version.split()[0],
-               twisted.version.short(),
-               django.get_version())
+         |wOS|n {os}
+         |wPython|n {python}
+         |wTwisted|n {twisted}
+         |wDjango|n {django}
+        """.format(version=utils.get_evennia_version(),
+                   os=os.name,
+                   python=sys.version.split()[0],
+                   twisted=twisted.version.short(),
+                   django=django.get_version())
         self.caller.msg(string)
 
 
@@ -644,7 +645,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
     """
     key = "@time"
     aliases = "@uptime"
-    locks = "cmd:perm(time) or perm(Players)"
+    locks = "cmd:perm(time) or perm(Player)"
     help_category = "System"
 
     def func(self):
@@ -702,7 +703,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     """
     key = "@server"
     aliases = ["@serverload", "@serverprocess"]
-    locks = "cmd:perm(list) or perm(Immortals)"
+    locks = "cmd:perm(list) or perm(Developer)"
     help_category = "System"
 
     def func(self):
@@ -719,7 +720,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
             now, _ = _IDMAPPER.cache_size()
             string = "The Idmapper cache freed |w{idmapper}|n database objects.\n" \
                      "The Python garbage collector freed |w{gc}|n Python instances total."
-            self.caller.msg(string.format(idmapper=(prev-now), gc=nflushed))
+            self.caller.msg(string.format(idmapper=(prev - now), gc=nflushed))
             return
 
         # display active processes
@@ -823,7 +824,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
     """
     key = "@tickers"
     help_category = "System"
-    locks = "cmd:perm(tickers) or perm(Builders)"
+    locks = "cmd:perm(tickers) or perm(Builder)"
 
     def func(self):
         from evennia import TICKER_HANDLER

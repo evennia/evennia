@@ -53,13 +53,14 @@ class ChannelAdmin(admin.ModelAdmin):
     list_display = ('id', 'db_key', 'db_lock_storage', "subscriptions")
     list_display_links = ("id", 'db_key')
     ordering = ["db_key"]
-    search_fields = ['id', 'db_key', 'db_aliases']
+    search_fields = ['id', 'db_key', 'db_tags__db_key']
     save_as = True
     save_on_top = True
     list_select_related = True
+    raw_id_fields = ('db_object_subscriptions', 'db_account_subscriptions',)
     fieldsets = (
-        (None, {'fields': (('db_key',), 'db_lock_storage', 'db_subscriptions')}),
-        )
+        (None, {'fields': (('db_key',), 'db_lock_storage', 'db_account_subscriptions', 'db_object_subscriptions')}),
+    )
 
     def subscriptions(self, obj):
         """
@@ -69,7 +70,7 @@ class ChannelAdmin(admin.ModelAdmin):
             obj (Channel): The channel to get subs from.
 
         """
-        return ", ".join([str(sub) for sub in obj.db_subscriptions.all()])
+        return ", ".join([str(sub) for sub in obj.subscriptions.all()])
 
     def save_model(self, request, obj, form, change):
         """

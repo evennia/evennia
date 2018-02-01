@@ -24,6 +24,7 @@ class HelpEntryManager(TypedObjectManager):
     search_help (equivalent to evennia.search_helpentry)
 
     """
+
     def find_topicmatch(self, topicstr, exact=False):
         """
         Searches for matching topics or aliases based on player's

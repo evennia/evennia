@@ -175,7 +175,7 @@ class TelnetOOB(object):
 
         """
         msdp_cmdname = "{msdp_var}{msdp_cmdname}{msdp_val}".format(
-                    msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL)
+            msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL)
 
         if not (args or kwargs):
             return msdp_cmdname
@@ -191,11 +191,11 @@ class TelnetOOB(object):
                 msdp_args += "{msdp_array_open}" \
                              "{msdp_args}" \
                              "{msdp_array_close}".format(
-                                                         msdp_array_open=MSDP_ARRAY_OPEN,
-                                                         msdp_array_close=MSDP_ARRAY_CLOSE,
-                                                         msdp_args="".join("%s%s"
-                                                                           % (MSDP_VAL, json.dumps(val))
-                                                                           for val in args))
+                                 msdp_array_open=MSDP_ARRAY_OPEN,
+                                 msdp_array_close=MSDP_ARRAY_CLOSE,
+                                 msdp_args="".join("%s%s"
+                                                   % (MSDP_VAL, json.dumps(val))
+                                                   for val in args))
 
         msdp_kwargs = ""
         if kwargs:
@@ -203,12 +203,12 @@ class TelnetOOB(object):
             msdp_kwargs += "{msdp_table_open}" \
                            "{msdp_kwargs}" \
                            "{msdp_table_close}".format(
-                                                       msdp_table_open=MSDP_TABLE_OPEN,
-                                                       msdp_table_close=MSDP_TABLE_CLOSE,
-                                                       msdp_kwargs="".join("%s%s%s%s"
-                                                                           % (MSDP_VAR, key, MSDP_VAL,
-                                                                              json.dumps(val))
-                                                                           for key, val in kwargs.iteritems()))
+                               msdp_table_open=MSDP_TABLE_OPEN,
+                               msdp_table_close=MSDP_TABLE_CLOSE,
+                               msdp_kwargs="".join("%s%s%s%s"
+                                                   % (MSDP_VAR, key, MSDP_VAL,
+                                                      json.dumps(val))
+                                                   for key, val in kwargs.iteritems()))
 
         msdp_string = msdp_args + msdp_kwargs
 
@@ -227,26 +227,45 @@ class TelnetOOB(object):
             GMCP messages will be outgoing on the following
             form (the non-JSON cmdname at the start is what
             IRE games use, supposedly, and what clients appear
-            to have adopted):
+            to have adopted). A cmdname without Package will end
+            up in the Core package, while Core package names will
+            be stripped on the Evennia side.
 
-            [cmdname, [], {}]          -> cmdname
-            [cmdname, [arg], {}]       -> cmdname arg
-            [cmdname, [args],{}]       -> cmdname [args]
-            [cmdname, [], {kwargs}]    -> cmdname {kwargs}
-            [cmdname, [args, {kwargs}] -> cmdname [[args],{kwargs}]
+            [cmd.name, [], {}]          -> Cmd.Name
+            [cmd.name, [arg], {}]       -> Cmd.Name arg
+            [cmd.name, [args],{}]       -> Cmd.Name [args]
+            [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
+            [cmdname, [args, {kwargs}] -> Core.Cmdname [[args],{kwargs}]
+
+        Notes:
+            There are also a few default mappings between evennia outputcmds and
+            GMCP:
+                client_options -> Core.Supports.Get
+                get_inputfuncs -> Core.Commands.Get
+                get_value      -> Char.Value.Get
+                repeat         -> Char.Repeat.Update
+                monitor        -> Char.Monitor.Update
 
         """
+
+        if cmdname in EVENNIA_TO_GMCP:
+            gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
+        elif "_" in cmdname:
+            gmcp_cmdname = ".".join(word.capitalize() for word in cmdname.split("_"))
+        else:
+            gmcp_cmdname = "Core.%s" % cmdname.capitalize()
+
         if not (args or kwargs):
-            gmcp_string = cmdname
+            gmcp_string = gmcp_cmdname
         elif args:
             if len(args) == 1:
                 args = args[0]
             if kwargs:
-                gmcp_string = "%s %s" % (cmdname, json.dumps([args, kwargs]))
+                gmcp_string = "%s %s" % (gmcp_cmdname, json.dumps([args, kwargs]))
             else:
-                gmcp_string = "%s %s" % (cmdname, json.dumps(args))
+                gmcp_string = "%s %s" % (gmcp_cmdname, json.dumps(args))
         else:  # only kwargs
-            gmcp_string = "%s %s" % (cmdname, json.dumps(kwargs))
+            gmcp_string = "%s %s" % (gmcp_cmdname, json.dumps(kwargs))
 
         # print("gmcp string", gmcp_string)  # DEBUG
         return gmcp_string
@@ -398,14 +417,9 @@ class TelnetOOB(object):
         kwargs.pop("options", None)
 
         if self.MSDP:
-            msdp_cmdname = cmdname
-            encoded_oob = self.encode_msdp(msdp_cmdname, *args, **kwargs)
+            encoded_oob = self.encode_msdp(cmdname, *args, **kwargs)
             self.protocol._write(IAC + SB + MSDP + encoded_oob + IAC + SE)
 
         if self.GMCP:
-            if cmdname in EVENNIA_TO_GMCP:
-                gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
-            else:
-                gmcp_cmdname = "Custom.Cmd"
-            encoded_oob = self.encode_gmcp(gmcp_cmdname, *args, **kwargs)
+            encoded_oob = self.encode_gmcp(cmdname, *args, **kwargs)
             self.protocol._write(IAC + SB + GMCP + encoded_oob + IAC + SE)

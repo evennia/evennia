@@ -8,6 +8,7 @@ Eventfuncs are just Python functions that can be used inside of calllbacks.
 from evennia import ObjectDB, ScriptDB
 from evennia.contrib.ingame_python.utils import InterruptEvent
 
+
 def deny():
     """
     Deny, that is stop, the callback here.
@@ -21,6 +22,7 @@ def deny():
 
     """
     raise InterruptEvent
+
 
 def get(**kwargs):
     """
@@ -52,6 +54,7 @@ def get(**kwargs):
         object = None
 
     return object
+
 
 def call_event(obj, event_name, seconds=0):
     """

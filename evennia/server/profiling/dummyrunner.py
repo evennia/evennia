@@ -15,7 +15,7 @@ full step-by-step setup help.
 Basically (for testing default Evennia):
 
  - Use an empty/testing database.
- - set PERMISSION_PLAYER_DEFAULT = "Builders"
+ - set PERMISSION_ACCOUNT_DEFAULT = "Builder"
  - start server, eventually with profiling active
  - launch this client runner
 
@@ -50,7 +50,7 @@ from evennia.utils import mod_import, time_format
 DUMMYRUNNER_SETTINGS = mod_import(settings.DUMMYRUNNER_SETTINGS_MODULE)
 if not DUMMYRUNNER_SETTINGS:
     raise IOError("Error: Dummyrunner could not find settings file at %s" %
-                    settings.DUMMYRUNNER_SETTINGS_MODULE)
+                  settings.DUMMYRUNNER_SETTINGS_MODULE)
 
 DATESTRING = "%Y%m%d%H%M%S"
 
@@ -65,7 +65,7 @@ TIMESTEP = DUMMYRUNNER_SETTINGS.TIMESTEP
 # chance of a client performing an action, per timestep. This helps to
 # spread out usage randomly, like it would be in reality.
 CHANCE_OF_ACTION = DUMMYRUNNER_SETTINGS.CHANCE_OF_ACTION
-# spread out the login action separately, having many players create accounts
+# spread out the login action separately, having many accounts create accounts
 # and connect simultaneously is generally unlikely.
 CHANCE_OF_LOGIN = DUMMYRUNNER_SETTINGS.CHANCE_OF_LOGIN
 # Port to use, if not specified on command line
@@ -79,7 +79,7 @@ NLOGGED_IN = 0
 
 INFO_STARTING = \
     """
-    Dummyrunner starting using {N} dummy player(s). If you don't see
+    Dummyrunner starting using {N} dummy account(s). If you don't see
     any connection messages, make sure that the Evennia server is
     running.
 
@@ -95,7 +95,7 @@ ERROR_NO_MIXIN = \
         from evennia.server.profiling.settings_mixin import *
 
     This will change the settings in the following way:
-        - change PERMISSION_PLAYER_DEFAULT to 'Immortals' to allow clients
+        - change PERMISSION_ACCOUNT_DEFAULT to 'Developer' to allow clients
           to test all commands
         - change PASSWORD_HASHERS to use a faster (but less safe) algorithm
           when creating large numbers of accounts at the same time
@@ -106,7 +106,7 @@ ERROR_NO_MIXIN = \
     error completely.
 
     Warning: Don't run dummyrunner on a production database! It will
-    create a lot of spammy objects and player accounts!
+    create a lot of spammy objects and accounts!
     """
 
 
@@ -121,7 +121,7 @@ HELPTEXT = """
 DO NOT RUN THIS ON A PRODUCTION SERVER! USE A CLEAN/TESTING DATABASE!
 
 This stand-alone program launches dummy telnet clients against a
-running Evennia server. The idea is to mimic real players logging in
+running Evennia server. The idea is to mimic real accounts logging in
 and repeatedly doing resource-heavy commands so as to stress test the
 game. It uses the default command set to log in and issue commands, so
 if that was customized, some of the functionality will not be tested
@@ -136,9 +136,9 @@ Setup:
      `evennia migrate`)
   2) in server/conf/settings.py, add
 
-        PERMISSION_PLAYER_DEFAULT="Builders"
+        PERMISSION_ACCOUNT_DEFAULT="Builder"
 
-     This is so that the dummy players can test building operations.
+     This is so that the dummy accounts can test building operations.
      You can also customize the dummyrunner by modifying a setting
      file specified by DUMMYRUNNER_SETTINGS_MODULE
 
@@ -160,12 +160,12 @@ Setup:
 
 Notes:
 
-The dummyrunner tends to create a lot of players all at once, which is
+The dummyrunner tends to create a lot of accounts all at once, which is
 a very heavy operation. This is not a realistic use-case - what you want
 to test is performance during run. A large
 number of clients here may lock up the client until all have been
 created. It may be better to connect multiple dummyrunners instead of
-starting one single one with a lot of players. Exactly what this number
+starting one single one with a lot of accounts. Exactly what this number
 is depends on your computer power. So start with 10-20 clients and increase
 until you see the initial login slows things too much.
 
@@ -177,6 +177,8 @@ until you see the initial login slows things too much.
 
 
 ICOUNT = 0
+
+
 def idcounter():
     """
     Makes unique ids.
@@ -191,6 +193,8 @@ def idcounter():
 
 
 GCOUNT = 0
+
+
 def gidcounter():
     """
     Makes globally unique ids.
@@ -220,10 +224,11 @@ def makeiter(obj):
 # Client classes
 #------------------------------------------------------------
 
+
 class DummyClient(telnet.StatefulTelnetProtocol):
     """
     Handles connection to a running Evennia server,
-    mimicking a real player by sending commands on
+    mimicking a real account by sending commands on
     a timer.
 
     """
@@ -238,14 +243,14 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self.key = "Dummy-%s" % self.cid
         self.gid = "%s-%s" % (time.strftime(DATESTRING), self.cid)
         self.istep = 0
-        self.exits = [] # exit names created
-        self.objs = [] # obj names created
+        self.exits = []  # exit names created
+        self.objs = []  # obj names created
 
         self._connected = False
         self._loggedin = False
         self._logging_out = False
         self._report = ""
-        self._cmdlist = [] # already stepping in a cmd definition
+        self._cmdlist = []  # already stepping in a cmd definition
         self._login = self.factory.actions[0]
         self._logout = self.factory.actions[1]
         self._actions = self.factory.actions[2:]
@@ -268,7 +273,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             # start client tick
             d = LoopingCall(self.step)
             # dissipate exact step by up to +/- 0.5 second
-            timestep = TIMESTEP + (-0.5 + (random.random()*1.0))
+            timestep = TIMESTEP + (-0.5 + (random.random() * 1.0))
             d.start(timestep, now=True).addErrback(self.error)
 
     def connectionLost(self, reason):
@@ -329,7 +334,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                 if rand < CHANCE_OF_LOGIN:
                     # get the login commands
                     self._cmdlist = list(makeiter(self._login(self)))
-                    NLOGGED_IN += 1 # this is for book-keeping
+                    NLOGGED_IN += 1  # this is for book-keeping
                     print("connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS))
                     self._loggedin = True
                 else:
@@ -350,6 +355,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
 class DummyFactory(protocol.ClientFactory):
     protocol = DummyClient
+
     def __init__(self, actions):
         "Setup the factory base (shared by all clients)"
         self.actions = actions
@@ -358,6 +364,7 @@ class DummyFactory(protocol.ClientFactory):
 # Access method:
 # Starts clients and connects them to a running server.
 #------------------------------------------------------------
+
 
 def start_all_dummy_clients(nclients):
     """
@@ -379,7 +386,7 @@ def start_all_dummy_clients(nclients):
     pratio = 1.0 / sum(tup[0] for tup in actions[2:])
     flogin, flogout, probs, cfuncs = actions[0], actions[1], [tup[0] * pratio for tup in actions[2:]], [tup[1] for tup in actions[2:]]
     # create cumulative probabilies for the random actions
-    cprobs = [sum(v for i,v in enumerate(probs) if i<=k) for k in range(len(probs))]
+    cprobs = [sum(v for i, v in enumerate(probs) if i <= k) for k in range(len(probs))]
     # rebuild a new, optimized action structure
     actions = (flogin, flogout) + tuple(zip(cprobs, cfuncs))
 
@@ -393,6 +400,7 @@ def start_all_dummy_clients(nclients):
 #------------------------------------------------------------
 # Command line interface
 #------------------------------------------------------------
+
 
 if __name__ == '__main__':
 

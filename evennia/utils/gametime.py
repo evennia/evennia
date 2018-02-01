@@ -19,6 +19,8 @@ from evennia.utils.create import create_script
 # to real time.
 
 TIMEFACTOR = settings.TIME_FACTOR
+IGNORE_DOWNTIMES = settings.TIME_IGNORE_DOWNTIMES
+
 
 # Only set if gametime_reset was called at some point.
 GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
@@ -86,7 +88,7 @@ def server_epoch():
     global _SERVER_EPOCH
     if not _SERVER_EPOCH:
         _SERVER_EPOCH = ServerConfig.objects.conf("server_epoch", default=None) \
-                        or time.time() - runtime()
+            or time.time() - runtime()
     return _SERVER_EPOCH
 
 
@@ -133,7 +135,10 @@ def gametime(absolute=False):
 
     """
     epoch = game_epoch() if absolute else 0
-    gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
+    if IGNORE_DOWNTIMES:
+        gtime = epoch + (time.time() - server_epoch()) * TIMEFACTOR
+    else:
+        gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     return gtime
 
 
@@ -224,12 +229,12 @@ def schedule(callback, repeat=False, sec=None, min=None,
                            repeats=-1 if repeat else 1)
     script.db.callback = callback
     script.db.gametime = {
-            "sec": sec,
-            "min": min,
-            "hour": hour,
-            "day": day,
-            "month": month,
-            "year": year,
+        "sec": sec,
+        "min": min,
+        "hour": hour,
+        "day": day,
+        "month": month,
+        "year": year,
     }
     return script
 

@@ -7,7 +7,6 @@ from builtins import object
 
 import time
 
-
 #------------------------------------------------------------
 # Server Session
 #------------------------------------------------------------
@@ -25,7 +24,7 @@ class Session(object):
         respective hook methods should be connected to the methods unique
         for the respective protocol so that there is a unified interface
         to Evennia.
-     2. A Server session. This is the same for all connected players,
+     2. A Server session. This is the same for all connected accounts,
         regardless of how they connect.
 
     The Portal and Server have their own respective sessionhandlers. These
@@ -47,8 +46,8 @@ class Session(object):
         a new session is established.
 
         Args:
-            protocol_key (str): By default, one of 'telnet', 'ssh',
-                'ssl' or 'web'.
+            protocol_key (str): By default, one of 'telnet', 'telnet/ssl', 'ssh',
+                'webclient/websocket' or 'webclient/ajax'.
             address (str): Client address.
             sessionhandler (SessionHandler): Reference to the
                 main sessionhandler instance.
@@ -83,7 +82,7 @@ class Session(object):
         self.cmd_total = 0
 
         self.protocol_flags = {"ENCODING": "utf-8",
-                               "SCREENREADER":False,
+                               "SCREENREADER": False,
                                "INPUTDEBUG": False,
                                "RAW": False,
                                "NOCOLOR": False}
@@ -106,7 +105,7 @@ class Session(object):
 
         """
         return dict((key, value) for key, value in self.__dict__.items()
-                                                  if key in self._attrs_to_sync)
+                    if key in self._attrs_to_sync)
 
     def load_sync_data(self, sessdata):
         """
@@ -118,16 +117,23 @@ class Session(object):
 
         """
         for propname, value in sessdata.items():
-            setattr(self, propname, value)
+            if (propname == "protocol_flags" and isinstance(value, dict) and
+                    hasattr(self, "protocol_flags") and
+                    isinstance(self.protocol_flags, dict)):
+                # special handling to allow partial update of protocol flags
+                self.protocol_flags.update(value)
+            else:
+                setattr(self, propname, value)
 
     def at_sync(self):
         """
         Called after a session has been fully synced (including
-        secondary operations such as setting self.player based
+        secondary operations such as setting self.account based
         on uid etc).
 
         """
-        self.protocol_flags.update(self.player.attributs.get("_saved_protocol_flags"), {})
+        if self.account:
+            self.protocol_flags.update(self.account.attributes.get("_saved_protocol_flags", {}))
 
     # access hooks
 

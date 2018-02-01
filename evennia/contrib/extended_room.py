@@ -4,7 +4,7 @@ Extended Room
 Evennia Contribution - Griatch 2012
 
 This is an extended Room typeclass for Evennia. It is supported
-by an extended `Look` command and an extended `@desc` command, also
+by an extended `Look` command and an extended `desc` command, also
 in this module.
 
 
@@ -21,7 +21,7 @@ There is also a general description which is used as fallback if
 one or more of the seasonal descriptions are not set when their
 time comes.
 
-An updated `@desc` command allows for setting seasonal descriptions.
+An updated `desc` command allows for setting seasonal descriptions.
 
 The room uses the `evennia.utils.gametime.GameTime` global script. This is
 started by default, but if you have deactivated it, you need to
@@ -45,13 +45,13 @@ at, without there having to be a database object created for it. The
 Details are simply stored in a dictionary on the room and if the look
 command cannot find an object match for a `look <target>` command it
 will also look through the available details at the current location
-if applicable. An extended `@desc` command is used to set details.
+if applicable. An extended `desc` command is used to set details.
 
 
 4) Extra commands
 
   CmdExtendedLook - look command supporting room details
-  CmdExtendedDesc - @desc command allowing to add seasonal descs and details,
+  CmdExtendedDesc - desc command allowing to add seasonal descs and details,
                     as well as listing them
   CmdGameTime     - A simple `time` command, displaying the current
                     time and season.
@@ -63,7 +63,7 @@ Installation/testing:
    (see Wiki for how to do this).
 2) `@dig` a room of type `contrib.extended_room.ExtendedRoom` (or make it the
    default room type)
-3) Use `@desc` and `@detail` to customize the room, then play around!
+3) Use `desc` and `detail` to customize the room, then play around!
 
 """
 from __future__ import division
@@ -108,6 +108,7 @@ class ExtendedRoom(DefaultRoom):
     time. It also allows for "details", together with a slightly modified
     look command.
     """
+
     def at_object_creation(self):
         """Called when room is first created only."""
         self.db.spring_desc = ""
@@ -188,7 +189,7 @@ class ExtendedRoom(DefaultRoom):
             key (str): A detail identifier.
 
         Returns:
-            detail (str or None): A detail mathing the given key.
+            detail (str or None): A detail matching the given key.
 
         Notes:
             A detail is a way to offer more things to look at in a room
@@ -212,37 +213,39 @@ class ExtendedRoom(DefaultRoom):
             return detail
         return None
 
-    def return_appearance(self, looker):
+    def return_appearance(self, looker, **kwargs):
         """
         This is called when e.g. the look command wants to retrieve
         the description of this object.
 
         Args:
             looker (Object): The object looking at us.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             description (str): Our description.
 
         """
-        update = False
+        # ensures that our description is current based on time/season
+        self.update_current_description()
+        # run the normal return_appearance method, now that desc is updated.
+        return super(ExtendedRoom, self).return_appearance(looker, **kwargs)
 
+    def update_current_description(self):
+        """
+        This will update the description of the room if the time or season
+        has changed since last checked.
+        """
+        update = False
         # get current time and season
         curr_season, curr_timeslot = self.get_time_and_season()
-
         # compare with previously stored slots
         last_season = self.ndb.last_season
         last_timeslot = self.ndb.last_timeslot
-
         if curr_season != last_season:
             # season changed. Load new desc, or a fallback.
-            if curr_season == 'spring':
-                new_raw_desc = self.db.spring_desc
-            elif curr_season == 'summer':
-                new_raw_desc = self.db.summer_desc
-            elif curr_season == 'autumn':
-                new_raw_desc = self.db.autumn_desc
-            else:
-                new_raw_desc = self.db.winter_desc
+            new_raw_desc = self.attributes.get("%s_desc" % curr_season)
             if new_raw_desc:
                 raw_desc = new_raw_desc
             else:
@@ -251,19 +254,15 @@ class ExtendedRoom(DefaultRoom):
             self.db.raw_desc = raw_desc
             self.ndb.last_season = curr_season
             update = True
-
         if curr_timeslot != last_timeslot:
             # timeslot changed. Set update flag.
             self.ndb.last_timeslot = curr_timeslot
             update = True
-
         if update:
             # if anything changed we have to re-parse
             # the raw_desc for time markers
             # and re-save the description again.
             self.db.desc = self.replace_timeslots(self.db.raw_desc, curr_timeslot)
-        # run the normal return_appearance method, now that desc is updated.
-        return super(ExtendedRoom, self).return_appearance(looker)
 
 
 # Custom Look command supporting Room details. Add this to
@@ -277,10 +276,11 @@ class CmdExtendedLook(default_cmds.CmdLook):
       look
       look <obj>
       look <room detail>
-      look *<player>
+      look *<account>
 
     Observes your location, details at your location or objects in your vicinity.
     """
+
     def func(self):
         """
         Handle the looking - add fallback to details.
@@ -315,7 +315,7 @@ class CmdExtendedLook(default_cmds.CmdLook):
                 return
 
         if not hasattr(looking_at_obj, 'return_appearance'):
-            # this is likely due to us having a player instead
+            # this is likely due to us having an account instead
             looking_at_obj = looking_at_obj.character
         if not looking_at_obj.access(caller, "view"):
             caller.msg("Could not find '%s'." % args)
@@ -331,26 +331,26 @@ class CmdExtendedLook(default_cmds.CmdLook):
 
 class CmdExtendedDesc(default_cmds.CmdDesc):
     """
-    `@desc` - describe an object or room.
+    `desc` - describe an object or room.
 
     Usage:
-      @desc[/switch] [<obj> =] <description>
-      @detail[/del] [<key> = <description>]
+      desc[/switch] [<obj> =] <description>
+      detail[/del] [<key> = <description>]
 
 
-    Switches for `@desc`:
+    Switches for `desc`:
       spring  - set description for <season> in current room.
       summer
       autumn
       winter
 
-    Switch for `@detail`:
+    Switch for `detail`:
       del   - delete a named detail.
 
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
 
-    The alias `@detail` allows to assign a "detail" (a non-object
+    The alias `detail` allows to assign a "detail" (a non-object
     target for the `look` command) to the current room (only).
 
     You can also embed special time markers in your room description, like this:
@@ -362,11 +362,11 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     Text marked this way will only display when the server is truly at the given
     timeslot. The available times are night, morning, afternoon and evening.
 
-    Note that `@detail`, seasons and time-of-day slots only work on rooms in this
-    version of the `@desc` command.
+    Note that `detail`, seasons and time-of-day slots only work on rooms in this
+    version of the `desc` command.
 
     """
-    aliases = ["@describe", "@detail"]
+    aliases = ["describe", "detail"]
 
     def reset_times(self, obj):
         """By deleteting the caches we force a re-load."""
@@ -377,7 +377,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
         """Define extended command"""
         caller = self.caller
         location = caller.location
-        if self.cmdstring == '@detail':
+        if self.cmdname == 'detail':
             # switch to detailing mode. This operates only on current location
             if not location:
                 caller.msg("No location to detail!")
@@ -414,7 +414,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
             self.reset_times(location)
             return
         else:
-            # we are doing a @desc call
+            # we are doing a desc call
             if not self.args:
                 if location:
                     string = "|wDescriptions on %s|n:\n" % location.key

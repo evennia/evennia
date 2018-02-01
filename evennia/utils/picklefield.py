@@ -34,7 +34,7 @@ from ast import literal_eval
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
-#import six # this is actually a pypy component, not in default syslib
+# import six # this is actually a pypy component, not in default syslib
 import django
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -54,11 +54,12 @@ except ImportError:
 
 # python 3.x does not have cPickle module
 try:
-    from cPickle import loads, dumps # cpython 2.x
+    from cPickle import loads, dumps  # cpython 2.x
 except ImportError:
-    from pickle import loads, dumps # cpython 3.x, other interpreters
+    from pickle import loads, dumps  # cpython 3.x, other interpreters
 
 DEFAULT_PROTOCOL = 2
+
 
 class PickledObject(str):
     """
@@ -105,12 +106,12 @@ def dbsafe_encode(value, compress_object=False, pickle_protocol=DEFAULT_PROTOCOL
     value = dumps(deepcopy(value), protocol=pickle_protocol)
     if compress_object:
         value = compress(value)
-    value = b64encode(value).decode() # decode bytes to str
+    value = b64encode(value).decode()  # decode bytes to str
     return PickledObject(value)
 
 
 def dbsafe_decode(value, compress_object=False):
-    value = value.encode() # encode str to bytes
+    value = value.encode()  # encode str to bytes
     value = b64decode(value)
     if compress_object:
         value = decompress(value)
@@ -119,13 +120,21 @@ def dbsafe_decode(value, compress_object=False):
 
 class PickledWidget(Textarea):
     def render(self, name, value, attrs=None):
+        """Display of the PickledField in django admin"""
         value = repr(value)
         try:
-            literal_eval(value)
+            # necessary to convert it back after repr(), otherwise validation errors will mutate it
+            value = literal_eval(value)
         except ValueError:
             return value
 
-        final_attrs = self.build_attrs(attrs, name=name)
+        # fix since the signature of build_attrs changed in Django 1.11
+        if attrs is not None:
+            attrs["name"] = name
+        else:
+            attrs = {"name": name}
+
+        final_attrs = self.build_attrs(attrs)
         return format_html('<textarea{0}>\r\n{1}</textarea>',
                            flatatt(final_attrs),
                            value)
@@ -198,7 +207,7 @@ class PickledObjectField(models.Field):
         # If the field doesn't have a default, then we punt to models.Field.
         return super(PickledObjectField, self).get_default()
 
-    #def to_python(self, value):
+    # def to_python(self, value):
     def from_db_value(self, value, *args):
         """
         B64decode and unpickle the object, optionally decompressing it.
@@ -264,12 +273,3 @@ class PickledObjectField(models.Field):
         # actual lookup, so all we need to do is limit the lookup types.
         return super(PickledObjectField, self).get_db_prep_lookup(
             lookup_type, value, connection=connection, prepared=prepared)
-
-
-# South support; see http://south.aeracode.org/docs/tutorial/part4.html#simple-inheritance
-try:
-    from south.modelsinspector import add_introspection_rules
-except ImportError:
-    pass
-else:
-    add_introspection_rules([], [r"^evennia\.utils\.picklefield\.PickledObjectField"])

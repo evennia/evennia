@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+
 def remove_manage_scripts(apps, schema_editor):
     ScriptDB = apps.get_model("scripts", "ScriptDB")
     for script in ScriptDB.objects.filter(db_typeclass_path__in=(u'src.scripts.scripts.CheckSessions',
@@ -11,6 +12,7 @@ def remove_manage_scripts(apps, schema_editor):
                                                                  u'src.scripts.scripts.ValidateIdmapperCache',
                                                                  u'src.utils.gametime.GameTime')):
         script.delete()
+
 
 class Migration(migrations.Migration):
 

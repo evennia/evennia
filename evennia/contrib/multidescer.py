@@ -16,7 +16,7 @@ also adds the short descriptions and the `sdesc` command).
 Installation:
 
 Edit `mygame/commands/default_cmdsets.py` and add
-`from contrib.multidesc import CmdMultiDesc` to the top.
+`from evennia.contrib.multidescer import CmdMultiDesc` to the top.
 
 Next, look up the `at_cmdset_create` method of the `CharacterCmdSet`
 class and add a line `self.add(CmdMultiDesc())` to the end
@@ -97,12 +97,14 @@ def _update_store(caller, key=None, desc=None, delete=False, swapkey=None):
 
 # eveditor save/load/quit functions
 
+
 def _save_editor(caller, buffer):
     "Called when the editor saves its contents"
     key = caller.db._multidesc_editkey
     _update_store(caller, key, buffer)
     caller.msg("Saved description to key '%s'." % key)
     return True
+
 
 def _load_editor(caller):
     "Called when the editor loads contents"
@@ -111,6 +113,7 @@ def _load_editor(caller):
     if match:
         return caller.db.multidesc[match[0]][1]
     return ""
+
 
 def _quit_editor(caller):
     "Called when the editor quits"
@@ -161,13 +164,13 @@ class CmdMultiDesc(default_cmds.MuxCommand):
                 # list all stored descriptions, either in full or cropped.
                 # Note that we list starting from 1, not from 0.
                 _update_store(caller)
-                do_crop = not "full" in switches
+                do_crop = "full" not in switches
                 if do_crop:
                     outtext = ["|w%s:|n %s" % (key, crop(desc))
-                                for key, desc in caller.db.multidesc]
+                               for key, desc in caller.db.multidesc]
                 else:
                     outtext = ["\n|w%s:|n|n\n%s\n%s" % (key, "-" * (len(key) + 1), desc)
-                                for key, desc in caller.db.multidesc]
+                               for key, desc in caller.db.multidesc]
 
                 caller.msg("|wStored descs:|n\n" + "\n".join(outtext))
                 return
@@ -249,6 +252,6 @@ class CmdMultiDesc(default_cmds.MuxCommand):
                 else:
                     caller.msg("|wCurrent desc:|n\n%s" % caller.db.desc)
 
-        except DescValidateError, err:
+        except DescValidateError as err:
             # This is triggered by _key_to_index
             caller.msg(err)

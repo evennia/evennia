@@ -8,6 +8,7 @@ for allowing Characters to traverse the exit to its destination.
 """
 from evennia import DefaultExit
 
+
 class Exit(DefaultExit):
     """
     Exits are connectors between rooms. Exits are normal Objects except

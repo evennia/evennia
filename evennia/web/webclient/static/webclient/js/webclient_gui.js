@@ -175,8 +175,11 @@ function onKeydown (event) {
     }
 
     if (code === 27) { // Escape key
-        closePopup("#optionsdialog");
-        closePopup("#helpdialog");
+        if ($('#helpdialog').is(':visible')) {
+          closePopup("#helpdialog");
+        } else {
+          closePopup("#optionsdialog");
+        }
     }
 
     if (history_entry !== null) {
@@ -289,6 +292,7 @@ function onPrompt(args, kwargs) {
 
 // Called when the user logged in
 function onLoggedIn() {
+    $('#optionsbutton').removeClass('hidden');
     Evennia.msg("webclient_options", [], {});
 }
 
@@ -323,6 +327,8 @@ function onSilence(cmdname, args, kwargs) {}
 
 // Handle the server connection closing
 function onConnectionClose(conn_name, evt) {
+    $('#optionsbutton').addClass('hidden');
+    closePopup("#optionsdialog");
     onText(["The connection was closed or lost."], {'cls': 'err'});
 }
 
@@ -369,28 +375,32 @@ function onNewLine(text, originator) {
     unread++;
     favico.badge(unread);
     document.title = "(" + unread + ") " + originalTitle;
+    if ("Notification" in window){
+      if (("notification_popup" in options) && (options["notification_popup"])) {
+          // There is a Promise-based API for this, but it’s not supported
+          // in Safari and some older browsers:
+          // https://developer.mozilla.org/en-US/docs/Web/API/Notification/requestPermission#Browser_compatibility
+          Notification.requestPermission(function(result) {
+              if(result === "granted") {
+              var title = originalTitle === "" ? "Evennia" : originalTitle;
+              var options = {
+                  body: text.replace(/(<([^>]+)>)/ig,""),
+                  icon: "/static/website/images/evennia_logo.png"
+              }
 
-    if (("notification_popup" in options) && (options["notification_popup"])) {
-        Notification.requestPermission().then(function(result) {
-            if(result === "granted") {
-            var title = originalTitle === "" ? "Evennia" : originalTitle;
-            var options = {
-                body: text.replace(/(<([^>]+)>)/ig,""),
-                icon: "/static/website/images/evennia_logo.png"
+              var n = new Notification(title, options);
+              n.onclick = function(e) {
+                  e.preventDefault();
+                   window.focus();
+                   this.close();
+              }
             }
-
-            var n = new Notification(title, options);
-            n.onclick = function(e) {
-                e.preventDefault();
-                 window.focus();
-                 this.close();
-            }
-          }
-        });
-    }
-    if (("notification_sound" in options) && (options["notification_sound"])) {
-        var audio = new Audio("/static/webclient/media/notification.wav");
-        audio.play();
+          });
+      }
+      if (("notification_sound" in options) && (options["notification_sound"])) {
+          var audio = new Audio("/static/webclient/media/notification.wav");
+          audio.play();
+      }
     }
   }
 }
@@ -427,7 +437,9 @@ function doStartDragDialog(event) {
 // Event when client finishes loading
 $(document).ready(function() {
 
-    Notification.requestPermission();
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
 
     favico = new Favico({
       animation: 'none'

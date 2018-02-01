@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+
 def convert_defaults(apps, schema_editor):
     ObjectDB = apps.get_model("objects", "ObjectDB")
     for obj in ObjectDB.objects.filter(db_typeclass_path="src.objects.objects.Object"):
         obj.db_typeclass_path = "typeclasses.objects.Object"
         obj.save()
+
 
 class Migration(migrations.Migration):
 
@@ -16,5 +18,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-            migrations.RunPython(convert_defaults),
+        migrations.RunPython(convert_defaults),
     ]

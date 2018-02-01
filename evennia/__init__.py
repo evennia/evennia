@@ -25,7 +25,7 @@ from builtins import object
 
 # Typeclasses
 
-DefaultPlayer = None
+DefaultAccount = None
 DefaultGuest = None
 DefaultObject = None
 DefaultCharacter = None
@@ -36,7 +36,7 @@ DefaultScript = None
 
 # Database models
 ObjectDB = None
-PlayerDB = None
+AccountDB = None
 ScriptDB = None
 ChannelDB = None
 Msg = None
@@ -51,7 +51,7 @@ InterruptCommand = None
 # search functions
 search_object = None
 search_script = None
-search_player = None
+search_account = None
 search_channel = None
 search_message = None
 search_help = None
@@ -60,7 +60,7 @@ search_tag = None
 # create functions
 create_object = None
 create_script = None
-create_player = None
+create_account = None
 create_channel = None
 create_message = None
 create_help_entry = None
@@ -79,9 +79,11 @@ EvMenu = None
 EvTable = None
 EvForm = None
 EvEditor = None
+EvMore = None
 
 # Handlers
 SESSION_HANDLER = None
+TASK_HANDLER = None
 TICKER_HANDLER = None
 MONITOR_HANDLER = None
 CHANNEL_HANDLER = None
@@ -108,8 +110,10 @@ def _create_version():
         pass
     return version
 
+
 __version__ = _create_version()
 del _create_version
+
 
 def _init():
     """
@@ -117,17 +121,18 @@ def _init():
     Evennia has fully initialized all its models. It sets up the API
     in a safe environment where all models are available already.
     """
-    global DefaultPlayer, DefaultObject, DefaultGuest, DefaultCharacter
+    global DefaultAccount, DefaultObject, DefaultGuest, DefaultCharacter
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
-    global ObjectDB, PlayerDB, ScriptDB, ChannelDB, Msg
+    global ObjectDB, AccountDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys, InterruptCommand
-    global search_object, search_script, search_player, search_channel, search_help, search_tag
-    global create_object, create_script, create_player, create_channel, create_message, create_help_entry
-    global settings,lockfuncs, logger, utils, gametime, ansi, spawn, managers
-    global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER
+    global search_object, search_script, search_account, search_channel, search_help, search_tag, search_message
+    global create_object, create_script, create_account, create_channel, create_message, create_help_entry
+    global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
+    global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER, TASK_HANDLER
+    global EvMenu, EvTable, EvForm, EvMore, EvEditor
 
-    from .players.players import DefaultPlayer
-    from .players.players import DefaultGuest
+    from .accounts.accounts import DefaultAccount
+    from .accounts.accounts import DefaultGuest
     from .objects.objects import DefaultObject
     from .objects.objects import DefaultCharacter
     from .objects.objects import DefaultRoom
@@ -137,7 +142,7 @@ def _init():
 
     # Database models
     from .objects.models import ObjectDB
-    from .players.models import PlayerDB
+    from .accounts.models import AccountDB
     from .scripts.models import ScriptDB
     from .comms.models import ChannelDB
     from .comms.models import Msg
@@ -149,7 +154,7 @@ def _init():
     # search functions
     from .utils.search import search_object
     from .utils.search import search_script
-    from .utils.search import search_player
+    from .utils.search import search_account
     from .utils.search import search_message
     from .utils.search import search_channel
     from .utils.search import search_help
@@ -158,7 +163,7 @@ def _init():
     # create functions
     from .utils.create import create_object
     from .utils.create import create_script
-    from .utils.create import create_player
+    from .utils.create import create_account
     from .utils.create import create_channel
     from .utils.create import create_message
     from .utils.create import create_help_entry
@@ -178,6 +183,7 @@ def _init():
 
     # handlers
     from .scripts.tickerhandler import TICKER_HANDLER
+    from .scripts.taskhandler import TASK_HANDLER
     from .server.sessionhandler import SESSION_HANDLER
     from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
@@ -189,6 +195,7 @@ def _init():
         Parent for other containers
 
         """
+
         def _help(self):
             "Returns list of contents"
             names = [name for name in self.__class__.__dict__ if not name.startswith('_')]
@@ -196,13 +203,12 @@ def _init():
             print(self.__doc__ + "-" * 60 + "\n" + ", ".join(names))
         help = property(_help)
 
-
     class DBmanagers(_EvContainer):
         """
         Links to instantiated database managers.
 
         helpentry - HelpEntry.objects
-        players - PlayerDB.objects
+        accounts - AccountDB.objects
         scripts - ScriptDB.objects
         msgs    - Msg.objects
         channels - Channel.objects
@@ -213,7 +219,7 @@ def _init():
 
         """
         from .help.models import HelpEntry
-        from .players.models import PlayerDB
+        from .accounts.models import AccountDB
         from .scripts.models import ScriptDB
         from .comms.models import Msg, ChannelDB
         from .objects.models import ObjectDB
@@ -223,7 +229,7 @@ def _init():
 
         # create container's properties
         helpentries = HelpEntry.objects
-        players = PlayerDB.objects
+        accounts = AccountDB.objects
         scripts = ScriptDB.objects
         msgs = Msg.objects
         channels = ChannelDB.objects
@@ -232,13 +238,12 @@ def _init():
         attributes = Attribute.objects
         tags = Tag.objects
         # remove these so they are not visible as properties
-        del HelpEntry, PlayerDB, ScriptDB, Msg, ChannelDB
+        del HelpEntry, AccountDB, ScriptDB, Msg, ChannelDB
         #del ExternalChannelConnection
         del ObjectDB, ServerConfig, Tag, Attribute
 
     managers = DBmanagers()
     del DBmanagers
-
 
     class DefaultCmds(_EvContainer):
         """
@@ -250,10 +255,10 @@ def _init():
         """
 
         from .commands.default.cmdset_character import CharacterCmdSet
-        from .commands.default.cmdset_player import PlayerCmdSet
+        from .commands.default.cmdset_account import AccountCmdSet
         from .commands.default.cmdset_unloggedin import UnloggedinCmdSet
         from .commands.default.cmdset_session import SessionCmdSet
-        from .commands.default.muxcommand import MuxCommand, MuxPlayerCommand
+        from .commands.default.muxcommand import MuxCommand, MuxAccountCommand
 
         def __init__(self):
             "populate the object with commands"
@@ -264,22 +269,21 @@ def _init():
                 self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
             from .commands.default import (admin, batchprocess,
-                                              building, comms, general,
-                                              player, help, system, unloggedin)
+                                           building, comms, general,
+                                           account, help, system, unloggedin)
             add_cmds(admin)
             add_cmds(building)
             add_cmds(batchprocess)
             add_cmds(building)
             add_cmds(comms)
             add_cmds(general)
-            add_cmds(player)
+            add_cmds(account)
             add_cmds(help)
             add_cmds(system)
             add_cmds(unloggedin)
 
     default_cmds = DefaultCmds()
     del DefaultCmds
-
 
     class SystemCmds(_EvContainer):
         """
@@ -293,7 +297,7 @@ def _init():
         CMD_MULTIMATCH - multiple command matches were found
         CMD_CHANNEL - the command name is a channel name
         CMD_LOGINSTART - this command will be called as the very
-                         first command when a player connects to
+                         first command when an account connects to
                          the server.
 
         To access in code, do 'from evennia import syscmdkeys' then
@@ -310,6 +314,7 @@ def _init():
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
+
 
 del object
 del absolute_import

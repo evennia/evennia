@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
+
 def convert_channelnames(apps, schema_editor):
     ChannelDB = apps.get_model("comms", "ChannelDB")
     for chan in ChannelDB.objects.filter(db_key="MUDinfo"):
@@ -13,6 +14,7 @@ def convert_channelnames(apps, schema_editor):
         chan.db_key = "MudInfo"
         chan.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -20,5 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-            migrations.RunPython(convert_channelnames),
+        migrations.RunPython(convert_channelnames),
     ]

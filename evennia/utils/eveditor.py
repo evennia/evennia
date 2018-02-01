@@ -378,7 +378,7 @@ class CmdLineInput(CmdEditorBase):
                     indent = "off"
 
                 self.caller.msg("|b%02i|||n (|g%s|n) %s" % (
-                        cline, indent, raw(line)))
+                    cline, indent, raw(line)))
             else:
                 self.caller.msg("|b%02i|||n %s" % (cline, raw(self.args)))
 
@@ -643,7 +643,7 @@ class CmdEditorGroup(CmdEditorBase):
                 indent = editor._indent
                 if indent >= 0:
                     caller.msg("Decreased indentation: new indentation is {}.".format(
-                            indent))
+                        indent))
                 else:
                     caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
             else:
@@ -655,7 +655,7 @@ class CmdEditorGroup(CmdEditorBase):
                 indent = editor._indent
                 if indent >= 0:
                     caller.msg("Increased indentation: new indentation is {}.".format(
-                            indent))
+                        indent))
                 else:
                     caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
             else:
@@ -780,7 +780,7 @@ class EvEditor(object):
                 caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
                 caller.attributes.add("_eveditor_unsaved", False)
                 caller.attributes.add("_eveditor_indent", 0)
-            except Exception, err:
+            except Exception as err:
                 caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
                 persistent = False
@@ -929,7 +929,7 @@ class EvEditor(object):
         nchars = len(buf)
 
         sep = self._sep
-        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH-20-len(self._key))
+        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH - 20 - len(self._key))
         footer = "|n" + sep * 10 +\
                  "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * 28
         if linenums:
@@ -956,10 +956,10 @@ class EvEditor(object):
 
         """
         keywords = {
-                "elif ": ["if "],
-                "else:": ["if ", "try"],
-                "except": ["try:"],
-                "finally:": ["try:"],
+            "elif ": ["if "],
+            "else:": ["if ", "try"],
+            "except": ["try:"],
+            "finally:": ["try:"],
         }
         opening_tags = ("if ", "try:", "for ", "while ")
 

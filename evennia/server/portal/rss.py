@@ -21,11 +21,13 @@ if RSS_ENABLED:
     except ImportError:
         raise ImportError("RSS requires python-feedparser to be installed. Install or set RSS_ENABLED=False.")
 
+
 class RSSReader(Session):
     """
     A simple RSS reader using the feedparser module.
 
     """
+
     def __init__(self, factory, url, rate):
         """
         Initialize the reader.
@@ -111,6 +113,7 @@ class RSSReader(Session):
 
         """
         return threads.deferToThread(self.get_new).addCallback(self._callback, init).addErrback(self._errback)
+
 
 class RSSBotFactory(object):
     """

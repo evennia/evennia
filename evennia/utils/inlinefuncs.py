@@ -161,7 +161,7 @@ def clr(*args, **kwargs):
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
 _INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN>",
-        "stackfull": lambda *args, **kwargs: "\n (not parsed: inlinefunc stack size exceeded.)"}
+                 "stackfull": lambda *args, **kwargs: "\n (not parsed: inlinefunc stack size exceeded.)"}
 
 
 # load custom inline func modules.
@@ -172,7 +172,7 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
         if module == "server.conf.inlinefuncs":
             # a temporary warning since the default module changed name
             raise ImportError("Error: %s\nPossible reason: mygame/server/conf/inlinefunc.py should "
-                  "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)." % err)
+                              "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)." % err)
         else:
             raise
 
@@ -189,7 +189,7 @@ except AttributeError:
 
 # regex definitions
 
-_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(") # unescaped $funcname{ (start of function call)
+_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname{ (start of function call)
 
 _RE_TOKEN = re.compile(r"""
                         (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
@@ -199,11 +199,12 @@ _RE_TOKEN = re.compile(r"""
                         (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname( (start of function call)
                         (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
                         (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\|\(}{\[\]]+|\"{1}|\'{1}) # everything else should also be included""",
-                        re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
+                       re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
 
 
 # Cache for function lookups.
 _PARSING_CACHE = utils.LimitedSizeOrderedDict(size_limit=1000)
+
 
 class ParseStack(list):
     """
@@ -221,12 +222,20 @@ class ParseStack(list):
     string + string]
 
     """
+
     def __init__(self, *args, **kwargs):
         super(ParseStack, self).__init__(*args, **kwargs)
         # always start stack with the empty string
         list.append(self, "")
         # indicates if the top of the stack is a string or not
         self._string_last = True
+
+    def __eq__(self, other):
+        return (super(ParseStack).__eq__(other) and
+                hasattr(other, "_string_last") and self._string_last == other._string_last)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def append(self, item):
         """
@@ -246,6 +255,7 @@ class ParseStack(list):
 
 class InlinefuncError(RuntimeError):
     pass
+
 
 def parse_inlinefunc(string, strip=False, **kwargs):
     """
@@ -273,64 +283,64 @@ def parse_inlinefunc(string, strip=False, **kwargs):
         # no cached stack; build a new stack and continue
         stack = ParseStack()
 
-    # process string on stack
-    ncallable = 0
-    for match in _RE_TOKEN.finditer(string):
-        gdict = match.groupdict()
-        if gdict["singlequote"]:
-            stack.append(gdict["singlequote"])
-        elif gdict["doublequote"]:
-            stack.append(gdict["doublequote"])
-        elif gdict["end"]:
-            if ncallable <= 0:
-                stack.append(")")
-                continue
-            args = []
-            while stack:
-                operation = stack.pop()
-                if callable(operation):
-                    if not strip:
-                        stack.append((operation, [arg for arg in reversed(args)]))
-                    ncallable -= 1
-                    break
+        # process string on stack
+        ncallable = 0
+        for match in _RE_TOKEN.finditer(string):
+            gdict = match.groupdict()
+            if gdict["singlequote"]:
+                stack.append(gdict["singlequote"])
+            elif gdict["doublequote"]:
+                stack.append(gdict["doublequote"])
+            elif gdict["end"]:
+                if ncallable <= 0:
+                    stack.append(")")
+                    continue
+                args = []
+                while stack:
+                    operation = stack.pop()
+                    if callable(operation):
+                        if not strip:
+                            stack.append((operation, [arg for arg in reversed(args)]))
+                        ncallable -= 1
+                        break
+                    else:
+                        args.append(operation)
+            elif gdict["start"]:
+                funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
+                try:
+                    # try to fetch the matching inlinefunc from storage
+                    stack.append(_INLINE_FUNCS[funcname])
+                except KeyError:
+                    stack.append(_INLINE_FUNCS["nomatch"])
+                    stack.append(funcname)
+                ncallable += 1
+            elif gdict["escaped"]:
+                # escaped tokens
+                token = gdict["escaped"].lstrip("\\")
+                stack.append(token)
+            elif gdict["comma"]:
+                if ncallable > 0:
+                    # commas outside strings and inside a callable are
+                    # used to mark argument separation - we use None
+                    # in the stack to indicate such a separation.
+                    stack.append(None)
                 else:
-                    args.append(operation)
-        elif gdict["start"]:
-            funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
-            try:
-                # try to fetch the matching inlinefunc from storage
-                stack.append(_INLINE_FUNCS[funcname])
-            except KeyError:
-                stack.append(_INLINE_FUNCS["nomatch"])
-                stack.append(funcname)
-            ncallable += 1
-        elif gdict["escaped"]:
-            # escaped tokens
-            token = gdict["escaped"].lstrip("\\")
-            stack.append(token)
-        elif gdict["comma"]:
-            if ncallable > 0:
-                # commas outside strings and inside a callable are
-                # used to mark argument separation - we use None
-                # in the stack to indicate such a separation.
-                stack.append(None)
+                    # no callable active - just a string
+                    stack.append(",")
             else:
-                # no callable active - just a string
-                stack.append(",")
+                # the rest
+                stack.append(gdict["rest"])
+
+        if ncallable > 0:
+            # this means not all inlinefuncs were complete
+            return string
+
+        if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
+            # if stack is larger than limit, throw away parsing
+            return string + gdict["stackfull"](*args, **kwargs)
         else:
-            # the rest
-            stack.append(gdict["rest"])
-
-    if ncallable > 0:
-        # this means not all inlinefuncs were complete
-        return string
-
-    if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
-        # if stack is larger than limit, throw away parsing
-        return string + gdict["stackfull"](*args, **kwargs)
-    else:
-        # cache the stack
-        _PARSING_CACHE[string] = stack
+            # cache the stack
+            _PARSING_CACHE[string] = stack
 
     # run the stack recursively
     def _run_stack(item, depth=0):
@@ -347,7 +357,7 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                         args.append("")
                     else:
                         # all other args should merge into one string
-                        args[-1] += _run_stack(arg, depth=depth+1)
+                        args[-1] += _run_stack(arg, depth=depth + 1)
                 # execute the inlinefunc at this point or strip it.
                 kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
@@ -359,6 +369,7 @@ def parse_inlinefunc(string, strip=False, **kwargs):
 #
 # Nick templating
 #
+
 
 """
 This supports the use of replacement templates in nicks:
@@ -451,5 +462,3 @@ def parse_nick_template(string, template_regex, outtemplate):
     if match:
         return outtemplate.format(**match.groupdict())
     return string
-
-
