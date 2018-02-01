@@ -244,7 +244,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 #            query.append(("db_tags__db_category", category.lower()))
 #        return self.filter(**dict(query))
 
-    @returns_typeclass_list
     def get_by_tag(self, key=None, category=None, tagtype=None):
         """
         Return objects having tags with a given key or category or combination of the two.
@@ -276,11 +275,13 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if n_keys > 1:
             if n_categories == 1:
                 category = categories[0]
-                query = Q(db_tags__db_tagtype=tagtype.lower() if tagtype else tagtype,
-                          db_tags__db_category=category.lower() if category else category,
-                          db_tags__db_model=dbmodel)
+                query = Q()
                 for key in keys:
-                    query = query & Q(db_tags__db_key=key.lower())
+                    query = query & \
+                        Q(db_tags__db_tagtype=tagtype.lower() if tagtype else tagtype,
+                          db_tags__db_category=category.lower() if category else category,
+                          db_tags__db_model=dbmodel,
+                          db_tags__db_key=key.lower())
                 print "Query:", query
             else:
                 query = Q(db_tags__db_tagtype=tagtype.lower(),
