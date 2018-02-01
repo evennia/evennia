@@ -6,4 +6,4 @@ from django.conf.urls import *
 from evennia.web.webclient import views as webclient_views
 
 urlpatterns = [
-   url(r'^$', webclient_views.webclient, name="index")]
+    url(r'^$', webclient_views.webclient, name="index")]

@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('db_is_active', models.BooleanField(default=False, verbose_name=b'script active')),
                 ('db_attributes', models.ManyToManyField(help_text=b'attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).', to='typeclasses.Attribute', null=True)),
                 ('db_obj', models.ForeignKey(blank=True, to='objects.ObjectDB', help_text=b'the object to store this script on, if not a global script.', null=True, verbose_name=b'scripted object')),
-                ('db_player', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, help_text=b'the player to store this script on (should not be set if obj is set)', null=True, verbose_name=b'scripted player')),
+                ('db_account', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, help_text=b'the account to store this script on (should not be set if obj is set)', null=True, verbose_name=b'scripted account')),
                 ('db_tags', models.ManyToManyField(help_text=b'tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag', null=True)),
             ],
             options={

@@ -46,10 +46,10 @@ class ScriptDBAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-                'fields': (('db_key', 'db_typeclass_path'), 'db_interval',
-                            'db_repeats', 'db_start_delay', 'db_persistent',
-                            'db_obj')}),
-        )
+            'fields': (('db_key', 'db_typeclass_path'), 'db_interval',
+                       'db_repeats', 'db_start_delay', 'db_persistent',
+                       'db_obj')}),
+    )
     inlines = [ScriptTagInline, ScriptAttributeInline]
 
     def save_model(self, request, obj, form, change):

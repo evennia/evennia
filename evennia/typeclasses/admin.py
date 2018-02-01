@@ -2,7 +2,7 @@ from django.contrib import admin
 from evennia.typeclasses.models import Tag
 from django import forms
 from evennia.utils.picklefield import PickledFormField
-from evennia.utils.dbserialize import from_pickle
+from evennia.utils.dbserialize import from_pickle, _SaverSet
 import traceback
 
 
@@ -18,17 +18,28 @@ class TagAdmin(admin.ModelAdmin):
 
 class TagForm(forms.ModelForm):
     """
-    This form overrides the base behavior of the ModelForm that would be used for a Tag-through-model.
-    Since the through-models only have access to the foreignkeys of the Tag and the Object that they're
-    attached to, we need to spoof the behavior of it being a form that would correspond to its tag,
-    or the creation of a tag. Instead of being saved, we'll call to the Object's handler, which will handle
-    the creation, change, or deletion of a tag for us, as well as updating the handler's cache so that all
-    changes are instantly updated in-game.
+    This form overrides the base behavior of the ModelForm that would be used for a
+    Tag-through-model.  Since the through-models only have access to the foreignkeys of the Tag and
+    the Object that they're attached to, we need to spoof the behavior of it being a form that would
+    correspond to its tag, or the creation of a tag. Instead of being saved, we'll call to the
+    Object's handler, which will handle the creation, change, or deletion of a tag for us, as well
+    as updating the handler's cache so that all changes are instantly updated in-game.
     """
-    tag_key = forms.CharField(label='Tag Name')
-    tag_category = forms.CharField(label="Category", required=False)
-    tag_type = forms.CharField(label="Type", required=False)
-    tag_data = forms.CharField(label="Data", required=False)
+    tag_key = forms.CharField(label='Tag Name',
+                              required=True,
+                              help_text="This is the main key identifier")
+    tag_category = forms.CharField(label="Category",
+                                   help_text="Used for grouping tags. Unset (default) gives a category of None",
+                                   required=False)
+    tag_type = forms.CharField(label="Type",
+                               help_text="Internal use. Either unset, \"alias\" or \"permission\"",
+                               required=False)
+    tag_data = forms.CharField(label="Data",
+                               help_text="Usually unused. Intended for eventual info about the tag itself",
+                               required=False)
+
+    class Meta:
+        fields = ("tag_key", "tag_category", "tag_data", "tag_type")
 
     def __init__(self, *args, **kwargs):
         """
@@ -83,6 +94,7 @@ class TagFormSet(forms.BaseInlineFormSet):
     Object, where the handler is an AliasHandler, PermissionsHandler, or TagHandler, based on the
     type of tag.
     """
+
     def save(self, commit=True):
         def get_handler(finished_object):
             related = getattr(finished_object, self.related_field)
@@ -113,15 +125,15 @@ class TagInline(admin.TabularInline):
     and the 'model' and 'related_field' class attributes must be set. model should be the
     through model (ObjectDB_db_tag', for example), while related field should be the name
     of the field on that through model which points to the model being used: 'objectdb',
-    'msg', 'playerdb', etc.
+    'msg', 'accountdb', etc.
     """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     form = TagForm
     formset = TagFormSet
-    related_field = None  # Must be 'objectdb', 'playerdb', 'msg', etc. Set when subclassing
-    raw_id_fields = ('tag',)
-    readonly_fields = ('tag',)
+    related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
+    # raw_id_fields = ('tag',)
+    # readonly_fields = ('tag',)
     extra = 0
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -149,13 +161,26 @@ class AttributeForm(forms.ModelForm):
     changes are instantly updated in-game.
     """
     attr_key = forms.CharField(label='Attribute Name', required=False, initial="Enter Attribute Name Here")
-    attr_category = forms.CharField(label="Category", help_text="type of attribute, for sorting", required=False)
+    attr_category = forms.CharField(label="Category",
+                                    help_text="type of attribute, for sorting",
+                                    required=False,
+                                    max_length=128)
     attr_value = PickledFormField(label="Value", help_text="Value to pickle/save", required=False)
-    attr_type = forms.CharField(label="Type", help_text="nick for nickname, else leave blank", required=False)
+    attr_type = forms.CharField(label="Type",
+                                help_text="Internal use. Either unset (normal Attribute) or \"nick\"",
+                                required=False,
+                                max_length=16)
     attr_strvalue = forms.CharField(label="String Value",
-                                    help_text="Only enter this if value is blank and you want to save as a string",
-                                    required=False)
-    attr_lockstring = forms.CharField(label="Locks", required=False, widget=forms.Textarea)
+                                    help_text="Only set when using the Attribute as a string-only store",
+                                    required=False,
+                                    widget=forms.Textarea(attrs={"rows": 1, "cols": 6}))
+    attr_lockstring = forms.CharField(label="Locks",
+                                      required=False,
+                                      help_text="Lock string on the form locktype:lockdef;lockfunc:lockdef;...",
+                                      widget=forms.Textarea(attrs={"rows": 1, "cols": 8}))
+
+    class Meta:
+        fields = ("attr_key", "attr_value", "attr_category", "attr_strvalue", "attr_lockstring", "attr_type")
 
     def __init__(self, *args, **kwargs):
         """
@@ -163,6 +188,7 @@ class AttributeForm(forms.ModelForm):
          to have based on the Attribute. attr_key, attr_category, attr_value, attr_strvalue, attr_type,
          and attr_lockstring all refer to the corresponding Attribute fields. The initial data of the form fields will
          similarly be populated.
+
         """
         super(AttributeForm, self).__init__(*args, **kwargs)
         attr_key = None
@@ -187,6 +213,9 @@ class AttributeForm(forms.ModelForm):
         self.instance.attr_key = attr_key
         self.instance.attr_category = attr_category
         self.instance.attr_value = attr_value
+        # prevent set from being transformed to unicode
+        if isinstance(attr_value, set) or isinstance(attr_value, _SaverSet):
+            self.fields['attr_value'].disabled = True
         self.instance.deserialized_value = from_pickle(attr_value)
         self.instance.attr_strvalue = attr_strvalue
         self.instance.attr_type = attr_type
@@ -210,6 +239,17 @@ class AttributeForm(forms.ModelForm):
         instance.attr_type = self.cleaned_data['attr_type'] or None
         instance.attr_lockstring = self.cleaned_data['attr_lockstring']
         return instance
+
+    def clean_attr_value(self):
+        """
+        Prevent Sets from being cleaned due to literal_eval failing on them. Otherwise they will be turned into
+        unicode.
+        """
+        data = self.cleaned_data['attr_value']
+        initial = self.instance.attr_value
+        if isinstance(initial, set) or isinstance(initial, _SaverSet):
+            return initial
+        return data
 
 
 class AttributeFormSet(forms.BaseInlineFormSet):
@@ -253,15 +293,15 @@ class AttributeInline(admin.TabularInline):
     and the 'model' and 'related_field' class attributes must be set. model should be the
     through model (ObjectDB_db_tag', for example), while related field should be the name
     of the field on that through model which points to the model being used: 'objectdb',
-    'msg', 'playerdb', etc.
+    'msg', 'accountdb', etc.
     """
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     form = AttributeForm
     formset = AttributeFormSet
-    related_field = None  # Must be 'objectdb', 'playerdb', 'msg', etc. Set when subclassing
-    raw_id_fields = ('attribute',)
-    readonly_fields = ('attribute',)
+    related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
+    # raw_id_fields = ('attribute',)
+    # readonly_fields = ('attribute',)
     extra = 0
 
     def get_formset(self, request, obj=None, **kwargs):

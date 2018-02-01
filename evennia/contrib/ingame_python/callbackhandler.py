@@ -4,6 +4,7 @@ Module containing the CallbackHandler for individual objects.
 
 from collections import namedtuple
 
+
 class CallbackHandler(object):
 
     """
@@ -88,7 +89,7 @@ class CallbackHandler(object):
         Args:
             callback_name (str): the name of the callback to add.
             code (str): the Python code associated with this callback.
-            author (Character or Player, optional): the author of the callback.
+            author (Character or Account, optional): the author of the callback.
             valid (bool, optional): should the callback be connected?
             parameters (str, optional): optional parameters.
 
@@ -99,7 +100,7 @@ class CallbackHandler(object):
         handler = type(self).script
         if handler:
             return self.format_callback(handler.add_callback(self.obj, callback_name, code,
-                    author=author, valid=valid, parameters=parameters))
+                                                             author=author, valid=valid, parameters=parameters))
 
     def edit(self, callback_name, number, code, author=None, valid=False):
         """
@@ -109,7 +110,7 @@ class CallbackHandler(object):
             callback_name (str): the name of the callback to edit.
             number (int): the callback number to be changed.
             code (str): the Python code associated with this callback.
-            author (Character or Player, optional): the author of the callback.
+            author (Character or Account, optional): the author of the callback.
             valid (bool, optional): should the callback be connected?
 
         Returns:
@@ -122,7 +123,7 @@ class CallbackHandler(object):
         handler = type(self).script
         if handler:
             return self.format_callback(handler.edit_callback(self.obj, callback_name,
-                    number, code, author=author, valid=valid))
+                                                              number, code, author=author, valid=valid))
 
     def remove(self, callback_name, number):
         """
@@ -200,5 +201,6 @@ class CallbackHandler(object):
 
         return Callback(**callback)
 
+
 Callback = namedtuple("Callback", ("obj", "name", "number", "code", "author",
-        "valid", "parameters", "created_on", "updated_by", "updated_on"))
+                                   "valid", "parameters", "created_on", "updated_by", "updated_on"))

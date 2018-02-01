@@ -23,8 +23,7 @@ from future.utils import listvalues
 import random
 
 from evennia import DefaultObject, DefaultExit, Command, CmdSet
-from evennia import utils
-from evennia.utils import search
+from evennia.utils import search, delay
 from evennia.utils.spawner import spawn
 
 # -------------------------------------------------------------
@@ -106,6 +105,7 @@ class CmdSetReadable(CmdSet):
     """
     A CmdSet for readables.
     """
+
     def at_cmdset_creation(self):
         """
         Called when the cmdset is created.
@@ -117,6 +117,7 @@ class Readable(TutorialObject):
     """
     This simple object defines some attributes and
     """
+
     def at_object_creation(self):
         """
         Called when object is created. We make sure to set the needed
@@ -176,6 +177,7 @@ class CmdClimb(Command):
 
 class CmdSetClimbable(CmdSet):
     """Climbing cmdset"""
+
     def at_cmdset_creation(self):
         """populate set"""
         self.add(CmdClimb())
@@ -303,6 +305,7 @@ class LightSource(TutorialObject):
 
     When burned out, the object will be deleted.
     """
+
     def at_init(self):
         """
         If this is called with the Attribute is_giving_light already
@@ -369,7 +372,7 @@ class LightSource(TutorialObject):
             # start the burn timer. When it runs out, self._burnout
             # will be called. We store the deferred so it can be
             # killed in unittesting.
-            self.deferred = utils.delay(60 * 3, self._burnout)
+            self.deferred = delay(60 * 3, self._burnout)
         return True
 
 
@@ -582,13 +585,14 @@ class CrumblingWall(TutorialObject, DefaultExit):
     The CrumblingWall can be examined in various ways, but only if a
     lit light source is in the room. The traversal itself is blocked
     by a traverse: lock on the exit that only allows passage if a
-    certain attribute is set on the trying player.
+    certain attribute is set on the trying account.
 
     Important attribute
      destination - this property must be set to make this a valid exit
                    whenever the button is pushed (this hides it as an exit
                    until it actually is)
     """
+
     def at_init(self):
         """
         Called when object is recalled from cache.
@@ -640,7 +644,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.db.exit_open = True
         # start a 45 second timer before closing again. We store the deferred so it can be
         # killed in unittesting.
-        self.deferred = utils.delay(45, self.reset)
+        self.deferred = delay(45, self.reset)
 
     def _translate_position(self, root, ipos):
         """Translates the position into words"""
@@ -701,7 +705,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.reset()
 
     def at_failed_traverse(self, traverser):
-        """This is called if the player fails to pass the Exit."""
+        """This is called if the account fails to pass the Exit."""
         traverser.msg("No matter how you try, you cannot force yourself through %s." % self.key)
 
     def reset(self):
@@ -838,6 +842,7 @@ class CmdAttack(Command):
 
 class CmdSetWeapon(CmdSet):
     """Holds the attack command."""
+
     def at_cmdset_creation(self):
         """called at first object creation."""
         self.add(CmdAttack())
@@ -854,6 +859,7 @@ class Weapon(TutorialObject):
                type of attack) (0-10)
 
     """
+
     def at_object_creation(self):
         """Called at first creation of the object"""
         super(Weapon, self).at_object_creation()
@@ -868,7 +874,7 @@ class Weapon(TutorialObject):
         When reset, the weapon is simply deleted, unless it has a place
         to return to.
         """
-        if self.location.has_player and self.home == self.location:
+        if self.location.has_account and self.home == self.location:
             self.location.msg_contents("%s suddenly and magically fades into nothingness, as if it was never there ..."
                                        % self.key)
             self.delete()
@@ -987,7 +993,7 @@ WEAPON_PROTOTYPES = {
         "hit": 0.85,
         "parry": 0.7,
         "damage": 11}
-    }
+}
 
 
 class CmdGetWeapon(Command):
@@ -1032,11 +1038,12 @@ class WeaponRack(TutorialObject):
     Attributes to set on this object:
         available_weapons: list of prototype-keys from
             WEAPON_PROTOTYPES, the weapons available in this rack.
-        no_more_weapons_msg - error message to return to players
+        no_more_weapons_msg - error message to return to accounts
             who already got one weapon from the rack and tries to
             grab another one.
 
     """
+
     def at_object_creation(self):
         """
         called at creation

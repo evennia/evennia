@@ -36,6 +36,7 @@ from twisted.protocols.policies import ProtocolWrapper, WrappingFactory
 from twisted.python import log
 from twisted.web.http import datetimeToString
 
+
 class WSException(Exception):
     """
     Something stupid happened here.
@@ -53,6 +54,7 @@ class WSException(Exception):
 #           except for the protocol number.
 # RFC6455 - RFC 6455. The official WebSocket protocol standard. The protocol
 #           number is 13, but otherwise it is identical to HyBi-07.
+
 
 HYBI00, HYBI07, HYBI10, RFC6455 = list(range(4))
 
@@ -87,6 +89,7 @@ decoders = {
 # Fake HTTP stuff, and a couple convenience methods for examining fake HTTP
 # headers.
 
+
 def http_headers(s):
     """
     Create a dictionary of data from raw HTTP headers.
@@ -104,13 +107,15 @@ def http_headers(s):
 
     return d
 
+
 def is_websocket(headers):
     """
     Determine whether a given set of headers is asking for WebSockets.
     """
 
-    return ("upgrade" in headers.get("Connection", "").lower()
-            and headers.get("Upgrade").lower() == "websocket")
+    return ("upgrade" in headers.get("Connection", "").lower() and
+            headers.get("Upgrade").lower() == "websocket")
+
 
 def is_hybi00(headers):
     """
@@ -123,6 +128,7 @@ def is_hybi00(headers):
     return "Sec-WebSocket-Key1" in headers and "Sec-WebSocket-Key2" in headers
 
 # Authentication for WS.
+
 
 def complete_hybi00(headers, challenge):
     """
@@ -139,6 +145,7 @@ def complete_hybi00(headers, challenge):
 
     return md5(nonce).digest()
 
+
 def make_accept(key):
     """
     Create an "accept" response for a given key.
@@ -154,6 +161,7 @@ def make_accept(key):
 # Separated out to make unit testing a lot easier.
 # Frames are bonghits in newer WS versions, so helpers are appreciated.
 
+
 def make_hybi00_frame(buf):
     """
     Make a HyBi-00 frame from some data.
@@ -163,6 +171,7 @@ def make_hybi00_frame(buf):
     """
 
     return "\x00%s\xff" % buf
+
 
 def parse_hybi00_frames(buf):
     """
@@ -192,6 +201,7 @@ def parse_hybi00_frames(buf):
     buf = buf[tail:]
     return frames, buf
 
+
 def mask(buf, key):
     """
     Mask or unmask a buffer of bytes with a masking key.
@@ -205,6 +215,7 @@ def mask(buf, key):
     for i, char in enumerate(buf):
         buf[i] = chr(ord(char) ^ key[i % 4])
     return "".join(buf)
+
 
 def make_hybi07_frame(buf, opcode=0x1):
     """
@@ -226,6 +237,7 @@ def make_hybi07_frame(buf, opcode=0x1):
     frame = "%s%s%s" % (header, length, buf)
     return frame
 
+
 def make_hybi07_frame_dwim(buf):
     """
     Make a HyBi-07 frame with binary or text data according to the type of buf.
@@ -238,6 +250,7 @@ def make_hybi07_frame_dwim(buf):
         return make_hybi07_frame(buf.encode("utf-8"), opcode=0x1)
     else:
         raise TypeError("In binary support mode, frame data must be either str or unicode")
+
 
 def parse_hybi07_frames(buf):
     """
@@ -259,7 +272,7 @@ def parse_hybi07_frames(buf):
             # At least one of the reserved flags is set. Pork chop sandwiches!
             raise WSException("Reserved flag in HyBi-07 frame (%d)" % header)
             #frames.append(("", CLOSE))
-            #return frames, buf
+            # return frames, buf
 
         # Get the opcode, and translate it to a local enum which we actually
         # care about.
@@ -328,6 +341,7 @@ def parse_hybi07_frames(buf):
         start += offset + length
 
     return frames, buf[start:]
+
 
 class WebSocketProtocol(ProtocolWrapper):
     """
@@ -538,7 +552,7 @@ class WebSocketProtocol(ProtocolWrapper):
                 log.msg("Can't support protocol version %s!" % version)
                 return False
 
-        self.validationMade() # custom Evennia addition
+        self.validationMade()  # custom Evennia addition
         return True
 
     def dataReceived(self, data):
@@ -638,6 +652,7 @@ class WebSocketProtocol(ProtocolWrapper):
             self.transport.write(frame)
 
         self.loseConnection()
+
 
 class WebSocketFactory(WrappingFactory):
     """

@@ -16,11 +16,11 @@ the database model and call its 'objects' property.
 Also remember that all commands in this file return lists (also if
 there is only one match) unless noted otherwise.
 
-Example: To reach the search method 'get_object_with_player'
+Example: To reach the search method 'get_object_with_account'
          in evennia/objects/managers.py:
 
 > from evennia.objects.models import ObjectDB
-> match = Object.objects.get_object_with_player(...)
+> match = Object.objects.get_object_with_account(...)
 
 
 """
@@ -30,15 +30,15 @@ Example: To reach the search method 'get_object_with_player'
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
-__all__ = ("search_object", "search_player", "search_script",
+__all__ = ("search_object", "search_account", "search_script",
            "search_message", "search_channel", "search_help_entry",
-           "search_object_tag", "search_script_tag", "search_player_tag",
+           "search_object_tag", "search_script_tag", "search_account_tag",
            "search_channel_tag")
 
 
 # import objects this way to avoid circular import problems
 ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
-PlayerDB = ContentType.objects.get(app_label="players", model="playerdb").model_class()
+AccountDB = ContentType.objects.get(app_label="accounts", model="accountdb").model_class()
 ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
 Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
 Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
@@ -99,20 +99,20 @@ object_search = search_object
 objects = search_objects
 
 #
-# Search for players
+# Search for accounts
 #
-# player_search(self, ostring)
+# account_search(self, ostring)
 
-#     Searches for a particular player by name or
+#     Searches for a particular account by name or
 #     database id.
 #
 #     ostring = a string or database id.
 #
 
-search_player = PlayerDB.objects.player_search
-search_players = search_player
-player_search = search_player
-players = search_players
+search_account = AccountDB.objects.account_search
+search_accounts = search_account
+account_search = search_account
+accounts = search_accounts
 
 #
 #   Searching for scripts
@@ -140,8 +140,8 @@ scripts = search_scripts
 #     Search the message database for particular messages. At least one
 #     of the arguments must be given to do a search.
 #
-#     sender - get messages sent by a particular player
-#     receiver - get messages received by a certain player
+#     sender - get messages sent by a particular account
+#     receiver - get messages received by a certain account
 #     channel - get messages sent to a particular channel
 #     freetext - Search for a text string in a message.
 #                NOTE: This can potentially be slow, so make sure to supply
@@ -190,7 +190,7 @@ help_entries = search_help
 # Locate Attributes
 
 #    search_object_attribute(key, category, value, strvalue) (also search_attribute works)
-#    search_player_attribute(key, category, value, strvalue) (also search_attribute works)
+#    search_account_attribute(key, category, value, strvalue) (also search_attribute works)
 #    search_script_attribute(key, category, value, strvalue) (also search_attribute works)
 #    search_channel_attribute(key, category, value, strvalue) (also search_attribute works)
 
@@ -201,8 +201,8 @@ def search_object_attribute(key=None, category=None, value=None, strvalue=None):
     return ObjectDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
 
 
-def search_player_attribute(key=None, category=None, value=None, strvalue=None):
-    return PlayerDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+def search_account_attribute(key=None, category=None, value=None, strvalue=None):
+    return AccountDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
 
 
 def search_script_attribute(key=None, category=None, value=None, strvalue=None):
@@ -212,13 +212,14 @@ def search_script_attribute(key=None, category=None, value=None, strvalue=None):
 def search_channel_attribute(key=None, category=None, value=None, strvalue=None):
     return Channel.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
 
+
 # search for attribute objects
 search_attribute_object = ObjectDB.objects.get_attribute
 
 # Locate Tags
 
 #    search_object_tag(key=None, category=None) (also search_tag works)
-#    search_player_tag(key=None, category=None)
+#    search_account_tag(key=None, category=None)
 #    search_script_tag(key=None, category=None)
 #    search_channel_tag(key=None, category=None)
 
@@ -243,12 +244,14 @@ def search_object_by_tag(key=None, category=None):
 
     """
     return ObjectDB.objects.get_by_tag(key=key, category=category)
+
+
 search_tag = search_object_by_tag  # this is the most common case
 
 
-def search_player_tag(key=None, category=None):
+def search_account_tag(key=None, category=None):
     """
-    Find player based on tag or category.
+    Find account based on tag or category.
 
     Args:
         key (str, optional): The tag key to search for.
@@ -257,12 +260,12 @@ def search_player_tag(key=None, category=None):
             tags will be searched.
 
     Returns:
-        matches (list): List of Players with tags matching
+        matches (list): List of Accounts with tags matching
             the search criteria, or an empty list if no
             matches were found.
 
     """
-    return PlayerDB.objects.get_by_tag(key=key, category=category)
+    return AccountDB.objects.get_by_tag(key=key, category=category)
 
 
 def search_script_tag(key=None, category=None):
@@ -301,6 +304,7 @@ def search_channel_tag(key=None, category=None):
 
     """
     return Channel.objects.get_by_tag(key=key, category=category)
+
 
 # search for tag objects (not the objects they are attached to
 search_tag_object = ObjectDB.objects.get_tag

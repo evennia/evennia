@@ -29,6 +29,7 @@ from builtins import object
 
 from django.db.models import signals
 
+from django.db.models.base import ModelBase
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -42,10 +43,9 @@ from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBa
 from evennia.typeclasses import managers
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import (
-        is_iter, inherits_from, lazy_property,
-        class_from_module)
+    is_iter, inherits_from, lazy_property,
+    class_from_module)
 from evennia.utils.logger import log_trace
-from evennia.typeclasses.django_new_patch import patched_new
 from .signals import remove_attributes_on_delete, post_save
 
 __all__ = ("TypedObject", )
@@ -84,21 +84,17 @@ class TypeclassBase(SharedMemoryModelBase):
 
         # storage of stats
         attrs["typename"] = name
-        attrs["path"] =  "%s.%s" % (attrs["__module__"], name)
+        attrs["path"] = "%s.%s" % (attrs["__module__"], name)
 
         # typeclass proxy setup
-        if not "Meta" in attrs:
+        if "Meta" not in attrs:
             class Meta(object):
                 proxy = True
                 app_label = attrs.get("__applabel__", "typeclasses")
             attrs["Meta"] = Meta
         attrs["Meta"].proxy = True
 
-        # patch for django proxy multi-inheritance
-        # this is a copy of django.db.models.base.__new__
-        # with a few lines changed as per
-        # https://code.djangoproject.com/ticket/11560
-        new_class = patched_new(cls, name, bases, attrs)
+        new_class = ModelBase.__new__(cls, name, bases, attrs)
 
         # attach signals
         signals.post_save.connect(post_save, sender=new_class)
@@ -108,6 +104,7 @@ class TypeclassBase(SharedMemoryModelBase):
 
 class DbHolder(object):
     "Holder for allowing property access of attributes"
+
     def __init__(self, obj, name, manager_name='attributes'):
         _SA(self, name, _GA(obj, manager_name))
         _SA(self, 'name', name)
@@ -168,17 +165,17 @@ class TypedObject(SharedMemoryModel):
     # This is the python path to the type class this object is tied to. The
     # typeclass is what defines what kind of Object this is)
     db_typeclass_path = models.CharField('typeclass', max_length=255, null=True,
-            help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
+                                         help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.")
     # Creation date. This is not changed once the object is created.
     db_date_created = models.DateTimeField('creation date', editable=False, auto_now_add=True)
     # Lock storage
     db_lock_storage = models.TextField('locks', blank=True,
-            help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
+                                       help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.")
     # many2many relationships
-    db_attributes = models.ManyToManyField(Attribute, null=True,
-            help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
-    db_tags = models.ManyToManyField(Tag, null=True,
-            help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
+    db_attributes = models.ManyToManyField(Attribute,
+                                           help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).')
+    db_tags = models.ManyToManyField(Tag,
+                                     help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
 
     # Database manager
     objects = managers.TypedObjectManager()
@@ -202,7 +199,7 @@ class TypedObject(SharedMemoryModel):
                         self.__class__ = class_from_module(self.__defaultclasspath__)
                     except Exception:
                         log_trace()
-                        self.__class__ = self._meta.proxy_for_model or self.__class__
+                        self.__class__ = self._meta.concrete_model or self.__class__
             finally:
                 self.db_typeclass_path = typeclass_path
         elif self.db_typeclass_path:
@@ -214,12 +211,12 @@ class TypedObject(SharedMemoryModel):
                     self.__class__ = class_from_module(self.__defaultclasspath__)
                 except Exception:
                     log_trace()
-                    self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+                    self.__dbclass__ = self._meta.concrete_model or self.__class__
         else:
             self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
         try:
-            self.__dbclass__ = self._meta.proxy_for_model or self.__class__
+            self.__dbclass__ = self._meta.concrete_model or self.__class__
         except AttributeError:
             err_class = repr(self.__class__)
             self.__class__ = class_from_module("evennia.objects.objects.DefaultObject")
@@ -262,7 +259,6 @@ class TypedObject(SharedMemoryModel):
         super(TypedObject, self).__init__(*args, **kwargs)
         self.set_class_from_typeclass(typeclass_path=typeclass_path)
 
-
     # initialize all handlers in a lazy fashion
     @lazy_property
     def attributes(self):
@@ -287,7 +283,6 @@ class TypedObject(SharedMemoryModel):
     @lazy_property
     def nattributes(self):
         return NAttributeHandler(self)
-
 
     class Meta(object):
         """
@@ -453,15 +448,15 @@ class TypedObject(SharedMemoryModel):
         """
         This performs an in-situ swap of the typeclass. This means
         that in-game, this object will suddenly be something else.
-        Player will not be affected. To 'move' a player to a different
+        Account will not be affected. To 'move' an account to a different
         object entirely (while retaining this object's type), use
-        self.player.swap_object().
+        self.account.swap_object().
 
         Note that this might be an error prone operation if the
         old/new typeclass was heavily customized - your code
         might expect one and not the other, so be careful to
         bug test your code if using this feature! Often its easiest
-        to create a new object and just swap the player over to
+        to create a new object and just swap the account over to
         that one instead.
 
         Args:
@@ -492,11 +487,10 @@ class TypedObject(SharedMemoryModel):
 
         # if we get to this point, the class is ok.
 
-
         if inherits_from(self, "evennia.scripts.models.ScriptDB"):
             if self.interval > 0:
-                raise RuntimeError("Cannot use swap_typeclass on time-dependent " \
-                                   "Script '%s'.\nStop and start a new Script of the " \
+                raise RuntimeError("Cannot use swap_typeclass on time-dependent "
+                                   "Script '%s'.\nStop and start a new Script of the "
                                    "right type instead." % self.key)
 
         self.typeclass_path = new_typeclass.path
@@ -562,8 +556,8 @@ class TypedObject(SharedMemoryModel):
             result (bool): If the permstring is passed or not.
 
         """
-        if hasattr(self, "player"):
-            if self.player and self.player.is_superuser and not self.player.attributes.get("_quell"):
+        if hasattr(self, "account"):
+            if self.account and self.account.is_superuser and not self.account.attributes.get("_quell"):
                 return True
         else:
             if self.is_superuser and not self.attributes.get("_quell"):
@@ -581,6 +575,10 @@ class TypedObject(SharedMemoryModel):
             ppos = _PERMISSION_HIERARCHY.index(perm)
             return any(True for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
                        if hperm in perms and hpos > ppos)
+        # we ignore pluralization (english only)
+        if perm.endswith("s"):
+            return self.check_permstring(perm[:-1])
+
         return False
 
     #
@@ -680,8 +678,9 @@ class TypedObject(SharedMemoryModel):
         Displays the name of the object in a viewer-aware manner.
 
         Args:
-            looker (TypedObject): The object or player that is looking
-                at/getting inforamtion for this object.
+            looker (TypedObject, optional): The object or account that is looking
+                at/getting inforamtion for this object. If not given, some
+                'safe' minimum level should be returned.
 
         Returns:
             name (str): A string containing the name of the object,
@@ -711,7 +710,7 @@ class TypedObject(SharedMemoryModel):
         not in your normal inventory listing.
 
         Args:
-            looker (TypedObject): The object or player that is looking
+            looker (TypedObject): The object or account that is looking
                 at/getting information for this object.
 
         Returns:

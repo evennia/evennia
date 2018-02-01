@@ -19,6 +19,10 @@ happens to be named "command"!
 
 A PR allows you to request that your custom fixes/additions/changes be pulled into the main Evennia repository. To make a PR you must first [fork Evennia on GitHub][8]. Read the [Contribution][3] page for more help.
 
+If you are working to solve an Issue in the issue tracker, note which branch you should make the PR
+against (`master` or `develop`). If you are making a PR for a new feature or contrib, do so against
+the `develop' branch.
+
 - All contributions should abide by Evennia's [style guide](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md).
 - For your own sanity and ours, separate unrelated contributions into their own branches and make a new PR for each. You can still update the branch after the PR is up - the PR will update automatically. 
 

@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='objectdb',
-            name='db_player',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, verbose_name=b'player', to=settings.AUTH_USER_MODEL, help_text=b'a Player connected to this object, if any.', null=True),
+            name='db_account',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, verbose_name=b'account', to=settings.AUTH_USER_MODEL, help_text=b'an Account connected to this object, if any.', null=True),
             preserve_default=True,
         ),
         migrations.AddField(

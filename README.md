@@ -67,7 +67,7 @@ Welcome!
 [homepage]: http://www.evennia.com
 [gettingstarted]: http://github.com/evennia/evennia/wiki/Getting-Started
 [wiki]: https://github.com/evennia/evennia/wiki
-[screenshot]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/evennia_screenshot3.png
+[screenshot]: https://user-images.githubusercontent.com/294267/30773728-ea45afb6-a076-11e7-8820-49be2168a6b8.png
 [logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
 [travisimg]: https://travis-ci.org/evennia/evennia.svg?branch=master
 [travislink]: https://travis-ci.org/evennia/evennia

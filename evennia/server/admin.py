@@ -19,4 +19,6 @@ class ServerConfigAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     list_select_related = True
+
+
 admin.site.register(ServerConfig, ServerConfigAdmin)

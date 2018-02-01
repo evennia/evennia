@@ -180,10 +180,10 @@ from django.conf import settings
 from evennia.utils import utils
 
 _ENCODINGS = settings.ENCODINGS
-_RE_INSERT = re.compile(r"^\#INSERT (.*)", re.MULTILINE)
+_RE_INSERT = re.compile(r"^\#INSERT (.*)$", re.MULTILINE)
 _RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
 _RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
-_RE_CODE_OR_HEADER = re.compile(r"(\A|^\#CODE|^\#HEADER).*?$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
+_RE_CODE_OR_HEADER = re.compile(r"((?:\A|^)#CODE|(?:/A|^)#HEADER|\A)(.*?)$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
                                 re.MULTILINE + re.DOTALL)
 
 
@@ -248,6 +248,7 @@ class BatchCommandProcessor(object):
     This class implements a batch-command processor.
 
     """
+
     def parse_file(self, pythonpath):
         """
         This parses the lines of a batchfile according to the following
@@ -272,15 +273,10 @@ class BatchCommandProcessor(object):
 
         def replace_insert(match):
             """Map replace entries"""
-            return "\n#".join(self.parse_file(match.group(1)))
+            return "\n#\n".join(self.parse_file(match.group(1)))
 
-        # insert commands from inserted files
         text = _RE_INSERT.sub(replace_insert, text)
-        #      re.sub(r"^\#INSERT (.*?)", replace_insert, text, flags=re.MULTILINE)
-        # get all commands
         commands = _RE_CMD_SPLIT.split(text)
-        #          re.split(r"^\#.*?$", text, flags=re.MULTILINE)
-        # remove eventual newline at the end of commands
         commands = [c.strip('\r\n') for c in commands]
         commands = [c for c in commands if c]
 
@@ -351,8 +347,12 @@ class BatchCodeProcessor(object):
         headers = []
         codes = []
         for imatch, match in enumerate(list(_RE_CODE_OR_HEADER.finditer(text))):
-            mtype = match.group(1)
-            istart, iend = match.span(2)
+            mtype = match.group(1).strip()
+            # we need to handle things differently at the start of the file
+            if mtype:
+                istart, iend = match.span(3)
+            else:
+                istart, iend = match.start(2), match.end(3)
             code = text[istart:iend]
             if mtype == "#HEADER":
                 headers.append(code)
@@ -412,6 +412,7 @@ class BatchCodeProcessor(object):
             err += "\n".join(traceback.format_exception(etype, value, tb))
             return err
         return None
+
 
 BATCHCMD = BatchCommandProcessor()
 BATCHCODE = BatchCodeProcessor()

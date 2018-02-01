@@ -26,4 +26,3 @@ def at_webserver_root_creation(web_root):
 
     """
     return web_root
-

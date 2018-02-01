@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 
-{% block sidebar %}
-{% endblock %}
+{% block titleblock %}404 - Not Found{% endblock %}
 
 {% block header_ext %}
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 {% endblock %}
 
 {% block content %}
-<h1>Error 404 - Page not found</h1>
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-block">
+        <h1 class="card-title">Error 404</h1>
+        <h4 class="card-subtitle">Page not found</h2>
+        <hr />
+        <p><a href="/">Back to the home page</a></p>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -9,18 +9,21 @@ from collections import deque, namedtuple
 from twisted.internet import reactor
 from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, \
-                                          PCONNSYNC, PDISCONNALL
+    PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
 
 # module import
 _MOD_IMPORT = None
 
-# throttles
+# global throttles
 _MAX_CONNECTION_RATE = float(settings.MAX_CONNECTION_RATE)
+# per-session throttles
 _MAX_COMMAND_RATE = float(settings.MAX_COMMAND_RATE)
 _MAX_CHAR_LIMIT = int(settings.MAX_CHAR_LIMIT)
 
-_MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(settings.MAX_CONNECTION_RATE)
+_MIN_TIME_BETWEEN_CONNECTS = 1.0 / float(_MAX_CONNECTION_RATE)
+_MIN_TIME_BETWEEN_COMMANDS = 1.0 / float(_MAX_COMMAND_RATE)
+
 _ERROR_COMMAND_OVERFLOW = settings.COMMAND_RATE_WARNING
 _ERROR_MAX_CHAR = settings.MAX_CHAR_LIMIT_WARNING
 
@@ -58,9 +61,6 @@ class PortalSessionHandler(SessionHandler):
 
         self.connection_last = self.uptime
         self.connection_task = None
-        self.command_counter = 0
-        self.command_counter_reset = self.uptime
-        self.command_overflow = False
 
     def at_server_connection(self):
         """
@@ -97,7 +97,7 @@ class PortalSessionHandler(SessionHandler):
             if len(_CONNECTION_QUEUE) > 1:
                 session.data_out(text=[["%s DoS protection is active. You are queued to connect in %g seconds ..." % (
                                  settings.SERVERNAME,
-                                 len(_CONNECTION_QUEUE)*_MIN_TIME_BETWEEN_CONNECTS)], {}])
+                                 len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS)], {}])
         now = time.time()
         if (now - self.connection_last < _MIN_TIME_BETWEEN_CONNECTS) or not self.portal.amp_protocol:
             if not session or not self.connection_task:
@@ -269,6 +269,7 @@ class PortalSessionHandler(SessionHandler):
 
         """
         session.load_sync_data(data)
+        session.at_login()
 
     def server_session_sync(self, serversessions, clean=True):
         """
@@ -353,8 +354,6 @@ class PortalSessionHandler(SessionHandler):
             Data is serialized before passed on.
 
         """
-        # from evennia.server.profiling.timetrace import timetrace  # DEBUG
-        # text = timetrace(text, "portalsessionhandler.data_in")  # DEBUG
         try:
             text = kwargs['text']
             if (_MAX_CHAR_LIMIT > 0) and len(text) > _MAX_CHAR_LIMIT:
@@ -366,30 +365,38 @@ class PortalSessionHandler(SessionHandler):
             pass
         if session:
             now = time.time()
-            if self.command_counter > _MAX_COMMAND_RATE > 0:
-                # data throttle (anti DoS measure)
-                delta_time = now - self.command_counter_reset
-                self.command_counter = 0
-                self.command_counter_reset = now
-                self.command_overflow = delta_time < 1.0
-                if self.command_overflow:
-                    reactor.callLater(1.0, self.data_in, None)
-            if self.command_overflow:
+
+            try:
+                command_counter_reset = session.command_counter_reset
+            except AttributeError:
+                command_counter_reset = session.command_counter_reset = now
+                session.command_counter = 0
+
+            # global command-rate limit
+            if max(0, now - command_counter_reset) > 1.0:
+                # more than a second since resetting the counter. Refresh.
+                session.command_counter_reset = now
+                session.command_counter = 0
+
+            session.command_counter += 1
+
+            if session.command_counter * _MIN_TIME_BETWEEN_COMMANDS > 1.0:
                 self.data_out(session, text=[[_ERROR_COMMAND_OVERFLOW], {}])
                 return
+
+            if not self.portal.amp_protocol:
+                # this can happen if someone connects before AMP connection
+                # was established (usually on first start)
+                reactor.callLater(1.0, self.data_in, session, **kwargs)
+                return
+
             # scrub data
             kwargs = self.clean_senddata(session, kwargs)
 
             # relay data to Server
-            self.command_counter += 1
             session.cmd_last = now
             self.portal.amp_protocol.send_MsgPortal2Server(session,
                                                            **kwargs)
-        else:
-            # called by the callLater callback
-            if self.command_overflow:
-                self.command_overflow = False
-                reactor.callLater(1.0, self.data_in, None)
 
     def data_out(self, session, **kwargs):
         """
@@ -427,5 +434,6 @@ class PortalSessionHandler(SessionHandler):
                         session.send_default(cmdname, *cmdargs, **cmdkwargs)
                     except Exception:
                         log_trace()
+
 
 PORTAL_SESSIONS = PortalSessionHandler()

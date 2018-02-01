@@ -20,12 +20,14 @@ SUPPRESS_GA = chr(3)
 
 # try to get the customized mssp info, if it exists.
 
+
 class SuppressGA(object):
     """
     Implements the SUPRESS-GO-AHEAD protocol. Add this to a variable on the telnet
     protocol to set it up.
 
     """
+
     def __init__(self, protocol):
         """
         Initialize suppression of GO-AHEADs.
@@ -38,11 +40,9 @@ class SuppressGA(object):
 
         self.protocol.protocol_flags["NOGOAHEAD"] = True
         # tell the client that we prefer to suppress GA ...
-        self.protocol.will(SUPPRESS_GA).addCallbacks(self.do_suppress_ga, self.dont_suppress_ga)
-        # ... but also accept if the client really wants not to.
-        self.protocol.do(SUPPRESS_GA).addCallbacks(self.do_suppress_ga, self.dont_suppress_ga)
+        self.protocol.will(SUPPRESS_GA).addCallbacks(self.will_suppress_ga, self.wont_suppress_ga)
 
-    def dont_suppress_ga(self, option):
+    def wont_suppress_ga(self, option):
         """
         Called when client requests to not suppress GA.
 
@@ -53,9 +53,9 @@ class SuppressGA(object):
         self.protocol.protocol_flags["NOGOAHEAD"] = False
         self.protocol.handshake_done()
 
-    def do_suppress_ga(self, option):
+    def will_suppress_ga(self, option):
         """
-        Client wants to suppress GA
+        Client will suppress GA
 
         Args:
             option (Option): Not used.
