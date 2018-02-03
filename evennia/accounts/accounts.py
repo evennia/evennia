@@ -619,7 +619,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         self.basetype_setup()
         self.at_account_creation()
 
-        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
+        permissions = [settings.PERMISSION_ACCOUNT_DEFAULT]
         if hasattr(self, "_createdict"):
             # this will only be set if the utils.create_account
             # function was used to create the object.
