@@ -1807,13 +1807,13 @@ class CmdLock(ObjManipCommand):
 
     For example:
        'get: id(25) or perm(Admin)'
-    The 'get' access_type is checked by the get command and will
-    an object locked with this string will only be possible to
-    pick up by Admins or by object with id=25.
+    The 'get' lock access_type is checked e.g. by the 'get' command.
+    An object locked with this example lock will only be possible to pick up
+    by Admins or by an object with id=25.
 
     You can add several access_types after one another by separating
     them by ';', i.e:
-       'get:id(25);delete:perm(Builder)'
+       'get:id(25); delete:perm(Builder)'
     """
     key = "@lock"
     aliases = ["@locks"]
