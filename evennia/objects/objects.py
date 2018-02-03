@@ -1750,7 +1750,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                 for recv in receivers) if receivers else None,
                             "speech": message}
             self_mapping.update(custom_mapping)
-            self.msg(text=(msg_self.format(**self_mapping), {"type": msg_type}))
+            self.msg(text=(msg_self.format(**self_mapping), {"type": msg_type}), from_obj=self)
 
         if receivers and msg_receivers:
             receiver_mapping = {"self": "You",
@@ -1768,7 +1768,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                             for recv in receivers) if receivers else None}
                 receiver_mapping.update(individual_mapping)
                 receiver_mapping.update(custom_mapping)
-                receiver.msg(text=(msg_receivers.format(**receiver_mapping), {"type": msg_type}))
+                receiver.msg(text=(msg_receivers.format(**receiver_mapping),
+                             {"type": msg_type}), from_obj=self)
 
         if self.location and msg_location:
             location_mapping = {"self": "You",
