@@ -21,7 +21,7 @@ from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.utils import logger
-from evennia.utils.utils import (lazy_property,
+from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, to_unicode, is_iter,
                                  variable_from_module)
 from evennia.typeclasses.attributes import NickHandler
@@ -420,6 +420,13 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             pass
 
         kwargs["options"] = options
+
+        if text and not (isinstance(text, basestring) or isinstance(text, tuple)):
+            # sanitize text before sending across the wire
+            try:
+                text = to_str(text, force_string=True)
+            except Exception:
+                text = repr(text)
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
