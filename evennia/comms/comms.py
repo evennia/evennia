@@ -26,6 +26,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         the hooks called by this method.
 
         """
+        self.basetype_setup()
         self.at_channel_creation()
         self.attributes.add("log_file", "channel_%s.log" % self.key)
         if hasattr(self, "_createdict"):
@@ -46,17 +47,22 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             if cdict.get("desc"):
                 self.attributes.add("desc", cdict["desc"])
 
-    def at_channel_creation(self):
-        """
-        Called once, when the channel is first created.
-
-        """
+    def basetype_setup(self):
         # delayed import of the channelhandler
         global _CHANNEL_HANDLER
         if not _CHANNEL_HANDLER:
             from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNEL_HANDLER
         # register ourselves with the channelhandler.
         _CHANNEL_HANDLER.add(self)
+
+        self.locks.add("send:all();listen:all();control:perm(Admin)")
+
+    def at_channel_creation(self):
+        """
+        Called once, when the channel is first created.
+
+        """
+        pass
 
     # helper methods, for easy overloading
 
