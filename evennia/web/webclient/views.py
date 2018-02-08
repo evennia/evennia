@@ -34,7 +34,13 @@ def _shared_login(request):
     if webclient_uid:
         # The webclient has previously registered a login to this browser_session
         if not account.is_authenticated() and not website_uid:
-            account = AccountDB.objects.get(id=webclient_uid)
+            try:
+                account = AccountDB.objects.get(id=webclient_uid)
+            except AccountDB.DoesNotExist:
+                # this can happen e.g. for guest accounts or deletions
+                csession["website_authenticated_uid"] = False
+                csession["webclient_authenticated_uid"] = False
+                return
             try:
                 # calls our custom authenticate in web/utils/backends.py
                 account = authenticate(autologin=account)
