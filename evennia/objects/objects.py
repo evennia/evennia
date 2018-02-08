@@ -22,7 +22,7 @@ from evennia.commands import cmdhandler
 from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, is_iter)
+                                 make_iter, to_unicode, is_iter, to_str)
 from django.utils.translation import ugettext as _
 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -528,10 +528,18 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         kwargs["options"] = options
 
+        if text and not (isinstance(text, basestring) or isinstance(text, tuple)):
+            # sanitize text before sending across the wire
+            try:
+                text = to_str(text, force_string=True)
+            except Exception:
+                text = repr(text)
+
         # relay to session(s)
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
             session.data_out(text=text, **kwargs)
+
 
     def for_contents(self, func, exclude=None, **kwargs):
         """
