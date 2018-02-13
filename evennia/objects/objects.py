@@ -211,6 +211,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         return ObjectSessionHandler(self)
 
     @property
+    def is_connected(self):
+        # we get an error for objects subscribed to channels without this
+        if self.account: # seems sane to pass on the account
+            return self.account.is_connected
+        else:
+            return False
+
+    @property
     def has_account(self):
         """
         Convenience property for checking if an active account is
