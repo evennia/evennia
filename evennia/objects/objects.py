@@ -207,6 +207,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         return ObjectSessionHandler(self)
 
     @property
+    def is_connected(self):
+        # we get an error for objects subscribed to channels without this
+        if self.account: # seems sane to pass on the account
+            return self.account.is_connected
+        else:
+            return False
+
+    @property
     def has_account(self):
         """
         Convenience property for checking if an active account is
@@ -519,6 +527,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                     obj.at_msg_send(text=text, to_obj=self, **kwargs)
                 except Exception:
                     logger.log_trace()
+        kwargs["options"] = options
         try:
             if not self.at_msg_receive(text=text, **kwargs):
                 # if at_msg_receive returns false, we abort message to this object
@@ -526,7 +535,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         except Exception:
             logger.log_trace()
 
-        kwargs["options"] = options
 
         if text and not (isinstance(text, basestring) or isinstance(text, tuple)):
             # sanitize text before sending across the wire
