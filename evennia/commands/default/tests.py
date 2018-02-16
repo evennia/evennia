@@ -293,6 +293,12 @@ class TestBuilding(CommandTest):
 
     def test_find(self):
         self.call(building.CmdFind(), "Room2", "One Match")
+        expect = "One Match(#1#7, loc):\n   " +\
+                 "Char2(#7)  evennia.objects.objects.DefaultCharacter (location: Room(#1))"
+        self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
+        self.call(building.CmdFind(), "Char2", expect, cmdstring="@locate")
+        self.call(building.CmdFind(), "/loc Char2", expect, cmdstring="find")
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
