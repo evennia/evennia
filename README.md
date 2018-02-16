@@ -41,6 +41,10 @@ For all links in commonmark that aren't explicit URLs, they are treated as cross
 
 ### AutoStructify
 
+AutoStructify makes it possible to write your documentation in Markdown, and automatically convert this
+into rST at build time. See [the AutoStructify Documentation](http://recommonmark.readthedocs.org/en/latest/auto_structify.html)
+for more information about configuration and usage.
+
 To use the advanced markdown to rst transformations you must add `AutoStructify` to your Sphinx conf.py.
 
 ```python
@@ -59,7 +63,7 @@ def setup(app):
 
 See https://github.com/rtfd/recommonmark/blob/master/docs/conf.py for a full example.
 
-AutoStructify comes with the following options. See http://recommonmark.readthedocs.org/en/latest/auto_structify.html for more information about the specific features.
+AutoStructify comes with the following options. See [http://recommonmark.readthedocs.org/en/latest/auto_structify.html](http://recommonmark.readthedocs.org/en/latest/auto_structify.html) for more information about the specific features.
 
 * __enable_auto_toc_tree__: enable the Auto Toc Tree feature.
 * __auto_toc_tree_section__: when True, Auto Toc Tree will only be enabled on section that matches the title.
