@@ -25,7 +25,7 @@ JQuery available.
 
     <script type="text/javascript" charset="utf-8">
         if(!window.jQuery) {
-            document.write("<div class='err'>jQuery library not found or the online version could not be reached.</div>");
+            document.write("<div class='err'>jQuery library not found or the online version could not be reached. Check so Javascript is not blocked in your browser.</div>");
         }
     </script>
 
@@ -57,6 +57,12 @@ JQuery available.
     {% endblock %}
 
     <script src="https://cdn.rawgit.com/ejci/favico.js/master/favico-0.3.10.min.js" language="javascript" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+        if(!window.Favico) {
+            document.write("<div class='err'>Favico.js library not found or the online version could not be reached. Check so Javascript is not blocked in your browser.</div>");
+        }
+    </script>
+
 
   </head>
   <body>
