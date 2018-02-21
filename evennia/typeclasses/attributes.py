@@ -282,6 +282,8 @@ class AttributeHandler(object):
                          "attribute__db_attrtype": self._attrtype,
                          "attribute__db_key__iexact": key.lower(),
                          "attribute__db_category__iexact": category.lower() if category else None}
+                if not self.obj.pk:
+                    return []
                 conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
                 if conn:
                     attr = conn[0].attribute
