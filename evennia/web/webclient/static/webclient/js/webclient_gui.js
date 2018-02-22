@@ -106,6 +106,7 @@ function togglePopup(dialogname, content) {
 
 // Grab text from inputline and send to Evennia
 function doSendText() {
+  console.log("sending text");
     if (!Evennia.isConnected()) {
         var reconnect = confirm("Not currently connected. Reconnect?");
         if (reconnect) {
@@ -158,6 +159,10 @@ function onKeydown (event) {
     var code = event.which;
     var history_entry = null;
     var inputfield = $("#inputfield");
+    if (code === 9) {
+      return;
+    }
+
     inputfield.focus();
 
     if (code === 13) { // Enter key sends text
@@ -205,50 +210,23 @@ function onKeyPress (event) {
 }
 
 var resizeInputField = function () {
-    var min_height = 50;
-    var max_height = 300;
-    var prev_text_len = 0;
+    return function() {
+      var wrapper = $("#inputform")
+      var input = $("#inputcontrol")
+      var prompt = $("#prompt")
 
-    // Check to see if we should change the height of the input area
-    return function () {
-        var inputfield = $("#inputfield");
-        var scrollh = inputfield.prop("scrollHeight");
-        var clienth = inputfield.prop("clientHeight");
-        var newh = 0;
-        var curr_text_len = inputfield.val().length;
-
-        if (scrollh > clienth && scrollh <= max_height) {
-            // Need to make it bigger
-            newh = scrollh;
-        }
-        else if (curr_text_len < prev_text_len) {
-            // There is less text in the field; try to make it smaller
-            // To avoid repaints, we draw the text in an offscreen element and
-            // determine its dimensions.
-            var sizer = $('#inputsizer')
-                .css("width", inputfield.prop("clientWidth"))
-                .text(inputfield.val());
-            newh = sizer.prop("scrollHeight");
-        }
-
-        if (newh != 0) {
-            newh = Math.min(newh, max_height);
-            if (clienth != newh) {
-                inputfield.css("height", newh + "px");
-                doWindowResize();
-            }
-        }
-        prev_text_len = curr_text_len;
+      input.height(wrapper.height() - (input.offset().top - wrapper.offset().top));
     }
 }();
 
 // Handle resizing of client
 function doWindowResize() {
-    var formh = $('#inputform').outerHeight(true);
-    var message_scrollh = $("#messagewindow").prop("scrollHeight");
-    $("#messagewindow")
-        .css({"bottom": formh}) // leave space for the input form
-        .scrollTop(message_scrollh); // keep the output window scrolled to the bottom
+      resizeInputField();
+      var resizable = $("[data-update-append]");
+      var parents = resizable.closest(".split")
+      parents.animate({
+          scrollTop: parents.prop("scrollHeight")
+      }, 0);
 }
 
 // Handle text coming from the server
@@ -256,6 +234,15 @@ function onText(args, kwargs) {
     // append message to previous ones, then scroll so latest is at
     // the bottom. Send 'cls' kwarg to modify the output class.
     var renderto = "main";
+    if ("tags" in kwargs) {
+      var tags = kwargs['tags'];
+      if (tags.constructor !== Array) {
+        tags = [tags]
+      }
+    }
+    else {
+      var tags = ['all'];
+    }
     if (kwargs["type"] == "help") {
         if (("helppopup" in options) && (options["helppopup"])) {
             renderto = "#helpdialog";
@@ -263,13 +250,19 @@ function onText(args, kwargs) {
     }
 
     if (renderto == "main") {
-        var mwin = $("#messagewindow");
-        var cls = kwargs == null ? 'out' : kwargs['cls'];
-        mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
-        mwin.animate({
-            scrollTop: document.getElementById("messagewindow").scrollHeight
-        }, 0);
-
+        for (var i = 0; i < tags.length; i++) {
+          var mwin = $("[data-role-output][data-tags*='" + tags[i] + "\"']");//this monster here makes sure the tag ends with "
+          var parent = mwin.closest(".split")
+          var cls = kwargs == null ? 'out' : kwargs['cls'];
+          if ( mwin.attr("data-update-overwrite") !== undefined ) {
+            mwin.html("<div class='" + cls + "'>" + args[0] + "</div>");
+          } else {
+            mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
+          }
+          parent.animate({
+              scrollTop: parent.prop("scrollHeight")
+          }, 0);
+        }
         onNewLine(args[0], null);
     } else {
         openPopup(renderto, args[0]);
@@ -453,7 +446,7 @@ $(document).ready(function() {
 
     //$(document).on("visibilitychange", onVisibilityChange);
 
-    $("#inputfield").bind("resize", doWindowResize)
+    $("[data-role-input]").bind("resize", doWindowResize)
         .keypress(onKeyPress)
         .bind("paste", resizeInputField)
         .bind("cut", resizeInputField);
@@ -506,6 +499,7 @@ $(document).ready(function() {
     },
     60000*3
     );
+    console.log("Completed GUI setup");
 
 
 });
