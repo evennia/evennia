@@ -513,6 +513,22 @@ class DefaultScript(ScriptBase):
                 updates.append("db_persistent")
             if updates:
                 self.save(update_fields=updates)
+
+            if cdict.get("permissions"):
+                self.permissions.batch_add(*cdict["permissions"])
+            if cdict.get("locks"):
+                self.locks.add(cdict["locks"])
+            if cdict.get("tags"):
+                # this should be a list of tags, tuples (key, category) or (key, category, data)
+                self.tags.batch_add(*cdict["tags"])
+            if cdict.get("attributes"):
+                # this should be tuples (key, val, ...)
+                self.attributes.batch_add(*cdict["attributes"])
+            if cdict.get("nattributes"):
+                # this should be a dict of nattrname:value
+                for key, value in cdict["nattributes"]:
+                    self.nattributes.add(key, value)
+
             if not cdict.get("autostart"):
                 # don't auto-start the script
                 return
