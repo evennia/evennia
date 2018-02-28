@@ -1002,14 +1002,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
             if cdict.get("tags"):
-                # this should be a list of tags
+                # this should be a list of tags, tuples (key, category) or (key, category, data)
                 self.tags.batch_add(*cdict["tags"])
             if cdict.get("attributes"):
-                # this should be a dict of attrname:value
+                # this should be tuples (key, val, ...)
                 self.attributes.batch_add(*cdict["attributes"])
             if cdict.get("nattributes"):
                 # this should be a dict of nattrname:value
-                for key, value in cdict["nattributes"].items():
+                for key, value in cdict["nattributes"]:
                     self.nattributes.add(key, value)
 
             del self._createdict

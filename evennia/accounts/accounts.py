@@ -631,10 +631,31 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             # this will only be set if the utils.create_account
             # function was used to create the object.
             cdict = self._createdict
+            updates = []
+            if not cdict.get("key"):
+                if not self.db_key:
+                    self.db_key = "#%i" % self.dbid
+                    updates.append("db_key")
+            elif self.key != cdict.get("key"):
+                updates.append("db_key")
+                self.db_key = cdict["key"]
+            if updates:
+                self.save(update_fields=updates)
+
             if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
             if cdict.get("permissions"):
                 permissions = cdict["permissions"]
+            if cdict.get("tags"):
+                # this should be a list of tags, tuples (key, category) or (key, category, data)
+                self.tags.batch_add(*cdict["tags"])
+            if cdict.get("attributes"):
+                # this should be tuples (key, val, ...)
+                self.attributes.batch_add(*cdict["attributes"])
+            if cdict.get("nattributes"):
+                # this should be a dict of nattrname:value
+                for key, value in cdict["nattributes"]:
+                    self.nattributes.add(key, value)
             del self._createdict
 
         self.permissions.batch_add(*permissions)
