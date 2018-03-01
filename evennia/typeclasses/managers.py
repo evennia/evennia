@@ -8,6 +8,8 @@ import shlex
 from django.db.models import Q
 from evennia.utils import idmapper
 from evennia.utils.utils import make_iter, variable_from_module, to_unicode
+from evennia.typeclasses.attributes import Attribute
+from evennia.typeclasses.tags import Tag
 
 __all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
@@ -56,7 +58,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         dbmodel = self.model.__dbclass__.__name__.lower()
         query = [("attribute__db_attrtype", attrtype), ("attribute__db_model", dbmodel)]
         if obj:
-            query.append(("%s__id" % self.model.__name__.lower(), obj.id))
+            query.append(("%s__id" % self.model.__dbclass__.__name__.lower(), obj.id))
         if key:
             query.append(("attribute__db_key", key))
         if category:
