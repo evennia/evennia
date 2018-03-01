@@ -65,8 +65,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             query.append(("attribute__db_category", category))
         if strvalue:
             query.append(("attribute__db_strvalue", strvalue))
-        elif value:
-            # strvalue and value are mutually exclusive
+        if value:
+            # no reason to make strvalue/value mutually exclusive at this level
             query.append(("attribute__db_value", value))
         return Attribute.objects.filter(
             pk__in=self.model.db_attributes.through.objects.filter(
