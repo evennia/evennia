@@ -588,6 +588,9 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
+        if not (obj.access(self.caller, 'control') or obj.access(self.caller, 'edit')):
+            self.caller.msg("You don't have permission to edit the description of %s." % obj.key)
+
         self.caller.db.evmenu_target = obj
         # launch the editor
         EvEditor(self.caller, loadfunc=_desc_load, savefunc=_desc_save,
@@ -617,7 +620,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             if not obj:
                 return
             desc = self.args
-        if obj.access(caller, "edit"):
+        if (obj.access(self.caller, 'control') or obj.access(self.caller, 'edit')):
             obj.db.desc = desc
             caller.msg("The description was set on %s." % obj.get_display_name(caller))
         else:
@@ -1637,6 +1640,10 @@ class CmdSetAttribute(ObjManipCommand):
         result = []
         if "edit" in self.switches:
             # edit in the line editor
+            if not (obj.access(self.caller, 'control') or obj.access(self.caller, 'edit')):
+                caller.msg("You don't have permission to edit %s." % obj.key)
+                return
+
             if len(attrs) > 1:
                 caller.msg("The Line editor can only be applied "
                            "to one attribute at a time.")
@@ -1657,12 +1664,18 @@ class CmdSetAttribute(ObjManipCommand):
                 return
             else:
                 # deleting the attribute(s)
+                if not (obj.access(self.caller, 'control') or obj.access(self.caller, 'edit')):
+                    caller.msg("You don't have permission to edit %s." % obj.key)
+                    return
                 for attr in attrs:
                     if not self.check_attr(obj, attr):
                         continue
                     result.append(self.rm_attr(obj, attr))
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
+            if not (obj.access(self.caller, 'control') or obj.access(self.caller, 'edit')):
+                caller.msg("You don't have permission to edit %s." % obj.key)
+                return
             for attr in attrs:
                 if not self.check_attr(obj, attr):
                     continue
