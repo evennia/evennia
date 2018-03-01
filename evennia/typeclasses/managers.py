@@ -68,7 +68,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         elif value:
             # strvalue and value are mutually exclusive
             query.append(("attribute__db_value", value))
-        return [th.attribute for th in self.model.db_attributes.through.objects.filter(**dict(query))]
+        return Attribute.objects.filter(
+            pk__in=self.model.db_attributes.through.objects.filter(
+                **dict(query)).values_list("attribute_id", flat=True))
 
     def get_nick(self, key=None, category=None, value=None, strvalue=None, obj=None):
         """
@@ -190,7 +192,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 query.append(("tag__db_key", key))
             if category:
                 query.append(("tag__db_category", category))
-            return [th.tag for th in self.model.db_tags.through.objects.filter(**dict(query))]
+            return Tag.objects.filter(
+                pk__in=self.model.db_tags.through.objects.filter(
+                    **dict(query)).values_list("tag_id", flat=True))
 
     def get_permission(self, key=None, category=None, obj=None):
         """
