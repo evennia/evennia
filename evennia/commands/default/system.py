@@ -245,6 +245,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     """
     key = "@py"
     aliases = ["!"]
+    options = ("time", "edit")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
 
@@ -328,6 +329,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     """
     key = "@scripts"
     aliases = ["@globalscript", "@listscripts"]
+    options = ("start", "stop", "kill", "validate")
     locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
@@ -521,6 +523,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
 
     key = "@service"
     aliases = ["@services"]
+    options = ("list", "start", "stop", "delete")
     locks = "cmd:perm(service) or perm(Developer)"
     help_category = "System"
 
@@ -672,7 +675,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     Usage:
        @server[/mem]
 
-    Switch:
+    Switches:
         mem - return only a string of the current memory usage
         flushmem - flush the idmapper cache
 
@@ -703,6 +706,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     """
     key = "@server"
     aliases = ["@serverload", "@serverprocess"]
+    options = ("mem", "flushmem")
     locks = "cmd:perm(list) or perm(Developer)"
     help_category = "System"
 
