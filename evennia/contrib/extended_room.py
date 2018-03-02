@@ -367,6 +367,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
 
     """
     aliases = ["describe", "detail"]
+    options = ()  # Inherits from default_cmds.CmdDesc, but unused here
 
     def reset_times(self, obj):
         """By deleteting the caches we force a re-load."""
