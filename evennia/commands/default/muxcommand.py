@@ -79,6 +79,11 @@ class MuxCommand(Command):
         it here). The rest of the command is stored in self.args, which can
         start with the switch indicator /.
 
+        Optional variables to aid in parsing, if set:
+          self.options = (tuple of valid /switches expected
+                          by this command (without the /))
+          self.split = Alternate string delimiter to separate left/right hand side.
+
         This parser breaks self.args into its constituents and stores them in the
         following variables:
           self.switches = [list of /switches (without the /)]
@@ -109,15 +114,44 @@ class MuxCommand(Command):
             else:
                 args = ""
                 switches = switches[0].split('/')
+            # Parse mux options, comparing them against user-provided switches, expanding abbreviations.
+            if hasattr(self, "options") and self.options and switches:
+                # If specific options are known, test them against given switches.
+                valid_switches, unused_switches, extra_switches = [], [], []
+                for element in switches:
+                    option_check = [each for each in self.options if each.lower().startswith(element.lower())]
+                    if len(option_check) > 1:
+                        extra_switches += option_check  # Either the option provided is ambiguous,
+                    elif len(option_check) == 1:
+                        valid_switches += option_check  # or it is a valid option abbreviation,
+                    elif len(option_check) == 0:
+                        unused_switches += [element]  # or an extraneous option to be ignored.
+                if extra_switches:  # User provided switches
+                    self.msg('|g%s|n: |wAmbiguous switch supplied: Did you mean /|C%s|w?' %
+                             (self.cmdstring, ' |nor /|C'.join(extra_switches)))
+                if unused_switches:
+                    plural = '' if len(unused_switches) == 1 else 'es'
+                    self.msg('|g%s|n: |wExtra switch%s "/|C%s|w" ignored.' %
+                             (self.cmdstring, plural, '|n, /|C'.join(unused_switches)))
+                switches = valid_switches  # Only include valid_switches in command function call
         arglist = [arg.strip() for arg in args.split()]
 
         # check for arg1, arg2, ... = argA, argB, ... constructs
-        lhs, rhs = args, None
+        lhs, rhs = args.strip(), None
         lhslist, rhslist = [arg.strip() for arg in args.split(',')], []
-        if args and '=' in args:
-            lhs, rhs = [arg.strip() for arg in args.split('=', 1)]
-            lhslist = [arg.strip() for arg in lhs.split(',')]
-            rhslist = [arg.strip() for arg in rhs.split(',')]
+        if lhs:
+            if '=' in lhs:  # Default delimiter has priority
+                # Parse to separate left into left/right sides using default delimiter
+                lhs, rhs = lhs.split('=', 1)
+            elif hasattr(self, "split") and self.split and self.split in lhs:
+                # Parse to separate left into left/right sides using a custom delimiter, if provided.
+                lhs, rhs = lhs.split(self.split, 1)  # At most, split once, into left and right parts.
+            # Trim user-injected whitespace
+            rhs = rhs.strip() if rhs is not None else None
+            lhs = lhs.strip()
+            # Further split left/right sides by comma delimiter
+            lhslist = [arg.strip() for arg in lhs.split(',')] if lhs is not None else ""
+            rhslist = [arg.strip() for arg in rhs.split(',')] if rhs is not None else ""
 
         # save to object properties:
         self.raw = raw
@@ -169,6 +203,10 @@ class MuxCommand(Command):
         string += "\nraw argument (self.raw): |w%s|n \n" % self.raw
         string += "cmd args (self.args): |w%s|n\n" % self.args
         string += "cmd switches (self.switches): |w%s|n\n" % self.switches
+        if hasattr(self, "options"):  # Optional
+            string += "cmd options (self.options): |w%s|n\n" % self.options
+        if hasattr(self, "split"):  # Optional
+            string += "cmd parse left/right using (self.split): |w%s|n\n" % self.split
         string += "space-separated arg list (self.arglist): |w%s|n\n" % self.arglist
         string += "lhs, left-hand side of '=' (self.lhs): |w%s|n\n" % self.lhs
         string += "lhs, comma separated (self.lhslist): |w%s|n\n" % self.lhslist
