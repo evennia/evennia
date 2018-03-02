@@ -18,8 +18,9 @@ class PersistentPrototype(DefaultScript):
     """
     This stores a single prototype
     """
-    key = "persistent_prototype"
-    desc = "Stores a prototoype"
+    def at_script_creation(self):
+        self.key = "empty prototype"
+        self.desc = "A prototype"
 
 
 def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete=False):
@@ -64,7 +65,7 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
         if desc:
             stored_prototype.desc = desc
         if tags:
-            stored_prototype.tags.add(tags)
+            stored_prototype.tags.batch_add(*tags)
         if locks:
             stored_prototype.locks.add(locks)
         if prototype:
@@ -95,12 +96,13 @@ def search_prototype(key=None, tags=None):
         be found.
 
     """
-    matches = PersistentPrototype.objects.all()
     if tags:
         # exact match on tag(s)
         tags = make_iter(tags)
-        tag_categories = ("persistent_prototype" for _ in tags)
-        matches = matches.get_by_tag(tags, tag_categories)
+        tag_categories = ["persistent_prototype" for _ in tags]
+        matches = PersistentPrototype.objects.get_by_tag(tags, tag_categories)
+    else:
+        matches = PersistentPrototype.objects.all()
     if key:
         # partial match on key
         matches = matches.filter(db_key=key) or matches.filter(db_key__icontains=key)
@@ -142,8 +144,8 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
 
     table = []
     for i in range(len(prototypes[0])):
-        table.append([tup[i] for tup in prototypes])
-    table = EvTable("Key", "Desc", "Use", "Edit", table, crop=True, width=78)
+        table.append([str(tup[i]) for tup in prototypes])
+    table = EvTable("Key", "Desc", "Use", "Edit", table=table, crop=True, width=78)
     table.reformat_column(0, width=28)
     table.reformat_column(1, width=40)
     table.reformat_column(2, width=5)

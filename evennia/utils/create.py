@@ -101,6 +101,7 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     locks = make_iter(locks) if locks is not None else None
     aliases = make_iter(aliases) if aliases is not None else None
     tags = make_iter(tags) if tags is not None else None
+    attributes = make_iter(attributes) if attributes is not None else None
 
 
     if isinstance(typeclass, basestring):
@@ -177,7 +178,9 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
             created or if the `start` method must be called explicitly.
         report_to (Object): The object to return error messages to.
         desc (str): Optional description of script
-
+        tags (list): List of tags or tuples (tag, category).
+        attributes (list): List if tuples (key, value) or (key, value, category)
+           (key, value, lockstring) or (key, value, lockstring, default_access).
 
     See evennia.scripts.manager for methods to manipulate existing
     scripts in the database.
@@ -198,9 +201,9 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
     if key:
         kwarg["db_key"] = key
     if account:
-        kwarg["db_account"] = dbid_to_obj(account, _ScriptDB)
+        kwarg["db_account"] = dbid_to_obj(account, _AccountDB)
     if obj:
-        kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
+        kwarg["db_obj"] = dbid_to_obj(obj, _ObjectDB)
     if interval:
         kwarg["db_interval"] = interval
     if start_delay:
@@ -211,6 +214,8 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
         kwarg["db_persistent"] = persistent
     if desc:
         kwarg["db_desc"] = desc
+    tags = make_iter(tags) if tags is not None else None
+    attributes = make_iter(attributes) if attributes is not None else None
 
     # create new instance
     new_script = typeclass(**kwarg)
@@ -218,7 +223,8 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
     # store the call signature for the signal
     new_script._createdict = dict(key=key, obj=obj, account=account, locks=locks, interval=interval,
                                   start_delay=start_delay, repeats=repeats, persistent=persistent,
-                                  autostart=autostart, report_to=report_to)
+                                  autostart=autostart, report_to=report_to, desc=desc,
+                                  tags=tags, attributes=attributes)
     # this will trigger the save signal which in turn calls the
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.
