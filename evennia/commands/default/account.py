@@ -455,7 +455,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     Usage:
       @option[/save] [name = value]
 
-    Switch:
+    Switches:
       save - Save the current option settings for future logins.
       clear - Clear the saved options.
 
@@ -467,6 +467,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     """
     key = "@option"
     aliases = "@options"
+    options = ("save", "clear")
     locks = "cmd:all()"
 
     # this is used by the parent
@@ -650,6 +651,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
+    options = ("all",)
     locks = "cmd:all()"
 
     # this is used by the parent
