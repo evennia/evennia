@@ -173,26 +173,37 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         if 'delete' in switches or 'del' in switches:
             if not self.args or not self.lhs:
-                caller.msg("usage nick/delete #num ('nicks' for list)")
+                caller.msg("usage nick/delete <nick> or <#num> ('nicks' for list)")
                 return
             # see if a number was given
             arg = self.args.lstrip("#")
+            oldnicks = []
             if arg.isdigit():
                 # we are given a index in nicklist
                 delindex = int(arg)
                 if 0 < delindex <= len(nicklist):
-                    oldnick = nicklist[delindex - 1]
-                    _, _, old_nickstring, old_replstring = oldnick.value
+                    oldnicks.append(nicklist[delindex - 1])
                 else:
                     caller.msg("Not a valid nick index. See 'nicks' for a list.")
                     return
-                nicktype = oldnick.category
-                nicktypestr = "%s-nick" % nicktype.capitalize()
+            else:
+                if not specified_nicktype:
+                    nicktypes = ("object", "account", "inputline")
+                for nicktype in nicktypes:
+                    oldnicks.append(caller.nicks.get(arg, category=nicktype, return_obj=True))
 
-                caller.nicks.remove(old_nickstring, category=nicktype)
-                caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
-                           nicktypestr, old_nickstring, old_replstring))
-                return
+            oldnicks = [oldnick for oldnick in oldnicks if oldnick]
+            if oldnicks:
+                for oldnick in oldnicks:
+                    nicktype = oldnick.category
+                    nicktypestr = "%s-nick" % nicktype.capitalize()
+                    _, _, old_nickstring, old_replstring = oldnick.value
+                    caller.nicks.remove(old_nickstring, category=nicktype)
+                    caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
+                               nicktypestr, old_nickstring, old_replstring))
+            else:
+                caller.msg("No matching nicks to remove.")
+            return
 
         if not self.rhs and self.lhs:
             # check what a nick is set to
