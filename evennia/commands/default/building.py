@@ -12,6 +12,7 @@ from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from, class_from_module
 from evennia.utils.eveditor import EvEditor
+from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import spawn, search_prototype, list_prototypes
 from evennia.utils.ansi import raw
 
@@ -2736,7 +2737,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
       @spawn/search [query]
       @spawn/list [tag, tag]
-      @spawn/show <key>
+      @spawn/show [<key>]
 
       @spawn/save <prototype_dict> [;desc[;tag,tag,..[;lockstring]]]
       @spawn/menu
@@ -2746,7 +2747,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
               location will default to caller's current location.
       search - search prototype by name or tags.
       list - list available prototypes, optionally limit by tags.
-      show - inspect prototype by key.
+      show - inspect prototype by key. If not given, acts like list.
       save - save a prototype to the database. It will be listable by /list.
       menu - manipulate prototype in a menu interface.
 
@@ -2792,11 +2793,27 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     "\n" + utils.fill(prots) if prots else "None")
         caller = self.caller
 
+
+        if 'show' in self.switches:
+            # the argument is a key in this case (may be a partial key)
+            if not self.args:
+                self.switches.append('list')
+            else:
+                EvMore(caller, unicode(list_prototypes(key=self.args), exit_on_lastpage=True))
+                return
+
+        if 'list' in self.switches:
+            # for list, all optional arguments are tags
+            EvMore(caller, unicode(list_prototypes(tags=self.lhslist)), exit_on_lastpage=True)
+            return
+
         if not self.args:
             ncount = len(search_prototype())
             caller.msg("Usage: @spawn <prototype-key> or {key: value, ...}"
                        "\n ({} existing prototypes. Use /list to inspect)".format(ncount))
             return
+
+
 
         prototypes = spawn(return_prototypes=True)
         if not self.args:
