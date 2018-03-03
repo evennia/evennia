@@ -159,7 +159,7 @@ def search_readonly_prototype(key=None, tags=None):
             prototype metadata,
 
     """
-    matches = []
+    matches = {}
     if tags:
         # use tags to limit selection
         tagset = set(tags)
@@ -171,11 +171,12 @@ def search_readonly_prototype(key=None, tags=None):
     if key:
         if key in matches:
             # exact match
-            return matches[key]
+            return [matches[key]]
         else:
             # fuzzy matching
             return [metaproto for pkey, metaproto in matches.items() if key in pkey]
-    return matches
+    else:
+        return [match for match in matches.values()]
 
 
 def search_prototype(key=None, tags=None):
@@ -223,10 +224,7 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
 
     """
     # handle read-only prototypes separately
-    if key and key in _READONLY_PROTOTYPES:
-        readonly_prototypes = _READONLY_PROTOTYPES[key]
-    else:
-        readonly_prototypes = _READONLY_PROTOTYPES.values()
+    readonly_prototypes = search_readonly_prototype(key, tags)
 
     # get use-permissions of readonly attributes (edit is always False)
     readonly_prototypes = [
@@ -239,9 +237,6 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
     # next, handle db-stored prototypes
     prototypes = search_persistent_prototype(key, tags)
 
-    if not prototypes:
-        return None
-
     # gather access permissions as (key, desc, tags, can_use, can_edit)
     prototypes = [(prototype.key, prototype.desc,
                    "{}/{}".format('Y' if prototype.access(caller, "use") else 'N',
@@ -250,6 +245,9 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
                   for prototype in prototypes]
 
     prototypes = prototypes + readonly_prototypes
+
+    if not prototypes:
+        return None
 
     if not show_non_use:
         prototypes = [tup for tup in sorted(prototypes, key=lambda o: o[0]) if tup[2]]
