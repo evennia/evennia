@@ -245,6 +245,28 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 caller.msg("No nicks found matching '{}'".format(self.lhs))
             return
 
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                if nicktype == "account":
+                    obj = account
+                else:
+                    obj = caller
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
+
         if not self.args or not self.lhs:
             caller.msg("Usage: nick[/switches] nickname = [realname]")
             return
