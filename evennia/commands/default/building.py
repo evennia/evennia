@@ -12,7 +12,7 @@ from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from, class_from_module
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.spawner import spawn
+from evennia.utils.spawner import spawn, search_prototype, list_prototypes
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2731,17 +2731,29 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     spawn objects from prototype
 
     Usage:
-      @spawn
-      @spawn[/switch] <prototype_name>
-      @spawn[/switch] {prototype dictionary}
+      @spawn[/noloc] <prototype_name>
+      @spawn[/noloc] <prototype_dict>
 
-    Switch:
+      @spawn/search [query]
+      @spawn/list [tag, tag]
+      @spawn/show <key>
+
+      @spawn/save <prototype_dict> [;desc[;tag,tag,..[;lockstring]]]
+      @spawn/menu
+
+    Switches:
       noloc - allow location to be None if not specified explicitly. Otherwise,
               location will default to caller's current location.
+      search - search prototype by name or tags.
+      list - list available prototypes, optionally limit by tags.
+      show - inspect prototype by key.
+      save - save a prototype to the database. It will be listable by /list.
+      menu - manipulate prototype in a menu interface.
 
     Example:
       @spawn GOBLIN
       @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
+      @spawn/save {"key": "grunt", prototype: "goblin"};;mobs;edit:all()
 
     Dictionary keys:
       |wprototype  |n - name of parent prototype to use. Can be a list for
@@ -2760,11 +2772,15 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     The available prototypes are defined globally in modules set in
     settings.PROTOTYPE_MODULES. If @spawn is used without arguments it
     displays a list of available prototypes.
+
     """
 
     key = "@spawn"
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
+
+    def parser(self):
+        super(CmdSpawn, self).parser()
 
     def func(self):
         """Implements the spawner"""
@@ -2774,6 +2790,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             prots = ", ".join(sorted(prototypes.keys()))
             return "\nAvailable prototypes (case sensitive): %s" % (
                     "\n" + utils.fill(prots) if prots else "None")
+        caller = self.caller
+
+        if not self.args:
+            ncount = len(search_prototype())
+            caller.msg("Usage: @spawn <prototype-key> or {key: value, ...}"
+                       "\n ({} existing prototypes. Use /list to inspect)".format(ncount))
+            return
 
         prototypes = spawn(return_prototypes=True)
         if not self.args:

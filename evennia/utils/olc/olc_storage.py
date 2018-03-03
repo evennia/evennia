@@ -228,11 +228,12 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
 
     # get use-permissions of readonly attributes (edit is always False)
     readonly_prototypes = [
-        (tup.key,
-         tup.desc,
+        (metaproto.key,
+         metaproto.desc,
          ("{}/N".format('Y'
-          if caller.locks.check_lockstring(caller, tup.locks, access_type='use') else 'N')),
-         ",".join(tup.tags)) for tup in readonly_prototypes]
+          if caller.locks.check_lockstring(caller, metaproto.locks, access_type='use') else 'N')),
+         ",".join(metaproto.tags))
+        for metaproto in sorted(readonly_prototypes, key=lambda o: o.key)]
 
     # next, handle db-stored prototypes
     prototypes = search_persistent_prototype(key, tags)
@@ -242,7 +243,7 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
                    "{}/{}".format('Y' if prototype.access(caller, "use") else 'N',
                                   'Y' if prototype.access(caller, "edit") else 'N'),
                    ",".join(prototype.tags.get(category="persistent_prototype")))
-                  for prototype in prototypes]
+                  for prototype in sorted(prototypes, key=lambda o: o.key)]
 
     prototypes = prototypes + readonly_prototypes
 
@@ -250,16 +251,16 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
         return None
 
     if not show_non_use:
-        prototypes = [tup for tup in sorted(prototypes, key=lambda o: o[0]) if tup[2]]
+        prototypes = [metaproto for metaproto in prototypes if metaproto[2].split("/", 1)[0] == 'Y']
     if not show_non_edit:
-        prototypes = [tup for tup in sorted(prototypes, key=lambda o: o[0]) if tup[3]]
+        prototypes = [metaproto for metaproto in prototypes if metaproto[2].split("/", 1)[1] == 'Y']
 
     if not prototypes:
         return None
 
     table = []
     for i in range(len(prototypes[0])):
-        table.append([str(tup[i]) for tup in prototypes])
+        table.append([str(metaproto[i]) for metaproto in prototypes])
     table = EvTable("Key", "Desc", "Use/Edit", "Tags", table=table, crop=True, width=78)
     table.reformat_column(0, width=28)
     table.reformat_column(1, width=40)
