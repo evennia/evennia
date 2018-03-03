@@ -14,6 +14,7 @@ prototype, override its name with an empty dict.
 
 """
 
+from collections import namedtuple
 from django.conf import settings
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
@@ -25,19 +26,22 @@ from evennia.utils.evtable import EvTable
 _READONLY_PROTOTYPES = {}
 _READONLY_PROTOTYPE_MODULES = {}
 
+# storage of meta info about the prototype
+MetaProto = namedtuple('MetaProto', ['key', 'desc', 'locks', 'tags', 'prototype'])
+
 for mod in settings.PROTOTYPE_MODULES:
     # to remove a default prototype, override it with an empty dict.
     # internally we store as (key, desc, locks, tags, prototype_dict)
     prots = [(key, prot) for key, prot in all_from_module(mod).items()
              if prot and isinstance(prot, dict)]
     _READONLY_PROTOTYPES.update(
-        {key.lower():
-            (key.lower(),
-             prot['prototype_desc'] if 'prototype_desc' in prot else mod,
-             prot['prototype_lock'] if 'prototype_lock' in prot else "use:all()",
-             set(make_iter(
-                 prot['prototype_tags']) if 'prototype_tags' in prot else ["base-prototype"]),
-             prot)
+        {key.lower(): MetaProto(
+            key.lower(),
+            prot['prototype_desc'] if 'prototype_desc' in prot else mod,
+            prot['prototype_lock'] if 'prototype_lock' in prot else "use:all()",
+            set(make_iter(
+                prot['prototype_tags']) if 'prototype_tags' in prot else ["base-prototype"]),
+            prot)
          for key, prot in prots})
     _READONLY_PROTOTYPE_MODULES.update({tup[0]: mod for tup in prots})
 
@@ -151,17 +155,16 @@ def search_readonly_prototype(key=None, tags=None):
         tags (str or list): Tag key to query for.
 
     Return:
-        matches (list): List of prototype tuples that includes
-            prototype metadata, on the form
-            `(key, desc, lockstring, taglist, prototypedict)`
+        matches (list): List of MetaProto tuples that includes
+            prototype metadata,
 
     """
     matches = []
     if tags:
         # use tags to limit selection
         tagset = set(tags)
-        matches = {key: tup for key, tup in _READONLY_PROTOTYPES.items()
-                   if tagset.intersection(tup[3])}
+        matches = {key: metaproto for key, metaproto in _READONLY_PROTOTYPES.items()
+                   if tagset.intersection(metaproto.tags)}
     else:
         matches = _READONLY_PROTOTYPES
 
@@ -171,7 +174,7 @@ def search_readonly_prototype(key=None, tags=None):
             return matches[key]
         else:
             # fuzzy matching
-            return [tup for pkey, tup in matches.items() if key in pkey]
+            return [metaproto for pkey, metaproto in matches.items() if key in pkey]
     return matches
 
 
@@ -227,11 +230,11 @@ def get_prototype_list(caller, key=None, tags=None, show_non_use=False, show_non
 
     # get use-permissions of readonly attributes (edit is always False)
     readonly_prototypes = [
-        (tup[0],
-         tup[1],
+        (tup.key,
+         tup.desc,
          ("{}/N".format('Y'
-          if caller.locks.check_lockstring(caller, tup[2], access_type='use') else 'N')),
-         ",".join(tup[3])) for tup in readonly_prototypes]
+          if caller.locks.check_lockstring(caller, tup.locks, access_type='use') else 'N')),
+         ",".join(tup.tags)) for tup in readonly_prototypes]
 
     # next, handle db-stored prototypes
     prototypes = search_persistent_prototype(key, tags)
