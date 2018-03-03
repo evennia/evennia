@@ -2331,7 +2331,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
 
     Examples:
       @tel Limbo
-      @tel/quiet box Limbo
+      @tel/quiet box = Limbo
       @tel/tonone box
 
     Switches:
@@ -2347,7 +2347,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
       loc - teleport object to the target's location instead of its contents
 
     Teleports an object somewhere. If no object is given, you yourself
-    is teleported to the target location.     """
+    is teleported to the target location.
+    """
     key = "@tel"
     aliases = "@teleport"
     locks = "cmd:perm(teleport) or perm(Builder)"
