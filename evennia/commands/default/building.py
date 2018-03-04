@@ -13,7 +13,7 @@ from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from, class_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
-from evennia.utils.spawner import spawn, search_prototype, list_prototypes
+from evennia.utils.spawner import spawn, search_prototype, list_prototypes, store_prototype
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2735,11 +2735,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       @spawn[/noloc] <prototype_name>
       @spawn[/noloc] <prototype_dict>
 
-      @spawn/search [query]
+      @spawn/search [key][;tag[,tag]]
       @spawn/list [tag, tag]
       @spawn/show [<key>]
 
-      @spawn/save <prototype_dict> [;desc[;tag,tag,..[;lockstring]]]
+      @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>
       @spawn/menu
 
     Switches:
@@ -2786,73 +2786,164 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Implements the spawner"""
 
-        def _show_prototypes(prototypes):
-            """Helper to show a list of available prototypes"""
-            prots = ", ".join(sorted(prototypes.keys()))
-            return "\nAvailable prototypes (case sensitive): %s" % (
-                    "\n" + utils.fill(prots) if prots else "None")
+        def _parse_prototype(inp, allow_key=False):
+            try:
+                # make use of _convert_from_string from the SetAttribute command
+                prototype = _convert_from_string(self, inp)
+            except SyntaxError:
+                # this means literal_eval tried to parse a faulty string
+                string = ("|RCritical Python syntax error in argument. Only primitive "
+                          "Python structures are allowed. \nYou also need to use correct "
+                          "Python syntax. Remember especially to put quotes around all "
+                          "strings inside lists and dicts.|n")
+                self.caller.msg(string)
+                return None
+            if isinstance(prototype, dict):
+                # an actual prototype. We need to make sure it's safe. Don't allow exec
+                if "exec" in prototype and not self.caller.check_permstring("Developer"):
+                    self.caller.msg("Spawn aborted: You don't have access to "
+                                    "use the 'exec' prototype key.")
+                    return None
+            elif isinstance(prototype, basestring):
+                # a prototype key
+                if allow_key:
+                    return prototype
+                else:
+                    self.caller.msg("The prototype must be defined as a Python dictionary.")
+            else:
+                caller.msg("The prototype must be given either as a Python dictionary or a key")
+            return None
+
+
+        def _search_show_prototype(query):
+            # prototype detail
+            strings = []
+            metaprots = search_prototype(key=query, return_meta=True)
+            if metaprots:
+                for metaprot in metaprots:
+                    header = (
+                        "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
+                        "|cdesc:|n {} \n|cprototype:|n ".format(
+                           metaprot.key, ", ".join(metaprot.tags),
+                           metaprot.locks, metaprot.desc))
+                    prototype = ("{{\n  {} \n}}".format("\n  ".join("{!r}: {!r},".format(key, value)
+                                 for key, value in
+                                 sorted(metaprot.prototype.items())).rstrip(",")))
+                    strings.append(header + prototype)
+                return "\n".join(strings)
+            else:
+                return False
+
         caller = self.caller
 
+        if 'search' in self.switches:
+            # query for a key match
+            if not self.args:
+                self.switches.append("list")
+            else:
+                key, tags = self.args.strip(), None
+                if ';' in self.args:
+                    key, tags = (part.strip().lower() for part in self.args.split(";", 1))
+                    tags = [tag.strip() for tag in tags.split(",")] if tags else None
+                EvMore(caller, unicode(list_prototypes(caller, key=key, tags=tags)),
+                       exit_on_lastpage=True)
+            return
 
         if 'show' in self.switches:
             # the argument is a key in this case (may be a partial key)
             if not self.args:
                 self.switches.append('list')
             else:
-                EvMore(caller, unicode(list_prototypes(key=self.args), exit_on_lastpage=True))
+                matchstring = _search_show_prototype(self.args)
+                if matchstring:
+                    caller.msg(matchstring)
+                else:
+                    caller.msg("No prototype '{}' was found.".format(self.args))
                 return
 
         if 'list' in self.switches:
             # for list, all optional arguments are tags
-            EvMore(caller, unicode(list_prototypes(tags=self.lhslist)), exit_on_lastpage=True)
+            EvMore(caller, unicode(list_prototypes(caller,
+                   tags=self.lhslist)), exit_on_lastpage=True)
+            return
+
+        if 'save' in self.switches:
+            if not self.args or not self.rhs:
+                caller.msg("Usage: @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
+                return
+
+            # handle lhs
+            parts = self.rhs.split(";", 3)
+            key, desc, tags, lockstring = "", "", [], ""
+            nparts = len(parts)
+            if nparts == 1:
+                key = parts.strip()
+            elif nparts == 2:
+                key, desc = (part.strip() for part in parts)
+            elif nparts == 3:
+                key, desc, tags = (part.strip() for part in parts)
+                tags = [tag.strip().lower() for tag in tags.split(",")]
+            else:
+                # lockstrings can itself contain ;
+                key, desc, tags, lockstring = (part.strip() for part in parts)
+                tags = [tag.strip().lower() for tag in tags.split(",")]
+
+            # handle rhs:
+            prototype = _parse_prototype(caller, self.rhs)
+            if not prototype:
+                return
+
+            # check for existing prototype
+            matchstring = _search_show_prototype(key)
+            if matchstring:
+                caller.msg("|yExisting saved prototype found:|n\n{}".format(matchstring))
+                answer = ("Do you want to replace the existing prototype? Y/[N]")
+                if not answer.lower() not in ["y", "yes"]:
+                    caller.msg("Save cancelled.")
+
+            # all seems ok. Try to save.
+            try:
+                store_prototype(caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
+            except PermissionError as err:
+                caller.msg("|rError saving:|R {}|n".format(err))
+                return
+            caller.msg("Saved prototype:")
+            caller.execute_cmd("spawn/show {}".format(key))
             return
 
         if not self.args:
             ncount = len(search_prototype())
-            caller.msg("Usage: @spawn <prototype-key> or {key: value, ...}"
+            caller.msg("Usage: @spawn <prototype-key> or {{key: value, ...}}"
                        "\n ({} existing prototypes. Use /list to inspect)".format(ncount))
             return
 
+        # A direct creation of an object from a given prototype
 
-
-        prototypes = spawn(return_prototypes=True)
-        if not self.args:
-            string = "Usage: @spawn {key:value, key, value, ... }"
-            self.caller.msg(string + _show_prototypes(prototypes))
-            return
-        try:
-            # make use of _convert_from_string from the SetAttribute command
-            prototype = _convert_from_string(self, self.args)
-        except SyntaxError:
-            # this means literal_eval tried to parse a faulty string
-            string = "|RCritical Python syntax error in argument. "
-            string += "Only primitive Python structures are allowed. "
-            string += "\nYou also need to use correct Python syntax. "
-            string += "Remember especially to put quotes around all "
-            string += "strings inside lists and dicts.|n"
-            self.caller.msg(string)
+        prototype = _parse_prototype(self.args, allow_key=True)
+        if not prototype:
             return
 
         if isinstance(prototype, basestring):
-            # A prototype key
-            keystr = prototype
-            prototype = prototypes.get(prototype, None)
-            if not prototype:
-                string = "No prototype named '%s'." % keystr
-                self.caller.msg(string + _show_prototypes(prototypes))
+            # A prototype key we are looking to apply
+            metaprotos = search_prototype(prototype)
+            nprots = len(metaprotos)
+            if not metaprotos:
+                caller.msg("No prototype named '%s'." % prototype)
                 return
-        elif isinstance(prototype, dict):
-            # we got the prototype on the command line. We must make sure to not allow
-            # the 'exec' key unless we are developers or higher.
-            if "exec" in prototype and not self.caller.check_permstring("Developer"):
-                self.caller.msg("Spawn aborted: You don't have access to use the 'exec' prototype key.")
+            elif nprots > 1:
+                caller.msg("Found {} prototypes matching '{}':\n  {}".format(
+                    nprots, prototype, ", ".join(metaproto.key for metaproto in metaprotos)))
                 return
-        else:
-            self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
-            return
+            # we have a metaprot, check access
+            metaproto = metaprotos[0]
+            if not caller.locks.check_lockstring(caller, metaproto.locks, access_type='use'):
+                caller.msg("You don't have access to use this prototype.")
+                return
+            prototype = metaproto.prototype
 
         if "noloc" not in self.switches and "location" not in prototype:
             prototype["location"] = self.caller.location
 
+        # proceed to spawning
         for obj in spawn(prototype):
             self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))

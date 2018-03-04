@@ -202,15 +202,18 @@ class EvMore(object):
             # goto top of the text
             self.page_top()
 
-    def display(self):
+    def display(self, show_footer=True):
         """
         Pretty-print the page.
         """
         pos = self._pos
         text = self._pages[pos]
-        page = _DISPLAY.format(text=text,
-                               pageno=pos + 1,
-                               pagemax=self._npages)
+        if show_footer:
+            page = _DISPLAY.format(text=text,
+                                   pageno=pos + 1,
+                                   pagemax=self._npages)
+        else:
+            page = text
         # check to make sure our session is still valid
         sessions = self._caller.sessions.get()
         if not sessions:
@@ -245,9 +248,11 @@ class EvMore(object):
             self.page_quit()
         else:
             self._pos += 1
-            self.display()
-            if self.exit_on_lastpage and self._pos >= self._npages - 1:
-                self.page_quit()
+            if self.exit_on_lastpage and self._pos >= (self._npages - 1):
+                self.display(show_footer=False)
+                self.page_quit(quiet=True)
+            else:
+                self.display()
 
     def page_back(self):
         """
@@ -256,16 +261,18 @@ class EvMore(object):
         self._pos = max(0, self._pos - 1)
         self.display()
 
-    def page_quit(self):
+    def page_quit(self, quiet=False):
         """
         Quit the pager
         """
         del self._caller.ndb._more
-        self._caller.msg(text=self._exit_msg, **self._kwargs)
+        if not quiet:
+            self._caller.msg(text=self._exit_msg, **self._kwargs)
         self._caller.cmdset.remove(CmdSetMore)
 
 
-def msg(caller, text="", always_page=False, session=None, justify_kwargs=None, **kwargs):
+def msg(caller, text="", always_page=False, session=None,
+        justify_kwargs=None, exit_on_lastpage=True, **kwargs):
     """
     More-supported version of msg, mimicking the normal msg method.
 
@@ -280,9 +287,10 @@ def msg(caller, text="", always_page=False, session=None, justify_kwargs=None, *
         justify_kwargs (dict, bool or None, optional): If given, this should
             be valid keyword arguments to the utils.justify() function. If False,
             no justification will be done.
+        exit_on_lastpage (bool, optional): Immediately exit pager when reaching the last page.
         kwargs (any, optional): These will be passed on
             to the `caller.msg` method.
 
     """
     EvMore(caller, text, always_page=always_page, session=session,
-           justify_kwargs=justify_kwargs, **kwargs)
+           justify_kwargs=justify_kwargs, exit_on_lastpage=exit_on_lastpage, **kwargs)
