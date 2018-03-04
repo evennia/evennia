@@ -113,7 +113,7 @@ class MuxCommand(Command):
 
         # check for arg1, arg2, ... = argA, argB, ... constructs
         lhs, rhs = args, None
-        lhslist, rhslist = [arg.strip() for arg in args.split(',')], []
+        lhslist, rhslist = [arg.strip() for arg in args.split(',') if arg], []
         if args and '=' in args:
             lhs, rhs = [arg.strip() for arg in args.split('=', 1)]
             lhslist = [arg.strip() for arg in lhs.split(',')]

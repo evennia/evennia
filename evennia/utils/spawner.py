@@ -483,7 +483,7 @@ def search_readonly_prototype(key=None, tags=None):
         return [match for match in matches.values()]
 
 
-def search_prototype(key=None, tags=None):
+def search_prototype(key=None, tags=None, return_meta=True):
     """
     Find prototypes based on key and/or tags.
 
@@ -492,8 +492,11 @@ def search_prototype(key=None, tags=None):
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'persistent_protototype'
             tag category.
+        return_meta (bool): If False, only return prototype dicts, if True
+            return MetaProto namedtuples including prototype meta info
+
     Return:
-        matches (list): All found prototype dicts.
+        matches (list): All found prototype dicts or MetaProtos
 
     Note:
         The available prototypes is a combination of those supplied in
@@ -505,10 +508,30 @@ def search_prototype(key=None, tags=None):
     """
     matches = []
     if key and key in _READONLY_PROTOTYPES:
-        matches.append(_READONLY_PROTOTYPES[key][3])
+        if return_meta:
+            matches.append(_READONLY_PROTOTYPES[key])
+        else:
+            matches.append(_READONLY_PROTOTYPES[key][3])
+    elif tags:
+        if return_meta:
+            matches.extend(
+                [MetaProto(prot.key, prot.desc, prot.locks.all(),
+                           prot.tags.all(), prot.attributes.get("prototype"))
+                 for prot in search_persistent_prototype(key, tags)])
+        else:
+            matches.extend([prot.attributes.get("prototype")
+                            for prot in search_persistent_prototype(key, tags)])
     else:
-        matches.extend([prot.attributes.get("prototype")
-                        for prot in search_persistent_prototype(key, tags)])
+        # neither key nor tags given. Return all.
+        if return_meta:
+            matches = [MetaProto(prot.key, prot.desc, prot.locks.all(),
+                                 prot.tags.all(), prot.attributes.get("prototype"))
+                       for prot in search_persistent_prototype(key, tags)] + \
+                        list(_READONLY_PROTOTYPES.values())
+        else:
+            matches = [prot.attributes.get("prototype")
+                       for prot in search_persistent_prototype()] + \
+                      [metaprot[3] for metaprot in _READONLY_PROTOTYPES.values()]
     return matches
 
 
