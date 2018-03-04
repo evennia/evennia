@@ -13,7 +13,8 @@ from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from, class_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
-from evennia.utils.spawner import spawn, search_prototype, list_prototypes, store_prototype
+from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
+                                   store_prototype, build_metaproto)
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -27,12 +28,8 @@ __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
            "CmdScript", "CmdTag", "CmdSpawn")
 
-try:
-    # used by @set
-    from ast import literal_eval as _LITERAL_EVAL
-except ImportError:
-    # literal_eval is not available before Python 2.6
-    _LITERAL_EVAL = None
+# used by @set
+from ast import literal_eval as _LITERAL_EVAL
 
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
@@ -1450,17 +1447,16 @@ def _convert_from_string(cmd, strobj):
         # if nothing matches, return as-is
         return obj
 
-    if _LITERAL_EVAL:
-        # Use literal_eval to parse python structure exactly.
-        try:
-            return _LITERAL_EVAL(strobj)
-        except (SyntaxError, ValueError):
-            # treat as string
-            strobj = utils.to_str(strobj)
-            string = "|RNote: name \"|r%s|R\" was converted to a string. " \
-                     "Make sure this is acceptable." % strobj
-            cmd.caller.msg(string)
-            return strobj
+    # Use literal_eval to parse python structure exactly.
+    try:
+        return _LITERAL_EVAL(strobj)
+    except (SyntaxError, ValueError):
+        # treat as string
+        strobj = utils.to_str(strobj)
+        string = "|RNote: name \"|r%s|R\" was converted to a string. " \
+                 "Make sure this is acceptable." % strobj
+        cmd.caller.msg(string)
+        return strobj
     else:
         # fall back to old recursive solution (does not support
         # nested lists/dicts)
@@ -2786,46 +2782,44 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Implements the spawner"""
 
-        def _parse_prototype(inp, allow_key=False):
+        def _parse_prototype(inp, expect=dict):
+            err = None
             try:
-                # make use of _convert_from_string from the SetAttribute command
-                prototype = _convert_from_string(self, inp)
-            except SyntaxError:
-                # this means literal_eval tried to parse a faulty string
-                string = ("|RCritical Python syntax error in argument. Only primitive "
-                          "Python structures are allowed. \nYou also need to use correct "
-                          "Python syntax. Remember especially to put quotes around all "
-                          "strings inside lists and dicts.|n")
-                self.caller.msg(string)
-                return None
-            if isinstance(prototype, dict):
+                prototype = _LITERAL_EVAL(inp)
+            except (SyntaxError, ValueError) as err:
+                # treat as string
+                prototype = utils.to_str(inp)
+            finally:
+                if not isinstance(prototype, expect):
+                    if err:
+                        string = ("{}\n|RCritical Python syntax error in argument. Only primitive "
+                                  "Python structures are allowed. \nYou also need to use correct "
+                                  "Python syntax. Remember especially to put quotes around all "
+                                  "strings inside lists and dicts.|n".format(err))
+                    else:
+                        string = "Expected {}, got {}.".format(expect, type(prototype))
+                    self.caller.msg(string)
+                    return None
+            if expect == dict:
                 # an actual prototype. We need to make sure it's safe. Don't allow exec
                 if "exec" in prototype and not self.caller.check_permstring("Developer"):
                     self.caller.msg("Spawn aborted: You don't have access to "
                                     "use the 'exec' prototype key.")
                     return None
-            elif isinstance(prototype, basestring):
-                # a prototype key
-                if allow_key:
-                    return prototype
-                else:
-                    self.caller.msg("The prototype must be defined as a Python dictionary.")
-            else:
-                caller.msg("The prototype must be given either as a Python dictionary or a key")
-            return None
+            return prototype
 
-
-        def _search_show_prototype(query):
+        def _search_show_prototype(query, metaprots=None):
             # prototype detail
             strings = []
-            metaprots = search_prototype(key=query, return_meta=True)
+            if not metaprots:
+                metaprots = search_prototype(key=query, return_meta=True)
             if metaprots:
                 for metaprot in metaprots:
                     header = (
                         "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
                         "|cdesc:|n {} \n|cprototype:|n ".format(
                            metaprot.key, ", ".join(metaprot.tags),
-                           metaprot.locks, metaprot.desc))
+                           "; ".join(metaprot.locks), metaprot.desc))
                     prototype = ("{{\n  {} \n}}".format("\n  ".join("{!r}: {!r},".format(key, value)
                                  for key, value in
                                  sorted(metaprot.prototype.items())).rstrip(",")))
@@ -2869,11 +2863,12 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         if 'save' in self.switches:
             if not self.args or not self.rhs:
-                caller.msg("Usage: @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
+                caller.msg(
+                  "Usage: @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
                 return
 
             # handle lhs
-            parts = self.rhs.split(";", 3)
+            parts = self.lhs.split(";", 3)
             key, desc, tags, lockstring = "", "", [], ""
             nparts = len(parts)
             if nparts == 1:
@@ -2889,17 +2884,26 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 tags = [tag.strip().lower() for tag in tags.split(",")]
 
             # handle rhs:
-            prototype = _parse_prototype(caller, self.rhs)
+            prototype = _parse_prototype(self.rhs)
             if not prototype:
                 return
 
-            # check for existing prototype
-            matchstring = _search_show_prototype(key)
-            if matchstring:
-                caller.msg("|yExisting saved prototype found:|n\n{}".format(matchstring))
-                answer = ("Do you want to replace the existing prototype? Y/[N]")
-                if not answer.lower() not in ["y", "yes"]:
-                    caller.msg("Save cancelled.")
+            # present prototype to save
+            new_matchstring = _search_show_prototype(
+                "", metaprots=[build_metaproto(key, desc, [lockstring], tags, prototype)])
+            string = "|yCreating new prototype:|n\n{}".format(new_matchstring)
+            question = "\nDo you want to continue saving? [Y]/N"
+
+            # check for existing prototype,
+            old_matchstring = _search_show_prototype(key)
+            if old_matchstring:
+                string += "\n|yExisting saved prototype found:|n\n{}".format(old_matchstring)
+                question = "\n|yDo you want to replace the existing prototype?|n [Y]/N"
+
+            answer = yield(string + question)
+            if answer.lower() in ["n", "no"]:
+                caller.msg("|rSave cancelled.|n")
+                return
 
             # all seems ok. Try to save.
             try:
@@ -2907,8 +2911,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             except PermissionError as err:
                 caller.msg("|rError saving:|R {}|n".format(err))
                 return
-            caller.msg("Saved prototype:")
-            caller.execute_cmd("spawn/show {}".format(key))
+            caller.msg("|gSaved prototype:|n {}".format(key))
             return
 
         if not self.args:
@@ -2919,12 +2922,16 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         # A direct creation of an object from a given prototype
 
-        prototype = _parse_prototype(self.args, allow_key=True)
+        prototype = _parse_prototype(
+                self.args, expect=dict if self.args.strip().startswith("{") else basestring)
         if not prototype:
+            # this will only let through dicts or strings
             return
 
+        key = '<unnamed>'
         if isinstance(prototype, basestring):
             # A prototype key we are looking to apply
+            key = prototype
             metaprotos = search_prototype(prototype)
             nprots = len(metaprotos)
             if not metaprotos:
@@ -2945,5 +2952,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             prototype["location"] = self.caller.location
 
         # proceed to spawning
-        for obj in spawn(prototype):
-            self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
+        try:
+            for obj in spawn(prototype):
+                self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
+        except RuntimeError as err:
+            caller.msg(err)

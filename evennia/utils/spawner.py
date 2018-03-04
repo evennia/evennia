@@ -359,6 +359,14 @@ class PersistentPrototype(DefaultScript):
         self.desc = "A prototype"
 
 
+def build_metaproto(key, desc, locks, tags, prototype):
+    """
+    Create a metaproto from combinant parts.
+
+    """
+    return MetaProto(key, desc, locks, tags, dict(prototype))
+
+
 def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete=False):
     """
     Store a prototype persistently.
@@ -386,7 +394,7 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
     """
     key_orig = key
     key = key.lower()
-    locks = locks if locks else "use:all();edit:id({}) or edit:perm(Admin)".format(caller.id)
+    locks = locks if locks else "use:all();edit:id({}) or perm(Admin)".format(caller.id)
     tags = [(tag, "persistent_prototype") for tag in make_iter(tags)]
 
     if key in _READONLY_PROTOTYPES:
@@ -506,34 +514,19 @@ def search_prototype(key=None, tags=None, return_meta=True):
         be found.
 
     """
-    matches = []
-    if key and key in _READONLY_PROTOTYPES:
-        if return_meta:
-            matches.append(_READONLY_PROTOTYPES[key])
-        else:
-            matches.append(_READONLY_PROTOTYPES[key][3])
-    elif tags:
-        if return_meta:
-            matches.extend(
-                [MetaProto(prot.key, prot.desc, prot.locks.all(),
-                           prot.tags.all(), prot.attributes.get("prototype"))
-                 for prot in search_persistent_prototype(key, tags)])
-        else:
-            matches.extend([prot.attributes.get("prototype")
-                            for prot in search_persistent_prototype(key, tags)])
-    else:
-        # neither key nor tags given. Return all.
-        if return_meta:
-            matches = [MetaProto(prot.key, prot.desc, prot.locks.all(),
-                                 prot.tags.all(), prot.attributes.get("prototype"))
-                       for prot in search_persistent_prototype(key, tags)] + \
-                        list(_READONLY_PROTOTYPES.values())
-        else:
-            matches = [prot.attributes.get("prototype")
-                       for prot in search_persistent_prototype()] + \
-                      [metaprot[3] for metaprot in _READONLY_PROTOTYPES.values()]
-    return matches
+    readonly_prototypes = search_readonly_prototype(key, tags)
+    persistent_prototypes = search_persistent_prototype(key, tags)
 
+    if return_meta:
+        persistent_prototypes = [
+            build_metaproto(prot.key, prot.desc, prot.locks.all(),
+                            prot.tags.all(), prot.attributes.get("prototype"))
+            for prot in persistent_prototypes]
+    else:
+        readonly_prototypes = [metaprot.prototyp for metaprot in readonly_prototypes]
+        persistent_prototypes = [prot.attributes.get("prototype") for prot in persistent_prototypes]
+
+    return persistent_prototypes + readonly_prototypes
 
 def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
     """
