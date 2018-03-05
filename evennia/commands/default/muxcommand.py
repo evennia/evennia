@@ -80,9 +80,10 @@ class MuxCommand(Command):
         start with the switch indicator /.
 
         Optional variables to aid in parsing, if set:
-          self.options = (tuple of valid /switches expected
-                          by this command (without the /))
-          self.split = Alternate string delimiter to separate left/right hand side.
+          self.switch_options  - (tuple of valid /switches expected by this
+                                  command (without the /))
+          self.rhs_split       - Alternate string delimiter to separate
+                                 left/right hand sides.
 
         This parser breaks self.args into its constituents and stores them in the
         following variables:
@@ -102,6 +103,18 @@ class MuxCommand(Command):
         """
         raw = self.args
         args = raw.strip()
+        # Temporary code to use the old settings before renaming     # #
+        if hasattr(self, "options"):                                   #
+            self.switch_options = self.options                         #
+        if hasattr(self, "split") and not hasattr(self, "rhs_split"):  #
+            self.rhs_split = self.split                            # # #
+        # Without explicitly setting these attributes, they assume default values:
+        if not hasattr(self, "switch_options"):
+            self.switch_options = None
+        if not hasattr(self, "rhs_split"):
+            self.rhs_split = "="
+        if not hasattr(self, "account_caller"):
+            self.account_caller = False
 
         # split out switches
         switches = []
@@ -114,17 +127,19 @@ class MuxCommand(Command):
             else:
                 args = ""
                 switches = switches[0].split('/')
-            # Parse mux options, comparing them against user-provided switches, expanding abbreviations.
-            if hasattr(self, "options") and self.options and switches:
-                # If specific options are known, test them against given switches.
+            # If user-provides switches, parse them with parser switch options.
+            if switches and self.switch_options:
                 valid_switches, unused_switches, extra_switches = [], [], []
                 for element in switches:
-                    option_check = [each for each in self.options if each.lower().startswith(element.lower())]
-                    if len(option_check) > 1:
+                    option_check = [each for each in self.switch_options
+                                    if each.lower() == element.lower() or
+                                    each.lower().startswith(element.lower())]
+                    match_count = len(option_check)
+                    if match_count > 1:
                         extra_switches += option_check  # Either the option provided is ambiguous,
-                    elif len(option_check) == 1:
+                    elif match_count == 1:
                         valid_switches += option_check  # or it is a valid option abbreviation,
-                    elif len(option_check) == 0:
+                    elif match_count == 0:
                         unused_switches += [element]  # or an extraneous option to be ignored.
                 if extra_switches:  # User provided switches
                     self.msg('|g%s|n: |wAmbiguous switch supplied: Did you mean /|C%s|w?' %
@@ -138,21 +153,22 @@ class MuxCommand(Command):
 
         # check for arg1, arg2, ... = argA, argB, ... constructs
         lhs, rhs = args.strip(), None
-        lhslist, rhslist = [arg.strip() for arg in args.split(',')], []
+        best_split = self.rhs_split
         if lhs:
-            if '=' in lhs:  # Default delimiter has priority
-                # Parse to separate left into left/right sides using default delimiter
-                lhs, rhs = lhs.split('=', 1)
-            elif hasattr(self, "split") and self.split and self.split in lhs:
-                # Parse to separate left into left/right sides using a custom delimiter, if provided.
-                lhs, rhs = lhs.split(self.split, 1)  # At most, split once, into left and right parts.
-            # Trim user-injected whitespace
-            rhs = rhs.strip() if rhs is not None else None
-            lhs = lhs.strip()
-            # Further split left/right sides by comma delimiter
-            lhslist = [arg.strip() for arg in lhs.split(',')] if lhs is not None else ""
-            rhslist = [arg.strip() for arg in rhs.split(',')] if rhs is not None else ""
-
+            if hasattr(self.rhs_split, '__iter__'):
+                for this_split in self.rhs_split:
+                    if this_split in lhs:  # First delimiter to allow a successful
+                        best_split = this_split  # split is the best split.
+                        break
+            # Parse to separate left into left/right sides using best_split delimiter string
+            if best_split in lhs:
+                lhs, rhs = lhs.split(best_split, 1)
+        # Trim user-injected whitespace
+        rhs = rhs.strip() if rhs is not None else None
+        lhs = lhs.strip()
+        # Further split left/right sides by comma delimiter
+        lhslist = [arg.strip() for arg in lhs.split(',')] if lhs is not None else ""
+        rhslist = [arg.strip() for arg in rhs.split(',')] if rhs is not None else ""
         # save to object properties:
         self.raw = raw
         self.switches = switches
@@ -167,7 +183,7 @@ class MuxCommand(Command):
         # sure that self.caller is always the account if possible. We also create
         # a special property "character" for the puppeted object, if any. This
         # is convenient for commands defined on the Account only.
-        if hasattr(self, "account_caller") and self.account_caller:
+        if self.account_caller:
             if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
                 # caller is an Object/Character
                 self.character = self.caller
@@ -203,10 +219,8 @@ class MuxCommand(Command):
         string += "\nraw argument (self.raw): |w%s|n \n" % self.raw
         string += "cmd args (self.args): |w%s|n\n" % self.args
         string += "cmd switches (self.switches): |w%s|n\n" % self.switches
-        if hasattr(self, "options"):  # Optional
-            string += "cmd options (self.options): |w%s|n\n" % self.options
-        if hasattr(self, "split"):  # Optional
-            string += "cmd parse left/right using (self.split): |w%s|n\n" % self.split
+        string += "cmd options (self.switch_options): |w%s|n\n" % self.switch_options
+        string += "cmd parse left/right using (self.rhs_split): |w%s|n\n" % self.rhs_split
         string += "space-separated arg list (self.arglist): |w%s|n\n" % self.arglist
         string += "lhs, left-hand side of '=' (self.lhs): |w%s|n\n" % self.lhs
         string += "lhs, comma separated (self.lhslist): |w%s|n\n" % self.lhslist
@@ -231,18 +245,4 @@ class MuxAccountCommand(MuxCommand):
     character is actually attached to this Account and Session.
     """
 
-    def parse(self):
-        """
-        We run the parent parser as usual, then fix the result
-        """
-        super(MuxAccountCommand, self).parse()
-
-        if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
-            # caller is an Object/Character
-            self.character = self.caller
-            self.caller = self.caller.account
-        elif utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount"):
-            # caller was already an Account
-            self.character = self.caller.get_puppet(self.session)
-        else:
-            self.character = None
+    account_caller = True  # Using MuxAccountCommand explicitly defaults the caller to an account
