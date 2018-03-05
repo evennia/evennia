@@ -467,7 +467,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     """
     key = "@option"
     aliases = "@options"
-    options = ("save", "clear")
+    switch_options = ("save", "clear")
     locks = "cmd:all()"
 
     # this is used by the parent
@@ -651,7 +651,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
-    options = ("all",)
+    switch_options = ("all",)
     locks = "cmd:all()"
 
     # this is used by the parent
