@@ -36,7 +36,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@boot"
-    options = ("quiet", "sid")
+    switch_options = ("quiet", "sid")
     locks = "cmd:perm(boot) or perm(Admin)"
     help_category = "Admin"
 
@@ -266,7 +266,7 @@ class CmdDelAccount(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@delaccount"
-    options = ("delobj",)
+    switch_options = ("delobj",)
     locks = "cmd:perm(delaccount) or perm(Developer)"
     help_category = "Admin"
 
@@ -343,7 +343,7 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
     """
     key = "@emit"
     aliases = ["@pemit", "@remit"]
-    options = ("room", "accounts", "contents")
+    switch_options = ("room", "accounts", "contents")
     locks = "cmd:perm(emit) or perm(Builder)"
     help_category = "Admin"
 
@@ -453,7 +453,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
     """
     key = "@perm"
     aliases = "@setperm"
-    options = ("del", "account")
+    switch_options = ("del", "account")
     locks = "cmd:perm(perm) or perm(Developer)"
     help_category = "Admin"
 
