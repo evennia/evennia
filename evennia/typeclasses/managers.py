@@ -8,6 +8,8 @@ import shlex
 from django.db.models import Q
 from evennia.utils import idmapper
 from evennia.utils.utils import make_iter, variable_from_module, to_unicode
+from evennia.typeclasses.attributes import Attribute
+from evennia.typeclasses.tags import Tag
 
 __all__ = ("TypedObjectManager", )
 _GA = object.__getattribute__
@@ -56,17 +58,19 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         dbmodel = self.model.__dbclass__.__name__.lower()
         query = [("attribute__db_attrtype", attrtype), ("attribute__db_model", dbmodel)]
         if obj:
-            query.append(("%s__id" % self.model.__name__.lower(), obj.id))
+            query.append(("%s__id" % self.model.__dbclass__.__name__.lower(), obj.id))
         if key:
             query.append(("attribute__db_key", key))
         if category:
             query.append(("attribute__db_category", category))
         if strvalue:
             query.append(("attribute__db_strvalue", strvalue))
-        elif value:
-            # strvalue and value are mutually exclusive
+        if value:
+            # no reason to make strvalue/value mutually exclusive at this level
             query.append(("attribute__db_value", value))
-        return [th.attribute for th in self.model.db_attributes.through.objects.filter(**dict(query))]
+        return Attribute.objects.filter(
+            pk__in=self.model.db_attributes.through.objects.filter(
+                **dict(query)).values_list("attribute_id", flat=True))
 
     def get_nick(self, key=None, category=None, value=None, strvalue=None, obj=None):
         """
@@ -189,7 +193,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 query.append(("tag__db_key", key))
             if category:
                 query.append(("tag__db_category", category))
-            return [th.tag for th in self.model.db_tags.through.objects.filter(**dict(query))]
+            return Tag.objects.filter(
+                pk__in=self.model.db_tags.through.objects.filter(
+                    **dict(query)).values_list("tag_id", flat=True))
 
     def get_permission(self, key=None, category=None, obj=None):
         """

@@ -143,14 +143,14 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             return re.sub(r"(\$[0-9]+|\*|\?|\[.+?\])", r"|Y\1|n", string)
 
         caller = self.caller
-        account = self.caller.account or caller
         switches = self.switches
-        nicktypes = [switch for switch in switches if switch in (
-            "object", "account", "inputline")] or ["inputline"]
+        nicktypes = [switch for switch in switches if switch in ("object", "account", "inputline")]
+        specified_nicktype = bool(nicktypes)
+        nicktypes = nicktypes if specified_nicktype else ["inputline"]
 
         nicklist = (utils.make_iter(caller.nicks.get(category="inputline", return_obj=True) or []) +
                     utils.make_iter(caller.nicks.get(category="object", return_obj=True) or []) +
-                    utils.make_iter(account.nicks.get(category="account", return_obj=True) or []))
+                    utils.make_iter(caller.nicks.get(category="account", return_obj=True) or []))
 
         if 'list' in switches or self.cmdstring in ("nicks", "@nicks"):
 
@@ -173,29 +173,99 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         if 'delete' in switches or 'del' in switches:
             if not self.args or not self.lhs:
-                caller.msg("usage nick/delete #num ('nicks' for list)")
+                caller.msg("usage nick/delete <nick> or <#num> ('nicks' for list)")
                 return
             # see if a number was given
             arg = self.args.lstrip("#")
+            oldnicks = []
             if arg.isdigit():
                 # we are given a index in nicklist
                 delindex = int(arg)
                 if 0 < delindex <= len(nicklist):
-                    oldnick = nicklist[delindex - 1]
-                    _, _, old_nickstring, old_replstring = oldnick.value
+                    oldnicks.append(nicklist[delindex - 1])
                 else:
                     caller.msg("Not a valid nick index. See 'nicks' for a list.")
                     return
-                nicktype = oldnick.category
-                nicktypestr = "%s-nick" % nicktype.capitalize()
+            else:
+                if not specified_nicktype:
+                    nicktypes = ("object", "account", "inputline")
+                for nicktype in nicktypes:
+                    oldnicks.append(caller.nicks.get(arg, category=nicktype, return_obj=True))
 
-                if nicktype == "account":
-                    account.nicks.remove(old_nickstring, category=nicktype)
-                else:
+            oldnicks = [oldnick for oldnick in oldnicks if oldnick]
+            if oldnicks:
+                for oldnick in oldnicks:
+                    nicktype = oldnick.category
+                    nicktypestr = "%s-nick" % nicktype.capitalize()
+                    _, _, old_nickstring, old_replstring = oldnick.value
                     caller.nicks.remove(old_nickstring, category=nicktype)
-                caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
-                           nicktypestr, old_nickstring, old_replstring))
-                return
+                    caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
+                               nicktypestr, old_nickstring, old_replstring))
+            else:
+                caller.msg("No matching nicks to remove.")
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                nicks = utils.make_iter(caller.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                if nicktype == "account":
+                    obj = account
+                else:
+                    obj = caller
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                if nicktype == "account":
+                    obj = account
+                else:
+                    obj = caller
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
 
         if not self.args or not self.lhs:
             caller.msg("Usage: nick[/switches] nickname = [realname]")
@@ -214,16 +284,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         errstring = ""
         string = ""
         for nicktype in nicktypes:
-            if nicktype == "account":
-                obj = account
-            else:
-                obj = caller
-
             nicktypestr = "%s-nick" % nicktype.capitalize()
             old_nickstring = None
             old_replstring = None
 
-            oldnick = obj.nicks.get(key=nickstring, category=nicktype, return_obj=True)
+            oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
             if oldnick:
                 _, _, old_nickstring, old_replstring = oldnick.value
             if replstring:
@@ -238,7 +303,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 else:
                     string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (nicktypestr, nickstring, replstring)
                 try:
-                    obj.nicks.add(nickstring, replstring, category=nicktype)
+                    caller.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
                     caller.msg("You must use the same $-markers both in the nick and in the replacement.")
                     return
