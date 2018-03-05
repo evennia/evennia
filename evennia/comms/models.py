@@ -527,7 +527,6 @@ class SubscriptionHandler(object):
         for subscriber in make_iter(entity):
             if subscriber:
                 clsname = subscriber.__dbclass__.__name__
-                print("subscriber:", subscriber, clsname)  # DEBUG
                 # chooses the right type
                 if clsname == "ObjectDB":
                     self.obj.db_object_subscriptions.add(subscriber)
@@ -585,9 +584,7 @@ class SubscriptionHandler(object):
         for obj in self.all():
             from django.core.exceptions import ObjectDoesNotExist
             try:
-                if hasattr(obj, 'account'):
-                    if not obj.account:
-                        continue
+                if hasattr(obj, 'account') and obj.account:
                     obj = obj.account
                 if not obj.is_connected:
                     continue
