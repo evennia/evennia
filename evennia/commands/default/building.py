@@ -124,7 +124,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "@setobjalias"
-    options = ("category",)
+    switch_options = ("category",)
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
@@ -219,7 +219,7 @@ class CmdCopy(ObjManipCommand):
     """
 
     key = "@copy"
-    options = ("reset",)
+    switch_options = ("reset",)
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
@@ -301,7 +301,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
-    options = ("move",)
+    switch_options = ("move",)
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
 
@@ -443,7 +443,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
-    options = ("copy",)
+    switch_options = ("copy",)
     locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
 
@@ -492,7 +492,7 @@ class CmdCreate(ObjManipCommand):
     """
 
     key = "@create"
-    options = ("drop",)
+    switch_options = ("drop",)
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
 
@@ -578,7 +578,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     key = "@desc"
     aliases = "@describe"
-    options = ("edit",)
+    switch_options = ("edit",)
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
 
@@ -657,7 +657,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
     key = "@destroy"
     aliases = ["@delete", "@del"]
-    options = ("override", "force")
+    switch_options = ("override", "force")
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
 
@@ -781,7 +781,7 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
     key = "@dig"
-    options = ("teleport",)
+    switch_options = ("teleport",)
     locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
 
@@ -924,7 +924,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
 
     key = "@tunnel"
     aliases = ["@tun"]
-    options = ("oneway", "tel")
+    switch_options = ("oneway", "tel")
     locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
 
@@ -2285,7 +2285,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     key = "@find"
     aliases = "@search, @locate"
-    options = ("room", "exit", "char", "exact", "loc")
+    switch_options = ("room", "exit", "char", "exact", "loc")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
@@ -2426,8 +2426,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     """
     key = "@tel"
     aliases = "@teleport"
-    options = ("quiet", "intoexit", "tonone", "loc")
-    split = " to "
+    switch_options = ("quiet", "intoexit", "tonone", "loc")
+    rhs_split = " to "
     locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
@@ -2535,7 +2535,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
 
     key = "@script"
     aliases = "@addscript"
-    options = ("start", "stop")
+    switch_options = ("start", "stop")
     locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"
 
@@ -2777,7 +2777,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
-    options = ("noloc", )
+    switch_options = ("noloc", )
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
