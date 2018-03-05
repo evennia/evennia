@@ -82,8 +82,9 @@ class MuxCommand(Command):
         Optional variables to aid in parsing, if set:
           self.switch_options  - (tuple of valid /switches expected by this
                                   command (without the /))
-          self.rhs_split       - Alternate string delimiter to separate
-                                 left/right hand sides.
+          self.rhs_split       - Alternate string delimiter or tuple of strings
+                                 to separate left/right hand sides. tuple form
+                                 gives priority split to first string delimeter.
 
         This parser breaks self.args into its constituents and stores them in the
         following variables:
@@ -103,11 +104,6 @@ class MuxCommand(Command):
         """
         raw = self.args
         args = raw.strip()
-        # Temporary code to use the old settings before renaming     # #
-        if hasattr(self, "options"):                                   #
-            self.switch_options = self.options                         #
-        if hasattr(self, "split") and not hasattr(self, "rhs_split"):  #
-            self.rhs_split = self.split                            # # #
         # Without explicitly setting these attributes, they assume default values:
         if not hasattr(self, "switch_options"):
             self.switch_options = None
