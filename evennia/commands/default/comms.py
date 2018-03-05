@@ -385,7 +385,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@cboot"
-    options = ("quiet",)
+    switch_options = ("quiet",)
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
 
@@ -454,7 +454,7 @@ class CmdCemit(COMMAND_DEFAULT_CLASS):
 
     key = "@cemit"
     aliases = ["@cmsg"]
-    options = ("sendername", "quiet")
+    switch_options = ("sendername", "quiet")
     locks = "cmd: not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
 
@@ -685,7 +685,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
     key = "page"
     aliases = ['tell']
-    options = ("last", "list")
+    switch_options = ("last", "list")
     locks = "cmd:not pperm(page_banned)"
     help_category = "Comms"
 
@@ -853,7 +853,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@irc2chan"
-    options = ("delete", "remove", "disconnect", "list", "ssl")
+    switch_options = ("delete", "remove", "disconnect", "list", "ssl")
     locks = "cmd:serversetting(IRC_ENABLED) and pperm(Developer)"
     help_category = "Comms"
 
@@ -1020,7 +1020,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@rss2chan"
-    options = ("disconnect", "remove", "list")
+    switch_options = ("disconnect", "remove", "list")
     locks = "cmd:serversetting(RSS_ENABLED) and pperm(Developer)"
     help_category = "Comms"
 
