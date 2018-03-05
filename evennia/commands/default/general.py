@@ -117,7 +117,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
-    options = ("inputline", "object", "account", "list", "delete", "clearall")
+    switch_options = ("inputline", "object", "account", "list", "delete", "clearall")
     aliases = ["nickname", "nicks"]
     locks = "cmd:all()"
 
@@ -448,7 +448,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     placing it in their inventory.
     """
     key = "give"
-    split = " to "
+    rhs_split = " to "
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
