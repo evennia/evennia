@@ -84,7 +84,7 @@ class MuxCommand(Command):
                                   command (without the /))
           self.rhs_split       - Alternate string delimiter or tuple of strings
                                  to separate left/right hand sides. tuple form
-                                 gives priority split to first string delimeter.
+                                 gives priority split to first string delimiter.
 
         This parser breaks self.args into its constituents and stores them in the
         following variables:
@@ -149,13 +149,15 @@ class MuxCommand(Command):
 
         # check for arg1, arg2, ... = argA, argB, ... constructs
         lhs, rhs = args.strip(), None
-        best_split = self.rhs_split
         if lhs:
-            if hasattr(self.rhs_split, '__iter__'):
+            if hasattr(self.rhs_split, '__iter__'):  # If delimiter is iterable, try each
+                best_split = self.rhs_split[0]
                 for this_split in self.rhs_split:
-                    if this_split in lhs:  # First delimiter to allow a successful
-                        best_split = this_split  # split is the best split.
+                    if this_split in lhs:  # delimiter to allow first successful
+                        best_split = this_split  # split to be the best split.
                         break
+            else:
+                best_split = self.rhs_split
             # Parse to separate left into left/right sides using best_split delimiter string
             if best_split in lhs:
                 lhs, rhs = lhs.split(best_split, 1)
