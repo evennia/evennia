@@ -2427,7 +2427,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     key = "@tel"
     aliases = "@teleport"
     switch_options = ("quiet", "intoexit", "tonone", "loc")
-    rhs_split = " to "
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
