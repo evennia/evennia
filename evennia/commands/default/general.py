@@ -448,7 +448,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     placing it in their inventory.
     """
     key = "give"
-    rhs_split = " to "
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
