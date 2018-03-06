@@ -113,7 +113,7 @@ class MuxCommand(Command):
             self.account_caller = False
 
         # split out switches
-        switches = []
+        switches, delimiters = [], self.rhs_split
         if args and len(args) > 1 and raw[0] == "/":
             # we have a switch, or a set of switches. These end with a space.
             switches = args[1:].split(None, 1)
@@ -150,14 +150,14 @@ class MuxCommand(Command):
         # check for arg1, arg2, ... = argA, argB, ... constructs
         lhs, rhs = args.strip(), None
         if lhs:
-            if hasattr(self.rhs_split, '__iter__'):  # If delimiter is iterable, try each
-                best_split = self.rhs_split[0]
-                for this_split in self.rhs_split:
-                    if this_split in lhs:  # delimiter to allow first successful
-                        best_split = this_split  # split to be the best split.
+            if delimiters and hasattr(delimiters, '__iter__'):  # If delimiter is iterable,
+                best_split = delimiters[0]  # (default to first delimiter)
+                for this_split in delimiters:  # try each delimiter
+                    if this_split in lhs:  # to find first successful split
+                        best_split = this_split  # to be the best split.
                         break
             else:
-                best_split = self.rhs_split
+                best_split = delimiters
             # Parse to separate left into left/right sides using best_split delimiter string
             if best_split in lhs:
                 lhs, rhs = lhs.split(best_split, 1)
