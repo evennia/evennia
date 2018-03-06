@@ -140,6 +140,13 @@ class TestGeneral(CommandTest):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")
         self.call(general.CmdDrop(), "Obj", "You drop Obj.")
 
+    def test_give(self):
+        self.call(general.CmdGive(), "Obj to Char2", "You aren't carrying Obj.")
+        self.call(general.CmdGive(), "Obj = Char2", "You aren't carrying Obj.")
+        self.call(general.CmdGet(), "Obj", "You pick up Obj.")
+        self.call(general.CmdGive(), "Obj to Char2", "You give")
+        self.call(general.CmdGive(), "Obj = Char", "You give", caller=self.char2)
+
     def test_say(self):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
 
