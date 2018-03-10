@@ -2803,7 +2803,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             if expect == dict:
                 # an actual prototype. We need to make sure it's safe. Don't allow exec
                 if "exec" in prototype and not self.caller.check_permstring("Developer"):
-                    self.caller.msg("Spawn aborted: You don't have access to "
+                    self.caller.msg("Spawn aborted: You are not allowed to "
                                     "use the 'exec' prototype key.")
                     return None
                 try:

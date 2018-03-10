@@ -223,7 +223,7 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
     return stored_prototype
 
 
-def search_persistent_prototype(key=None, tags=None):
+def search_persistent_prototype(key=None, tags=None, return_metaprotos=False):
     """
     Find persistent (database-stored) prototypes based on key and/or tags.
 
@@ -232,8 +232,10 @@ def search_persistent_prototype(key=None, tags=None):
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'persistent_protototype'
             tag category.
+        return_metaproto (bool): Return results as metaprotos.
     Return:
-        matches (queryset): All found PersistentPrototypes
+        matches (queryset or list): All found PersistentPrototypes. If `return_metaprotos`
+            is set, return a list of MetaProtos.
 
     Note:
         This will not include read-only prototypes defined in modules.
@@ -249,6 +251,11 @@ def search_persistent_prototype(key=None, tags=None):
     if key:
         # partial match on key
         matches = matches.filter(db_key=key) or matches.filter(db_key__icontains=key)
+    if return_metaprotos:
+        return [build_metaproto(match.key, match.desc, match.locks.all(),
+                                match.tags.get(category="persistent_prototype", return_list=True),
+                                match.attributes.get("prototype"))
+                for match in matches]
     return matches
 
 
@@ -335,8 +342,30 @@ def get_protparents():
     return {metaproto.key: metaproto.prototype for metaproto in metaprotos}
 
 
+def gather_prototype_tree(metaprotos):
+    """
+    Build nested structure of metaprotos, starting from the roots with no parents.
 
-def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
+    Args:
+        metaprotos (list): All metaprotos to structure.
+    Returns:
+        tree (list): A list of lists representing all root metaprotos and
+            their children.
+    """
+    roots = [mproto for mproto in metaprotos if 'prototype' not in mproto]
+
+    def _iterate_tree(root):
+        rootkey = root.key
+        children = [_iterate_tree(mproto) for mproto in metaprotos
+                    if mproto.prototype.get('prototype') == rootkey]
+        if children:
+            return children
+        return root
+    return [_iterate_tree(root) for root in roots]
+
+
+def list_prototypes(caller, key=None, tags=None, show_non_use=False,
+                    show_non_edit=True, sort_tree=True):
     """
     Collate a list of found prototypes based on search criteria and access.
 
@@ -346,34 +375,38 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
         tags (str or list, optional): Tag key or keys to query for.
         show_non_use (bool, optional): Show also prototypes the caller may not use.
         show_non_edit (bool, optional): Show also prototypes the caller may not edit.
+        sort_tree (bool, optional): Order prototypes by inheritance tree.
     Returns:
         table (EvTable or None): An EvTable representation of the prototypes. None
             if no prototypes were found.
 
     """
-    # handle read-only prototypes separately
-    readonly_prototypes = search_readonly_prototype(key, tags)
+    # get metaprotos for readonly and db-based prototypes
+    metaprotos = search_readonly_prototype(key, tags)
+    metaprotos += search_persistent_prototype(key, tags, return_metaprotos=True)
+
+    if sort_tree:
+        def _print_tree(mproto, level=0):
+
+            prototypes = [
+                (metaproto.key,
+                 metaproto.desc,
+                 ("{}/N".format('Y'
+                  if caller.locks.check_lockstring(caller, metaproto.locks, access_type='use') else 'N')),
+                 ",".join(metaproto.tags))
+                for metaproto in sorted(metaprotos, key=lambda o: o.key)]
+
+        tree = gather_prototype_tree(metaprotos)
+
 
     # get use-permissions of readonly attributes (edit is always False)
-    readonly_prototypes = [
+    prototypes = [
         (metaproto.key,
          metaproto.desc,
          ("{}/N".format('Y'
           if caller.locks.check_lockstring(caller, metaproto.locks, access_type='use') else 'N')),
          ",".join(metaproto.tags))
-        for metaproto in sorted(readonly_prototypes, key=lambda o: o.key)]
-
-    # next, handle db-stored prototypes
-    prototypes = search_persistent_prototype(key, tags)
-
-    # gather access permissions as (key, desc, tags, can_use, can_edit)
-    prototypes = [(prototype.key, prototype.desc,
-                   "{}/{}".format('Y' if prototype.access(caller, "use") else 'N',
-                                  'Y' if prototype.access(caller, "edit") else 'N'),
-                   ",".join(prototype.tags.get(category="persistent_prototype", return_list=True)))
-                  for prototype in sorted(prototypes, key=lambda o: o.key)]
-
-    prototypes = prototypes + readonly_prototypes
+        for metaproto in sorted(metaprotos, key=lambda o: o.key)]
 
     if not prototypes:
         return None
@@ -417,7 +450,6 @@ def validate_prototype(prototype, protkey=None, protparents=None, _visited=None)
         RuntimeError: If prototype has invalid structure.
 
     """
-    print("validate_prototype {}, {}, {}, {}".format(protkey, prototype, protparents, _visited))
     if not protparents:
         protparents = get_protparents()
     if _visited is None:
