@@ -370,7 +370,7 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     prototypes = [(prototype.key, prototype.desc,
                    "{}/{}".format('Y' if prototype.access(caller, "use") else 'N',
                                   'Y' if prototype.access(caller, "edit") else 'N'),
-                   ",".join(prototype.tags.get(category="persistent_prototype")))
+                   ",".join(prototype.tags.get(category="persistent_prototype", return_list=True)))
                   for prototype in sorted(prototypes, key=lambda o: o.key)]
 
     prototypes = prototypes + readonly_prototypes
@@ -403,32 +403,45 @@ def _handle_dbref(inp):
     return dbid_to_obj(inp, ObjectDB)
 
 
-def _validate_prototype(key, prototype, protparents, visited):
+def validate_prototype(prototype, protkey=None, protparents=None, _visited=None):
     """
     Run validation on a prototype, checking for inifinite regress.
 
+    Args:
+        prototype (dict): Prototype to validate.
+        protkey (str, optional): The name of the prototype definition, if any.
+        protpartents (dict, optional): The available prototype parent library. If
+            note given this will be determined from settings/database.
+        _visited (list, optional): This is an internal work array and should not be set manually.
+    Raises:
+        RuntimeError: If prototype has invalid structure.
+
     """
-    print("validate_prototype {}, {}, {}, {}".format(key, prototype, protparents, visited))
+    print("validate_prototype {}, {}, {}, {}".format(protkey, prototype, protparents, _visited))
+    if not protparents:
+        protparents = get_protparents()
+    if _visited is None:
+        _visited = []
     assert isinstance(prototype, dict)
-    if id(prototype) in visited:
-        raise RuntimeError("%s has infinite nesting of prototypes." % key or prototype)
-    visited.append(id(prototype))
+    if id(prototype) in _visited:
+        raise RuntimeError("%s has infinite nesting of prototypes." % protkey or prototype)
+    _visited.append(id(prototype))
     protstrings = prototype.get("prototype")
     if protstrings:
         for protstring in make_iter(protstrings):
-            if key is not None and protstring == key:
-                raise RuntimeError("%s tries to prototype itself." % key or prototype)
+            if protkey is not None and protstring == protkey:
+                raise RuntimeError("%s tries to prototype itself." % protkey or prototype)
             protparent = protparents.get(protstring)
             if not protparent:
                 raise RuntimeError(
-                    "%s's prototype '%s' was not found." % (key or prototype, protstring))
-            _validate_prototype(protstring, protparent, protparents, visited)
+                    "%s's prototype '%s' was not found." % (protkey or prototype, protstring))
+            validate_prototype(protparent, protstring, protparents, _visited)
 
 
 def _get_prototype(dic, prot, protparents):
     """
     Recursively traverse a prototype dictionary, including multiple
-    inheritance. Use _validate_prototype before this, we don't check
+    inheritance. Use validate_prototype before this, we don't check
     for infinite recursion here.
 
     """
@@ -509,6 +522,7 @@ def _batch_create_object(*objparams):
         objs.append(obj)
     return objs
 
+
 def spawn(*prototypes, **kwargs):
     """
     Spawn a number of prototyped objects.
@@ -535,7 +549,7 @@ def spawn(*prototypes, **kwargs):
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
     for key, prototype in protparents.items():
-        _validate_prototype(key.lower(), prototype, protparents, [])
+        validate_prototype(prototype, key.lower(), protparents)
 
     if "return_prototypes" in kwargs:
         # only return the parents
@@ -544,7 +558,7 @@ def spawn(*prototypes, **kwargs):
     objsparams = []
     for prototype in prototypes:
 
-        _validate_prototype(None, prototype, protparents, [])
+        validate_prototype(prototype, None, protparents)
         prot = _get_prototype(prototype, {}, protparents)
         if not prot:
             continue
