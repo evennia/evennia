@@ -422,13 +422,19 @@ def validate_prototype(prototype, protkey=None, protparents=None, _visited=None)
         protparents = get_protparents()
     if _visited is None:
         _visited = []
+    protkey = protkey.lower() if protkey is not None else None
+
     assert isinstance(prototype, dict)
+
     if id(prototype) in _visited:
         raise RuntimeError("%s has infinite nesting of prototypes." % protkey or prototype)
+
     _visited.append(id(prototype))
     protstrings = prototype.get("prototype")
+
     if protstrings:
         for protstring in make_iter(protstrings):
+            protstring = protstring.lower()
             if protkey is not None and protstring == protkey:
                 raise RuntimeError("%s tries to prototype itself." % protkey or prototype)
             protparent = protparents.get(protstring)
@@ -545,6 +551,8 @@ def spawn(*prototypes, **kwargs):
     """
     # get available protparents
     protparents = get_protparents()
+
+    print("protparents: {}".format(protparents))
 
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
