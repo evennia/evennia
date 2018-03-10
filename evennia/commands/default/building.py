@@ -14,7 +14,7 @@ from evennia.utils.utils import inherits_from, class_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
-                                   store_prototype, build_metaproto)
+                                   store_prototype, build_metaproto, validate_prototype)
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2806,6 +2806,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     self.caller.msg("Spawn aborted: You don't have access to "
                                     "use the 'exec' prototype key.")
                     return None
+                try:
+                    validate_prototype(prototype)
+                except RuntimeError as err:
+                    self.caller.msg(str(err))
+                    return
             return prototype
 
         def _search_show_prototype(query, metaprots=None):
