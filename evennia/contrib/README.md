@@ -16,7 +16,7 @@ things you want from here into your game folder and change them there.
 ## Contrib modules
 
 * Barter system (Griatch 2012) - A safe and effective barter-system
-  for any game. Allows safe trading of any godds (including coin)
+  for any game. Allows safe trading of any goods (including coin).
 * CharGen (Griatch 2011) - A simple Character creator for OOC mode.
   Meant as a starting point for a more fleshed-out system.
 * Clothing (BattleJenkins 2017) - A layered clothing system with
@@ -33,7 +33,7 @@ things you want from here into your game folder and change them there.
   on a character and access it in an emote with a custom marker.
 * Mail (grungies1138 2016) - An in-game mail system for communication.
 * Menu login (Griatch 2011) - A login system using menus asking
-  for name/password rather than giving them as one command
+  for name/password rather than giving them as one command.
 * Map Builder (CloudKeeper 2016) - Build a game area based on a 2D
   "graphical" unicode map. Supports assymmetric exits.
 * Menu Login (Vincent-lg 2016) - Alternate login system using EvMenu.
@@ -59,7 +59,7 @@ things you want from here into your game folder and change them there.
 ## Contrib packages
 
 * EGI_Client (gtaylor 2016) - Client for reporting game status
-  to the Evennia game index (games.evennia.com)
+  to the Evennia game index (games.evennia.com).
 * In-game Python (Vincent Le Goff 2017) - Allow trusted builders to script
   objects and events using Python from in-game.
 * Tutorial examples (Griatch 2011, 2015) - A folder of basic
