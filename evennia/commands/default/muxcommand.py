@@ -114,6 +114,8 @@ class MuxCommand(Command):
 
         # split out switches
         switches, delimiters = [], self.rhs_split
+        if self.switch_options:
+            self.switch_options = [opt.lower() for opt in self.switch_options]
         if args and len(args) > 1 and raw[0] == "/":
             # we have a switch, or a set of switches. These end with a space.
             switches = args[1:].split(None, 1)
@@ -127,16 +129,16 @@ class MuxCommand(Command):
             if switches and self.switch_options:
                 valid_switches, unused_switches, extra_switches = [], [], []
                 for element in switches:
-                    option_check = [each for each in self.switch_options
-                                    if each.lower() == element.lower() or
-                                    each.lower().startswith(element.lower())]
+                    option_check = [opt for opt in self.switch_options if opt == element]
+                    if not option_check:
+                        option_check = [opt for opt in self.switch_options if opt.startswith(element)]
                     match_count = len(option_check)
                     if match_count > 1:
-                        extra_switches += option_check  # Either the option provided is ambiguous,
+                        extra_switches.extend(option_check)  # Either the option provided is ambiguous,
                     elif match_count == 1:
-                        valid_switches += option_check  # or it is a valid option abbreviation,
+                        valid_switches.extend(option_check)  # or it is a valid option abbreviation,
                     elif match_count == 0:
-                        unused_switches += [element]  # or an extraneous option to be ignored.
+                        unused_switches.append(element)  # or an extraneous option to be ignored.
                 if extra_switches:  # User provided switches
                     self.msg('|g%s|n: |wAmbiguous switch supplied: Did you mean /|C%s|w?' %
                              (self.cmdstring, ' |nor /|C'.join(extra_switches)))
