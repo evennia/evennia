@@ -21,6 +21,7 @@ from mock import Mock, mock
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms
+from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
 from evennia.utils import ansi, utils
 from evennia.server.sessionhandler import SESSIONS
@@ -146,6 +147,26 @@ class TestGeneral(CommandTest):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")
         self.call(general.CmdGive(), "Obj to Char2", "You give")
         self.call(general.CmdGive(), "Obj = Char", "You give", caller=self.char2)
+
+    def test_mux_command(self):
+
+        class CmdTest(MuxCommand):
+            key = 'test'
+            switch_options = ('test', 'testswitch', 'testswitch2')
+
+            def func(self):
+                self.msg("Switches matched: {}".format(self.switches))
+
+        self.call(CmdTest(), "/test/testswitch/testswitch2", "Switches matched: ['test', 'testswitch', 'testswitch2']")
+        self.call(CmdTest(), "/test", "Switches matched: ['test']")
+        self.call(CmdTest(), "/test/testswitch", "Switches matched: ['test', 'testswitch']")
+        self.call(CmdTest(), "/testswitch/testswitch2", "Switches matched: ['testswitch', 'testswitch2']")
+        self.call(CmdTest(), "/testswitch", "Switches matched: ['testswitch']")
+        self.call(CmdTest(), "/testswitch2", "Switches matched: ['testswitch2']")
+        self.call(CmdTest(), "/t", "test: Ambiguous switch supplied: "
+                                   "Did you mean /test or /testswitch or /testswitch2?|Switches matched: []")
+        self.call(CmdTest(), "/tests", "test: Ambiguous switch supplied: "
+                                       "Did you mean /testswitch or /testswitch2?|Switches matched: []")
 
     def test_say(self):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
