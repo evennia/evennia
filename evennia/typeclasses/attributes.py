@@ -245,7 +245,7 @@ class AttributeHandler(object):
                 found from cache or database.
         Notes:
             When given a category only, a search for all objects
-            of that cateogory is done and a the category *name* is is
+            of that cateogory is done and the category *name* is
             stored. This tells the system on subsequent calls that the
             list of cached attributes of this category is up-to-date
             and that the cache can be queried for category matches
