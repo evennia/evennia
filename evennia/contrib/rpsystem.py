@@ -708,12 +708,15 @@ class RecogHandler(object):
                 than `max_length`.
 
         """
+        if not obj.access(self.obj, "enable_recog", default=True):
+            raise SdescError("This person is unrecognizeable.")
+
         # strip emote components from recog
-        recog = _RE_REF.sub(r"\1",
-                            _RE_REF_LANG.sub(r"\1",
-                                             _RE_SELF_REF.sub(r"",
-                                                              _RE_LANGUAGE.sub(r"",
-                                                                               _RE_OBJ_REF_START.sub(r"", recog)))))
+        recog = _RE_REF.sub(
+            r"\1", _RE_REF_LANG.sub(
+                r"\1", _RE_SELF_REF.sub(
+                    r"", _RE_LANGUAGE.sub(
+                        r"", _RE_OBJ_REF_START.sub(r"", recog)))))
 
         # make an recog clean of ANSI codes
         cleaned_recog = ansi.strip_ansi(recog)
