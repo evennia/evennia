@@ -36,6 +36,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@boot"
+    switch_options = ("quiet", "sid")
     locks = "cmd:perm(boot) or perm(Admin)"
     help_category = "Admin"
 
@@ -265,6 +266,7 @@ class CmdDelAccount(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@delaccount"
+    switch_options = ("delobj",)
     locks = "cmd:perm(delaccount) or perm(Developer)"
     help_category = "Admin"
 
@@ -329,9 +331,9 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
       @pemit           [<obj>, <obj>, ... =] <message>
 
     Switches:
-      room : limit emits to rooms only (default)
-      accounts : limit emits to accounts only
-      contents : send to the contents of matched objects too
+      room     -  limit emits to rooms only (default)
+      accounts -  limit emits to accounts only
+      contents -  send to the contents of matched objects too
 
     Emits a message to the selected objects or to
     your immediate surroundings. If the object is a room,
@@ -341,6 +343,7 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
     """
     key = "@emit"
     aliases = ["@pemit", "@remit"]
+    switch_options = ("room", "accounts", "contents")
     locks = "cmd:perm(emit) or perm(Builder)"
     help_category = "Admin"
 
@@ -442,14 +445,15 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
       @perm[/switch] *<account> [= <permission>[,<permission>,...]]
 
     Switches:
-      del : delete the given permission from <object> or <account>.
-      account : set permission on an account (same as adding * to name)
+      del     -  delete the given permission from <object> or <account>.
+      account -  set permission on an account (same as adding * to name)
 
     This command sets/clears individual permission strings on an object
     or account. If no permission is given, list all permissions on <object>.
     """
     key = "@perm"
     aliases = "@setperm"
+    switch_options = ("del", "account")
     locks = "cmd:perm(perm) or perm(Developer)"
     help_category = "Admin"
 
