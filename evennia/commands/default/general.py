@@ -88,8 +88,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     Switches:
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
-      account    - replace on account-lookup
-
+      account   - replace on account-lookup
       list      - show all defined aliases (also "nicks" works)
       delete    - remove nick by index in /list
       clearall  - clear all nicks
@@ -118,6 +117,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
+    switch_options = ("inputline", "object", "account", "list", "delete", "clearall")
     aliases = ["nickname", "nicks"]
     locks = "cmd:all()"
 
@@ -442,12 +442,13 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     give away something to someone
 
     Usage:
-      give <inventory obj> = <target>
+      give <inventory obj> <to||=> <target>
 
     Gives an items from your inventory to another character,
     placing it in their inventory.
     """
     key = "give"
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 

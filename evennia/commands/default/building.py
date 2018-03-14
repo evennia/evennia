@@ -124,6 +124,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "@setobjalias"
+    switch_options = ("category",)
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
@@ -218,6 +219,7 @@ class CmdCopy(ObjManipCommand):
     """
 
     key = "@copy"
+    switch_options = ("reset",)
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
@@ -299,6 +301,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
+    switch_options = ("move",)
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
 
@@ -440,6 +443,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
+    switch_options = ("copy",)
     locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
 
@@ -488,6 +492,7 @@ class CmdCreate(ObjManipCommand):
     """
 
     key = "@create"
+    switch_options = ("drop",)
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
 
@@ -573,6 +578,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     key = "@desc"
     aliases = "@describe"
+    switch_options = ("edit",)
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
 
@@ -634,11 +640,11 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     Usage:
        @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
 
-    switches:
+    Switches:
        override - The @destroy command will usually avoid accidentally
                   destroying account objects. This switch overrides this safety.
        force - destroy without confirmation.
-    examples:
+    Examples:
        @destroy house, roof, door, 44-78
        @destroy 5-10, flower, 45
        @destroy/force north
@@ -651,6 +657,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
     key = "@destroy"
     aliases = ["@delete", "@del"]
+    switch_options = ("override", "force")
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
 
@@ -774,6 +781,7 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
     key = "@dig"
+    switch_options = ("teleport",)
     locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
 
@@ -883,7 +891,7 @@ class CmdDig(ObjManipCommand):
                                                        new_back_exit.dbref,
                                                        alias_string)
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
-        if new_room and ('teleport' in self.switches or "tel" in self.switches):
+        if new_room and 'teleport' in self.switches:
             caller.move_to(new_room)
 
 
@@ -916,6 +924,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
 
     key = "@tunnel"
     aliases = ["@tun"]
+    switch_options = ("oneway", "tel")
     locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
 
@@ -2276,6 +2285,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     key = "@find"
     aliases = "@search, @locate"
+    switch_options = ("room", "exit", "char", "exact", "loc")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
@@ -2312,7 +2322,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
         restrictions = ""
         if self.switches:
-            restrictions = ", %s" % (",".join(self.switches))
+            restrictions = ", %s" % (", ".join(self.switches))
 
         if is_dbref or is_account:
 
@@ -2392,7 +2402,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     teleport object to another location
 
     Usage:
-      @tel/switch [<object> =] <target location>
+      @tel/switch [<object> to||=] <target location>
 
     Examples:
       @tel Limbo
@@ -2416,6 +2426,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     """
     key = "@tel"
     aliases = "@teleport"
+    switch_options = ("quiet", "intoexit", "tonone", "loc")
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
@@ -2523,6 +2535,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
 
     key = "@script"
     aliases = "@addscript"
+    switch_options = ("start", "stop")
     locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"
 
@@ -2622,6 +2635,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 
     key = "@tag"
     aliases = ["@tags"]
+    options = ("search", "del")
     locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
@@ -2763,6 +2777,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
+    switch_options = ("noloc", )
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
