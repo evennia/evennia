@@ -111,7 +111,7 @@ import evennia
 from evennia.objects.models import ObjectDB
 from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj
 
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
 from evennia.utils.evtable import EvTable
@@ -342,7 +342,7 @@ def get_protparents():
     return {metaproto.key: metaproto.prototype for metaproto in metaprotos}
 
 
-def gather_prototype_tree(metaprotos):
+def get_prototype_tree(metaprotos):
     """
     Build nested structure of metaprotos, starting from the roots with no parents.
 
@@ -352,16 +352,40 @@ def gather_prototype_tree(metaprotos):
         tree (list): A list of lists representing all root metaprotos and
             their children.
     """
-    roots = [mproto for mproto in metaprotos if 'prototype' not in mproto]
+    mapping = {mproto.key.lower(): mproto for mproto in metaprotos}
+    parents = defaultdict(list)
+
+    for key, mproto in mapping:
+        proto = mproto.prototype.get('prototype', None)
+        if isinstance(proto, basestring):
+            parents[key].append(proto.lower())
+        elif isinstance(proto, (tuple, list)):
+            parents[key].extend([pro.lower() for pro in proto])
+
+    def _iterate(root):
+        prts = parents[root]
+
+
+
+    return parents
+
+    roots = [root for root in metaprotos if not root.prototype.get('prototype')]
 
     def _iterate_tree(root):
-        rootkey = root.key
-        children = [_iterate_tree(mproto) for mproto in metaprotos
-                    if mproto.prototype.get('prototype') == rootkey]
+        rootkey = root.key.lower()
+        children = [
+            _iterate_tree(mproto) for mproto in metaprotos
+            if rootkey in [mp.lower() for mp in make_iter(mproto.prototype.get('prototype', ''))]]
         if children:
             return children
         return root
-    return [_iterate_tree(root) for root in roots]
+    tree = []
+    for root in roots:
+        tree.append(root)
+        branch = _iterate_tree(root)
+        if branch:
+            tree.append(branch)
+    return tree
 
 
 def list_prototypes(caller, key=None, tags=None, show_non_use=False,
@@ -386,18 +410,17 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False,
     metaprotos += search_persistent_prototype(key, tags, return_metaprotos=True)
 
     if sort_tree:
-        def _print_tree(mproto, level=0):
+        def _print_tree(struct, level=0):
+            indent = " " * level
+            if isinstance(struct, list):
+                # a sub-branch
+                return "\n".join("{}{}".format(
+                    indent, _print_tree(leaf, level + 2)) for leaf in struct)
+            else:
+                # an actual mproto
+                return "{}{}".format(indent, struct.key)
 
-            prototypes = [
-                (metaproto.key,
-                 metaproto.desc,
-                 ("{}/N".format('Y'
-                  if caller.locks.check_lockstring(caller, metaproto.locks, access_type='use') else 'N')),
-                 ",".join(metaproto.tags))
-                for metaproto in sorted(metaprotos, key=lambda o: o.key)]
-
-        tree = gather_prototype_tree(metaprotos)
-
+        print(_print_tree(get_prototype_tree(metaprotos)))
 
     # get use-permissions of readonly attributes (edit is always False)
     prototypes = [
