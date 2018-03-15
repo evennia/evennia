@@ -362,12 +362,14 @@ def get_prototype_tree(metaprotos):
         elif isinstance(proto, (tuple, list)):
             parents[key].extend([pro.lower() for pro in proto])
 
-    def _iterate(root):
-        prts = parents[root]
+    def _iterate(child, level=0):
+        tree = [_iterate(parent, level + 1) for parent in parents[key]]
+        return tree if tree else level * " " + child
 
+    for key in parents:
+        print("Mproto {}:\n{}".format(_iterate(key, level=0)))
 
-
-    return parents
+    return []
 
     roots = [root for root in metaprotos if not root.prototype.get('prototype')]
 
