@@ -122,6 +122,9 @@ _READONLY_PROTOTYPES = {}
 _READONLY_PROTOTYPE_MODULES = {}
 
 
+class PermissionError(RuntimeError):
+    pass
+
 # storage of meta info about the prototype
 MetaProto = namedtuple('MetaProto', ['key', 'desc', 'locks', 'tags', 'prototype'])
 
@@ -199,14 +202,16 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
     stored_prototype = PersistentPrototype.objects.filter(db_key=key)
 
     if stored_prototype:
+        # edit existing prototype
         stored_prototype = stored_prototype[0]
         if not stored_prototype.access(caller, 'edit'):
             raise PermissionError("{} does not have permission to "
-                                  "edit prototype {}".format(caller, key))
+                                  "edit prototype {}.".format(caller, key))
 
         if delete:
+            # delete prototype
             stored_prototype.delete()
-            return
+            return True
 
         if desc:
             stored_prototype.desc = desc
@@ -216,11 +221,31 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
             stored_prototype.locks.add(locks)
         if prototype:
             stored_prototype.attributes.add("prototype", prototype)
+    elif delete:
+        # didn't find what to delete
+        return False
     else:
+        # create a new prototype
         stored_prototype = create_script(
             PersistentPrototype, key=key, desc=desc, persistent=True,
             locks=locks, tags=tags, attributes=[("prototype", prototype)])
     return stored_prototype
+
+
+def delete_prototype(caller, key):
+    """
+    Delete a stored prototype
+
+    Args:
+        caller (Account or Object): Caller aiming to delete a prototype.
+        key (str): The persistent prototype to delete.
+    Returns:
+        success (bool): If deletion worked or not.
+    Raises:
+        PermissionError: If 'edit' lock was not passed.
+
+    """
+    return store_prototype(caller, key, None, delete=True)
 
 
 def search_persistent_prototype(key=None, tags=None, return_metaprotos=False):
@@ -549,8 +574,6 @@ def spawn(*prototypes, **kwargs):
     """
     # get available protparents
     protparents = get_protparents()
-
-    print("protparents: {}".format(protparents))
 
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
