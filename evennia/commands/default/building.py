@@ -14,7 +14,8 @@ from evennia.utils.utils import inherits_from, class_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
-                                   store_prototype, build_metaproto, validate_prototype)
+                                   store_prototype, build_metaproto, validate_prototype,
+                                   delete_prototype, PermissionError)
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2777,9 +2778,6 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
-    def parser(self):
-        super(CmdSpawn, self).parser()
-
     def func(self):
         """Implements the spawner"""
 
@@ -2867,7 +2865,28 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                    tags=self.lhslist)), exit_on_lastpage=True)
             return
 
+        if 'delete' in self.switches:
+            # remove db-based prototype
+            matchstring = _search_show_prototype(self.args)
+            if matchstring:
+                question = "\nDo you want to continue deleting? [Y]/N"
+                string = "|rDeleting prototype:|n\n{}".format(matchstring)
+                answer = yield(string + question)
+                if answer.lower() in ["n", "no"]:
+                    caller.msg("|rDeletion cancelled.|n")
+                    return
+                try:
+                    success = delete_prototype(caller, self.args)
+                except PermissionError as err:
+                    caller.msg("|rError deleting:|R {}|n".format(err))
+                caller.msg("Deletion {}.".format(
+                    'successful' if success else 'failed (does the prototype exist?)'))
+                return
+            else:
+                caller.msg("Could not find prototype '{}'".format(key))
+
         if 'save' in self.switches:
+            # store a prototype to the database store
             if not self.args or not self.rhs:
                 caller.msg(
                   "Usage: @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
@@ -2902,6 +2921,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # check for existing prototype,
             old_matchstring = _search_show_prototype(key)
+
             if old_matchstring:
                 string += "\n|yExisting saved prototype found:|n\n{}".format(old_matchstring)
                 question = "\n|yDo you want to replace the existing prototype?|n [Y]/N"
