@@ -2743,8 +2743,9 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
               location will default to caller's current location.
       search - search prototype by name or tags.
       list - list available prototypes, optionally limit by tags.
-      show - inspect prototype by key. If not given, acts like list.
+      show, examine - inspect prototype by key. If not given, acts like list.
       save - save a prototype to the database. It will be listable by /list.
+      delete - remove a prototype from database, if allowed to.
       menu - manipulate prototype in a menu interface.
 
     Example:
@@ -2824,7 +2825,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                         "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
                         "|cdesc:|n {} \n|cprototype:|n ".format(
                            metaprot.key, ", ".join(metaprot.tags),
-                           "; ".join(metaprot.locks), metaprot.desc))
+                           metaprot.locks, metaprot.desc))
                     prototype = ("{{\n  {} \n}}".format("\n  ".join("{!r}: {!r},".format(key, value)
                                  for key, value in
                                  sorted(metaprot.prototype.items())).rstrip(",")))
@@ -2848,7 +2849,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                        exit_on_lastpage=True)
             return
 
-        if 'show' in self.switches:
+        if 'show' in self.switches or 'examine' in self.switches:
             # the argument is a key in this case (may be a partial key)
             if not self.args:
                 self.switches.append('list')
