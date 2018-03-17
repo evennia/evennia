@@ -158,7 +158,7 @@ def build_metaproto(key, desc, locks, tags, prototype):
     Create a metaproto from combinant parts.
 
     """
-    return MetaProto(key, desc, locks, tags, dict(prototype))
+    return MetaProto(key, desc, make_iter(locks), tags, dict(prototype))
 
 
 def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete=False):
@@ -249,7 +249,7 @@ def search_persistent_prototype(key=None, tags=None, return_metaprotos=False):
     else:
         matches = PersistentPrototype.objects.all()
     if key:
-        # partial match on key
+        # exact or partial match on key
         matches = matches.filter(db_key=key) or matches.filter(db_key__icontains=key)
     if return_metaprotos:
         return [build_metaproto(match.key, match.desc, match.locks.all(),
@@ -316,18 +316,20 @@ def search_prototype(key=None, tags=None, return_meta=True):
 
     """
     readonly_prototypes = search_readonly_prototype(key, tags)
-    persistent_prototypes = search_persistent_prototype(key, tags)
+    persistent_prototypes = search_persistent_prototype(key, tags, return_metaprotos=True)
 
-    if return_meta:
-        persistent_prototypes = [
-            build_metaproto(prot.key, prot.desc, prot.locks.all(),
-                            prot.tags.all(), prot.attributes.get("prototype"))
-            for prot in persistent_prototypes]
-    else:
-        readonly_prototypes = [metaprot.prototyp for metaprot in readonly_prototypes]
-        persistent_prototypes = [prot.attributes.get("prototype") for prot in persistent_prototypes]
+    matches = persistent_prototypes + readonly_prototypes
+    if len(matches) > 1 and key:
+        key = key.lower()
+        # avoid duplicates if an exact match exist between the two types
+        filter_matches = [mta for mta in matches if mta.key == key]
+        if len(filter_matches) < len(matches):
+            matches = filter_matches
 
-    return persistent_prototypes + readonly_prototypes
+    if not return_meta:
+        matches = [mta.prototype for mta in matches]
+
+    return matches
 
 
 def get_protparents():
@@ -340,54 +342,6 @@ def get_protparents():
     metaprotos = search_prototype(return_meta=True)
     # organize by key
     return {metaproto.key: metaproto.prototype for metaproto in metaprotos}
-
-
-def get_prototype_tree(metaprotos):
-    """
-    Build nested structure of metaprotos, starting from the roots with no parents.
-
-    Args:
-        metaprotos (list): All metaprotos to structure.
-    Returns:
-        tree (list): A list of lists representing all root metaprotos and
-            their children.
-    """
-    mapping = {mproto.key.lower(): mproto for mproto in metaprotos}
-    parents = defaultdict(list)
-
-    for key, mproto in mapping:
-        proto = mproto.prototype.get('prototype', None)
-        if isinstance(proto, basestring):
-            parents[key].append(proto.lower())
-        elif isinstance(proto, (tuple, list)):
-            parents[key].extend([pro.lower() for pro in proto])
-
-    def _iterate(child, level=0):
-        tree = [_iterate(parent, level + 1) for parent in parents[key]]
-        return tree if tree else level * " " + child
-
-    for key in parents:
-        print("Mproto {}:\n{}".format(_iterate(key, level=0)))
-
-    return []
-
-    roots = [root for root in metaprotos if not root.prototype.get('prototype')]
-
-    def _iterate_tree(root):
-        rootkey = root.key.lower()
-        children = [
-            _iterate_tree(mproto) for mproto in metaprotos
-            if rootkey in [mp.lower() for mp in make_iter(mproto.prototype.get('prototype', ''))]]
-        if children:
-            return children
-        return root
-    tree = []
-    for root in roots:
-        tree.append(root)
-        branch = _iterate_tree(root)
-        if branch:
-            tree.append(branch)
-    return tree
 
 
 def list_prototypes(caller, key=None, tags=None, show_non_use=False,
@@ -410,19 +364,6 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False,
     # get metaprotos for readonly and db-based prototypes
     metaprotos = search_readonly_prototype(key, tags)
     metaprotos += search_persistent_prototype(key, tags, return_metaprotos=True)
-
-    if sort_tree:
-        def _print_tree(struct, level=0):
-            indent = " " * level
-            if isinstance(struct, list):
-                # a sub-branch
-                return "\n".join("{}{}".format(
-                    indent, _print_tree(leaf, level + 2)) for leaf in struct)
-            else:
-                # an actual mproto
-                return "{}{}".format(indent, struct.key)
-
-        print(_print_tree(get_prototype_tree(metaprotos)))
 
     # get use-permissions of readonly attributes (edit is always False)
     prototypes = [
