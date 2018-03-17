@@ -20,12 +20,13 @@ import textwrap
 import random
 from os.path import join as osjoin
 from importlib import import_module
-from inspect import ismodule, trace, getmembers, getmodule
+from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
 from twisted.internet import threads, reactor, task
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from django.apps import apps
 from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
@@ -1879,3 +1880,22 @@ def get_game_dir_path():
         else:
             os.chdir(os.pardir)
     raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
+
+
+def get_all_typeclasses():
+    """
+    List available typeclasses from all available modules.
+
+    Returns:
+        typeclasses (dict): On the form {"typeclass.path": typeclass, ...}
+
+    Notes:
+        This will dynamicall retrieve all abstract django models inheriting at any distance
+        from the TypedObject base (aka a Typeclass) so it will work fine with any custom
+        classes being added.
+
+    """
+    from evennia.typeclasses.models import TypedObject
+    typeclasses = {"{}.{}".format(model.__module__, model.__name__): model
+                   for model in apps.get_models() if TypedObject in getmro(model)}
+    return typeclasses

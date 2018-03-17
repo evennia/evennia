@@ -10,7 +10,7 @@ from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
-from evennia.utils.utils import inherits_from, class_from_module
+from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
@@ -1702,6 +1702,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
               object - basically making this a new clean object.
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
+      list - show available typeclasses.
     Example:
       @type button = examples.red_button.RedButton
 
@@ -1732,6 +1733,26 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
         """Implements command"""
 
         caller = self.caller
+
+        if 'list' in self.switches:
+            tclasses = get_all_typeclasses()
+            print(list(tclasses.keys()))
+            contribs = [key for key in sorted(tclasses)
+                        if key.startswith("evennia.contrib")] or ["<None loaded>"]
+            core = [key for key in sorted(tclasses)
+                    if key.startswith("evennia") and key not in contribs] or ["<None loaded>"]
+            game = [key for key in sorted(tclasses)
+                    if not key.startswith("evennia")] or ["<None loaded>"]
+            string = ("|wCore typeclasses|n\n"
+                      "    {core}\n"
+                      "|wLoaded Contrib typeclasses|n\n"
+                      "    {contrib}\n"
+                      "|wGame-dir typeclasses|n\n"
+                      "    {game}").format(core="\n    ".join(core),
+                                           contrib="\n    ".join(contribs),
+                                           game="\n    ".join(game))
+            caller.msg(string)
+            return
 
         if not self.args:
             caller.msg("Usage: %s <object> [= typeclass]" % self.cmdstring)
