@@ -569,8 +569,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         except Exception:
             logger.log_trace()
 
-
-        if text and not (isinstance(text, basestring) or isinstance(text, tuple)):
+        if not (isinstance(text, basestring) or isinstance(text, tuple)):
             # sanitize text before sending across the wire
             try:
                 text = to_str(text, force_string=True)
