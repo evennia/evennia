@@ -17,6 +17,10 @@
 
 
 var options = {};
+
+var known_types = new Array();
+    known_types.push('help');
+
 //
 // GUI Elements
 //
@@ -106,6 +110,7 @@ function togglePopup(dialogname, content) {
 
 // Grab text from inputline and send to Evennia
 function doSendText() {
+  console.log("sending text");
     if (!Evennia.isConnected()) {
         var reconnect = confirm("Not currently connected. Reconnect?");
         if (reconnect) {
@@ -158,6 +163,10 @@ function onKeydown (event) {
     var code = event.which;
     var history_entry = null;
     var inputfield = $("#inputfield");
+    if (code === 9) {
+      return;
+    }
+
     inputfield.focus();
 
     if (code === 13) { // Enter key sends text
@@ -205,64 +214,68 @@ function onKeyPress (event) {
 }
 
 var resizeInputField = function () {
-    var min_height = 50;
-    var max_height = 300;
-    var prev_text_len = 0;
+    return function() {
+      var wrapper = $("#inputform")
+      var input = $("#inputcontrol")
+      var prompt = $("#prompt")
 
-    // Check to see if we should change the height of the input area
-    return function () {
-        var inputfield = $("#inputfield");
-        var scrollh = inputfield.prop("scrollHeight");
-        var clienth = inputfield.prop("clientHeight");
-        var newh = 0;
-        var curr_text_len = inputfield.val().length;
-
-        if (scrollh > clienth && scrollh <= max_height) {
-            // Need to make it bigger
-            newh = scrollh;
-        }
-        else if (curr_text_len < prev_text_len) {
-            // There is less text in the field; try to make it smaller
-            // To avoid repaints, we draw the text in an offscreen element and
-            // determine its dimensions.
-            var sizer = $('#inputsizer')
-                .css("width", inputfield.prop("clientWidth"))
-                .text(inputfield.val());
-            newh = sizer.prop("scrollHeight");
-        }
-
-        if (newh != 0) {
-            newh = Math.min(newh, max_height);
-            if (clienth != newh) {
-                inputfield.css("height", newh + "px");
-                doWindowResize();
-            }
-        }
-        prev_text_len = curr_text_len;
+      input.height(wrapper.height() - (input.offset().top - wrapper.offset().top));
     }
 }();
 
 // Handle resizing of client
 function doWindowResize() {
-    var formh = $('#inputform').outerHeight(true);
-    var message_scrollh = $("#messagewindow").prop("scrollHeight");
-    $("#messagewindow")
-        .css({"bottom": formh}) // leave space for the input form
-        .scrollTop(message_scrollh); // keep the output window scrolled to the bottom
+      resizeInputField();
+      var resizable = $("[data-update-append]");
+      var parents = resizable.closest(".split")
+      parents.animate({
+          scrollTop: parents.prop("scrollHeight")
+      }, 0);
 }
 
 // Handle text coming from the server
 function onText(args, kwargs) {
-    // append message to previous ones, then scroll so latest is at
-    // the bottom. Send 'cls' kwarg to modify the output class.
-    var renderto = "main";
-    if (kwargs["type"] == "help") {
-        if (("helppopup" in options) && (options["helppopup"])) {
-            renderto = "#helpdialog";
+    var use_default_pane = true;
+
+    if ( kwargs && 'type' in kwargs ) {
+        var msgtype = kwargs['type'];
+        if ( ! known_types.includes(msgtype) ) {
+            // this is a new output type that can be mapped to panes
+            console.log('detected new output type: ' + msgtype)
+            known_types.push(msgtype);
+        }
+
+        if ( msgtype == 'help' ) {
+            if (("helppopup" in options) && (options["helppopup"])) {
+                openPopup("#helpdialog", args[0]);
+                return;
+            }
+            // fall through to the default output
+
+        } else {
+            // pass this message to each pane that has this msgtype mapped
+            if( SplitHandler ) {
+                for ( var key in SplitHandler.split_panes) {
+                    var pane = SplitHandler.split_panes[key];
+		    console.log(pane);
+                    // is this message type mapped to this pane?
+                    if ( (pane['types'].length > 0) && pane['types'].includes(msgtype) ) {
+                        // yes, so append/replace this pane's inner div with this message
+                        if ( pane['update_method'] == 'replace' ) {
+                            $('#'+key).html(args[0])
+                        } else {
+                            $('#'+key).append(args[0]).animate({ scrollTop: document.getElementById("#"+key).scrollHeight }, 0);
+                        }
+                        // record sending this message to a pane, no need to update the default div
+                        use_default_pane = false;
+                    }
+                }
+            }
         }
     }
 
-    if (renderto == "main") {
+    // append message to default pane, then scroll so latest is at the bottom.
+    if(use_default_pane) {
         var mwin = $("#messagewindow");
         var cls = kwargs == null ? 'out' : kwargs['cls'];
         mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
@@ -271,8 +284,6 @@ function onText(args, kwargs) {
         }, 0);
 
         onNewLine(args[0], null);
-    } else {
-        openPopup(renderto, args[0]);
     }
 }
 
@@ -377,7 +388,10 @@ function onNewLine(text, originator) {
     document.title = "(" + unread + ") " + originalTitle;
     if ("Notification" in window){
       if (("notification_popup" in options) && (options["notification_popup"])) {
-          Notification.requestPermission().then(function(result) {
+          // There is a Promise-based API for this, but it’s not supported
+          // in Safari and some older browsers:
+          // https://developer.mozilla.org/en-US/docs/Web/API/Notification/requestPermission#Browser_compatibility
+          Notification.requestPermission(function(result) {
               if(result === "granted") {
               var title = originalTitle === "" ? "Evennia" : originalTitle;
               var options = {
@@ -427,12 +441,97 @@ function doStartDragDialog(event) {
     $(document).bind("mouseup", undrag);
 }
 
+
+function onSplitDialogClose() {
+    var pane      = $("input[name=pane]:checked").attr("value");
+    var direction = $("input[name=direction]:checked").attr("value");
+    var flow1     = $("input[name=flow1]:checked").attr("value");
+    var flow2     = $("input[name=flow2]:checked").attr("value");
+
+    SplitHandler.dynamic_split( pane, direction, flow1, flow2 );
+
+    closePopup("#splitdialog");
+}
+
+
+function onSplitDialog() {
+    var dialog = $("#splitdialogcontent");
+    dialog.empty();
+
+    dialog.append("<h3>Split?</h3>");
+    dialog.append('<input type="radio" name="direction" value="vertical" checked> top/bottom<br />');
+    dialog.append('<input type="radio" name="direction" value="horizontal"> side-by-side<br />');
+
+    dialog.append("<h3>Split Which Pane?</h3>");
+    for ( var pane in SplitHandler.split_panes ) {
+        dialog.append('<input type="radio" name="pane" value="'+ pane +'">'+ pane +'<br />');
+    }
+
+    dialog.append("<h3>New First Pane Flow</h3>");
+    dialog.append('<input type="radio" name="flow1" value="append" checked>append<br />');
+    dialog.append('<input type="radio" name="flow1" value="replace">replace<br />');
+
+    dialog.append("<h3>New Second Pane Flow</h3>");
+    dialog.append('<input type="radio" name="flow2" value="append" checked>append<br />');
+    dialog.append('<input type="radio" name="flow2" value="replace">replace<br />');
+
+    dialog.append('<div id="splitclose" class="button">Split It</div>');
+
+    $("#splitclose").bind("click", onSplitDialogClose);
+
+    openPopup("#splitdialog");
+}
+
+function onPaneControlDialogClose() {
+    var pane = $("input[name=pane]:checked").attr("value");
+
+    var types = new Array; 
+    $('#splitdialogcontent input[type=checkbox]:checked').each(function() {
+        types.push( $(this).attr('value') );
+    });
+
+    SplitHandler.set_pane_types( pane, types );
+
+    closePopup("#splitdialog");
+}
+
+function onPaneControlDialog() {
+    var dialog = $("#splitdialogcontent");
+    dialog.empty();
+
+    dialog.append("<h3>Set Which Pane?</h3>");
+    for ( var pane in SplitHandler.split_panes ) {
+        dialog.append('<input type="radio" name="pane" value="'+ pane +'">'+ pane +'<br />');
+    }
+
+    dialog.append("<h3>Which content types?</h3>");
+    for ( var type in known_types ) {
+        dialog.append('<input type="checkbox" value="'+ known_types[type] +'">'+ known_types[type] +'<br />');
+    }
+
+    dialog.append('<div id="paneclose" class="button">Make It So</div>');
+
+    $("#paneclose").bind("click", onPaneControlDialogClose);
+
+    openPopup("#splitdialog");
+}
+
 //
 // Register Events
 //
 
 // Event when client finishes loading
 $(document).ready(function() {
+
+    if( SplitHandler ) {
+      SplitHandler.init();
+      SplitHandler.split_panes['main-sub'] = {'types': ['help'], 'update_method': 'replace'};
+      $("#splitbutton").bind("click", onSplitDialog);
+      $("#panebutton").bind("click", onPaneControlDialog);
+    } else {
+      $("#splitbutton").hide();
+      $("#panebutton").hide();
+    }
 
     if ("Notification" in window) {
       Notification.requestPermission();
@@ -450,7 +549,7 @@ $(document).ready(function() {
 
     //$(document).on("visibilitychange", onVisibilityChange);
 
-    $("#inputfield").bind("resize", doWindowResize)
+    $("[data-role-input]").bind("resize", doWindowResize)
         .keypress(onKeyPress)
         .bind("paste", resizeInputField)
         .bind("cut", resizeInputField);
@@ -503,6 +602,7 @@ $(document).ready(function() {
     },
     60000*3
     );
+    console.log("Completed GUI setup");
 
 
 });
