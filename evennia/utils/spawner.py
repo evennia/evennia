@@ -197,6 +197,12 @@ def save_db_prototype(caller, key, prototype, desc="", tags=None, locks="", dele
     key_orig = key
     key = key.lower()
     locks = locks if locks else "use:all();edit:id({}) or perm(Admin)".format(caller.id)
+
+    is_valid, err = caller.locks.validate(locks)
+    if not is_valid:
+        caller.msg("Lock error: {}".format(err))
+        return False
+
     tags = [(tag, "db_prototype") for tag in make_iter(tags)]
 
     if key in _MODULE_PROTOTYPES:
