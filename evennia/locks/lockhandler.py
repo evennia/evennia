@@ -287,7 +287,7 @@ class LockHandler(object):
         """
         self.lock_bypass = hasattr(obj, "is_superuser") and obj.is_superuser
 
-    def add(self, lockstring):
+    def add(self, lockstring, validate_only=False):
         """
         Add a new lockstring to handler.
 
@@ -296,10 +296,12 @@ class LockHandler(object):
                 `"<access_type>:<functions>"`.  Multiple access types
                 should be separated by semicolon (`;`). Alternatively,
                 a list with lockstrings.
-
+            validate_only (bool, optional): If True, validate the lockstring but
+                don't actually store it.
         Returns:
             success (bool): The outcome of the addition, `False` on
-                error.
+                error. If `validate_only` is True, this will be a tuple
+                (bool, error), for pass/fail and a string error.
 
         """
         if isinstance(lockstring, basestring):
@@ -308,21 +310,41 @@ class LockHandler(object):
             lockdefs = [lockdef for locks in lockstring for lockdef in locks.split(";")]
             lockstring = ";".join(lockdefs)
 
+        err = ""
         # sanity checks
         for lockdef in lockdefs:
             if ':' not in lockdef:
-                self._log_error(_("Lock: '%s' contains no colon (:).") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' contains no colon (:).").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
             access_type, rhs = [part.strip() for part in lockdef.split(':', 1)]
             if not access_type:
-                self._log_error(_("Lock: '%s' has no access_type (left-side of colon is empty).") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' has no access_type "
+                        "(left-side of colon is empty).").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
             if rhs.count('(') != rhs.count(')'):
-                self._log_error(_("Lock: '%s' has mismatched parentheses.") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' has mismatched parentheses.").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
             if not _RE_FUNCS.findall(rhs):
-                self._log_error(_("Lock: '%s' has no valid lock functions.") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' has no valid lock functions.").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
+        if validate_only:
+            return True, None
         # get the lock string
         storage_lockstring = self.obj.lock_storage
         if storage_lockstring:
@@ -333,6 +355,18 @@ class LockHandler(object):
         self._cache_locks(storage_lockstring)
         self._save_locks()
         return True
+
+    def validate(self, lockstring):
+        """
+        Validate lockstring syntactically, without saving it.
+
+        Args:
+            lockstring (str): Lockstring to validate.
+        Returns:
+            valid (bool): If validation passed or not.
+
+        """
+        return self.add(lockstring, validate_only=True)
 
     def replace(self, lockstring):
         """

@@ -2229,12 +2229,15 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n|wExits|n: %s" % ", ".join(["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
+                string += "\n|wExits|n: %s" % ", ".join(
+                    ["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
             if pobjs:
-                string += "\n|wCharacters|n: %s" % ", ".join(["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
+                string += "\n|wCharacters|n: %s" % ", ".join(
+                    ["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
             if things:
-                string += "\n|wContents|n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
-                                                            if cont not in exits and cont not in pobjs])
+                string += "\n|wContents|n: %s" % ", ".join(
+                    ["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
+                     if cont not in exits and cont not in pobjs])
         separator = "-" * _DEFAULT_WIDTH
         # output info
         return '%s\n%s\n%s' % (separator, string.strip(), separator)
@@ -2961,9 +2964,6 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # handle lhs
             parts = self.lhs.split(";", 3)
-            key, desc, tags, lockstring = (
-                "", "User-created prototype", ["user-created"],
-                "edit:id({}) or perm(Admin); use:all()".format(caller.id))
             nparts = len(parts)
             if nparts == 1:
                 key = parts[0].strip()
@@ -2971,11 +2971,25 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 key, desc = (part.strip() for part in parts)
             elif nparts == 3:
                 key, desc, tags = (part.strip() for part in parts)
-                tags = [tag.strip().lower() for tag in tags.split(",")]
+                tags = [tag.strip().lower() for tag in tags.split(",") if tag]
             else:
                 # lockstrings can itself contain ;
                 key, desc, tags, lockstring = (part.strip() for part in parts)
-                tags = [tag.strip().lower() for tag in tags.split(",")]
+                tags = [tag.strip().lower() for tag in tags.split(",") if tag]
+            if not key:
+                caller.msg("The prototype must have a key.")
+                return
+            if not desc:
+                desc = "User-created prototype"
+            if not tags:
+                tags = ["user"]
+            if not lockstring:
+                lockstring = "edit:id({}) or perm(Admin); use:all()".format(caller.id)
+
+            is_valid, err = caller.locks.validate(lockstring)
+            if not is_valid:
+                caller.msg("|rLock error|n: {}".format(err))
+                return
 
             # handle rhs:
             prototype = _parse_prototype(self.rhs)
@@ -3002,7 +3016,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                prot = save_db_prototype(caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
+                prot = save_db_prototype(
+                    caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
+                if not prot:
+                    caller.msg("|rError saving:|R {}.|n".format(key))
+                    return
                 prot.locks.append("edit", "perm(Admin)")
                 if not prot.locks.get("use"):
                     prot.locks.add("use:all()")
@@ -3043,7 +3061,6 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             metaproto = metaprotos[0]
             if not caller.locks.check_lockstring(caller, metaproto.locks, access_type='use'):
                 caller.msg("You don't have access to use this prototype.")
-                print("spawning2 {}:{} - {}".format(self.cmdstring, self.args, prototype))
                 return
             prototype = metaproto.prototype
 
