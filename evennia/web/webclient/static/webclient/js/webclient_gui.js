@@ -525,7 +525,6 @@ $(document).ready(function() {
 
     if( SplitHandler ) {
       SplitHandler.init();
-      SplitHandler.split_panes['main-sub'] = {'types': ['help'], 'update_method': 'replace'};
       $("#splitbutton").bind("click", onSplitDialog);
       $("#panebutton").bind("click", onPaneControlDialog);
     } else {

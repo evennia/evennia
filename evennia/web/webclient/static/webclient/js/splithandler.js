@@ -63,6 +63,8 @@ var SplitHandler = (function () {
       minSize: [50,50],
     });
 
+    split_panes['main-sub'] = {'types': [], 'update_method': 'append'};
+
     var input_render = Mustache.render(input_template);
     $('[data-role-input]').html(input_render);
     console.log("SplitHandler initialized");
