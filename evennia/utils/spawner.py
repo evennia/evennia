@@ -109,17 +109,19 @@ from django.conf import settings
 from random import randint
 import evennia
 from evennia.objects.models import ObjectDB
-from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj, is_iter
+from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj, is_iter, crop
 
 from collections import namedtuple
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
 from evennia.utils.evtable import EvTable
+from evennia.utils.evmenu import EvMenu
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _MODULE_PROTOTYPES = {}
 _MODULE_PROTOTYPE_MODULES = {}
+_MENU_CROP_WIDTH = 15
 
 
 class PermissionError(RuntimeError):
@@ -156,7 +158,7 @@ class DbPrototype(DefaultScript):
         self.desc = "A prototype"
 
 
-def build_metaproto(key, desc, locks, tags, prototype):
+def build_metaproto(key='', desc='', locks='', tags=None, prototype=None):
     """
     Create a metaproto from combinant parts.
 
@@ -655,6 +657,204 @@ def spawn(*prototypes, **kwargs):
                            alias_string, nattributes, attributes, tags, execs))
 
     return _batch_create_object(*objsparams)
+
+
+# prototype design menu nodes
+
+def _get_menu_metaprot(caller):
+    if hasattr(caller.ndb._menutree, "olc_metaprot"):
+        return caller.ndb._menutree.olc_metaprot
+    else:
+        metaproto = build_metaproto(None, '', [], [], None)
+        caller.ndb._menutree.olc_metaprot = metaproto
+        caller.ndb._menutree.olc_new = True
+    return metaproto
+
+
+def _set_menu_metaprot(caller, field, value):
+    metaprot = _get_menu_metaprot(caller)
+    kwargs = dict(metaprot.__dict__)
+    kwargs[field] = value
+    caller.ndb._menutree.olc_metaprot = build_metaproto(**kwargs)
+
+
+def node_index(caller):
+    metaprot = _get_menu_metaprot(caller)
+    key = "|g{}|n".format(
+        crop(metaprot.key, _MENU_CROP_WIDTH)) if metaprot.key else "|rundefined, required|n"
+    desc = "|g{}|n".format(
+        crop(metaprot.desc, _MENU_CROP_WIDTH)) if metaprot.desc else "''"
+    tags = "|g{}|n".format(
+        crop(", ".join(metaprot.tags), _MENU_CROP_WIDTH)) if metaprot.tags else []
+    locks = "|g{}|n".format(
+        crop(", ".join(metaprot.locks), _MENU_CROP_WIDTH)) if metaprot.tags else []
+    prot = "|gdefined|n" if metaprot.prototype else "|rundefined, required|n"
+
+    text = ("|c --- Prototype wizard --- |n\n"
+            "(make choice; q to abort, h for help)")
+    options = (
+        {"desc": "Key ({})".format(key), "goto": "node_key"},
+        {"desc": "Description ({})".format(desc), "goto": "node_desc"},
+        {"desc": "Tags ({})".format(tags), "goto": "node_tags"},
+        {"desc": "Locks ({})".format(locks), "goto": "node_locks"},
+        {"desc": "Prototype ({})".format(prot), "goto": "node_prototype_index"})
+    return text, options
+
+
+def _node_check_key(caller, key):
+    old_metaprot = search_prototype(key)
+    olc_new = caller.ndb._menutree.olc_new
+    key = key.strip().lower()
+    if old_metaprot:
+        # we are starting a new prototype that matches an existing
+        if not caller.locks.check_lockstring(caller, old_metaprot.locks, access_type='edit'):
+            # return to the node_key to try another key
+            caller.msg("Prototype '{key}' already exists and you don't "
+                       "have permission to edit it.".format(key=key))
+            return "node_key"
+        elif olc_new:
+            # we are selecting an existing prototype to edit. Reset to index.
+            del caller.ndb._menutree.olc_new
+            caller.ndb._menutree.olc_metaprot = old_metaprot
+            caller.msg("Prototype already exists. Reloading.")
+            return "node_index"
+
+    # continue on
+    _set_menu_metaprot(caller, 'key', key)
+    caller.msg("Key '{key}' was set.".format(key=key))
+    return "node_desc"
+
+
+def node_key(caller):
+    metaprot = _get_menu_metaprot(caller)
+    text = ["The |ckey|n must be unique and is used to find and use "
+            "the prototype to spawn new entities. It is not case sensitive."]
+    old_key = metaprot.key
+    if old_key:
+        text.append("Current key is '|y{key}|n'".format(key=old_key))
+    else:
+        text.append("The key is currently unset.")
+    text.append("Enter text or make choice (q for quit, h for help)")
+    text = "\n".join(text)
+    options = ({"desc": "forward (desc)",
+                "goto": "node_desc"},
+               {"desc": "back (index)",
+                "goto": "node_index"},
+               {"key": "_default",
+                "desc": "enter a key",
+                "goto": _node_check_key})
+    return text, options
+
+
+def _node_check_desc(caller, desc):
+    desc = desc.strip()
+    _set_menu_metaprot(caller, 'desc', desc)
+    caller.msg("Description was set to '{desc}'.".format(desc=desc))
+    return "node_tags"
+
+
+def node_desc(caller):
+    metaprot = _get_menu_metaprot(caller)
+    text = ["|cDescribe|n briefly the prototype for viewing in listings."]
+    desc = metaprot.desc
+
+    if desc:
+        text.append("The current desc is:\n\"|y{desc}|n\"".format(desc))
+    else:
+        text.append("Description is currently unset.")
+    text = "\n".join(text)
+    options = ({"desc": "forward (tags)",
+                "goto": "node_tags"},
+               {"desc": "back (key)",
+                "goto": "node_key"},
+               {"key": "_default",
+                "desc": "enter a description",
+                "goto": _node_check_desc})
+
+    return text, options
+
+
+def _node_check_tags(caller, tags):
+    tags = [part.strip().lower() for part in tags.split(",")]
+    _set_menu_metaprot(caller, 'tags', tags)
+    caller.msg("Tags {tags} were set".format(tags=tags))
+    return "node_locks"
+
+
+def node_tags(caller):
+    metaprot = _get_menu_metaprot(caller)
+    text = ["|cTags|n can be used to find prototypes. They are case-insitive. "
+            "Separate multiple by tags by commas."]
+    tags = metaprot.tags
+
+    if tags:
+        text.append("The current tags are:\n|y{tags}|n".format(tags))
+    else:
+        text.append("No tags are currently set.")
+    text = "\n".join(text)
+    options = ({"desc": "forward (locks)",
+                "goto": "node_locks"},
+               {"desc": "back (desc)",
+                "goto": "node_desc"},
+               {"key": "_default",
+                "desc": "enter tags separated by commas",
+                "goto": _node_check_tags})
+    return text, options
+
+
+def _node_check_locks(caller, lockstring):
+    # TODO - have a way to validate lock string here
+    _set_menu_metaprot(caller, 'locks', lockstring)
+    caller.msg("Set lockstring '{lockstring}'.".format(lockstring=lockstring))
+    return "node_prototype_index"
+
+
+def node_locks(caller):
+    metaprot = _get_menu_metaprot(caller)
+    text = ["Set |ylocks|n on the prototype. There are two valid lock types: "
+            "'edit' (who can edit the prototype) and 'use' (who can apply the prototype)\n"
+            "(If you are unsure, leave as default.)"]
+    locks = metaprot.locks
+    if locks:
+        text.append("Current lock is |y'{lockstring}'|n".format(lockstring=locks))
+    else:
+        text.append("Lock unset - if not changed the default lockstring will be set as\n"
+                    "   |y'use:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
+    text = "\n".join(text)
+    options = ({"desc": "forward (prototype)",
+                "goto": "node_prototype_index"},
+               {"desc": "back (tags)",
+                "goto": "node_tags"},
+               {"key": "_default",
+                "desc": "enter lockstring",
+                "goto": _node_check_locks})
+
+    return text, options
+
+
+def node_prototype_index(caller):
+    pass
+
+
+def start_olc(caller, session=None, metaproto=None):
+    """
+    Start menu-driven olc system for prototypes.
+
+    Args:
+        caller (Object or Account): The entity starting the menu.
+        session (Session, optional): The individual session to get data.
+        metaproto (MetaProto, optional): Given when editing an existing
+            prototype rather than creating a new one.
+
+    """
+
+    menudata = {"node_index": node_index,
+                "node_key": node_key,
+                "node_desc": node_desc,
+                "node_tags": node_tags,
+                "node_locks": node_locks,
+                "node_prototype_index": node_prototype_index}
+    EvMenu(caller, menudata, startnode='node_index', session=session, olc_metaproto=metaproto)
 
 
 # Testing
