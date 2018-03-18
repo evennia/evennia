@@ -15,7 +15,7 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
                                    save_db_prototype, build_metaproto, validate_prototype,
-                                   delete_db_prototype, PermissionError)
+                                   delete_db_prototype, PermissionError, start_olc)
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2806,7 +2806,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       @spawn/show [<key>]
 
       @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>
-      @spawn/menu
+      @spawn/menu [<key>]
+      @olc     - equivalent to @spawn/menu
 
     Switches:
       noloc - allow location to be None if not specified explicitly. Otherwise,
@@ -2816,7 +2817,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       show, examine - inspect prototype by key. If not given, acts like list.
       save - save a prototype to the database. It will be listable by /list.
       delete - remove a prototype from database, if allowed to.
-      menu - manipulate prototype in a menu interface.
+      menu, olc - create/manipulate prototype in a menu interface.
 
     Example:
       @spawn GOBLIN
@@ -2844,7 +2845,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
-    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu")
+    aliases = ["@olc"]
+    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
@@ -2903,6 +2905,22 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return False
 
         caller = self.caller
+
+        if self.cmdstring == "olc" or 'menu' in self.switches or 'olc' in self.switches:
+            # OLC menu mode
+            metaprot = None
+            if self.lhs:
+                key = self.lhs
+                metaprot = search_prototype(key=key, return_meta=True)
+                if len(metaprot) > 1:
+                    caller.msg("More than one match for {}:\n{}".format(
+                        key, "\n".join(mproto.key for mproto in metaprot)))
+                    return
+                elif metaprot:
+                    # one match
+                    metaprot = metaprot[0]
+            start_olc(caller, self.session, metaprot)
+            return
 
         if 'search' in self.switches:
             # query for a key match
