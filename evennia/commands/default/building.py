@@ -3002,7 +3002,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                save_db_prototype(caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
+                prot = save_db_prototype(caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
+                prot.locks.append("edit", "perm(Admin)")
+                if not prot.locks.get("use"):
+                    prot.locks.add("use:all()")
             except PermissionError as err:
                 caller.msg("|rError saving:|R {}|n".format(err))
                 return

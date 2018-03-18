@@ -421,6 +421,28 @@ class LockHandler(object):
         self._cache_locks(self.obj.lock_storage)
         self.cache_lock_bypass(self.obj)
 
+    def append(self, access_type, lockstring, op='or'):
+        """
+        Append a lock definition to access_type if it doesn't already exist.
+
+        Args:
+            access_type (str): Access type.
+            lockstring (str): A valid lockstring, without the operator to
+                link it to an eventual existing lockstring.
+            op (str): An operator 'and', 'or', 'and not', 'or not' used
+                for appending the lockstring to an existing access-type.
+        Note:
+            The most common use of this method is for use in commands where
+            the user can specify their own lockstrings. This method allows
+            the system to auto-add things like Admin-override access.
+
+        """
+        old_lockstring = self.get(access_type)
+        if not lockstring.strip().lower() in old_lockstring.lower():
+            lockstring = "{old} {op} {new}".format(
+                old=old_lockstring, op=op, new=lockstring.strip())
+            self.add(lockstring)
+
     def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
         """
         Checks a lock of the correct type by passing execution off to
@@ -459,9 +481,13 @@ class LockHandler(object):
                 return True
         except AttributeError:
             # happens before session is initiated.
-            if not no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
-                                            (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser) or
-                                            (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
+            if not no_superuser_bypass and (
+                (hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
+                (hasattr(accessing_obj, 'account') and
+                    hasattr(accessing_obj.account, 'is_superuser') and
+                    accessing_obj.account.is_superuser) or
+                (hasattr(accessing_obj, 'get_account') and
+                    (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
 
         # no superuser or bypass -> normal lock operation
@@ -469,7 +495,8 @@ class LockHandler(object):
             # we have a lock, test it.
             evalstring, func_tup, raw_string = self.locks[access_type]
             # execute all lock funcs in the correct order, producing a tuple of True/False results.
-            true_false = tuple(bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
+            true_false = tuple(bool(
+                tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
             # the True/False tuple goes into evalstring, which combines them
             # with AND/OR/NOT in order to get the final result.
             return eval(evalstring % true_false)
@@ -520,9 +547,13 @@ class LockHandler(object):
             if accessing_obj.locks.lock_bypass and not no_superuser_bypass:
                 return True
         except AttributeError:
-            if no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
-                                        (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser) or
-                                        (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
+            if no_superuser_bypass and (
+                (hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
+                (hasattr(accessing_obj, 'account') and
+                    hasattr(accessing_obj.account, 'is_superuser') and
+                    accessing_obj.account.is_superuser) or
+                (hasattr(accessing_obj, 'get_account') and
+                    (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
         if ":" not in lockstring:
             lockstring = "%s:%s" % ("_dummy", lockstring)
@@ -538,7 +569,8 @@ class LockHandler(object):
         else:
             # if no access types was given and multiple locks were
             # embedded in the lockstring we assume all must be true
-            return all(self._eval_access_type(accessing_obj, locks, access_type) for access_type in locks)
+            return all(self._eval_access_type(
+                accessing_obj, locks, access_type) for access_type in locks)
 
 
 def _test():

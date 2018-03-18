@@ -161,7 +161,12 @@ def build_metaproto(key, desc, locks, tags, prototype):
     Create a metaproto from combinant parts.
 
     """
-    return MetaProto(key, desc, ";".join(locks) if is_iter(locks) else locks, tags, dict(prototype))
+    if locks:
+        locks = (";".join(locks) if is_iter(locks) else locks)
+    else:
+        locks = []
+    prototype = dict(prototype) if prototype else {}
+    return MetaProto(key, desc, locks, tags, dict(prototype))
 
 
 def save_db_prototype(caller, key, prototype, desc="", tags=None, locks="", delete=False):
