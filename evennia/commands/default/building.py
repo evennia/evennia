@@ -14,8 +14,8 @@ from evennia.utils.utils import inherits_from, class_from_module, get_all_typecl
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
-                                   store_prototype, build_metaproto, validate_prototype,
-                                   delete_prototype, PermissionError)
+                                   save_db_prototype, build_metaproto, validate_prototype,
+                                   delete_db_prototype, PermissionError)
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -1739,6 +1739,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     key = "@typeclass"
     aliases = ["@type", "@parent", "@swap", "@update"]
+    switch_options = ("show", "examine", "update", "reset", "force", "list")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
 
@@ -1749,7 +1750,6 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         if 'list' in self.switches:
             tclasses = get_all_typeclasses()
-            print(list(tclasses.keys()))
             contribs = [key for key in sorted(tclasses)
                         if key.startswith("evennia.contrib")] or ["<None loaded>"]
             core = [key for key in sorted(tclasses)
@@ -1764,7 +1764,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                       "    {game}").format(core="\n    ".join(core),
                                            contrib="\n    ".join(contribs),
                                            game="\n    ".join(game))
-            caller.msg(string)
+            EvMore(caller, string, exit_on_lastpage=True)
             return
 
         if not self.args:
@@ -2841,7 +2841,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
-    switch_options = ("noloc", )
+    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
@@ -2912,7 +2912,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     tags = [tag.strip() for tag in tags.split(",")] if tags else None
                 EvMore(caller, unicode(list_prototypes(caller, key=key, tags=tags)),
                        exit_on_lastpage=True)
-            return
+                return
 
         if 'show' in self.switches or 'examine' in self.switches:
             # the argument is a key in this case (may be a partial key)
@@ -2943,7 +2943,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     caller.msg("|rDeletion cancelled.|n")
                     return
                 try:
-                    success = delete_prototype(caller, self.args)
+                    success = delete_db_prototype(caller, self.args)
                 except PermissionError as err:
                     caller.msg("|rError deleting:|R {}|n".format(err))
                 caller.msg("Deletion {}.".format(
@@ -2961,10 +2961,12 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # handle lhs
             parts = self.lhs.split(";", 3)
-            key, desc, tags, lockstring = "", "", [], ""
+            key, desc, tags, lockstring = (
+                "", "User-created prototype", ["user-created"],
+                "edit:id({}) or perm(Admin); use:all()".format(caller.id))
             nparts = len(parts)
             if nparts == 1:
-                key = parts.strip()
+                key = parts[0].strip()
             elif nparts == 2:
                 key, desc = (part.strip() for part in parts)
             elif nparts == 3:
@@ -3000,7 +3002,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                store_prototype(caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
+                save_db_prototype(caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
             except PermissionError as err:
                 caller.msg("|rError saving:|R {}|n".format(err))
                 return
@@ -3038,6 +3040,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             metaproto = metaprotos[0]
             if not caller.locks.check_lockstring(caller, metaproto.locks, access_type='use'):
                 caller.msg("You don't have access to use this prototype.")
+                print("spawning2 {}:{} - {}".format(self.cmdstring, self.args, prototype))
                 return
             prototype = metaproto.prototype
 

@@ -109,17 +109,17 @@ from django.conf import settings
 from random import randint
 import evennia
 from evennia.objects.models import ObjectDB
-from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj
+from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj, is_iter
 
-from collections import namedtuple, defaultdict
+from collections import namedtuple
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
 from evennia.utils.evtable import EvTable
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
-_READONLY_PROTOTYPES = {}
-_READONLY_PROTOTYPE_MODULES = {}
+_MODULE_PROTOTYPES = {}
+_MODULE_PROTOTYPE_MODULES = {}
 
 
 class PermissionError(RuntimeError):
@@ -133,7 +133,7 @@ for mod in settings.PROTOTYPE_MODULES:
     # internally we store as (key, desc, locks, tags, prototype_dict)
     prots = [(key, prot) for key, prot in all_from_module(mod).items()
              if prot and isinstance(prot, dict)]
-    _READONLY_PROTOTYPES.update(
+    _MODULE_PROTOTYPES.update(
         {key.lower(): MetaProto(
             key.lower(),
             prot['prototype_desc'] if 'prototype_desc' in prot else mod,
@@ -142,12 +142,12 @@ for mod in settings.PROTOTYPE_MODULES:
                 prot['prototype_tags']) if 'prototype_tags' in prot else ["base-prototype"]),
             prot)
          for key, prot in prots})
-    _READONLY_PROTOTYPE_MODULES.update({tup[0]: mod for tup in prots})
+    _MODULE_PROTOTYPE_MODULES.update({tup[0]: mod for tup in prots})
 
 # Prototype storage mechanisms
 
 
-class PersistentPrototype(DefaultScript):
+class DbPrototype(DefaultScript):
     """
     This stores a single prototype
     """
@@ -161,10 +161,10 @@ def build_metaproto(key, desc, locks, tags, prototype):
     Create a metaproto from combinant parts.
 
     """
-    return MetaProto(key, desc, make_iter(locks), tags, dict(prototype))
+    return MetaProto(key, desc, ";".join(locks) if is_iter(locks) else locks, tags, dict(prototype))
 
 
-def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete=False):
+def save_db_prototype(caller, key, prototype, desc="", tags=None, locks="", delete=False):
     """
     Store a prototype persistently.
 
@@ -176,7 +176,7 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
         prototype (dict): Prototype dict.
         desc (str, optional): Description of prototype, to use in listing.
         tags (list, optional): Tag-strings to apply to prototype. These are always
-            applied with the 'persistent_prototype' category.
+            applied with the 'db_prototype' category.
         locks (str, optional): Locks to apply to this prototype. Used locks
             are 'use' and 'edit'
         delete (bool, optional): Delete an existing prototype identified by 'key'.
@@ -192,14 +192,14 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
     key_orig = key
     key = key.lower()
     locks = locks if locks else "use:all();edit:id({}) or perm(Admin)".format(caller.id)
-    tags = [(tag, "persistent_prototype") for tag in make_iter(tags)]
+    tags = [(tag, "db_prototype") for tag in make_iter(tags)]
 
-    if key in _READONLY_PROTOTYPES:
-        mod = _READONLY_PROTOTYPE_MODULES.get(key, "N/A")
+    if key in _MODULE_PROTOTYPES:
+        mod = _MODULE_PROTOTYPE_MODULES.get(key, "N/A")
         raise PermissionError("{} is a read-only prototype "
                               "(defined as code in {}).".format(key_orig, mod))
 
-    stored_prototype = PersistentPrototype.objects.filter(db_key=key)
+    stored_prototype = DbPrototype.objects.filter(db_key=key)
 
     if stored_prototype:
         # edit existing prototype
@@ -227,12 +227,12 @@ def store_prototype(caller, key, prototype, desc="", tags=None, locks="", delete
     else:
         # create a new prototype
         stored_prototype = create_script(
-            PersistentPrototype, key=key, desc=desc, persistent=True,
+            DbPrototype, key=key, desc=desc, persistent=True,
             locks=locks, tags=tags, attributes=[("prototype", prototype)])
     return stored_prototype
 
 
-def delete_prototype(caller, key):
+def delete_db_prototype(caller, key):
     """
     Delete a stored prototype
 
@@ -245,21 +245,21 @@ def delete_prototype(caller, key):
         PermissionError: If 'edit' lock was not passed.
 
     """
-    return store_prototype(caller, key, None, delete=True)
+    return save_db_prototype(caller, key, None, delete=True)
 
 
-def search_persistent_prototype(key=None, tags=None, return_metaprotos=False):
+def search_db_prototype(key=None, tags=None, return_metaprotos=False):
     """
     Find persistent (database-stored) prototypes based on key and/or tags.
 
     Kwargs:
         key (str): An exact or partial key to query for.
         tags (str or list): Tag key or keys to query for. These
-            will always be applied with the 'persistent_protototype'
+            will always be applied with the 'db_protototype'
             tag category.
         return_metaproto (bool): Return results as metaprotos.
     Return:
-        matches (queryset or list): All found PersistentPrototypes. If `return_metaprotos`
+        matches (queryset or list): All found DbPrototypes. If `return_metaprotos`
             is set, return a list of MetaProtos.
 
     Note:
@@ -269,22 +269,22 @@ def search_persistent_prototype(key=None, tags=None, return_metaprotos=False):
     if tags:
         # exact match on tag(s)
         tags = make_iter(tags)
-        tag_categories = ["persistent_prototype" for _ in tags]
-        matches = PersistentPrototype.objects.get_by_tag(tags, tag_categories)
+        tag_categories = ["db_prototype" for _ in tags]
+        matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
     else:
-        matches = PersistentPrototype.objects.all()
+        matches = DbPrototype.objects.all()
     if key:
         # exact or partial match on key
         matches = matches.filter(db_key=key) or matches.filter(db_key__icontains=key)
     if return_metaprotos:
         return [build_metaproto(match.key, match.desc, match.locks.all(),
-                                match.tags.get(category="persistent_prototype", return_list=True),
+                                match.tags.get(category="db_prototype", return_list=True),
                                 match.attributes.get("prototype"))
                 for match in matches]
     return matches
 
 
-def search_readonly_prototype(key=None, tags=None):
+def search_module_prototype(key=None, tags=None):
     """
     Find read-only prototypes, defined in modules.
 
@@ -301,10 +301,10 @@ def search_readonly_prototype(key=None, tags=None):
     if tags:
         # use tags to limit selection
         tagset = set(tags)
-        matches = {key: metaproto for key, metaproto in _READONLY_PROTOTYPES.items()
+        matches = {key: metaproto for key, metaproto in _MODULE_PROTOTYPES.items()
                    if tagset.intersection(metaproto.tags)}
     else:
-        matches = _READONLY_PROTOTYPES
+        matches = _MODULE_PROTOTYPES
 
     if key:
         if key in matches:
@@ -324,7 +324,7 @@ def search_prototype(key=None, tags=None, return_meta=True):
     Kwargs:
         key (str): An exact or partial key to query for.
         tags (str or list): Tag key or keys to query for. These
-            will always be applied with the 'persistent_protototype'
+            will always be applied with the 'db_protototype'
             tag category.
         return_meta (bool): If False, only return prototype dicts, if True
             return MetaProto namedtuples including prototype meta info
@@ -340,15 +340,15 @@ def search_prototype(key=None, tags=None, return_meta=True):
         be found.
 
     """
-    readonly_prototypes = search_readonly_prototype(key, tags)
-    persistent_prototypes = search_persistent_prototype(key, tags, return_metaprotos=True)
+    module_prototypes = search_module_prototype(key, tags)
+    db_prototypes = search_db_prototype(key, tags, return_metaprotos=True)
 
-    matches = persistent_prototypes + readonly_prototypes
+    matches = db_prototypes + module_prototypes
     if len(matches) > 1 and key:
         key = key.lower()
         # avoid duplicates if an exact match exist between the two types
         filter_matches = [mta for mta in matches if mta.key == key]
-        if len(filter_matches) < len(matches):
+        if filter_matches and len(filter_matches) < len(matches):
             matches = filter_matches
 
     if not return_meta:
@@ -369,8 +369,7 @@ def get_protparents():
     return {metaproto.key: metaproto.prototype for metaproto in metaprotos}
 
 
-def list_prototypes(caller, key=None, tags=None, show_non_use=False,
-                    show_non_edit=True, sort_tree=True):
+def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
     """
     Collate a list of found prototypes based on search criteria and access.
 
@@ -380,22 +379,27 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False,
         tags (str or list, optional): Tag key or keys to query for.
         show_non_use (bool, optional): Show also prototypes the caller may not use.
         show_non_edit (bool, optional): Show also prototypes the caller may not edit.
-        sort_tree (bool, optional): Order prototypes by inheritance tree.
     Returns:
         table (EvTable or None): An EvTable representation of the prototypes. None
             if no prototypes were found.
 
     """
+    # this allows us to pass lists of empty strings
+    tags = [tag for tag in make_iter(tags) if tag]
+
     # get metaprotos for readonly and db-based prototypes
-    metaprotos = search_readonly_prototype(key, tags)
-    metaprotos += search_persistent_prototype(key, tags, return_metaprotos=True)
+    metaprotos = search_module_prototype(key, tags)
+    metaprotos += search_db_prototype(key, tags, return_metaprotos=True)
 
     # get use-permissions of readonly attributes (edit is always False)
     prototypes = [
         (metaproto.key,
          metaproto.desc,
          ("{}/N".format('Y'
-          if caller.locks.check_lockstring(caller, metaproto.locks, access_type='use') else 'N')),
+          if caller.locks.check_lockstring(
+            caller,
+            metaproto.locks,
+            access_type='use') else 'N')),
          ",".join(metaproto.tags))
         for metaproto in sorted(metaprotos, key=lambda o: o.key)]
 
@@ -640,7 +644,6 @@ def spawn(*prototypes, **kwargs):
                            alias_string, nattributes, attributes, tags, execs))
 
     return _batch_create_object(*objsparams)
-
 
 
 # Testing
