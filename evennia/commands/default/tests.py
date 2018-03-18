@@ -27,6 +27,7 @@ from evennia.utils import ansi, utils
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
+from evennia.utils import spawner
 
 
 # set up signal here since we are not starting the server
@@ -390,8 +391,10 @@ class TestBuilding(CommandTest):
         self.assertEqual(goblin.location, spawnLoc)
         goblin.delete()
 
+        spawner.save_db_prototype(self.char1, "ball", {'key': 'Ball', 'prototype': 'GOBLIN'})
+
         # Tests "@spawn <prototype_name>"
-        self.call(building.CmdSpawn(), "'BALL'", "Spawned Ball")
+        self.call(building.CmdSpawn(), "ball", "Spawned Ball")
         ball = getObject(self, "Ball")
         self.assertEqual(ball.location, self.char1.location)
         self.assertIsInstance(ball, DefaultObject)
@@ -415,6 +418,9 @@ class TestBuilding(CommandTest):
 
         # test calling spawn with an invalid prototype.
         self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST'")
+
+        # Test listing commands
+        self.call(building.CmdSpawn(), "/list", "| Key ")
 
 
 class TestComms(CommandTest):
