@@ -1700,11 +1700,13 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       @typeclass[/switch] <object> [= typeclass.path]
       @type                     ''
       @parent                   ''
+      @typeclass/list/show [typeclass.path]
       @swap - this is a shorthand for using /force/reset flags.
       @update - this is a shorthand for using the /force/reload flag.
 
     Switch:
-      show - display the current typeclass of object (default)
+      show, examine - display the current typeclass of object (default) or, if
+            given a typeclass path, show the docstring of that typeclass.
       update - *only* re-run at_object_creation on this object
               meaning locks or other properties set later may remain.
       reset - clean out *all* the attributes and properties on the
@@ -1712,6 +1714,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
       list - show available typeclasses.
+
+
     Example:
       @type button = examples.red_button.RedButton
 
@@ -1767,6 +1771,33 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             caller.msg("Usage: %s <object> [= typeclass]" % self.cmdstring)
             return
 
+        if "show" in self.switches or "examine" in self.switches:
+            oquery = self.lhs
+            obj = caller.search(oquery, quiet=True)
+            if not obj:
+                # no object found to examine, see if it's a typeclass-path instead
+                tclasses = get_all_typeclasses()
+                matches = [(key, tclass)
+                           for key, tclass in tclasses.items() if key.endswith(oquery)]
+                nmatches = len(matches)
+                if nmatches > 1:
+                    caller.msg("Multiple typeclasses found matching {}:\n  {}".format(
+                        oquery, "\n  ".join(tup[0] for tup in matches)))
+                elif not matches:
+                    caller.msg("No object or typeclass path found to match '{}'".format(oquery))
+                else:
+                    # one match found
+                    caller.msg("Docstring for typeclass '{}':\n{}".format(
+                        oquery, matches[0][1].__doc__))
+            else:
+                # do the search again to get the error handling in case of multi-match
+                obj = caller.search(oquery)
+                if not obj:
+                    return
+                caller.msg("{}'s current typeclass is '{}.{}'".format(
+                    obj.name, obj.__class__.__module__, obj.__class__.__name__))
+            return
+
         # get object to swap on
         obj = caller.search(self.lhs)
         if not obj:
@@ -1779,7 +1810,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         new_typeclass = self.rhs or obj.path
 
-        if "show" in self.switches:
+        if "show" in self.switches or "examine" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
             caller.msg(string)
             return
