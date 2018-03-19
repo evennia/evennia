@@ -317,6 +317,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
 
     """
     key = "@sethelp"
+    switch_options = ("edit", "replace", "append", "extend", "delete")
     locks = "cmd:perm(Helper)"
     help_category = "Building"
 

@@ -16,10 +16,10 @@ things you want from here into your game folder and change them there.
 ## Contrib modules
 
 * Barter system (Griatch 2012) - A safe and effective barter-system
-  for any game. Allows safe trading of any godds (including coin)
+  for any game. Allows safe trading of any goods (including coin).
 * CharGen (Griatch 2011) - A simple Character creator for OOC mode.
   Meant as a starting point for a more fleshed-out system.
-* Clothing (BattleJenkins 2017) - A layered clothing system with
+* Clothing (FlutterSprite 2017) - A layered clothing system with
   slots for different types of garments auto-showing in description.
 * Color-markups (Griatch, 2017) - Alternative in-game color markups.
 * Custom gametime (Griatch, vlgeoff 2017) - Implements Evennia's
@@ -33,7 +33,7 @@ things you want from here into your game folder and change them there.
   on a character and access it in an emote with a custom marker.
 * Mail (grungies1138 2016) - An in-game mail system for communication.
 * Menu login (Griatch 2011) - A login system using menus asking
-  for name/password rather than giving them as one command
+  for name/password rather than giving them as one command.
 * Map Builder (CloudKeeper 2016) - Build a game area based on a 2D
   "graphical" unicode map. Supports assymmetric exits.
 * Menu Login (Vincent-lg 2016) - Alternate login system using EvMenu.
@@ -50,8 +50,9 @@ things you want from here into your game folder and change them there.
   time to pass depending on if you are walking/running etc.
 * Talking NPC (Griatch 2011) - A talking NPC object that offers a
   menu-driven conversation tree.
-* Turnbattle (BattleJenkins 2017) - A turn-based combat engine meant
-  as a start to build from. Has attack/disengage and turn timeouts.
+* Tree Select (FlutterSprite 2017) - A simple system for creating a
+  branching EvMenu with selection options sourced from a single
+  multi-line string.
 * Wilderness (titeuf87 2017) - Make infinitely large wilderness areas
   with dynamically created locations.
 * UnixCommand (Vincent Le Geoff 2017) - Add commands with UNIX-style syntax.
@@ -59,9 +60,12 @@ things you want from here into your game folder and change them there.
 ## Contrib packages
 
 * EGI_Client (gtaylor 2016) - Client for reporting game status
-  to the Evennia game index (games.evennia.com)
+  to the Evennia game index (games.evennia.com).
 * In-game Python (Vincent Le Goff 2017) - Allow trusted builders to script
   objects and events using Python from in-game.
+* Turnbattle (FlutterSprite 2017) - A turn-based combat engine meant
+  as a start to build from. Has attack/disengage and turn timeouts,
+  and includes optional expansions for equipment and combat movement.
 * Tutorial examples (Griatch 2011, 2015) - A folder of basic
   example objects, commands and scripts.
 * Tutorial world (Griatch 2011, 2015) - A folder containing the

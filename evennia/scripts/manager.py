@@ -214,7 +214,7 @@ class ScriptDBManager(TypedObjectManager):
         VALIDATE_ITERATION -= 1
         return nr_started, nr_stopped
 
-    def search_script(self, ostring, obj=None, only_timed=False):
+    def search_script(self, ostring, obj=None, only_timed=False, typeclass=None):
         """
         Search for a particular script.
 
@@ -224,6 +224,7 @@ class ScriptDBManager(TypedObjectManager):
                 this object
             only_timed (bool): Limit search only to scripts that run
                 on a timer.
+            typeclass (class or str): Typeclass or path to typeclass.
 
         """
 
@@ -237,10 +238,17 @@ class ScriptDBManager(TypedObjectManager):
                                     (only_timed and dbref_match.interval)):
                 return [dbref_match]
 
+        if typeclass:
+            if callable(typeclass):
+                typeclass = u"%s.%s" % (typeclass.__module__, typeclass.__name__)
+            else:
+                typeclass = u"%s" % typeclass
+
         # not a dbref; normal search
         obj_restriction = obj and Q(db_obj=obj) or Q()
-        timed_restriction = only_timed and Q(interval__gt=0) or Q()
-        scripts = self.filter(timed_restriction & obj_restriction & Q(db_key__iexact=ostring))
+        timed_restriction = only_timed and Q(db_interval__gt=0) or Q()
+        typeclass_restriction = typeclass and Q(db_typeclass_path=typeclass) or Q()
+        scripts = self.filter(timed_restriction & obj_restriction & typeclass_restriction & Q(db_key__iexact=ostring))
         return scripts
     # back-compatibility alias
     script_search = search_script

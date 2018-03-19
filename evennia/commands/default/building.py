@@ -106,9 +106,15 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     Usage:
       @alias <obj> [= [alias[,alias,alias,...]]]
       @alias <obj> =
+      @alias/category <obj> = [alias[,alias,...]:<category>
+
+    Switches:
+      category - requires ending input with :category, to store the
+        given aliases with the given category.
 
     Assigns aliases to an object so it can be referenced by more
-    than one name. Assign empty to remove all aliases from object.
+    than one name. Assign empty to remove all aliases from object. If
+    assigning a category, all aliases given will be using this category.
 
     Observe that this is not the same thing as personal aliases
     created with the 'nick' command! Aliases set with @alias are
@@ -118,6 +124,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "@setobjalias"
+    switch_options = ("category",)
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
@@ -138,9 +145,12 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
         if self.rhs is None:
             # no =, so we just list aliases on object.
-            aliases = obj.aliases.all()
+            aliases = obj.aliases.all(return_key_and_category=True)
             if aliases:
-                caller.msg("Aliases for '%s': %s" % (obj.get_display_name(caller), ", ".join(aliases)))
+                caller.msg("Aliases for %s: %s" % (
+                    obj.get_display_name(caller),
+                    ", ".join("'%s'%s" % (alias, "" if category is None else "[category:'%s']" % category)
+                              for (alias, category) in aliases)))
             else:
                 caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
             return
@@ -159,17 +169,27 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 caller.msg("No aliases to clear.")
             return
 
+        category = None
+        if "category" in self.switches:
+            if ":" in self.rhs:
+                rhs, category = self.rhs.rsplit(':', 1)
+                category = category.strip()
+            else:
+                caller.msg("If specifying the /category switch, the category must be given "
+                           "as :category at the end.")
+        else:
+            rhs = self.rhs
+
         # merge the old and new aliases (if any)
-        old_aliases = obj.aliases.all()
-        new_aliases = [alias.strip().lower() for alias in self.rhs.split(',')
-                       if alias.strip()]
+        old_aliases = obj.aliases.get(category=category, return_list=True)
+        new_aliases = [alias.strip().lower() for alias in rhs.split(',') if alias.strip()]
 
         # make the aliases only appear once
         old_aliases.extend(new_aliases)
         aliases = list(set(old_aliases))
 
         # save back to object.
-        obj.aliases.add(aliases)
+        obj.aliases.add(aliases, category=category)
 
         # we need to trigger this here, since this will force
         # (default) Exits to rebuild their Exit commands with the new
@@ -177,7 +197,8 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
         obj.at_cmdset_get(force_init=True)
 
         # report all aliases on the object
-        caller.msg("Alias(es) for '%s' set to %s." % (obj.get_display_name(caller), str(obj.aliases)))
+        caller.msg("Alias(es) for '%s' set to '%s'%s." % (obj.get_display_name(caller),
+                   str(obj.aliases), " (category: '%s')" % category if category else ""))
 
 
 class CmdCopy(ObjManipCommand):
@@ -198,6 +219,7 @@ class CmdCopy(ObjManipCommand):
     """
 
     key = "@copy"
+    switch_options = ("reset",)
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
@@ -279,6 +301,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
+    switch_options = ("move",)
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
 
@@ -420,6 +443,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
+    switch_options = ("copy",)
     locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
 
@@ -468,6 +492,7 @@ class CmdCreate(ObjManipCommand):
     """
 
     key = "@create"
+    switch_options = ("drop",)
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
 
@@ -553,6 +578,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     key = "@desc"
     aliases = "@describe"
+    switch_options = ("edit",)
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
 
@@ -614,11 +640,11 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     Usage:
        @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
 
-    switches:
+    Switches:
        override - The @destroy command will usually avoid accidentally
                   destroying account objects. This switch overrides this safety.
        force - destroy without confirmation.
-    examples:
+    Examples:
        @destroy house, roof, door, 44-78
        @destroy 5-10, flower, 45
        @destroy/force north
@@ -631,6 +657,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
     key = "@destroy"
     aliases = ["@delete", "@del"]
+    switch_options = ("override", "force")
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
 
@@ -754,6 +781,7 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
     key = "@dig"
+    switch_options = ("teleport",)
     locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
 
@@ -863,7 +891,7 @@ class CmdDig(ObjManipCommand):
                                                        new_back_exit.dbref,
                                                        alias_string)
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
-        if new_room and ('teleport' in self.switches or "tel" in self.switches):
+        if new_room and 'teleport' in self.switches:
             caller.move_to(new_room)
 
 
@@ -896,6 +924,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
 
     key = "@tunnel"
     aliases = ["@tun"]
+    switch_options = ("oneway", "tel")
     locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
 
@@ -1458,6 +1487,13 @@ class CmdSetAttribute(ObjManipCommand):
 
     Switch:
         edit: Open the line editor (string values only)
+        script: If we're trying to set an attribute on a script
+        channel: If we're trying to set an attribute on a channel
+        account: If we're trying to set an attribute on an account
+        room: Setting an attribute on a room (global search)
+        exit: Setting an attribute on an exit (global search)
+        char: Setting an attribute on a character (global search)
+        character: Alias for char, as above.
 
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
@@ -1558,6 +1594,38 @@ class CmdSetAttribute(ObjManipCommand):
         # start the editor
         EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
 
+    def search_for_obj(self, objname):
+        """
+        Searches for an object matching objname. The object may be of different typeclasses.
+        Args:
+            objname: Name of the object we're looking for
+
+        Returns:
+            A typeclassed object, or None if nothing is found.
+        """
+        from evennia.utils.utils import variable_from_module
+        _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+        caller = self.caller
+        if objname.startswith('*') or "account" in self.switches:
+            found_obj = caller.search_account(objname.lstrip('*'))
+        elif "script" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_script(objname), caller)
+        elif "channel" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_channel(objname), caller)
+        else:
+            global_search = True
+            if "char" in self.switches or "character" in self.switches:
+                typeclass = settings.BASE_CHARACTER_TYPECLASS
+            elif "room" in self.switches:
+                typeclass = settings.BASE_ROOM_TYPECLASS
+            elif "exit" in self.switches:
+                typeclass = settings.BASE_EXIT_TYPECLASS
+            else:
+                global_search = False
+                typeclass = None
+            found_obj = caller.search(objname, global_search=global_search, typeclass=typeclass)
+        return found_obj
+
     def func(self):
         """Implement the set attribute - a limited form of @py."""
 
@@ -1571,10 +1639,7 @@ class CmdSetAttribute(ObjManipCommand):
         objname = self.lhs_objattr[0]['name']
         attrs = self.lhs_objattr[0]['attrs']
 
-        if objname.startswith('*'):
-            obj = caller.search_account(objname.lstrip('*'))
-        else:
-            obj = caller.search(objname)
+        obj = self.search_for_obj(objname)
         if not obj:
             return
 
@@ -2202,12 +2267,14 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     Usage:
       @find[/switches] <name or dbref or *account> [= dbrefmin[-dbrefmax]]
+      @locate - this is a shorthand for using the /loc switch.
 
     Switches:
       room - only look for rooms (location=None)
       exit - only look for exits (destination!=None)
       char - only look for characters (BASE_CHARACTER_TYPECLASS)
       exact- only exact matches are returned.
+      loc  - display object location if exists and match has one result
 
     Searches the database for an object of a particular name or exact #dbref.
     Use *accountname to search for an account. The switches allows for
@@ -2218,6 +2285,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     key = "@find"
     aliases = "@search, @locate"
+    switch_options = ("room", "exit", "char", "exact", "loc")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
@@ -2229,6 +2297,9 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         if not self.args:
             caller.msg("Usage: @find <string> [= low [-high]]")
             return
+
+        if "locate" in self.cmdstring:  # Use option /loc as a default for @locate command alias
+            switches.append('loc')
 
         searchstring = self.lhs
         low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
@@ -2251,7 +2322,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
         restrictions = ""
         if self.switches:
-            restrictions = ", %s" % (",".join(self.switches))
+            restrictions = ", %s" % (", ".join(self.switches))
 
         if is_dbref or is_account:
 
@@ -2279,6 +2350,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             else:
                 result = result[0]
                 string += "\n|g   %s - %s|n" % (result.get_display_name(caller), result.path)
+                if "loc" in self.switches and not is_account and result.location:
+                    string += " (|wlocation|n: |g{}|n)".format(result.location.get_display_name(caller))
         else:
             # Not an account/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
@@ -2314,6 +2387,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 else:
                     string = "|wOne Match|n(#%i-#%i%s):" % (low, high, restrictions)
                     string += "\n   |g%s - %s|n" % (results[0].get_display_name(caller), results[0].path)
+                    if "loc" in self.switches and nresults == 1 and results[0].location:
+                        string += " (|wlocation|n: |g{}|n)".format(results[0].location.get_display_name(caller))
             else:
                 string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
                 string += "\n   |RNo matches found for '%s'|n" % searchstring
@@ -2327,7 +2402,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     teleport object to another location
 
     Usage:
-      @tel/switch [<object> =] <target location>
+      @tel/switch [<object> to||=] <target location>
 
     Examples:
       @tel Limbo
@@ -2351,6 +2426,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     """
     key = "@tel"
     aliases = "@teleport"
+    switch_options = ("quiet", "intoexit", "tonone", "loc")
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
@@ -2458,6 +2535,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
 
     key = "@script"
     aliases = "@addscript"
+    switch_options = ("start", "stop")
     locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"
 
@@ -2557,6 +2635,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 
     key = "@tag"
     aliases = ["@tags"]
+    options = ("search", "del")
     locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
@@ -2698,6 +2777,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@spawn"
+    switch_options = ("noloc", )
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 

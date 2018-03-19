@@ -3,7 +3,7 @@
 # Sept 2017:
 Release of Evennia 0.7; upgrade to Django 1.11, change 'Player' to 
 'Account', rework the website template and a slew of other updates.
-Info on what changed and how to migrat is found here: 
+Info on what changed and how to migrate is found here:
 https://groups.google.com/forum/#!msg/evennia/0JYYNGY-NfE/cDFaIwmPBAAJ
 
 ## Feb 2017:

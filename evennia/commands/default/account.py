@@ -168,7 +168,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         if desc:
             new_character.db.desc = desc
         elif not new_character.db.desc:
-            new_character.db.desc = "This is an Account."
+            new_character.db.desc = "This is a character."
         self.msg("Created new character %s. Use |w@ic %s|n to enter the game as this character."
                  % (new_character.key, new_character.key))
 
@@ -455,7 +455,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     Usage:
       @option[/save] [name = value]
 
-    Switch:
+    Switches:
       save - Save the current option settings for future logins.
       clear - Clear the saved options.
 
@@ -467,6 +467,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     """
     key = "@option"
     aliases = "@options"
+    switch_options = ("save", "clear")
     locks = "cmd:all()"
 
     # this is used by the parent
@@ -650,6 +651,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
+    switch_options = ("all",)
     locks = "cmd:all()"
 
     # this is used by the parent
