@@ -182,7 +182,8 @@ _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 
 # i18n
 from django.utils.translation import ugettext as _
-_ERR_NOT_IMPLEMENTED = _("Menu node '{nodename}' is not implemented. Make another choice.")
+_ERR_NOT_IMPLEMENTED = _("Menu node '{nodename}' is either not implemented or "
+                         "caused an error. Make another choice.")
 _ERR_GENERAL = _("Error in menu node '{nodename}'.")
 _ERR_NO_OPTION_DESC = _("No description.")
 _HELP_FULL = _("Commands: <menu option>, help, quit")
@@ -573,6 +574,7 @@ class EvMenu(object):
         except EvMenuError:
             errmsg = _ERR_GENERAL.format(nodename=callback)
             self.caller.msg(errmsg, self._session)
+            logger.log_trace()
             raise
 
         return ret
@@ -606,9 +608,11 @@ class EvMenu(object):
                 nodetext, options = ret, None
         except KeyError:
             self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
+            logger.log_trace()
             raise EvMenuError
         except Exception:
             self.caller.msg(_ERR_GENERAL.format(nodename=nodename), session=self._session)
+            logger.log_trace()
             raise
 
         # store options to make them easier to test

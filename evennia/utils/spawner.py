@@ -754,12 +754,13 @@ def _node_check_desc(caller, desc):
 
 
 def node_desc(caller):
+
     metaprot = _get_menu_metaprot(caller)
     text = ["|cDescribe|n briefly the prototype for viewing in listings."]
     desc = metaprot.desc
 
     if desc:
-        text.append("The current desc is:\n\"|y{desc}|n\"".format(desc))
+        text.append("The current desc is:\n\"|y{desc}|n\"".format(desc=desc))
     else:
         text.append("Description is currently unset.")
     text = "\n".join(text)
@@ -788,7 +789,7 @@ def node_tags(caller):
     tags = metaprot.tags
 
     if tags:
-        text.append("The current tags are:\n|y{tags}|n".format(tags))
+        text.append("The current tags are:\n|y{tags}|n".format(tags=tags))
     else:
         text.append("No tags are currently set.")
     text = "\n".join(text)
