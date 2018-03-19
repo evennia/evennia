@@ -257,14 +257,15 @@ function onText(args, kwargs) {
             if( SplitHandler ) {
                 for ( var key in SplitHandler.split_panes) {
                     var pane = SplitHandler.split_panes[key];
-		    console.log(pane);
                     // is this message type mapped to this pane?
                     if ( (pane['types'].length > 0) && pane['types'].includes(msgtype) ) {
                         // yes, so append/replace this pane's inner div with this message
                         if ( pane['update_method'] == 'replace' ) {
                             $('#'+key).html(args[0])
                         } else {
-                            $('#'+key).append(args[0]).animate({ scrollTop: document.getElementById("#"+key).scrollHeight }, 0);
+                            $('#'+key).append(args[0]);
+                            var scrollHeight = $('#'+key).parent().prop("scrollHeight");
+                            $('#'+key).parent().animate({ scrollTop: scrollHeight }, 0);
                         }
                         // record sending this message to a pane, no need to update the default div
                         use_default_pane = false;
@@ -279,9 +280,8 @@ function onText(args, kwargs) {
         var mwin = $("#messagewindow");
         var cls = kwargs == null ? 'out' : kwargs['cls'];
         mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
-        mwin.animate({
-            scrollTop: document.getElementById("messagewindow").scrollHeight
-        }, 0);
+        var scrollHeight = mwin.parent().parent().prop("scrollHeight");
+        mwin.parent().parent().animate({ scrollTop: scrollHeight }, 0);
 
         onNewLine(args[0], null);
     }
