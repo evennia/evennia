@@ -58,6 +58,12 @@ SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server portal connection (for bots)
 PCONNSYNC = chr(12)   # portal post-syncing session
 PDISCONNALL = chr(13)  # portal session discnnect all
+SRELOAD = chr(14)      # server reloading (have portal start a new server)
+SSTART = chr(15)       # server start (portal must already be running anyway)
+PSHUTD = chr(16)       # portal (+server) shutdown
+SSHUTD = chr(17)       # server shutdown
+PSTATUS = chr(18)      # ping server or portal status
+SRESET = chr(19)       # server shutdown in reset mode
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -373,8 +379,10 @@ class ServerSessionHandler(SessionHandler):
             self[sessid] = sess
             sess.at_sync()
 
+        mode = 'reload'
+
         # tell the server hook we synced
-        self.server.at_post_portal_sync()
+        self.server.at_post_portal_sync(mode)
         # announce the reconnection
         self.announce_all(_(" ... Server restarted."))
 
@@ -432,13 +440,28 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SCONN,
                                                          protocol_path=protocol_path, config=configdict)
 
+    def portal_restart_server(self):
+        """
+        Called by server when reloading. We tell the portal to start a new server instance.
+
+        """
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SRELOAD)
+
+    def portal_reset_server(self):
+        """
+        Called by server when reloading. We tell the portal to start a new server instance.
+
+        """
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SRESET)
+
     def portal_shutdown(self):
         """
-        Called by server when shutting down the portal.
+        Called by server when it's time to shut down (the portal will shut us down and then shut
+        itself down)
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
-                                                         operation=SSHUTD)
+                                                         operation=PSHUTD)
 
     def login(self, session, account, force=False, testmode=False):
         """
@@ -563,8 +586,6 @@ class ServerSessionHandler(SessionHandler):
                                                                 operation=SSYNC,
                                                                 sessiondata=session_data,
                                                                 clean=False)
-
-
 
     def disconnect_all_sessions(self, reason="You have been disconnected."):
         """

@@ -88,8 +88,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     Switches:
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
-      account    - replace on account-lookup
-
+      account   - replace on account-lookup
       list      - show all defined aliases (also "nicks" works)
       delete    - remove nick by index in /list
       clearall  - clear all nicks
@@ -118,7 +117,8 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
-    aliases = ["nickname", "nicks", "alias"]
+    switch_options = ("inputline", "object", "account", "list", "delete", "clearall")
+    aliases = ["nickname", "nicks"]
     locks = "cmd:all()"
 
     def parse(self):
@@ -143,7 +143,6 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             return re.sub(r"(\$[0-9]+|\*|\?|\[.+?\])", r"|Y\1|n", string)
 
         caller = self.caller
-        account = self.caller.account or caller
         switches = self.switches
         nicktypes = [switch for switch in switches if switch in ("object", "account", "inputline")]
         specified_nicktype = bool(nicktypes)
@@ -151,7 +150,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         nicklist = (utils.make_iter(caller.nicks.get(category="inputline", return_obj=True) or []) +
                     utils.make_iter(caller.nicks.get(category="object", return_obj=True) or []) +
-                    utils.make_iter(account.nicks.get(category="account", return_obj=True) or []))
+                    utils.make_iter(caller.nicks.get(category="account", return_obj=True) or []))
 
         if 'list' in switches or self.cmdstring in ("nicks", "@nicks"):
 
@@ -174,29 +173,77 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         if 'delete' in switches or 'del' in switches:
             if not self.args or not self.lhs:
-                caller.msg("usage nick/delete #num ('nicks' for list)")
+                caller.msg("usage nick/delete <nick> or <#num> ('nicks' for list)")
                 return
             # see if a number was given
             arg = self.args.lstrip("#")
+            oldnicks = []
             if arg.isdigit():
                 # we are given a index in nicklist
                 delindex = int(arg)
                 if 0 < delindex <= len(nicklist):
-                    oldnick = nicklist[delindex - 1]
-                    _, _, old_nickstring, old_replstring = oldnick.value
+                    oldnicks.append(nicklist[delindex - 1])
                 else:
                     caller.msg("Not a valid nick index. See 'nicks' for a list.")
                     return
-                nicktype = oldnick.category
-                nicktypestr = "%s-nick" % nicktype.capitalize()
+            else:
+                if not specified_nicktype:
+                    nicktypes = ("object", "account", "inputline")
+                for nicktype in nicktypes:
+                    oldnicks.append(caller.nicks.get(arg, category=nicktype, return_obj=True))
 
-                if nicktype == "account":
-                    account.nicks.remove(old_nickstring, category=nicktype)
-                else:
+            oldnicks = [oldnick for oldnick in oldnicks if oldnick]
+            if oldnicks:
+                for oldnick in oldnicks:
+                    nicktype = oldnick.category
+                    nicktypestr = "%s-nick" % nicktype.capitalize()
+                    _, _, old_nickstring, old_replstring = oldnick.value
                     caller.nicks.remove(old_nickstring, category=nicktype)
-                caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
-                           nicktypestr, old_nickstring, old_replstring))
-                return
+                    caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
+                               nicktypestr, old_nickstring, old_replstring))
+            else:
+                caller.msg("No matching nicks to remove.")
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                nicks = utils.make_iter(caller.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                if nicktype == "account":
+                    obj = account
+                else:
+                    obj = caller
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
 
         if not self.rhs and self.lhs:
             # check what a nick is set to
@@ -237,16 +284,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         errstring = ""
         string = ""
         for nicktype in nicktypes:
-            if nicktype == "account":
-                obj = account
-            else:
-                obj = caller
-
             nicktypestr = "%s-nick" % nicktype.capitalize()
             old_nickstring = None
             old_replstring = None
 
-            oldnick = obj.nicks.get(key=nickstring, category=nicktype, return_obj=True)
+            oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
             if oldnick:
                 _, _, old_nickstring, old_replstring = oldnick.value
             if replstring:
@@ -261,7 +303,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 else:
                     string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (nicktypestr, nickstring, replstring)
                 try:
-                    obj.nicks.add(nickstring, replstring, category=nicktype)
+                    caller.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
                     caller.msg("You must use the same $-markers both in the nick and in the replacement.")
                     return
@@ -337,13 +379,17 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
                 caller.msg("You can't get that.")
             return
 
+        # calling at_before_get hook method
+        if not obj.at_before_get(caller):
+            return
+
         obj.move_to(caller, quiet=True)
         caller.msg("You pick up %s." % obj.name)
         caller.location.msg_contents("%s picks up %s." %
                                      (caller.name,
                                       obj.name),
                                      exclude=caller)
-        # calling hook method
+        # calling at_get hook method
         obj.at_get(caller)
 
 
@@ -378,6 +424,10 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
+        # Call the object script's at_before_drop() method.
+        if not obj.at_before_drop(caller):
+            return
+
         obj.move_to(caller.location, quiet=True)
         caller.msg("You drop %s." % (obj.name,))
         caller.location.msg_contents("%s drops %s." %
@@ -392,12 +442,13 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     give away something to someone
 
     Usage:
-      give <inventory obj> = <target>
+      give <inventory obj> <to||=> <target>
 
     Gives an items from your inventory to another character,
     placing it in their inventory.
     """
     key = "give"
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
@@ -420,6 +471,11 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         if not to_give.location == caller:
             caller.msg("You are not holding %s." % to_give.key)
             return
+
+        # calling at_before_give hook method
+        if not to_give.at_before_give(caller, target):
+            return
+
         # give object
         caller.msg("You give %s to %s." % (to_give.key, target.key))
         to_give.move_to(target, quiet=True)
@@ -496,7 +552,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
 
     Usage:
       whisper <character> = <message>
-      whisper <char1>, <char2> = <message?
+      whisper <char1>, <char2> = <message>
 
     Talk privately to one or more characters in your current location, without
     others in the room being informed.
