@@ -1,50 +1,50 @@
 // Use split.js to create a basic ui
 var SplitHandler = (function () {
-  var num_splits = 0;
   var split_panes = {};
 
   var set_pane_types = function(splitpane, types) {
     split_panes[splitpane]['types'] = types;
   }
 
-  var dynamic_split = function(splitpane, direction, update_method1, update_method2) {
-    var first  = ++num_splits;
-    var second = ++num_splits;
 
-    var first_div  = $( '<div id="split_'+first +'" class="split split-'+direction+'" />' )
-    var first_sub  = $( '<div id="split_'+first +'-sub"/>' )
-    var second_div = $( '<div id="split_'+second+'" class="split split-'+direction+'" />' )
-    var second_sub = $( '<div id="split_'+second+'-sub"/>' )
+  var dynamic_split = function(splitpane, direction, pane_name1, pane_name2, update_method1, update_method2, sizes) {
+    // find the sub-div of the pane we are being asked to split
+    splitpanesub = splitpane + '-sub';
 
-    // check to see if this pane contains the primary message window.
-    contents = $('#'+splitpane).contents();
+    // create the new div stack to replace the sub-div with.
+    var first_div  = $( '<div id="'+pane_name1+'" class="split split-'+direction+'" />' )
+    var first_sub  = $( '<div id="'+pane_name1+'-sub" class="split-sub" />' )
+    var second_div = $( '<div id="'+pane_name2+'" class="split split-'+direction+'" />' )
+    var second_sub = $( '<div id="'+pane_name2+'-sub" class="split-sub" />' )
+
+    // check to see if this sub-pane contains anything
+    contents = $('#'+splitpanesub).contents();
     if( contents ) {
-      // it does, so move it to the first new div (TODO -- selectable between first/second?)
+      // it does, so move it to the first new div-sub (TODO -- selectable between first/second?)
       contents.appendTo(first_sub);
     }
-
     first_div.append( first_sub );
     second_div.append( second_sub );
 
-    // update the split_panes array to remove this split
+    // update the split_panes array to remove this pane name
     delete( split_panes[splitpane] );
 
     // now vaporize the current split_N-sub placeholder and create two new panes.
-    $('#'+splitpane).parent().append(first_div);
-    $('#'+splitpane).parent().append(second_div);
-    $('#'+splitpane).remove();
+    $('#'+splitpane).append(first_div);
+    $('#'+splitpane).append(second_div);
+    $('#'+splitpane+'-sub').remove();
 
     // And split
-    Split(['#split_'+first,'#split_'+second], {
+    Split(['#'+pane_name1,'#'+pane_name2], {
       direction: direction,
-      sizes: [50,50],
+      sizes: sizes,
       gutterSize: 4,
       minSize: [50,50],
     });
 
-    // store our new splits for future splits/uses by the main UI.
-    split_panes['split_'+first +'-sub'] = { 'types': [], 'update_method': update_method1 };
-    split_panes['split_'+second+'-sub'] = { 'types': [], 'update_method': update_method2 };
+    // store our new split sub-divs for future splits/uses by the main UI.
+    split_panes[pane_name1] = { 'types': [], 'update_method': update_method1 };
+    split_panes[pane_name2] = { 'types': [], 'update_method': update_method2 };
   }
 
 
@@ -63,7 +63,7 @@ var SplitHandler = (function () {
       minSize: [50,50],
     });
 
-    split_panes['main-sub'] = {'types': [], 'update_method': 'append'};
+    split_panes['main']  = { 'types': [], 'update_method': 'append' };
 
     var input_render = Mustache.render(input_template);
     $('[data-role-input]').html(input_render);

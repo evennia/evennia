@@ -147,6 +147,19 @@ div {margin:0px;}
     cursor: pointer;
 }
 
+.button {
+    width: fit-content;
+    padding: 1em;
+    color: black;
+    border: 1px solid black;
+    background-color: darkgray;
+    margin: 0 auto;
+}
+
+.splitbutton:hover {
+    cursor: pointer;
+}
+
 #optionsbutton {
     width: 2rem;
     font-size: 2rem;
@@ -254,6 +267,10 @@ div {margin:0px;}
 
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.split-sub {
+    padding: .5rem;
 }
 
 .content {
