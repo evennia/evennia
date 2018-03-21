@@ -15,6 +15,7 @@
 (function () {
 "use strict"
 
+var num_splits = 0;
 
 var options = {};
 
@@ -167,7 +168,7 @@ function onKeydown (event) {
       return;
     }
 
-    inputfield.focus();
+    //inputfield.focus();
 
     if (code === 13) { // Enter key sends text
         doSendText();
@@ -245,31 +246,23 @@ function onText(args, kwargs) {
             known_types.push(msgtype);
         }
 
-        if ( msgtype == 'help' ) {
-            if (("helppopup" in options) && (options["helppopup"])) {
-                openPopup("#helpdialog", args[0]);
-                return;
-            }
-            // fall through to the default output
-
-        } else {
-            // pass this message to each pane that has this msgtype mapped
-            if( SplitHandler ) {
-                for ( var key in SplitHandler.split_panes) {
-                    var pane = SplitHandler.split_panes[key];
-                    // is this message type mapped to this pane?
-                    if ( (pane['types'].length > 0) && pane['types'].includes(msgtype) ) {
-                        // yes, so append/replace this pane's inner div with this message
-                        if ( pane['update_method'] == 'replace' ) {
-                            $('#'+key).html(args[0])
-                        } else {
-                            $('#'+key).append(args[0]);
-                            var scrollHeight = $('#'+key).parent().prop("scrollHeight");
-                            $('#'+key).parent().animate({ scrollTop: scrollHeight }, 0);
-                        }
-                        // record sending this message to a pane, no need to update the default div
-                        use_default_pane = false;
+        // pass this message to each pane that has this msgtype mapped
+        if( SplitHandler ) {
+            for ( var key in SplitHandler.split_panes) {
+                var pane = SplitHandler.split_panes[key];
+                // is this message type mapped to this pane?
+                if ( (pane['types'].length > 0) && pane['types'].includes(msgtype) ) {
+                    // yes, so append/replace this pane's inner div with this message
+                    var text_div = $('#'+key+'-sub');
+                    if ( pane['update_method'] == 'replace' ) {
+                        text_div.html(args[0])
+                    } else {
+                        text_div.append(args[0]);
+                        var scrollHeight = text_div.parent().prop("scrollHeight");
+                        text_div.parent().animate({ scrollTop: scrollHeight }, 0);
                     }
+                    // record sending this message to a pane, no need to update the default div
+                    use_default_pane = false;
                 }
             }
         }
@@ -441,18 +434,38 @@ function doStartDragDialog(event) {
     $(document).bind("mouseup", undrag);
 }
 
-
 function onSplitDialogClose() {
     var pane      = $("input[name=pane]:checked").attr("value");
     var direction = $("input[name=direction]:checked").attr("value");
+    var new_pane1 = $("input[name=new_pane1]").val();
+    var new_pane2 = $("input[name=new_pane2]").val();
     var flow1     = $("input[name=flow1]:checked").attr("value");
     var flow2     = $("input[name=flow2]:checked").attr("value");
 
-    SplitHandler.dynamic_split( pane, direction, flow1, flow2 );
+    if( new_pane1 == "" ) {
+        new_pane1 = 'pane_'+num_splits;
+        num_splits++;
+    }
+
+    if( new_pane2 == "" ) {
+        new_pane2 = 'pane_'+num_splits;
+        num_splits++;
+    }
+
+    if( document.getElementById(new_pane1) ) {
+        alert('An element: "' + new_pane1 + '" already exists');
+        return;
+    }
+
+    if( document.getElementById(new_pane2) ) {
+        alert('An element: "' + new_pane2 + '" already exists');
+        return;
+    }
+
+    SplitHandler.dynamic_split( pane, direction, new_pane1, new_pane2, flow1, flow2, [50,50] );
 
     closePopup("#splitdialog");
 }
-
 
 function onSplitDialog() {
     var dialog = $("#splitdialogcontent");
@@ -466,6 +479,10 @@ function onSplitDialog() {
     for ( var pane in SplitHandler.split_panes ) {
         dialog.append('<input type="radio" name="pane" value="'+ pane +'">'+ pane +'<br />');
     }
+
+    dialog.append("<h3>New Pane Names</h3>");
+    dialog.append('<input type="text" name="new_pane1" value="" />');
+    dialog.append('<input type="text" name="new_pane2" value="" />');
 
     dialog.append("<h3>New First Pane Flow</h3>");
     dialog.append('<input type="radio" name="flow1" value="append" checked>append<br />');
