@@ -129,20 +129,28 @@ div {margin:0px;}
   max-height: 3rem;
 }
 
-.splitbutton {
-    position: absolute;
-    right: 1%;
-    top: 1%;
-    z-index: 1;
+#splitbutton {
     width: 2rem;
-    height: 2rem;
     font-size: 2rem;
     color: #a6a6a6;
     background-color: transparent;
     border: 0px;
 }
 
-.splitbutton:hover {
+#splitbutton:hover {
+    color: white;
+    cursor: pointer;
+}
+
+#panebutton {
+    width: 2rem;
+    font-size: 2rem;
+    color: #a6a6a6;
+    background-color: transparent;
+    border: 0px;
+}
+
+#panebutton:hover {
     color: white;
     cursor: pointer;
 }

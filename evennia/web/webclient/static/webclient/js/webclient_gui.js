@@ -496,7 +496,7 @@ function onSplitDialog() {
 
     $("#splitclose").bind("click", onSplitDialogClose);
 
-    openPopup("#splitdialog");
+    togglePopup("#splitdialog");
 }
 
 function onPaneControlDialogClose() {
@@ -530,7 +530,7 @@ function onPaneControlDialog() {
 
     $("#paneclose").bind("click", onPaneControlDialogClose);
 
-    openPopup("#splitdialog");
+    togglePopup("#splitdialog");
 }
 
 //
