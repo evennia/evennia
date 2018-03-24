@@ -725,7 +725,6 @@ def _set_property(caller, raw_string, **kwargs):
     meta = propname_low.startswith("meta_")
     if meta:
         propname_low = propname_low[5:]
-    raw_string = raw_string.strip()
 
     if callable(processor):
         try:
@@ -763,25 +762,27 @@ def _wizard_options(prev_node, next_node):
     return options
 
 
+# menu nodes
+
 def node_index(caller):
     metaprot = _get_menu_metaprot(caller)
     prototype = metaprot.prototype
 
     text = ("|c --- Prototype wizard --- |n\n\n"
-            "Define properties of the prototype. All prototype values can be over-ridden at "
-            "the time of spawning an instance of the prototype, but some are required.\n\n"
-            "'Meta'-properties are not used in the prototype itself but are used to organize and "
-            "list prototypes. The 'Meta-Key' uniquely identifies the prototype and allows you to "
-            "edit an existing prototype or save a new one for use by you or others later.\n\n"
-            "(make choice; q to abort. If unsure, start from 1.)")
+            "Define the |yproperties|n of the prototype. All prototype values can be "
+            "over-ridden at the time of spawning an instance of the prototype, but some are "
+            "required.\n\n'|wMeta'-properties|n are not used in the prototype itself but are used "
+            "to organize and list prototypes. The 'Meta-Key' uniquely identifies the prototype "
+            "and allows you to edit an existing prototype or save a new one for use by you or "
+            "others later.\n\n(make choice; q to abort. If unsure, start from 1.)")
 
     options = []
     # The meta-key goes first
     options.append(
         {"desc": "|WMeta-Key|n|n{}".format(_format_property("Key", True, metaprot, None)),
          "goto": "node_meta_key"})
-    for key in ('Prototype', 'Typeclass', 'Key', 'Aliases', 'Home', 'Destination',
-                'Permissions', 'Locks', 'Location', 'Tags', 'Attrs'):
+    for key in ('Prototype', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
+                'Permissions', 'Location', 'Home', 'Destination'):
         req = False
         if key in ("Prototype", "Typeclass"):
             req = "prototype" not in prototype and "typeclass" not in prototype
@@ -812,84 +813,66 @@ def _check_meta_key(caller, key):
             del caller.ndb._menutree.olc_new
             caller.ndb._menutree.olc_metaprot = old_metaprot
             caller.msg("Prototype already exists. Reloading.")
-            return "node_meta_index"
+            return "node_index"
 
-    return _set_property(caller, key, prop='meta_key', next_node="node_meta_desc")
+    return _set_property(caller, key, prop='meta_key', next_node="node_prototype")
 
 
 def node_meta_key(caller):
     metaprot = _get_menu_metaprot(caller)
-    text = ["The prototype name, or |cmeta-key|n, uniquely identifies the prototype. "
+    text = ["The prototype name, or |wMeta-Key|n, uniquely identifies the prototype. "
             "It is used to find and use the prototype to spawn new entities. "
             "It is not case sensitive."]
     old_key = metaprot.key
     if old_key:
-        text.append("Current key is '|y{key}|n'".format(key=old_key))
+        text.append("Current key is '|w{key}|n'".format(key=old_key))
     else:
         text.append("The key is currently unset.")
     text.append("Enter text or make a choice (q for quit)")
     text = "\n\n".join(text)
-    options = _wizard_options("index", "meta_desc")
+    options = _wizard_options("index", "prototype")
     options.append({"key": "_default",
                     "goto": _check_meta_key})
     return text, options
 
 
-def node_meta_desc(caller):
-
+def node_prototype(caller):
     metaprot = _get_menu_metaprot(caller)
-    text = ["|cDescribe|n briefly the prototype for viewing in listings."]
-    desc = metaprot.desc
+    prot = metaprot.prototype
+    prototype = prot.get("prototype")
 
-    if desc:
-        text.append("The current meta desc is:\n\"|y{desc}|n\"".format(desc=desc))
+    text = ["Set the prototype's parent |yPrototype|n. If this is unset, Typeclass will be used."]
+    if prototype:
+        text.append("Current prototype is |y{prototype}|n.".format(prototype=prototype))
     else:
-        text.append("Description is currently unset.")
+        text.append("Parent prototype is not set")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_key", "meta_tags")
+    options = _wizard_options("meta_key", "typeclass")
     options.append({"key": "_default",
                     "goto": (_set_property,
-                             dict(prop='meta_desc', next_node="node_meta_tags"))})
+                             dict(prop="prototype",
+                                  processor=lambda s: s.strip(),
+                                  next_node="node_typeclass"))})
     return text, options
 
 
-def node_meta_tags(caller):
+def node_typeclass(caller):
     metaprot = _get_menu_metaprot(caller)
-    text = ["|cTags|n can be used to classify and find prototypes. Tags are case-insensitive. "
-            "Separate multiple by tags by commas."]
-    tags = metaprot.tags
+    prot = metaprot.prototype
+    typeclass = prot.get("typeclass")
 
-    if tags:
-        text.append("The current tags are:\n|y{tags}|n".format(tags=tags))
+    text = ["Set the typeclass's parent |yTypeclass|n."]
+    if typeclass:
+        text.append("Current typeclass is |y{typeclass}|n.".format(typeclass=typeclass))
     else:
-        text.append("No tags are currently set.")
+        text.append("Using default typeclass {typeclass}.".format(
+            typeclass=settings.BASE_OBJECT_TYPECLASS))
     text = "\n\n".join(text)
-    options = _wizard_options("meta_desc", "meta_locks")
+    options = _wizard_options("prototype", "key")
     options.append({"key": "_default",
                     "goto": (_set_property,
-                             dict(prop="meta_tags",
-                                  processor=lambda s: [str(part.strip()) for part in s.split(",")],
-                                  next_node="node_meta_locks"))})
-    return text, options
-
-
-def node_meta_locks(caller):
-    metaprot = _get_menu_metaprot(caller)
-    text = ["Set |ylocks|n on the prototype. There are two valid lock types: "
-            "'edit' (who can edit the prototype) and 'use' (who can apply the prototype)\n"
-            "(If you are unsure, leave as default.)"]
-    locks = metaprot.locks
-    if locks:
-        text.append("Current lock is |y'{lockstring}'|n".format(lockstring=locks))
-    else:
-        text.append("Lock unset - if not changed the default lockstring will be set as\n"
-                    "   |y'use:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
-    text = "\n\n".join(text)
-    options = _wizard_options("meta_tags", "prototype")
-    options.append({"key": "_default",
-                    "desc": "enter lockstring",
-                    "goto": (_set_property,
-                             dict(prop="meta_locks",
+                             dict(prop="typeclass",
+                                  processor=lambda s: s.strip(),
                                   next_node="node_key"))})
     return text, options
 
@@ -899,15 +882,248 @@ def node_key(caller):
     prot = metaprot.prototype
     key = prot.get("key")
 
-    text = ["Set the prototype's |ykey|n."]
+    text = ["Set the prototype's |yKey|n. This will retain case sensitivity."]
     if key:
-        text.append("Current key value is '|y{}|n'.")
+        text.append("Current key value is '|y{key}|n'.".format(key=key))
     else:
         text.append("Key is currently unset.")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_locks",
+    options = _wizard_options("typeclass", "aliases")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="key",
+                                  processor=lambda s: s.strip(),
+                                  next_node="node_aliases"))})
+    return text, options
 
-    return "\n".join(text), options
+
+def node_aliases(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    aliases = prot.get("aliases")
+
+    text = ["Set the prototype's |yAliases|n. Separate multiple aliases with commas. "
+            "ill retain case sensitivity."]
+    if aliases:
+        text.append("Current aliases are '|y{aliases}|n'.".format(aliases=aliases))
+    else:
+        text.append("No aliases are set.")
+    text = "\n\n".join(text)
+    options = _wizard_options("key", "attrs")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="aliases",
+                                  processor=lambda s: [part.strip() for part in s.split(",")],
+                                  next_node="node_attrs"))})
+    return text, options
+
+
+def node_attrs(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    attrs = prot.get("attrs")
+
+    text = ["Set the prototype's |yAttributes|n. Separate multiple attrs with commas. "
+            "Will retain case sensitivity."]
+    if attrs:
+        text.append("Current attrs are '|y{attrs}|n'.".format(attrs=attrs))
+    else:
+        text.append("No attrs are set.")
+    text = "\n\n".join(text)
+    options = _wizard_options("aliases", "tags")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="attrs",
+                                  processor=lambda s: [part.strip() for part in s.split(",")],
+                                  next_node="node_tags"))})
+    return text, options
+
+
+def node_tags(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    tags = prot.get("tags")
+
+    text = ["Set the prototype's |yTags|n. Separate multiple tags with commas. "
+            "Will retain case sensitivity."]
+    if tags:
+        text.append("Current tags are '|y{tags}|n'.".format(tags=tags))
+    else:
+        text.append("No tags are set.")
+    text = "\n\n".join(text)
+    options = _wizard_options("attrs", "locks")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="tags",
+                                  processor=lambda s: [part.strip() for part in s.split(",")],
+                                  next_node="node_locks"))})
+    return text, options
+
+
+def node_locks(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    locks = prot.get("locks")
+
+    text = ["Set the prototype's |yLock string|n. Separate multiple locks with semi-colons. "
+            "Will retain case sensitivity."]
+    if locks:
+        text.append("Current locks are '|y{locks}|n'.".format(locks=locks))
+    else:
+        text.append("No locks are set.")
+    text = "\n\n".join(text)
+    options = _wizard_options("tags", "permissions")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="locks",
+                                  processor=lambda s: s.strip(),
+                                  next_node="node_permissions"))})
+    return text, options
+
+
+def node_permissions(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    permissions = prot.get("permissions")
+
+    text = ["Set the prototype's |yPermissions|n. Separate multiple permissions with commas. "
+            "Will retain case sensitivity."]
+    if permissions:
+        text.append("Current permissions are '|y{permissions}|n'.".format(permissions=permissions))
+    else:
+        text.append("No permissions are set.")
+    text = "\n\n".join(text)
+    options = _wizard_options("destination", "location")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="permissions",
+                                  processor=lambda s: [part.strip() for part in s.split(",")],
+                                  next_node="node_location"))})
+    return text, options
+
+
+def node_location(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    location = prot.get("location")
+
+    text = ["Set the prototype's |yLocation|n"]
+    if location:
+        text.append("Current location is |y{location}|n.".format(location=location))
+    else:
+        text.append("Default location is {}'s inventory.".format(caller))
+    text = "\n\n".join(text)
+    options = _wizard_options("permissions", "home")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="location",
+                                  processor=lambda s: s.strip(),
+                                  next_node="node_home"))})
+    return text, options
+
+
+def node_home(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    home = prot.get("home")
+
+    text = ["Set the prototype's |yHome location|n"]
+    if home:
+        text.append("Current home location is |y{home}|n.".format(home=home))
+    else:
+        text.append("Default home location (|y{home}|n) used.".format(home=settings.DEFAULT_HOME))
+    text = "\n\n".join(text)
+    options = _wizard_options("aliases", "destination")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="home",
+                                  processor=lambda s: s.strip(),
+                                  next_node="node_destination"))})
+    return text, options
+
+
+def node_destination(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    dest = prot.get("dest")
+
+    text = ["Set the prototype's |yDestination|n. This is usually only used for Exits."]
+    if dest:
+        text.append("Current destination is |y{dest}|n.".format(dest=dest))
+    else:
+        text.append("No destination is set (default).")
+    text = "\n\n".join(text)
+    options = _wizard_options("home", "meta_desc")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="dest",
+                                  processor=lambda s: s.strip(),
+                                  next_node="node_meta_desc"))})
+    return text, options
+
+
+def node_meta_desc(caller):
+
+    metaprot = _get_menu_metaprot(caller)
+    text = ["The |wMeta-Description|n briefly describes the prototype for viewing in listings."]
+    desc = metaprot.desc
+
+    if desc:
+        text.append("The current meta desc is:\n\"|w{desc}|n\"".format(desc=desc))
+    else:
+        text.append("Description is currently unset.")
+    text = "\n\n".join(text)
+    options = _wizard_options("meta_key", "meta_tags")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop='meta_desc',
+                                  processor=lambda s: s.strip(),
+                                  next_node="node_meta_tags"))})
+
+    return text, options
+
+
+def node_meta_tags(caller):
+    metaprot = _get_menu_metaprot(caller)
+    text = ["|wMeta-Tags|n can be used to classify and find prototypes. Tags are case-insensitive. "
+            "Separate multiple by tags by commas."]
+    tags = metaprot.tags
+
+    if tags:
+        text.append("The current tags are:\n|w{tags}|n".format(tags=tags))
+    else:
+        text.append("No tags are currently set.")
+    text = "\n\n".join(text)
+    options = _wizard_options("meta_desc", "meta_locks")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="meta_tags",
+                                  processor=lambda s: [
+                                    str(part.strip().lower()) for part in s.split(",")],
+                                  next_node="node_meta_locks"))})
+    return text, options
+
+
+def node_meta_locks(caller):
+    metaprot = _get_menu_metaprot(caller)
+    text = ["Set |wMeta-Locks|n on the prototype. There are two valid lock types: "
+            "'edit' (who can edit the prototype) and 'use' (who can apply the prototype)\n"
+            "(If you are unsure, leave as default.)"]
+    locks = metaprot.locks
+    if locks:
+        text.append("Current lock is |w'{lockstring}'|n".format(lockstring=locks))
+    else:
+        text.append("Lock unset - if not changed the default lockstring will be set as\n"
+                    "   |w'use:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
+    text = "\n\n".join(text)
+    options = _wizard_options("meta_tags", "index")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="meta_locks",
+                                  processor=lambda s: s.strip().lower(),
+                                  next_node="node_index"))})
+    return text, options
+
 
 
 def start_olc(caller, session=None, metaproto=None):
@@ -923,10 +1139,21 @@ def start_olc(caller, session=None, metaproto=None):
     """
     menudata = {"node_index": node_index,
                 "node_meta_key": node_meta_key,
+                "node_prototype": node_prototype,
+                "node_typeclass": node_typeclass,
+                "node_key": node_key,
+                "node_aliases": node_aliases,
+                "node_attrs": node_attrs,
+                "node_tags": node_tags,
+                "node_locks": node_locks,
+                "node_permissions": node_permissions,
+                "node_location": node_location,
+                "node_home": node_home,
+                "node_destination": node_destination,
                 "node_meta_desc": node_meta_desc,
                 "node_meta_tags": node_meta_tags,
                 "node_meta_locks": node_meta_locks,
-                "node_key": node_key}
+                }
     EvMenu(caller, menudata, startnode='node_index', session=session, olc_metaproto=metaproto)
 
 
