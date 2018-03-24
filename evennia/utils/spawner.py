@@ -671,6 +671,10 @@ def _get_menu_metaprot(caller):
     return metaproto
 
 
+def _is_new_prototype(caller):
+    return hasattr(caller.ndb._menutree, "olc_new")
+
+
 def _set_menu_metaprot(caller, field, value):
     metaprot = _get_menu_metaprot(caller)
     kwargs = dict(metaprot.__dict__)
@@ -678,30 +682,121 @@ def _set_menu_metaprot(caller, field, value):
     caller.ndb._menutree.olc_metaprot = build_metaproto(**kwargs)
 
 
-def node_meta_index(caller):
-    metaprot = _get_menu_metaprot(caller)
-    key = "|g{}|n".format(
-        crop(metaprot.key, _MENU_CROP_WIDTH)) if metaprot.key else "|rundefined, required|n"
-    desc = "|g{}|n".format(
-        crop(metaprot.desc, _MENU_CROP_WIDTH)) if metaprot.desc else "''"
-    tags = "|g{}|n".format(
-        crop(", ".join(metaprot.tags), _MENU_CROP_WIDTH)) if metaprot.tags else []
-    locks = "|g{}|n".format(
-        crop(", ".join(metaprot.locks), _MENU_CROP_WIDTH)) if metaprot.tags else []
-    prot = "|gdefined|n" if metaprot.prototype else "|rundefined, required|n"
+def _format_property(key, required=False, metaprot=None, prototype=None):
+    key = key.lower()
+    if metaprot is not None:
+        prop = getattr(metaprot, key) or ''
+    elif prototype is not None:
+        prop = prototype.get(key, '')
 
-    text = ("|c --- Prototype wizard --- |n\n"
-            "(make choice; q to abort, h for help)")
-    options = (
-        {"desc": "Key ({})".format(key), "goto": "node_meta_key"},
-        {"desc": "Description ({})".format(desc), "goto": "node_meta_desc"},
-        {"desc": "Tags ({})".format(tags), "goto": "node_meta_tags"},
-        {"desc": "Locks ({})".format(locks), "goto": "node_meta_locks"},
-        {"desc": "Prototype[menu] ({})".format(prot), "goto": "node_prototype_index"})
+    out = prop
+    if callable(prop):
+        if hasattr(prop, '__name__'):
+            out = "<{}>".format(prop.__name__)
+        else:
+            out = repr(prop)
+    if is_iter(prop):
+        out = ", ".join(str(pr) for pr in prop)
+    if not out and required:
+        out = "|rrequired"
+    return " ({}|n)".format(crop(out, _MENU_CROP_WIDTH))
+
+
+def _set_property(caller, raw_string, **kwargs):
+    """
+    Update a property. To be called by the 'goto' option variable.
+
+    Args:
+        caller (Object, Account): The user of the wizard.
+        raw_string (str): Input from user on given node - the new value to set.
+    Kwargs:
+        prop (str): Property name to edit with `raw_string`.
+        processor (callable): Converts `raw_string` to a form suitable for saving.
+        next_node (str): Where to redirect to after this has run.
+    Returns:
+        next_node (str): Next node to go to.
+
+    """
+    prop = kwargs.get("prop", "meta_key")
+    processor = kwargs.get("processor", None)
+    next_node = kwargs.get("next_node", "node_index")
+
+    propname_low = prop.strip().lower()
+    meta = propname_low.startswith("meta_")
+    if meta:
+        propname_low = propname_low[5:]
+    raw_string = raw_string.strip()
+
+    if callable(processor):
+        try:
+            value = processor(raw_string)
+        except Exception as err:
+            caller.msg("Could not set {prop} to {value} ({err})".format(
+                       prop=prop.replace("_", "-").capitalize(), value=raw_string, err=str(err)))
+            # this means we'll re-run the current node.
+            return None
+    else:
+        value = raw_string
+
+    if meta:
+        _set_menu_metaprot(caller, propname_low, value)
+    else:
+        metaprot = _get_menu_metaprot(caller)
+        prototype = metaprot.prototype
+        prototype[propname_low] = value
+        _set_menu_metaprot(caller, "prototype", prototype)
+
+    caller.msg("Set {prop} to {value}.".format(
+        prop=prop.replace("_", "-").capitalize(), value=str(value)))
+
+    return next_node
+
+
+def _wizard_options(prev_node, next_node):
+    options = [{"desc": "forward ({})".format(next_node.replace("_", "-")),
+                "goto": "node_{}".format(next_node)},
+               {"desc": "back ({})".format(prev_node.replace("_", "-")),
+                "goto": "node_{}".format(prev_node)}]
+    if "index" not in (prev_node, next_node):
+        options.append({"desc": "index",
+                        "goto": "node_index"})
+    return options
+
+
+def node_index(caller):
+    metaprot = _get_menu_metaprot(caller)
+    prototype = metaprot.prototype
+
+    text = ("|c --- Prototype wizard --- |n\n\n"
+            "Define properties of the prototype. All prototype values can be over-ridden at "
+            "the time of spawning an instance of the prototype, but some are required.\n\n"
+            "'Meta'-properties are not used in the prototype itself but are used to organize and "
+            "list prototypes. The 'Meta-Key' uniquely identifies the prototype and allows you to "
+            "edit an existing prototype or save a new one for use by you or others later.\n\n"
+            "(make choice; q to abort. If unsure, start from 1.)")
+
+    options = []
+    # The meta-key goes first
+    options.append(
+        {"desc": "|WMeta-Key|n|n{}".format(_format_property("Key", True, metaprot, None)),
+         "goto": "node_meta_key"})
+    for key in ('Prototype', 'Typeclass', 'Key', 'Aliases', 'Home', 'Destination',
+                'Permissions', 'Locks', 'Location', 'Tags', 'Attrs'):
+        req = False
+        if key in ("Prototype", "Typeclass"):
+            req = "prototype" not in prototype and "typeclass" not in prototype
+        options.append(
+            {"desc": "|w{}|n{}".format(key, _format_property(key, req, None, prototype)),
+             "goto": "node_{}".format(key.lower())})
+    for key in ('Desc', 'Tags', 'Locks'):
+        options.append(
+            {"desc": "|WMeta-{}|n|n{}".format(key, _format_property(key, req, metaprot, None)),
+             "goto": "node_meta_{}".format(key.lower())})
+
     return text, options
 
 
-def _node_check_key(caller, key):
+def _check_meta_key(caller, key):
     old_metaprot = search_prototype(key)
     olc_new = caller.ndb._menutree.olc_new
     key = key.strip().lower()
@@ -719,15 +814,12 @@ def _node_check_key(caller, key):
             caller.msg("Prototype already exists. Reloading.")
             return "node_meta_index"
 
-    # continue on
-    _set_menu_metaprot(caller, 'key', key)
-    caller.msg("Key '{key}' was set.".format(key=key))
-    return "node_meta_desc"
+    return _set_property(caller, key, prop='meta_key', next_node="node_meta_desc")
 
 
 def node_meta_key(caller):
     metaprot = _get_menu_metaprot(caller)
-    text = ["The prototype name, or |ckey|n, uniquely identifies the prototype. "
+    text = ["The prototype name, or |cmeta-key|n, uniquely identifies the prototype. "
             "It is used to find and use the prototype to spawn new entities. "
             "It is not case sensitive."]
     old_key = metaprot.key
@@ -735,23 +827,12 @@ def node_meta_key(caller):
         text.append("Current key is '|y{key}|n'".format(key=old_key))
     else:
         text.append("The key is currently unset.")
-    text.append("Enter text or make a choice (q for quit, h for help)")
-    text = "\n".join(text)
-    options = ({"desc": "forward (desc)",
-                "goto": "node_meta_desc"},
-               {"desc": "back (index)",
-                "goto": "node_meta_index"},
-               {"key": "_default",
-                "desc": "enter a key",
-                "goto": _node_check_key})
+    text.append("Enter text or make a choice (q for quit)")
+    text = "\n\n".join(text)
+    options = _wizard_options("index", "meta_desc")
+    options.append({"key": "_default",
+                    "goto": _check_meta_key})
     return text, options
-
-
-def _node_check_desc(caller, desc):
-    desc = desc.strip()
-    _set_menu_metaprot(caller, 'desc', desc)
-    caller.msg("Description was set to '{desc}'.".format(desc=desc))
-    return "node_meta_tags"
 
 
 def node_meta_desc(caller):
@@ -764,23 +845,12 @@ def node_meta_desc(caller):
         text.append("The current meta desc is:\n\"|y{desc}|n\"".format(desc=desc))
     else:
         text.append("Description is currently unset.")
-    text = "\n".join(text)
-    options = ({"desc": "forward (tags)",
-                "goto": "node_meta_tags"},
-               {"desc": "back (key)",
-                "goto": "node_meta_key"},
-               {"key": "_default",
-                "desc": "enter a description",
-                "goto": _node_check_desc})
-
+    text = "\n\n".join(text)
+    options = _wizard_options("meta_key", "meta_tags")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop='meta_desc', next_node="node_meta_tags"))})
     return text, options
-
-
-def _node_check_tags(caller, tags):
-    tags = [part.strip().lower() for part in tags.split(",")]
-    _set_menu_metaprot(caller, 'tags', tags)
-    caller.msg("Tags {tags} were set".format(tags=tags))
-    return "node_meta_locks"
 
 
 def node_meta_tags(caller):
@@ -793,22 +863,14 @@ def node_meta_tags(caller):
         text.append("The current tags are:\n|y{tags}|n".format(tags=tags))
     else:
         text.append("No tags are currently set.")
-    text = "\n".join(text)
-    options = ({"desc": "forward (locks)",
-                "goto": "node_meta_locks"},
-               {"desc": "back (desc)",
-                "goto": "node_meta_desc"},
-               {"key": "_default",
-                "desc": "enter tags separated by commas",
-                "goto": _node_check_tags})
+    text = "\n\n".join(text)
+    options = _wizard_options("meta_desc", "meta_locks")
+    options.append({"key": "_default",
+                    "goto": (_set_property,
+                             dict(prop="meta_tags",
+                                  processor=lambda s: [str(part.strip()) for part in s.split(",")],
+                                  next_node="node_meta_locks"))})
     return text, options
-
-
-def _node_check_locks(caller, lockstring):
-    # TODO - have a way to validate lock string here
-    _set_menu_metaprot(caller, 'locks', lockstring)
-    caller.msg("Set lockstring '{lockstring}'.".format(lockstring=lockstring))
-    return "node_prototype_index"
 
 
 def node_meta_locks(caller):
@@ -822,24 +884,30 @@ def node_meta_locks(caller):
     else:
         text.append("Lock unset - if not changed the default lockstring will be set as\n"
                     "   |y'use:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
-    text = "\n".join(text)
-    options = ({"desc": "forward (prototype)",
-                "goto": "node_prototype_index"},
-               {"desc": "back (tags)",
-                "goto": "node_meta_tags"},
-               {"key": "_default",
-                "desc": "enter lockstring",
-                "goto": _node_check_locks})
-
+    text = "\n\n".join(text)
+    options = _wizard_options("meta_tags", "prototype")
+    options.append({"key": "_default",
+                    "desc": "enter lockstring",
+                    "goto": (_set_property,
+                             dict(prop="meta_locks",
+                                  next_node="node_key"))})
     return text, options
 
 
-def node_prototype_index(caller):
+def node_key(caller):
     metaprot = _get_menu_metaprot(caller)
-    text = ["  |c--- Prototype menu --- |n"
-    ]
+    prot = metaprot.prototype
+    key = prot.get("key")
 
-    pass
+    text = ["Set the prototype's |ykey|n."]
+    if key:
+        text.append("Current key value is '|y{}|n'.")
+    else:
+        text.append("Key is currently unset.")
+    text = "\n\n".join(text)
+    options = _wizard_options("meta_locks",
+
+    return "\n".join(text), options
 
 
 def start_olc(caller, session=None, metaproto=None):
@@ -853,14 +921,13 @@ def start_olc(caller, session=None, metaproto=None):
             prototype rather than creating a new one.
 
     """
-
-    menudata = {"node_meta_index": node_meta_index,
+    menudata = {"node_index": node_index,
                 "node_meta_key": node_meta_key,
                 "node_meta_desc": node_meta_desc,
                 "node_meta_tags": node_meta_tags,
                 "node_meta_locks": node_meta_locks,
-                "node_prototype_index": node_prototype_index}
-    EvMenu(caller, menudata, startnode='node_meta_index', session=session, olc_metaproto=metaproto)
+                "node_key": node_key}
+    EvMenu(caller, menudata, startnode='node_index', session=session, olc_metaproto=metaproto)
 
 
 # Testing

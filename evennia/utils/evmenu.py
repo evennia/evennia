@@ -43,13 +43,18 @@ command definition too) with function definitions:
     def node_with_other_name(caller, input_string):
         # code
         return text, options
+
+    def another_node(caller, input_string, **kwargs):
+        # code
+        return text, options
 ```
 
 Where caller is the object using the menu and input_string is the
 command entered by the user on the *previous* node (the command
 entered to get to this node). The node function code will only be
 executed once per node-visit and the system will accept nodes with
-both one or two arguments interchangeably.
+both one or two arguments interchangeably. It also accepts nodes
+that takes **kwargs.
 
 The menu tree itself is available on the caller as
 `caller.ndb._menutree`. This makes it a convenient place to store
@@ -82,12 +87,14 @@ menu is immediately exited and the default "look" command is called.
                 the callable. Those kwargs will also be passed into the next node if possible.
                 Such a callable should return either a str or a (str, dict), where the
                 string is the name of the next node to go to and the dict is the new,
-                (possibly modified) kwarg to pass into the next node.
+                (possibly modified) kwarg to pass into the next node. If the callable returns
+                None or the empty string, the current node will be revisited.
             - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above
                 and runs before it. If given a node name, the node will be executed but will not
                 be considered the next node. If node/callback returns str or (str, dict), these will
                 replace the `goto` step (`goto` callbacks will not fire), with the string being the
                 next node name and the optional dict acting as the kwargs-input for the next node.
+                If an exec callable returns the empty string (only), the current node is re-run.
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
@@ -669,6 +676,9 @@ class EvMenu(object):
 
         if isinstance(ret, basestring):
             # only return a value if a string (a goto target), ignore all other returns
+            if not ret:
+                # an empty string - rerun the same node
+                return self.nodename
             return ret, kwargs
         return None
 
@@ -718,6 +728,9 @@ class EvMenu(object):
                     raise EvMenuError(
                             "{}: goto callable must return str or (str, dict)".format(inp_nodename))
                 nodename, kwargs = nodename[:2]
+            if not nodename:
+                # no nodename return. Re-run current node
+                nodename = self.nodename
         try:
             # execute the found node, make use of the returns.
             nodetext, options = self._execute_node(nodename, raw_string, **kwargs)
