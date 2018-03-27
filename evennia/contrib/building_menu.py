@@ -48,6 +48,7 @@ def show_exits(menu
 """
 
 from inspect import getargspec
+from textwrap import dedent
 
 from django.conf import settings
 from evennia import Command, CmdSet
@@ -123,7 +124,8 @@ class Choice(object):
 
     """A choice object, created by `add_choice`."""
 
-    def __init__(self, title, key=None, aliases=None, attr=None, callback=None, text=None, brief=None, menu=None, caller=None, obj=None):
+    def __init__(self, title, key=None, aliases=None, attr=None, on_select=None, on_nomatch=None, text=None, brief=None,
+            menu=None, caller=None, obj=None):
         """Constructor.
 
         Args:
@@ -132,9 +134,8 @@ class Choice(object):
                     the sub-neu.  If not set, try to guess it based on the title.
             aliases (list of str, optional): the allowed aliases for this choice.
             attr (str, optional): the name of the attribute of 'obj' to set.
-            callback (callable, optional): the function to call before the input
-                    is set in `attr`.  If `attr` is not set, you should
-                    specify a function that both callback and set the value in `obj`.
+            on_select (callable, optional): a callable to call when the choice is selected.
+            on_nomatch (callable, optional): a callable to call when no match is entered in the choice.
             text (str or callable, optional): a text to be displayed when
                     the menu is opened  It can be a callable.
             brief (str or callable, optional): a brief summary of the
@@ -150,7 +151,8 @@ class Choice(object):
         self.key = key
         self.aliases = aliases
         self.attr = attr
-        self.callback = callback
+        self.on_select = on_select
+        self.on_nomatch = on_nomatch
         self.text = text
         self.brief = brief
         self.menu = menu
@@ -160,10 +162,30 @@ class Choice(object):
     def __repr__(self):
         return "<Choice (title={}, key={})>".format(self.title, self.key)
 
-    def trigger(self, string):
-        """Call the trigger callback, is specified."""
-        if self.callback:
-            _call_or_get(self.callback, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
+    def select(self, string):
+        """Called when the user opens the choice."""
+        if self.on_select:
+            _call_or_get(self.on_select, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
+
+        # Display the text if there is some
+        if self.text:
+            self.caller.msg(_call_or_get(self.text, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj))
+
+
+    def nomatch(self, string):
+        """Called when the user entered something that wasn't a command in a given choice.
+
+        Args:
+            string (str): the entered string.
+
+        """
+        if self.on_nomatch:
+            _call_or_get(self.on_nomatch, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
+
+    def display_text(self):
+        """Display the choice text to the caller."""
+        text = _call_or_get(self.text, menu=self.menu, choice=self, string="", caller=self.caller, obj=self.obj)
+        return text.format(obj=self.obj, caller=self.caller)
 
 
 class BuildingMenu(object):
@@ -241,7 +263,7 @@ class BuildingMenu(object):
         """
         pass
 
-    def add_choice(self, title, key=None, aliases=None, attr=None, callback=None, text=None, brief=None):
+    def add_choice(self, title, key=None, aliases=None, attr=None, on_select=None, on_nomatch=None, text=None, brief=None):
         """Add a choice, a valid sub-menu, in the current builder menu.
 
         Args:
@@ -250,7 +272,8 @@ class BuildingMenu(object):
                     the sub-neu.  If not set, try to guess it based on the title.
             aliases (list of str, optional): the allowed aliases for this choice.
             attr (str, optional): the name of the attribute of 'obj' to set.
-            callback (callable, optional): the function to call before the input
+            on_select (callable, optional): a callable to call when the choice is selected.
+            on_nomatch (callable, optional): a callable to call when no match is entered in the choice.
                     is set in `attr`.  If `attr` is not set, you should
                     specify a function that both callback and set the value in `obj`.
             text (str or callable, optional): a text to be displayed when
@@ -275,16 +298,21 @@ class BuildingMenu(object):
         key = key.lower()
         aliases = aliases or []
         aliases = [a.lower() for a in aliases]
-        if callback is None:
+        if on_select is None and on_nomatch is None:
             if attr is None:
                 raise ValueError("The choice {} has neither attr nor callback, specify one of these as arguments".format(title))
 
-            callback = menu_setattr
+        if attr and on_nomatch is None:
+            on_nomatch = menu_setattr
+
+        if isinstance(text, basestring):
+            text = dedent(text.strip("\n"))
 
         if key and key in self.cmds:
             raise ValueError("A conflict exists between {} and {}, both use key or alias {}".format(self.cmds[key], title, repr(key)))
 
-        choice = Choice(title, key, aliases, attr, callback, text, brief, menu=self, caller=self.caller, obj=self.obj)
+        choice = Choice(title, key=key, aliases=aliases, attr=attr, on_select=on_select, on_nomatch=on_nomatch, text=text,
+                brief=brief, menu=self, caller=self.caller, obj=self.obj)
         self.choices.append(choice)
         if key:
             self.cmds[key] = choice
@@ -305,7 +333,7 @@ class BuildingMenu(object):
             This is just a shortcut method, calling `add_choice`.
 
         """
-        return self.add_choice(title, key=key, aliases=aliases, callback=menu_quit)
+        return self.add_choice(title, key=key, aliases=aliases, on_select=menu_quit)
 
     def _generate_commands(self, cmdset):
         """
@@ -318,7 +346,7 @@ class BuildingMenu(object):
         if self.key is None:
             for choice in self.choices:
                 cmd = MenuCommand(key=choice.key, aliases=choice.aliases, building_menu=self, choice=choice)
-                cmd.get_help = lambda cmd, caller: _call_or_get(choice.text, menu=self, choice=choice, obj=self.obj, caller=self.caller)
+                cmd.get_help = lambda cmd, caller: choice.display_text()
                 cmdset.add(cmd)
 
     def _save(self):
@@ -427,13 +455,20 @@ class MenuCommand(Command):
 
     def func(self):
         """Function body."""
-        if self.choice is None:
+        if self.choice is None or self.menu is None:
             log_err("Command: {}, no choice has been specified".format(self.key))
-            self.msg("An unexpected error occurred.  Closing the menu.")
+            self.msg("|rAn unexpected error occurred.  Closing the menu.|n")
             self.caller.cmdset.delete(BuildingMenuCmdSet)
             return
 
-        self.choice.trigger(self.args)
+        self.menu.key = self.choice.key
+        self.menu._save()
+        for cmdset in self.caller.cmdset.get():
+            if isinstance(cmdset, BuildingMenuCmdSet):
+                for command in cmdset:
+                    cmdset.remove(command)
+                break
+        self.choice.select(self.raw_string)
 
 
 class CmdNoInput(MenuCommand):
@@ -444,16 +479,20 @@ class CmdNoInput(MenuCommand):
     locks = "cmd:all()"
 
     def func(self):
-        """Redisplay the screen, if any."""
+        """Display the menu or choice text."""
         if self.menu:
-            self.menu.display()
+            choice = self.menu.cmds.get(self.menu.key)
+            if self.menu.key and choice:
+                choice.display_text()
+            else:
+                self.menu.display()
         else:
-            log_err("When CMDNOMATCH was called, the building menu couldn't be found")
-            self.caller.msg("The building menu couldn't be found, remove the CmdSet")
+            log_err("When CMDNOINPUT was called, the building menu couldn't be found")
+            self.caller.msg("|rThe building menu couldn't be found, remove the CmdSet.|n")
             self.caller.cmdset.delete(BuildingMenuCmdSet)
 
 
-class CmdNoMatch(Command):
+class CmdNoMatch(MenuCommand):
 
     """No input has been found."""
 
@@ -463,7 +502,26 @@ class CmdNoMatch(Command):
     def func(self):
         """Redirect most inputs to the screen, if found."""
         raw_string = self.raw_string.rstrip()
-        self.msg("No match")
+        choice = self.menu.cmds.get(self.menu.key) if self.menu else None
+        cmdset = None
+        for cset in self.caller.cmdset.get():
+            if isinstance(cset, BuildingMenuCmdSet):
+                cmdset = cset
+                break
+        if self.menu is None:
+            log_err("When CMDNOMATCH was called, the building menu couldn't be found")
+            self.caller.msg("|rThe building menu couldn't be found, remove the CmdSet.|n")
+            self.caller.cmdset.delete(BuildingMenuCmdSet)
+        elif self.args == "/" and self.menu.key:
+            self.menu.key = None
+            self.menu._save()
+            self.menu._generate_commands(cmdset)
+            self.menu.display()
+        elif self.menu.key:
+            choice.nomatch(raw_string)
+            choice.display_text()
+        else:
+            self.menu.display()
 
 
 class BuildingMenuCmdSet(CmdSet):
@@ -507,7 +565,7 @@ def menu_setattr(menu, choice, obj, string):
     Note:
         This function is supposed to be used as a default to
         `BuildingMenu.add_choice`, when an attribute name is specified
-        but no function to callback the said value.
+        but no function to call `on_nomatch` the said value.
 
     """
     attr = getattr(choice, "attr", None)
@@ -519,7 +577,6 @@ def menu_setattr(menu, choice, obj, string):
         obj = getattr(obj, part)
 
     setattr(obj, attr.split(".")[-1], string)
-    menu.display()
 
 def menu_quit(caller):
     """
