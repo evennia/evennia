@@ -166,6 +166,7 @@ evennia.utils.evmenu`.
 from __future__ import print_function
 import random
 from builtins import object, range
+import re
 
 from textwrap import dedent
 from inspect import isfunction, getargspec
@@ -970,6 +971,107 @@ class EvMenu(object):
         separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
         separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
         return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
+
+
+# -----------------------------------------------------------
+#
+# List node
+#
+# -----------------------------------------------------------
+
+def list_node(option_list, examine_processor, goto_processor, pagesize=10):
+    """
+    Decorator for making an EvMenu node into a multi-page list node. Will add new options,
+    prepending those options added in the node.
+
+    Args:
+        option_list (list): List of strings indicating the options.
+        examine_processor (callable): Will be called with the caller and the chosen option when
+            examining said option. Should return a text string to display in the node.
+        goto_processor (callable): Will be called with caller and
+            the chosen option from the optionlist. Should return the target node to goto after the
+            selection.
+        pagesize (int): How many options to show per page.
+
+    Example:
+
+        @list_node(['foo', 'bar'], examine_processor, goto_processor)
+        def node_index(caller):
+            text = "describing the list"
+            return text, []
+
+    """
+
+    def _rerouter(caller, raw_string):
+        "Parse which input was given, select from option_list"
+
+        caller.ndb._menutree
+
+        goto_processor
+
+
+
+    def decorator(func):
+
+        all_options = [{"desc": opt, "goto": _rerouter} for opt in option_list]
+        all_options = list(sorted(all_options, key=lambda d: d["desc"]))
+
+        nall_options = len(all_options)
+        pages = [all_options[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
+        npages = len(pages)
+
+        def _examine_select(caller, raw_string, **kwargs):
+
+            match = re.search(r"[0-9]+$", raw_string)
+
+
+            page_index = kwargs.get("optionpage_index", 0)
+
+
+        def _list_node(caller, raw_string, **kwargs):
+
+            # update text with detail, if set
+
+
+            # dynamic, multi-page option list
+            page_index = max(0, min(npages - 1, kwargs.get("optionpage_index", 0)))
+
+            options = pages[page_index]
+
+            if options:
+                if npages > 1:
+                    # if the goto callable returns None, the same node is rerun, and
+                    # kwargs not used by the callable are passed on to the node.
+                    if page_index > 0:
+                        options.append({"desc": "prev",
+                                        "goto": (lambda caller: None,
+                                                 {"optionpage_index": page_index - 1})})
+                    if page_index < npages - 1:
+                        options.append({"desc": "next",
+                                        "goto": (lambda caller: None,
+                                                 {"optionpage_index": page_index + 1})})
+                options.append({"key": "_default",
+                                "goto": (_examine_select, {"optionpage_index": page_index})})
+
+            # add data from the decorated node
+
+            try:
+                text, extra_options = func(caller, raw_string)
+            except Exception:
+                logger.log_trace()
+            else:
+                if isinstance(extra_options, {}):
+                    extra_options = [extra_options]
+                else:
+                    extra_options = make_iter(extra_options)
+                options.append(extra_options)
+
+            return text, options
+
+        return _list_node
+    return decorator
+
+
 
 
 # -------------------------------------------------------------------------------------------------
