@@ -109,13 +109,14 @@ from django.conf import settings
 from random import randint
 import evennia
 from evennia.objects.models import ObjectDB
-from evennia.utils.utils import make_iter, all_from_module, dbid_to_obj, is_iter, crop
+from evennia.utils.utils import (
+    make_iter, all_from_module, dbid_to_obj, is_iter, crop, get_all_typeclasses)
 
 from collections import namedtuple
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
 from evennia.utils.evtable import EvTable
-from evennia.utils.evmenu import EvMenu
+from evennia.utils.evmenu import EvMenu, list_node
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
@@ -856,6 +857,16 @@ def node_prototype(caller):
     return text, options
 
 
+def _typeclass_examine(caller, typeclass):
+    return "This is typeclass |y{}|n.".format(typeclass)
+
+
+def _typeclass_select(caller, typeclass):
+    caller.msg("Selected typeclass |y{}|n.".format(typeclass))
+    return None
+
+
+@list_node(list(sorted(get_all_typeclasses().keys())), _typeclass_examine, _typeclass_select)
 def node_typeclass(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
