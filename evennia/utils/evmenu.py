@@ -1002,61 +1002,82 @@ def list_node(option_list, examine_processor, goto_processor, pagesize=10):
 
     """
 
-    def _rerouter(caller, raw_string):
-        "Parse which input was given, select from option_list"
-
-        caller.ndb._menutree
-
-        goto_processor
-
-
-
     def decorator(func):
 
-        all_options = [{"desc": opt, "goto": _rerouter} for opt in option_list]
-        all_options = list(sorted(all_options, key=lambda d: d["desc"]))
+        def _input_parser(caller, raw_string, **kwargs):
+            "Parse which input was given, select from option_list"
 
-        nall_options = len(all_options)
-        pages = [all_options[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
+            available_choices = kwargs.get("available_choices", [])
+            processor = kwargs.get("selection_processor")
+            try:
+                match_ind = int(re.search(r"[0-9]+$", raw_string).group()) - 1
+                selection = available_choices[match_ind]
+            except (AttributeError, KeyError, IndexError, ValueError):
+                return None
+
+            if processor:
+                try:
+                    return processor(caller, selection)
+                except Exception:
+                    logger.log_trace()
+            return selection
+
+        nall_options = len(option_list)
+        pages = [option_list[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
         npages = len(pages)
-
-        def _examine_select(caller, raw_string, **kwargs):
-
-            match = re.search(r"[0-9]+$", raw_string)
-
-
-            page_index = kwargs.get("optionpage_index", 0)
-
 
         def _list_node(caller, raw_string, **kwargs):
 
-            # update text with detail, if set
-
-
-            # dynamic, multi-page option list
             page_index = max(0, min(npages - 1, kwargs.get("optionpage_index", 0)))
+            page = pages[page_index]
 
-            options = pages[page_index]
+            # dynamic, multi-page option list. We use _input_parser as a goto-callable,
+            # with the `goto_processor` redirecting when we leave the node.
+            options = [{"desc": opt,
+                        "goto": (_input_parser,
+                                 {"available_choices": page,
+                                  "selection_processor":  goto_processor})} for opt in page]
 
-            if options:
-                if npages > 1:
-                    # if the goto callable returns None, the same node is rerun, and
-                    # kwargs not used by the callable are passed on to the node.
-                    if page_index > 0:
-                        options.append({"desc": "prev",
-                                        "goto": (lambda caller: None,
-                                                 {"optionpage_index": page_index - 1})})
-                    if page_index < npages - 1:
-                        options.append({"desc": "next",
-                                        "goto": (lambda caller: None,
-                                                 {"optionpage_index": page_index + 1})})
-                options.append({"key": "_default",
-                                "goto": (_examine_select, {"optionpage_index": page_index})})
+            if npages > 1:
+                # if the goto callable returns None, the same node is rerun, and
+                # kwargs not used by the callable are passed on to the node. This
+                # allows us to call ourselves over and over, using different kwargs.
+                if page_index > 0:
+                    options.append({"key": ("|wb|Wack|n", "b"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index - 1})})
+                if page_index < npages - 1:
+                    options.append({"key": ("|wn|Wext|n", "n"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index + 1})})
+
+                options.append({"key": ("|Wcurrent|n", "c"),
+                                "desc": "|W({}/{})|n".format(page_index + 1, npages),
+                                "goto": (lambda caller: None,
+                                         {"optionpage_index": page_index})})
+            options.append({"key": "_default",
+                            "goto": (lambda caller: None,
+                                     {"show_detail": True, "optionpage_index": page_index})})
+
+            # update text with detail, if set. Here we call _input_parser like a normal function
+            text_detail = None
+            if raw_string and 'show_detail' in kwargs:
+                text_detail = _input_parser(
+                    caller, raw_string, **{"available_choices": page,
+                                           "selection_processor": examine_processor})
+                if text_detail is None:
+                    text_detail = "|rThat's not a valid command or option.|n"
 
             # add data from the decorated node
 
+            text = ''
             try:
                 text, extra_options = func(caller, raw_string)
+            except TypeError:
+                try:
+                    text, extra_options = func(caller)
+                except Exception:
+                    raise
             except Exception:
                 logger.log_trace()
             else:
@@ -1066,12 +1087,12 @@ def list_node(option_list, examine_processor, goto_processor, pagesize=10):
                     extra_options = make_iter(extra_options)
                 options.append(extra_options)
 
+            text = text + "\n\n" + text_detail if text_detail else text
+
             return text, options
 
         return _list_node
     return decorator
-
-
 
 
 # -------------------------------------------------------------------------------------------------
