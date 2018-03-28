@@ -53,8 +53,9 @@ from textwrap import dedent
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
-from evennia.utils.logger import log_err, log_trace
 from evennia.utils.ansi import strip_ansi
+from evennia.utils.eveditor import EvEditor
+from evennia.utils.logger import log_err, log_trace
 from evennia.utils.utils import class_from_module
 
 _MAX_TEXT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
@@ -322,6 +323,26 @@ class BuildingMenu(object):
 
         for alias in aliases:
             self.cmds[alias] = choice
+
+    def add_choice_edit(self, title="description", key="d", aliases=None, attr="db.desc", glance="\n   {obj.db.desc}", on_enter=None):
+        """
+        Add a simple choice to edit a given attribute in the EvEditor.
+
+        Args:
+            title (str, optional): the choice title.
+            key (str, optional): the choice key.
+            aliases (list of str, optional): the choice aliases.
+            glance (str or callable, optional): the at-a-glance description.
+            on_enter (callable, optional): a different callable to edit the attribute.
+
+        Note:
+            This is just a shortcut method, calling `add_choice`.
+            If `on_enter` is not set, use `menu_edit` which opens
+            an EvEditor to edit the specified attribute.
+
+        """
+        on_enter = on_enter or menu_edit
+        return self.add_choice(title, key=key, aliases=aliases, attr=attr, glance=glance, on_enter=on_enter)
 
     def add_choice_quit(self, title="quit the menu", key="q", aliases=None, on_enter=None):
         """
@@ -601,3 +622,57 @@ def menu_quit(caller):
         caller.cmdset.remove(BuildingMenuCmdSet)
     else:
         caller.msg("It looks like the building menu has already been closed.")
+
+def menu_edit(caller, choice, obj):
+    """
+    Open the EvEditor to edit a specified field.
+
+    Args:
+        caller (Account or Object): the caller.
+        choice (Choice): the choice object.
+        obj (any): the object to edit.
+
+    """
+    attr = choice.attr
+    caller.db._building_menu_to_edit = (obj, attr)
+    caller.cmdset.remove(BuildingMenuCmdSet)
+    EvEditor(caller, loadfunc=_menu_loadfunc, savefunc=_menu_savefunc, quitfunc=_menu_quitfunc, key="editor", persistent=True)
+
+def _menu_loadfunc(caller):
+    obj, attr = caller.attributes.get("_building_menu_to_edit", [None, None])
+    if obj and attr:
+        for part in attr.split(".")[:-1]:
+            obj = getattr(obj, part)
+
+    return getattr(obj, attr.split(".")[-1]) if obj is not None else ""
+
+def _menu_savefunc(caller, buf):
+    obj, attr = caller.attributes.get("_building_menu_to_edit", [None, None])
+    if obj and attr:
+        for part in attr.split(".")[:-1]:
+            obj = getattr(obj, part)
+
+        setattr(obj, attr.split(".")[-1], buf)
+
+    if caller.ndb._building_menu:
+        caller.ndb._building_menu.key = None
+    if caller.db._building_menu:
+        caller.db._building_menu["key"] = None
+
+    caller.attributes.remove("_building_menu_to_edit")
+    caller.cmdset.add(BuildingMenuCmdSet)
+    if caller.ndb._building_menu:
+        caller.ndb._building_menu.display()
+
+    return True
+
+def _menu_quitfunc(caller):
+    caller.attributes.remove("_building_menu_to_edit")
+    if caller.ndb._building_menu:
+        caller.ndb._building_menu.key = None
+    if caller.db._building_menu:
+        caller.db._building_menu["key"] = None
+
+    caller.cmdset.add(BuildingMenuCmdSet)
+    if caller.ndb._building_menu:
+        caller.ndb._building_menu.display()
