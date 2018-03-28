@@ -11,7 +11,7 @@ Building menus are similar to `EvMenu`, except that they have been specifically-
  [T]itle: the limbo room
  [D]escription
     This is the limbo room.  You can easily change this default description,
-    either by using the |y@desc/edit|n command, or simply by selecting this
+    either by using the |y@desc/edit|n command, or simply by entering this
     menu (enter |yd|n).
  [E]xits:
      north to A parking(#4)
@@ -124,7 +124,7 @@ class Choice(object):
 
     """A choice object, created by `add_choice`."""
 
-    def __init__(self, title, key=None, aliases=None, attr=None, on_select=None, on_nomatch=None, text=None, brief=None,
+    def __init__(self, title, key=None, aliases=None, attr=None, text=None, glance=None, on_enter=None, on_nomatch=None, on_leave=None,
             menu=None, caller=None, obj=None):
         """Constructor.
 
@@ -134,15 +134,16 @@ class Choice(object):
                     the sub-neu.  If not set, try to guess it based on the title.
             aliases (list of str, optional): the allowed aliases for this choice.
             attr (str, optional): the name of the attribute of 'obj' to set.
-            on_select (callable, optional): a callable to call when the choice is selected.
-            on_nomatch (callable, optional): a callable to call when no match is entered in the choice.
             text (str or callable, optional): a text to be displayed when
                     the menu is opened  It can be a callable.
-            brief (str or callable, optional): a brief summary of the
+            glance (str or callable, optional): an at-a-glance summary of the
                     sub-menu shown in the main menu.  It can be set to
                     display the current value of the attribute in the
                     main menu itself.
             menu (BuildingMenu, optional): the parent building menu.
+            on_enter (callable, optional): a callable to call when the choice is entered.
+            on_nomatch (callable, optional): a callable to call when no match is entered in the choice.
+            on_leave (callable, optional): a callable to call when the caller leaves the choice.
             caller (Account or Object, optional): the caller.
             obj (Object, optional): the object to edit.
 
@@ -151,10 +152,11 @@ class Choice(object):
         self.key = key
         self.aliases = aliases
         self.attr = attr
-        self.on_select = on_select
-        self.on_nomatch = on_nomatch
         self.text = text
-        self.brief = brief
+        self.glance = glance
+        self.on_enter = on_enter
+        self.on_nomatch = on_nomatch
+        self.on_leave = on_leave
         self.menu = menu
         self.caller = caller
         self.obj = obj
@@ -162,15 +164,13 @@ class Choice(object):
     def __repr__(self):
         return "<Choice (title={}, key={})>".format(self.title, self.key)
 
-    def select(self, string):
+    def enter(self, string):
         """Called when the user opens the choice."""
-        if self.on_select:
-            _call_or_get(self.on_select, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
+        if self.on_enter:
+            _call_or_get(self.on_enter, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
 
         # Display the text if there is some
-        if self.text:
-            self.caller.msg(_call_or_get(self.text, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj))
-
+        self.display_text()
 
     def nomatch(self, string):
         """Called when the user entered something that wasn't a command in a given choice.
@@ -184,8 +184,9 @@ class Choice(object):
 
     def display_text(self):
         """Display the choice text to the caller."""
-        text = _call_or_get(self.text, menu=self.menu, choice=self, string="", caller=self.caller, obj=self.obj)
-        return text.format(obj=self.obj, caller=self.caller)
+        if self.text:
+            text = _call_or_get(self.text, menu=self.menu, choice=self, string="", caller=self.caller, obj=self.obj)
+            self.caller.msg(text.format(obj=self.obj, caller=self.caller))
 
 
 class BuildingMenu(object):
@@ -206,6 +207,9 @@ class BuildingMenu(object):
 
     """
 
+    keys_go_back = ["@"]
+    min_shortcut = 1
+
     def __init__(self, caller=None, obj=None, title="Building menu: {obj}", key=None):
         """Constructor, you shouldn't override.  See `init` instead.
 
@@ -219,9 +223,6 @@ class BuildingMenu(object):
         self.choices = []
         self.key = key
         self.cmds = {}
-
-        # Options (can be overridden in init)
-        self.min_shortcut = 1
 
         if obj:
             self.init(obj)
@@ -263,7 +264,8 @@ class BuildingMenu(object):
         """
         pass
 
-    def add_choice(self, title, key=None, aliases=None, attr=None, on_select=None, on_nomatch=None, text=None, brief=None):
+    def add_choice(self, title, key=None, aliases=None, attr=None, text=None, glance=None,
+            on_enter=None, on_nomatch=None, on_leave=None):
         """Add a choice, a valid sub-menu, in the current builder menu.
 
         Args:
@@ -272,16 +274,17 @@ class BuildingMenu(object):
                     the sub-neu.  If not set, try to guess it based on the title.
             aliases (list of str, optional): the allowed aliases for this choice.
             attr (str, optional): the name of the attribute of 'obj' to set.
-            on_select (callable, optional): a callable to call when the choice is selected.
-            on_nomatch (callable, optional): a callable to call when no match is entered in the choice.
-                    is set in `attr`.  If `attr` is not set, you should
-                    specify a function that both callback and set the value in `obj`.
             text (str or callable, optional): a text to be displayed when
                     the menu is opened  It can be a callable.
-            brief (str or callable, optional): a brief summary of the
+            glance (str or callable, optional): an at-a-glance summary of the
                     sub-menu shown in the main menu.  It can be set to
                     display the current value of the attribute in the
                     main menu itself.
+            on_enter (callable, optional): a callable to call when the choice is entered.
+            on_nomatch (callable, optional): a callable to call when no match is entered in the choice.
+                    is set in `attr`.  If `attr` is not set, you should
+                    specify a function that both callback and set the value in `obj`.
+            on_leave (callable, optional): a callable to call when the caller leaves the choice.
 
         Note:
             All arguments can be a callable, like a function.  This has the
@@ -298,7 +301,7 @@ class BuildingMenu(object):
         key = key.lower()
         aliases = aliases or []
         aliases = [a.lower() for a in aliases]
-        if on_select is None and on_nomatch is None:
+        if on_enter is None and on_nomatch is None:
             if attr is None:
                 raise ValueError("The choice {} has neither attr nor callback, specify one of these as arguments".format(title))
 
@@ -311,8 +314,8 @@ class BuildingMenu(object):
         if key and key in self.cmds:
             raise ValueError("A conflict exists between {} and {}, both use key or alias {}".format(self.cmds[key], title, repr(key)))
 
-        choice = Choice(title, key=key, aliases=aliases, attr=attr, on_select=on_select, on_nomatch=on_nomatch, text=text,
-                brief=brief, menu=self, caller=self.caller, obj=self.obj)
+        choice = Choice(title, key=key, aliases=aliases, attr=attr, text=text, glance=glance, on_enter=on_enter, on_nomatch=on_nomatch, on_leave=on_leave,
+                menu=self, caller=self.caller, obj=self.obj)
         self.choices.append(choice)
         if key:
             self.cmds[key] = choice
@@ -320,7 +323,7 @@ class BuildingMenu(object):
         for alias in aliases:
             self.cmds[alias] = choice
 
-    def add_choice_quit(self, title="quit the menu", key="q", aliases=None):
+    def add_choice_quit(self, title="quit the menu", key="q", aliases=None, on_enter=None):
         """
         Add a simple choice just to quit the building menu.
 
@@ -328,12 +331,18 @@ class BuildingMenu(object):
             title (str, optional): the choice title.
             key (str, optional): the choice key.
             aliases (list of str, optional): the choice aliases.
+            on_enter (callable, optional): a different callable to quit the building menu.
 
         Note:
             This is just a shortcut method, calling `add_choice`.
+            If `on_enter` is not set, use `menu_quit` which simply
+            closes the menu and displays a message.  It also
+            removes the CmdSet from the caller.  If you supply
+            another callable instead, make sure to do the same.
 
         """
-        return self.add_choice(title, key=key, aliases=aliases, on_select=menu_quit)
+        on_enter = on_enter or menu_quit
+        return self.add_choice(title, key=key, aliases=aliases, on_enter=on_enter)
 
     def _generate_commands(self, cmdset):
         """
@@ -363,13 +372,7 @@ class BuildingMenu(object):
         caller = self.caller
         self._save()
         self.caller.cmdset.add(BuildingMenuCmdSet, permanent=True)
-
-        # Try to find the newly added cmdset (a shortcut would be nice)
-        for cmdset in self.caller.cmdset.get():
-            if isinstance(cmdset, BuildingMenuCmdSet):
-                self._generate_commands(cmdset)
-                self.display()
-                return
+        self.display()
 
     # Display methods.  Override for customization
     def display_title(self):
@@ -391,6 +394,10 @@ class BuildingMenu(object):
             ret += title[:pos] + "[|y" + choice.key.title() + "|n]" + title[pos + len(choice.key):]
         else:
             ret += "[|y" + choice.key.title() + "|n] " + title
+        if choice.glance:
+            glance = _call_or_get(choice.glance, menu=self, choice=choice, caller=self.caller, string="", obj=self.obj)
+            glance = glance.format(obj=self.obj, caller=self.caller)
+            ret += ": " + glance
 
         return ret
 
@@ -415,7 +422,7 @@ class BuildingMenu(object):
             saved in the caller, but the object itself cannot be found.
 
         """
-        menu = caller.db._buildingmenu
+        menu = caller.db._building_menu
         if menu:
             class_name = menu.get("class")
             if not class_name:
@@ -426,10 +433,11 @@ class BuildingMenu(object):
                 menu_class = class_from_module(class_name)
             except Exception:
                 log_trace("BuildingMenu: attempting to load class {} failed".format(repr(class_name)))
-                return False
+                return
 
             # Create the menu
             obj = menu.get("obj")
+            key = menu.get("key")
             try:
                 building_menu = menu_class(caller, obj)
             except Exception:
@@ -437,6 +445,7 @@ class BuildingMenu(object):
                 return False
 
             # If there's no saved key, add the menu commands
+            building_menu.key = key
             building_menu._generate_commands(cmdset)
 
             return building_menu
@@ -463,12 +472,9 @@ class MenuCommand(Command):
 
         self.menu.key = self.choice.key
         self.menu._save()
-        for cmdset in self.caller.cmdset.get():
-            if isinstance(cmdset, BuildingMenuCmdSet):
-                for command in cmdset:
-                    cmdset.remove(command)
-                break
-        self.choice.select(self.raw_string)
+        self.caller.cmdset.delete(BuildingMenuCmdSet)
+        self.caller.cmdset.add(BuildingMenuCmdSet, permanent=True)
+        self.choice.enter(self.raw_string)
 
 
 class CmdNoInput(MenuCommand):
@@ -512,10 +518,11 @@ class CmdNoMatch(MenuCommand):
             log_err("When CMDNOMATCH was called, the building menu couldn't be found")
             self.caller.msg("|rThe building menu couldn't be found, remove the CmdSet.|n")
             self.caller.cmdset.delete(BuildingMenuCmdSet)
-        elif self.args == "/" and self.menu.key:
+        elif raw_string in self.menu.keys_go_back and self.menu.key:
             self.menu.key = None
             self.menu._save()
-            self.menu._generate_commands(cmdset)
+            self.caller.cmdset.delete(BuildingMenuCmdSet)
+            self.caller.cmdset.add(BuildingMenuCmdSet, permanent=True)
             self.menu.display()
         elif self.menu.key:
             choice.nomatch(raw_string)
