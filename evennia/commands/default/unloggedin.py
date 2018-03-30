@@ -3,6 +3,7 @@ Commands that are available from the connect screen.
 """
 import re
 import time
+import datetime
 from collections import defaultdict
 from random import getrandbits
 from django.conf import settings
@@ -11,8 +12,9 @@ from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
 from evennia.comms.models import ChannelDB
+from evennia.server.sessionhandler import SESSIONS
 
-from evennia.utils import create, logger, utils
+from evennia.utils import create, logger, utils, gametime
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -514,6 +516,23 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
         string = "Screenreader mode turned |w%s|n." % ("on" if new_setting else "off")
         self.caller.msg(string)
         self.session.sessionhandler.session_portal_sync(self.session)
+
+
+class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
+    """
+    Provides MUDINFO output, so that Evennia games can be added to Mudconnector
+    and Mudstats.
+    """
+    key = "info"
+    locks = "cmd:all()"
+
+    def func(self):
+        self.caller.msg("## BEGIN INFO 1.1")
+        self.caller.msg("Name: %s" % settings.SERVERNAME)
+        self.caller.msg("Uptime: %s" % datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime())
+        self.caller.msg("Connected: %d" % SESSIONS.account_count())
+        self.caller.msg("Version: Evennia %s" % utils.get_evennia_version())
+        self.caller.msg("## END INFO")
 
 
 def _create_account(session, accountname, password, permissions, typeclass=None, email=None):
