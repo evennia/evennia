@@ -165,13 +165,19 @@ class Choice(object):
     def __repr__(self):
         return "<Choice (title={}, key={})>".format(self.title, self.key)
 
+    @property
+    def keys(self):
+        """Return a tuple of keys separated by `sep_keys`."""
+        return tuple(self.key.split(self.menu.sep_keys))
+
     def enter(self, string):
         """Called when the user opens the choice."""
         if self.on_enter:
             _call_or_get(self.on_enter, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
 
         # Display the text if there is some
-        self.display_text()
+        if self.caller:
+            self.caller.msg(self.format_text())
 
     def nomatch(self, string):
         """Called when the user entered something that wasn't a command in a given choice.
@@ -183,11 +189,14 @@ class Choice(object):
         if self.on_nomatch:
             _call_or_get(self.on_nomatch, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
 
-    def display_text(self):
-        """Display the choice text to the caller."""
+    def format_text(self):
+        """Format the choice text and return it, or an empty string."""
+        text = ""
         if self.text:
             text = _call_or_get(self.text, menu=self.menu, choice=self, string="", caller=self.caller, obj=self.obj)
-            self.caller.msg(text.format(obj=self.obj, caller=self.caller))
+            text = text.format(obj=self.obj, caller=self.caller)
+
+        return text
 
 
 class BuildingMenu(object):
@@ -209,9 +218,11 @@ class BuildingMenu(object):
     """
 
     keys_go_back = ["@"]
+    sep_keys = "."
+    joker_key = "*"
     min_shortcut = 1
 
-    def __init__(self, caller=None, obj=None, title="Building menu: {obj}", key=None):
+    def __init__(self, caller=None, obj=None, title="Building menu: {obj}", key="", parents=None):
         """Constructor, you shouldn't override.  See `init` instead.
 
         Args:
@@ -223,6 +234,7 @@ class BuildingMenu(object):
         self.title = title
         self.choices = []
         self.key = key
+        self.parents = parents or ()
         self.cmds = {}
 
         if obj:
@@ -252,6 +264,72 @@ class BuildingMenu(object):
                         raise ValueError("Cannot guess the key for {}".format(choice))
                     else:
                         self.cmds[chocie.key] = choice
+
+    @property
+    def keys(self):
+        """Return a tuple of keys separated by `sep_keys`."""
+        if not self.key:
+            return ()
+
+        return tuple(self.key.split(self.sep_keys))
+
+    @property
+    def current_choice(self):
+        """Return the current choice or None."""
+        menu_keys = self.keys
+        if not menu_keys:
+            return None
+
+        for choice in self.choices:
+            choice_keys = choice.keys
+            if len(menu_keys) == len(choice_keys):
+                # Check all the intermediate keys
+                common = True
+                for menu_key, choice_key in zip(menu_keys, choice_keys):
+                    if choice_key == self.joker_key:
+                        continue
+
+                    if menu_key != choice_key:
+                        common = False
+                        break
+
+                if common:
+                    return choice
+
+        return None
+
+    @property
+    def relevant_choices(self):
+        """Only return the relevant choices according to the current meny key.
+
+        The menu key is stored and will be used to determine the
+        actual position of the caller in the menu.  Therefore, this
+        method compares the menu key (`self.key`) to all the choices'
+        keys.  It also handles the joker key.
+
+        """
+        menu_keys = self.keys
+        relevant = []
+        for choice in self.choices:
+            choice_keys = choice.keys
+            if not menu_keys and len(choice_keys) == 1:
+                # First level choice with the menu key empty, that's relevant
+                relevant.append(choice)
+            elif len(menu_keys) == len(choice_keys) - 1:
+                # Check all the intermediate keys
+                common = True
+                for menu_key, choice_key in zip(menu_keys, choice_keys):
+                    if choice_key == self.joker_key:
+                        continue
+
+                    if menu_key != choice_key:
+                        common = False
+                        break
+
+                if common:
+                    relevant.append(choice)
+
+        return relevant
 
     def init(self, obj):
         """Create the sub-menu to edit the specified object.
@@ -365,20 +443,6 @@ class BuildingMenu(object):
         on_enter = on_enter or menu_quit
         return self.add_choice(title, key=key, aliases=aliases, on_enter=on_enter)
 
-    def _generate_commands(self, cmdset):
-        """
-        Generate commands for the menu, if any is needed.
-
-        Args:
-            cmdset (CmdSet): the cmdset.
-
-        """
-        if self.key is None:
-            for choice in self.choices:
-                cmd = MenuCommand(key=choice.key, aliases=choice.aliases, building_menu=self, choice=choice)
-                cmd.get_help = lambda cmd, caller: choice.display_text()
-                cmdset.add(cmd)
-
     def _save(self):
         """Save the menu in a persistent attribute on the caller."""
         self.caller.ndb._building_menu = self
@@ -386,6 +450,7 @@ class BuildingMenu(object):
                 "class": type(self).__module__ + "." + type(self).__name__,
                 "obj": self.obj,
                 "key": self.key,
+                "parents": self.parents,
         }
 
     def open(self):
@@ -394,6 +459,121 @@ class BuildingMenu(object):
         self._save()
         self.caller.cmdset.add(BuildingMenuCmdSet, permanent=True)
         self.display()
+
+    def open_parent_menu(self):
+        """Open parent menu, using `self.parents`."""
+        parents = list(self.parents)
+        if parents:
+            parent_class, parent_obj, parent_key = parents[-1]
+            del parents[-1]
+
+            if self.caller.cmdset.has(BuildingMenuCmdSet):
+                self.caller.cmdset.remove(BuildingMenuCmdSet)
+
+            try:
+                menu_class = class_from_module(parent_class)
+            except Exception:
+                log_trace("BuildingMenu: attempting to load class {} failed".format(repr(parent_class)))
+                return
+
+            # Create the submenu
+            try:
+                building_menu = menu_class(self.caller, parent_obj, key=parent_key, parents=tuple(parents))
+            except Exception:
+                log_trace("An error occurred while creating building menu {}".format(repr(parent_class)))
+                return
+            else:
+                return building_menu.open()
+
+    def open_submenu(self, submenu_class, submenu_obj, parent_key):
+        """
+        Open a sub-menu, closing the current menu and opening the new one.
+
+        Args:
+            submenu_class (str): the submenu class as a Python path.
+            submenu_obj (any): the object to give to the submenu.
+            parent_key (str, optional): the parent key when the submenu is closed.
+
+        Note:
+            When the user enters `@` in the submenu, she will go back to
+            the current menu, with the `parent_key` set as its key.
+            Therefore, you should set it on the key of the choice that
+            should be opened when the user leaves the submenu.
+
+        Returns:
+            new_menu (BuildingMenu): the new building menu or None.
+
+        """
+        parents = list(self.parents)
+        parents.append((type(self).__module__ + "." + type(self).__name__, self.obj, parent_key))
+        parents = tuple(parents)
+        if self.caller.cmdset.has(BuildingMenuCmdSet):
+            self.caller.cmdset.remove(BuildingMenuCmdSet)
+
+        # Shift to the new menu
+        try:
+            menu_class = class_from_module(submenu_class)
+        except Exception:
+            log_trace("BuildingMenu: attempting to load class {} failed".format(repr(submenu_class)))
+            return
+
+        # Create the submenu
+        try:
+            building_menu = menu_class(self.caller, submenu_obj, parents=parents)
+        except Exception:
+            log_trace("An error occurred while creating building menu {}".format(repr(submenu_class)))
+            return
+        else:
+            return building_menu.open()
+
+    def move(self, key=None, back=False, quiet=False, string="" ):
+        """
+        Move inside the menu.
+
+        Args:
+            key (str): the portion of the key to add to the current
+                    menu key, after a separator (`sep_keys`).  If
+                    you wish to go back in the menu tree, don't
+                    provide a `key`, just set `back` to `True`.
+            back (bool, optional): go back in the menu (`False` by default).
+            quiet (bool, optional): should the menu or choice be displayed afterward?
+
+        Note:
+            This method will need to be called directly should you
+            use more than two levels in your menu.  For instance,
+            in your room menu, if you want to have an "exits"
+            option, and then be able to enter "north" in this
+            choice to edit an exit.  The specific exit choice
+            could be a different menu (with a different class), but
+            it could also be an additional level in your original menu.
+            If that's the case, you will need to use this method.
+
+        """
+        choice = self.current_choice
+        if choice:
+            #choice.leave()
+            pass
+
+        if not back: # Move forward
+            if not key:
+                raise ValueError("you are asking to move forward, you should specify a key.")
+
+            if self.key:
+                self.key += self.sep_keys
+            self.key += key
+        else: # Move backward
+            if not self.keys:
+                raise ValueError("you already are at the top of the tree, you cannot move backward.")
+
+            self.key = self.sep_keys.join(self.keys[:-1])
+
+        self._save()
+        choice = self.current_choice
+        if choice:
+            choice.enter(string)
+
+        if not quiet:
+            self.display()
 
     # Display methods.  Override for customization
     def display_title(self):
@@ -423,12 +603,16 @@ class BuildingMenu(object):
         return ret
 
     def display(self):
-        """Display the entire menu."""
-        menu = self.display_title() + "\n"
-        for choice in self.choices:
-            menu += "\n" + self.display_choice(choice)
+        """Display the entire menu or a single choice, depending on the current key.."""
+        choice = self.current_choice
+        if self.key and choice:
+            text = choice.format_text()
+        else:
+            text = self.display_title() + "\n"
+            for choice in self.choices:
+                text += "\n" + self.display_choice(choice)
 
-        self.caller.msg(menu)
+        self.caller.msg(text)
 
     @staticmethod
     def restore(caller, cmdset):
@@ -459,97 +643,75 @@ class BuildingMenu(object):
             # Create the menu
             obj = menu.get("obj")
             key = menu.get("key")
+            parents = menu.get("parents")
             try:
-                building_menu = menu_class(caller, obj)
+                building_menu = menu_class(caller, obj, key=key, parents=parents)
             except Exception:
                 log_trace("An error occurred while creating building menu {}".format(repr(class_name)))
                 return False
 
-            # If there's no saved key, add the menu commands
-            building_menu.key = key
-            building_menu._generate_commands(cmdset)
-
             return building_menu
 
 
-class MenuCommand(Command):
-
-    """An applicaiton-specific command."""
-
-    help_category = "Application-specific"
-
-    def __init__(self, **kwargs):
-        self.menu = kwargs.pop("building_menu", None)
-        self.choice = kwargs.pop("choice", None)
-        super(MenuCommand, self).__init__(**kwargs)
-
-    def func(self):
-        """Function body."""
-        if self.choice is None or self.menu is None:
-            log_err("Command: {}, no choice has been specified".format(self.key))
-            self.msg("|rAn unexpected error occurred.  Closing the menu.|n")
-            self.caller.cmdset.delete(BuildingMenuCmdSet)
-            return
-
-        self.menu.key = self.choice.key
-        self.menu._save()
-        self.caller.cmdset.delete(BuildingMenuCmdSet)
-        self.caller.cmdset.add(BuildingMenuCmdSet, permanent=True)
-        self.choice.enter(self.raw_string)
-
-
-class CmdNoInput(MenuCommand):
+class CmdNoInput(Command):
 
     """No input has been found."""
 
     key = _CMD_NOINPUT
     locks = "cmd:all()"
 
+    def __init__(self, **kwargs):
+        self.menu = kwargs.pop("building_menu", None)
+        super(Command, self).__init__(**kwargs)
+
     def func(self):
         """Display the menu or choice text."""
         if self.menu:
-            choice = self.menu.cmds.get(self.menu.key)
-            if self.menu.key and choice:
-                choice.display_text()
-            else:
-                self.menu.display()
+            self.menu.display()
         else:
             log_err("When CMDNOINPUT was called, the building menu couldn't be found")
             self.caller.msg("|rThe building menu couldn't be found, remove the CmdSet.|n")
             self.caller.cmdset.delete(BuildingMenuCmdSet)
 
 
-class CmdNoMatch(MenuCommand):
+class CmdNoMatch(Command):
 
     """No input has been found."""
 
     key = _CMD_NOMATCH
     locks = "cmd:all()"
 
+    def __init__(self, **kwargs):
+        self.menu = kwargs.pop("building_menu", None)
+        super(Command, self).__init__(**kwargs)
+
     def func(self):
-        """Redirect most inputs to the screen, if found."""
+        """Call the proper menu or redirect to nomatch."""
         raw_string = self.raw_string.rstrip()
-        choice = self.menu.cmds.get(self.menu.key) if self.menu else None
-        cmdset = None
-        for cset in self.caller.cmdset.get():
-            if isinstance(cset, BuildingMenuCmdSet):
-                cmdset = cset
-                break
         if self.menu is None:
             log_err("When CMDNOMATCH was called, the building menu couldn't be found")
             self.caller.msg("|rThe building menu couldn't be found, remove the CmdSet.|n")
             self.caller.cmdset.delete(BuildingMenuCmdSet)
-        elif raw_string in self.menu.keys_go_back and self.menu.key:
-            self.menu.key = None
-            self.menu._save()
-            self.caller.cmdset.delete(BuildingMenuCmdSet)
-            self.caller.cmdset.add(BuildingMenuCmdSet, permanent=True)
-            self.menu.display()
-        elif self.menu.key:
+            return
+
+        choice = self.menu.current_choice
+        if raw_string in self.menu.keys_go_back:
+            if self.menu.key:
+                self.menu.move(back=True)
+            elif self.menu.parents:
+                self.menu.open_parent_menu()
+            else:
+                self.menu.display()
+        elif choice:
             choice.nomatch(raw_string)
-            choice.display_text()
+            self.caller.msg(choice.format_text())
         else:
-            self.menu.display()
+            for choice in self.menu.relevant_choices:
+                if choice.key.lower() == raw_string.lower() or any(raw_string.lower() == alias for alias in choice.aliases):
+                    self.menu.move(choice.key)
+                    return
+
+            self.msg("|rUnknown command: {}|n.".format(raw_string))
 
 
 class BuildingMenuCmdSet(CmdSet):
@@ -567,16 +729,14 @@ class BuildingMenuCmdSet(CmdSet):
 
         # The caller could recall the menu
         menu = caller.ndb._building_menu
-        if menu:
-            menu._generate_commands(self)
-        else:
+        if menu is None:
             menu = caller.db._building_menu
             if menu:
                 menu = BuildingMenu.restore(caller, self)
 
         cmds = [CmdNoInput, CmdNoMatch]
         for cmd in cmds:
-            self.add(cmd(building_menu=menu, choice=None))
+            self.add(cmd(building_menu=menu))
 
 
 # Helper functions
@@ -638,6 +798,28 @@ def menu_edit(caller, choice, obj):
     caller.cmdset.remove(BuildingMenuCmdSet)
     EvEditor(caller, loadfunc=_menu_loadfunc, savefunc=_menu_savefunc, quitfunc=_menu_quitfunc, key="editor", persistent=True)
 
+def open_submenu(caller, menu, choice, obj, parent_key):
+    """
+    Open a sub-menu, closing the current menu and opening the new one
+    with `parent` set.
+
+    Args:
+        caller (Account or Object): the caller.
+        menu (Building): the selected choice.
+        choice (Chocie): the choice.
+        obj (any): the object to be edited.
+        parent_key (any): the parent menu key.
+
+    Note:
+        You can easily call this function from a different callback to customize its
+        behavior.
+
+    """
+    parent_key = parent_key if isinstance(parent_key, basestring) else None
+    menu.open_submenu(choice.attr, obj, parent_key)
+
+
+# Private functions for EvEditor
 def _menu_loadfunc(caller):
     obj, attr = caller.attributes.get("_building_menu_to_edit", [None, None])
     if obj and attr:
@@ -654,25 +836,10 @@ def _menu_savefunc(caller, buf):
 
         setattr(obj, attr.split(".")[-1], buf)
 
-    if caller.ndb._building_menu:
-        caller.ndb._building_menu.key = None
-    if caller.db._building_menu:
-        caller.db._building_menu["key"] = None
-
     caller.attributes.remove("_building_menu_to_edit")
-    caller.cmdset.add(BuildingMenuCmdSet)
-    if caller.ndb._building_menu:
-        caller.ndb._building_menu.display()
-
     return True
 
 def _menu_quitfunc(caller):
-    caller.attributes.remove("_building_menu_to_edit")
-    if caller.ndb._building_menu:
-        caller.ndb._building_menu.key = None
-    if caller.db._building_menu:
-        caller.db._building_menu["key"] = None
-
     caller.cmdset.add(BuildingMenuCmdSet)
     if caller.ndb._building_menu:
-        caller.ndb._building_menu.display()
+        caller.ndb._building_menu.move(back=True)
