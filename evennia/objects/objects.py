@@ -535,17 +535,19 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         except Exception:
             logger.log_trace()
 
-        if not (isinstance(text, basestring) or isinstance(text, tuple)):
-            # sanitize text before sending across the wire
-            try:
-                text = to_str(text, force_string=True)
-            except Exception:
-                text = repr(text)
+        if text is not None:
+            if not (isinstance(text, basestring) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text, force_string=True)
+                except Exception:
+                    text = repr(text)
+            kwargs['text'] = text
 
         # relay to session(s)
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
-            session.data_out(text=text, **kwargs)
+            session.data_out(**kwargs)
 
 
     def for_contents(self, func, exclude=None, **kwargs):
