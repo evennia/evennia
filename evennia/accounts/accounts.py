@@ -421,17 +421,19 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         kwargs["options"] = options
 
-        if not (isinstance(text, basestring) or isinstance(text, tuple)):
-            # sanitize text before sending across the wire
-            try:
-                text = to_str(text, force_string=True)
-            except Exception:
-                text = repr(text)
+        if text is not None:
+            if not (isinstance(text, basestring) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text, force_string=True)
+                except Exception:
+                    text = repr(text)
+            kwargs['text'] = text
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
-            session.data_out(text=text, **kwargs)
+            session.data_out(**kwargs)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """
