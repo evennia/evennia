@@ -1882,9 +1882,13 @@ def get_game_dir_path():
     raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
 
 
-def get_all_typeclasses():
+def get_all_typeclasses(parent=None):
     """
     List available typeclasses from all available modules.
+
+    Args:
+        parent (str, optional): If given, only return typeclasses inheriting (at any distance)
+            from this parent.
 
     Returns:
         typeclasses (dict): On the form {"typeclass.path": typeclass, ...}
@@ -1898,4 +1902,7 @@ def get_all_typeclasses():
     from evennia.typeclasses.models import TypedObject
     typeclasses = {"{}.{}".format(model.__module__, model.__name__): model
                    for model in apps.get_models() if TypedObject in getmro(model)}
+    if parent:
+        typeclasses = {name: typeclass for name, typeclass in typeclasses.items()
+                       if inherits_from(typeclass, parent)}
     return typeclasses
