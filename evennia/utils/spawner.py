@@ -333,7 +333,7 @@ def search_module_prototype(key=None, tags=None):
 
 def search_prototype(key=None, tags=None, return_meta=True):
     """
-    Find prototypes based on key and/or tags.
+    Find prototypes based on key and/or tags, or all prototypes.
 
     Kwargs:
         key (str): An exact or partial key to query for.
@@ -344,7 +344,8 @@ def search_prototype(key=None, tags=None, return_meta=True):
             return MetaProto namedtuples including prototype meta info
 
     Return:
-        matches (list): All found prototype dicts or MetaProtos
+        matches (list): All found prototype dicts or MetaProtos. If no keys
+            or tags are given, all available prototypes/MetaProtos will be returned.
 
     Note:
         The available prototypes is a combination of those supplied in
@@ -437,6 +438,25 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     table.reformat_column(2, width=11, align='r')
     table.reformat_column(3, width=20)
     return table
+
+
+def metaproto_to_str(metaproto):
+    """
+    Format a metaproto to a nice string representation.
+
+    Args:
+        metaproto (NamedTuple): Represents the prototype.
+    """
+    header = (
+        "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
+        "|cdesc:|n {} \n|cprototype:|n ".format(
+           metaproto.key, ", ".join(metaproto.tags),
+           metaproto.locks, metaproto.desc))
+    prototype = ("{{\n  {} \n}}".format("\n  ".join("{!r}: {!r},".format(key, value)
+                 for key, value in
+                 sorted(metaproto.prototype.items())).rstrip(",")))
+    return header + prototype
+
 
 # Spawner mechanism
 
@@ -660,7 +680,13 @@ def spawn(*prototypes, **kwargs):
     return _batch_create_object(*objsparams)
 
 
-# prototype design menu nodes
+# ------------------------------------------------------------
+#
+# OLC Prototype design menu
+#
+# ------------------------------------------------------------
+
+# Helper functions
 
 def _get_menu_metaprot(caller):
     if hasattr(caller.ndb._menutree, "olc_metaprot"):
@@ -683,7 +709,7 @@ def _set_menu_metaprot(caller, field, value):
     caller.ndb._menutree.olc_metaprot = build_metaproto(**kwargs)
 
 
-def _format_property(key, required=False, metaprot=None, prototype=None):
+def _format_property(key, required=False, metaprot=None, prototype=None, cropper=None):
     key = key.lower()
     if metaprot is not None:
         prop = getattr(metaprot, key) or ''
@@ -700,7 +726,7 @@ def _format_property(key, required=False, metaprot=None, prototype=None):
         out = ", ".join(str(pr) for pr in prop)
     if not out and required:
         out = "|rrequired"
-    return " ({}|n)".format(crop(out, _MENU_CROP_WIDTH))
+    return " ({}|n)".format(cropper(out) if cropper else crop(out, _MENU_CROP_WIDTH))
 
 
 def _set_property(caller, raw_string, **kwargs):
@@ -744,7 +770,15 @@ def _set_property(caller, raw_string, **kwargs):
         metaprot = _get_menu_metaprot(caller)
         prototype = metaprot.prototype
         prototype[propname_low] = value
+
+        # typeclass and prototype can't co-exist
+        if propname_low == "typeclass":
+            prototype.pop("prototype", None)
+        if propname_low == "prototype":
+            prototype.pop("typeclass", None)
+
         _set_menu_metaprot(caller, "prototype", prototype)
+
 
     caller.msg("Set {prop} to {value}.".format(
         prop=prop.replace("_", "-").capitalize(), value=str(value)))
@@ -752,18 +786,27 @@ def _set_property(caller, raw_string, **kwargs):
     return next_node
 
 
-def _wizard_options(prev_node, next_node):
-    options = [{"desc": "forward ({})".format(next_node.replace("_", "-")),
+def _wizard_options(prev_node, next_node, color="|W"):
+    options = [{"key": ("|wf|Worward", "f"),
+                "desc": "{color}({node})|n".format(
+                    color=color, node=next_node.replace("_", "-")),
                 "goto": "node_{}".format(next_node)},
-               {"desc": "back ({})".format(prev_node.replace("_", "-")),
+               {"key": ("|wb|Wack", "b"),
+                "desc": "{color}({node})|n".format(
+                    color=color, node=prev_node.replace("_", "-")),
                 "goto": "node_{}".format(prev_node)}]
     if "index" not in (prev_node, next_node):
-        options.append({"desc": "index",
+        options.append({"key": ("|wi|Wndex", "i"),
                         "goto": "node_index"})
     return options
 
 
-# menu nodes
+def _path_cropper(pythonpath):
+    "Crop path to only the last component"
+    return pythonpath.split('.')[-1]
+
+
+# Menu nodes
 
 def node_index(caller):
     metaprot = _get_menu_metaprot(caller)
@@ -784,15 +827,20 @@ def node_index(caller):
          "goto": "node_meta_key"})
     for key in ('Prototype', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
-        req = False
+        required = False
+        cropper = None
         if key in ("Prototype", "Typeclass"):
-            req = "prototype" not in prototype and "typeclass" not in prototype
+            required = "prototype" not in prototype and "typeclass" not in prototype
+        if key == 'Typeclass':
+            cropper = _path_cropper
         options.append(
-            {"desc": "|w{}|n{}".format(key, _format_property(key, req, None, prototype)),
+            {"desc": "|w{}|n{}".format(
+                key, _format_property(key, required, None, prototype, cropper=cropper)),
              "goto": "node_{}".format(key.lower())})
+    required = False
     for key in ('Desc', 'Tags', 'Locks'):
         options.append(
-            {"desc": "|WMeta-{}|n|n{}".format(key, _format_property(key, req, metaprot, None)),
+            {"desc": "|WMeta-{}|n|n{}".format(key, _format_property(key, required, metaprot, None)),
              "goto": "node_meta_{}".format(key.lower())})
 
     return text, options
@@ -837,6 +885,24 @@ def node_meta_key(caller):
     return text, options
 
 
+def _all_prototypes():
+    return [mproto.key for mproto in search_prototype()]
+
+
+def _prototype_examine(caller, prototype_name):
+    metaprot = search_prototype(key=prototype_name)
+    if metaprot:
+        return metaproto_to_str(metaprot[0])
+    return "Prototype not registered."
+
+
+def _prototype_select(caller, prototype):
+    ret = _set_property(caller, prototype, prop="prototype", processor=str, next_node="node_key")
+    caller.msg("Selected prototype |y{}|n. Removed any set typeclass parent.".format(prototype))
+    return ret
+
+
+@list_node(_all_prototypes, _prototype_examine, _prototype_select)
 def node_prototype(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
@@ -848,25 +914,43 @@ def node_prototype(caller):
     else:
         text.append("Parent prototype is not set")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_key", "typeclass")
-    options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="prototype",
-                                  processor=lambda s: s.strip(),
-                                  next_node="node_typeclass"))})
+    options = _wizard_options("meta_key", "typeclass", color="|W")
     return text, options
 
 
-def _typeclass_examine(caller, typeclass):
-    return "This is typeclass |y{}|n.".format(typeclass)
+def _all_typeclasses():
+    return list(sorted(get_all_typeclasses().keys()))
+    # return list(sorted(get_all_typeclasses(parent="evennia.objects.objects.DefaultObject").keys()))
+
+
+def _typeclass_examine(caller, typeclass_path):
+    if typeclass_path is None:
+        # this means we are exiting the listing
+        return "node_key"
+
+    typeclass = get_all_typeclasses().get(typeclass_path)
+    if typeclass:
+        docstr = []
+        for line in typeclass.__doc__.split("\n"):
+            if line.strip():
+                docstr.append(line)
+            elif docstr:
+                break
+        docstr = '\n'.join(docstr) if docstr else "<empty>"
+        txt = "Typeclass |y{typeclass_path}|n; First paragraph of docstring:\n\n{docstring}".format(
+                typeclass_path=typeclass_path, docstring=docstr)
+    else:
+        txt = "This is typeclass |y{}|n.".format(typeclass)
+    return txt
 
 
 def _typeclass_select(caller, typeclass):
-    caller.msg("Selected typeclass |y{}|n.".format(typeclass))
-    return None
+    ret = _set_property(caller, typeclass, prop='typeclass', processor=str, next_node="node_key")
+    caller.msg("Selected typeclass |y{}|n. Removed any set prototype parent.".format(typeclass))
+    return ret
 
 
-@list_node(list(sorted(get_all_typeclasses().keys())), _typeclass_examine, _typeclass_select)
+@list_node(_all_typeclasses, _typeclass_examine, _typeclass_select)
 def node_typeclass(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
@@ -879,12 +963,7 @@ def node_typeclass(caller):
         text.append("Using default typeclass {typeclass}.".format(
             typeclass=settings.BASE_OBJECT_TYPECLASS))
     text = "\n\n".join(text)
-    options = _wizard_options("prototype", "key")
-    options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="typeclass",
-                                  processor=lambda s: s.strip(),
-                                  next_node="node_key"))})
+    options = _wizard_options("prototype", "key", color="|W")
     return text, options
 
 

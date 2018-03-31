@@ -979,18 +979,20 @@ class EvMenu(object):
 #
 # -----------------------------------------------------------
 
-def list_node(option_list, examine_processor, goto_processor, pagesize=10):
+def list_node(option_generator, examine_processor, goto_processor, pagesize=10):
     """
     Decorator for making an EvMenu node into a multi-page list node. Will add new options,
     prepending those options added in the node.
 
     Args:
-        option_list (list): List of strings indicating the options.
-        examine_processor (callable): Will be called with the caller and the chosen option when
-            examining said option. Should return a text string to display in the node.
-        goto_processor (callable): Will be called with caller and
-            the chosen option from the optionlist. Should return the target node to goto after the
-            selection.
+        option_generator (callable or list): A list of strings indicating the options, or a callable
+            that is called without any arguments to produce such a list.
+        examine_processor (callable, optional): Will be called with the caller and the chosen option
+            when examining said option. Should return a text string to display in the node.
+        goto_processor (callable, optional): Will be called as goto_processor(caller, menuchoice)
+            where menuchoice is the chosen option as a string. Should return the target node to
+            goto after this selection.
+
         pagesize (int): How many options to show per page.
 
     Example:
@@ -1009,6 +1011,7 @@ def list_node(option_list, examine_processor, goto_processor, pagesize=10):
 
             available_choices = kwargs.get("available_choices", [])
             processor = kwargs.get("selection_processor")
+
             try:
                 match_ind = int(re.search(r"[0-9]+$", raw_string).group()) - 1
                 selection = available_choices[match_ind]
@@ -1022,11 +1025,13 @@ def list_node(option_list, examine_processor, goto_processor, pagesize=10):
                     logger.log_trace()
             return selection
 
-        nall_options = len(option_list)
-        pages = [option_list[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
-        npages = len(pages)
-
         def _list_node(caller, raw_string, **kwargs):
+
+            option_list = option_generator() if callable(option_generator) else option_generator
+
+            nall_options = len(option_list)
+            pages = [option_list[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
+            npages = len(pages)
 
             page_index = max(0, min(npages - 1, kwargs.get("optionpage_index", 0)))
             page = pages[page_index]
@@ -1042,19 +1047,21 @@ def list_node(option_list, examine_processor, goto_processor, pagesize=10):
                 # if the goto callable returns None, the same node is rerun, and
                 # kwargs not used by the callable are passed on to the node. This
                 # allows us to call ourselves over and over, using different kwargs.
-                if page_index > 0:
-                    options.append({"key": ("|wb|Wack|n", "b"),
-                                    "goto": (lambda caller: None,
-                                             {"optionpage_index": page_index - 1})})
-                if page_index < npages - 1:
-                    options.append({"key": ("|wn|Wext|n", "n"),
-                                    "goto": (lambda caller: None,
-                                             {"optionpage_index": page_index + 1})})
-
                 options.append({"key": ("|Wcurrent|n", "c"),
                                 "desc": "|W({}/{})|n".format(page_index + 1, npages),
                                 "goto": (lambda caller: None,
                                          {"optionpage_index": page_index})})
+                if page_index > 0:
+                    options.append({"key": ("|wp|Wrevious page|n", "p"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index - 1})})
+                if page_index < npages - 1:
+                    options.append({"key": ("|wn|Wext page|n", "n"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index + 1})})
+
+
+            # this catches arbitrary input, notably to examine entries ('look 4' or 'l4' etc)
             options.append({"key": "_default",
                             "goto": (lambda caller: None,
                                      {"show_detail": True, "optionpage_index": page_index})})
@@ -1071,6 +1078,7 @@ def list_node(option_list, examine_processor, goto_processor, pagesize=10):
             # add data from the decorated node
 
             text = ''
+            extra_options = []
             try:
                 text, extra_options = func(caller, raw_string)
             except TypeError:
@@ -1080,14 +1088,16 @@ def list_node(option_list, examine_processor, goto_processor, pagesize=10):
                     raise
             except Exception:
                 logger.log_trace()
+                print("extra_options:", extra_options)
             else:
                 if isinstance(extra_options, {}):
                     extra_options = [extra_options]
                 else:
                     extra_options = make_iter(extra_options)
-                options.append(extra_options)
 
+            options.extend(extra_options)
             text = text + "\n\n" + text_detail if text_detail else text
+            text += "\n\n(Make a choice or enter 'look <num>' to examine an option closer)"
 
             return text, options
 

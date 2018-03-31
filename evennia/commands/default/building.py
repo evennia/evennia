@@ -15,7 +15,8 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
                                    save_db_prototype, build_metaproto, validate_prototype,
-                                   delete_db_prototype, PermissionError, start_olc)
+                                   delete_db_prototype, PermissionError, start_olc,
+                                   metaproto_to_str)
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2886,21 +2887,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         def _search_show_prototype(query, metaprots=None):
             # prototype detail
-            strings = []
             if not metaprots:
                 metaprots = search_prototype(key=query, return_meta=True)
             if metaprots:
-                for metaprot in metaprots:
-                    header = (
-                        "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
-                        "|cdesc:|n {} \n|cprototype:|n ".format(
-                           metaprot.key, ", ".join(metaprot.tags),
-                           metaprot.locks, metaprot.desc))
-                    prototype = ("{{\n  {} \n}}".format("\n  ".join("{!r}: {!r},".format(key, value)
-                                 for key, value in
-                                 sorted(metaprot.prototype.items())).rstrip(",")))
-                    strings.append(header + prototype)
-                return "\n".join(strings)
+                return "\n".join(metaproto_to_str(metaprot) for metaprot in metaprots)
             else:
                 return False
 
