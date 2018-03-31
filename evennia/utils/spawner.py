@@ -117,6 +117,7 @@ from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
 from evennia.utils.evtable import EvTable
 from evennia.utils.evmenu import EvMenu, list_node
+from evennia.utils.ansi import strip_ansi
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
@@ -779,25 +780,33 @@ def _set_property(caller, raw_string, **kwargs):
 
         _set_menu_metaprot(caller, "prototype", prototype)
 
-
     caller.msg("Set {prop} to {value}.".format(
         prop=prop.replace("_", "-").capitalize(), value=str(value)))
 
     return next_node
 
 
-def _wizard_options(prev_node, next_node, color="|W"):
-    options = [{"key": ("|wf|Worward", "f"),
-                "desc": "{color}({node})|n".format(
-                    color=color, node=next_node.replace("_", "-")),
-                "goto": "node_{}".format(next_node)},
-               {"key": ("|wb|Wack", "b"),
-                "desc": "{color}({node})|n".format(
-                    color=color, node=prev_node.replace("_", "-")),
-                "goto": "node_{}".format(prev_node)}]
+def _wizard_options(curr_node, prev_node, next_node, color="|W"):
+    options = []
+    if prev_node:
+        options.append({"key": ("|wb|Wack", "b"),
+                        "desc": "{color}({node})|n".format(
+                            color=color, node=prev_node.replace("_", "-")),
+                        "goto": "node_{}".format(prev_node)})
+    if next_node:
+        options.append({"key": ("|wf|Worward", "f"),
+                        "desc": "{color}({node})|n".format(
+                            color=color, node=next_node.replace("_", "-")),
+                        "goto": "node_{}".format(next_node)})
+
     if "index" not in (prev_node, next_node):
         options.append({"key": ("|wi|Wndex", "i"),
                         "goto": "node_index"})
+
+    if curr_node:
+        options.append({"key": ("|wv|Walidate prototype", "v"),
+                        "goto": ("node_validate_prototype", {"back": curr_node})})
+
     return options
 
 
@@ -846,6 +855,23 @@ def node_index(caller):
     return text, options
 
 
+def node_validate_prototype(caller, raw_string, **kwargs):
+    metaprot = _get_menu_metaprot(caller)
+
+    txt = metaproto_to_str(metaprot)
+    errors = "\n\n|g No validation errors found.|n (but errors could still happen at spawn-time)"
+    try:
+        # validate, don't spawn
+        spawn(metaprot.prototype, return_prototypes=True)
+    except RuntimeError as err:
+        errors = "\n\n|rError: {}|n".format(err)
+    text = (txt + errors)
+
+    options = _wizard_options(None, kwargs.get("back"), None)
+
+    return text, options
+
+
 def _check_meta_key(caller, key):
     old_metaprot = search_prototype(key)
     olc_new = caller.ndb._menutree.olc_new
@@ -879,7 +905,7 @@ def node_meta_key(caller):
         text.append("The key is currently unset.")
     text.append("Enter text or make a choice (q for quit)")
     text = "\n\n".join(text)
-    options = _wizard_options("index", "prototype")
+    options = _wizard_options("meta_key", "index", "prototype")
     options.append({"key": "_default",
                     "goto": _check_meta_key})
     return text, options
@@ -914,7 +940,7 @@ def node_prototype(caller):
     else:
         text.append("Parent prototype is not set")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_key", "typeclass", color="|W")
+    options = _wizard_options("prototype", "meta_key", "typeclass", color="|W")
     return text, options
 
 
@@ -963,7 +989,7 @@ def node_typeclass(caller):
         text.append("Using default typeclass {typeclass}.".format(
             typeclass=settings.BASE_OBJECT_TYPECLASS))
     text = "\n\n".join(text)
-    options = _wizard_options("prototype", "key", color="|W")
+    options = _wizard_options("typeclass", "prototype", "key", color="|W")
     return text, options
 
 
@@ -978,7 +1004,7 @@ def node_key(caller):
     else:
         text.append("Key is currently unset.")
     text = "\n\n".join(text)
-    options = _wizard_options("typeclass", "aliases")
+    options = _wizard_options("key", "typeclass", "aliases")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="key",
@@ -999,7 +1025,7 @@ def node_aliases(caller):
     else:
         text.append("No aliases are set.")
     text = "\n\n".join(text)
-    options = _wizard_options("key", "attrs")
+    options = _wizard_options("aliases", "key", "attrs")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="aliases",
@@ -1020,7 +1046,7 @@ def node_attrs(caller):
     else:
         text.append("No attrs are set.")
     text = "\n\n".join(text)
-    options = _wizard_options("aliases", "tags")
+    options = _wizard_options("attrs", "aliases", "tags")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="attrs",
@@ -1041,7 +1067,7 @@ def node_tags(caller):
     else:
         text.append("No tags are set.")
     text = "\n\n".join(text)
-    options = _wizard_options("attrs", "locks")
+    options = _wizard_options("tags", "attrs", "locks")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="tags",
@@ -1062,7 +1088,7 @@ def node_locks(caller):
     else:
         text.append("No locks are set.")
     text = "\n\n".join(text)
-    options = _wizard_options("tags", "permissions")
+    options = _wizard_options("locks", "tags", "permissions")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="locks",
@@ -1083,7 +1109,7 @@ def node_permissions(caller):
     else:
         text.append("No permissions are set.")
     text = "\n\n".join(text)
-    options = _wizard_options("destination", "location")
+    options = _wizard_options("permissions", "destination", "location")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="permissions",
@@ -1103,7 +1129,7 @@ def node_location(caller):
     else:
         text.append("Default location is {}'s inventory.".format(caller))
     text = "\n\n".join(text)
-    options = _wizard_options("permissions", "home")
+    options = _wizard_options("location", "permissions", "home")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="location",
@@ -1123,7 +1149,7 @@ def node_home(caller):
     else:
         text.append("Default home location (|y{home}|n) used.".format(home=settings.DEFAULT_HOME))
     text = "\n\n".join(text)
-    options = _wizard_options("aliases", "destination")
+    options = _wizard_options("home", "aliases", "destination")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="home",
@@ -1143,7 +1169,7 @@ def node_destination(caller):
     else:
         text.append("No destination is set (default).")
     text = "\n\n".join(text)
-    options = _wizard_options("home", "meta_desc")
+    options = _wizard_options("destination", "home", "meta_desc")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="dest",
@@ -1163,7 +1189,7 @@ def node_meta_desc(caller):
     else:
         text.append("Description is currently unset.")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_key", "meta_tags")
+    options = _wizard_options("meta_desc", "meta_key", "meta_tags")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop='meta_desc',
@@ -1184,7 +1210,7 @@ def node_meta_tags(caller):
     else:
         text.append("No tags are currently set.")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_desc", "meta_locks")
+    options = _wizard_options("meta_tags", "meta_desc", "meta_locks")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="meta_tags",
@@ -1206,7 +1232,7 @@ def node_meta_locks(caller):
         text.append("Lock unset - if not changed the default lockstring will be set as\n"
                     "   |w'use:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
     text = "\n\n".join(text)
-    options = _wizard_options("meta_tags", "index")
+    options = _wizard_options("meta_locks", "meta_tags", "index")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="meta_locks",
@@ -1214,6 +1240,33 @@ def node_meta_locks(caller):
                                   next_node="node_index"))})
     return text, options
 
+
+class OLCMenu(EvMenu):
+    """
+    A custom EvMenu with a different formatting for the options.
+
+    """
+    def options_formatter(self, optionlist):
+        """
+        Split the options into two blocks - olc options and normal options
+
+        """
+        olc_keys = ("index", "forward", "back", "previous", "next", "validate prototype")
+        olc_options = []
+        other_options = []
+        for key, desc in optionlist:
+            raw_key = strip_ansi(key)
+            if raw_key in olc_keys:
+                desc = " {}".format(desc) if desc else ""
+                olc_options.append("|lc{}|lt{}|le{}".format(raw_key, key, desc))
+            else:
+                other_options.append((key, desc))
+
+        olc_options = " | ".join(olc_options) + " | " + "|wq|Wuit" if olc_options else ""
+        other_options = super(OLCMenu, self).options_formatter(other_options)
+        sep = "\n\n" if olc_options and other_options else ""
+
+        return "{}{}{}".format(olc_options, sep, other_options)
 
 
 def start_olc(caller, session=None, metaproto=None):
@@ -1228,6 +1281,7 @@ def start_olc(caller, session=None, metaproto=None):
 
     """
     menudata = {"node_index": node_index,
+                "node_validate_prototype": node_validate_prototype,
                 "node_meta_key": node_meta_key,
                 "node_prototype": node_prototype,
                 "node_typeclass": node_typeclass,
@@ -1244,7 +1298,7 @@ def start_olc(caller, session=None, metaproto=None):
                 "node_meta_tags": node_meta_tags,
                 "node_meta_locks": node_meta_locks,
                 }
-    EvMenu(caller, menudata, startnode='node_index', session=session, olc_metaproto=metaproto)
+    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_metaproto=metaproto)
 
 
 # Testing
