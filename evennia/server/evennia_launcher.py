@@ -1037,9 +1037,11 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
         new_linecount = sum(blck.count("\n") for blck in _block(filehandle))
 
         if new_linecount < old_linecount:
-            # this could happen if the file was manually deleted or edited
-            print("Log file has shrunk. Restart log reader.")
-            sys.exit()
+            # this happens if the file was cycled or manually deleted/edited.
+            print(" ** Log file {filename} has cycled or been edited. "
+                  "Restarting log. ".format(filehandle.name))
+            new_linecount = 0
+            old_linecount = 0
 
         lines_to_get = max(0, new_linecount - old_linecount)
 
