@@ -670,7 +670,7 @@ class TestGenderSub(CommandTest):
         char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
         txt = "Test |p gender"
         self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender")
-              
+
 # test health bar contrib
 
 from evennia.contrib import health_bar
@@ -966,7 +966,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_basic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
-        
+
     # Test equipment commands
     def test_turnbattleequipcmd(self):
         # Start with equip module specific commands.
@@ -984,7 +984,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_equip.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
-        
+
     # Test range commands
     def test_turnbattlerangecmd(self):
         # Start with range module specific commands.
@@ -998,7 +998,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_range.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
-        
+
 
 class TestTurnBattleFunc(EvenniaTest):
 
@@ -1080,7 +1080,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
-        
+
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_tbequipfunc(self):
         attacker = create_object(tb_equip.TBEquipCharacter, key="Attacker")
@@ -1159,7 +1159,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
-        
+
     # Test combat functions in tb_range too.
     def test_tbrangefunc(self):
         testroom = create_object(DefaultRoom, key="Test Room")
@@ -1264,7 +1264,7 @@ Bar
 -Qux"""
 
 class TestTreeSelectFunc(EvenniaTest):
-    
+
     def test_tree_functions(self):
         # Dash counter
         self.assertTrue(tree_select.dashcount("--test") == 2)
@@ -1279,7 +1279,7 @@ class TestTreeSelectFunc(EvenniaTest):
         # Option list to menu options
         test_optlist = tree_select.parse_opts(TREE_MENU_TESTSTR, category_index=2)
         optlist_to_menu_expected_result = [{'goto': ['menunode_treeselect', {'newindex': 3}], 'key': 'Baz 1'},
-        {'goto': ['menunode_treeselect', {'newindex': 4}], 'key': 'Baz 2'}, 
+        {'goto': ['menunode_treeselect', {'newindex': 4}], 'key': 'Baz 2'},
         {'goto': ['menunode_treeselect', {'newindex': 1}], 'key': ['<< Go Back', 'go back', 'back'], 'desc': 'Return to the previous menu.'}]
         self.assertTrue(tree_select.optlist_to_menuoptions(TREE_MENU_TESTSTR, test_optlist, 2, True, True) == optlist_to_menu_expected_result)
 
@@ -1414,3 +1414,150 @@ class TestRandomStringGenerator(EvenniaTest):
         # We can't generate one more
         with self.assertRaises(random_string_generator.ExhaustedGenerator):
             SIMPLE_GENERATOR.get()
+
+
+# Tests for the building_menu contrib
+from evennia.contrib.building_menu import BuildingMenu, CmdNoInput, CmdNoMatch
+
+class Submenu(BuildingMenu):
+    def init(self, exit):
+        self.add_choice("title", key="t", attr="key")
+
+class TestBuildingMenu(CommandTest):
+
+    def setUp(self):
+        super(TestBuildingMenu, self).setUp()
+        self.menu = BuildingMenu(caller=self.char1, obj=self.room1, title="test")
+        self.menu.add_choice("title", key="t", attr="key")
+        self.menu.add_choice_quit()
+
+    def test_quit(self):
+        """Try to quit the building menu."""
+        self.assertFalse(self.char1.cmdset.has("building_menu"))
+        self.menu.open()
+        self.assertTrue(self.char1.cmdset.has("building_menu"))
+        self.call(CmdNoMatch(building_menu=self.menu), "q")
+        # char1 tries to quit the editor
+        self.assertFalse(self.char1.cmdset.has("building_menu"))
+
+    def test_setattr(self):
+        """Test the simple setattr provided by building menus."""
+        key = self.room1.key
+        self.menu.open()
+        self.call(CmdNoMatch(building_menu=self.menu), "t")
+        self.assertIsNotNone(self.menu.current_choice)
+        self.call(CmdNoMatch(building_menu=self.menu), "some new title")
+        self.call(CmdNoMatch(building_menu=self.menu), "@")
+        self.assertIsNone(self.menu.current_choice)
+        self.assertEqual(self.room1.key, "some new title")
+        self.call(CmdNoMatch(building_menu=self.menu), "q")
+
+    def test_add_choice_without_key(self):
+        """Try to add choices without keys."""
+        choices = []
+        for i in range(20):
+            choices.append(self.menu.add_choice("choice", attr="test"))
+        self.menu._add_keys_choice()
+        keys = ["c", "h", "o", "i", "e", "ch", "ho", "oi", "ic", "ce", "cho", "hoi", "oic", "ice", "choi", "hoic", "oice", "choic", "hoice", "choice"]
+        for i in range(20):
+            self.assertEqual(choices[i].key, keys[i])
+
+        # Adding another key of the same title would break, no more available shortcut
+        self.menu.add_choice("choice", attr="test")
+        with self.assertRaises(ValueError):
+            self.menu._add_keys_choice()
+
+    def test_callbacks(self):
+        """Test callbacks in menus."""
+        self.room1.key = "room1"
+        def on_enter(caller, menu):
+            caller.msg("on_enter:{}".format(menu.title))
+        def on_nomatch(caller, string, choice):
+            caller.msg("on_nomatch:{},{}".format(string, choice.key))
+        def on_leave(caller, obj):
+            caller.msg("on_leave:{}".format(obj.key))
+        self.menu.add_choice("test", key="e", on_enter=on_enter, on_nomatch=on_nomatch, on_leave=on_leave)
+        self.call(CmdNoMatch(building_menu=self.menu), "e", "on_enter:test")
+        self.call(CmdNoMatch(building_menu=self.menu), "ok", "on_nomatch:ok,e")
+        self.call(CmdNoMatch(building_menu=self.menu), "@", "on_leave:room1")
+        self.call(CmdNoMatch(building_menu=self.menu), "q")
+
+    def test_multi_level(self):
+        """Test multi-level choices."""
+        # Creaste three succeeding menu (t2 is contained in t1, t3 is contained in t2)
+        def on_nomatch_t1(caller, menu):
+            menu.move("whatever") # this will be valid since after t1 is a joker
+
+        def on_nomatch_t2(caller, menu):
+            menu.move("t3") # this time the key matters
+
+        t1 = self.menu.add_choice("what", key="t1", attr="t1", on_nomatch=on_nomatch_t1)
+        t2 = self.menu.add_choice("and", key="t1.*", attr="t2", on_nomatch=on_nomatch_t2)
+        t3 = self.menu.add_choice("why", key="t1.*.t3", attr="t3")
+        self.menu.open()
+
+        # Move into t1
+        self.assertIn(t1, self.menu.relevant_choices)
+        self.assertNotIn(t2, self.menu.relevant_choices)
+        self.assertNotIn(t3, self.menu.relevant_choices)
+        self.assertIsNone(self.menu.current_choice)
+        self.call(CmdNoMatch(building_menu=self.menu), "t1")
+        self.assertEqual(self.menu.current_choice, t1)
+        self.assertNotIn(t1, self.menu.relevant_choices)
+        self.assertIn(t2, self.menu.relevant_choices)
+        self.assertNotIn(t3, self.menu.relevant_choices)
+
+        # Move into t2
+        self.call(CmdNoMatch(building_menu=self.menu), "t2")
+        self.assertEqual(self.menu.current_choice, t2)
+        self.assertNotIn(t1, self.menu.relevant_choices)
+        self.assertNotIn(t2, self.menu.relevant_choices)
+        self.assertIn(t3, self.menu.relevant_choices)
+
+        # Move into t3
+        self.call(CmdNoMatch(building_menu=self.menu), "t3")
+        self.assertEqual(self.menu.current_choice, t3)
+        self.assertNotIn(t1, self.menu.relevant_choices)
+        self.assertNotIn(t2, self.menu.relevant_choices)
+        self.assertNotIn(t3, self.menu.relevant_choices)
+
+        # Move back to t2
+        self.call(CmdNoMatch(building_menu=self.menu), "@")
+        self.assertEqual(self.menu.current_choice, t2)
+        self.assertNotIn(t1, self.menu.relevant_choices)
+        self.assertNotIn(t2, self.menu.relevant_choices)
+        self.assertIn(t3, self.menu.relevant_choices)
+
+        # Move back into t1
+        self.call(CmdNoMatch(building_menu=self.menu), "@")
+        self.assertEqual(self.menu.current_choice, t1)
+        self.assertNotIn(t1, self.menu.relevant_choices)
+        self.assertIn(t2, self.menu.relevant_choices)
+        self.assertNotIn(t3, self.menu.relevant_choices)
+
+        # Moves back to the main menu
+        self.call(CmdNoMatch(building_menu=self.menu), "@")
+        self.assertIn(t1, self.menu.relevant_choices)
+        self.assertNotIn(t2, self.menu.relevant_choices)
+        self.assertNotIn(t3, self.menu.relevant_choices)
+        self.assertIsNone(self.menu.current_choice)
+        self.call(CmdNoMatch(building_menu=self.menu), "q")
+
+    def test_submenu(self):
+        """Test to add sub-menus."""
+        def open_exit(menu):
+            menu.open_submenu("evennia.contrib.tests.Submenu", self.exit)
+            return False
+
+        self.menu.add_choice("exit", key="x", on_enter=open_exit)
+        self.menu.open()
+        self.call(CmdNoMatch(building_menu=self.menu), "x")
+        self.menu = self.char1.ndb._building_menu
+        self.call(CmdNoMatch(building_menu=self.menu), "t")
+        self.call(CmdNoMatch(building_menu=self.menu), "in")
+        self.call(CmdNoMatch(building_menu=self.menu), "@")
+        self.call(CmdNoMatch(building_menu=self.menu), "@")
+        self.menu = self.char1.ndb._building_menu
+        self.assertEqual(self.char1.ndb._building_menu.obj, self.room1)
+        self.call(CmdNoMatch(building_menu=self.menu), "q")
+        self.assertEqual(self.exit.key, "in")
