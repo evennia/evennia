@@ -2909,7 +2909,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 elif metaprot:
                     # one match
                     metaprot = metaprot[0]
-            start_olc(caller, self.session, metaprot)
+            start_olc(caller, session=self.session, metaproto=metaprot)
             return
 
         if 'search' in self.switches:
