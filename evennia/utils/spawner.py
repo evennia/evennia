@@ -765,6 +765,9 @@ def _set_property(caller, raw_string, **kwargs):
     else:
         value = raw_string
 
+    if not value:
+        return next_node
+
     if meta:
         _set_menu_metaprot(caller, propname_low, value)
     else:
@@ -780,7 +783,7 @@ def _set_property(caller, raw_string, **kwargs):
 
         _set_menu_metaprot(caller, "prototype", prototype)
 
-    caller.msg("Set {prop} to {value}.".format(
+    caller.msg("Set {prop} to '{value}'.".format(
         prop=prop.replace("_", "-").capitalize(), value=str(value)))
 
     return next_node
@@ -874,7 +877,7 @@ def node_validate_prototype(caller, raw_string, **kwargs):
 
 def _check_meta_key(caller, key):
     old_metaprot = search_prototype(key)
-    olc_new = caller.ndb._menutree.olc_new
+    olc_new = _is_new_prototype(caller)
     key = key.strip().lower()
     if old_metaprot:
         # we are starting a new prototype that matches an existing
@@ -1298,7 +1301,7 @@ def start_olc(caller, session=None, metaproto=None):
                 "node_meta_tags": node_meta_tags,
                 "node_meta_locks": node_meta_locks,
                 }
-    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_metaproto=metaproto)
+    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_metaprot=metaproto)
 
 
 # Testing
