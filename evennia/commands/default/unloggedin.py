@@ -521,18 +521,19 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
 class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
     """
     Provides MUDINFO output, so that Evennia games can be added to Mudconnector
-    and Mudstats.
+    and Mudstats.  Sadly, the MUDINFO specification seems to have dropped off the
+    face of the net, but it is still used by some crawlers.  This implementation
+    was created by looking at the MUDINFO implementation in MUX2, TinyMUSH, Rhost,
+    and PennMUSH.
     """
     key = "info"
     locks = "cmd:all()"
 
     def func(self):
-        self.caller.msg("## BEGIN INFO 1.1")
-        self.caller.msg("Name: %s" % settings.SERVERNAME)
-        self.caller.msg("Uptime: %s" % datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime())
-        self.caller.msg("Connected: %d" % SESSIONS.account_count())
-        self.caller.msg("Version: Evennia %s" % utils.get_evennia_version())
-        self.caller.msg("## END INFO")
+        self.caller.msg("## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
+                        settings.SERVERNAME,
+                        datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
+                        SESSIONS.account_count(), utils.get_evennia_version()))
 
 
 def _create_account(session, accountname, password, permissions, typeclass=None, email=None):
