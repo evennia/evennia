@@ -23,3 +23,4 @@ class UnloggedinCmdSet(CmdSet):
         self.add(unloggedin.CmdUnconnectedHelp())
         self.add(unloggedin.CmdUnconnectedEncoding())
         self.add(unloggedin.CmdUnconnectedScreenreader())
+        self.add(unloggedin.CmdUnconnectedInfo())
