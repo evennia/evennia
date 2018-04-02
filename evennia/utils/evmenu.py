@@ -1132,7 +1132,7 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
 
     Args:
         option_generator (callable or list): A list of strings indicating the options, or a callable
-            that is called without any arguments to produce such a list.
+            that is called as option_generator(caller) to produce such a list.
         select (callable, option): Will be called as select(caller, menuchoice)
             where menuchoice is the chosen option as a string. Should return the target node to
             goto after this selection. Note that if this is not given, the decorated node must itself
@@ -1217,14 +1217,22 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
         def _list_node(caller, raw_string, **kwargs):
 
             mode = kwargs.get("list_mode", None)
-            option_list = option_generator() if callable(option_generator) else option_generator
+            option_list = option_generator(caller) if callable(option_generator) else option_generator
 
-            nall_options = len(option_list)
-            pages = [option_list[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
-            npages = len(pages)
+            npages = 0
+            page_index = 0
+            page = None
+            options = []
 
-            page_index = max(0, min(npages - 1, kwargs.get("optionpage_index", 0)))
-            page = pages[page_index]
+            if option_list:
+                nall_options = len(option_list)
+                pages = [option_list[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
+                npages = len(pages)
+
+                page_index = max(0, min(npages - 1, kwargs.get("optionpage_index", 0)))
+                page = pages[page_index]
+
+            text = ""
             entry = None
             extra_text = None
 
@@ -1233,19 +1241,19 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                 mode, entry = _input_parser(caller, raw_string,
                                             **{"available_choices": page})
 
-            if examine and mode: #  == "look":
+            if examine and mode:  #  == "look":
                 # look mode - we are examining a given entry
                 try:
                     text = examine(caller, entry)
                 except Exception:
                     logger.log_trace()
                     text = "|rCould not view."
-                options = [{"key": ("|wb|Wack|n", "b"),
-                            "goto": (lambda caller: None,
-                                     {"optionpage_index": page_index})},
-                           {"key": "_default",
-                            "goto": (lambda caller: None,
-                                     {"optionpage_index": page_index})}]
+                options.extend([{"key": ("|wb|Wack|n", "b"),
+                                 "goto": (lambda caller: None,
+                                          {"optionpage_index": page_index})},
+                                {"key": "_default",
+                                 "goto": (lambda caller: None,
+                                          {"optionpage_index": page_index})}])
                 return text, options
 
             # if edit and mode == "edit":
@@ -1263,9 +1271,9 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
 
                     # dynamic, multi-page option list. Each selection leads to the `select`
                     # callback being called with a result from the available choices
-                    options = [{"desc": opt,
-                                "goto": (_select_parser,
-                                         {"available_choices": page})} for opt in page]
+                    options.extend([{"desc": opt,
+                                     "goto": (_select_parser,
+                                              {"available_choices": page})} for opt in page])
 
                 if add:
                     # We have a processor to handle adding a new entry. Re-run this node
