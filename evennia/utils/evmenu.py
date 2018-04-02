@@ -1135,17 +1135,15 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             that is called as option_generator(caller) to produce such a list.
         select (callable, option): Will be called as select(caller, menuchoice)
             where menuchoice is the chosen option as a string. Should return the target node to
-            goto after this selection. Note that if this is not given, the decorated node must itself
-            provide a way to continue from the node!
+            goto after this selection. Note that if this is not given, the decorated node must
+            itself provide a way to continue from the node!
         examine (callable, optional): If given, allows for examining options in detail. Will
             be called with examine(caller, menuchoice) and should return a text string to
             display in-place in the node.
-        edit (callable, optional): If given, this callable will be called as edit(caller, menuchoice).
-            It should return the node-key to a node decorated with the `edit_node` decorator. The
-            menuchoice will automatically be stored on the menutree as `list_node_edit`.
-        add (tuple, optional): If given, this callable will be called as add(caller, menuchoice).
-            It should return the node-key to a node decorated with the `edit_node` decorator. The
-            menuchoice will automatically be stored on the menutree as `list_node_add`.
+        edit (callable, optional): If given, this callable will be called as edit(caller,
+            menuchoice, **kwargs) and should return a complete (text, options) tuple (like a node).
+        add (callable optional): If given, this callable will be called as add(caller, menuchoice,
+            **kwargs) and should return a complete (text, options) tuple (like a node).
 
         pagesize (int): How many options to show per page.
 
@@ -1189,25 +1187,28 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             """
 
             available_choices = kwargs.get("available_choices", [])
-            match = re.search(r"(^[a-zA-Z]*)\s*([0-9]*)$", raw_string)
-            cmd, number = match.groups()
+            match = re.search(r"(^[a-zA-Z]*)\s*(.*?)$", raw_string)
+            cmd, args = match.groups()
             mode, selection = None, None
+            cmd = cmd.lower().strip()
 
-            if number:
-                number = int(number) - 1
-                cmd = cmd.lower().strip()
-                if cmd.startswith("e") or cmd.startswith("a") and edit:
-                    mode = "edit"
-                elif examine:
-                    mode = "examine"
-
+            if args:
                 try:
-                    selection = available_choices[number]
-                except IndexError:
-                    caller.msg("|rInvalid index")
-                    mode = None
-            else:
-                caller.msg("|rMust supply a number.")
+                    number = int(args) - 1
+                except ValueError:
+                    if cmd.startswith("a") and add:
+                        mode = "add"
+                        selection = args
+                else:
+                    if cmd.startswith("e") and edit:
+                        mode = "edit"
+                    elif examine:
+                        mode = "look"
+                    try:
+                        selection = available_choices[number]
+                    except IndexError:
+                        caller.msg("|rInvalid index")
+                        mode = None
 
             return mode, selection
 
@@ -1233,18 +1234,18 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                 page = pages[page_index]
 
             text = ""
-            entry = None
+            selection = None
             extra_text = None
 
             if mode == "arbitrary":
                 # freeform input, we must parse it for the allowed commands (look/edit)
-                mode, entry = _input_parser(caller, raw_string,
-                                            **{"available_choices": page})
+                mode, selection = _input_parser(caller, raw_string,
+                                                **{"available_choices": page})
 
-            if examine and mode:  #  == "look":
+            if examine and mode == "look":
                 # look mode - we are examining a given entry
                 try:
-                    text = examine(caller, entry)
+                    text = examine(caller, selection)
                 except Exception:
                     logger.log_trace()
                     text = "|rCould not view."
@@ -1256,15 +1257,25 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                                           {"optionpage_index": page_index})}])
                 return text, options
 
-            # if edit and mode == "edit":
-            #     pass
-            # elif add and mode == "add":
-            #     # add mode - we are adding a new entry
-            #     pass
+            elif add and mode == 'add':
+                # add mode - the selection is the new value
+                try:
+                    text, options = add(caller, selection, **kwargs)
+                except Exception:
+                    logger.log_trace()
+                    text = "|rCould not add."
+                return text, options
+
+            elif edit and mode == 'edit':
+                try:
+                    text, options = edit(caller, selection, **kwargs)
+                except Exception:
+                    logger.log_trace()
+                    text = "|Could not edit."
+                return text, options
 
             else:
                 # normal mode - list
-                pass
 
                 if select:
                     # We have a processor to handle selecting an entry
@@ -1275,13 +1286,6 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                                      "goto": (_select_parser,
                                               {"available_choices": page})} for opt in page])
 
-                if add:
-                    # We have a processor to handle adding a new entry. Re-run this node
-                    # in the 'add' mode
-                    options.append({"key": ("|wadd|Wdd new|n", "a"),
-                                    "goto": (lambda caller: None,
-                                             {"optionpage_index": page_index,
-                                              "list_mode": "add"})})
                 if npages > 1:
                     # if the goto callable returns None, the same node is rerun, and
                     # kwargs not used by the callable are passed on to the node. This
