@@ -690,9 +690,11 @@ def spawn(*prototypes, **kwargs):
 # Helper functions
 
 def _get_menu_metaprot(caller):
+
+    metaproto = None
     if hasattr(caller.ndb._menutree, "olc_metaprot"):
-        return caller.ndb._menutree.olc_metaprot
-    else:
+        metaproto = caller.ndb._menutree.olc_metaprot
+    if not metaproto:
         metaproto = build_metaproto(None, '', [], [], None)
         caller.ndb._menutree.olc_metaprot = metaproto
         caller.ndb._menutree.olc_new = True
@@ -931,7 +933,7 @@ def _prototype_select(caller, prototype):
     return ret
 
 
-@list_node(_all_prototypes, _prototype_examine, _prototype_select)
+@list_node(_all_prototypes, _prototype_select, examine=_prototype_examine)
 def node_prototype(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
@@ -979,7 +981,7 @@ def _typeclass_select(caller, typeclass):
     return ret
 
 
-@list_node(_all_typeclasses, _typeclass_examine, _typeclass_select)
+@list_node(_all_typeclasses, _typeclass_select, examine=_typeclass_examine)
 def node_typeclass(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
