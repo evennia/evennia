@@ -114,7 +114,7 @@ def _menu_savefunc(caller, buf):
     return True
 
 def _menu_quitfunc(caller):
-    caller.cmdset.add(BuildingMenuCmdSet)
+    caller.cmdset.add(BuildingMenuCmdSet, permanent=calelr.ndb._building_menu and caller.ndb._building_menu.persistent or False)
     if caller.ndb._building_menu:
         caller.ndb._building_menu.move(back=True)
 
@@ -767,7 +767,7 @@ class BuildingMenu(object):
         """
         caller = self.caller
         self._save()
-        self.caller.cmdset.add(BuildingMenuCmdSet, permanent=True)
+        self.caller.cmdset.add(BuildingMenuCmdSet, permanent=self.persistent)
         self.display()
 
     def open_parent_menu(self):
