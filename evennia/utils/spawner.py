@@ -916,7 +916,7 @@ def node_meta_key(caller):
     return text, options
 
 
-def _all_prototypes():
+def _all_prototypes(caller):
     return [mproto.key for mproto in search_prototype()]
 
 
@@ -949,7 +949,7 @@ def node_prototype(caller):
     return text, options
 
 
-def _all_typeclasses():
+def _all_typeclasses(caller):
     return list(sorted(get_all_typeclasses().keys()))
     # return list(sorted(get_all_typeclasses(parent="evennia.objects.objects.DefaultObject").keys()))
 
@@ -1060,24 +1060,17 @@ def node_attrs(caller):
     return text, options
 
 
-def node_tags(caller):
+def _caller_tags(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
     tags = prot.get("tags")
+    return tags
 
-    text = ["Set the prototype's |yTags|n. Separate multiple tags with commas. "
-            "Will retain case sensitivity."]
-    if tags:
-        text.append("Current tags are '|y{tags}|n'.".format(tags=tags))
-    else:
-        text.append("No tags are set.")
-    text = "\n\n".join(text)
+
+@list_node(_caller_tags)
+def node_tags(caller):
+    text = "Set the prototype's |yTags|n."
     options = _wizard_options("tags", "attrs", "locks")
-    options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="tags",
-                                  processor=lambda s: [part.strip() for part in s.split(",")],
-                                  next_node="node_locks"))})
     return text, options
 
 
@@ -1202,6 +1195,7 @@ def node_meta_desc(caller):
                                   next_node="node_meta_tags"))})
 
     return text, options
+
 
 
 def node_meta_tags(caller):
