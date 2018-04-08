@@ -1185,32 +1185,34 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                 which processors are available.
 
             """
-
+            mode, selection, new_value = None, None, None
             available_choices = kwargs.get("available_choices", [])
-            match = re.search(r"(^[a-zA-Z]*)\s*(.*?)$", raw_string)
-            cmd, args = match.groups()
-            mode, selection = None, None
-            cmd = cmd.lower().strip()
 
-            if args:
+            cmd, args = re.search(r"(^[a-zA-Z]*)\s*(.*?)$", raw_string).groups()
+
+            cmd = cmd.lower().strip()
+            if cmd.startswith('a') and add:
+                mode = "add"
+                new_value = args
+            else:
+                selection, new_value = re.search(r"(^[0-9]*)\s*(.*?)$", args).groups()
                 try:
-                    number = int(args) - 1
+                    selection = int(selection) - 1
                 except ValueError:
-                    if cmd.startswith("a") and add:
-                        mode = "add"
-                        selection = args
+                    caller.msg("|rInvalid input|n")
                 else:
+                    # edits are on the form 'edit <num> <args>
                     if cmd.startswith("e") and edit:
                         mode = "edit"
                     elif examine:
                         mode = "look"
                     try:
-                        selection = available_choices[number]
+                        selection = available_choices[selection]
                     except IndexError:
-                        caller.msg("|rInvalid index")
+                        caller.msg("|rInvalid index|n")
                         mode = None
 
-            return mode, selection
+            return mode, selection, new_value
 
         def _relay_to_edit_or_add(caller, raw_string, **kwargs):
             pass
@@ -1239,8 +1241,8 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
 
             if mode == "arbitrary":
                 # freeform input, we must parse it for the allowed commands (look/edit)
-                mode, selection = _input_parser(caller, raw_string,
-                                                **{"available_choices": page})
+                mode, selection, new_value = _input_parser(caller, raw_string,
+                                                           **{"available_choices": page})
 
             if examine and mode == "look":
                 # look mode - we are examining a given entry
