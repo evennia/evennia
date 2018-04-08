@@ -2286,7 +2286,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     key = "@find"
     aliases = "@search, @locate"
-    switch_options = ("room", "exit", "char", "exact", "loc")
+    switch_options = ("room", "exit", "char", "exact", "loc", "contains")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
