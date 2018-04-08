@@ -15,7 +15,7 @@
 (function () {
 "use strict"
 
-var num_splits = 0;
+var num_splits = 0; //unique id counter for default split-panel names
 
 var options = {};
 
@@ -544,9 +544,12 @@ $(document).ready(function() {
       SplitHandler.init();
       $("#splitbutton").bind("click", onSplitDialog);
       $("#panebutton").bind("click", onPaneControlDialog);
+      $("#undobutton").bind("click", SplitHandler.undo_split);
+      $("#optionsbutton").hide();
     } else {
       $("#splitbutton").hide();
       $("#panebutton").hide();
+      $("#undobutton").hide();
     }
 
     if ("Notification" in window) {
