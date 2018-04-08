@@ -1219,7 +1219,6 @@ def node_meta_desc(caller):
     return text, options
 
 
-
 def node_meta_tags(caller):
     metaprot = _get_menu_metaprot(caller)
     text = ["|wMeta-Tags|n can be used to classify and find prototypes. Tags are case-insensitive. "
