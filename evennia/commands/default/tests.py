@@ -337,6 +337,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "Char2", expect, cmdstring="@locate")
         self.call(building.CmdFind(), "/l Char2", expect, cmdstring="find")  # /l switch is abbreviated form of /loc
         self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
+        self.call(building.CmdFind(), "/contains om2", "One Match")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
