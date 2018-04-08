@@ -155,6 +155,19 @@ div {margin:0px;}
     cursor: pointer;
 }
 
+#undobutton {
+    width: 2rem;
+    font-size: 2rem;
+    color: #a6a6a6;
+    background-color: transparent;
+    border: 0px;
+}
+
+#undobutton:hover {
+    color: white;
+    cursor: pointer;
+}
+
 .button {
     width: fit-content;
     padding: 1em;
