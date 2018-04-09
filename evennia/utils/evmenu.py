@@ -1170,10 +1170,11 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             except Exception:
                 caller.msg("|rInvalid choice.|n")
             else:
-                try:
-                    return select(caller, selection)
-                except Exception:
-                    logger.log_trace()
+                if select:
+                    try:
+                        return select(caller, selection)
+                    except Exception:
+                        logger.log_trace()
             return None
 
         def _input_parser(caller, raw_string, **kwargs):
@@ -1185,7 +1186,7 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                 which processors are available.
 
             """
-            mode, selection, new_value = None, None, None
+            mode, selection, args = None, None, None
             available_choices = kwargs.get("available_choices", [])
 
             cmd, args = re.search(r"(^[a-zA-Z]*)\s*(.*?)$", raw_string).groups()
@@ -1193,13 +1194,12 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             cmd = cmd.lower().strip()
             if cmd.startswith('a') and add:
                 mode = "add"
-                new_value = args
             else:
-                selection, new_value = re.search(r"(^[0-9]*)\s*(.*?)$", args).groups()
+                selection, args = re.search(r"(^[0-9]*)\s*(.*?)$", args).groups()
                 try:
                     selection = int(selection) - 1
                 except ValueError:
-                    caller.msg("|rInvalid input|n")
+                    mode = "look"
                 else:
                     # edits are on the form 'edit <num> <args>
                     if cmd.startswith("e") and edit:
@@ -1212,7 +1212,7 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                         caller.msg("|rInvalid index|n")
                         mode = None
 
-            return mode, selection, new_value
+            return mode, selection, args
 
         def _relay_to_edit_or_add(caller, raw_string, **kwargs):
             pass
@@ -1222,9 +1222,11 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             mode = kwargs.get("list_mode", None)
             option_list = option_generator(caller) if callable(option_generator) else option_generator
 
+            print("option_list: {}, {}".format(option_list,  mode))
+
             npages = 0
             page_index = 0
-            page = None
+            page = []
             options = []
 
             if option_list:
@@ -1241,7 +1243,7 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
 
             if mode == "arbitrary":
                 # freeform input, we must parse it for the allowed commands (look/edit)
-                mode, selection, new_value = _input_parser(caller, raw_string,
+                mode, selection, args = _input_parser(caller, raw_string,
                                                            **{"available_choices": page})
 
             if examine and mode == "look":
@@ -1262,7 +1264,7 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             elif add and mode == 'add':
                 # add mode - the selection is the new value
                 try:
-                    text, options = add(caller, selection, **kwargs)
+                    text, options = add(caller, args)
                 except Exception:
                     logger.log_trace()
                     text = "|rCould not add."
@@ -1270,7 +1272,7 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
 
             elif edit and mode == 'edit':
                 try:
-                    text, options = edit(caller, selection, **kwargs)
+                    text, options = edit(caller, selection, args)
                 except Exception:
                     logger.log_trace()
                     text = "|Could not edit."
@@ -1279,14 +1281,13 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             else:
                 # normal mode - list
 
-                if select:
-                    # We have a processor to handle selecting an entry
+                # We have a processor to handle selecting an entry
 
-                    # dynamic, multi-page option list. Each selection leads to the `select`
-                    # callback being called with a result from the available choices
-                    options.extend([{"desc": opt,
-                                     "goto": (_select_parser,
-                                              {"available_choices": page})} for opt in page])
+                # dynamic, multi-page option list. Each selection leads to the `select`
+                # callback being called with a result from the available choices
+                options.extend([{"desc": opt,
+                                 "goto": (_select_parser,
+                                          {"available_choices": page})} for opt in page])
 
                 if npages > 1:
                     # if the goto callable returns None, the same node is rerun, and

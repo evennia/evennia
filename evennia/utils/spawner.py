@@ -1066,16 +1066,19 @@ def _caller_tags(caller):
     tags = prot.get("tags")
     return tags
 
-def _add_tags(caller, tag, **kwargs):
+
+def _add_tag(caller, tag, **kwargs):
     tag = tag.strip().lower()
     metaprot = _get_menu_metaprot(caller)
-    tags = metaprot.tags
+    prot = metaprot.prototype
+    tags = prot.get('tags', [])
     if tags:
         if tag not in tags:
             tags.append(tag)
     else:
         tags = [tag]
-    metaprot.tags = tags
+    prot['tags'] = tags
+    _set_menu_metaprot(caller, "prototype", prot)
     text = kwargs.get("text")
     if not text:
         text = "Added tag {}. (return to continue)".format(tag)
@@ -1084,12 +1087,26 @@ def _add_tags(caller, tag, **kwargs):
     return text, options
 
 
-def _edit_tag(caller, tag, **kwargs):
-    tag = tag.strip().lower()
+def _edit_tag(caller, old_tag, new_tag, **kwargs):
     metaprot = _get_menu_metaprot(caller)
-    #TODO change in evmenu so one can do e 3 <new tag> right away, parse & store value in kwarg
+    prototype = metaprot.prototype
+    tags = prototype.get('tags', [])
 
-@list_node(_caller_tags, edit=_edit_tags)
+    old_tag = old_tag.strip().lower()
+    new_tag = new_tag.strip().lower()
+    tags[tags.index(old_tag)] = new_tag
+    prototype['tags'] = tags
+    _set_menu_metaprot(caller, 'prototype', prototype)
+
+    text = kwargs.get('text')
+    if not text:
+        text = "Changed tag {} to {}.".format(old_tag, new_tag)
+    options = {"key": "_default",
+               "goto": lambda caller: None}
+    return text, options
+
+
+@list_node(_caller_tags, edit=_edit_tag, add=_add_tag)
 def node_tags(caller):
     text = "Set the prototype's |yTags|n."
     options = _wizard_options("tags", "attrs", "locks")
