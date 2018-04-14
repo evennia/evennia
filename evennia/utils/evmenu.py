@@ -989,143 +989,12 @@ class EvMenu(object):
 
 # -----------------------------------------------------------
 #
-# Edit node (decorator turning a node into an editing
-#    point for a given resource
-#
-# -----------------------------------------------------------
-
-def edit_node(edit_text, add_text, edit_callback, add_callback, get_choices=None):
-    """
-    Decorator for turning an EvMenu node into an editing
-    page. Will add new options, prepending those options
-    added in the node.
-
-    Args:
-        edit_text (str or callable): Will be used as text for the edit node. If
-            callable, it will be called as edittext(selection)
-            and should return the node text for the edit-node, probably listing
-            the current value of all editable propnames, if possible.
-        add_text (str) or callable: Gives text for node in add-mode. If a callable,
-            called as add_text() and should return the text for the node.
-        edit_callback (callable): Will be called as edit_callback(editable, raw_string)
-            and should return a boolean True/False if the setting of the property
-            succeeded or not. The value will always be a string and should be
-            converted as needed.
-        add_callback (callable): Will be called as add_callback(raw_string) and
-            should return a boolean True/False if the addition succeded.
-
-        get_choices (callable): Produce the available editable choices. If this
-            is not given, the `goto` callable must have been provided with the
-            kwarg `available_choices` by the decorated node.
-
-    """
-
-    def decorator(func):
-
-        def _setter_goto(caller, raw_string, **kwargs):
-            editable = kwargs.get("editable")
-            mode = kwargs.get("edit_node_mode")
-            try:
-                if mode == 'edit':
-                    is_ok = edit_callback(editable, raw_string)
-                else:
-                    is_ok = add_callback(raw_string)
-            except Exception:
-                logger.log_trace()
-            if not is_ok:
-                caller.msg("|rValue could not be set.")
-            return None
-
-        def _patch_goto(caller, raw_string, **kwargs):
-
-            # parse incoming string to figure out if there is a match to edit/add
-            match = re.search(r"(^[a-zA-Z]*)\s*([0-9]*)$", raw_string)
-            cmd, number = match.groups()
-            edit_mode = None
-            available_choices = None
-            selection = None
-
-            if get_choices:
-                available_choices = make_iter(get_choices(caller, raw_string, **kwargs))
-            if not available_choices:
-                available_choices = kwargs.get("available_choices", [])
-
-            if available_choices and cmd.startswith("e"):
-                try:
-                    index = int(cmd) - 1
-                    selection = available_choices[index]
-                    edit_mode = 'edit'
-                except (IndexError, TypeError):
-                    caller.msg("|rNot a valid 'edit' command.")
-
-            if cmd.startswith("a") and not number:
-                # add mode
-                edit_mode = "add"
-
-            if edit_mode:
-                # replace with edit text/options
-                text = edit_text(selection) if edit_mode == "edit" else add_text()
-                options = ({"key": "_default",
-                            "goto": (_setter_goto,
-                                     {"selection": selection,
-                                      "edit_node_mode": edit_mode})})
-                return text, options
-
-            # no matches - pass through to the original decorated goto instruction
-
-            decorated_opt = kwargs.get("decorated_opt")
-
-            if decorated_opt:
-                # use EvMenu's parser to get the goto/goto-kwargs out of
-                # the decorated option structure
-                dec_goto, dec_goto_kwargs, _, _ = \
-                    caller.ndb._menutree.extract_goto_exec("edit-node", decorated_opt)
-
-                if callable(dec_goto):
-                    try:
-                        return dec_goto(caller, raw_string,
-                                        **{dec_goto_kwargs if dec_goto_kwargs else {}})
-                    except Exception:
-                        caller.msg("|rThere was an error in the edit node.")
-                        logger.log_trace()
-            return None
-
-        def _edit_node(caller, raw_string, **kwargs):
-
-            text, options = func(caller, raw_string, **kwargs)
-
-            if options:
-                # find eventual _default in options and patch it with a handler for
-                # catching editing
-
-                decorated_opt = None
-                iopt = 0
-                for iopt, optdict in enumerate(options):
-                    if optdict.get('key') == "_default":
-                        decorated_opt = optdict
-                        break
-
-                if decorated_opt:
-                    # inject our wrapper over the original goto instruction for the
-                    # _default action (save the original)
-                    options[iopt]["goto"] = (_patch_goto,
-                                             {"decorated_opt": decorated_opt})
-
-            return text, options
-
-        return _edit_node
-    return decorator
-
-
-
-# -----------------------------------------------------------
-#
 # List node (decorator turning a node into a list with
 #   look/edit/add functionality for the elements)
 #
 # -----------------------------------------------------------
 
-def list_node(option_generator, select=None, examine=None, edit=None, add=None, pagesize=10):
+def list_node(option_generator, select=None, pagesize=10):
     """
     Decorator for making an EvMenu node into a multi-page list node. Will add new options,
     prepending those options added in the node.
@@ -1135,24 +1004,21 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
             that is called as option_generator(caller) to produce such a list.
         select (callable, option): Will be called as select(caller, menuchoice)
             where menuchoice is the chosen option as a string. Should return the target node to
-            goto after this selection. Note that if this is not given, the decorated node must
-            itself provide a way to continue from the node!
-        examine (callable, optional): If given, allows for examining options in detail. Will
-            be called with examine(caller, menuchoice) and should return a text string to
-            display in-place in the node.
-        edit (callable, optional): If given, this callable will be called as edit(caller,
-            menuchoice, **kwargs) and should return a complete (text, options) tuple (like a node).
-        add (callable optional): If given, this callable will be called as add(caller, menuchoice,
-            **kwargs) and should return a complete (text, options) tuple (like a node).
-
+            goto after this selection (or None to repeat the list-node). Note that if this is not
+            given, the decorated node must itself provide a way to continue from the node!
         pagesize (int): How many options to show per page.
 
     Example:
 
-        @list_node(['foo', 'bar'], examine, select)
+        @list_node(['foo', 'bar'], select)
         def node_index(caller):
             text = "describing the list"
             return text, []
+
+    Notes:
+        All normal `goto` or `exec` callables returned from the decorated nodes will, if they accept
+        **kwargs, get a new kwarg 'available_choices' injected. These are the ordered list of named
+        options (descs) visible on the current node page.
 
     """
 
@@ -1177,52 +1043,43 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
                         logger.log_trace()
             return None
 
-        def _input_parser(caller, raw_string, **kwargs):
-            """
-            Parse which input was given, select from option_list.
-
-            Understood input is [cmd]<num>, where [cmd] is either empty (`select`)
-                or one of the supported actions `look`, `edit` or `add` depending on
-                which processors are available.
-
-            """
-            mode, selection, args = None, None, None
-            available_choices = kwargs.get("available_choices", [])
-
-            cmd, args = re.search(r"(^[a-zA-Z]*)\s*(.*?)$", raw_string).groups()
-
-            cmd = cmd.lower().strip()
-            if cmd.startswith('a') and add:
-                mode = "add"
-            else:
-                selection, args = re.search(r"(^[0-9]*)\s*(.*?)$", args).groups()
-                try:
-                    selection = int(selection) - 1
-                except ValueError:
-                    mode = "look"
-                else:
-                    # edits are on the form 'edit <num> <args>
-                    if cmd.startswith("e") and edit:
-                        mode = "edit"
-                    elif examine:
-                        mode = "look"
-                    try:
-                        selection = available_choices[selection]
-                    except IndexError:
-                        caller.msg("|rInvalid index|n")
-                        mode = None
-
-            return mode, selection, args
-
-        def _relay_to_edit_or_add(caller, raw_string, **kwargs):
-            pass
+#         def _input_parser(caller, raw_string, **kwargs):
+#             """
+#             Parse which input was given, select from option_list.
+#
+#
+#             """
+#             mode, selection, args = None, None, None
+#             available_choices = kwargs.get("available_choices", [])
+#
+#             cmd, args = re.search(r"(^[a-zA-Z]*)\s*(.*?)$", raw_string).groups()
+#
+#             cmd = cmd.lower().strip()
+#             if cmd.startswith('a') and add:
+#                 mode = "add"
+#             else:
+#                 selection, args = re.search(r"(^[0-9]*)\s*(.*?)$", args).groups()
+#                 try:
+#                     selection = int(selection) - 1
+#                 except ValueError:
+#                     mode = "look"
+#                 else:
+#                     # edits are on the form 'edit <num> <args>
+#                     if cmd.startswith("e") and edit:
+#                         mode = "edit"
+#                     elif examine:
+#                         mode = "look"
+#                     try:
+#                         selection = available_choices[selection]
+#                     except IndexError:
+#                         caller.msg("|rInvalid index|n")
+#                         mode = None
+#
+#             return mode, selection, args
 
         def _list_node(caller, raw_string, **kwargs):
 
-            mode = kwargs.get("list_mode", None)
             option_list = option_generator(caller) if callable(option_generator) else option_generator
-
-            print("option_list: {}, {}".format(option_list,  mode))
 
             npages = 0
             page_index = 0
@@ -1231,113 +1088,83 @@ def list_node(option_generator, select=None, examine=None, edit=None, add=None, 
 
             if option_list:
                 nall_options = len(option_list)
-                pages = [option_list[ind:ind + pagesize] for ind in range(0, nall_options, pagesize)]
+                pages = [option_list[ind:ind + pagesize]
+                         for ind in range(0, nall_options, pagesize)]
                 npages = len(pages)
 
                 page_index = max(0, min(npages - 1, kwargs.get("optionpage_index", 0)))
                 page = pages[page_index]
 
             text = ""
-            selection = None
             extra_text = None
 
-            if mode == "arbitrary":
-                # freeform input, we must parse it for the allowed commands (look/edit)
-                mode, selection, args = _input_parser(caller, raw_string,
-                                                           **{"available_choices": page})
+            # dynamic, multi-page option list. Each selection leads to the `select`
+            # callback being called with a result from the available choices
+            options.extend([{"desc": opt,
+                             "goto": (_select_parser,
+                                      {"available_choices": page})} for opt in page])
 
-            if examine and mode == "look":
-                # look mode - we are examining a given entry
-                try:
-                    text = examine(caller, selection)
-                except Exception:
-                    logger.log_trace()
-                    text = "|rCould not view."
-                options.extend([{"key": ("|wb|Wack|n", "b"),
-                                 "goto": (lambda caller: None,
-                                          {"optionpage_index": page_index})},
-                                {"key": "_default",
-                                 "goto": (lambda caller: None,
-                                          {"optionpage_index": page_index})}])
-                return text, options
-
-            elif add and mode == 'add':
-                # add mode - the selection is the new value
-                try:
-                    text, options = add(caller, args)
-                except Exception:
-                    logger.log_trace()
-                    text = "|rCould not add."
-                return text, options
-
-            elif edit and mode == 'edit':
-                try:
-                    text, options = edit(caller, selection, args)
-                except Exception:
-                    logger.log_trace()
-                    text = "|Could not edit."
-                return text, options
-
-            else:
-                # normal mode - list
-
-                # We have a processor to handle selecting an entry
-
-                # dynamic, multi-page option list. Each selection leads to the `select`
-                # callback being called with a result from the available choices
-                options.extend([{"desc": opt,
-                                 "goto": (_select_parser,
-                                          {"available_choices": page})} for opt in page])
-
-                if npages > 1:
-                    # if the goto callable returns None, the same node is rerun, and
-                    # kwargs not used by the callable are passed on to the node. This
-                    # allows us to call ourselves over and over, using different kwargs.
-                    options.append({"key": ("|Wcurrent|n", "c"),
-                                    "desc": "|W({}/{})|n".format(page_index + 1, npages),
-                                    "goto": (lambda caller: None,
-                                             {"optionpage_index": page_index})})
-                    if page_index > 0:
-                        options.append({"key": ("|wp|Wrevious page|n", "p"),
-                                        "goto": (lambda caller: None,
-                                                 {"optionpage_index": page_index - 1})})
-                    if page_index < npages - 1:
-                        options.append({"key": ("|wn|Wext page|n", "n"),
-                                        "goto": (lambda caller: None,
-                                                 {"optionpage_index": page_index + 1})})
-
-                # this catches arbitrary input and reruns this node with the 'arbitrary' mode
-                # this could mean input on the form 'look <num>' or 'edit <num>'
-                options.append({"key": "_default",
+            if npages > 1:
+                # if the goto callable returns None, the same node is rerun, and
+                # kwargs not used by the callable are passed on to the node. This
+                # allows us to call ourselves over and over, using different kwargs.
+                options.append({"key": ("|Wcurrent|n", "c"),
+                                "desc": "|W({}/{})|n".format(page_index + 1, npages),
                                 "goto": (lambda caller: None,
-                                         {"optionpage_index": page_index,
-                                          "available_choices": page,
-                                          "list_mode": "arbitrary"})})
+                                         {"optionpage_index": page_index})})
+                if page_index > 0:
+                    options.append({"key": ("|wp|Wrevious page|n", "p"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index - 1})})
+                if page_index < npages - 1:
+                    options.append({"key": ("|wn|Wext page|n", "n"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index + 1})})
 
-                # add data from the decorated node
+            # add data from the decorated node
 
-                extra_options = []
+            decorated_options = []
+            try:
+                text, decorated_options = func(caller, raw_string)
+            except TypeError:
                 try:
-                    text, extra_options = func(caller, raw_string)
-                except TypeError:
-                    try:
-                        text, extra_options = func(caller)
-                    except Exception:
-                        raise
+                    text, decorated_options = func(caller)
                 except Exception:
-                    logger.log_trace()
-                    print("extra_options:", extra_options)
+                    raise
+            except Exception:
+                logger.log_trace()
+            else:
+                if isinstance(decorated_options, {}):
+                    decorated_options = [decorated_options]
                 else:
-                    if isinstance(extra_options, {}):
-                        extra_options = [extra_options]
-                    else:
-                        extra_options = make_iter(extra_options)
+                    decorated_options = make_iter(decorated_options)
 
-                options.extend(extra_options)
-                text = text + "\n\n" + extra_text if extra_text else text
-                text += "\n\n(Make a choice or enter 'look <num>' to examine an option closer)"
+            extra_options = []
+            for eopt in decorated_options:
+                cback = ("goto" in eopt and "goto") or ("exec" in eopt and "exec") or None
+                if cback:
+                    signature = eopt[cback]
+                    if callable(signature):
+                        # callable with no kwargs defined
+                        eopt[cback] = (signature, {"available_choices": page})
+                    elif is_iter(signature):
+                        if len(signature) > 1 and isinstance(signature[1], dict):
+                            signature[1]["available_choices"] = page
+                            eopt[cback] = signature
+                        elif signature:
+                            # a callable alone in a tuple (i.e. no previous kwargs)
+                            eopt[cback] = (signature[0], {"available_choices": page})
+                        else:
+                            # malformed input.
+                            logger.log_err("EvMenu @list_node decorator found "
+                                           "malformed option to decorate: {}".format(eopt))
+                extra_options.append(eopt)
 
-                return text, options
+            options.extend(extra_options)
+            text = text + "\n\n" + extra_text if extra_text else text
+            text += "\n\n(Make a choice or enter 'look <num>' to examine an option closer)"
+
+            return text, options
 
         return _list_node
     return decorator
