@@ -929,8 +929,9 @@ def _all_prototypes(caller):
 def _prototype_examine(caller, prototype_name):
     metaprot = search_prototype(key=prototype_name)
     if metaprot:
-        return metaproto_to_str(metaprot[0])
-    return "Prototype not registered."
+        caller.msg(metaproto_to_str(metaprot[0]))
+    caller.msg("Prototype not registered.")
+    return None
 
 
 def _prototype_select(caller, prototype):
@@ -939,7 +940,7 @@ def _prototype_select(caller, prototype):
     return ret
 
 
-@list_node(_all_prototypes, select=_prototype_select, examine=_prototype_examine)
+@list_node(_all_prototypes, _prototype_select)
 def node_prototype(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
@@ -952,6 +953,9 @@ def node_prototype(caller):
         text.append("Parent prototype is not set")
     text = "\n\n".join(text)
     options = _wizard_options("prototype", "meta_key", "typeclass", color="|W")
+    options.append({"key": "_default",
+                    "goto": _prototype_examine})
+
     return text, options
 
 
@@ -978,7 +982,8 @@ def _typeclass_examine(caller, typeclass_path):
                 typeclass_path=typeclass_path, docstring=docstr)
     else:
         txt = "This is typeclass |y{}|n.".format(typeclass)
-    return txt
+    caller.msg(txt)
+    return None
 
 
 def _typeclass_select(caller, typeclass):
@@ -987,7 +992,7 @@ def _typeclass_select(caller, typeclass):
     return ret
 
 
-@list_node(_all_typeclasses, _typeclass_select, examine=_typeclass_examine)
+@list_node(_all_typeclasses, _typeclass_select)
 def node_typeclass(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
@@ -1001,6 +1006,8 @@ def node_typeclass(caller):
             typeclass=settings.BASE_OBJECT_TYPECLASS))
     text = "\n\n".join(text)
     options = _wizard_options("typeclass", "prototype", "key", color="|W")
+    options.append({"key": "_default",
+                    "goto": _typeclass_examine})
     return text, options
 
 
@@ -1104,7 +1111,7 @@ def _examine_attr(caller, selection):
     return "Attribute {} = {}".format(selection, value)
 
 
-@list_node(_caller_attrs, edit=_edit_attr, add=_add_attr, examine=_examine_attr)
+@list_node(_caller_attrs)
 def node_attrs(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
@@ -1172,7 +1179,7 @@ def _edit_tag(caller, old_tag, new_tag, **kwargs):
     return text, options
 
 
-@list_node(_caller_tags, edit=_edit_tag, add=_add_tag)
+@list_node(_caller_tags)
 def node_tags(caller):
     text = "Set the prototype's |yTags|n."
     options = _wizard_options("tags", "attrs", "locks")
