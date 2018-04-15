@@ -105,6 +105,7 @@ prototype, override its name with an empty dict.
 from __future__ import print_function
 
 import copy
+from ast import literal_eval
 from django.conf import settings
 from random import randint
 import evennia
@@ -124,6 +125,11 @@ _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _MODULE_PROTOTYPES = {}
 _MODULE_PROTOTYPE_MODULES = {}
 _MENU_CROP_WIDTH = 15
+
+_MENU_ATTR_LITERAL_EVAL_ERROR = (
+    "|rCritical Python syntax error in your value. Only primitive Python structures are allowed.\n"
+    "You also need to use correct Python syntax. Remember especially to put quotes around all "
+    "strings inside lists and dicts.|n")
 
 
 class PermissionError(RuntimeError):
@@ -933,7 +939,7 @@ def _prototype_select(caller, prototype):
     return ret
 
 
-@list_node(_all_prototypes, _prototype_select, examine=_prototype_examine)
+@list_node(_all_prototypes, select=_prototype_select, examine=_prototype_examine)
 def node_prototype(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
@@ -1039,6 +1045,66 @@ def node_aliases(caller):
     return text, options
 
 
+def _caller_attrs(caller):
+    metaprot = _get_menu_metaprot(caller)
+    attrs = metaprot.prototype.get("attrs", [])
+    return attrs
+
+
+def _attrparse(caller, attr_string):
+    "attr is entering on the form 'attr = value'"
+
+    if '=' in attr_string:
+        attrname, value = (part.strip() for part in attr_string.split('=', 1))
+        attrname = attrname.lower()
+    if attrname:
+        try:
+            value = literal_eval(value)
+        except SyntaxError:
+            caller.msg(_MENU_ATTR_LITERAL_EVAL_ERROR)
+        else:
+            return attrname, value
+    else:
+        return None, None
+
+
+def _add_attr(caller, attr_string, **kwargs):
+    attrname, value = _attrparse(caller, attr_string)
+    if attrname:
+        metaprot = _get_menu_metaprot(caller)
+        prot = metaprot.prototype
+        prot['attrs'][attrname] = value
+        _set_menu_metaprot(caller, "prototype", prot)
+        text = "Added"
+    else:
+        text = "Attribute must be given as 'attrname = <value>' where <value> uses valid Python."
+    options = {"key": "_default",
+               "goto": lambda caller: None}
+    return text, options
+
+
+def _edit_attr(caller, attrname, new_value, **kwargs):
+    attrname, value = _attrparse("{}={}".format(caller, attrname, new_value))
+    if attrname:
+        metaprot = _get_menu_metaprot(caller)
+        prot = metaprot.prototype
+        prot['attrs'][attrname] = value
+        text = "Edited Attribute {} = {}".format(attrname, value)
+    else:
+        text = "Attribute value must be valid Python."
+    options = {"key": "_default",
+               "goto": lambda caller: None}
+    return text, options
+
+
+def _examine_attr(caller, selection):
+    metaprot = _get_menu_metaprot(caller)
+    prot = metaprot.prototype
+    value = prot['attrs'][selection]
+    return "Attribute {} = {}".format(selection, value)
+
+
+@list_node(_caller_attrs, edit=_edit_attr, add=_add_attr, examine=_examine_attr)
 def node_attrs(caller):
     metaprot = _get_menu_metaprot(caller)
     prot = metaprot.prototype
