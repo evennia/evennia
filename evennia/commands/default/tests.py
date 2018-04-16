@@ -14,16 +14,17 @@ main test suite started with
 
 import re
 import types
+import datetime
 
 from django.conf import settings
 from mock import Mock, mock
 
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
-from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms
+from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
-from evennia.utils import ansi, utils
+from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
@@ -494,3 +495,12 @@ class TestInterruptCommand(CommandTest):
     def test_interrupt_command(self):
         ret = self.call(CmdInterrupt(), "")
         self.assertEqual(ret, "")
+
+
+class TestUnconnectedCommand(CommandTest):
+    def test_info_command(self):
+        expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
+                        settings.SERVERNAME,
+                        datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
+                        SESSIONS.account_count(), utils.get_evennia_version())
+        self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
