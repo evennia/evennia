@@ -502,5 +502,5 @@ class TestUnconnectedCommand(CommandTest):
         expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
                         settings.SERVERNAME,
                         datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
-                        SESSIONS.account_count(), utils.get_evennia_version())
+                        SESSIONS.account_count(), utils.get_evennia_version().replace("-",""))
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
