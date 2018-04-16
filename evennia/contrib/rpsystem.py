@@ -1088,7 +1088,7 @@ class CmdMask(RPCommand):
         if self.cmdstring == "mask":
             # wear a mask
             if not self.args:
-                caller.msg("Usage: (un)wearmask sdesc")
+                caller.msg("Usage: (un)mask sdesc")
                 return
             if caller.db.unmasked_sdesc:
                 caller.msg("You are already wearing a mask.")
@@ -1111,7 +1111,7 @@ class CmdMask(RPCommand):
             del caller.db.unmasked_sdesc
             caller.locks.remove("enable_recog")
             caller.sdesc.add(old_sdesc)
-            caller.msg("You remove your mask and is again '%s'." % old_sdesc)
+            caller.msg("You remove your mask and are again '%s'." % old_sdesc)
 
 
 class RPSystemCmdSet(CmdSet):
