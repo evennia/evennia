@@ -166,7 +166,6 @@ evennia.utils.evmenu`.
 from __future__ import print_function
 import random
 from builtins import object, range
-import re
 
 from textwrap import dedent
 from inspect import isfunction, getargspec
@@ -1009,7 +1008,6 @@ def list_node(option_generator, select=None, pagesize=10):
         pagesize (int): How many options to show per page.
 
     Example:
-
         @list_node(['foo', 'bar'], select)
         def node_index(caller):
             text = "describing the list"
@@ -1043,43 +1041,10 @@ def list_node(option_generator, select=None, pagesize=10):
                         logger.log_trace()
             return None
 
-#         def _input_parser(caller, raw_string, **kwargs):
-#             """
-#             Parse which input was given, select from option_list.
-#
-#
-#             """
-#             mode, selection, args = None, None, None
-#             available_choices = kwargs.get("available_choices", [])
-#
-#             cmd, args = re.search(r"(^[a-zA-Z]*)\s*(.*?)$", raw_string).groups()
-#
-#             cmd = cmd.lower().strip()
-#             if cmd.startswith('a') and add:
-#                 mode = "add"
-#             else:
-#                 selection, args = re.search(r"(^[0-9]*)\s*(.*?)$", args).groups()
-#                 try:
-#                     selection = int(selection) - 1
-#                 except ValueError:
-#                     mode = "look"
-#                 else:
-#                     # edits are on the form 'edit <num> <args>
-#                     if cmd.startswith("e") and edit:
-#                         mode = "edit"
-#                     elif examine:
-#                         mode = "look"
-#                     try:
-#                         selection = available_choices[selection]
-#                     except IndexError:
-#                         caller.msg("|rInvalid index|n")
-#                         mode = None
-#
-#             return mode, selection, args
-
         def _list_node(caller, raw_string, **kwargs):
 
-            option_list = option_generator(caller) if callable(option_generator) else option_generator
+            option_list = option_generator(caller) \
+                    if callable(option_generator) else option_generator
 
             npages = 0
             page_index = 0
@@ -1162,7 +1127,6 @@ def list_node(option_generator, select=None, pagesize=10):
 
             options.extend(extra_options)
             text = text + "\n\n" + extra_text if extra_text else text
-            text += "\n\n(Make a choice or enter 'look <num>' to examine an option closer)"
 
             return text, options
 
