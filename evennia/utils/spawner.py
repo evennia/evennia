@@ -122,6 +122,8 @@ from evennia.utils.ansi import strip_ansi
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
+_PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
+_NON_CREATE_KWARGS = _CREATE_OBJECT_KWARGS + _PROTOTYPE_META_NAMES
 _MODULE_PROTOTYPES = {}
 _MODULE_PROTOTYPE_MODULES = {}
 _MENU_CROP_WIDTH = 15
@@ -135,24 +137,24 @@ _MENU_ATTR_LITERAL_EVAL_ERROR = (
 class PermissionError(RuntimeError):
     pass
 
-# storage of meta info about the prototype
-MetaProto = namedtuple('MetaProto', ['key', 'desc', 'locks', 'tags', 'prototype'])
 
 for mod in settings.PROTOTYPE_MODULES:
     # to remove a default prototype, override it with an empty dict.
     # internally we store as (key, desc, locks, tags, prototype_dict)
-    prots = [(key, prot) for key, prot in all_from_module(mod).items()
+    prots = [(prototype_key, prot) for prototype_key, prot in all_from_module(mod).items()
              if prot and isinstance(prot, dict)]
-    _MODULE_PROTOTYPES.update(
-        {key.lower(): MetaProto(
-            key.lower(),
-            prot['prototype_desc'] if 'prototype_desc' in prot else mod,
-            prot['prototype_lock'] if 'prototype_lock' in prot else "use:all()",
-            set(make_iter(
-                prot['prototype_tags']) if 'prototype_tags' in prot else ["base-prototype"]),
-            prot)
-         for key, prot in prots})
+    # assign module path to each prototype_key for easy reference
     _MODULE_PROTOTYPE_MODULES.update({tup[0]: mod for tup in prots})
+    # make sure the prototype contains all meta info
+    for prototype_key, prot in prots:
+        prot.update({
+          "prototype_key": prototype_key.lower(),
+          "prototype_desc": prot['prototype_desc'] if 'prototype_desc' in prot else mod,
+          "prototype_locks": prot['prototype_locks'] if 'prototype_locks' in prot else "use:all()",
+          "prototype_tags": set(make_iter(prot['prototype_tags'])
+                                if 'prototype_tags' in prot else ["base-prototype"])})
+        _MODULE_PROTOTYPES.update(prot)
+
 
 # Prototype storage mechanisms
 
@@ -162,24 +164,11 @@ class DbPrototype(DefaultScript):
     This stores a single prototype
     """
     def at_script_creation(self):
-        self.key = "empty prototype"
-        self.desc = "A prototype"
+        self.key = "empty prototype"  # prototype_key
+        self.desc = "A prototype"     # prototype_desc
 
 
-def build_metaproto(key='', desc='', locks='', tags=None, prototype=None):
-    """
-    Create a metaproto from combinant parts.
-
-    """
-    if locks:
-        locks = (";".join(locks) if is_iter(locks) else locks)
-    else:
-        locks = []
-    prototype = dict(prototype) if prototype else {}
-    return MetaProto(key, desc, locks, tags, dict(prototype))
-
-
-def save_db_prototype(caller, key, prototype, desc="", tags=None, locks="", delete=False):
+def save_db_prototype(caller, prototype, key=None, desc=None, tags=None, locks="", delete=False):
     """
     Store a prototype persistently.
 
@@ -187,13 +176,14 @@ def save_db_prototype(caller, key, prototype, desc="", tags=None, locks="", dele
         caller (Account or Object): Caller aiming to store prototype. At this point
             the caller should have permission to 'add' new prototypes, but to edit
             an existing prototype, the 'edit' lock must be passed on that prototype.
-        key (str): Name of prototype to store.
         prototype (dict): Prototype dict.
-        desc (str, optional): Description of prototype, to use in listing.
+        key (str): Name of prototype to store. Will be inserted as `prototype_key` in the prototype.
+        desc (str, optional): Description of prototype, to use in listing. Will be inserted
+            as `prototype_desc` in the prototype.
         tags (list, optional): Tag-strings to apply to prototype. These are always
-            applied with the 'db_prototype' category.
+            applied with the 'db_prototype' category. Will be inserted as `prototype_tags`.
         locks (str, optional): Locks to apply to this prototype. Used locks
-            are 'use' and 'edit'
+            are 'use' and 'edit'. Will be inserted as `prototype_locks` in the prototype.
         delete (bool, optional): Delete an existing prototype identified by 'key'.
             This requires `caller` to pass the 'edit' lock of the prototype.
     Returns:
@@ -204,21 +194,40 @@ def save_db_prototype(caller, key, prototype, desc="", tags=None, locks="", dele
 
 
     """
-    key_orig = key
-    key = key.lower()
-    locks = locks if locks else "use:all();edit:id({}) or perm(Admin)".format(caller.id)
+    key_orig = key or prototype.get('prototype_key', None)
+    if not key_orig:
+        caller.msg("This prototype requires a prototype_key.")
+        return False
+    key = str(key).lower()
+
+    # we can't edit a prototype defined in a module
+    if key in _MODULE_PROTOTYPES:
+        mod = _MODULE_PROTOTYPE_MODULES.get(key, "N/A")
+        raise PermissionError("{} is a read-only prototype "
+                              "(defined as code in {}).".format(key_orig, mod))
+
+    prototype['prototype_key'] = key
+
+    if desc:
+        desc = prototype['prototype_desc'] = desc
+    else:
+        desc = prototype.get('prototype_desc', '')
+
+    # set up locks and check they are on a valid form
+    locks = locks or prototype.get(
+        "prototype_locks", "use:all();edit:id({}) or perm(Admin)".format(caller.id))
+    prototype['prototype_locks'] = locks
 
     is_valid, err = caller.locks.validate(locks)
     if not is_valid:
         caller.msg("Lock error: {}".format(err))
         return False
 
-    tags = [(tag, "db_prototype") for tag in make_iter(tags)]
-
-    if key in _MODULE_PROTOTYPES:
-        mod = _MODULE_PROTOTYPE_MODULES.get(key, "N/A")
-        raise PermissionError("{} is a read-only prototype "
-                              "(defined as code in {}).".format(key_orig, mod))
+    if tags:
+        tags = [(tag, "db_prototype") for tag in make_iter(tags)]
+    else:
+        tags = prototype.get('prototype_tags', [])
+    prototype['prototype_tags'] = tags
 
     stored_prototype = DbPrototype.objects.filter(db_key=key)
 
@@ -269,7 +278,7 @@ def delete_db_prototype(caller, key):
     return save_db_prototype(caller, key, None, delete=True)
 
 
-def search_db_prototype(key=None, tags=None, return_metaprotos=False):
+def search_db_prototype(key=None, tags=None, return_queryset=False):
     """
     Find persistent (database-stored) prototypes based on key and/or tags.
 
@@ -278,13 +287,14 @@ def search_db_prototype(key=None, tags=None, return_metaprotos=False):
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'db_protototype'
             tag category.
-        return_metaproto (bool): Return results as metaprotos.
+        return_queryset (bool): Return the database queryset.
     Return:
-        matches (queryset or list): All found DbPrototypes. If `return_metaprotos`
-            is set, return a list of MetaProtos.
+        matches (queryset or list): All found DbPrototypes. If `return_queryset`
+            is not set, this is a list of prototype dicts.
 
     Note:
-        This will not include read-only prototypes defined in modules.
+        This does not include read-only prototypes defined in modules; use
+        `search_module_prototype` for those.
 
     """
     if tags:
@@ -297,11 +307,9 @@ def search_db_prototype(key=None, tags=None, return_metaprotos=False):
     if key:
         # exact or partial match on key
         matches = matches.filter(db_key=key) or matches.filter(db_key__icontains=key)
-    if return_metaprotos:
-        return [build_metaproto(match.key, match.desc, match.locks.all(),
-                                match.tags.get(category="db_prototype", return_list=True),
-                                match.attributes.get("prototype"))
-                for match in matches]
+    if not return_queryset:
+        # return prototype
+        return [dbprot.attributes.get("prototype", {}) for dbprot in matches]
     return matches
 
 
@@ -314,16 +322,16 @@ def search_module_prototype(key=None, tags=None):
         tags (str or list): Tag key to query for.
 
     Return:
-        matches (list): List of MetaProto tuples that includes
-            prototype metadata,
+        matches (list): List of prototypes matching the search criterion.
 
     """
     matches = {}
     if tags:
         # use tags to limit selection
         tagset = set(tags)
-        matches = {key: metaproto for key, metaproto in _MODULE_PROTOTYPES.items()
-                   if tagset.intersection(metaproto.tags)}
+        matches = {prototype_key: prototype
+                   for prototype_key, prototype in _MODULE_PROTOTYPES.items()
+                   if tagset.intersection(prototype.get("prototype_tags", []))}
     else:
         matches = _MODULE_PROTOTYPES
 
@@ -333,12 +341,13 @@ def search_module_prototype(key=None, tags=None):
             return [matches[key]]
         else:
             # fuzzy matching
-            return [metaproto for pkey, metaproto in matches.items() if key in pkey]
+            return [prototype for prototype_key, prototype in matches.items()
+                    if key in prototype_key]
     else:
         return [match for match in matches.values()]
 
 
-def search_prototype(key=None, tags=None, return_meta=True):
+def search_prototype(key=None, tags=None):
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
@@ -347,12 +356,10 @@ def search_prototype(key=None, tags=None, return_meta=True):
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'db_protototype'
             tag category.
-        return_meta (bool): If False, only return prototype dicts, if True
-            return MetaProto namedtuples including prototype meta info
 
     Return:
-        matches (list): All found prototype dicts or MetaProtos. If no keys
-            or tags are given, all available prototypes/MetaProtos will be returned.
+        matches (list): All found prototype dicts. If no keys
+            or tags are given, all available prototypes will be returned.
 
     Note:
         The available prototypes is a combination of those supplied in
@@ -363,32 +370,29 @@ def search_prototype(key=None, tags=None, return_meta=True):
 
     """
     module_prototypes = search_module_prototype(key, tags)
-    db_prototypes = search_db_prototype(key, tags, return_metaprotos=True)
+    db_prototypes = search_db_prototype(key, tags)
 
     matches = db_prototypes + module_prototypes
     if len(matches) > 1 and key:
         key = key.lower()
         # avoid duplicates if an exact match exist between the two types
-        filter_matches = [mta for mta in matches if mta.key == key]
+        filter_matches = [mta for mta in matches
+                          if mta.get('prototype_key') and mta['prototype_key'] == key]
         if filter_matches and len(filter_matches) < len(matches):
             matches = filter_matches
-
-    if not return_meta:
-        matches = [mta.prototype for mta in matches]
 
     return matches
 
 
-def get_protparents():
+def get_protparent_dict():
     """
-    Get prototype parents. These are a combination of meta-key and prototype-dict and are used when
-    a prototype refers to another parent-prototype.
+    Get prototype parents.
+
+    Returns:
+        parent_dict (dict): A mapping {prototype_key: prototype} for all available prototypes.
 
     """
-    # get all prototypes
-    metaprotos = search_prototype(return_meta=True)
-    # organize by key
-    return {metaproto.key: metaproto.prototype for metaproto in metaprotos}
+    return {prototype['prototype_key']: prototype for prototype in search_prototype()}
 
 
 def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
@@ -410,35 +414,29 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     tags = [tag for tag in make_iter(tags) if tag]
 
     # get metaprotos for readonly and db-based prototypes
-    metaprotos = search_module_prototype(key, tags)
-    metaprotos += search_db_prototype(key, tags, return_metaprotos=True)
+    prototypes = search_prototype(key, tags)
 
     # get use-permissions of readonly attributes (edit is always False)
-    prototypes = [
-        (metaproto.key,
-         metaproto.desc,
-         ("{}/N".format('Y'
-          if caller.locks.check_lockstring(
-            caller,
-            metaproto.locks,
-            access_type='use') else 'N')),
-         ",".join(metaproto.tags))
-        for metaproto in sorted(metaprotos, key=lambda o: o.key)]
+    display_tuples = []
+    for prototype in sorted(prototypes, key=lambda d: d['prototype_key']):
+        lock_use = caller.locks.check_lockstring(caller, prototype['locks'], access_type='use')
+        if not show_non_use and not lock_use:
+            continue
+        lock_edit = caller.locks.check_lockstring(caller, prototype['locks'], access_type='edit')
+        if not show_non_edit and not lock_edit:
+            continue
+        display_tuples.append(
+            (prototype.get('prototype_key', '<unset>',
+             prototype['prototype_desc', ''],
+             "{}/{}".format('Y' if lock_use else 'N', 'Y' if lock_edit else 'N'),
+             ",".join(prototype.get('prototype_tags', [])))))
 
-    if not prototypes:
-        return None
-
-    if not show_non_use:
-        prototypes = [metaproto for metaproto in prototypes if metaproto[2].split("/", 1)[0] == 'Y']
-    if not show_non_edit:
-        prototypes = [metaproto for metaproto in prototypes if metaproto[2].split("/", 1)[1] == 'Y']
-
-    if not prototypes:
+    if not display_tuples:
         return None
 
     table = []
-    for i in range(len(prototypes[0])):
-        table.append([str(metaproto[i]) for metaproto in prototypes])
+    for i in range(len(display_tuples[0])):
+        table.append([str(display_tuple[i]) for display_tuple in display_tuples])
     table = EvTable("Key", "Desc", "Use/Edit", "Tags", table=table, crop=True, width=78)
     table.reformat_column(0, width=28)
     table.reformat_column(1, width=40)
@@ -447,22 +445,26 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     return table
 
 
-def metaproto_to_str(metaproto):
+def prototype_to_str(prototype):
     """
-    Format a metaproto to a nice string representation.
+    Format a prototype to a nice string representation.
 
     Args:
         metaproto (NamedTuple): Represents the prototype.
     """
+
     header = (
         "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
         "|cdesc:|n {} \n|cprototype:|n ".format(
-           metaproto.key, ", ".join(metaproto.tags),
-           metaproto.locks, metaproto.desc))
-    prototype = ("{{\n  {} \n}}".format("\n  ".join("{!r}: {!r},".format(key, value)
-                 for key, value in
-                 sorted(metaproto.prototype.items())).rstrip(",")))
-    return header + prototype
+           prototype['prototype_key'],
+           ", ".join(prototype['prototype_tags']),
+           prototype['prototype_locks'],
+           prototype['prototype_desc']))
+    proto = ("{{\n  {} \n}}".format(
+        "\n  ".join(
+            "{!r}: {!r},".format(key, value) for key, value in
+             sorted(prototype.items()) if key not in _PROTOTYPE_META_NAMES)).rstrip(","))
+    return header + proto
 
 
 # Spawner mechanism
@@ -487,10 +489,12 @@ def validate_prototype(prototype, protkey=None, protparents=None, _visited=None)
 
     """
     if not protparents:
-        protparents = get_protparents()
+        protparents = get_protparent_dict()
     if _visited is None:
         _visited = []
-    protkey = protkey.lower() if protkey is not None else None
+    protkey = protkey or prototype.get('prototype_key', None)
+
+    protkey = protkey.lower() or prototype.get('prototype_key', None)
 
     assert isinstance(prototype, dict)
 
@@ -537,8 +541,8 @@ def _batch_create_object(*objparams):
     so make sure the spawned Typeclass works before using this!
 
     Args:
-        objsparams (tuple): Parameters for the respective creation/add
-            handlers in the following order:
+        objsparams (tuple): Each paremter tuple will create one object instance using the parameters within.
+            The parameters should be given in the following order:
                 - `create_kwargs` (dict): For use as new_obj = `ObjectDB(**create_kwargs)`.
                 - `permissions` (str): Permission string used with `new_obj.batch_add(permission)`.
                 - `lockstring` (str): Lockstring used with `new_obj.locks.add(lockstring)`.
@@ -555,9 +559,6 @@ def _batch_create_object(*objparams):
                         (the newly created object) available in the namespace. Execution
                         will happend after all other properties have been assigned and
                         is intended for calling custom handlers etc.
-            for the respective creation/add handlers in the following
-            order: (create_kwargs, permissions, locks, aliases, nattributes,
-            attributes, tags, execs)
 
     Returns:
         objects (list): A list of created objects
@@ -664,6 +665,10 @@ def spawn(*prototypes, **kwargs):
         alias_string = aliasval() if callable(aliasval) else aliasval
         tagval = prot.pop("tags", [])
         tags = tagval() if callable(tagval) else tagval
+
+        # we make sure to add a tag identifying which prototype created this object
+        # tags.append(())
+
         attrval = prot.pop("attrs", [])
         attributes = attrval() if callable(tagval) else attrval
 
@@ -676,9 +681,9 @@ def spawn(*prototypes, **kwargs):
 
         # the rest are attributes
         simple_attributes = [(key, value()) if callable(value) else (key, value)
-                             for key, value in prot.items() if not key.startswith("ndb_")]
+                             for key, value in prot.items() if not (key.startswith("ndb_"))]
         attributes = attributes + simple_attributes
-        attributes = [tup for tup in attributes if not tup[0] in _CREATE_OBJECT_KWARGS]
+        attributes = [tup for tup in attributes if not tup[0] in _NON_CREATE_KWARGS]
 
         # pack for call into _batch_create_object
         objsparams.append((create_kwargs, permission_string, lock_string,
@@ -695,34 +700,30 @@ def spawn(*prototypes, **kwargs):
 
 # Helper functions
 
-def _get_menu_metaprot(caller):
+def _get_menu_prototype(caller):
 
-    metaproto = None
-    if hasattr(caller.ndb._menutree, "olc_metaprot"):
-        metaproto = caller.ndb._menutree.olc_metaprot
-    if not metaproto:
-        metaproto = build_metaproto(None, '', [], [], None)
-        caller.ndb._menutree.olc_metaprot = metaproto
+    prototype = None
+    if hasattr(caller.ndb._menutree, "olc_prototype"):
+        prototype = caller.ndb._menutree.olc_prototype
+    if not prototype:
+        caller.ndb._menutree.olc_prototype = {}
         caller.ndb._menutree.olc_new = True
-    return metaproto
+    return prototype
 
 
 def _is_new_prototype(caller):
     return hasattr(caller.ndb._menutree, "olc_new")
 
 
-def _set_menu_metaprot(caller, field, value):
-    metaprot = _get_menu_metaprot(caller)
-    kwargs = dict(metaprot.__dict__)
-    kwargs[field] = value
-    caller.ndb._menutree.olc_metaprot = build_metaproto(**kwargs)
+def _set_menu_prototype(caller, field, value):
+    prototype = _get_menu_prototype(caller)
+    prototype[field] = value
+    caller.ndb._menutree.olc_prototype = prototype
 
 
-def _format_property(key, required=False, metaprot=None, prototype=None, cropper=None):
+def _format_property(key, required=False, prototype=None, cropper=None):
     key = key.lower()
-    if metaprot is not None:
-        prop = getattr(metaprot, key) or ''
-    elif prototype is not None:
+    if prototype is not None:
         prop = prototype.get(key, '')
 
     out = prop
@@ -753,14 +754,11 @@ def _set_property(caller, raw_string, **kwargs):
         next_node (str): Next node to go to.
 
     """
-    prop = kwargs.get("prop", "meta_key")
+    prop = kwargs.get("prop", "prototype_key")
     processor = kwargs.get("processor", None)
     next_node = kwargs.get("next_node", "node_index")
 
     propname_low = prop.strip().lower()
-    meta = propname_low.startswith("meta_")
-    if meta:
-        propname_low = propname_low[5:]
 
     if callable(processor):
         try:
@@ -776,23 +774,17 @@ def _set_property(caller, raw_string, **kwargs):
     if not value:
         return next_node
 
-    if meta:
-        _set_menu_metaprot(caller, propname_low, value)
-    else:
-        metaprot = _get_menu_metaprot(caller)
-        prototype = metaprot.prototype
-        prototype[propname_low] = value
+    prototype = _get_menu_prototype(caller)
 
-        # typeclass and prototype can't co-exist
-        if propname_low == "typeclass":
-            prototype.pop("prototype", None)
-        if propname_low == "prototype":
-            prototype.pop("typeclass", None)
+    # typeclass and prototype can't co-exist
+    if propname_low == "typeclass":
+        prototype.pop("prototype", None)
+    if propname_low == "prototype":
+        prototype.pop("typeclass", None)
 
-        _set_menu_metaprot(caller, "prototype", prototype)
+    caller.ndb._menutree.olc_prototype = prototype
 
-    caller.msg("Set {prop} to '{value}'.".format(
-        prop=prop.replace("_", "-").capitalize(), value=str(value)))
+    caller.msg("Set {prop} to '{value}'.".format(prop, value=str(value)))
 
     return next_node
 
@@ -829,8 +821,7 @@ def _path_cropper(pythonpath):
 # Menu nodes
 
 def node_index(caller):
-    metaprot = _get_menu_metaprot(caller)
-    prototype = metaprot.prototype
+    prototype = _get_menu_prototype(caller)
 
     text = ("|c --- Prototype wizard --- |n\n\n"
             "Define the |yproperties|n of the prototype. All prototype values can be "
@@ -841,10 +832,9 @@ def node_index(caller):
             "others later.\n\n(make choice; q to abort. If unsure, start from 1.)")
 
     options = []
-    # The meta-key goes first
     options.append(
-        {"desc": "|WMeta-Key|n|n{}".format(_format_property("Key", True, metaprot, None)),
-         "goto": "node_meta_key"})
+        {"desc": "|WPrototype-Key|n|n{}".format(_format_property("Key", True, prototype, None)),
+         "goto": "node_prototype_key"})
     for key in ('Prototype', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
         required = False
@@ -860,20 +850,20 @@ def node_index(caller):
     required = False
     for key in ('Desc', 'Tags', 'Locks'):
         options.append(
-            {"desc": "|WMeta-{}|n|n{}".format(key, _format_property(key, required, metaprot, None)),
-             "goto": "node_meta_{}".format(key.lower())})
+            {"desc": "|WPrototype-{}|n|n{}".format(key, _format_property(key, required, prototype, None)),
+             "goto": "node_prototype_{}".format(key.lower())})
 
     return text, options
 
 
 def node_validate_prototype(caller, raw_string, **kwargs):
-    metaprot = _get_menu_metaprot(caller)
+    prototype = _get_menu_prototype(caller)
 
-    txt = metaproto_to_str(metaprot)
+    txt = prototype_to_str(prototype)
     errors = "\n\n|g No validation errors found.|n (but errors could still happen at spawn-time)"
     try:
         # validate, don't spawn
-        spawn(metaprot.prototype, return_prototypes=True)
+        spawn(prototype, return_prototypes=True)
     except RuntimeError as err:
         errors = "\n\n|rError: {}|n".format(err)
     text = (txt + errors)
@@ -883,42 +873,43 @@ def node_validate_prototype(caller, raw_string, **kwargs):
     return text, options
 
 
-def _check_meta_key(caller, key):
-    old_metaprot = search_prototype(key)
+def _check_prototype_key(caller, key):
+    old_prototype = search_prototype(key)
     olc_new = _is_new_prototype(caller)
     key = key.strip().lower()
-    if old_metaprot:
+    if old_prototype:
         # we are starting a new prototype that matches an existing
-        if not caller.locks.check_lockstring(caller, old_metaprot.locks, access_type='edit'):
-            # return to the node_meta_key to try another key
+        if not caller.locks.check_lockstring(
+                caller, old_prototype['prototype_locks'], access_type='edit'):
+            # return to the node_prototype_key to try another key
             caller.msg("Prototype '{key}' already exists and you don't "
                        "have permission to edit it.".format(key=key))
-            return "node_meta_key"
+            return "node_prototype_key"
         elif olc_new:
             # we are selecting an existing prototype to edit. Reset to index.
             del caller.ndb._menutree.olc_new
-            caller.ndb._menutree.olc_metaprot = old_metaprot
+            caller.ndb._menutree.olc_prototype = old_prototype
             caller.msg("Prototype already exists. Reloading.")
             return "node_index"
 
-    return _set_property(caller, key, prop='meta_key', next_node="node_prototype")
+    return _set_property(caller, key, prop='prototype_key', next_node="node_prototype")
 
 
-def node_meta_key(caller):
-    metaprot = _get_menu_metaprot(caller)
+def node_prototype_key(caller):
+    prototype = _get_menu_prototype(caller)
     text = ["The prototype name, or |wMeta-Key|n, uniquely identifies the prototype. "
             "It is used to find and use the prototype to spawn new entities. "
             "It is not case sensitive."]
-    old_key = metaprot.key
+    old_key = prototype['prototype_key']
     if old_key:
         text.append("Current key is '|w{key}|n'".format(key=old_key))
     else:
         text.append("The key is currently unset.")
     text.append("Enter text or make a choice (q for quit)")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_key", "index", "prototype")
+    options = _wizard_options("prototype_key", "index", "prototype")
     options.append({"key": "_default",
-                    "goto": _check_meta_key})
+                    "goto": _check_prototype_key})
     return text, options
 
 
@@ -927,9 +918,9 @@ def _all_prototypes(caller):
 
 
 def _prototype_examine(caller, prototype_name):
-    metaprot = search_prototype(key=prototype_name)
-    if metaprot:
-        caller.msg(metaproto_to_str(metaprot[0]))
+    prototypes = search_prototype(key=prototype_name)
+    if prototypes:
+        caller.msg(prototype_to_str(prototypes[0]))
     caller.msg("Prototype not registered.")
     return None
 
@@ -942,17 +933,22 @@ def _prototype_select(caller, prototype):
 
 @list_node(_all_prototypes, _prototype_select)
 def node_prototype(caller):
-    metaprot = _get_menu_metaprot(caller)
-    prot = metaprot.prototype
-    prototype = prot.get("prototype")
+    prototype = _get_menu_prototype(caller)
 
-    text = ["Set the prototype's parent |yPrototype|n. If this is unset, Typeclass will be used."]
-    if prototype:
-        text.append("Current prototype is |y{prototype}|n.".format(prototype=prototype))
+    prot_parent_key = prototype.get('prototype')
+
+    text = ["Set the prototype's |yParent Prototype|n. If this is unset, Typeclass will be used."]
+    if prot_parent_key:
+        prot_parent = search_prototype(prot_parent_key)
+        if prot_parent:
+            text.append("Current parent prototype is {}:\n{}".format(prototype_to_str(prot_parent)))
+        else:
+            text.append("Current parent prototype |r{prototype}|n "
+                        "does not appear to exist.".format(prot_parent_key))
     else:
         text.append("Parent prototype is not set")
     text = "\n\n".join(text)
-    options = _wizard_options("prototype", "meta_key", "typeclass", color="|W")
+    options = _wizard_options("prototype", "prototype_key", "typeclass", color="|W")
     options.append({"key": "_default",
                     "goto": _prototype_examine})
 
@@ -961,7 +957,6 @@ def node_prototype(caller):
 
 def _all_typeclasses(caller):
     return list(sorted(get_all_typeclasses().keys()))
-    # return list(sorted(get_all_typeclasses(parent="evennia.objects.objects.DefaultObject").keys()))
 
 
 def _typeclass_examine(caller, typeclass_path):
@@ -994,9 +989,8 @@ def _typeclass_select(caller, typeclass):
 
 @list_node(_all_typeclasses, _typeclass_select)
 def node_typeclass(caller):
-    metaprot = _get_menu_metaprot(caller)
-    prot = metaprot.prototype
-    typeclass = prot.get("typeclass")
+    prototype = _get_menu_prototype(caller)
+    typeclass = prototype.get("typeclass")
 
     text = ["Set the typeclass's parent |yTypeclass|n."]
     if typeclass:
@@ -1012,9 +1006,8 @@ def node_typeclass(caller):
 
 
 def node_key(caller):
-    metaprot = _get_menu_metaprot(caller)
-    prot = metaprot.prototype
-    key = prot.get("key")
+    prototype = _get_menu_prototype(caller)
+    key = prototype.get("key")
 
     text = ["Set the prototype's |yKey|n. This will retain case sensitivity."]
     if key:
@@ -1032,9 +1025,8 @@ def node_key(caller):
 
 
 def node_aliases(caller):
-    metaprot = _get_menu_metaprot(caller)
-    prot = metaprot.prototype
-    aliases = prot.get("aliases")
+    prototype = _get_menu_prototype(caller)
+    aliases = prototype.get("aliases")
 
     text = ["Set the prototype's |yAliases|n. Separate multiple aliases with commas. "
             "ill retain case sensitivity."]
@@ -1053,8 +1045,8 @@ def node_aliases(caller):
 
 
 def _caller_attrs(caller):
-    metaprot = _get_menu_metaprot(caller)
-    attrs = metaprot.prototype.get("attrs", [])
+    prototype = _get_menu_prototype(caller)
+    attrs = prototype.get("attrs", [])
     return attrs
 
 
@@ -1078,10 +1070,9 @@ def _attrparse(caller, attr_string):
 def _add_attr(caller, attr_string, **kwargs):
     attrname, value = _attrparse(caller, attr_string)
     if attrname:
-        metaprot = _get_menu_metaprot(caller)
-        prot = metaprot.prototype
+        prot = _get_menu_prototype(caller)
         prot['attrs'][attrname] = value
-        _set_menu_metaprot(caller, "prototype", prot)
+        _set_menu_prototype(caller, "prototype", prot)
         text = "Added"
     else:
         text = "Attribute must be given as 'attrname = <value>' where <value> uses valid Python."
@@ -1093,8 +1084,7 @@ def _add_attr(caller, attr_string, **kwargs):
 def _edit_attr(caller, attrname, new_value, **kwargs):
     attrname, value = _attrparse("{}={}".format(caller, attrname, new_value))
     if attrname:
-        metaprot = _get_menu_metaprot(caller)
-        prot = metaprot.prototype
+        prot = _get_menu_prototype(caller)
         prot['attrs'][attrname] = value
         text = "Edited Attribute {} = {}".format(attrname, value)
     else:
@@ -1105,16 +1095,14 @@ def _edit_attr(caller, attrname, new_value, **kwargs):
 
 
 def _examine_attr(caller, selection):
-    metaprot = _get_menu_metaprot(caller)
-    prot = metaprot.prototype
+    prot = _get_menu_prototype(caller)
     value = prot['attrs'][selection]
     return "Attribute {} = {}".format(selection, value)
 
 
 @list_node(_caller_attrs)
 def node_attrs(caller):
-    metaprot = _get_menu_metaprot(caller)
-    prot = metaprot.prototype
+    prot = _get_menu_prototype(caller)
     attrs = prot.get("attrs")
 
     text = ["Set the prototype's |yAttributes|n. Separate multiple attrs with commas. "
@@ -1134,7 +1122,7 @@ def node_attrs(caller):
 
 
 def _caller_tags(caller):
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prot = metaprot.prototype
     tags = prot.get("tags")
     return tags
@@ -1142,7 +1130,7 @@ def _caller_tags(caller):
 
 def _add_tag(caller, tag, **kwargs):
     tag = tag.strip().lower()
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prot = metaprot.prototype
     tags = prot.get('tags', [])
     if tags:
@@ -1151,7 +1139,7 @@ def _add_tag(caller, tag, **kwargs):
     else:
         tags = [tag]
     prot['tags'] = tags
-    _set_menu_metaprot(caller, "prototype", prot)
+    _set_menu_prototype(caller, "prototype", prot)
     text = kwargs.get("text")
     if not text:
         text = "Added tag {}. (return to continue)".format(tag)
@@ -1161,7 +1149,7 @@ def _add_tag(caller, tag, **kwargs):
 
 
 def _edit_tag(caller, old_tag, new_tag, **kwargs):
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prototype = metaprot.prototype
     tags = prototype.get('tags', [])
 
@@ -1169,7 +1157,7 @@ def _edit_tag(caller, old_tag, new_tag, **kwargs):
     new_tag = new_tag.strip().lower()
     tags[tags.index(old_tag)] = new_tag
     prototype['tags'] = tags
-    _set_menu_metaprot(caller, 'prototype', prototype)
+    _set_menu_prototype(caller, 'prototype', prototype)
 
     text = kwargs.get('text')
     if not text:
@@ -1187,7 +1175,7 @@ def node_tags(caller):
 
 
 def node_locks(caller):
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prot = metaprot.prototype
     locks = prot.get("locks")
 
@@ -1208,7 +1196,7 @@ def node_locks(caller):
 
 
 def node_permissions(caller):
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prot = metaprot.prototype
     permissions = prot.get("permissions")
 
@@ -1229,7 +1217,7 @@ def node_permissions(caller):
 
 
 def node_location(caller):
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prot = metaprot.prototype
     location = prot.get("location")
 
@@ -1249,7 +1237,7 @@ def node_location(caller):
 
 
 def node_home(caller):
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prot = metaprot.prototype
     home = prot.get("home")
 
@@ -1269,7 +1257,7 @@ def node_home(caller):
 
 
 def node_destination(caller):
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     prot = metaprot.prototype
     dest = prot.get("dest")
 
@@ -1279,18 +1267,18 @@ def node_destination(caller):
     else:
         text.append("No destination is set (default).")
     text = "\n\n".join(text)
-    options = _wizard_options("destination", "home", "meta_desc")
+    options = _wizard_options("destination", "home", "prototype_desc")
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="dest",
                                   processor=lambda s: s.strip(),
-                                  next_node="node_meta_desc"))})
+                                  next_node="node_prototype_desc"))})
     return text, options
 
 
-def node_meta_desc(caller):
+def node_prototype_desc(caller):
 
-    metaprot = _get_menu_metaprot(caller)
+    metaprot = _get_menu_prototype(caller)
     text = ["The |wMeta-Description|n briefly describes the prototype for viewing in listings."]
     desc = metaprot.desc
 
@@ -1299,18 +1287,18 @@ def node_meta_desc(caller):
     else:
         text.append("Description is currently unset.")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_desc", "meta_key", "meta_tags")
+    options = _wizard_options("prototype_desc", "prototype_key", "prototype_tags")
     options.append({"key": "_default",
                     "goto": (_set_property,
-                             dict(prop='meta_desc',
+                             dict(prop='prototype_desc',
                                   processor=lambda s: s.strip(),
-                                  next_node="node_meta_tags"))})
+                                  next_node="node_prototype_tags"))})
 
     return text, options
 
 
-def node_meta_tags(caller):
-    metaprot = _get_menu_metaprot(caller)
+def node_prototype_tags(caller):
+    metaprot = _get_menu_prototype(caller)
     text = ["|wMeta-Tags|n can be used to classify and find prototypes. Tags are case-insensitive. "
             "Separate multiple by tags by commas."]
     tags = metaprot.tags
@@ -1320,18 +1308,18 @@ def node_meta_tags(caller):
     else:
         text.append("No tags are currently set.")
     text = "\n\n".join(text)
-    options = _wizard_options("meta_tags", "meta_desc", "meta_locks")
+    options = _wizard_options("prototype_tags", "prototype_desc", "prototype_locks")
     options.append({"key": "_default",
                     "goto": (_set_property,
-                             dict(prop="meta_tags",
+                             dict(prop="prototype_tags",
                                   processor=lambda s: [
                                     str(part.strip().lower()) for part in s.split(",")],
-                                  next_node="node_meta_locks"))})
+                                  next_node="node_prototype_locks"))})
     return text, options
 
 
-def node_meta_locks(caller):
-    metaprot = _get_menu_metaprot(caller)
+def node_prototype_locks(caller):
+    metaprot = _get_menu_prototype(caller)
     text = ["Set |wMeta-Locks|n on the prototype. There are two valid lock types: "
             "'edit' (who can edit the prototype) and 'use' (who can apply the prototype)\n"
             "(If you are unsure, leave as default.)"]
@@ -1342,10 +1330,10 @@ def node_meta_locks(caller):
         text.append("Lock unset - if not changed the default lockstring will be set as\n"
                     "   |w'use:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
     text = "\n\n".join(text)
-    options = _wizard_options("meta_locks", "meta_tags", "index")
+    options = _wizard_options("prototype_locks", "prototype_tags", "index")
     options.append({"key": "_default",
                     "goto": (_set_property,
-                             dict(prop="meta_locks",
+                             dict(prop="prototype_locks",
                                   processor=lambda s: s.strip().lower(),
                                   next_node="node_index"))})
     return text, options
@@ -1392,7 +1380,7 @@ def start_olc(caller, session=None, metaproto=None):
     """
     menudata = {"node_index": node_index,
                 "node_validate_prototype": node_validate_prototype,
-                "node_meta_key": node_meta_key,
+                "node_prototype_key": node_prototype_key,
                 "node_prototype": node_prototype,
                 "node_typeclass": node_typeclass,
                 "node_key": node_key,
@@ -1404,11 +1392,11 @@ def start_olc(caller, session=None, metaproto=None):
                 "node_location": node_location,
                 "node_home": node_home,
                 "node_destination": node_destination,
-                "node_meta_desc": node_meta_desc,
-                "node_meta_tags": node_meta_tags,
-                "node_meta_locks": node_meta_locks,
+                "node_prototype_desc": node_prototype_desc,
+                "node_prototype_tags": node_prototype_tags,
+                "node_prototype_locks": node_prototype_locks,
                 }
-    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_metaprot=metaproto)
+    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_prototype=metaproto)
 
 
 # Testing
