@@ -75,7 +75,8 @@ class CommandTest(EvenniaTest):
         returned_msg = ""
         try:
             receiver.msg = Mock()
-            cmdobj.at_pre_cmd()
+            if cmdobj.at_pre_cmd():
+                return
             cmdobj.parse()
             ret = cmdobj.func()
             if isinstance(ret, types.GeneratorType):
