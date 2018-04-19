@@ -43,13 +43,18 @@ command definition too) with function definitions:
     def node_with_other_name(caller, input_string):
         # code
         return text, options
+
+    def another_node(caller, input_string, **kwargs):
+        # code
+        return text, options
 ```
 
 Where caller is the object using the menu and input_string is the
 command entered by the user on the *previous* node (the command
 entered to get to this node). The node function code will only be
 executed once per node-visit and the system will accept nodes with
-both one or two arguments interchangeably.
+both one or two arguments interchangeably. It also accepts nodes
+that takes **kwargs.
 
 The menu tree itself is available on the caller as
 `caller.ndb._menutree`. This makes it a convenient place to store
@@ -82,12 +87,14 @@ menu is immediately exited and the default "look" command is called.
                 the callable. Those kwargs will also be passed into the next node if possible.
                 Such a callable should return either a str or a (str, dict), where the
                 string is the name of the next node to go to and the dict is the new,
-                (possibly modified) kwarg to pass into the next node.
+                (possibly modified) kwarg to pass into the next node. If the callable returns
+                None or the empty string, the current node will be revisited.
             - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above
                 and runs before it. If given a node name, the node will be executed but will not
                 be considered the next node. If node/callback returns str or (str, dict), these will
                 replace the `goto` step (`goto` callbacks will not fire), with the string being the
                 next node name and the optional dict acting as the kwargs-input for the next node.
+                If an exec callable returns the empty string (only), the current node is re-run.
 
 If key is not given, the option will automatically be identified by
 its number 1..N.
@@ -167,7 +174,7 @@ from evennia import Command, CmdSet
 from evennia.utils import logger
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import mod_import, make_iter, pad, m_len
+from evennia.utils.utils import mod_import, make_iter, pad, m_len, is_iter
 from evennia.commands import cmdhandler
 
 # read from protocol NAWS later?
@@ -182,7 +189,8 @@ _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 
 # i18n
 from django.utils.translation import ugettext as _
-_ERR_NOT_IMPLEMENTED = _("Menu node '{nodename}' is not implemented. Make another choice.")
+_ERR_NOT_IMPLEMENTED = _("Menu node '{nodename}' is either not implemented or "
+                         "caused an error. Make another choice.")
 _ERR_GENERAL = _("Error in menu node '{nodename}'.")
 _ERR_NO_OPTION_DESC = _("No description.")
 _HELP_FULL = _("Commands: <menu option>, help, quit")
@@ -573,6 +581,7 @@ class EvMenu(object):
         except EvMenuError:
             errmsg = _ERR_GENERAL.format(nodename=callback)
             self.caller.msg(errmsg, self._session)
+            logger.log_trace()
             raise
 
         return ret
@@ -606,9 +615,11 @@ class EvMenu(object):
                 nodetext, options = ret, None
         except KeyError:
             self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
+            logger.log_trace()
             raise EvMenuError
         except Exception:
             self.caller.msg(_ERR_GENERAL.format(nodename=nodename), session=self._session)
+            logger.log_trace()
             raise
 
         # store options to make them easier to test
@@ -665,8 +676,48 @@ class EvMenu(object):
 
         if isinstance(ret, basestring):
             # only return a value if a string (a goto target), ignore all other returns
+            if not ret:
+                # an empty string - rerun the same node
+                return self.nodename
             return ret, kwargs
         return None
+
+    def extract_goto_exec(self, nodename, option_dict):
+        """
+        Helper: Get callables and their eventual kwargs.
+
+        Args:
+            nodename (str): The current node name (used for error reporting).
+            option_dict (dict): The seleted option's dict.
+
+        Returns:
+            goto (str, callable or None): The goto directive in the option.
+            goto_kwargs (dict): Kwargs for `goto` if the former is callable, otherwise empty.
+            execute (callable or None): Executable given by the `exec` directive.
+            exec_kwargs (dict): Kwargs for `execute` if it's callable, otherwise empty.
+
+        """
+        goto_kwargs, exec_kwargs = {}, {}
+        goto, execute = option_dict.get("goto", None), option_dict.get("exec", None)
+        if goto and isinstance(goto, (tuple, list)):
+            if len(goto) > 1:
+                goto, goto_kwargs = goto[:2]  # ignore any extra arguments
+                if not hasattr(goto_kwargs, "__getitem__"):
+                    #  not a dict-like structure
+                    raise EvMenuError("EvMenu node {}: goto kwargs is not a dict: {}".format(
+                                                            nodename, goto_kwargs))
+            else:
+                goto = goto[0]
+        if execute and isinstance(execute, (tuple, list)):
+            if len(execute) > 1:
+                execute, exec_kwargs = execute[:2]  # ignore any extra arguments
+                if not hasattr(exec_kwargs, "__getitem__"):
+                    #  not a dict-like structure
+                    raise EvMenuError("EvMenu node {}: exec kwargs is not a dict: {}".format(
+                                                            nodename, goto_kwargs))
+            else:
+                execute = execute[0]
+        return goto, goto_kwargs, execute, exec_kwargs
 
     def goto(self, nodename, raw_string, **kwargs):
         """
@@ -681,29 +732,6 @@ class EvMenu(object):
                 argument)
 
         """
-        def _extract_goto_exec(option_dict):
-            "Helper: Get callables and their eventual kwargs"
-            goto_kwargs, exec_kwargs = {}, {}
-            goto, execute = option_dict.get("goto", None), option_dict.get("exec", None)
-            if goto and isinstance(goto, (tuple, list)):
-                if len(goto) > 1:
-                    goto, goto_kwargs = goto[:2]  # ignore any extra arguments
-                    if not hasattr(goto_kwargs, "__getitem__"):
-                        #  not a dict-like structure
-                        raise EvMenuError("EvMenu node {}: goto kwargs is not a dict: {}".format(
-                                                                nodename, goto_kwargs))
-                else:
-                    goto = goto[0]
-            if execute and isinstance(execute, (tuple, list)):
-                if len(execute) > 1:
-                    execute, exec_kwargs = execute[:2]  # ignore any extra arguments
-                    if not hasattr(exec_kwargs, "__getitem__"):
-                        #  not a dict-like structure
-                        raise EvMenuError("EvMenu node {}: exec kwargs is not a dict: {}".format(
-                                                                nodename, goto_kwargs))
-                else:
-                    execute = execute[0]
-            return goto, goto_kwargs, execute, exec_kwargs
 
         if callable(nodename):
             # run the "goto" callable, if possible
@@ -714,6 +742,9 @@ class EvMenu(object):
                     raise EvMenuError(
                             "{}: goto callable must return str or (str, dict)".format(inp_nodename))
                 nodename, kwargs = nodename[:2]
+            if not nodename:
+                # no nodename return. Re-run current node
+                nodename = self.nodename
         try:
             # execute the found node, make use of the returns.
             nodetext, options = self._execute_node(nodename, raw_string, **kwargs)
@@ -746,12 +777,12 @@ class EvMenu(object):
                 desc = dic.get("desc", dic.get("text", None))
                 if "_default" in keys:
                     keys = [key for key in keys if key != "_default"]
-                    goto, goto_kwargs, execute, exec_kwargs = _extract_goto_exec(dic)
+                    goto, goto_kwargs, execute, exec_kwargs = self.extract_goto_exec(nodename, dic)
                     self.default = (goto, goto_kwargs, execute, exec_kwargs)
                 else:
                     # use the key (only) if set, otherwise use the running number
                     keys = list(make_iter(dic.get("key", str(inum + 1).strip())))
-                    goto, goto_kwargs, execute, exec_kwargs = _extract_goto_exec(dic)
+                    goto, goto_kwargs, execute, exec_kwargs = self.extract_goto_exec(nodename, dic)
                 if keys:
                     display_options.append((keys[0], desc))
                     for key in keys:
@@ -945,12 +976,162 @@ class EvMenu(object):
             node (str): The formatted node to display.
 
         """
+        screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: 78})[0]
+
         nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
         options_width_max = max(m_len(line) for line in optionstext.split("\n"))
-        total_width = max(options_width_max, nodetext_width_max)
+        total_width = min(screen_width, max(options_width_max, nodetext_width_max))
         separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
         separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
         return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
+
+
+# -----------------------------------------------------------
+#
+# List node (decorator turning a node into a list with
+#   look/edit/add functionality for the elements)
+#
+# -----------------------------------------------------------
+
+def list_node(option_generator, select=None, pagesize=10):
+    """
+    Decorator for making an EvMenu node into a multi-page list node. Will add new options,
+    prepending those options added in the node.
+
+    Args:
+        option_generator (callable or list): A list of strings indicating the options, or a callable
+            that is called as option_generator(caller) to produce such a list.
+        select (callable, option): Will be called as select(caller, menuchoice)
+            where menuchoice is the chosen option as a string. Should return the target node to
+            goto after this selection (or None to repeat the list-node). Note that if this is not
+            given, the decorated node must itself provide a way to continue from the node!
+        pagesize (int): How many options to show per page.
+
+    Example:
+        @list_node(['foo', 'bar'], select)
+        def node_index(caller):
+            text = "describing the list"
+            return text, []
+
+    Notes:
+        All normal `goto` or `exec` callables returned from the decorated nodes will, if they accept
+        **kwargs, get a new kwarg 'available_choices' injected. These are the ordered list of named
+        options (descs) visible on the current node page.
+
+    """
+
+    def decorator(func):
+
+        def _select_parser(caller, raw_string, **kwargs):
+            """
+            Parse the select action
+            """
+            available_choices = kwargs.get("available_choices", [])
+
+            try:
+                index = int(raw_string.strip()) - 1
+                selection = available_choices[index]
+            except Exception:
+                caller.msg("|rInvalid choice.|n")
+            else:
+                if select:
+                    try:
+                        return select(caller, selection)
+                    except Exception:
+                        logger.log_trace()
+            return None
+
+        def _list_node(caller, raw_string, **kwargs):
+
+            option_list = option_generator(caller) \
+                    if callable(option_generator) else option_generator
+
+            npages = 0
+            page_index = 0
+            page = []
+            options = []
+
+            if option_list:
+                nall_options = len(option_list)
+                pages = [option_list[ind:ind + pagesize]
+                         for ind in range(0, nall_options, pagesize)]
+                npages = len(pages)
+
+                page_index = max(0, min(npages - 1, kwargs.get("optionpage_index", 0)))
+                page = pages[page_index]
+
+            text = ""
+            extra_text = None
+
+            # dynamic, multi-page option list. Each selection leads to the `select`
+            # callback being called with a result from the available choices
+            options.extend([{"desc": opt,
+                             "goto": (_select_parser,
+                                      {"available_choices": page})} for opt in page])
+
+            if npages > 1:
+                # if the goto callable returns None, the same node is rerun, and
+                # kwargs not used by the callable are passed on to the node. This
+                # allows us to call ourselves over and over, using different kwargs.
+                options.append({"key": ("|Wcurrent|n", "c"),
+                                "desc": "|W({}/{})|n".format(page_index + 1, npages),
+                                "goto": (lambda caller: None,
+                                         {"optionpage_index": page_index})})
+                if page_index > 0:
+                    options.append({"key": ("|wp|Wrevious page|n", "p"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index - 1})})
+                if page_index < npages - 1:
+                    options.append({"key": ("|wn|Wext page|n", "n"),
+                                    "goto": (lambda caller: None,
+                                             {"optionpage_index": page_index + 1})})
+
+            # add data from the decorated node
+
+            decorated_options = []
+            try:
+                text, decorated_options = func(caller, raw_string)
+            except TypeError:
+                try:
+                    text, decorated_options = func(caller)
+                except Exception:
+                    raise
+            except Exception:
+                logger.log_trace()
+            else:
+                if isinstance(decorated_options, {}):
+                    decorated_options = [decorated_options]
+                else:
+                    decorated_options = make_iter(decorated_options)
+
+            extra_options = []
+            for eopt in decorated_options:
+                cback = ("goto" in eopt and "goto") or ("exec" in eopt and "exec") or None
+                if cback:
+                    signature = eopt[cback]
+                    if callable(signature):
+                        # callable with no kwargs defined
+                        eopt[cback] = (signature, {"available_choices": page})
+                    elif is_iter(signature):
+                        if len(signature) > 1 and isinstance(signature[1], dict):
+                            signature[1]["available_choices"] = page
+                            eopt[cback] = signature
+                        elif signature:
+                            # a callable alone in a tuple (i.e. no previous kwargs)
+                            eopt[cback] = (signature[0], {"available_choices": page})
+                        else:
+                            # malformed input.
+                            logger.log_err("EvMenu @list_node decorator found "
+                                           "malformed option to decorate: {}".format(eopt))
+                extra_options.append(eopt)
+
+            options.extend(extra_options)
+            text = text + "\n\n" + extra_text if extra_text else text
+
+            return text, options
+
+        return _list_node
+    return decorator
 
 
 # -------------------------------------------------------------------------------------------------
