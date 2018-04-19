@@ -144,7 +144,7 @@ for mod in settings.PROTOTYPE_MODULES:
     prots = [(prototype_key, prot) for prototype_key, prot in all_from_module(mod).items()
              if prot and isinstance(prot, dict)]
     # assign module path to each prototype_key for easy reference
-    _MODULE_PROTOTYPE_MODULES.update({tup[0]: mod for tup in prots})
+    _MODULE_PROTOTYPE_MODULES.update({prototype_key: mod for prototype_key, _ in prots})
     # make sure the prototype contains all meta info
     for prototype_key, prot in prots:
         prot.update({
@@ -153,7 +153,7 @@ for mod in settings.PROTOTYPE_MODULES:
           "prototype_locks": prot['prototype_locks'] if 'prototype_locks' in prot else "use:all()",
           "prototype_tags": set(make_iter(prot['prototype_tags'])
                                 if 'prototype_tags' in prot else ["base-prototype"])})
-        _MODULE_PROTOTYPES.update(prot)
+        _MODULE_PROTOTYPES[prototype_key] = prot
 
 
 # Prototype storage mechanisms
@@ -413,23 +413,25 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     # this allows us to pass lists of empty strings
     tags = [tag for tag in make_iter(tags) if tag]
 
-    # get metaprotos for readonly and db-based prototypes
+    # get prototypes for readonly and db-based prototypes
     prototypes = search_prototype(key, tags)
 
     # get use-permissions of readonly attributes (edit is always False)
     display_tuples = []
-    for prototype in sorted(prototypes, key=lambda d: d['prototype_key']):
-        lock_use = caller.locks.check_lockstring(caller, prototype['locks'], access_type='use')
+    for prototype in sorted(prototypes, key=lambda d: d.get('prototype_key', '')):
+        lock_use = caller.locks.check_lockstring(
+            caller, prototype.get('prototype_locks', ''), access_type='use')
         if not show_non_use and not lock_use:
             continue
-        lock_edit = caller.locks.check_lockstring(caller, prototype['locks'], access_type='edit')
+        lock_edit = caller.locks.check_lockstring(
+            caller, prototype.get('prototype_locks', ''), access_type='edit')
         if not show_non_edit and not lock_edit:
             continue
         display_tuples.append(
-            (prototype.get('prototype_key', '<unset>',
-             prototype['prototype_desc', ''],
+            (prototype.get('prototype_key', '<unset>'),
+             prototype.get('prototype_desc', '<unset>'),
              "{}/{}".format('Y' if lock_use else 'N', 'Y' if lock_edit else 'N'),
-             ",".join(prototype.get('prototype_tags', [])))))
+             ",".join(prototype.get('prototype_tags', []))))
 
     if not display_tuples:
         return None
@@ -450,7 +452,7 @@ def prototype_to_str(prototype):
     Format a prototype to a nice string representation.
 
     Args:
-        metaproto (NamedTuple): Represents the prototype.
+        prototype (dict): The prototype.
     """
 
     header = (
@@ -706,7 +708,7 @@ def _get_menu_prototype(caller):
     if hasattr(caller.ndb._menutree, "olc_prototype"):
         prototype = caller.ndb._menutree.olc_prototype
     if not prototype:
-        caller.ndb._menutree.olc_prototype = {}
+        caller.ndb._menutree.olc_prototype = prototype = {}
         caller.ndb._menutree.olc_new = True
     return prototype
 
@@ -721,10 +723,10 @@ def _set_menu_prototype(caller, field, value):
     caller.ndb._menutree.olc_prototype = prototype
 
 
-def _format_property(key, required=False, prototype=None, cropper=None):
-    key = key.lower()
+def _format_property(prop, required=False, prototype=None, cropper=None):
+
     if prototype is not None:
-        prop = prototype.get(key, '')
+        prop = prototype.get(prop, '')
 
     out = prop
     if callable(prop):
@@ -845,7 +847,7 @@ def node_index(caller):
             cropper = _path_cropper
         options.append(
             {"desc": "|w{}|n{}".format(
-                key, _format_property(key, required, None, prototype, cropper=cropper)),
+                key, _format_property(key, required, prototype, cropper=cropper)),
              "goto": "node_{}".format(key.lower())})
     required = False
     for key in ('Desc', 'Tags', 'Locks'):
@@ -900,7 +902,7 @@ def node_prototype_key(caller):
     text = ["The prototype name, or |wMeta-Key|n, uniquely identifies the prototype. "
             "It is used to find and use the prototype to spawn new entities. "
             "It is not case sensitive."]
-    old_key = prototype['prototype_key']
+    old_key = prototype.get('prototype_key', None)
     if old_key:
         text.append("Current key is '|w{key}|n'".format(key=old_key))
     else:
@@ -914,7 +916,8 @@ def node_prototype_key(caller):
 
 
 def _all_prototypes(caller):
-    return [mproto.key for mproto in search_prototype()]
+    return [prototype["prototype_key"]
+            for prototype in search_prototype() if "prototype_key" in prototype]
 
 
 def _prototype_examine(caller, prototype_name):
@@ -1122,17 +1125,15 @@ def node_attrs(caller):
 
 
 def _caller_tags(caller):
-    metaprot = _get_menu_prototype(caller)
-    prot = metaprot.prototype
-    tags = prot.get("tags")
+    prototype = _get_menu_prototype(caller)
+    tags = prototype.get("tags")
     return tags
 
 
 def _add_tag(caller, tag, **kwargs):
     tag = tag.strip().lower()
-    metaprot = _get_menu_prototype(caller)
-    prot = metaprot.prototype
-    tags = prot.get('tags', [])
+    prototype = _get_menu_prototype(caller)
+    tags = prototype.get('tags', [])
     if tags:
         if tag not in tags:
             tags.append(tag)
@@ -1149,8 +1150,7 @@ def _add_tag(caller, tag, **kwargs):
 
 
 def _edit_tag(caller, old_tag, new_tag, **kwargs):
-    metaprot = _get_menu_prototype(caller)
-    prototype = metaprot.prototype
+    prototype = _get_menu_prototype(caller)
     tags = prototype.get('tags', [])
 
     old_tag = old_tag.strip().lower()
@@ -1175,9 +1175,8 @@ def node_tags(caller):
 
 
 def node_locks(caller):
-    metaprot = _get_menu_prototype(caller)
-    prot = metaprot.prototype
-    locks = prot.get("locks")
+    prototype = _get_menu_prototype(caller)
+    locks = prototype.get("locks")
 
     text = ["Set the prototype's |yLock string|n. Separate multiple locks with semi-colons. "
             "Will retain case sensitivity."]
@@ -1196,9 +1195,8 @@ def node_locks(caller):
 
 
 def node_permissions(caller):
-    metaprot = _get_menu_prototype(caller)
-    prot = metaprot.prototype
-    permissions = prot.get("permissions")
+    prototype = _get_menu_prototype(caller)
+    permissions = prototype.get("permissions")
 
     text = ["Set the prototype's |yPermissions|n. Separate multiple permissions with commas. "
             "Will retain case sensitivity."]
@@ -1217,9 +1215,8 @@ def node_permissions(caller):
 
 
 def node_location(caller):
-    metaprot = _get_menu_prototype(caller)
-    prot = metaprot.prototype
-    location = prot.get("location")
+    prototype = _get_menu_prototype(caller)
+    location = prototype.get("location")
 
     text = ["Set the prototype's |yLocation|n"]
     if location:
@@ -1237,9 +1234,8 @@ def node_location(caller):
 
 
 def node_home(caller):
-    metaprot = _get_menu_prototype(caller)
-    prot = metaprot.prototype
-    home = prot.get("home")
+    prototype = _get_menu_prototype(caller)
+    home = prototype.get("home")
 
     text = ["Set the prototype's |yHome location|n"]
     if home:
@@ -1257,9 +1253,8 @@ def node_home(caller):
 
 
 def node_destination(caller):
-    metaprot = _get_menu_prototype(caller)
-    prot = metaprot.prototype
-    dest = prot.get("dest")
+    prototype = _get_menu_prototype(caller)
+    dest = prototype.get("dest")
 
     text = ["Set the prototype's |yDestination|n. This is usually only used for Exits."]
     if dest:
@@ -1278,9 +1273,9 @@ def node_destination(caller):
 
 def node_prototype_desc(caller):
 
-    metaprot = _get_menu_prototype(caller)
+    prototype = _get_menu_prototype(caller)
     text = ["The |wMeta-Description|n briefly describes the prototype for viewing in listings."]
-    desc = metaprot.desc
+    desc = prototype.get("prototype_desc", None)
 
     if desc:
         text.append("The current meta desc is:\n\"|w{desc}|n\"".format(desc=desc))
@@ -1298,10 +1293,10 @@ def node_prototype_desc(caller):
 
 
 def node_prototype_tags(caller):
-    metaprot = _get_menu_prototype(caller)
+    prototype = _get_menu_prototype(caller)
     text = ["|wMeta-Tags|n can be used to classify and find prototypes. Tags are case-insensitive. "
             "Separate multiple by tags by commas."]
-    tags = metaprot.tags
+    tags = prototype.get('prototype_tags', [])
 
     if tags:
         text.append("The current tags are:\n|w{tags}|n".format(tags=tags))
@@ -1319,11 +1314,11 @@ def node_prototype_tags(caller):
 
 
 def node_prototype_locks(caller):
-    metaprot = _get_menu_prototype(caller)
+    prototype = _get_menu_prototype(caller)
     text = ["Set |wMeta-Locks|n on the prototype. There are two valid lock types: "
             "'edit' (who can edit the prototype) and 'use' (who can apply the prototype)\n"
             "(If you are unsure, leave as default.)"]
-    locks = metaprot.locks
+    locks = prototype.get('prototype_locks', '')
     if locks:
         text.append("Current lock is |w'{lockstring}'|n".format(lockstring=locks))
     else:
@@ -1367,14 +1362,14 @@ class OLCMenu(EvMenu):
         return "{}{}{}".format(olc_options, sep, other_options)
 
 
-def start_olc(caller, session=None, metaproto=None):
+def start_olc(caller, session=None, prototype=None):
     """
     Start menu-driven olc system for prototypes.
 
     Args:
         caller (Object or Account): The entity starting the menu.
         session (Session, optional): The individual session to get data.
-        metaproto (MetaProto, optional): Given when editing an existing
+        prototype (dict, optional): Given when editing an existing
             prototype rather than creating a new one.
 
     """
@@ -1396,7 +1391,7 @@ def start_olc(caller, session=None, metaproto=None):
                 "node_prototype_tags": node_prototype_tags,
                 "node_prototype_locks": node_prototype_locks,
                 }
-    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_prototype=metaproto)
+    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_prototype=prototype)
 
 
 # Testing

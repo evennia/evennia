@@ -14,9 +14,9 @@ from evennia.utils.utils import inherits_from, class_from_module, get_all_typecl
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
-                                   save_db_prototype, build_metaproto, validate_prototype,
+                                   save_db_prototype, validate_prototype,
                                    delete_db_prototype, PermissionError, start_olc,
-                                   metaproto_to_str)
+                                   prototype_to_str)
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2885,12 +2885,12 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     return
             return prototype
 
-        def _search_show_prototype(query, metaprots=None):
+        def _search_show_prototype(query, prototypes=None):
             # prototype detail
-            if not metaprots:
-                metaprots = search_prototype(key=query, return_meta=True)
-            if metaprots:
-                return "\n".join(metaproto_to_str(metaprot) for metaprot in metaprots)
+            if not prototypes:
+                prototypes = search_prototype(key=query)
+            if prototypes:
+                return "\n".join(prototype_to_str(prot) for prot in prototypes)
             else:
                 return False
 
@@ -2898,18 +2898,18 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         if self.cmdstring == "olc" or 'menu' in self.switches or 'olc' in self.switches:
             # OLC menu mode
-            metaprot = None
+            prototype = None
             if self.lhs:
                 key = self.lhs
-                metaprot = search_prototype(key=key, return_meta=True)
-                if len(metaprot) > 1:
+                prototype = search_prototype(key=key, return_meta=True)
+                if len(prototype) > 1:
                     caller.msg("More than one match for {}:\n{}".format(
-                        key, "\n".join(mproto.key for mproto in metaprot)))
+                        key, "\n".join(proto.get('prototype_key', '') for proto in prototype)))
                     return
-                elif metaprot:
+                elif prototype:
                     # one match
-                    metaprot = metaprot[0]
-            start_olc(caller, session=self.session, metaproto=metaprot)
+                    prototype = prototype[0]
+            start_olc(caller, session=self.session, prototype=prototype)
             return
 
         if 'search' in self.switches:
@@ -3005,8 +3005,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
 
             # present prototype to save
-            new_matchstring = _search_show_prototype(
-                "", metaprots=[build_metaproto(key, desc, [lockstring], tags, prototype)])
+            new_matchstring = _search_show_prototype("", prototypes=[prototype])
             string = "|yCreating new prototype:|n\n{}".format(new_matchstring)
             question = "\nDo you want to continue saving? [Y]/N"
 
@@ -3056,21 +3055,21 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if isinstance(prototype, basestring):
             # A prototype key we are looking to apply
             key = prototype
-            metaprotos = search_prototype(prototype)
-            nprots = len(metaprotos)
-            if not metaprotos:
+            prototypes = search_prototype(prototype)
+            nprots = len(prototypes)
+            if not prototypes:
                 caller.msg("No prototype named '%s'." % prototype)
                 return
             elif nprots > 1:
                 caller.msg("Found {} prototypes matching '{}':\n  {}".format(
-                    nprots, prototype, ", ".join(metaproto.key for metaproto in metaprotos)))
+                    nprots, prototype, ", ".join(prot.get('prototype_key', '')
+                                                 for proto in prototypes)))
                 return
-            # we have a metaprot, check access
-            metaproto = metaprotos[0]
-            if not caller.locks.check_lockstring(caller, metaproto.locks, access_type='use'):
+            # we have a prototype, check access
+            prototype = prototypes[0]
+            if not caller.locks.check_lockstring(caller, prototype.get('prototype_locks', ''), access_type='use'):
                 caller.msg("You don't have access to use this prototype.")
                 return
-            prototype = metaproto.prototype
 
         if "noloc" not in self.switches and "location" not in prototype:
             prototype["location"] = self.caller.location
