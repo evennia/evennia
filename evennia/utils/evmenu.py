@@ -976,7 +976,11 @@ class EvMenu(object):
             node (str): The formatted node to display.
 
         """
-        screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: 78})[0]
+        if self._session:
+            screen_width = self._session.protocol_flags.get(
+                    "SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
+        else:
+            screen_width = _MAX_TEXT_WIDTH
 
         nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
         options_width_max = max(m_len(line) for line in optionstext.split("\n"))
