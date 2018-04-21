@@ -1005,10 +1005,12 @@ def list_node(option_generator, select=None, pagesize=10):
     Args:
         option_generator (callable or list): A list of strings indicating the options, or a callable
             that is called as option_generator(caller) to produce such a list.
-        select (callable, option): Will be called as select(caller, menuchoice)
-            where menuchoice is the chosen option as a string. Should return the target node to
-            goto after this selection (or None to repeat the list-node). Note that if this is not
-            given, the decorated node must itself provide a way to continue from the node!
+        select (callable or str, optional): Node to redirect a selection to. Its `**kwargs` will
+            contain the `available_choices` list and `selection` will hold one of the elements in
+            that list.  If a callable, it will be called as select(caller, menuchoice) where
+            menuchoice is the chosen option as a string. Should return the target node to goto after
+            this selection (or None to repeat the list-node). Note that if this is not given, the
+            decorated node must itself provide a way to continue from the node!
         pagesize (int): How many options to show per page.
 
     Example:
@@ -1038,11 +1040,16 @@ def list_node(option_generator, select=None, pagesize=10):
             except Exception:
                 caller.msg("|rInvalid choice.|n")
             else:
-                if select:
+                if callable(select):
                     try:
                         return select(caller, selection)
                     except Exception:
                         logger.log_trace()
+                else:
+                    # we assume a string was given, we inject the result into the kwargs
+                    # to pass on to the next node
+                    kwargs['selection'] = selection
+                    return str(select)
             return None
 
         def _list_node(caller, raw_string, **kwargs):
