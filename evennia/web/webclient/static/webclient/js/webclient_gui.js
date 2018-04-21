@@ -484,13 +484,13 @@ function onSplitDialog() {
     dialog.append('<input type="text" name="new_pane1" value="" />');
     dialog.append('<input type="text" name="new_pane2" value="" />');
 
-    dialog.append("<h3>New First Pane Flow</h3>");
-    dialog.append('<input type="radio" name="flow1" value="append" checked>append<br />');
-    dialog.append('<input type="radio" name="flow1" value="replace">replace<br />');
+    dialog.append("<h3>New First Pane</h3>");
+    dialog.append('<input type="radio" name="flow1" value="append" checked>append new incoming messages<br />');
+    dialog.append('<input type="radio" name="flow1" value="replace">replace old messages with new ones<br />');
 
-    dialog.append("<h3>New Second Pane Flow</h3>");
-    dialog.append('<input type="radio" name="flow2" value="append" checked>append<br />');
-    dialog.append('<input type="radio" name="flow2" value="replace">replace<br />');
+    dialog.append("<h3>New Second Pane</h3>");
+    dialog.append('<input type="radio" name="flow2" value="append" checked>append new incoming messages<br />');
+    dialog.append('<input type="radio" name="flow2" value="replace">replace old messages with new ones<br />');
 
     dialog.append('<div id="splitclose" class="button">Split It</div>');
 
