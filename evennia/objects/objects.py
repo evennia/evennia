@@ -1875,7 +1875,7 @@ class DefaultCharacter(DefaultObject):
 
         """
         self.msg("\nYou become |c%s|n.\n" % self.name)
-        self.msg(self.at_look(self.location))
+        self.msg((self.at_look(self.location), {'type':'look'}), options = None)
 
         def message(obj, from_obj):
             obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
