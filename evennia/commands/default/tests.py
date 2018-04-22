@@ -129,8 +129,8 @@ class TestGeneral(CommandTest):
 
     def test_nick(self):
         self.call(general.CmdNick(), "testalias = testaliasedstring1", "Inputline-nick 'testalias' mapped to 'testaliasedstring1'.")
-        self.call(general.CmdNick(), "/account testalias = testaliasedstring2", "Accountnick 'testalias' mapped to 'testaliasedstring2'.")
-        self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Objectnick 'testalias' mapped to 'testaliasedstring3'.")
+        self.call(general.CmdNick(), "/account testalias = testaliasedstring2", "Account-nick 'testalias' mapped to 'testaliasedstring2'.")
+        self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Object-nick 'testalias' mapped to 'testaliasedstring3'.")
         self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
         self.assertEqual(None, self.char1.nicks.get("testalias", category="account"))
         self.assertEqual(u"testaliasedstring2", self.char1.account.nicks.get("testalias", category="account"))
