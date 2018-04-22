@@ -688,7 +688,7 @@ class TestMail(CommandTest):
                   "You have received a new @mail from TestAccount2(account 2)|You sent your message.", caller=self.account2)
         self.call(mail.CmdMail(), "TestAccount=Message 1", "You sent your message.", caller=self.account2)
         self.call(mail.CmdMail(), "TestAccount=Message 2", "You sent your message.", caller=self.account2)
-        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.account)
+        self.call(mail.CmdMail(), "", "| ID:   From:             Subject:", caller=self.account)
         self.call(mail.CmdMail(), "2", "From: TestAccount2", caller=self.account)
         self.call(mail.CmdMail(), "/forward TestAccount2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.account)
         self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.account)
