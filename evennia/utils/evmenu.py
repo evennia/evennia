@@ -1045,11 +1045,12 @@ def list_node(option_generator, select=None, pagesize=10):
                         return select(caller, selection)
                     except Exception:
                         logger.log_trace()
-                else:
+                elif select:
                     # we assume a string was given, we inject the result into the kwargs
                     # to pass on to the next node
                     kwargs['selection'] = selection
                     return str(select)
+            # this means the previous node will be re-run with these same kwargs
             return None
 
         def _list_node(caller, raw_string, **kwargs):
