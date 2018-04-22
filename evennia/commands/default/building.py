@@ -2270,12 +2270,12 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
       @locate - this is a shorthand for using the /loc switch.
 
     Switches:
-      room    - only look for rooms (location=None)
-      exit    - only look for exits (destination!=None)
-      char    - only look for characters (BASE_CHARACTER_TYPECLASS)
-      exact   - only exact matches are returned.
-      loc     - display object location if exists and match has one result
-      contains- search for names containing the string, rather than starting with.
+      room       - only look for rooms (location=None)
+      exit       - only look for exits (destination!=None)
+      char       - only look for characters (BASE_CHARACTER_TYPECLASS)
+      exact      - only exact matches are returned.
+      loc        - display object location if exists and match has one result
+      startswith - search for names starting with the string, rather than containing
 
     Searches the database for an object of a particular name or exact #dbref.
     Use *accountname to search for an account. The switches allows for
@@ -2286,7 +2286,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     key = "@find"
     aliases = "@search, @locate"
-    switch_options = ("room", "exit", "char", "exact", "loc", "contains")
+    switch_options = ("room", "exit", "char", "exact", "loc", "startswith")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
@@ -2360,13 +2360,13 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 keyquery = Q(db_key__iexact=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(db_tags__db_key__iexact=searchstring,
                                db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
-            elif "contains" in switches:
-                keyquery = Q(db_key__icontains=searchstring, id__gte=low, id__lte=high)
-                aliasquery = Q(db_tags__db_key__icontains=searchstring,
-                               db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
-            else:
+            elif "startswith" in switches:
                 keyquery = Q(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(db_tags__db_key__istartswith=searchstring,
+                               db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
+            else:
+                keyquery = Q(db_key__icontains=searchstring, id__gte=low, id__lte=high)
+                aliasquery = Q(db_tags__db_key__icontains=searchstring,
                                db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
 
             results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
