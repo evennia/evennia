@@ -327,7 +327,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
 
     def test_find(self):
-        self.call(building.CmdFind(), "Room2", "One Match")
+        self.call(building.CmdFind(), "oom2", "One Match")
         expect = "One Match(#1#7, loc):\n   " +\
                  "Char2(#7)  evennia.objects.objects.DefaultCharacter (location: Room(#1))"
         self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
@@ -337,7 +337,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "Char2", expect, cmdstring="@locate")
         self.call(building.CmdFind(), "/l Char2", expect, cmdstring="find")  # /l switch is abbreviated form of /loc
         self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
-        self.call(building.CmdFind(), "/contains om2", "One Match")
+        self.call(building.CmdFind(), "/startswith Room2", "One Match")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
