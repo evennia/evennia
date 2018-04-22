@@ -31,7 +31,7 @@ from evennia import DefaultObject, DefaultCharacter
 
 # set up signal here since we are not starting the server
 
-_RE = re.compile(r"^\+|-+\+|\+-+|--*|\|(?:\s|$)", re.MULTILINE)
+_RE = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 
 
 # ------------------------------------------------------------
