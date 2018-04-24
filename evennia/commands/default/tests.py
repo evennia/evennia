@@ -94,8 +94,11 @@ class CommandTest(EvenniaTest):
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             if msg is not None:
-                returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
-                returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+                # set our separator for returned messages based on parsing ansi or not
+                msg_sep = "|" if noansi else "||"
+                # Have to strip ansi for each returned message for the regex to handle it correctly
+                returned_msg = msg_sep.join(_RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi))
+                                            for mess in stored_msg).strip()
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
                     sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
                     sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
@@ -166,7 +169,7 @@ class TestSystem(CommandTest):
         self.call(system.CmdPy(), "1+2", ">>> 1+2|3")
 
     def test_scripts(self):
-        self.call(system.CmdScripts(), "", "| dbref |")
+        self.call(system.CmdScripts(), "", "dbref ")
 
     def test_objects(self):
         self.call(system.CmdObjects(), "", "Object subtype totals")
