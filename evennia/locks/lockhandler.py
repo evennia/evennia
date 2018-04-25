@@ -544,7 +544,11 @@ class LockHandler(object):
 # convenience access function
 
 # dummy to be able to call check_lockstring from the outside
-_LOCK_HANDLER = LockHandler()
+
+class _ObjDummy:
+    lock_storage = ''
+
+_LOCK_HANDLER = LockHandler(_ObjDummy())
 
 
 def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
