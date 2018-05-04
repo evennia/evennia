@@ -624,6 +624,7 @@ class ChannelDB(TypedObject):
 
     db_object_subscriptions = models.ManyToManyField("objects.ObjectDB",
                                                      related_name="object_subscription_set", blank=True, verbose_name='object subscriptions', db_index=True)
+    is_hidden = models.BooleanField(default=False)
 
     # Database manager
     objects = managers.ChannelDBManager()

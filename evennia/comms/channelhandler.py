@@ -254,7 +254,7 @@ class ChannelHandler(object):
         self._cached_channel_cmds = {}
         self._cached_cmdsets = {}
         self._cached_channels = {}
-        for channel in _CHANNELDB.objects.get_all_channels():
+        for channel in _CHANNELDB.objects.get_all_channels(include_hidden=True):
             self.add(channel)
 
     def get(self, channelname=None):
