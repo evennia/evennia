@@ -333,7 +333,7 @@ class ChannelDBManager(TypedObjectManager):
 
     """
 
-    def get_all_channels(self):
+    def get_all_channels(self, include_hidden=False):
         """
         Get all channels.
 
@@ -341,7 +341,10 @@ class ChannelDBManager(TypedObjectManager):
             channels (list): All channels in game.
 
         """
-        return self.all()
+        if include_hidden:
+            return self.all()
+
+        return self.filter(is_hidden=False)
 
     def get_channel(self, channelkey):
         """
