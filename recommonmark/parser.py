@@ -23,6 +23,7 @@ class CommonMarkParser(parsers.Parser):
     """Docutils parser for CommonMark"""
 
     supported = ('md', 'markdown')
+    translate_section_name = None
 
     def __init__(self):
         self._level_to_elem = {}
@@ -93,7 +94,10 @@ class CommonMarkParser(parsers.Parser):
         assert isinstance(self.current_node, nodes.title)
         # The title node has a tree of text nodes, use the whole thing to
         # determine the section id and names
-        name = nodes.fully_normalize_name(self.current_node.astext())
+        text = self.current_node.astext()
+        if self.translate_section_name:
+            text = self.translate_section_name(text)
+        name = nodes.fully_normalize_name(text)
         section = self.current_node.parent
         section['names'].append(name)
         self.document.note_implicit_target(section, section)
