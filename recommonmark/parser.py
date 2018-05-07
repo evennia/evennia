@@ -140,8 +140,7 @@ class CommonMarkParser(parsers.Parser):
         # TODO okay, so this is acutally not always the right line number, but
         # these mdnodes won't have sourcepos on them for whatever reason. This
         # is better than 0 though.
-        ref_node.line = (mdnode.sourcepos[0][0] if mdnode.sourcepos
-                         else mdnode.parent.sourcepos[0][0])
+        ref_node.line = self._get_line(mdnode)
         if mdnode.title:
             ref_node['title'] = mdnode.title
         next_node = ref_node
@@ -156,8 +155,7 @@ class CommonMarkParser(parsers.Parser):
                 refwarn=True
             )
             # TODO also not correct sourcepos
-            wrap_node.line = (mdnode.sourcepos[0][0] if mdnode.sourcepos
-                              else mdnode.parent.sourcepos[0][0])
+            wrap_node.line = self._get_line(mdnode)
             if mdnode.title:
                 wrap_node['title'] = mdnode.title
             wrap_node.append(ref_node)
@@ -248,3 +246,10 @@ class CommonMarkParser(parsers.Parser):
 
     def is_section_level(self, level, section):
         return self._level_to_elem.get(level, None) == section
+
+    def _get_line(self, mdnode):
+        while mdnode:
+            if mdnode.sourcepos:
+                return mdnode.sourcepos[0][0]
+            mdnode = mdnode.parent
+        return 0
