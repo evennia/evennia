@@ -14,16 +14,17 @@ main test suite started with
 
 import re
 import types
+import datetime
 
 from django.conf import settings
 from mock import Mock, mock
 
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
-from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms
+from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
-from evennia.utils import ansi, utils
+from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
@@ -76,7 +77,8 @@ class CommandTest(EvenniaTest):
         old_msg = receiver.msg
         try:
             receiver.msg = Mock()
-            cmdobj.at_pre_cmd()
+            if cmdobj.at_pre_cmd():
+                return
             cmdobj.parse()
             ret = cmdobj.func()
             if isinstance(ret, types.GeneratorType):
@@ -328,7 +330,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
 
     def test_find(self):
-        self.call(building.CmdFind(), "Room2", "One Match")
+        self.call(building.CmdFind(), "oom2", "One Match")
         expect = "One Match(#1#7, loc):\n   " +\
                  "Char2(#7)  evennia.objects.objects.DefaultCharacter (location: Room(#1))"
         self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
@@ -338,6 +340,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "Char2", expect, cmdstring="@locate")
         self.call(building.CmdFind(), "/l Char2", expect, cmdstring="find")  # /l switch is abbreviated form of /loc
         self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
+        self.call(building.CmdFind(), "/startswith Room2", "One Match")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
@@ -500,3 +503,12 @@ class TestInterruptCommand(CommandTest):
     def test_interrupt_command(self):
         ret = self.call(CmdInterrupt(), "")
         self.assertEqual(ret, "")
+
+
+class TestUnconnectedCommand(CommandTest):
+    def test_info_command(self):
+        expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
+                        settings.SERVERNAME,
+                        datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
+                        SESSIONS.account_count(), utils.get_evennia_version().replace("-", ""))
+        self.call(unloggedin.CmdUnconnectedInfo(), "", expected)

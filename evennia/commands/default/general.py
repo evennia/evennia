@@ -71,7 +71,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
             target = caller.search(self.args)
             if not target:
                 return
-        self.msg(caller.at_look(target))
+        self.msg((caller.at_look(target), {'type':'look'}), options=None)
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
