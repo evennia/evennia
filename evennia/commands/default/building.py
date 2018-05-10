@@ -2840,8 +2840,14 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       |wdestination|n - only valid for exits (object or dbref)
       |wpermissions|n - string or list of permission strings
       |wlocks      |n - a lock-string
-      |waliases    |n - string or list of strings
+      |waliases    |n - string or list of strings.
       |wndb_|n<name>  - value of a nattribute (ndb_ is stripped)
+
+      |wprototype_key|n   - name of this prototype. Used to store/retrieve from db
+      |wprototype_desc|n  - desc of this prototype. Used in listings
+      |wprototype_locks|n - locks of this prototype. Limits who may use prototype
+      |wprototype_tags|n  - tags of this prototype. Used to find prototype
+
       any other keywords are interpreted as Attributes and their values.
 
     The available prototypes are defined globally in modules set in

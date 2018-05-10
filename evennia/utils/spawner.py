@@ -172,13 +172,14 @@ for mod in settings.PROTOTYPE_MODULES:
     _MODULE_PROTOTYPE_MODULES.update({prototype_key: mod for prototype_key, _ in prots})
     # make sure the prototype contains all meta info
     for prototype_key, prot in prots:
+        actual_prot_key = prot.get('prototype_key', prototype_key).lower()
         prot.update({
-          "prototype_key": prot.get('prototype_key', prototype_key.lower()),
+          "prototype_key": actual_prot_key,
           "prototype_desc": prot['prototype_desc'] if 'prototype_desc' in prot else mod,
-          "prototype_locks": prot['prototype_locks'] if 'prototype_locks' in prot else "use:all()",
-          "prototype_tags": set(make_iter(prot['prototype_tags'])
-                                if 'prototype_tags' in prot else ["base-prototype"])})
-        _MODULE_PROTOTYPES[prototype_key] = prot
+          "prototype_locks": (prot['prototype_locks']
+                              if 'prototype_locks' in prot else "use:all();edit:false()"),
+          "prototype_tags": list(set(make_iter(prot.get('prototype_tags', [])) + ["module"]))})
+        _MODULE_PROTOTYPES[actual_prot_key] = prot
 
 
 for mod in settings.PROTOTYPEFUNC_MODULES:
@@ -537,8 +538,11 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
             caller, prototype.get('prototype_locks', ''), access_type='use')
         if not show_non_use and not lock_use:
             continue
-        lock_edit = caller.locks.check_lockstring(
-            caller, prototype.get('prototype_locks', ''), access_type='edit')
+        if prototype.get('prototype_key', '') in _MODULE_PROTOTYPES:
+            lock_edit = False
+        else:
+            lock_edit = caller.locks.check_lockstring(
+                caller, prototype.get('prototype_locks', ''), access_type='edit')
         if not show_non_edit and not lock_edit:
             continue
         ptags = []
@@ -566,8 +570,8 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
         table.append([str(display_tuple[i]) for display_tuple in display_tuples])
     table = EvTable("Key", "Desc", "Use/Edit", "Tags", table=table, crop=True, width=width)
     table.reformat_column(0, width=22)
-    table.reformat_column(1, width=31)
-    table.reformat_column(2, width=9, align='r')
+    table.reformat_column(1, width=29)
+    table.reformat_column(2, width=11, align='c')
     table.reformat_column(3, width=16)
     return table
 
@@ -617,7 +621,7 @@ def validate_prototype(prototype, protkey=None, protparents=None, _visited=None)
     if _visited is None:
         _visited = []
 
-    protkey = protkey and protkey.lower() or prototype.get('prototype_key', "")
+    protkey = protkey and protkey.lower() or prototype.get('prototype_key', None)
 
     assert isinstance(prototype, dict)
 
@@ -796,8 +800,10 @@ def spawn(*prototypes, **kwargs):
         val = prot.pop("tags", [])
         tags = validate_spawn_value(val, make_iter)
 
-        # we make sure to add a tag identifying which prototype created this object
-        tags.append((prototype['prototype_key'], _PROTOTYPE_TAG_CATEGORY))
+        prototype_key = prototype.get('prototype_key', None)
+        if prototype_key:
+            # we make sure to add a tag identifying which prototype created this object
+            tags.append((prototype_key, _PROTOTYPE_TAG_CATEGORY))
 
         val = prot.pop("exec", "")
         execs = validate_spawn_value(val, make_iter)
