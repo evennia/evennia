@@ -257,7 +257,7 @@ class InlinefuncError(RuntimeError):
     pass
 
 
-def parse_inlinefunc(string, strip=False, **kwargs):
+def parse_inlinefunc(string, strip=False, _available_funcs=None, **kwargs):
     """
     Parse the incoming string.
 
@@ -265,6 +265,8 @@ def parse_inlinefunc(string, strip=False, **kwargs):
         string (str): The incoming string to parse.
         strip (bool, optional): Whether to strip function calls rather than
             execute them.
+        _available_funcs(dict, optional): Define an alterinative source of functions to parse for.
+            If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
     Kwargs:
         session (Session): This is sent to this function by Evennia when triggering
             it. It is passed to the inlinefunc.
@@ -273,6 +275,9 @@ def parse_inlinefunc(string, strip=False, **kwargs):
 
     """
     global _PARSING_CACHE
+
+    _available_funcs = _INLINE_FUNCS if _available_funcs is None else _available_funcs
+
     if string in _PARSING_CACHE:
         # stack is already cached
         stack = _PARSING_CACHE[string]
@@ -309,9 +314,9 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                 funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
                 try:
                     # try to fetch the matching inlinefunc from storage
-                    stack.append(_INLINE_FUNCS[funcname])
+                    stack.append(_available_funcs[funcname])
                 except KeyError:
-                    stack.append(_INLINE_FUNCS["nomatch"])
+                    stack.append(_available_funcs["nomatch"])
                     stack.append(funcname)
                 ncallable += 1
             elif gdict["escaped"]:

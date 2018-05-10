@@ -513,7 +513,7 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc
+# Inlinefunc & PrototypeFuncs
 ######################################################################
 # Evennia supports inline function preprocessing. This allows users
 # to supply inline calls on the form $func(arg, arg, ...) to do
@@ -525,6 +525,10 @@ INLINEFUNC_ENABLED = False
 # is loaded from left-to-right, same-named functions will overload
 INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
                       "server.conf.inlinefuncs"]
+# Module holding handlers for OLCFuncs. These allow for embedding
+# functional code in prototypes
+PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
+                         "server.conf.prototypefuncs"]
 
 ######################################################################
 # Default Account setup and access
