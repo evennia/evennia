@@ -369,7 +369,8 @@ class TestBuilding(CommandTest):
 
         # Tests "@spawn <prototype_dictionary>" without specifying location.
         self.call(building.CmdSpawn(),
-                  "{'key':'goblin', 'typeclass':'evennia.DefaultCharacter'}", "Spawned goblin")
+                  "{'prototype_key': 'testprot', 'key':'goblin', "
+                  "'typeclass':'evennia.DefaultCharacter'}", "Spawned goblin")
         goblin = getObject(self, "goblin")
 
         # Tests that the spawned object's type is a DefaultCharacter.
@@ -394,7 +395,7 @@ class TestBuilding(CommandTest):
         self.assertEqual(goblin.location, spawnLoc)
         goblin.delete()
 
-        spawner.save_db_prototype(self.char1, "ball", {'key': 'Ball', 'prototype': 'GOBLIN'})
+        spawner.save_db_prototype(self.char1, {'key': 'Ball', 'prototype': 'GOBLIN'}, 'ball')
 
         # Tests "@spawn <prototype_name>"
         self.call(building.CmdSpawn(), "ball", "Spawned Ball")
