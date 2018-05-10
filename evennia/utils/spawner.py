@@ -22,28 +22,41 @@ GOBLIN = {
 ```
 
 Possible keywords are:
-    prototype - string parent prototype
-    key - string, the main object identifier
-    typeclass - string, if not set, will use `settings.BASE_OBJECT_TYPECLASS`
-    location - this should be a valid object or #dbref
-    home - valid object or #dbref
-    destination - only valid for exits (object or dbref)
+    prototype_key (str):  name of this prototype. This is used when storing prototypes and should
+        be unique. This should always be defined but for prototypes defined in modules, the
+        variable holding the prototype dict will become the prototype_key if it's not explicitly
+        given.
+    prototype_desc (str, optional): describes prototype in listings
+    prototype_locks (str, optional): locks for restricting access to this prototype. Locktypes
+        supported are 'edit' and 'use'.
+    prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype
+        in listings
 
-    permissions - string or list of permission strings
-    locks - a lock-string
-    aliases - string or list of strings
-    exec - this is a string of python code to execute or a list of such codes.
-        This can be used e.g. to trigger custom handlers on the object. The
-        execution namespace contains 'evennia' for the library and 'obj'
-    tags - string or list of strings or tuples `(tagstr, category)`. Plain
-        strings will be result in tags with no category (default tags).
-    attrs - tuple or list of tuples of Attributes to add. This form allows
-    more complex Attributes to be set. Tuples at least specify `(key, value)`
-        but can also specify up to `(key, value, category, lockstring)`. If
-        you want to specify a lockstring but not a category, set the category
-        to `None`.
-    ndb_<name> - value of a nattribute (ndb_ is stripped)
-    other - any other name is interpreted as the key of an Attribute with
+    prototype (str or callable, optional): bame (prototype_key) of eventual parent prototype
+    typeclass (str or callable, optional): if not set, will use typeclass of parent prototype or use
+        `settings.BASE_OBJECT_TYPECLASS`
+    key (str or callable, optional): the name of the spawned object. If not given this will set to a
+        random hash
+    location (obj, str or callable, optional): location of the object - a valid object or #dbref
+    home (obj, str or callable, optional): valid object or #dbref
+    destination (obj, str or callable, optional): only valid for exits (object or #dbref)
+
+    permissions (str, list or callable, optional): which permissions for spawned object to have
+    locks (str or callable, optional): lock-string for the spawned object
+    aliases (str, list or callable, optional): Aliases for the spawned object
+    exec (str or callable, optional): this is a string of python code to execute or a list of such
+        codes.  This can be used e.g. to trigger custom handlers on the object. The execution
+        namespace contains 'evennia' for the library and 'obj'. All default spawn commands limit
+        this functionality to Developer/superusers. Usually it's better to use callables or
+        prototypefuncs instead of this.
+    tags (str, tuple, list or callable, optional): string or list of strings or tuples
+        `(tagstr, category)`. Plain strings will be result in tags with no category (default tags).
+    attrs (tuple, list or callable, optional): tuple or list of tuples of Attributes to add. This
+        form allows more complex Attributes to be set. Tuples at least specify `(key, value)`
+        but can also specify up to `(key, value, category, lockstring)`. If you want to specify a
+        lockstring but not a category, set the category to `None`.
+    ndb_<name> (any): value of a nattribute (ndb_ is stripped)
+    other (any): any other name is interpreted as the key of an Attribute with
         its value. Such Attributes have no categories.
 
 Each value can also be a callable that takes no arguments. It should
@@ -56,6 +69,9 @@ that prototype, inheritng all prototype slots it does not explicitly
 define itself, while overloading those that it does specify.
 
 ```python
+import random
+
+
 GOBLIN_WIZARD = {
  "prototype": GOBLIN,
  "key": "goblin wizard",
@@ -65,6 +81,7 @@ GOBLIN_WIZARD = {
 GOBLIN_ARCHER = {
  "prototype": GOBLIN,
  "key": "goblin archer",
+ "attack_skill": (random, (5, 10))"
  "attacks": ["short bow"]
 }
 ```
@@ -105,15 +122,18 @@ prototype, override its name with an empty dict.
 from __future__ import print_function
 
 import copy
+import hashlib
+import time
 from ast import literal_eval
 from django.conf import settings
 from random import randint
 import evennia
 from evennia.objects.models import ObjectDB
 from evennia.utils.utils import (
-    make_iter, all_from_module, dbid_to_obj, is_iter, crop, get_all_typeclasses)
+    make_iter, all_from_module, callables_from_module, dbid_to_obj,
+    is_iter, crop, get_all_typeclasses)
+from evennia.utils import inlinefuncs
 
-from collections import namedtuple
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.create import create_script
 from evennia.utils.evtable import EvTable
@@ -126,7 +146,9 @@ _PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "p
 _NON_CREATE_KWARGS = _CREATE_OBJECT_KWARGS + _PROTOTYPE_META_NAMES
 _MODULE_PROTOTYPES = {}
 _MODULE_PROTOTYPE_MODULES = {}
+_PROTOTYPEFUNCS = {}
 _MENU_CROP_WIDTH = 15
+_PROTOTYPE_TAG_CATEGORY = "spawned_by_prototype"
 
 _MENU_ATTR_LITERAL_EVAL_ERROR = (
     "|rCritical Python syntax error in your value. Only primitive Python structures are allowed.\n"
@@ -136,6 +158,9 @@ _MENU_ATTR_LITERAL_EVAL_ERROR = (
 
 class PermissionError(RuntimeError):
     pass
+
+
+# load resources
 
 
 for mod in settings.PROTOTYPE_MODULES:
@@ -148,12 +173,87 @@ for mod in settings.PROTOTYPE_MODULES:
     # make sure the prototype contains all meta info
     for prototype_key, prot in prots:
         prot.update({
-          "prototype_key": prototype_key.lower(),
+          "prototype_key": prot.get('prototype_key', prototype_key.lower()),
           "prototype_desc": prot['prototype_desc'] if 'prototype_desc' in prot else mod,
           "prototype_locks": prot['prototype_locks'] if 'prototype_locks' in prot else "use:all()",
           "prototype_tags": set(make_iter(prot['prototype_tags'])
                                 if 'prototype_tags' in prot else ["base-prototype"])})
         _MODULE_PROTOTYPES[prototype_key] = prot
+
+
+for mod in settings.PROTOTYPEFUNC_MODULES:
+    try:
+        _PROTOTYPEFUNCS.update(callables_from_module(mod))
+    except ImportError:
+        pass
+
+
+# Helper functions
+
+
+def olcfunc_parser(value, available_functions=None, **kwargs):
+    """
+    This is intended to be used by the in-game olc mechanism. It will parse the prototype
+    value for function tokens like `$olcfunc(arg, arg, ...)`. These functions behave all the
+    parameters of `inlinefuncs` but they are *not* passed a Session since this is not guaranteed to
+    be available at the time of spawning. They may also return other structures than strings.
+
+    Available olcfuncs are specified as callables in one of the modules of
+    `settings.PROTOTYPEFUNC_MODULES`, or specified on the command line.
+
+    Args:
+        value (string): The value to test for a parseable olcfunc.
+        available_functions (dict, optional): Mapping of name:olcfunction to use for this parsing.
+
+    Kwargs:
+        any (any): Passed on to the inlinefunc.
+
+    Returns:
+        any (any): A structure to replace the string on the prototype level. If this is a
+            callable or a (callable, (args,)) structure, it will be executed as if one had supplied
+            it to the prototype directly.
+
+    """
+    if not isinstance(basestring, value):
+        return value
+    available_functions = _PROTOTYPEFUNCS if available_functions is None else available_functions
+    return inlinefuncs.parse_inlinefunc(value, _available_funcs=available_functions)
+
+
+def _to_obj(value, force=True):
+    return dbid_to_obj(value, ObjectDB)
+
+
+def _to_obj_or_any(value):
+    obj = dbid_to_obj(value, ObjectDB)
+    return obj if obj is not None else value
+
+
+def validate_spawn_value(value, validator=None):
+    """
+    Analyze the value and produce a value for use at the point of spawning.
+
+    Args:
+        value (any): This can be:j
+            callable - will be called as callable()
+            (callable, (args,)) - will be called as callable(*args)
+            other - will be assigned depending on the variable type
+            validator (callable, optional): If given, this will be called with the value to
+                check and guarantee the outcome is of a given type.
+
+    Returns:
+        any (any): The (potentially pre-processed value to use for this prototype key)
+
+    """
+    validator = validator if validator else lambda o: o
+    if callable(value):
+        return validator(value())
+    elif value and is_iter(value) and callable(value[0]):
+        # a structure (callable, (args, ))
+        args = value[1:]
+        return validator(value[0](*make_iter(args)))
+    else:
+        return validator(value)
 
 
 # Prototype storage mechanisms
@@ -384,6 +484,20 @@ def search_prototype(key=None, tags=None):
     return matches
 
 
+def search_objects_with_prototype(prototype_key):
+    """
+    Retrieve all object instances created by a given prototype.
+
+    Args:
+        prototype_key (str): The exact (and unique) prototype identifier to query for.
+
+    Returns:
+        matches (Queryset): All matching objects spawned from this prototype.
+
+    """
+    return ObjectDB.objects.get_by_tag(key=prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+
+
 def get_protparent_dict():
     """
     Get prototype parents.
@@ -401,7 +515,7 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
 
     Args:
         caller (Account or Object): The object requesting the list.
-        key (str, optional): Exact or partial key to query for.
+        key (str, optional): Exact or partial prototype key to query for.
         tags (str or list, optional): Tag key or keys to query for.
         show_non_use (bool, optional): Show also prototypes the caller may not use.
         show_non_edit (bool, optional): Show also prototypes the caller may not edit.
@@ -427,23 +541,34 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
             caller, prototype.get('prototype_locks', ''), access_type='edit')
         if not show_non_edit and not lock_edit:
             continue
+        ptags = []
+        for ptag in prototype.get('prototype_tags', []):
+            if is_iter(ptag):
+                if len(ptag) > 1:
+                    ptags.append("{} (category: {}".format(ptag[0], ptag[1]))
+                else:
+                    ptags.append(ptag[0])
+            else:
+                ptags.append(str(ptag))
+
         display_tuples.append(
             (prototype.get('prototype_key', '<unset>'),
              prototype.get('prototype_desc', '<unset>'),
              "{}/{}".format('Y' if lock_use else 'N', 'Y' if lock_edit else 'N'),
-             ",".join(prototype.get('prototype_tags', []))))
+             ",".join(ptags)))
 
     if not display_tuples:
         return None
 
     table = []
+    width = 78
     for i in range(len(display_tuples[0])):
         table.append([str(display_tuple[i]) for display_tuple in display_tuples])
-    table = EvTable("Key", "Desc", "Use/Edit", "Tags", table=table, crop=True, width=78)
-    table.reformat_column(0, width=28)
-    table.reformat_column(1, width=40)
-    table.reformat_column(2, width=11, align='r')
-    table.reformat_column(3, width=20)
+    table = EvTable("Key", "Desc", "Use/Edit", "Tags", table=table, crop=True, width=width)
+    table.reformat_column(0, width=22)
+    table.reformat_column(1, width=31)
+    table.reformat_column(2, width=9, align='r')
+    table.reformat_column(3, width=16)
     return table
 
 
@@ -472,17 +597,14 @@ def prototype_to_str(prototype):
 # Spawner mechanism
 
 
-def _handle_dbref(inp):
-    return dbid_to_obj(inp, ObjectDB)
-
-
 def validate_prototype(prototype, protkey=None, protparents=None, _visited=None):
     """
     Run validation on a prototype, checking for inifinite regress.
 
     Args:
         prototype (dict): Prototype to validate.
-        protkey (str, optional): The name of the prototype definition, if any.
+        protkey (str, optional): The name of the prototype definition. If not given, the prototype
+            dict needs to have the `prototype_key` field set.
         protpartents (dict, optional): The available prototype parent library. If
             note given this will be determined from settings/database.
         _visited (list, optional): This is an internal work array and should not be set manually.
@@ -494,9 +616,8 @@ def validate_prototype(prototype, protkey=None, protparents=None, _visited=None)
         protparents = get_protparent_dict()
     if _visited is None:
         _visited = []
-    protkey = protkey or prototype.get('prototype_key', None)
 
-    protkey = protkey.lower() or prototype.get('prototype_key', None)
+    protkey = protkey and protkey.lower() or prototype.get('prototype_key', "")
 
     assert isinstance(prototype, dict)
 
@@ -619,9 +740,12 @@ def spawn(*prototypes, **kwargs):
         return_prototypes (bool): Only return a list of the
             prototype-parents (no object creation happens)
 
+    Returns:
+        object (Object): Spawned object.
+
     """
     # get available protparents
-    protparents = get_protparents()
+    protparents = get_protparent_dict()
 
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
@@ -643,47 +767,61 @@ def spawn(*prototypes, **kwargs):
         # extract the keyword args we need to create the object itself. If we get a callable,
         # call that to get the value (don't catch errors)
         create_kwargs = {}
-        keyval = prot.pop("key", "Spawned Object %06i" % randint(1, 100000))
-        create_kwargs["db_key"] = keyval() if callable(keyval) else keyval
+        # we must always add a key, so if not given we use a shortened md5 hash. There is a (small)
+        # chance this is not unique but it should usually not be a problem.
+        val = prot.pop("key", "Spawned-{}".format(
+            hashlib.md5(str(time.time())).hexdigest()[:6]))
+        create_kwargs["db_key"] = validate_spawn_value(val, str)
 
-        locval = prot.pop("location", None)
-        create_kwargs["db_location"] = locval() if callable(locval) else _handle_dbref(locval)
+        val = prot.pop("location", None)
+        create_kwargs["db_location"] = validate_spawn_value(val, _to_obj)
 
-        homval = prot.pop("home", settings.DEFAULT_HOME)
-        create_kwargs["db_home"] = homval() if callable(homval) else _handle_dbref(homval)
+        val = prot.pop("home", settings.DEFAULT_HOME)
+        create_kwargs["db_home"] = validate_spawn_value(val, _to_obj)
 
-        destval = prot.pop("destination", None)
-        create_kwargs["db_destination"] = destval() if callable(destval) else _handle_dbref(destval)
+        val = prot.pop("destination", None)
+        create_kwargs["db_destination"] = validate_spawn_value(val, _to_obj)
 
-        typval = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
-        create_kwargs["db_typeclass_path"] = typval() if callable(typval) else typval
+        val = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
+        create_kwargs["db_typeclass_path"] = validate_spawn_value(val, str)
 
         # extract calls to handlers
-        permval = prot.pop("permissions", [])
-        permission_string = permval() if callable(permval) else permval
-        lockval = prot.pop("locks", "")
-        lock_string = lockval() if callable(lockval) else lockval
-        aliasval = prot.pop("aliases", "")
-        alias_string = aliasval() if callable(aliasval) else aliasval
-        tagval = prot.pop("tags", [])
-        tags = tagval() if callable(tagval) else tagval
+        val = prot.pop("permissions", [])
+        permission_string = validate_spawn_value(val, make_iter)
+        val = prot.pop("locks", "")
+        lock_string = validate_spawn_value(val, str)
+        val = prot.pop("aliases", [])
+        alias_string = validate_spawn_value(val, make_iter)
+
+        val = prot.pop("tags", [])
+        tags = validate_spawn_value(val, make_iter)
 
         # we make sure to add a tag identifying which prototype created this object
-        # tags.append(())
+        tags.append((prototype['prototype_key'], _PROTOTYPE_TAG_CATEGORY))
 
-        attrval = prot.pop("attrs", [])
-        attributes = attrval() if callable(tagval) else attrval
-
-        exval = prot.pop("exec", "")
-        execs = make_iter(exval() if callable(exval) else exval)
+        val = prot.pop("exec", "")
+        execs = validate_spawn_value(val, make_iter)
 
         # extract ndb assignments
-        nattributes = dict((key.split("_", 1)[1], value() if callable(value) else value)
-                           for key, value in prot.items() if key.startswith("ndb_"))
+        nattributes = dict((key.split("_", 1)[1], validate_spawn_value(val, _to_obj))
+                           for key, val in prot.items() if key.startswith("ndb_"))
 
         # the rest are attributes
-        simple_attributes = [(key, value()) if callable(value) else (key, value)
-                             for key, value in prot.items() if not (key.startswith("ndb_"))]
+        val = prot.pop("attrs", [])
+        attributes = validate_spawn_value(val, list)
+
+        simple_attributes = []
+        for key, value in ((key, value) for key, value in prot.items()
+                           if not (key.startswith("ndb_"))):
+            if is_iter(value) and len(value) > 1:
+                # (value, category)
+                simple_attributes.append((key,
+                                          validate_spawn_value(value[0], _to_obj_or_any),
+                                          validate_spawn_value(value[1], str)))
+            else:
+                simple_attributes.append((key,
+                                          validate_spawn_value(value, _to_obj_or_any)))
+
         attributes = attributes + simple_attributes
         attributes = [tup for tup in attributes if not tup[0] in _NON_CREATE_KWARGS]
 
