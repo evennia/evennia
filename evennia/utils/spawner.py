@@ -388,7 +388,7 @@ def search_db_prototype(key=None, tags=None, return_queryset=False):
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'db_protototype'
             tag category.
-        return_queryset (bool): Return the database queryset.
+        return_queryset (bool, optional): Return the database queryset.
     Return:
         matches (queryset or list): All found DbPrototypes. If `return_queryset`
             is not set, this is a list of prototype dicts.
@@ -410,7 +410,7 @@ def search_db_prototype(key=None, tags=None, return_queryset=False):
         matches = matches.filter(db_key=key) or matches.filter(db_key__icontains=key)
     if not return_queryset:
         # return prototype
-        return [dbprot.attributes.get("prototype", {}) for dbprot in matches]
+        matches = [dict(dbprot.attributes.get("prototype", {})) for dbprot in matches]
     return matches
 
 
