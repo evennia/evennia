@@ -192,19 +192,19 @@ for mod in settings.PROTOTYPEFUNC_MODULES:
 # Helper functions
 
 
-def olcfunc_parser(value, available_functions=None, **kwargs):
+def protfunc_parser(value, available_functions=None, **kwargs):
     """
     This is intended to be used by the in-game olc mechanism. It will parse the prototype
-    value for function tokens like `$olcfunc(arg, arg, ...)`. These functions behave all the
+    value for function tokens like `$protfunc(arg, arg, ...)`. These functions behave all the
     parameters of `inlinefuncs` but they are *not* passed a Session since this is not guaranteed to
     be available at the time of spawning. They may also return other structures than strings.
 
-    Available olcfuncs are specified as callables in one of the modules of
+    Available protfuncs are specified as callables in one of the modules of
     `settings.PROTOTYPEFUNC_MODULES`, or specified on the command line.
 
     Args:
-        value (string): The value to test for a parseable olcfunc.
-        available_functions (dict, optional): Mapping of name:olcfunction to use for this parsing.
+        value (string): The value to test for a parseable protfunc.
+        available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
 
     Kwargs:
         any (any): Passed on to the inlinefunc.
@@ -215,7 +215,7 @@ def olcfunc_parser(value, available_functions=None, **kwargs):
             it to the prototype directly.
 
     """
-    if not isinstance(basestring, value):
+    if not isinstance(value, basestring):
         return value
     available_functions = _PROTOTYPEFUNCS if available_functions is None else available_functions
     return inlinefuncs.parse_inlinefunc(value, _available_funcs=available_functions)
@@ -246,6 +246,7 @@ def validate_spawn_value(value, validator=None):
         any (any): The (potentially pre-processed value to use for this prototype key)
 
     """
+    value = protfunc_parser(value)
     validator = validator if validator else lambda o: o
     if callable(value):
         return validator(value())
