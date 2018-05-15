@@ -270,6 +270,9 @@ class DbPrototype(DefaultScript):
         self.desc = "A prototype"     # prototype_desc
 
 
+
+
+
 def save_db_prototype(caller, prototype, key=None, desc=None, tags=None, locks="", delete=False):
     """
     Store a prototype persistently.
@@ -660,6 +663,28 @@ def _get_prototype(dic, prot, protparents):
     prot.update(dic)
     prot.pop("prototype", None)  # we don't need this anymore
     return prot
+
+
+def batch_update_objects_with_prototype(prototype, objects=None):
+    """
+    Update existing objects with the latest version of the prototype.
+
+    Args:
+        prototype (str or dict): Either the `prototype_key` to use or the
+            prototype dict itself.
+        objects (list): List of objects to update. If not given, query for these
+            objects using the prototype's `prototype_key`.
+    Returns:
+        changed (int): The number of objects that had changes applied to them.
+    """
+    prototype_key = prototype if isinstance(prototype, basestring) else prototype['prototype_key']
+    prototype_obj = search_db_prototype(prototype_key, return_queryset=True)
+    prototype_obj = prototype_obj[0] if prototype_obj else None
+    new_prototype = prototype_obj.db.prototype
+
+
+
+    return 0
 
 
 def _batch_create_object(*objparams):
