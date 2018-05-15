@@ -13,10 +13,7 @@ from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
-from evennia.utils.spawner import (spawn, search_prototype, list_prototypes,
-                                   save_db_prototype, validate_prototype,
-                                   delete_db_prototype, PermissionError, start_olc,
-                                   prototype_to_str)
+from evennia.utils import spawner
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2792,12 +2789,6 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
 
-#
-# To use the prototypes with the @spawn function set
-#   PROTOTYPE_MODULES = ["commands.prototypes"]
-# Reload the server and the prototypes should be available.
-#
-
 
 class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
@@ -2810,6 +2801,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       @spawn/search [key][;tag[,tag]]
       @spawn/list [tag, tag]
       @spawn/show [<key>]
+      @spawn/update <key>
 
       @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>
       @spawn/menu [<key>]
@@ -2823,6 +2815,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       show, examine - inspect prototype by key. If not given, acts like list.
       save - save a prototype to the database. It will be listable by /list.
       delete - remove a prototype from database, if allowed to.
+      update - find existing objects with the same prototype_key and update
+               them with latest version of given prototype. If given with /save,
+               will auto-update all objects with the old version of the prototype
+               without asking first.
       menu, olc - create/manipulate prototype in a menu interface.
 
     Example:
@@ -2843,7 +2839,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       |waliases    |n - string or list of strings.
       |wndb_|n<name>  - value of a nattribute (ndb_ is stripped)
 
-      |wprototype_key|n   - name of this prototype. Used to store/retrieve from db
+      |wprototype_key|n   - name of this prototype. Unique. Used to store/retrieve from db
+                            and update existing prototyped objects if desired.
       |wprototype_desc|n  - desc of this prototype. Used in listings
       |wprototype_locks|n - locks of this prototype. Limits who may use prototype
       |wprototype_tags|n  - tags of this prototype. Used to find prototype
@@ -2858,7 +2855,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     key = "@spawn"
     aliases = ["@olc"]
-    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc")
+    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc", "update")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
@@ -2890,7 +2887,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                                     "use the 'exec' prototype key.")
                     return None
                 try:
-                    validate_prototype(prototype)
+                    spawner.validate_prototype(prototype)
                 except RuntimeError as err:
                     self.caller.msg(str(err))
                     return
@@ -2899,9 +2896,9 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         def _search_show_prototype(query, prototypes=None):
             # prototype detail
             if not prototypes:
-                prototypes = search_prototype(key=query)
+                prototypes = spawner.search_prototype(key=query)
             if prototypes:
-                return "\n".join(prototype_to_str(prot) for prot in prototypes)
+                return "\n".join(spawner.prototype_to_str(prot) for prot in prototypes)
             else:
                 return False
 
@@ -2912,7 +2909,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             prototype = None
             if self.lhs:
                 key = self.lhs
-                prototype = search_prototype(key=key, return_meta=True)
+                prototype = spawner.search_prototype(key=key, return_meta=True)
                 if len(prototype) > 1:
                     caller.msg("More than one match for {}:\n{}".format(
                         key, "\n".join(proto.get('prototype_key', '') for proto in prototype)))
@@ -2920,7 +2917,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 elif prototype:
                     # one match
                     prototype = prototype[0]
-            start_olc(caller, session=self.session, prototype=prototype)
+            spawner.start_olc(caller, session=self.session, prototype=prototype)
             return
 
         if 'search' in self.switches:
@@ -2932,7 +2929,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 if ';' in self.args:
                     key, tags = (part.strip().lower() for part in self.args.split(";", 1))
                     tags = [tag.strip() for tag in tags.split(",")] if tags else None
-                EvMore(caller, unicode(list_prototypes(caller, key=key, tags=tags)),
+                EvMore(caller, unicode(spawner.list_prototypes(caller, key=key, tags=tags)),
                        exit_on_lastpage=True)
                 return
 
@@ -2950,29 +2947,9 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         if 'list' in self.switches:
             # for list, all optional arguments are tags
-            EvMore(caller, unicode(list_prototypes(caller,
+            EvMore(caller, unicode(spawner.list_prototypes(caller,
                    tags=self.lhslist)), exit_on_lastpage=True)
             return
-
-        if 'delete' in self.switches:
-            # remove db-based prototype
-            matchstring = _search_show_prototype(self.args)
-            if matchstring:
-                question = "\nDo you want to continue deleting? [Y]/N"
-                string = "|rDeleting prototype:|n\n{}".format(matchstring)
-                answer = yield(string + question)
-                if answer.lower() in ["n", "no"]:
-                    caller.msg("|rDeletion cancelled.|n")
-                    return
-                try:
-                    success = delete_db_prototype(caller, self.args)
-                except PermissionError as err:
-                    caller.msg("|rError deleting:|R {}|n".format(err))
-                caller.msg("Deletion {}.".format(
-                    'successful' if success else 'failed (does the prototype exist?)'))
-                return
-            else:
-                caller.msg("Could not find prototype '{}'".format(key))
 
         if 'save' in self.switches:
             # store a prototype to the database store
@@ -3015,6 +2992,12 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             if not prototype:
                 return
 
+            # inject the prototype_* keys into the prototype to save
+            prototype['prototype_key'] = prototype.get('prototype_key', key)
+            prototype['prototype_desc'] = prototype.get('prototype_desc', desc)
+            prototype['prototype_tags'] = prototype.get('prototype_tags', tags)
+            prototype['prototype_locks'] = prototype.get('prototype_locks', lockstring)
+
             # present prototype to save
             new_matchstring = _search_show_prototype("", prototypes=[prototype])
             string = "|yCreating new prototype:|n\n{}".format(new_matchstring)
@@ -3034,7 +3017,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                prot = save_db_prototype(
+                prot = spawner.save_db_prototype(
                     caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
                 if not prot:
                     caller.msg("|rError saving:|R {}.|n".format(key))
@@ -3046,13 +3029,67 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 caller.msg("|rError saving:|R {}|n".format(err))
                 return
             caller.msg("|gSaved prototype:|n {}".format(key))
+
+            # check if we want to update existing objects
+            existing_objects = spawner.search_objects_with_prototype(key)
+            if existing_objects:
+                if 'update' not in self.switches:
+                    n_existing = len(existing_objects)
+                    slow = " (note that this may be slow)" if n_existing > 10 else ""
+                    string = ("There are {} objects already created with an older version "
+                              "of prototype {}. Should it be re-applied to them{}? [Y]/N".format(
+                                  n_existing, key, slow))
+                    answer = yield(string)
+                    if answer.lower() in ["n", "no"]:
+                        caller.msg("|rNo update was done of existing objects. "
+                                   "Use @spawn/update <key> to apply later as needed.|n")
+                        return
+                n_updated = spawner.batch_update_objects_with_prototype(existing_objects, key)
+                caller.msg("{} objects were updated.".format(n_updated))
             return
 
         if not self.args:
-            ncount = len(search_prototype())
+            ncount = len(spawner.search_prototype())
             caller.msg("Usage: @spawn <prototype-key> or {{key: value, ...}}"
                        "\n ({} existing prototypes. Use /list to inspect)".format(ncount))
             return
+
+        if 'delete' in self.switches:
+            # remove db-based prototype
+            matchstring = _search_show_prototype(self.args)
+            if matchstring:
+                string = "|rDeleting prototype:|n\n{}".format(matchstring)
+                question = "\nDo you want to continue deleting? [Y]/N"
+                answer = yield(string + question)
+                if answer.lower() in ["n", "no"]:
+                    caller.msg("|rDeletion cancelled.|n")
+                    return
+                try:
+                    success = spawner.delete_db_prototype(caller, self.args)
+                except PermissionError as err:
+                    caller.msg("|rError deleting:|R {}|n".format(err))
+                caller.msg("Deletion {}.".format(
+                    'successful' if success else 'failed (does the prototype exist?)'))
+                return
+            else:
+                caller.msg("Could not find prototype '{}'".format(key))
+
+        if 'update' in self.switches:
+            # update existing prototypes
+            key = self.args.strip().lower()
+            existing_objects = spawner.search_objects_with_prototype(key)
+            if existing_objects:
+                n_existing = len(existing_objects)
+                slow = " (note that this may be slow)" if n_existing > 10 else ""
+                string = ("There are {} objects already created with an older version "
+                          "of prototype {}. Should it be re-applied to them{}? [Y]/N".format(
+                              n_existing, key, slow))
+                answer = yield(string)
+                if answer.lower() in ["n", "no"]:
+                    caller.msg("|rUpdate cancelled.")
+                    return
+                n_updated = spawner.batch_update_objects_with_prototype(existing_objects, key)
+                caller.msg("{} objects were updated.".format(n_updated))
 
         # A direct creation of an object from a given prototype
 
@@ -3066,7 +3103,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if isinstance(prototype, basestring):
             # A prototype key we are looking to apply
             key = prototype
-            prototypes = search_prototype(prototype)
+            prototypes = spawner.search_prototype(prototype)
             nprots = len(prototypes)
             if not prototypes:
                 caller.msg("No prototype named '%s'." % prototype)
@@ -3087,7 +3124,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         # proceed to spawning
         try:
-            for obj in spawn(prototype):
+            for obj in spawner.spawn(prototype):
                 self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
         except RuntimeError as err:
             caller.msg(err)
