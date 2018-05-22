@@ -326,19 +326,19 @@ class TBMagicCharacter(DefaultCharacter):
         """
         Called once, when this object is first created. This is the
         normal hook to overload for most object types.
-        """
-        self.db.max_hp = 100  # Set maximum HP to 100
-        self.db.hp = self.db.max_hp  # Set current HP to maximum
-        self.db.spells_known = [] # Set empty spells known list
-        self.db.max_mp = 20 # Set maximum MP to 20
-        self.db.mp = self.db.max_mp # Set current MP to maximum
-        """
+        
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
 
         You may want to expand this to include various 'stats' that
         can be changed at creation and factor into combat calculations.
         """
+        self.db.max_hp = 100  # Set maximum HP to 100
+        self.db.hp = self.db.max_hp  # Set current HP to maximum
+        self.db.spells_known = [] # Set empty spells known list
+        self.db.max_mp = 20 # Set maximum MP to 20
+        self.db.mp = self.db.max_mp # Set current MP to maximum
+        
 
     def at_before_move(self, destination):
         """
@@ -795,6 +795,13 @@ class CmdCast(MuxCommand):
     def func(self):
         """
         This performs the actual command.
+        
+        Note: This is a quite long command, since it has to cope with all
+        the different circumstances in which you may or may not be able
+        to cast a spell. None of the spell's effects are handled by the
+        command - all the command does is verify that the player's input
+        is valid for the spell being cast and then call the spell's
+        function.
         """
         caller = self.caller
         
@@ -945,14 +952,6 @@ class CmdCast(MuxCommand):
             spelldata["spellfunc"](caller, spell_to_cast, spell_targets, spelldata["cost"], **kwargs)
         except Exception:
             log_trace("Error in callback for spell: %s." % spell_to_cast)
-        """
-        Note: This is a quite long command, since it has to cope with all
-        the different circumstances in which you may or may not be able
-        to cast a spell. None of the spell's effects are handled by the
-        command - all the command does is verify that the player's input
-        is valid for the spell being cast and then call the spell's
-        function.
-        """
         
 
 class CmdRest(Command):
@@ -979,9 +978,7 @@ class CmdRest(Command):
         self.caller.db.hp = self.caller.db.max_hp  # Set current HP to maximum
         self.caller.db.mp = self.caller.db.max_mp  # Set current MP to maximum
         self.caller.location.msg_contents("%s rests to recover HP and MP." % self.caller)
-        """
-        You'll probably want to replace this with your own system for recovering HP and MP.
-        """
+        # You'll probably want to replace this with your own system for recovering HP and MP.
         
 class CmdStatus(Command):
     """
