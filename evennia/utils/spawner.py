@@ -235,7 +235,7 @@ def validate_spawn_value(value, validator=None):
     Analyze the value and produce a value for use at the point of spawning.
 
     Args:
-        value (any): This can be:j
+        value (any): This can be:
             callable - will be called as callable()
             (callable, (args,)) - will be called as callable(*args)
             other - will be assigned depending on the variable type
@@ -602,6 +602,44 @@ def prototype_to_str(prototype):
     return header + proto
 
 
+def prototype_from_object(obj):
+    """
+    Guess a minimal prototype from an existing object.
+
+    Args:
+        obj (Object): An object to analyze.
+
+    Returns:
+        prototype (dict): A prototype estimating the current state of the object.
+
+    """
+    # first, check if this object already has a prototype
+
+    prot = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
+    prot = search_prototype(prot)
+    if not prot or len(prot) > 1:
+        # no unambiguous prototype found - build new prototype
+        prot = {}
+        prot['prototype_key'] = "From-Object-{}-{}".format(
+                obj.key, hashlib.md5(str(time.time())).hexdigest()[:6])
+        prot['prototype_desc'] = "Built from {}".format(str(obj))
+        prot['prototype_locks'] = "use:all();edit:all()"
+
+    prot['key'] = obj.db_key or hashlib.md5(str(time.time())).hexdigest()[:6]
+    prot['location'] = obj.db_location
+    prot['home'] = obj.db_home
+    prot['destination'] = obj.db_destination
+    prot['typeclass'] = obj.db_typeclass_path
+    prot['locks'] = obj.locks.all()
+    prot['permissions'] = obj.permissions.get()
+    prot['aliases'] = obj.aliases.get()
+    prot['tags'] = [(tag.key, tag.category, tag.data)
+                    for tag in obj.tags.get(return_tagobj=True, return_list=True)]
+    prot['attrs'] = [(attr.key, attr.value, attr.category, attr.locks)
+                     for attr in obj.attributes.get(return_obj=True, return_list=True)]
+
+    return prot
+
 # Spawner mechanism
 
 
@@ -665,26 +703,137 @@ def _get_prototype(dic, prot, protparents):
     return prot
 
 
-def batch_update_objects_with_prototype(prototype, objects=None):
+def prototype_diff_from_object(prototype, obj):
+    """
+    Get a simple diff for a prototype compared to an object which may or may not already have a
+    prototype (or has one but changed locally). For more complex migratations a manual diff may be
+    needed.
+
+    Args:
+        prototype (dict): Prototype.
+        obj (Object): Object to
+
+    Returns:
+        diff (dict): Mapping for every prototype key: {"keyname": "REMOVE|UPDATE|KEEP", ...}
+
+    """
+    prot1 = prototype
+    prot2 = prototype_from_object(obj)
+
+    diff = {}
+    for key, value in prot1.items():
+        diff[key] = "KEEP"
+        if key in prot2:
+            if callable(prot2[key]) or value != prot2[key]:
+                diff[key] = "UPDATE"
+        elif key not in prot2:
+            diff[key] = "REMOVE"
+
+    return diff
+
+
+def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
     """
     Update existing objects with the latest version of the prototype.
 
     Args:
         prototype (str or dict): Either the `prototype_key` to use or the
             prototype dict itself.
-        objects (list): List of objects to update. If not given, query for these
+        diff (dict, optional): This a diff structure that describes how to update the protototype. If
+            not given this will be constructed from the first object found.
+        objects (list, optional): List of objects to update. If not given, query for these
             objects using the prototype's `prototype_key`.
     Returns:
         changed (int): The number of objects that had changes applied to them.
+
     """
     prototype_key = prototype if isinstance(prototype, basestring) else prototype['prototype_key']
     prototype_obj = search_db_prototype(prototype_key, return_queryset=True)
     prototype_obj = prototype_obj[0] if prototype_obj else None
     new_prototype = prototype_obj.db.prototype
+    objs = ObjectDB.objects.get_by_tag(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
 
+    if not objs:
+        return 0
 
+    if not diff:
+        diff = prototype_diff_from_object(new_prototype, objs[0])
 
-    return 0
+    changed = 0
+    for obj in objs:
+        do_save = False
+        for key, directive in diff.items():
+            val = new_prototype[key]
+            if directive in ('UPDATE', 'REPLACE'):
+                do_save = True
+                if key == 'key':
+                    obj.db_key = validate_spawn_value(val, str)
+                elif key == 'typeclass':
+                    obj.db_typeclass_path = validate_spawn_value(val, str)
+                elif key == 'location':
+                    obj.db_location = validate_spawn_value(val, _to_obj)
+                elif key == 'home':
+                    obj.db_home = validate_spawn_value(val, _to_obj)
+                elif key == 'destination':
+                    obj.db_destination = validate_spawn_value(val, _to_obj)
+                elif key == 'locks':
+                    if directive == 'REPLACE':
+                        obj.locks.clear()
+                    obj.locks.add(validate_spawn_value(val, str))
+                elif key == 'permissions':
+                    if directive == 'REPLACE':
+                        obj.permissions.clear()
+                    obj.permissions.batch_add(validate_spawn_value(val, make_iter))
+                elif key == 'aliases':
+                    if directive == 'REPLACE':
+                        obj.aliases.clear()
+                    obj.aliases.batch_add(validate_spawn_value(val, make_iter))
+                elif key == 'tags':
+                    if directive == 'REPLACE':
+                        obj.tags.clear()
+                    obj.tags.batch_add(validate_spawn_value(val, make_iter))
+                elif key == 'attrs':
+                    if directive == 'REPLACE':
+                        obj.attributes.clear()
+                    obj.attributes.batch_add(validate_spawn_value(val, make_iter))
+                elif key == 'exec':
+                    # we don't auto-rerun exec statements, it would be huge security risk!
+                    pass
+                else:
+                    obj.attributes.add(key, validate_spawn_value(val, _to_obj))
+            elif directive == 'REMOVE':
+                do_save = True
+                if key == 'key':
+                    obj.db_key = ''
+                elif key == 'typeclass':
+                    # fall back to default
+                    obj.db_typeclass_path = settings.BASE_OBJECT_TYPECLASS
+                elif key == 'location':
+                    obj.db_location = None
+                elif key == 'home':
+                    obj.db_home = None
+                elif key == 'destination':
+                    obj.db_destination = None
+                elif key == 'locks':
+                    obj.locks.clear()
+                elif key == 'permissions':
+                    obj.permissions.clear()
+                elif key == 'aliases':
+                    obj.aliases.clear()
+                elif key == 'tags':
+                    obj.tags.clear()
+                elif key == 'attrs':
+                    obj.attributes.clear()
+                elif key == 'exec':
+                    # we don't auto-rerun exec statements, it would be huge security risk!
+                    pass
+                else:
+                    obj.attributes.remove(key)
+            if do_save:
+                changed += 1
+                obj.save()
+
+    return changed
 
 
 def _batch_create_object(*objparams):
@@ -835,7 +984,7 @@ def spawn(*prototypes, **kwargs):
         execs = validate_spawn_value(val, make_iter)
 
         # extract ndb assignments
-        nattributes = dict((key.split("_", 1)[1], validate_spawn_value(val, _to_obj))
+        nattribute = dict((key.split("_", 1)[1], validate_spawn_value(val, _to_obj))
                            for key, val in prot.items() if key.startswith("ndb_"))
 
         # the rest are attributes
