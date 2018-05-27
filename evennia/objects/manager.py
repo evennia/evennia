@@ -76,10 +76,14 @@ class ObjectDBManager(TypedObjectManager):
         # simplest case - search by dbref
         dbref = self.dbref(ostring)
         if dbref:
-            return dbref
+            try:
+                return self.get(id=dbref)
+            except self.model.DoesNotExist:
+                pass
+
         # not a dbref. Search by name.
-        cand_restriction = candidates is not None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates)
-                                                                if obj]) or Q()
+        cand_restriction = candidates is not None and Q(
+                pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         if exact:
             return self.filter(cand_restriction & Q(db_account__username__iexact=ostring))
         else:  # fuzzy matching

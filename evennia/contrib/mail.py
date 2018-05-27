@@ -253,7 +253,7 @@ class CmdMail(default_cmds.MuxCommand):
                     index += 1
 
                 table.reformat_column(0, width=6)
-                table.reformat_column(1, width=17)
+                table.reformat_column(1, width=18)
                 table.reformat_column(2, width=34)
                 table.reformat_column(3, width=13)
                 table.reformat_column(4, width=7)

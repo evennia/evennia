@@ -8,20 +8,29 @@
 
 
 {% block client %}
+<div id="toolbar">
+  <button id="optionsbutton" type="button" aria-haspopup="true" aria-owns="#optionsdialog">&#x2699;<span class="sr-only sr-only-focusable">Settings</span></button>
+  <button id="splitbutton" type="button" aria-haspopup="true" aria-owns="#optionsdialog">&#x21f9;<span class="sr-only sr-only-focusable">Splits</span></button>
+  <button id="panebutton" type="button" aria-haspopup="true" aria-owns="#optionsdialog">&#x2699;<span class="sr-only sr-only-focusable">Splits</span></button>
+  <button id="undobutton" type="button" aria-haspopup="true" aria-owns="#optionsdialog">&#x21B6;<span class="sr-only sr-only-focusable">Splits</span></button>
+</div>
 
-<div id="wrapper">
-    <div id="toolbar">
-        <button id="optionsbutton" type="button" class="hidden">&#x2699;</button>
-    </div>
-    <div id="messagewindow" role="log"></div>
-    <div id="inputform">
-        <div id="prompt"></div>
-        <div id="inputcontrol">
-            <textarea id="inputfield" type="text"></textarea>
-            <input id="inputsend" type="button" value="&gt;"/>
+<!-- The "Main" Content -->
+<div id="main"  class="split split-vertical" data-role-default>
+  <div id="main-sub" class="split-sub">
+    <div id="messagewindow"></div>
+  </div>
+</div>
+<!-- The "Input" Pane -->
+<div id="input" class="split split-vertical" data-role-input data-update-append></div>
+
+<!-- Basic UI Components -->
+<div id="splitdialog" class="dialog">
+    <div class="dialogtitle">Split Pane<span class="dialogclose">&times;</span></div>
+    <div class="dialogcontentparent">
+        <div id="splitdialogcontent" class="dialogcontent">
         </div>
     </div>
-    <div id="inputsizer"></div>
 </div>
 
 <div id="optionsdialog" class="dialog">
@@ -47,4 +56,29 @@
     </div>
 </div>
 
+<script type="text/html" id="split-template">
+  <div class="split content<%#horizontal%> split-horizontal<%/horizontal%>" id='<%id%>'>
+
+  </div>
+</script>
+
+<script type="text/html" id="output-template">
+  <div id="<%id%>" role="log" data-role-output data-update-append data-tags='[<%#tags%>"<%.%>", <%/tags%>]'></div>
+</script>
+
+<script type="text/html" id="input-template">
+  <div id="inputform" class="wrapper">
+    <div id="prompt" class="prompt">
+    </div>
+    <div id="inputcontrol" class="input-group">
+      <textarea id="inputfield" type="text" class="form-control"></textarea>
+      <span class="input-group-btn">
+        <button class="btn btn-large btn-outline-primary" id="inputsend" type="button" value="">&gt;</button>
+      </span>
+    </div>
+  </div>
+</script>
+
+{% endblock %}
+{% block scripts %}
 {% endblock %}

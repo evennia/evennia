@@ -21,7 +21,7 @@ from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import (variable_from_module, is_iter,
                                  to_str, to_unicode,
-                                 make_iter,
+                                 make_iter, delay,
                                  callables_from_module)
 from evennia.utils.inlinefuncs import parse_inlinefunc
 
@@ -58,6 +58,12 @@ SSYNC = chr(8)        # server session sync
 SCONN = chr(11)        # server portal connection (for bots)
 PCONNSYNC = chr(12)   # portal post-syncing session
 PDISCONNALL = chr(13)  # portal session discnnect all
+SRELOAD = chr(14)      # server reloading (have portal start a new server)
+SSTART = chr(15)       # server start (portal must already be running anyway)
+PSHUTD = chr(16)       # portal (+server) shutdown
+SSHUTD = chr(17)       # server shutdown
+PSTATUS = chr(18)      # ping server or portal status
+SRESET = chr(19)       # server shutdown in reset mode
 
 # i18n
 from django.utils.translation import ugettext as _
@@ -65,6 +71,7 @@ from django.utils.translation import ugettext as _
 _SERVERNAME = settings.SERVERNAME
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_DELAY_CMD_LOGINSTART = settings.DELAY_CMD_LOGINSTART
 _MAX_SERVER_COMMANDS_PER_SECOND = 100.0
 _MAX_SESSION_COMMANDS_PER_SECOND = 5.0
 _MODEL_MAP = None
@@ -274,6 +281,16 @@ class ServerSessionHandler(SessionHandler):
         self.server = None
         self.server_data = {"servername": _SERVERNAME}
 
+    def _run_cmd_login(self, session):
+        """
+        Launch the CMD_LOGINSTART command. This is wrapped
+        for delays.
+
+        """
+        if not session.logged_in:
+            self.data_in(session, text=[[CMD_LOGINSTART], {}])
+
+
     def portal_connect(self, portalsessiondata):
         """
         Called by Portal when a new session has connected.
@@ -309,8 +326,9 @@ class ServerSessionHandler(SessionHandler):
                 sess.logged_in = False
                 sess.uid = None
 
-        # show the first login command
-        self.data_in(sess, text=[[CMD_LOGINSTART], {}])
+        # show the first login command, may delay slightly to allow
+        # the handshakes to finish.
+        delay(_DELAY_CMD_LOGINSTART, self._run_cmd_login, sess)
 
     def portal_session_sync(self, portalsessiondata):
         """
@@ -361,8 +379,10 @@ class ServerSessionHandler(SessionHandler):
             self[sessid] = sess
             sess.at_sync()
 
+        mode = 'reload'
+
         # tell the server hook we synced
-        self.server.at_post_portal_sync()
+        self.server.at_post_portal_sync(mode)
         # announce the reconnection
         self.announce_all(_(" ... Server restarted."))
 
@@ -420,13 +440,28 @@ class ServerSessionHandler(SessionHandler):
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SCONN,
                                                          protocol_path=protocol_path, config=configdict)
 
+    def portal_restart_server(self):
+        """
+        Called by server when reloading. We tell the portal to start a new server instance.
+
+        """
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SRELOAD)
+
+    def portal_reset_server(self):
+        """
+        Called by server when reloading. We tell the portal to start a new server instance.
+
+        """
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SRESET)
+
     def portal_shutdown(self):
         """
-        Called by server when shutting down the portal.
+        Called by server when it's time to shut down (the portal will shut us down and then shut
+        itself down)
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
-                                                         operation=SSHUTD)
+                                                         operation=PSHUTD)
 
     def login(self, session, account, force=False, testmode=False):
         """
@@ -538,6 +573,20 @@ class ServerSessionHandler(SessionHandler):
                                                                 sessiondata=sessdata,
                                                                 clean=False)
 
+    def session_portal_partial_sync(self, session_data):
+        """
+        Call to make a partial update of the session, such as only a particular property.
+
+        Args:
+            session_data (dict): Store `{sessid: {property:value}, ...}` defining one or
+                more sessions in detail.
+
+        """
+        return self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION,
+                                                                operation=SSYNC,
+                                                                sessiondata=session_data,
+                                                                clean=False)
+
     def disconnect_all_sessions(self, reason="You have been disconnected."):
         """
         Cleanly disconnect all of the connected sessions.
@@ -565,10 +614,14 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = curr_session.uid
+        # we can't compare sessions directly since this will compare addresses and
+        # mean connecting from the same host would not catch duplicates
+        sid = id(curr_session)
         doublet_sessions = [sess for sess in self.values()
                             if sess.logged_in and
                             sess.uid == uid and
-                            sess != curr_session]
+                            id(sess) != sid]
+
         for session in doublet_sessions:
             self.disconnect(session, reason)
 

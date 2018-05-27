@@ -89,10 +89,14 @@ DefaultLock:   Exits:          controls who may traverse the exit to
 """
 from __future__ import print_function
 
+from ast import literal_eval
 from django.conf import settings
 from evennia.utils import utils
 
 _PERMISSION_HIERARCHY = [pe.lower() for pe in settings.PERMISSION_HIERARCHY]
+# also accept different plural forms
+_PERMISSION_HIERARCHY_PLURAL = [pe + 's' if not pe.endswith('s') else pe
+                                for pe in _PERMISSION_HIERARCHY]
 
 
 def _to_account(accessing_obj):
@@ -158,49 +162,77 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
 
     """
     # this allows the perm_above lockfunc to make use of this function too
-    gtmode = kwargs.pop("_greater_than", False)
-
     try:
         permission = args[0].lower()
-        perms_object = [p.lower() for p in accessing_obj.permissions.all()]
+        perms_object = accessing_obj.permissions.all()
     except (AttributeError, IndexError):
         return False
 
-    if utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject") and accessing_obj.account:
-        account = accessing_obj.account
-        # we strip eventual plural forms, so Builders == Builder
-        perms_account = [p.lower().rstrip("s") for p in account.permissions.all()]
+    gtmode = kwargs.pop("_greater_than", False)
+    is_quell = False
+
+    account = (utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject") and
+               accessing_obj.account)
+    # check object perms (note that accessing_obj could be an Account too)
+    perms_account = []
+    if account:
+        perms_account = account.permissions.all()
         is_quell = account.attributes.get("_quell")
 
-        if permission in _PERMISSION_HIERARCHY:
-            # check hierarchy without allowing escalation obj->account
-            hpos_target = _PERMISSION_HIERARCHY.index(permission)
-            hpos_account = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_account]
+    # Check hirarchy matches; handle both singular/plural forms in hierarchy
+    hpos_target = None
+    if permission in _PERMISSION_HIERARCHY:
+        hpos_target = _PERMISSION_HIERARCHY.index(permission)
+    if permission.endswith('s') and permission[:-1] in _PERMISSION_HIERARCHY:
+        hpos_target = _PERMISSION_HIERARCHY.index(permission[:-1])
+    if hpos_target is not None:
+        # hieratchy match
+        hpos_account = -1
+        hpos_object = -1
+
+        if account:
+            # we have an account puppeting this object. We must check what perms it has
+            perms_account_single = [p[:-1] if p.endswith('s') else p for p in perms_account]
+            hpos_account = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
+                            if hperm in perms_account_single]
             hpos_account = hpos_account and hpos_account[-1] or -1
-            if is_quell:
-                hpos_object = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY) if hperm in perms_object]
-                hpos_object = hpos_object and hpos_object[-1] or -1
-                if gtmode:
-                    return hpos_target < min(hpos_account, hpos_object)
-                else:
-                    return hpos_target <= min(hpos_account, hpos_object)
-            elif gtmode:
+
+        if not account or is_quell:
+            # only get the object-level perms if there is no account or quelling
+            perms_object_single = [p[:-1] if p.endswith('s') else p for p in perms_object]
+            hpos_object = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
+                           if hperm in perms_object_single]
+            hpos_object = hpos_object and hpos_object[-1] or -1
+
+        if account and is_quell:
+            # quell mode: use smallest perm from account and object
+            if gtmode:
+                return hpos_target < min(hpos_account, hpos_object)
+            else:
+                return hpos_target <= min(hpos_account, hpos_object)
+        elif account:
+            # use account perm
+            if gtmode:
                 return hpos_target < hpos_account
             else:
                 return hpos_target <= hpos_account
-        elif not is_quell and permission in perms_account:
-            # if we get here, check account perms first, otherwise
-            # continue as normal
+        else:
+            # use object perm
+            if gtmode:
+                return hpos_target < hpos_object
+            else:
+                return hpos_target <= hpos_object
+    else:
+        # no hierarchy match - check direct matches
+        if account:
+            # account exists, check it first unless quelled
+            if is_quell and permission in perms_object:
+                return True
+            elif permission in perms_account:
+                return True
+        elif permission in perms_object:
             return True
 
-    if permission in perms_object:
-        # simplest case - we have direct match
-        return True
-    if permission in _PERMISSION_HIERARCHY:
-        # check if we have a higher hierarchy position
-        hpos_target = _PERMISSION_HIERARCHY.index(permission)
-        return any(1 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
-                   if hperm in perms_object and hpos_target < hpos)
     return False
 
 
@@ -228,7 +260,6 @@ def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     to all ranks higher up in the hierarchy.
     """
     return perm(_to_account(accessing_obj), accessed_obj, *args, **kwargs)
-
 
 def pperm_above(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -482,7 +513,7 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
         accessing_obj = accessing_obj.obj
     tagkey = args[0] if args else None
     category = args[1] if len(args) > 1 else None
-    return accessing_obj.tags.get(tagkey, category=category)
+    return bool(accessing_obj.tags.get(tagkey, category=category))
 
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
@@ -494,7 +525,7 @@ def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     Only true if accessed_obj has the specified tag and optional
     category.
     """
-    return accessed_obj.tags.get(*args)
+    return bool(accessed_obj.tags.get(*args))
 
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):
@@ -592,7 +623,9 @@ def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
       serversetting(IRC_ENABLED)
       serversetting(BASE_SCRIPT_PATH, ['types'])
 
-    A given True/False or integers will be converted properly.
+    A given True/False or integers will be converted properly. Note that
+    everything will enter this function as strings, so they have to be
+    unpacked to their real value. We only support basic properties.
     """
     if not args or not args[0]:
         return False
@@ -602,12 +635,12 @@ def serversetting(accessing_obj, accessed_obj, *args, **kwargs):
     else:
         setting, val = args[0], args[1]
     # convert
-    if val == 'True':
-        val = True
-    elif val == 'False':
-        val = False
-    elif val.isdigit():
-        val = int(val)
+    try:
+        val = literal_eval(val)
+    except Exception:
+        # we swallow errors here, lockfuncs has noone to report to
+        return False
+
     if setting in settings._wrapped.__dict__:
         return settings._wrapped.__dict__[setting] == val
     return False

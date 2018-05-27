@@ -245,7 +245,7 @@ class AttributeHandler(object):
                 found from cache or database.
         Notes:
             When given a category only, a search for all objects
-            of that cateogory is done and a the category *name* is is
+            of that cateogory is done and the category *name* is
             stored. This tells the system on subsequent calls that the
             list of cached attributes of this category is up-to-date
             and that the cache can be queried for category matches
@@ -282,6 +282,8 @@ class AttributeHandler(object):
                          "attribute__db_attrtype": self._attrtype,
                          "attribute__db_key__iexact": key.lower(),
                          "attribute__db_category__iexact": category.lower() if category else None}
+                if not self.obj.pk:
+                    return []
                 conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
                 if conn:
                     attr = conn[0].attribute
