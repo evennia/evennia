@@ -670,7 +670,7 @@ class TestGenderSub(CommandTest):
         char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
         txt = "Test |p gender"
         self.assertEqual(gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender")
-              
+
 # test health bar contrib
 
 from evennia.contrib import health_bar
@@ -697,7 +697,7 @@ class TestMail(CommandTest):
                   "You have received a new @mail from TestAccount2(account 2)|You sent your message.", caller=self.account2)
         self.call(mail.CmdMail(), "TestAccount=Message 1", "You sent your message.", caller=self.account2)
         self.call(mail.CmdMail(), "TestAccount=Message 2", "You sent your message.", caller=self.account2)
-        self.call(mail.CmdMail(), "", "| ID:   From:            Subject:", caller=self.account)
+        self.call(mail.CmdMail(), "", "| ID:   From:             Subject:", caller=self.account)
         self.call(mail.CmdMail(), "2", "From: TestAccount2", caller=self.account)
         self.call(mail.CmdMail(), "/forward TestAccount2 = 1/Forward message", "You sent your message.|Message forwarded.", caller=self.account)
         self.call(mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.account)
@@ -798,7 +798,7 @@ from evennia.contrib import talking_npc
 class TestTalkingNPC(CommandTest):
     def test_talkingnpc(self):
         npc = create_object(talking_npc.TalkingNPC, key="npctalker", location=self.room1)
-        self.call(talking_npc.CmdTalk(), "", "(You walk up and talk to Char.)|")
+        self.call(talking_npc.CmdTalk(), "", "(You walk up and talk to Char.)")
         npc.delete()
 
 
@@ -824,9 +824,30 @@ class TestTutorialWorldMob(EvenniaTest):
 
 
 from evennia.contrib.tutorial_world import objects as tutobjects
+from mock.mock import MagicMock
+from twisted.trial.unittest import TestCase as TwistedTestCase
+
+from twisted.internet.base import DelayedCall
+DelayedCall.debug = True
 
 
-class TestTutorialWorldObjects(CommandTest):
+def _mockdelay(tim, func, *args, **kwargs):
+    func(*args, **kwargs)
+    return MagicMock()
+
+
+def _mockdeferLater(reactor, timedelay, callback, *args, **kwargs):
+    callback(*args, **kwargs)
+    return MagicMock()
+
+
+class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
+
+    def setUp(self):
+        self.patch(sys.modules['evennia.contrib.tutorial_world.objects'], 'delay', _mockdelay)
+        self.patch(sys.modules['evennia.scripts.taskhandler'], 'deferLater', _mockdeferLater)
+        super(TestTutorialWorldObjects, self).setUp()
+
     def test_tutorialobj(self):
         obj1 = create_object(tutobjects.TutorialObject, key="tutobj")
         obj1.reset()
@@ -848,10 +869,7 @@ class TestTutorialWorldObjects(CommandTest):
 
     def test_lightsource(self):
         light = create_object(tutobjects.LightSource, key="torch", location=self.room1)
-        self.call(tutobjects.CmdLight(), "", "You light torch.", obj=light)
-        light._burnout()
-        if hasattr(light, "deferred"):
-            light.deferred.cancel()
+        self.call(tutobjects.CmdLight(), "", "A torch on the floor flickers and dies.|You light torch.", obj=light)
         self.assertFalse(light.pk)
 
     def test_crumblingwall(self):
@@ -869,12 +887,12 @@ class TestTutorialWorldObjects(CommandTest):
                   "You shift the weedy green root upwards.|Holding aside the root you think you notice something behind it ...", obj=wall)
         self.call(tutobjects.CmdPressButton(), "",
                   "You move your fingers over the suspicious depression, then gives it a decisive push. First", obj=wall)
-        self.assertTrue(wall.db.button_exposed)
-        self.assertTrue(wall.db.exit_open)
+        # we patch out the delay, so these are closed immediately
+        self.assertFalse(wall.db.button_exposed)
+        self.assertFalse(wall.db.exit_open)
         wall.reset()
-        if hasattr(wall, "deferred"):
-            wall.deferred.cancel()
         wall.delete()
+        return wall.deferred
 
     def test_weapon(self):
         weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
@@ -948,7 +966,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_basic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
-        
+
     # Test equipment commands
     def test_turnbattleequipcmd(self):
         # Start with equip module specific commands.
@@ -966,7 +984,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_equip.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
-        
+
     # Test range commands
     def test_turnbattlerangecmd(self):
         # Start with range module specific commands.
@@ -980,7 +998,7 @@ class TestTurnBattleCmd(CommandTest):
         self.call(tb_range.CmdPass(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
-        
+
 
 class TestTurnBattleFunc(EvenniaTest):
 
@@ -1062,7 +1080,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
-        
+
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_tbequipfunc(self):
         attacker = create_object(tb_equip.TBEquipCharacter, key="Attacker")
@@ -1141,7 +1159,7 @@ class TestTurnBattleFunc(EvenniaTest):
         self.assertTrue(turnhandler.db.fighters == [joiner, attacker, defender])
         # Remove the script at the end
         turnhandler.stop()
-        
+
     # Test combat functions in tb_range too.
     def test_tbrangefunc(self):
         testroom = create_object(DefaultRoom, key="Test Room")
@@ -1246,7 +1264,7 @@ Bar
 -Qux"""
 
 class TestTreeSelectFunc(EvenniaTest):
-    
+
     def test_tree_functions(self):
         # Dash counter
         self.assertTrue(tree_select.dashcount("--test") == 2)
@@ -1261,7 +1279,7 @@ class TestTreeSelectFunc(EvenniaTest):
         # Option list to menu options
         test_optlist = tree_select.parse_opts(TREE_MENU_TESTSTR, category_index=2)
         optlist_to_menu_expected_result = [{'goto': ['menunode_treeselect', {'newindex': 3}], 'key': 'Baz 1'},
-        {'goto': ['menunode_treeselect', {'newindex': 4}], 'key': 'Baz 2'}, 
+        {'goto': ['menunode_treeselect', {'newindex': 4}], 'key': 'Baz 2'},
         {'goto': ['menunode_treeselect', {'newindex': 1}], 'key': ['<< Go Back', 'go back', 'back'], 'desc': 'Return to the previous menu.'}]
         self.assertTrue(tree_select.optlist_to_menuoptions(TREE_MENU_TESTSTR, test_optlist, 2, True, True) == optlist_to_menu_expected_result)
 

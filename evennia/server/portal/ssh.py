@@ -39,7 +39,7 @@ from twisted.conch.ssh import common
 from twisted.conch.insults import insults
 from twisted.conch.manhole_ssh import TerminalRealm, _Glue, ConchFactory
 from twisted.conch.manhole import Manhole, recvline
-from twisted.internet import defer
+from twisted.internet import defer, protocol
 from twisted.conch import interfaces as iconch
 from twisted.python import components
 from django.conf import settings
@@ -52,11 +52,33 @@ from evennia.utils.utils import to_str
 _RE_N = re.compile(r"\|n$")
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _GAME_DIR = settings.GAME_DIR
+_PRIVATE_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssh-private.key")
+_PUBLIC_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssh-public.key")
+_KEY_LENGTH = 2048
 
 CTRL_C = '\x03'
 CTRL_D = '\x04'
 CTRL_BACKSLASH = '\x1c'
 CTRL_L = '\x0c'
+
+_NO_AUTOGEN = """
+Evennia could not generate SSH private- and public keys ({{err}})
+Using conch default keys instead.
+
+If this error persists, create the keys manually (using the tools for your OS)
+and put them here:
+    {}
+    {}
+""".format(_PRIVATE_KEY_FILE, _PUBLIC_KEY_FILE)
+
+
+# not used atm
+class SSHServerFactory(protocol.ServerFactory):
+    "This is only to name this better in logs"
+    noisy = False
+
+    def logPrefix(self):
+        return "SSH"
 
 
 class SshProtocol(Manhole, session.Session):
@@ -66,6 +88,7 @@ class SshProtocol(Manhole, session.Session):
     here.
 
     """
+    noisy = False
 
     def __init__(self, starttuple):
         """
@@ -76,6 +99,7 @@ class SshProtocol(Manhole, session.Session):
             starttuple (tuple): A (account, factory) tuple.
 
         """
+        self.protocol_key = "ssh"
         self.authenticated_account = starttuple[0]
         # obs must not be called self.factory, that gets overwritten!
         self.cfactory = starttuple[1]
@@ -104,7 +128,7 @@ class SshProtocol(Manhole, session.Session):
         # since we might have authenticated already, we might set this here.
         if self.authenticated_account:
             self.logged_in = True
-            self.uid = self.authenticated_account.user.id
+            self.uid = self.authenticated_account.id
         self.sessionhandler.connect(self)
 
     def connectionMade(self):
@@ -228,7 +252,7 @@ class SshProtocol(Manhole, session.Session):
 
         """
         if reason:
-            self.data_out(text=reason)
+            self.data_out(text=((reason, ), {}))
         self.connectionLost(reason)
 
     def data_out(self, **kwargs):
@@ -302,6 +326,9 @@ class SshProtocol(Manhole, session.Session):
 
 
 class ExtraInfoAuthServer(SSHUserAuthServer):
+
+    noisy = False
+
     def auth_password(self, packet):
         """
         Password authentication.
@@ -327,6 +354,7 @@ class AccountDBPasswordChecker(object):
     useful for the Realm.
 
     """
+    noisy = False
     credentialInterfaces = (credentials.IUsernamePassword,)
 
     def __init__(self, factory):
@@ -362,6 +390,8 @@ class PassAvatarIdTerminalRealm(TerminalRealm):
 
     """
 
+    noisy = False
+
     def _getAvatar(self, avatarId):
         comp = components.Componentized()
         user = self.userFactory(comp, avatarId)
@@ -382,6 +412,8 @@ class TerminalSessionTransport_getPeer(object):
     provide getPeer to the transport.  This one does.
 
     """
+
+    noisy = False
 
     def __init__(self, proto, chainedProtocol, avatar, width, height):
         self.proto = proto
@@ -417,33 +449,32 @@ def getKeyPair(pubkeyfile, privkeyfile):
 
     if not (os.path.exists(pubkeyfile) and os.path.exists(privkeyfile)):
         # No keypair exists. Generate a new RSA keypair
-        print("  Generating SSH RSA keypair ...", end=' ')
         from Crypto.PublicKey import RSA
 
-        KEY_LENGTH = 1024
-        rsaKey = Key(RSA.generate(KEY_LENGTH))
-        publicKeyString = rsaKey.public().toString(type="OPENSSH")
-        privateKeyString = rsaKey.toString(type="OPENSSH")
+        rsa_key = Key(RSA.generate(_KEY_LENGTH))
+        public_key_string = rsa_key.public().toString(type="OPENSSH")
+        private_key_string = rsa_key.toString(type="OPENSSH")
 
         # save keys for the future.
-        file(pubkeyfile, 'w+b').write(publicKeyString)
-        file(privkeyfile, 'w+b').write(privateKeyString)
-        print(" done.")
+        with open(privkeyfile, 'wt') as pfile:
+            pfile.write(private_key_string)
+            print("Created SSH private key in '{}'".format(_PRIVATE_KEY_FILE))
+        with open(pubkeyfile, 'wt') as pfile:
+            pfile.write(public_key_string)
+            print("Created SSH public key in '{}'".format(_PUBLIC_KEY_FILE))
     else:
-        publicKeyString = file(pubkeyfile).read()
-        privateKeyString = file(privkeyfile).read()
+        with open(pubkeyfile) as pfile:
+            public_key_string = pfile.read()
+        with open(privkeyfile) as pfile:
+            private_key_string = pfile.read()
 
-    return Key.fromString(publicKeyString), Key.fromString(privateKeyString)
+    return Key.fromString(public_key_string), Key.fromString(private_key_string)
 
 
 def makeFactory(configdict):
     """
     Creates the ssh server factory.
     """
-
-    pubkeyfile = os.path.join(_GAME_DIR, "server", "ssh-public.key")
-    privkeyfile = os.path.join(_GAME_DIR, "server", "ssh-private.key")
-
     def chainProtocolFactory(username=None):
         return insults.ServerProtocol(
             configdict['protocolFactory'],
@@ -458,14 +489,11 @@ def makeFactory(configdict):
 
     try:
         # create/get RSA keypair
-        publicKey, privateKey = getKeyPair(pubkeyfile, privkeyfile)
+        publicKey, privateKey = getKeyPair(_PUBLIC_KEY_FILE, _PRIVATE_KEY_FILE)
         factory.publicKeys = {'ssh-rsa': publicKey}
         factory.privateKeys = {'ssh-rsa': privateKey}
     except Exception as err:
-        print("getKeyPair error: {err}\n WARNING: Evennia could not "
-              "auto-generate SSH keypair. Using conch default keys instead.\n"
-              "If this error persists, create {pub} and "
-              "{priv} yourself using third-party tools.".format(err=err, pub=pubkeyfile, priv=privkeyfile))
+        print(_NO_AUTOGEN.format(err=err))
 
     factory.services = factory.services.copy()
     factory.services['ssh-userauth'] = ExtraInfoAuthServer

@@ -188,6 +188,7 @@ class ServerSession(Session):
         if not _ObjectDB:
             from evennia.objects.models import ObjectDB as _ObjectDB
 
+        super(ServerSession, self).at_sync()
         if not self.logged_in:
             # assign the unloggedin-command set.
             self.cmdset_storage = settings.CMDSET_UNLOGGEDIN
@@ -400,6 +401,7 @@ class ServerSession(Session):
         # this can happen if this is triggered e.g. a command.msg
         # that auto-adds the session, we'd get a kwarg collision.
         kwargs.pop("session", None)
+        kwargs.pop("from_obj", None)
         if text is not None:
             self.data_out(text=text, **kwargs)
         else:

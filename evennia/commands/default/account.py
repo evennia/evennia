@@ -455,7 +455,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     Usage:
       @option[/save] [name = value]
 
-    Switch:
+    Switches:
       save - Save the current option settings for future logins.
       clear - Clear the saved options.
 
@@ -467,6 +467,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
     """
     key = "@option"
     aliases = "@options"
+    switch_options = ("save", "clear")
     locks = "cmd:all()"
 
     # this is used by the parent
@@ -549,8 +550,11 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             try:
                 old_val = flags.get(new_name, False)
                 new_val = validator(new_val)
-                flags[new_name] = new_val
-                self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (new_name, old_val, new_val))
+                if old_val == new_val:
+                    self.msg("Option |w%s|n was kept as '|w%s|n'." % (new_name, old_val))
+                else:
+                    flags[new_name] = new_val
+                    self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (new_name, old_val, new_val))
                 return {new_name: new_val}
             except Exception as err:
                 self.msg("|rCould not set option |w%s|r:|n %s" % (new_name, err))
@@ -572,7 +576,8 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                       "TERM": utils.to_str,
                       "UTF-8": validate_bool,
                       "XTERM256": validate_bool,
-                      "INPUTDEBUG": validate_bool}
+                      "INPUTDEBUG": validate_bool,
+                      "FORCEDENDLINE": validate_bool}
 
         name = self.lhs.upper()
         val = self.rhs.strip()
@@ -646,6 +651,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
     game. Use the /all switch to disconnect from all sessions.
     """
     key = "@quit"
+    switch_options = ("all",)
     locks = "cmd:all()"
 
     # this is used by the parent

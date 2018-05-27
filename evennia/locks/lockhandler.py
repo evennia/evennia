@@ -541,6 +541,46 @@ class LockHandler(object):
             return all(self._eval_access_type(accessing_obj, locks, access_type) for access_type in locks)
 
 
+# convenience access function
+
+# dummy to be able to call check_lockstring from the outside
+
+class _ObjDummy:
+    lock_storage = ''
+
+_LOCK_HANDLER = LockHandler(_ObjDummy())
+
+
+def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
+                     default=False, access_type=None):
+    """
+    Do a direct check against a lockstring ('atype:func()..'),
+    without any intermediary storage on the accessed object.
+
+    Args:
+        accessing_obj (object or None): The object seeking access.
+            Importantly, this can be left unset if the lock functions
+            don't access it, no updating or storage of locks are made
+            against this object in this method.
+        lockstring (str): Lock string to check, on the form
+            `"access_type:lock_definition"` where the `access_type`
+            part can potentially be set to a dummy value to just check
+            a lock condition.
+        no_superuser_bypass  (bool, optional): Force superusers to heed lock.
+        default (bool, optional): Fallback result to use if `access_type` is set
+            but no such `access_type` is found in the given `lockstring`.
+        access_type (str, bool): If set, only this access_type will be looked up
+            among the locks defined by `lockstring`.
+
+    Return:
+        access (bool): If check is passed or not.
+
+    """
+    return _LOCK_HANDLER.check_lockstring(
+        accessing_obj, lockstring, no_superuser_bypass=no_superuser_bypass,
+        default=default, access_type=access_type)
+
+
 def _test():
     # testing
 

@@ -14,15 +14,17 @@ main test suite started with
 
 import re
 import types
+import datetime
 
 from django.conf import settings
-from mock import Mock
+from mock import Mock, mock
 
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
-from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms
+from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin
+from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
-from evennia.utils import ansi, utils
+from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
@@ -37,12 +39,13 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--*|\|(?:\s|$)", re.MULTILINE)
 # Command testing
 # ------------------------------------------------------------
 
+
 class CommandTest(EvenniaTest):
     """
     Tests a command
     """
-
-    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None, receiver=None, cmdstring=None, obj=None):
+    def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None,
+             receiver=None, cmdstring=None, obj=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -71,10 +74,10 @@ class CommandTest(EvenniaTest):
         cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
-        returned_msg = ""
         try:
             receiver.msg = Mock()
-            cmdobj.at_pre_cmd()
+            if cmdobj.at_pre_cmd():
+                return
             cmdobj.parse()
             ret = cmdobj.func()
             if isinstance(ret, types.GeneratorType):
@@ -125,16 +128,47 @@ class TestGeneral(CommandTest):
         self.call(general.CmdPose(), "looks around", "Char looks around")
 
     def test_nick(self):
-        self.call(general.CmdNick(), "testalias = testaliasedstring1", "Nick 'testalias' mapped to 'testaliasedstring1'.")
-        self.call(general.CmdNick(), "/account testalias = testaliasedstring2", "Nick 'testalias' mapped to 'testaliasedstring2'.")
-        self.call(general.CmdNick(), "/object testalias = testaliasedstring3", "Nick 'testalias' mapped to 'testaliasedstring3'.")
+        self.call(general.CmdNick(), "testalias = testaliasedstring1",
+                  "Inputlinenick 'testalias' mapped to 'testaliasedstring1'.")
+        self.call(general.CmdNick(), "/account testalias = testaliasedstring2",
+                  "Accountnick 'testalias' mapped to 'testaliasedstring2'.")
+        self.call(general.CmdNick(), "/object testalias = testaliasedstring3",
+                  "Objectnick 'testalias' mapped to 'testaliasedstring3'.")
         self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
         self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
+        self.assertEqual(None, self.char1.account.nicks.get("testalias", category="account"))
         self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
 
     def test_get_and_drop(self):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")
         self.call(general.CmdDrop(), "Obj", "You drop Obj.")
+
+    def test_give(self):
+        self.call(general.CmdGive(), "Obj to Char2", "You aren't carrying Obj.")
+        self.call(general.CmdGive(), "Obj = Char2", "You aren't carrying Obj.")
+        self.call(general.CmdGet(), "Obj", "You pick up Obj.")
+        self.call(general.CmdGive(), "Obj to Char2", "You give")
+        self.call(general.CmdGive(), "Obj = Char", "You give", caller=self.char2)
+
+    def test_mux_command(self):
+
+        class CmdTest(MuxCommand):
+            key = 'test'
+            switch_options = ('test', 'testswitch', 'testswitch2')
+
+            def func(self):
+                self.msg("Switches matched: {}".format(self.switches))
+
+        self.call(CmdTest(), "/test/testswitch/testswitch2", "Switches matched: ['test', 'testswitch', 'testswitch2']")
+        self.call(CmdTest(), "/test", "Switches matched: ['test']")
+        self.call(CmdTest(), "/test/testswitch", "Switches matched: ['test', 'testswitch']")
+        self.call(CmdTest(), "/testswitch/testswitch2", "Switches matched: ['testswitch', 'testswitch2']")
+        self.call(CmdTest(), "/testswitch", "Switches matched: ['testswitch']")
+        self.call(CmdTest(), "/testswitch2", "Switches matched: ['testswitch2']")
+        self.call(CmdTest(), "/t", "test: Ambiguous switch supplied: "
+                                   "Did you mean /test or /testswitch or /testswitch2?|Switches matched: []")
+        self.call(CmdTest(), "/tests", "test: Ambiguous switch supplied: "
+                                       "Did you mean /testswitch or /testswitch2?|Switches matched: []")
 
     def test_say(self):
         self.call(general.CmdSay(), "Testing", "You say, \"Testing\"")
@@ -183,7 +217,7 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdPerm(), "Char2 = Builder", "Permission 'Builder' given to Char2 (the Object/Character).")
 
     def test_wall(self):
-        self.call(admin.CmdWall(), "Test", "Announcing to all connected accounts ...")
+        self.call(admin.CmdWall(), "Test", "Announcing to all connected sessions ...")
 
     def test_ban(self):
         self.call(admin.CmdBan(), "Char", "NameBan char was added.")
@@ -223,7 +257,8 @@ class TestAccount(CommandTest):
         self.call(account.CmdColorTest(), "ansi", "ANSI colors:", caller=self.account)
 
     def test_char_create(self):
-        self.call(account.CmdCharCreate(), "Test1=Test char", "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
+        self.call(account.CmdCharCreate(), "Test1=Test char",
+                  "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
 
     def test_quell(self):
         self.call(account.CmdQuell(), "", "Quelling to current puppet's permissions (developer).", caller=self.account)
@@ -232,16 +267,19 @@ class TestAccount(CommandTest):
 class TestBuilding(CommandTest):
     def test_create(self):
         name = settings.BASE_OBJECT_TYPECLASS.rsplit('.', 1)[1]
-        self.call(building.CmdCreate(), "/drop TestObj1", "You create a new %s: TestObj1." % name)
+        self.call(building.CmdCreate(), "/d TestObj1",   # /d switch is abbreviated form of /drop
+                  "You create a new %s: TestObj1." % name)
 
     def test_examine(self):
         self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
 
     def test_set_obj_alias(self):
-        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to testobj1b.")
+        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj(#4)")
+        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to 'testobj1b'.")
 
     def test_copy(self):
-        self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b", "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
+        self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b",
+                  "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
 
     def test_attribute_commands(self):
         self.call(building.CmdSetAttribute(), "Obj/test1=\"value1\"", "Created attribute Obj/test1 = 'value1'")
@@ -284,19 +322,36 @@ class TestBuilding(CommandTest):
 
     def test_typeclass(self):
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
-                  "Obj changed typeclass from evennia.objects.objects.DefaultObject to evennia.objects.objects.DefaultExit.")
+                  "Obj changed typeclass from evennia.objects.objects.DefaultObject "
+                  "to evennia.objects.objects.DefaultExit.")
 
     def test_lock(self):
         self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
 
     def test_find(self):
-        self.call(building.CmdFind(), "Room2", "One Match")
+        self.call(building.CmdFind(), "oom2", "One Match")
+        expect = "One Match(#1#7, loc):\n   " +\
+                 "Char2(#7)  evennia.objects.objects.DefaultCharacter (location: Room(#1))"
+        self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
+        self.call(building.CmdFind(), "/ex Char2",  # /ex is an ambiguous switch
+                  "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|" + expect,
+                  cmdstring="locate")
+        self.call(building.CmdFind(), "Char2", expect, cmdstring="@locate")
+        self.call(building.CmdFind(), "/l Char2", expect, cmdstring="find")  # /l switch is abbreviated form of /loc
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
+        self.call(building.CmdFind(), "/startswith Room2", "One Match")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
 
     def test_teleport(self):
-        self.call(building.CmdTeleport(), "Room2", "Room2(#2)\n|Teleported to Room2.")
+        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#2)\n|Teleported to Room2.")
+        self.call(building.CmdTeleport(), "/t",  # /t switch is abbreviated form of /tonone
+                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a Nonelocation.")
+        self.call(building.CmdTeleport(), "/l Room2",  # /l switch is abbreviated form of /loc
+                  "Destination has no location.")
+        self.call(building.CmdTeleport(), "/q me to Room2",  # /q switch is abbreviated form of /quiet
+                  "Char is already at Room2.")
 
     def test_spawn(self):
         def getObject(commandTest, objKeyStr):
@@ -312,7 +367,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), " ", "Usage: @spawn")
 
         # Tests "@spawn <prototype_dictionary>" without specifying location.
-        self.call(building.CmdSpawn(), \
+        self.call(building.CmdSpawn(),
                   "{'key':'goblin', 'typeclass':'evennia.DefaultCharacter'}", "Spawned goblin")
         goblin = getObject(self, "goblin")
 
@@ -331,8 +386,8 @@ class TestBuilding(CommandTest):
             # char1's default location in the future...
             spawnLoc = self.room1
 
-        self.call(building.CmdSpawn(), \
-                  "{'prototype':'GOBLIN', 'key':'goblin', 'location':'%s'}" \
+        self.call(building.CmdSpawn(),
+                  "{'prototype':'GOBLIN', 'key':'goblin', 'location':'%s'}"
                   % spawnLoc.dbref, "Spawned goblin")
         goblin = getObject(self, "goblin")
         self.assertEqual(goblin.location, spawnLoc)
@@ -345,70 +400,81 @@ class TestBuilding(CommandTest):
         self.assertIsInstance(ball, DefaultObject)
         ball.delete()
 
-        # Tests "@spawn/noloc ..." without specifying a location.
+        # Tests "@spawn/n ..." without specifying a location.
         # Location should be "None".
-        self.call(building.CmdSpawn(), "/noloc 'BALL'", "Spawned Ball")
+        self.call(building.CmdSpawn(), "/n 'BALL'", "Spawned Ball")   # /n switch is abbreviated form of /noloc
         ball = getObject(self, "Ball")
         self.assertIsNone(ball.location)
         ball.delete()
 
         # Tests "@spawn/noloc ...", but DO specify a location.
         # Location should be the specified location.
-        self.call(building.CmdSpawn(),  \
-                  "/noloc {'prototype':'BALL', 'location':'%s'}" \
+        self.call(building.CmdSpawn(),
+                  "/noloc {'prototype':'BALL', 'location':'%s'}"
                   % spawnLoc.dbref, "Spawned Ball")
         ball = getObject(self, "Ball")
         self.assertEqual(ball.location, spawnLoc)
         ball.delete()
 
         # test calling spawn with an invalid prototype.
-        self.call(building.CmdSpawn(), \
-                  "'NO_EXIST'", "No prototype named 'NO_EXIST'")
+        self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST'")
 
 
 class TestComms(CommandTest):
 
     def setUp(self):
         super(CommandTest, self).setUp()
-        self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel", "Created channel testchan and connected to it.", receiver=self.account)
+        self.call(comms.CmdChannelCreate(), "testchan;test=Test Channel",
+                  "Created channel testchan and connected to it.", receiver=self.account)
 
     def test_toggle_com(self):
-        self.call(comms.CmdAddCom(), "tc = testchan", "You are already connected to channel testchan. You can now", receiver=self.account)
+        self.call(comms.CmdAddCom(), "tc = testchan",
+                  "You are already connected to channel testchan. You can now", receiver=self.account)
         self.call(comms.CmdDelCom(), "tc", "Your alias 'tc' for channel testchan was cleared.", receiver=self.account)
 
     def test_channels(self):
-        self.call(comms.CmdChannels(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
+        self.call(comms.CmdChannels(), "",
+                  "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
 
     def test_all_com(self):
-        self.call(comms.CmdAllCom(), "", "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
+        self.call(comms.CmdAllCom(), "",
+                  "Available channels (use comlist,addcom and delcom to manage", receiver=self.account)
 
     def test_clock(self):
-        self.call(comms.CmdClock(), "testchan=send:all()", "Lock(s) applied. Current locks on testchan:", receiver=self.account)
+        self.call(comms.CmdClock(),
+                  "testchan=send:all()", "Lock(s) applied. Current locks on testchan:", receiver=self.account)
 
     def test_cdesc(self):
-        self.call(comms.CmdCdesc(), "testchan = Test Channel", "Description of channel 'testchan' set to 'Test Channel'.", receiver=self.account)
+        self.call(comms.CmdCdesc(), "testchan = Test Channel",
+                  "Description of channel 'testchan' set to 'Test Channel'.", receiver=self.account)
 
     def test_cemit(self):
-        self.call(comms.CmdCemit(), "testchan = Test Message", "[testchan] Test Message|Sent to channel testchan: Test Message", receiver=self.account)
+        self.call(comms.CmdCemit(), "testchan = Test Message",
+                  "[testchan] Test Message|Sent to channel testchan: Test Message", receiver=self.account)
 
     def test_cwho(self):
         self.call(comms.CmdCWho(), "testchan", "Channel subscriptions\ntestchan:\n  TestAccount", receiver=self.account)
 
     def test_page(self):
-        self.call(comms.CmdPage(), "TestAccount2 = Test", "TestAccount2 is offline. They will see your message if they list their pages later.|You paged TestAccount2 with: 'Test'.", receiver=self.account)
+        self.call(comms.CmdPage(), "TestAccount2 = Test",
+                  "TestAccount2 is offline. They will see your message if they list their pages later."
+                  "|You paged TestAccount2 with: 'Test'.", receiver=self.account)
 
     def test_cboot(self):
         # No one else connected to boot
         self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <account> [:reason]", receiver=self.account)
 
     def test_cdestroy(self):
-        self.call(comms.CmdCdestroy(), "testchan", "[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases.|Channel 'testchan' was destroyed.", receiver=self.account)
+        self.call(comms.CmdCdestroy(), "testchan",
+                  "[testchan] TestAccount: testchan is being destroyed. Make sure to change your aliases."
+                  "|Channel 'testchan' was destroyed.", receiver=self.account)
 
 
 class TestBatchProcess(CommandTest):
     def test_batch_commands(self):
         # cannot test batchcode here, it must run inside the server process
-        self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds", "Running Batchcommand processor  Automatic mode for example_batch_cmds")
+        self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds",
+                  "Running Batchcommand processor  Automatic mode for example_batch_cmds")
         # we make sure to delete the button again here to stop the running reactor
         confirm = building.CmdDestroy.confirm
         building.CmdDestroy.confirm = False
@@ -431,3 +497,12 @@ class TestInterruptCommand(CommandTest):
     def test_interrupt_command(self):
         ret = self.call(CmdInterrupt(), "")
         self.assertEqual(ret, "")
+
+
+class TestUnconnectedCommand(CommandTest):
+    def test_info_command(self):
+        expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
+                        settings.SERVERNAME,
+                        datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
+                        SESSIONS.account_count(), utils.get_evennia_version().replace("-", ""))
+        self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
