@@ -205,6 +205,23 @@ class TestParsing(unittest.TestCase):
             </document>
             """
         )
+        self.assertParses(
+            """
+            **[link](foo)**
+            """,
+            """
+            <?xml version="1.0" ?>
+            <document source="&lt;string&gt;">
+              <paragraph>
+                <strong>
+                  <pending_xref refdomain="None" refexplicit="True" reftarget="foo" reftype="any" refwarn="True">
+                    <reference refuri="foo">link</reference>
+                  </pending_xref>
+                </strong>
+              </paragraph>
+            </document>
+            """
+        )
 
     def test_image(self):
         self.assertParses(
