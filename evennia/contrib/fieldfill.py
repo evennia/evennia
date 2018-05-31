@@ -18,24 +18,28 @@ Optional:
     min - Minimum charater length (if text) or value (if number)
     default - Initial value (blank if not given)
     blankmsg - Message to show when field is blank
+    verifyfunc - Name of a callable used to verify input
 """
 
 SAMPLE_FORM = [
-{"fieldname":"Player", "fieldtype":"text", "max":30, "default":"Ashley"},
+{"fieldname":"Player", "fieldtype":"text", "max":30, "blankmsg":"(Name of an online player)"},
 {"fieldname":"Delay", "fieldtype":"number", "min":3, "max":30, "default":10},
 {"fieldname":"Message", "fieldtype":"text", "min":3, "max":200,
-"default": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non urna ante. Etiam maximus orci ut commodo lobortis. Sed sodales sed libero quis fermentum. Nunc vel semper ante. Donec mattis nisl eget condimentum mattis. Pellentesque ac semper lorem. Sed augue."
+"default": "Lorem ipsum dolor sit amet"
 }
 ]
 
-def init_fill_field(form, caller, callback):
+def init_fill_field(formtemplate, caller, callback):
     """
     Presents a player with a fillable form.
     """
+    # Initialize form data from the template
+    blank_formdata = form_template_to_dict(formtemplate)
     
     # Pass kwargs to store data needed in the menu
     kwargs = {
-    "formdata":form_template_to_dict(form_template)
+    "formdata":blank_formdata,
+    "formtemplate": formtemplate
     }
     
     # Initialize menu of selections
@@ -48,6 +52,28 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
     """
     # Retrieve menu info
     formdata = caller.ndb._menutree.formdata
+    formtemplate = caller.ndb._menutree.formtemplate
+    
+    # Display current form data
+    text = display_formdata(formtemplate, formdata)
+    options = ({"key": "_default",
+               "goto":"menunode_fieldfill"})
+               
+    if raw_string:
+        if raw_string.lower().strip() == "show":
+            return text, options
+        elif "=" not in raw_string:
+            text = None
+            caller.msg("NO!")
+            return text, options
+        else:
+            entry = raw_string.split("=", 1)
+            fieldname = entry[0].strip()
+            newvalue = entry[1].strip()
+            caller.msg("Setting %s to %s!" % (fieldname, newvalue))
+            text = None
+    
+    return text, options
 
     
 def form_template_to_dict(formtemplate):
@@ -68,8 +94,8 @@ def display_formdata(formtemplate, formdata):
     """
     Displays a form's current data as a table
     """
-    formtable = evtable.EvTable(border="cells")
-    field_name_width = 3
+    formtable = evtable.EvTable(border="rows", valign="t", maxwidth=80)
+    field_name_width = 5
     
     for field in formtemplate:
         new_fieldname = ""
@@ -80,11 +106,14 @@ def display_formdata(formtemplate, formdata):
             field_name_width = len(field["fieldname"]) + 5
         # Get field value
         new_fieldvalue = str(formdata[field["fieldname"]])
+        # Use blank message if field is blank and once is present
+        if new_fieldvalue == "" and "blankmsg" in field:
+            new_fieldvalue = "|x" + str(field["blankmsg"]) + "|n"
         # Add name and value to table
         formtable.add_row(new_fieldname, new_fieldvalue)
         
     formtable.reformat_column(0, align="r", width=field_name_width)
-    formtable.reformat(valign="t", width=80)
+    formtable.reformat_column(1, pad_left=0)
         
     return formtable
     
@@ -98,3 +127,16 @@ class CmdTest(Command):
     def func(self):
         SAMPLE_FORM_DATA = form_template_to_dict(SAMPLE_FORM)
         self.caller.msg(display_formdata(SAMPLE_FORM, SAMPLE_FORM_DATA))
+        
+class CmdTestMenu(Command):
+    """
+    Test stuff
+    """
+
+    key = "testmenu"
+
+    def func(self):
+        init_fill_field(SAMPLE_FORM, self.caller, Placeholder)
+        
+def Placeholder():
+    return
