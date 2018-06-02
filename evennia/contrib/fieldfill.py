@@ -2,8 +2,9 @@
 Fyield Fyill
 """
 
-from evennia.utils import evmenu, evtable
+from evennia.utils import evmenu, evtable, delay
 from evennia import Command
+from evennia.server.sessionhandler import SESSIONS
 
 """
 Complete field data is sent to the given callable as a dictionary (field:value pairs)
@@ -18,17 +19,12 @@ Optional:
     min - Minimum charater length (if text) or value (if number)
     default - Initial value (blank if not given)
     blankmsg - Message to show when field is blank
+    cantclear - Field can't be cleared if True
     verifyfunc - Name of a callable used to verify input
     preformtxt - Text to put before the whole form table. Can be put in any field.
     postformtxt - Text to put after the whole form table. Can be put in any field.
 """
 
-SAMPLE_FORM = [
-{"fieldname":"Player", "fieldtype":"text", "max":30, "blankmsg":"(Name of an online player)",
- "preformtxt":"Send a delayed message to another player:", "postformtxt":"Syntax: <field> = <new value>|/Or: clear <field>, help, show, quit"},
-{"fieldname":"Delay", "fieldtype":"number", "min":3, "max":30, "default":10},
-{"fieldname":"Message", "fieldtype":"text", "min":3, "max":200, "blankmsg":"(Message up to 200 characters)"}
-]
 
 class FieldEvMenu(evmenu.EvMenu):
     """
@@ -62,7 +58,8 @@ def init_fill_field(formtemplate, caller, callback):
     # Pass kwargs to store data needed in the menu
     kwargs = {
     "formdata":blank_formdata,
-    "formtemplate": formtemplate
+    "formtemplate": formtemplate,
+    "callback": callback
     }
     
     # Initialize menu of selections
@@ -79,6 +76,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
     # Retrieve menu info
     formdata = caller.ndb._menutree.formdata
     formtemplate = caller.ndb._menutree.formtemplate
+    callback = caller.ndb._menutree.callback
     
     # Display current form data
     text = display_formdata(formtemplate, formdata)
@@ -86,6 +84,10 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                "goto":"menunode_fieldfill"})
                
     if raw_string:
+        # Test for 'submit' command
+        if raw_string.lower().strip() == "submit":
+            callback(caller, formdata)
+            return None, None
         # Test for 'show' command
         if raw_string.lower().strip() == "show":
             return text, options
@@ -106,7 +108,17 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                 caller.msg("Field '%s' does not exist!" % cleartest[1])
                 text = None
                 return text, options
-                
+            
+            # Test to see if field can be cleared
+            for field in formtemplate:
+                if field["fieldname"] == matched_field and "cantclear" in field.keys():
+                    if field["cantclear"] == True:
+                        caller.msg("Field '%s' can't be cleared!" % matched_field)
+                        text = None
+                        return text, options
+                    
+            
+            # Clear the field
             formdata.update({matched_field:None})
             caller.ndb._menutree.formdata = formdata
             caller.msg("Field '%s' cleared." % matched_field)
@@ -145,6 +157,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
         fieldtype = None
         max_value = None
         min_value = None
+        verifyfunc = None
         for field in formtemplate:
             if field["fieldname"] == matched_field:
                 fieldtype = field["fieldtype"]
@@ -152,6 +165,9 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                     max_value = field["max"]
                 if "min" in field.keys():
                     min_value = field["min"]
+                if "verifyfunc" in field.keys():
+                    verifyfunc = field["verifyfunc"]
+                    
             
         # Field type text update
         if fieldtype == "text":
@@ -166,11 +182,6 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                     caller.msg("Field '%s' reqiures a minimum length of %i characters." % (matched_field, min_value))
                     text = None
                     return text, options
-            # Update form data
-            formdata.update({matched_field:newvalue})
-            caller.ndb._menutree.formdata = formdata
-            caller.msg("Field '%s' set to: %s" % (matched_field, newvalue))
-            text = None
                 
         # Field type number update
         if fieldtype == "number":
@@ -180,10 +191,20 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                 caller.msg("Field '%s' requires a number." % matched_field)
                 text = None
                 return text, options
-            formdata.update({matched_field:newvalue})
-            caller.ndb._menutree.formdata = formdata
-            caller.msg("Field '%s' set to: %i" % (matched_field, newvalue))
-            text = None
+                
+        # Call verify function if present
+        if verifyfunc:
+            if verifyfunc(caller, newvalue) == False:
+                text = None
+                return text, options
+            elif verifyfunc(caller, newvalue) != True:
+                newvalue = verifyfunc(caller, newvalue)
+        
+        # If everything checks out, update form!!
+        formdata.update({matched_field:newvalue})
+        caller.ndb._menutree.formdata = formdata
+        caller.msg("Field '%s' set to: %s" % (matched_field, str(newvalue)))
+        text = None
     
     return text, options
 
@@ -241,6 +262,36 @@ def display_formdata(formtemplate, formdata):
         
     return pretext + str(formtable) + posttext
     
+    
+    
+    
+# PLACEHOLDER / EXAMPLE STUFF STARTS HEEEERE
+    
+def verify_online_player(caller, value):
+    # Get a list of sessions
+    session_list = SESSIONS.get_sessions()
+    char_list = []
+    matched_character = None
+    for session in session_list:
+        if not session.logged_in:
+            continue
+        char_list.append(session.get_puppet())
+    print char_list
+    for character in char_list:
+        if value.lower() in character.key.lower():
+            matched_character = character
+    if not matched_character:
+        caller.msg("No character matching '%s' is online." % value)
+        return False
+    return matched_character
+
+SAMPLE_FORM = [
+{"fieldname":"Player", "fieldtype":"text", "max":30, "blankmsg":"(Name of an online player)", "verifyfunc":verify_online_player,
+ "preformtxt":"Send a delayed message to another player:", "postformtxt":"Syntax: <field> = <new value>|/Or: clear <field>, help, show, quit"},
+{"fieldname":"Delay", "fieldtype":"number", "min":3, "max":30, "default":10, "cantclear":True},
+{"fieldname":"Message", "fieldtype":"text", "min":3, "max":200, "blankmsg":"(Message up to 200 characters)"}
+]
+
 class CmdTest(Command):
     """
     Test stuff
@@ -260,7 +311,17 @@ class CmdTestMenu(Command):
     key = "testmenu"
 
     def func(self):
-        init_fill_field(SAMPLE_FORM, self.caller, Placeholder)
-        
-def Placeholder():
+        init_fill_field(SAMPLE_FORM, self.caller, init_delayed_message)
+
+def sendmessage(obj, text):
+    obj.msg(text)        
+
+def init_delayed_message(caller, formdata):
+    player_to_message = formdata["Player"]
+    message_delay = formdata["Delay"]
+    message = ("Message from %s: " % caller) + formdata["Message"]
+    
+    deferred = delay(message_delay, sendmessage, player_to_message, message)
+    
     return
+    
