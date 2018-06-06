@@ -647,6 +647,22 @@ def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
         default=default, access_type=access_type)
 
 
+def validate_lockstring(lockstring):
+    """
+    Validate so lockstring is on a valid form.
+
+    Args:
+        lockstring (str): Lockstring to validate.
+
+    Returns:
+        is_valid (bool): If the lockstring is valid or not.
+        error (str or None): A string describing the error, or None
+            if no error was found.
+
+    """
+    return _LOCK_HANDLER.valdate(lockstring)
+
+
 def _test():
     # testing
 
