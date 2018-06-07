@@ -126,70 +126,25 @@ from __future__ import print_function
 import copy
 import hashlib
 import time
-from ast import literal_eval
+
 from django.conf import settings
-from random import randint
 import evennia
+from random import randint
 from evennia.objects.models import ObjectDB
 from evennia.utils.utils import (
     make_iter, dbid_to_obj,
-    is_iter, crop, get_all_typeclasses)
-
-from evennia.utils.evtable import EvTable
+    is_iter, get_all_typeclasses)
+from evennia.prototypes import prototypes as protlib
+from evennia.prototypes.prototypes import value_to_obj, value_to_obj_or_any, init_spawn_value
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
 _NON_CREATE_KWARGS = _CREATE_OBJECT_KWARGS + _PROTOTYPE_META_NAMES
-_MENU_CROP_WIDTH = 15
 _PROTOTYPE_TAG_CATEGORY = "spawned_by_prototype"
 
-_MENU_ATTR_LITERAL_EVAL_ERROR = (
-    "|rCritical Python syntax error in your value. Only primitive Python structures are allowed.\n"
-    "You also need to use correct Python syntax. Remember especially to put quotes around all "
-    "strings inside lists and dicts.|n")
 
-
-# Helper functions
-
-def _to_obj(value, force=True):
-    return dbid_to_obj(value, ObjectDB)
-
-
-def _to_obj_or_any(value):
-    obj = dbid_to_obj(value, ObjectDB)
-    return obj if obj is not None else value
-
-
-def validate_spawn_value(value, validator=None):
-    """
-    Analyze the value and produce a value for use at the point of spawning.
-
-    Args:
-        value (any): This can be:
-            callable - will be called as callable()
-            (callable, (args,)) - will be called as callable(*args)
-            other - will be assigned depending on the variable type
-            validator (callable, optional): If given, this will be called with the value to
-                check and guarantee the outcome is of a given type.
-
-    Returns:
-        any (any): The (potentially pre-processed value to use for this prototype key)
-
-    """
-    value = protfunc_parser(value)
-    validator = validator if validator else lambda o: o
-    if callable(value):
-        return validator(value())
-    elif value and is_iter(value) and callable(value[0]):
-        # a structure (callable, (args, ))
-        args = value[1:]
-        return validator(value[0](*make_iter(args)))
-    else:
-        return validator(value)
-
-# Spawner mechanism
-
+# Helper
 
 def _get_prototype(dic, prot, protparents):
     """
@@ -209,6 +164,246 @@ def _get_prototype(dic, prot, protparents):
     return prot
 
 
+# obj-related prototype functions
+
+def prototype_from_object(obj):
+    """
+    Guess a minimal prototype from an existing object.
+
+    Args:
+        obj (Object): An object to analyze.
+
+    Returns:
+        prototype (dict): A prototype estimating the current state of the object.
+
+    """
+    # first, check if this object already has a prototype
+
+    prot = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
+    prot = protlib.search_prototype(prot)
+    if not prot or len(prot) > 1:
+        # no unambiguous prototype found - build new prototype
+        prot = {}
+        prot['prototype_key'] = "From-Object-{}-{}".format(
+                obj.key, hashlib.md5(str(time.time())).hexdigest()[:6])
+        prot['prototype_desc'] = "Built from {}".format(str(obj))
+        prot['prototype_locks'] = "spawn:all();edit:all()"
+
+    prot['key'] = obj.db_key or hashlib.md5(str(time.time())).hexdigest()[:6]
+    prot['location'] = obj.db_location
+    prot['home'] = obj.db_home
+    prot['destination'] = obj.db_destination
+    prot['typeclass'] = obj.db_typeclass_path
+    prot['locks'] = obj.locks.all()
+    prot['permissions'] = obj.permissions.get()
+    prot['aliases'] = obj.aliases.get()
+    prot['tags'] = [(tag.key, tag.category, tag.data)
+                    for tag in obj.tags.get(return_tagobj=True, return_list=True)]
+    prot['attrs'] = [(attr.key, attr.value, attr.category, attr.locks)
+                     for attr in obj.attributes.get(return_obj=True, return_list=True)]
+
+    return prot
+
+
+def prototype_diff_from_object(prototype, obj):
+    """
+    Get a simple diff for a prototype compared to an object which may or may not already have a
+    prototype (or has one but changed locally). For more complex migratations a manual diff may be
+    needed.
+
+    Args:
+        prototype (dict): Prototype.
+        obj (Object): Object to
+
+    Returns:
+        diff (dict): Mapping for every prototype key: {"keyname": "REMOVE|UPDATE|KEEP", ...}
+
+    """
+    prot1 = prototype
+    prot2 = prototype_from_object(obj)
+
+    diff = {}
+    for key, value in prot1.items():
+        diff[key] = "KEEP"
+        if key in prot2:
+            if callable(prot2[key]) or value != prot2[key]:
+                diff[key] = "UPDATE"
+        elif key not in prot2:
+            diff[key] = "REMOVE"
+
+    return diff
+
+
+def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
+    """
+    Update existing objects with the latest version of the prototype.
+
+    Args:
+        prototype (str or dict): Either the `prototype_key` to use or the
+            prototype dict itself.
+        diff (dict, optional): This a diff structure that describes how to update the protototype.
+            If not given this will be constructed from the first object found.
+        objects (list, optional): List of objects to update. If not given, query for these
+            objects using the prototype's `prototype_key`.
+    Returns:
+        changed (int): The number of objects that had changes applied to them.
+
+    """
+    prototype_key = prototype if isinstance(prototype, basestring) else prototype['prototype_key']
+    prototype_obj = protlib.DbPrototype.objects.filter(db_key=prototype_key)
+    prototype_obj = prototype_obj[0] if prototype_obj else None
+    new_prototype = prototype_obj.db.prototype
+    objs = ObjectDB.objects.get_by_tag(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+
+    if not objs:
+        return 0
+
+    if not diff:
+        diff = prototype_diff_from_object(new_prototype, objs[0])
+
+    changed = 0
+    for obj in objs:
+        do_save = False
+        for key, directive in diff.items():
+            val = new_prototype[key]
+            if directive in ('UPDATE', 'REPLACE'):
+                do_save = True
+                if key == 'key':
+                    obj.db_key = init_spawn_value(val, str)
+                elif key == 'typeclass':
+                    obj.db_typeclass_path = init_spawn_value(val, str)
+                elif key == 'location':
+                    obj.db_location = init_spawn_value(val, value_to_obj)
+                elif key == 'home':
+                    obj.db_home = init_spawn_value(val, value_to_obj)
+                elif key == 'destination':
+                    obj.db_destination = init_spawn_value(val, value_to_obj)
+                elif key == 'locks':
+                    if directive == 'REPLACE':
+                        obj.locks.clear()
+                    obj.locks.add(init_spawn_value(val, str))
+                elif key == 'permissions':
+                    if directive == 'REPLACE':
+                        obj.permissions.clear()
+                    obj.permissions.batch_add(init_spawn_value(val, make_iter))
+                elif key == 'aliases':
+                    if directive == 'REPLACE':
+                        obj.aliases.clear()
+                    obj.aliases.batch_add(init_spawn_value(val, make_iter))
+                elif key == 'tags':
+                    if directive == 'REPLACE':
+                        obj.tags.clear()
+                    obj.tags.batch_add(init_spawn_value(val, make_iter))
+                elif key == 'attrs':
+                    if directive == 'REPLACE':
+                        obj.attributes.clear()
+                    obj.attributes.batch_add(init_spawn_value(val, make_iter))
+                elif key == 'exec':
+                    # we don't auto-rerun exec statements, it would be huge security risk!
+                    pass
+                else:
+                    obj.attributes.add(key, init_spawn_value(val, value_to_obj))
+            elif directive == 'REMOVE':
+                do_save = True
+                if key == 'key':
+                    obj.db_key = ''
+                elif key == 'typeclass':
+                    # fall back to default
+                    obj.db_typeclass_path = settings.BASE_OBJECT_TYPECLASS
+                elif key == 'location':
+                    obj.db_location = None
+                elif key == 'home':
+                    obj.db_home = None
+                elif key == 'destination':
+                    obj.db_destination = None
+                elif key == 'locks':
+                    obj.locks.clear()
+                elif key == 'permissions':
+                    obj.permissions.clear()
+                elif key == 'aliases':
+                    obj.aliases.clear()
+                elif key == 'tags':
+                    obj.tags.clear()
+                elif key == 'attrs':
+                    obj.attributes.clear()
+                elif key == 'exec':
+                    # we don't auto-rerun exec statements, it would be huge security risk!
+                    pass
+                else:
+                    obj.attributes.remove(key)
+            if do_save:
+                changed += 1
+                obj.save()
+
+    return changed
+
+
+def batch_create_object(*objparams):
+    """
+    This is a cut-down version of the create_object() function,
+    optimized for speed. It does NOT check and convert various input
+    so make sure the spawned Typeclass works before using this!
+
+    Args:
+        objsparams (tuple): Each paremter tuple will create one object instance using the parameters
+            within.
+            The parameters should be given in the following order:
+                - `create_kwargs` (dict): For use as new_obj = `ObjectDB(**create_kwargs)`.
+                - `permissions` (str): Permission string used with `new_obj.batch_add(permission)`.
+                - `lockstring` (str): Lockstring used with `new_obj.locks.add(lockstring)`.
+                - `aliases` (list): A list of alias strings for
+                    adding with `new_object.aliases.batch_add(*aliases)`.
+                - `nattributes` (list): list of tuples `(key, value)` to be loop-added to
+                    add with `new_obj.nattributes.add(*tuple)`.
+                - `attributes` (list): list of tuples `(key, value[,category[,lockstring]])` for
+                    adding with `new_obj.attributes.batch_add(*attributes)`.
+                - `tags` (list): list of tuples `(key, category)` for adding
+                    with `new_obj.tags.batch_add(*tags)`.
+                - `execs` (list): Code strings to execute together with the creation
+                    of each object. They will be executed with `evennia` and `obj`
+                        (the newly created object) available in the namespace. Execution
+                        will happend after all other properties have been assigned and
+                        is intended for calling custom handlers etc.
+
+    Returns:
+        objects (list): A list of created objects
+
+    Notes:
+        The `exec` list will execute arbitrary python code so don't allow this to be available to
+        unprivileged users!
+
+    """
+
+    # bulk create all objects in one go
+
+    # unfortunately this doesn't work since bulk_create doesn't creates pks;
+    # the result would be duplicate objects at the next stage, so we comment
+    # it out for now:
+    #  dbobjs = _ObjectDB.objects.bulk_create(dbobjs)
+
+    dbobjs = [ObjectDB(**objparam[0]) for objparam in objparams]
+    objs = []
+    for iobj, obj in enumerate(dbobjs):
+        # call all setup hooks on each object
+        objparam = objparams[iobj]
+        # setup
+        obj._createdict = {"permissions": make_iter(objparam[1]),
+                           "locks": objparam[2],
+                           "aliases": make_iter(objparam[3]),
+                           "nattributes": objparam[4],
+                           "attributes": objparam[5],
+                           "tags": make_iter(objparam[6])}
+        # this triggers all hooks
+        obj.save()
+        # run eventual extra code
+        for code in objparam[7]:
+            if code:
+                exec(code, {}, {"evennia": evennia, "obj": obj})
+        objs.append(obj)
+    return objs
+
+
+# Spawner mechanism
 
 def spawn(*prototypes, **kwargs):
     """
@@ -234,12 +429,12 @@ def spawn(*prototypes, **kwargs):
 
     """
     # get available protparents
-    protparents = {prot['prototype_key']: prot for prot in search_prototype()}
+    protparents = {prot['prototype_key']: prot for prot in protlib.search_prototype()}
 
     # overload module's protparents with specifically given protparents
     protparents.update(kwargs.get("prototype_parents", {}))
     for key, prototype in protparents.items():
-        validate_prototype(prototype, key.lower(), protparents)
+        protlib.validate_prototype(prototype, key.lower(), protparents)
 
     if "return_prototypes" in kwargs:
         # only return the parents
@@ -248,7 +443,7 @@ def spawn(*prototypes, **kwargs):
     objsparams = []
     for prototype in prototypes:
 
-        validate_prototype(prototype, None, protparents)
+        protlib.validate_prototype(prototype, None, protparents)
         prot = _get_prototype(prototype, {}, protparents)
         if not prot:
             continue
@@ -260,30 +455,30 @@ def spawn(*prototypes, **kwargs):
         # chance this is not unique but it should usually not be a problem.
         val = prot.pop("key", "Spawned-{}".format(
             hashlib.md5(str(time.time())).hexdigest()[:6]))
-        create_kwargs["db_key"] = validate_spawn_value(val, str)
+        create_kwargs["db_key"] = init_spawn_value(val, str)
 
         val = prot.pop("location", None)
-        create_kwargs["db_location"] = validate_spawn_value(val, _to_obj)
+        create_kwargs["db_location"] = init_spawn_value(val, value_to_obj)
 
         val = prot.pop("home", settings.DEFAULT_HOME)
-        create_kwargs["db_home"] = validate_spawn_value(val, _to_obj)
+        create_kwargs["db_home"] = init_spawn_value(val, value_to_obj)
 
         val = prot.pop("destination", None)
-        create_kwargs["db_destination"] = validate_spawn_value(val, _to_obj)
+        create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj)
 
         val = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
-        create_kwargs["db_typeclass_path"] = validate_spawn_value(val, str)
+        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str)
 
         # extract calls to handlers
         val = prot.pop("permissions", [])
-        permission_string = validate_spawn_value(val, make_iter)
+        permission_string = init_spawn_value(val, make_iter)
         val = prot.pop("locks", "")
-        lock_string = validate_spawn_value(val, str)
+        lock_string = init_spawn_value(val, str)
         val = prot.pop("aliases", [])
-        alias_string = validate_spawn_value(val, make_iter)
+        alias_string = init_spawn_value(val, make_iter)
 
         val = prot.pop("tags", [])
-        tags = validate_spawn_value(val, make_iter)
+        tags = init_spawn_value(val, make_iter)
 
         prototype_key = prototype.get('prototype_key', None)
         if prototype_key:
@@ -291,15 +486,15 @@ def spawn(*prototypes, **kwargs):
             tags.append((prototype_key, _PROTOTYPE_TAG_CATEGORY))
 
         val = prot.pop("exec", "")
-        execs = validate_spawn_value(val, make_iter)
+        execs = init_spawn_value(val, make_iter)
 
         # extract ndb assignments
-        nattribute = dict((key.split("_", 1)[1], validate_spawn_value(val, _to_obj))
+        nattributes = dict((key.split("_", 1)[1], init_spawn_value(val, value_to_obj))
                            for key, val in prot.items() if key.startswith("ndb_"))
 
         # the rest are attributes
         val = prot.pop("attrs", [])
-        attributes = validate_spawn_value(val, list)
+        attributes = init_spawn_value(val, list)
 
         simple_attributes = []
         for key, value in ((key, value) for key, value in prot.items()
@@ -307,11 +502,11 @@ def spawn(*prototypes, **kwargs):
             if is_iter(value) and len(value) > 1:
                 # (value, category)
                 simple_attributes.append((key,
-                                          validate_spawn_value(value[0], _to_obj_or_any),
-                                          validate_spawn_value(value[1], str)))
+                                          init_spawn_value(value[0], value_to_obj_or_any),
+                                          init_spawn_value(value[1], str)))
             else:
                 simple_attributes.append((key,
-                                          validate_spawn_value(value, _to_obj_or_any)))
+                                          init_spawn_value(value, value_to_obj_or_any)))
 
         attributes = attributes + simple_attributes
         attributes = [tup for tup in attributes if not tup[0] in _NON_CREATE_KWARGS]
@@ -320,7 +515,7 @@ def spawn(*prototypes, **kwargs):
         objsparams.append((create_kwargs, permission_string, lock_string,
                            alias_string, nattributes, attributes, tags, execs))
 
-    return _batch_create_object(*objsparams)
+    return batch_create_object(*objsparams)
 
 
 # Testing
