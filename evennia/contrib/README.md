@@ -29,6 +29,9 @@ things you want from here into your game folder and change them there.
   that requires an email to login rather then just name+password.
 * Extended Room (Griatch 2012) - An expanded Room typeclass with
   multiple descriptions for time and season as well as details.
+* Field Fill (FlutterSprite 2018) - A simple system for creating an
+  EvMenu that presents a player with a highly customizable fillable
+  form
 * GenderSub (Griatch 2015) - Simple example (only) of storing gender
   on a character and access it in an emote with a custom marker.
 * Mail (grungies1138 2016) - An in-game mail system for communication.

@@ -1299,7 +1299,6 @@ FIELD_TEST_DATA = {"TextTest":None, "NumberTest":None, "DefaultText":"Test", "De
 class TestFieldFillFunc(EvenniaTest):
 
     def test_field_functions(self):
-        # Template to dictionary
         self.assertTrue(fieldfill.form_template_to_dict(FIELD_TEST_TEMPLATE) == FIELD_TEST_DATA)
         
 # Test of the unixcommand module
