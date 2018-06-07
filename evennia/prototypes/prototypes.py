@@ -6,16 +6,26 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 """
 
 from django.conf import settings
+
 from evennia.scripts.scripts import DefaultScript
 from evennia.objects.models import ObjectDB
 from evennia.utils.create import create_script
-from evennia.utils.utils import all_from_module, make_iter, callables_from_module, is_iter
+from evennia.utils.utils import (
+    all_from_module, make_iter, is_iter, dbid_to_obj)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
+from evennia.utils.evtable import EvTable
+from evennia.utils.prototypes.protfuncs import protfunc_parser
 
 
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
+_PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
+_PROTOTYPE_TAG_CATEGORY = "spawned_by_prototype"
+
+
+class PermissionError(RuntimeError):
+    pass
 
 
 class ValidationError(RuntimeError):
@@ -23,6 +33,99 @@ class ValidationError(RuntimeError):
     Raised on prototype validation errors
     """
     pass
+
+
+# helper functions
+
+def value_to_obj(value, force=True):
+    return dbid_to_obj(value, ObjectDB)
+
+
+def value_to_obj_or_any(value):
+    obj = dbid_to_obj(value, ObjectDB)
+    return obj if obj is not None else value
+
+
+def prototype_to_str(prototype):
+    """
+    Format a prototype to a nice string representation.
+
+    Args:
+        prototype (dict): The prototype.
+    """
+
+    header = (
+        "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
+        "|cdesc:|n {} \n|cprototype:|n ".format(
+           prototype['prototype_key'],
+           ", ".join(prototype['prototype_tags']),
+           prototype['prototype_locks'],
+           prototype['prototype_desc']))
+    proto = ("{{\n  {} \n}}".format(
+        "\n  ".join(
+            "{!r}: {!r},".format(key, value) for key, value in
+             sorted(prototype.items()) if key not in _PROTOTYPE_META_NAMES)).rstrip(","))
+    return header + proto
+
+
+def check_permission(prototype_key, action, default=True):
+    """
+    Helper function to check access to actions on given prototype.
+
+    Args:
+        prototype_key (str): The prototype to affect.
+        action (str): One of "spawn" or "edit".
+        default (str): If action is unknown or prototype has no locks
+
+    Returns:
+        passes (bool): If permission for action is granted or not.
+
+    """
+    if action == 'edit':
+        if prototype_key in _MODULE_PROTOTYPES:
+            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
+            logger.log_err("{} is a read-only prototype "
+                           "(defined as code in {}).".format(prototype_key, mod))
+            return False
+
+    prototype = search_prototype(key=prototype_key)
+    if not prototype:
+        logger.log_err("Prototype {} not found.".format(prototype_key))
+        return False
+
+    lockstring = prototype.get("prototype_locks")
+
+    if lockstring:
+        return check_lockstring(None, lockstring, default=default, access_type=action)
+    return default
+
+
+def init_spawn_value(value, validator=None):
+    """
+    Analyze the prototype value and produce a value useful at the point of spawning.
+
+    Args:
+        value (any): This can be:
+            callable - will be called as callable()
+            (callable, (args,)) - will be called as callable(*args)
+            other - will be assigned depending on the variable type
+            validator (callable, optional): If given, this will be called with the value to
+                check and guarantee the outcome is of a given type.
+
+    Returns:
+        any (any): The (potentially pre-processed value to use for this prototype key)
+
+    """
+    value = protfunc_parser(value)
+    validator = validator if validator else lambda o: o
+    if callable(value):
+        return validator(value())
+    elif value and is_iter(value) and callable(value[0]):
+        # a structure (callable, (args, ))
+        args = value[1:]
+        return validator(value[0](*make_iter(args)))
+    else:
+        return validator(value)
 
 
 # module-based prototypes
@@ -59,39 +162,7 @@ class DbPrototype(DefaultScript):
         self.db.prototype = {}        # actual prototype
 
 
-# General prototype functions
-
-
-def check_permission(prototype_key, action, default=True):
-    """
-    Helper function to check access to actions on given prototype.
-
-    Args:
-        prototype_key (str): The prototype to affect.
-        action (str): One of "spawn" or "edit".
-        default (str): If action is unknown or prototype has no locks
-
-    Returns:
-        passes (bool): If permission for action is granted or not.
-
-    """
-    if action == 'edit':
-        if prototype_key in _MODULE_PROTOTYPES:
-            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
-            logger.log_err("{} is a read-only prototype "
-                           "(defined as code in {}).".format(prototype_key, mod))
-            return False
-
-    prototype = search_prototype(key=prototype_key)
-    if not prototype:
-        logger.log_err("Prototype {} not found.".format(prototype_key))
-        return False
-
-    lockstring = prototype.get("prototype_locks")
-
-    if lockstring:
-        return check_lockstring(None, lockstring, default=default, access_type=action)
-    return default
+# Prototype manager functions
 
 
 def create_prototype(**kwargs):
@@ -281,45 +352,6 @@ def search_objects_with_prototype(prototype_key):
     return ObjectDB.objects.get_by_tag(key=prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
 
 
-def prototype_from_object(obj):
-    """
-    Guess a minimal prototype from an existing object.
-
-    Args:
-        obj (Object): An object to analyze.
-
-    Returns:
-        prototype (dict): A prototype estimating the current state of the object.
-
-    """
-    # first, check if this object already has a prototype
-
-    prot = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
-    prot = search_prototype(prot)
-    if not prot or len(prot) > 1:
-        # no unambiguous prototype found - build new prototype
-        prot = {}
-        prot['prototype_key'] = "From-Object-{}-{}".format(
-                obj.key, hashlib.md5(str(time.time())).hexdigest()[:6])
-        prot['prototype_desc'] = "Built from {}".format(str(obj))
-        prot['prototype_locks'] = "spawn:all();edit:all()"
-
-    prot['key'] = obj.db_key or hashlib.md5(str(time.time())).hexdigest()[:6]
-    prot['location'] = obj.db_location
-    prot['home'] = obj.db_home
-    prot['destination'] = obj.db_destination
-    prot['typeclass'] = obj.db_typeclass_path
-    prot['locks'] = obj.locks.all()
-    prot['permissions'] = obj.permissions.get()
-    prot['aliases'] = obj.aliases.get()
-    prot['tags'] = [(tag.key, tag.category, tag.data)
-                    for tag in obj.tags.get(return_tagobj=True, return_list=True)]
-    prot['attrs'] = [(attr.key, attr.value, attr.category, attr.locks)
-                     for attr in obj.attributes.get(return_obj=True, return_list=True)]
-
-    return prot
-
-
 def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
     """
     Collate a list of found prototypes based on search criteria and access.
@@ -384,171 +416,3 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     table.reformat_column(2, width=11, align='c')
     table.reformat_column(3, width=16)
     return table
-
-
-
-def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
-    """
-    Update existing objects with the latest version of the prototype.
-
-    Args:
-        prototype (str or dict): Either the `prototype_key` to use or the
-            prototype dict itself.
-        diff (dict, optional): This a diff structure that describes how to update the protototype.
-            If not given this will be constructed from the first object found.
-        objects (list, optional): List of objects to update. If not given, query for these
-            objects using the prototype's `prototype_key`.
-    Returns:
-        changed (int): The number of objects that had changes applied to them.
-
-    """
-    prototype_key = prototype if isinstance(prototype, basestring) else prototype['prototype_key']
-    prototype_obj = search_db_prototype(prototype_key, return_queryset=True)
-    prototype_obj = prototype_obj[0] if prototype_obj else None
-    new_prototype = prototype_obj.db.prototype
-    objs = ObjectDB.objects.get_by_tag(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
-
-    if not objs:
-        return 0
-
-    if not diff:
-        diff = prototype_diff_from_object(new_prototype, objs[0])
-
-    changed = 0
-    for obj in objs:
-        do_save = False
-        for key, directive in diff.items():
-            val = new_prototype[key]
-            if directive in ('UPDATE', 'REPLACE'):
-                do_save = True
-                if key == 'key':
-                    obj.db_key = validate_spawn_value(val, str)
-                elif key == 'typeclass':
-                    obj.db_typeclass_path = validate_spawn_value(val, str)
-                elif key == 'location':
-                    obj.db_location = validate_spawn_value(val, _to_obj)
-                elif key == 'home':
-                    obj.db_home = validate_spawn_value(val, _to_obj)
-                elif key == 'destination':
-                    obj.db_destination = validate_spawn_value(val, _to_obj)
-                elif key == 'locks':
-                    if directive == 'REPLACE':
-                        obj.locks.clear()
-                    obj.locks.add(validate_spawn_value(val, str))
-                elif key == 'permissions':
-                    if directive == 'REPLACE':
-                        obj.permissions.clear()
-                    obj.permissions.batch_add(validate_spawn_value(val, make_iter))
-                elif key == 'aliases':
-                    if directive == 'REPLACE':
-                        obj.aliases.clear()
-                    obj.aliases.batch_add(validate_spawn_value(val, make_iter))
-                elif key == 'tags':
-                    if directive == 'REPLACE':
-                        obj.tags.clear()
-                    obj.tags.batch_add(validate_spawn_value(val, make_iter))
-                elif key == 'attrs':
-                    if directive == 'REPLACE':
-                        obj.attributes.clear()
-                    obj.attributes.batch_add(validate_spawn_value(val, make_iter))
-                elif key == 'exec':
-                    # we don't auto-rerun exec statements, it would be huge security risk!
-                    pass
-                else:
-                    obj.attributes.add(key, validate_spawn_value(val, _to_obj))
-            elif directive == 'REMOVE':
-                do_save = True
-                if key == 'key':
-                    obj.db_key = ''
-                elif key == 'typeclass':
-                    # fall back to default
-                    obj.db_typeclass_path = settings.BASE_OBJECT_TYPECLASS
-                elif key == 'location':
-                    obj.db_location = None
-                elif key == 'home':
-                    obj.db_home = None
-                elif key == 'destination':
-                    obj.db_destination = None
-                elif key == 'locks':
-                    obj.locks.clear()
-                elif key == 'permissions':
-                    obj.permissions.clear()
-                elif key == 'aliases':
-                    obj.aliases.clear()
-                elif key == 'tags':
-                    obj.tags.clear()
-                elif key == 'attrs':
-                    obj.attributes.clear()
-                elif key == 'exec':
-                    # we don't auto-rerun exec statements, it would be huge security risk!
-                    pass
-                else:
-                    obj.attributes.remove(key)
-            if do_save:
-                changed += 1
-                obj.save()
-
-    return changed
-
-def batch_create_object(*objparams):
-    """
-    This is a cut-down version of the create_object() function,
-    optimized for speed. It does NOT check and convert various input
-    so make sure the spawned Typeclass works before using this!
-
-    Args:
-        objsparams (tuple): Each paremter tuple will create one object instance using the parameters within.
-            The parameters should be given in the following order:
-                - `create_kwargs` (dict): For use as new_obj = `ObjectDB(**create_kwargs)`.
-                - `permissions` (str): Permission string used with `new_obj.batch_add(permission)`.
-                - `lockstring` (str): Lockstring used with `new_obj.locks.add(lockstring)`.
-                - `aliases` (list): A list of alias strings for
-                    adding with `new_object.aliases.batch_add(*aliases)`.
-                - `nattributes` (list): list of tuples `(key, value)` to be loop-added to
-                    add with `new_obj.nattributes.add(*tuple)`.
-                - `attributes` (list): list of tuples `(key, value[,category[,lockstring]])` for
-                    adding with `new_obj.attributes.batch_add(*attributes)`.
-                - `tags` (list): list of tuples `(key, category)` for adding
-                    with `new_obj.tags.batch_add(*tags)`.
-                - `execs` (list): Code strings to execute together with the creation
-                    of each object. They will be executed with `evennia` and `obj`
-                        (the newly created object) available in the namespace. Execution
-                        will happend after all other properties have been assigned and
-                        is intended for calling custom handlers etc.
-
-    Returns:
-        objects (list): A list of created objects
-
-    Notes:
-        The `exec` list will execute arbitrary python code so don't allow this to be available to
-        unprivileged users!
-
-    """
-
-    # bulk create all objects in one go
-
-    # unfortunately this doesn't work since bulk_create doesn't creates pks;
-    # the result would be duplicate objects at the next stage, so we comment
-    # it out for now:
-    #  dbobjs = _ObjectDB.objects.bulk_create(dbobjs)
-
-    dbobjs = [ObjectDB(**objparam[0]) for objparam in objparams]
-    objs = []
-    for iobj, obj in enumerate(dbobjs):
-        # call all setup hooks on each object
-        objparam = objparams[iobj]
-        # setup
-        obj._createdict = {"permissions": make_iter(objparam[1]),
-                           "locks": objparam[2],
-                           "aliases": make_iter(objparam[3]),
-                           "nattributes": objparam[4],
-                           "attributes": objparam[5],
-                           "tags": make_iter(objparam[6])}
-        # this triggers all hooks
-        obj.save()
-        # run eventual extra code
-        for code in objparam[7]:
-            if code:
-                exec(code, {}, {"evennia": evennia, "obj": obj})
-        objs.append(obj)
-    return objs

@@ -4,14 +4,26 @@ OLC Prototype menu nodes
 
 """
 
+from ast import literal_eval
+from django.conf import settings
 from evennia.utils.evmenu import EvMenu, list_node
 from evennia.utils.ansi import strip_ansi
+from evennia.utils import utils
+from evennia.utils.prototypes import prototypes as protlib
+from evennia.utils.prototypes import spawner
 
 # ------------------------------------------------------------
 #
 # OLC Prototype design menu
 #
 # ------------------------------------------------------------
+
+_MENU_CROP_WIDTH = 15
+_MENU_ATTR_LITERAL_EVAL_ERROR = (
+    "|rCritical Python syntax error in your value. Only primitive Python structures are allowed.\n"
+    "You also need to use correct Python syntax. Remember especially to put quotes around all "
+    "strings inside lists and dicts.|n")
+
 
 # Helper functions
 
@@ -48,11 +60,11 @@ def _format_property(prop, required=False, prototype=None, cropper=None):
             out = "<{}>".format(prop.__name__)
         else:
             out = repr(prop)
-    if is_iter(prop):
+    if utils.is_iter(prop):
         out = ", ".join(str(pr) for pr in prop)
     if not out and required:
         out = "|rrequired"
-    return " ({}|n)".format(cropper(out) if cropper else crop(out, _MENU_CROP_WIDTH))
+    return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
 
 
 def _set_property(caller, raw_string, **kwargs):
@@ -166,7 +178,8 @@ def node_index(caller):
     required = False
     for key in ('Desc', 'Tags', 'Locks'):
         options.append(
-            {"desc": "|WPrototype-{}|n|n{}".format(key, _format_property(key, required, prototype, None)),
+            {"desc": "|WPrototype-{}|n|n{}".format(
+                key, _format_property(key, required, prototype, None)),
              "goto": "node_prototype_{}".format(key.lower())})
 
     return text, options
@@ -175,11 +188,11 @@ def node_index(caller):
 def node_validate_prototype(caller, raw_string, **kwargs):
     prototype = _get_menu_prototype(caller)
 
-    txt = prototype_to_str(prototype)
+    txt = protlib.prototype_to_str(prototype)
     errors = "\n\n|g No validation errors found.|n (but errors could still happen at spawn-time)"
     try:
         # validate, don't spawn
-        spawn(prototype, return_prototypes=True)
+        spawner.spawn(prototype, return_prototypes=True)
     except RuntimeError as err:
         errors = "\n\n|rError: {}|n".format(err)
     text = (txt + errors)
@@ -190,7 +203,7 @@ def node_validate_prototype(caller, raw_string, **kwargs):
 
 
 def _check_prototype_key(caller, key):
-    old_prototype = search_prototype(key)
+    old_prototype = protlib.search_prototype(key)
     olc_new = _is_new_prototype(caller)
     key = key.strip().lower()
     if old_prototype:
@@ -231,13 +244,13 @@ def node_prototype_key(caller):
 
 def _all_prototypes(caller):
     return [prototype["prototype_key"]
-            for prototype in search_prototype() if "prototype_key" in prototype]
+            for prototype in protlib.search_prototype() if "prototype_key" in prototype]
 
 
 def _prototype_examine(caller, prototype_name):
-    prototypes = search_prototype(key=prototype_name)
+    prototypes = protlib.search_prototype(key=prototype_name)
     if prototypes:
-        caller.msg(prototype_to_str(prototypes[0]))
+        caller.msg(protlib.prototype_to_str(prototypes[0]))
     caller.msg("Prototype not registered.")
     return None
 
@@ -256,9 +269,10 @@ def node_prototype(caller):
 
     text = ["Set the prototype's |yParent Prototype|n. If this is unset, Typeclass will be used."]
     if prot_parent_key:
-        prot_parent = search_prototype(prot_parent_key)
+        prot_parent = protlib.search_prototype(prot_parent_key)
         if prot_parent:
-            text.append("Current parent prototype is {}:\n{}".format(prototype_to_str(prot_parent)))
+            text.append(
+                "Current parent prototype is {}:\n{}".format(protlib.prototype_to_str(prot_parent)))
         else:
             text.append("Current parent prototype |r{prototype}|n "
                         "does not appear to exist.".format(prot_parent_key))
@@ -273,7 +287,7 @@ def node_prototype(caller):
 
 
 def _all_typeclasses(caller):
-    return list(sorted(get_all_typeclasses().keys()))
+    return list(sorted(utils.get_all_typeclasses().keys()))
 
 
 def _typeclass_examine(caller, typeclass_path):
@@ -281,7 +295,7 @@ def _typeclass_examine(caller, typeclass_path):
         # this means we are exiting the listing
         return "node_key"
 
-    typeclass = get_all_typeclasses().get(typeclass_path)
+    typeclass = utils.get_all_typeclasses().get(typeclass_path)
     if typeclass:
         docstr = []
         for line in typeclass.__doc__.split("\n"):
@@ -453,8 +467,8 @@ def _add_tag(caller, tag, **kwargs):
             tags.append(tag)
     else:
         tags = [tag]
-    prot['tags'] = tags
-    _set_menu_prototype(caller, "prototype", prot)
+    prototype['tags'] = tags
+    _set_menu_prototype(caller, "prototype", prototype)
     text = kwargs.get("text")
     if not text:
         text = "Added tag {}. (return to continue)".format(tag)
@@ -706,4 +720,3 @@ def start_olc(caller, session=None, prototype=None):
                 "node_prototype_locks": node_prototype_locks,
                 }
     OLCMenu(caller, menudata, startnode='node_index', session=session, olc_prototype=prototype)
-
