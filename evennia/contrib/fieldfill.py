@@ -169,7 +169,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
         newvalue = entry[1].strip()
         
         # Syntax error of field name is too short or blank
-        if len(fieldname) < 3:
+        if len(fieldname) < 1:
             caller.msg(syntax_err)
             text = (None, help_text)
             return text, options
