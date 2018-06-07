@@ -1283,6 +1283,25 @@ class TestTreeSelectFunc(EvenniaTest):
         {'goto': ['menunode_treeselect', {'newindex': 1}], 'key': ['<< Go Back', 'go back', 'back'], 'desc': 'Return to the previous menu.'}]
         self.assertTrue(tree_select.optlist_to_menuoptions(TREE_MENU_TESTSTR, test_optlist, 2, True, True) == optlist_to_menu_expected_result)
 
+# Test field fill
+
+from evennia.contrib import fieldfill
+
+FIELD_TEST_TEMPLATE = [
+{"fieldname":"TextTest", "fieldtype":"text"},
+{"fieldname":"NumberTest", "fieldtype":"number", "blankmsg":"Number here!"},
+{"fieldname":"DefaultText", "fieldtype":"text", "default":"Test"},
+{"fieldname":"DefaultNum", "fieldtype":"number", "default":3}
+]
+
+FIELD_TEST_DATA = {"TextTest":None, "NumberTest":None, "DefaultText":"Test", "DefaultNum":3}
+
+class TestFieldFillFunc(EvenniaTest):
+
+    def test_field_functions(self):
+        # Template to dictionary
+        self.assertTrue(fieldfill.form_template_to_dict(FIELD_TEST_TEMPLATE) == FIELD_TEST_DATA)
+        
 # Test of the unixcommand module
 
 from evennia.contrib.unixcommand import UnixCommand

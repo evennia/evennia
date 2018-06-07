@@ -191,7 +191,7 @@ def init_fill_field(formtemplate, caller, callback, pretext="", posttext="",
     "pretext": pretext,
     "posttext": posttext,
     "submitcmd": submitcmd,
-    "borderstyle": borderstyle
+    "borderstyle": borderstyle,
     "helptext": helptext
     }
     
