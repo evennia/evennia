@@ -34,9 +34,9 @@ syntax <field> = <new value>, like so:
     > name = Ashley
     Field 'Name' set to: Ashley
     
-Typing 'show' by itself will show the form and its current values.
+Typing 'look' by itself will show the form and its current values.
 
-    > show
+    > look
 
       Name: Ashley 
        Age:         
@@ -54,7 +54,7 @@ Form data is presented as an EvTable, so text of any length will wrap cleanly.
 
     > history = EVERY MORNING I WAKE UP AND OPEN PALM SLAM[...]
     Field 'History' set to: EVERY MORNING I WAKE UP AND[...]
-    > show
+    > look
 
       Name: Ashley                                                             
        Age: 31                                                                 
@@ -178,7 +178,7 @@ def init_fill_field(formtemplate, caller, callback, pretext="", posttext="",
         helptext = ("Available commands:|/"
                      "|w<field> = <new value>:|n Set given field to new value, replacing the old value|/"
                      "|wclear <field>:|n Clear the value in the given field, making it blank|/"
-                     "|wshow|n: Show the form's current values|/"
+                     "|wlook|n: Show the form's current values|/"
                      "|whelp|n: Display this help screen|/"
                      "|wquit|n: Quit the form menu without submitting|/"
                      "|w%s|n: Submit this form and quit the menu" % submitcmd)
@@ -217,7 +217,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
     helptext = caller.ndb._menutree.helptext
     
     # Syntax error
-    syntax_err = "Syntax: <field> = <new value>|/Or: clear <field>, help, show, quit|/'%s' to submit form" % submitcmd
+    syntax_err = "Syntax: <field> = <new value>|/Or: clear <field>, help, look, quit|/'%s' to submit form" % submitcmd
     
     # Display current form data
     text = (display_formdata(formtemplate, formdata, pretext=pretext,
@@ -245,8 +245,8 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
             callback(caller, formdata)
             return None, None
         
-        # Test for 'show' command
-        if raw_string.lower().strip() == "show":
+        # Test for 'look' command
+        if raw_string.lower().strip() == "look" or raw_string.lower().strip() == "l":
             return text, options
         
         # Test for 'clear' command
@@ -508,7 +508,7 @@ class CmdTestMenu(Command):
        <field> = <new value>
        clear <field>
        help
-       show
+       look
        quit
        send
     """
