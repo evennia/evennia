@@ -50,10 +50,10 @@ class TestSpawner(EvenniaTest):
     def test_spawn(self):
         obj1 = spawner.spawn(self.prot1)
         # check spawned objects have the right tag
-        self.assertEqual(list(spawner.search_objects_with_prototype("testprototype")), obj1)
+        self.assertEqual(list(protlib.search_objects_with_prototype("testprototype")), obj1)
         self.assertEqual([o.key for o in spawner.spawn(
                           _PROTPARENTS["GOBLIN"], _PROTPARENTS["GOBLIN_ARCHWIZARD"],
-                          prototype_parents=_PROTPARENTS)], [])
+                          prototype_parents=_PROTPARENTS)], ['goblin grunt', 'goblin archwizard'])
 
 
 class TestPrototypeStorage(EvenniaTest):

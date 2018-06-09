@@ -426,10 +426,12 @@ def spawn(*prototypes, **kwargs):
 
     """
     # get available protparents
-    protparents = {prot['prototype_key']: prot for prot in protlib.search_prototype()}
+    protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
 
     # overload module's protparents with specifically given protparents
-    protparents.update(kwargs.get("prototype_parents", {}))
+    protparents.update(
+        {key.lower(): value for key, value in kwargs.get("prototype_parents", {}).items()})
+
     for key, prototype in protparents.items():
         protlib.validate_prototype(prototype, key.lower(), protparents)
 
