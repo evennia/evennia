@@ -1,10 +1,44 @@
 """
-Unit test for the spawner
+Unit tests for the prototypes and spawner
 
 """
 
+from random import randint
 from evennia.utils.test_resources import EvenniaTest
-from evennia.utils import spawner
+from evennia.prototypes import spawner, prototypes as protlib
+
+
+_PROTPARENTS = {
+    "NOBODY": {},
+    "GOBLIN": {
+        "key": "goblin grunt",
+        "health": lambda: randint(1, 1),
+        "resists": ["cold", "poison"],
+        "attacks": ["fists"],
+        "weaknesses": ["fire", "light"]
+    },
+    "GOBLIN_WIZARD": {
+        "prototype": "GOBLIN",
+        "key": "goblin wizard",
+        "spells": ["fire ball", "lighting bolt"]
+    },
+    "GOBLIN_ARCHER": {
+        "prototype": "GOBLIN",
+        "key": "goblin archer",
+        "attacks": ["short bow"]
+    },
+    "ARCHWIZARD": {
+        "attacks": ["archwizard staff"],
+    },
+    "GOBLIN_ARCHWIZARD": {
+        "key": "goblin archwizard",
+        "prototype": ("GOBLIN_WIZARD", "ARCHWIZARD")
+    }
+}
+
+
+class TestPrototypes(EvenniaTest):
+    pass
 
 
 class TestSpawner(EvenniaTest):
@@ -17,6 +51,9 @@ class TestSpawner(EvenniaTest):
         obj1 = spawner.spawn(self.prot1)
         # check spawned objects have the right tag
         self.assertEqual(list(spawner.search_objects_with_prototype("testprototype")), obj1)
+        self.assertEqual([o.key for o in spawner.spawn(
+                          _PROTPARENTS["GOBLIN"], _PROTPARENTS["GOBLIN_ARCHWIZARD"],
+                          prototype_parents=_PROTPARENTS)], [])
 
 
 class TestPrototypeStorage(EvenniaTest):

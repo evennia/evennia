@@ -13,7 +13,7 @@ from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
-from evennia.utils import spawner
+from evennia.prototypes import spawner
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
