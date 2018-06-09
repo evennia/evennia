@@ -129,11 +129,8 @@ import time
 
 from django.conf import settings
 import evennia
-from random import randint
 from evennia.objects.models import ObjectDB
-from evennia.utils.utils import (
-    make_iter, dbid_to_obj,
-    is_iter, get_all_typeclasses)
+from evennia.utils.utils import make_iter, is_iter
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.prototypes import value_to_obj, value_to_obj_or_any, init_spawn_value
 
@@ -516,42 +513,3 @@ def spawn(*prototypes, **kwargs):
                            alias_string, nattributes, attributes, tags, execs))
 
     return batch_create_object(*objsparams)
-
-
-# Testing
-
-if __name__ == "__main__":
-    protparents = {
-        "NOBODY": {},
-        # "INFINITE" : {
-        #     "prototype":"INFINITE"
-        # },
-        "GOBLIN": {
-            "key": "goblin grunt",
-            "health": lambda: randint(20, 30),
-            "resists": ["cold", "poison"],
-            "attacks": ["fists"],
-            "weaknesses": ["fire", "light"]
-        },
-        "GOBLIN_WIZARD": {
-            "prototype": "GOBLIN",
-            "key": "goblin wizard",
-            "spells": ["fire ball", "lighting bolt"]
-        },
-        "GOBLIN_ARCHER": {
-            "prototype": "GOBLIN",
-            "key": "goblin archer",
-            "attacks": ["short bow"]
-        },
-        "ARCHWIZARD": {
-            "attacks": ["archwizard staff"],
-        },
-        "GOBLIN_ARCHWIZARD": {
-            "key": "goblin archwizard",
-            "prototype": ("GOBLIN_WIZARD", "ARCHWIZARD")
-        }
-    }
-    # test
-    print([o.key for o in spawn(protparents["GOBLIN"],
-                                protparents["GOBLIN_ARCHWIZARD"],
-                                prototype_parents=protparents)])

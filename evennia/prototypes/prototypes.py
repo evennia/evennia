@@ -15,7 +15,7 @@ from evennia.utils.utils import (
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
 from evennia.utils.evtable import EvTable
-from evennia.utils.prototypes.protfuncs import protfunc_parser
+from evennia.prototypes.protfuncs import protfunc_parser
 
 
 _MODULE_PROTOTYPE_MODULES = {}
