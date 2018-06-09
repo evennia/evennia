@@ -416,3 +416,45 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     table.reformat_column(2, width=11, align='c')
     table.reformat_column(3, width=16)
     return table
+
+
+def validate_prototype(prototype, protkey=None, protparents=None, _visited=None):
+    """
+    Run validation on a prototype, checking for inifinite regress.
+
+    Args:
+        prototype (dict): Prototype to validate.
+        protkey (str, optional): The name of the prototype definition. If not given, the prototype
+            dict needs to have the `prototype_key` field set.
+        protpartents (dict, optional): The available prototype parent library. If
+            note given this will be determined from settings/database.
+        _visited (list, optional): This is an internal work array and should not be set manually.
+    Raises:
+        RuntimeError: If prototype has invalid structure.
+
+    """
+    if not protparents:
+        protparents = {prototype['prototype_key']: prototype for prototype in search_prototype()}
+    if _visited is None:
+        _visited = []
+
+    protkey = protkey and protkey.lower() or prototype.get('prototype_key', None)
+
+    assert isinstance(prototype, dict)
+
+    if id(prototype) in _visited:
+        raise RuntimeError("%s has infinite nesting of prototypes." % protkey or prototype)
+
+    _visited.append(id(prototype))
+    protstrings = prototype.get("prototype")
+
+    if protstrings:
+        for protstring in make_iter(protstrings):
+            protstring = protstring.lower()
+            if protkey is not None and protstring == protkey:
+                raise RuntimeError("%s tries to prototype itself." % protkey or prototype)
+            protparent = protparents.get(protstring)
+            if not protparent:
+                raise RuntimeError(
+                    "%s's prototype '%s' was not found." % (protkey or prototype, protstring))
+            validate_prototype(protparent, protstring, protparents, _visited)
