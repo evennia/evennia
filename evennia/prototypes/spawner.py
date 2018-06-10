@@ -177,27 +177,45 @@ def prototype_from_object(obj):
     # first, check if this object already has a prototype
 
     prot = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
-    prot = protlib.search_prototype(prot)
+    if prot:
+        prot = protlib.search_prototype(prot[0])
     if not prot or len(prot) > 1:
         # no unambiguous prototype found - build new prototype
         prot = {}
         prot['prototype_key'] = "From-Object-{}-{}".format(
-                obj.key, hashlib.md5(str(time.time())).hexdigest()[:6])
+                obj.key, hashlib.md5(str(time.time())).hexdigest()[:7])
         prot['prototype_desc'] = "Built from {}".format(str(obj))
         prot['prototype_locks'] = "spawn:all();edit:all()"
 
     prot['key'] = obj.db_key or hashlib.md5(str(time.time())).hexdigest()[:6]
-    prot['location'] = obj.db_location
-    prot['home'] = obj.db_home
-    prot['destination'] = obj.db_destination
     prot['typeclass'] = obj.db_typeclass_path
-    prot['locks'] = obj.locks.all()
-    prot['permissions'] = obj.permissions.get()
-    prot['aliases'] = obj.aliases.get()
-    prot['tags'] = [(tag.key, tag.category, tag.data)
-                    for tag in obj.tags.get(return_tagobj=True, return_list=True)]
-    prot['attrs'] = [(attr.key, attr.value, attr.category, attr.locks)
-                     for attr in obj.attributes.get(return_obj=True, return_list=True)]
+
+    location = obj.db_location
+    if location:
+        prot['location'] = location
+    home = obj.db_home
+    if home:
+        prot['home'] = home
+    destination = obj.db_destination
+    if destination:
+        prot['destination'] = destination
+    locks = obj.locks.all()
+    if locks:
+        prot['locks'] = locks
+    perms = obj.permissions.get()
+    if perms:
+        prot['permissions'] = perms
+    aliases = obj.aliases.get()
+    if aliases:
+        prot['aliases'] = aliases
+    tags = [(tag.db_key, tag.db_category, tag.db_data)
+            for tag in obj.tags.get(return_tagobj=True, return_list=True) if tag]
+    if tags:
+        prot['tags'] = tags
+    attrs = [(attr.key, attr.value, attr.category, attr.locks.all())
+             for attr in obj.attributes.get(return_obj=True, return_list=True) if attr]
+    if attrs:
+        prot['attrs'] = attrs
 
     return prot
 
@@ -224,8 +242,14 @@ def prototype_diff_from_object(prototype, obj):
         diff[key] = "KEEP"
         if key in prot2:
             if callable(prot2[key]) or value != prot2[key]:
-                diff[key] = "UPDATE"
+                if key in ('attrs', 'tags', 'permissions', 'locks', 'aliases'):
+                    diff[key] = 'REPLACE'
+                else:
+                    diff[key] = "UPDATE"
         elif key not in prot2:
+            diff[key] = "UPDATE"
+    for key in prot2:
+        if key not in diff and key not in prot1:
             diff[key] = "REMOVE"
 
     return diff
@@ -246,25 +270,42 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
         changed (int): The number of objects that had changes applied to them.
 
     """
-    prototype_key = prototype if isinstance(prototype, basestring) else prototype['prototype_key']
-    prototype_obj = protlib.DbPrototype.objects.filter(db_key=prototype_key)
-    prototype_obj = prototype_obj[0] if prototype_obj else None
-    new_prototype = prototype_obj.db.prototype
-    objs = ObjectDB.objects.get_by_tag(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+    if isinstance(prototype, basestring):
+        new_prototype = protlib.search_prototype(prototype)
+    else:
+        new_prototype = prototype
 
-    if not objs:
+    prototype_key = new_prototype['prototype_key']
+
+    if not objects:
+        objects = ObjectDB.objects.get_by_tag(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+
+    if not objects:
         return 0
 
     if not diff:
-        diff = prototype_diff_from_object(new_prototype, objs[0])
+        diff = prototype_diff_from_object(new_prototype, objects[0])
 
     changed = 0
-    for obj in objs:
+    for obj in objects:
         do_save = False
+
+        old_prot_key = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
+        old_prot_key = old_prot_key[0] if old_prot_key else None
+        if prototype_key != old_prot_key:
+            obj.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
+            obj.tags.add(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+
         for key, directive in diff.items():
-            val = new_prototype[key]
             if directive in ('UPDATE', 'REPLACE'):
+
+                if key in _PROTOTYPE_META_NAMES:
+                    # prototype meta keys are not stored on-object
+                    continue
+
+                val = new_prototype[key]
                 do_save = True
+
                 if key == 'key':
                     obj.db_key = init_spawn_value(val, str)
                 elif key == 'typeclass':
@@ -282,19 +323,19 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
                 elif key == 'permissions':
                     if directive == 'REPLACE':
                         obj.permissions.clear()
-                    obj.permissions.batch_add(init_spawn_value(val, make_iter))
+                    obj.permissions.batch_add(*init_spawn_value(val, make_iter))
                 elif key == 'aliases':
                     if directive == 'REPLACE':
                         obj.aliases.clear()
-                    obj.aliases.batch_add(init_spawn_value(val, make_iter))
+                    obj.aliases.batch_add(*init_spawn_value(val, make_iter))
                 elif key == 'tags':
                     if directive == 'REPLACE':
                         obj.tags.clear()
-                    obj.tags.batch_add(init_spawn_value(val, make_iter))
+                    obj.tags.batch_add(*init_spawn_value(val, make_iter))
                 elif key == 'attrs':
                     if directive == 'REPLACE':
                         obj.attributes.clear()
-                    obj.attributes.batch_add(init_spawn_value(val, make_iter))
+                    obj.attributes.batch_add(*init_spawn_value(val, make_iter))
                 elif key == 'exec':
                     # we don't auto-rerun exec statements, it would be huge security risk!
                     pass
@@ -328,9 +369,9 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
                     pass
                 else:
                     obj.attributes.remove(key)
-            if do_save:
-                changed += 1
-                obj.save()
+        if do_save:
+            changed += 1
+            obj.save()
 
     return changed
 
