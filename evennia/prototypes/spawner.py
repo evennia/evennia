@@ -132,13 +132,13 @@ import evennia
 from evennia.objects.models import ObjectDB
 from evennia.utils.utils import make_iter, is_iter
 from evennia.prototypes import prototypes as protlib
-from evennia.prototypes.prototypes import value_to_obj, value_to_obj_or_any, init_spawn_value
+from evennia.prototypes.prototypes import (
+    value_to_obj, value_to_obj_or_any, init_spawn_value, _PROTOTYPE_TAG_CATEGORY)
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
 _NON_CREATE_KWARGS = _CREATE_OBJECT_KWARGS + _PROTOTYPE_META_NAMES
-_PROTOTYPE_TAG_CATEGORY = "spawned_by_prototype"
 
 
 # Helper

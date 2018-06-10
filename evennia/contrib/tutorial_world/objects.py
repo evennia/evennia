@@ -24,7 +24,7 @@ import random
 
 from evennia import DefaultObject, DefaultExit, Command, CmdSet
 from evennia.utils import search, delay
-from evennia.utils.spawner import spawn
+from evennia.prototypes.spawner import spawn
 
 # -------------------------------------------------------------
 #

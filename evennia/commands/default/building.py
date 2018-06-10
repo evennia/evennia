@@ -13,7 +13,7 @@ from evennia.utils import create, utils, search
 from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
-from evennia.prototypes import spawner
+from evennia.prototypes import spawner, prototypes as protlib
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -2887,7 +2887,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                                     "use the 'exec' prototype key.")
                     return None
                 try:
-                    spawner.validate_prototype(prototype)
+                    protlib.validate_prototype(prototype)
                 except RuntimeError as err:
                     self.caller.msg(str(err))
                     return
@@ -2929,7 +2929,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 if ';' in self.args:
                     key, tags = (part.strip().lower() for part in self.args.split(";", 1))
                     tags = [tag.strip() for tag in tags.split(",")] if tags else None
-                EvMore(caller, unicode(spawner.list_prototypes(caller, key=key, tags=tags)),
+                EvMore(caller, unicode(protlib.list_prototypes(caller, key=key, tags=tags)),
                        exit_on_lastpage=True)
                 return
 
@@ -2947,7 +2947,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         if 'list' in self.switches:
             # for list, all optional arguments are tags
-            EvMore(caller, unicode(spawner.list_prototypes(caller,
+            EvMore(caller, unicode(protlib.list_prototypes(caller,
                    tags=self.lhslist)), exit_on_lastpage=True)
             return
 
@@ -3049,7 +3049,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.args:
-            ncount = len(spawner.search_prototype())
+            ncount = len(protlib.search_prototype())
             caller.msg("Usage: @spawn <prototype-key> or {{key: value, ...}}"
                        "\n ({} existing prototypes. Use /list to inspect)".format(ncount))
             return
@@ -3065,7 +3065,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     caller.msg("|rDeletion cancelled.|n")
                     return
                 try:
-                    success = spawner.delete_db_prototype(caller, self.args)
+                    success = protlib.delete_db_prototype(caller, self.args)
                 except PermissionError as err:
                     caller.msg("|rError deleting:|R {}|n".format(err))
                 caller.msg("Deletion {}.".format(
@@ -3077,7 +3077,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if 'update' in self.switches:
             # update existing prototypes
             key = self.args.strip().lower()
-            existing_objects = spawner.search_objects_with_prototype(key)
+            existing_objects = protlib.search_objects_with_prototype(key)
             if existing_objects:
                 n_existing = len(existing_objects)
                 slow = " (note that this may be slow)" if n_existing > 10 else ""
@@ -3103,7 +3103,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if isinstance(prototype, basestring):
             # A prototype key we are looking to apply
             key = prototype
-            prototypes = spawner.search_prototype(prototype)
+            prototypes = protlib.search_prototype(prototype)
             nprots = len(prototypes)
             if not prototypes:
                 caller.msg("No prototype named '%s'." % prototype)
@@ -3115,7 +3115,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             # we have a prototype, check access
             prototype = prototypes[0]
-            if not caller.locks.check_lockstring(caller, prototype.get('prototype_locks', ''), access_type='use'):
+            if not caller.locks.check_lockstring(caller, prototype.get('prototype_locks', ''), access_type='spawn'):
                 caller.msg("You don't have access to use this prototype.")
                 return
 
