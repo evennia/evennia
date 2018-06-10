@@ -83,6 +83,7 @@ class TestUtils(EvenniaTest):
              'prototype_desc': 'Built from Obj',
              'prototype_key': Something,
              'prototype_locks': 'spawn:all();edit:all()',
+             'prototype_tags': [],
              'tags': [(u'foo', None, None)],
              'typeclass': 'evennia.objects.objects.DefaultObject'}, new_prot)
 
@@ -121,6 +122,7 @@ class TestUtils(EvenniaTest):
               'prototype_desc': 'UPDATE',
               'prototype_key': 'UPDATE',
               'prototype_locks': 'KEEP',
+              'prototype_tags': 'KEEP',
               'test': 'UPDATE',
               'typeclass': 'KEEP'})
 
@@ -148,6 +150,7 @@ class TestUtils(EvenniaTest):
                           'prototype_desc': 'Built from Obj',
                           'prototype_key': Something,
                           'prototype_locks': 'spawn:all();edit:all()',
+                          'prototype_tags': [],
                           'typeclass': 'evennia.objects.objects.DefaultObject'},
                          new_prot)
 
