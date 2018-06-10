@@ -9,6 +9,7 @@ from anything import Anything, Something
 from evennia.utils.test_resources import EvenniaTest
 from evennia.prototypes import spawner, prototypes as protlib
 
+from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
 _PROTPARENTS = {
     "NOBODY": {},
@@ -151,63 +152,80 @@ class TestUtils(EvenniaTest):
                          new_prot)
 
 
+class TestProtLib(EvenniaTest):
+
+    def setUp(self):
+        super(TestProtLib, self).setUp()
+        self.obj1.attributes.add("testattr", "testval")
+        self.prot = spawner.prototype_from_object(self.obj1)
+
+    def test_prototype_to_str(self):
+        prstr = protlib.prototype_to_str(self.prot)
+        self.assertTrue(prstr.startswith("|cprototype key:|n"))
+
+    def test_check_permission(self):
+        pass
+
 class TestPrototypeStorage(EvenniaTest):
 
     def setUp(self):
         super(TestPrototypeStorage, self).setUp()
-        self.prot1 = {"prototype_key": "testprototype"}
-        self.prot2 = {"prototype_key": "testprototype2"}
-        self.prot3 = {"prototype_key": "testprototype3"}
+        self.maxDiff = None
 
-    def _get_metaproto(
-            self, key='testprototype', desc='testprototype',
-            locks=['edit:id(6) or perm(Admin)', 'use:all()'],
-            tags=[], prototype={"key": "testprototype"}):
-        return spawner.build_metaproto(key, desc, locks, tags, prototype)
+        self.prot1 = spawner.prototype_from_object(self.obj1)
+        self.prot1['prototype_key'] = 'testprototype1'
+        self.prot1['prototype_desc'] = 'testdesc1'
+        self.prot1['prototype_tags'] = [('foo1', _PROTOTYPE_TAG_META_CATEGORY)]
 
-    def _to_metaproto(self, db_prototype):
-        return spawner.build_metaproto(
-            db_prototype.key, db_prototype.desc, db_prototype.locks.all(),
-            db_prototype.tags.get(category="db_prototype", return_list=True),
-            db_prototype.attributes.get("prototype"))
+        self.prot2 = self.prot1.copy()
+        self.prot2['prototype_key'] = 'testprototype2'
+        self.prot2['prototype_desc'] = 'testdesc2'
+        self.prot2['prototype_tags'] = [('foo1', _PROTOTYPE_TAG_META_CATEGORY)]
+
+        self.prot3 = self.prot2.copy()
+        self.prot3['prototype_key'] = 'testprototype3'
+        self.prot3['prototype_desc'] = 'testdesc3'
+        self.prot3['prototype_tags'] = [('foo1', _PROTOTYPE_TAG_META_CATEGORY)]
 
     def test_prototype_storage(self):
 
-        prot = spawner.save_db_prototype(self.char1, self.prot1, "testprot",
-                                         desc='testdesc0', tags=["foo"])
+        prot1 = protlib.create_prototype(**self.prot1)
 
-        self.assertTrue(bool(prot))
-        self.assertEqual(prot.db.prototype, self.prot1)
-        self.assertEqual(prot.desc, "testdesc0")
+        self.assertTrue(bool(prot1))
+        self.assertEqual(prot1, self.prot1)
 
-        prot = spawner.save_db_prototype(self.char1, self.prot1, "testprot",
-                                         desc='testdesc', tags=["fooB"])
-        self.assertEqual(prot.db.prototype, self.prot1)
-        self.assertEqual(prot.desc, "testdesc")
-        self.assertTrue(bool(prot.tags.get("fooB", "db_prototype")))
+        self.assertEqual(prot1['prototype_desc'], "testdesc1")
 
-        self.assertEqual(list(prot.__class__.objects.get_by_tag("foo", "db_prototype")), [prot])
-
-        prot2 = spawner.save_db_prototype(self.char1, self.prot2, "testprot2",
-                                          desc='testdesc2b', tags=["foo"])
+        self.assertEqual(prot1['prototype_tags'], [("foo1", _PROTOTYPE_TAG_META_CATEGORY)])
         self.assertEqual(
-            list(prot.__class__.objects.get_by_tag("foo", "db_prototype")), [prot, prot2])
+            protlib.DbPrototype.objects.get_by_tag(
+                "foo1", _PROTOTYPE_TAG_META_CATEGORY)[0].db.prototype, prot1)
 
-        prot3 = spawner.save_db_prototype(self.char1, self.prot3, "testprot2", desc='testdesc2')
-        self.assertEqual(prot2.id, prot3.id)
+        prot2 = protlib.create_prototype(**self.prot2)
         self.assertEqual(
-            list(prot.__class__.objects.get_by_tag("foo", "db_prototype")), [prot, prot2])
+            [pobj.db.prototype
+             for pobj in protlib.DbPrototype.objects.get_by_tag(
+                 "foo1", _PROTOTYPE_TAG_META_CATEGORY)],
+            [prot1, prot2])
 
-        # returns DBPrototype
-        self.assertEqual(list(spawner.search_db_prototype("testprot", return_queryset=True)), [prot])
+        # add to existing prototype
+        prot1b = protlib.create_prototype(
+            prototype_key='testprototype1', foo='bar', prototype_tags=['foo2'])
 
-        prot = prot.db.prototype
-        prot3 = prot3.db.prototype
-        self.assertEqual(list(spawner.search_prototype("testprot")), [prot])
         self.assertEqual(
-            list(spawner.search_prototype("testprot")), [self.prot1])
+            [pobj.db.prototype
+             for pobj in protlib.DbPrototype.objects.get_by_tag(
+                 "foo2", _PROTOTYPE_TAG_META_CATEGORY)],
+            [prot1b])
+
+        self.assertEqual(list(protlib.search_prototype("testprototype2")), [prot2])
+        self.assertNotEqual(list(protlib.search_prototype("testprototype1")), [prot1])
+        self.assertEqual(list(protlib.search_prototype("testprototype1")), [prot1b])
+
+        prot3 = protlib.create_prototype(**self.prot3)
+
         # partial match
-        self.assertEqual(list(spawner.search_prototype("prot")), [prot, prot3])
-        self.assertEqual(list(spawner.search_prototype(tags="foo")), [prot, prot3])
+        self.assertEqual(list(protlib.search_prototype("prot")), [prot1b, prot2, prot3])
+        self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
 
-        self.assertTrue(str(unicode(spawner.list_prototypes(self.char1))))
+        self.assertTrue(str(unicode(protlib.list_prototypes(self.char1))))

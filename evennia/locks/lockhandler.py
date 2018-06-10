@@ -660,7 +660,7 @@ def validate_lockstring(lockstring):
             if no error was found.
 
     """
-    return _LOCK_HANDLER.valdate(lockstring)
+    return _LOCK_HANDLER.validate(lockstring)
 
 
 def _test():
