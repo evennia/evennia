@@ -186,6 +186,7 @@ def prototype_from_object(obj):
                 obj.key, hashlib.md5(str(time.time())).hexdigest()[:7])
         prot['prototype_desc'] = "Built from {}".format(str(obj))
         prot['prototype_locks'] = "spawn:all();edit:all()"
+        prot['prototype_tags'] = []
 
     prot['key'] = obj.db_key or hashlib.md5(str(time.time())).hexdigest()[:6]
     prot['typeclass'] = obj.db_typeclass_path

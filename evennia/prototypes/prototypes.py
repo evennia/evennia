@@ -21,7 +21,8 @@ from evennia.prototypes.protfuncs import protfunc_parser
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
 _PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
-_PROTOTYPE_TAG_CATEGORY = "spawned_by_prototype"
+_PROTOTYPE_TAG_CATEGORY = "from_prototype"
+_PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 
 
 class PermissionError(RuntimeError):
@@ -167,7 +168,7 @@ class DbPrototype(DefaultScript):
 
 def create_prototype(**kwargs):
     """
-    Store a prototype persistently.
+    Create/Store a prototype persistently.
 
     Kwargs:
         prototype_key (str): This is required for any storage.
@@ -204,36 +205,45 @@ def create_prototype(**kwargs):
         raise PermissionError("{} is a read-only prototype "
                               "(defined as code in {}).".format(prototype_key, mod))
 
-    # want to create- or edit
-    prototype = kwargs
-
     # make sure meta properties are included with defaults
-    prototype['prototype_desc'] = prototype.get('prototype_desc', '')
-    locks = prototype.get('prototype_locks', "spawn:all();edit:perm(Admin)")
-    is_valid, err = validate_lockstring(locks)
+    stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
+    prototype = dict(stored_prototype[0].db.prototype) if stored_prototype else {}
+
+    kwargs['prototype_desc'] = kwargs.get("prototype_desc", prototype.get("prototype_desc", ""))
+    prototype_locks = kwargs.get(
+        "prototype_locks", prototype.get('prototype_locks', "spawn:all();edit:perm(Admin)"))
+    is_valid, err = validate_lockstring(prototype_locks)
     if not is_valid:
         raise ValidationError("Lock error: {}".format(err))
-    prototype["prototype_locks"] = locks
-    prototype["prototype_tags"] = [
-        _to_batchtuple(tag, "db_prototype")
-        for tag in make_iter(prototype.get("prototype_tags", []))]
+    kwargs['prototype_locks'] = prototype_locks
 
-    stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
+    prototype_tags = [
+        _to_batchtuple(tag, _PROTOTYPE_TAG_META_CATEGORY)
+        for tag in make_iter(kwargs.get("prototype_tags",
+                             prototype.get('prototype_tags', [])))]
+    kwargs["prototype_tags"] = prototype_tags
+
+    prototype.update(kwargs)
 
     if stored_prototype:
         # edit existing prototype
         stored_prototype = stored_prototype[0]
-
         stored_prototype.desc = prototype['prototype_desc']
-        stored_prototype.tags.batch_add(*prototype['prototype_tags'])
+        if prototype_tags:
+            stored_prototype.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
+            stored_prototype.tags.batch_add(*prototype['prototype_tags'])
         stored_prototype.locks.add(prototype['prototype_locks'])
         stored_prototype.attributes.add('prototype', prototype)
     else:
         # create a new prototype
         stored_prototype = create_script(
             DbPrototype, key=prototype_key, desc=prototype['prototype_desc'], persistent=True,
-            locks=locks, tags=prototype['prototype_tags'], attributes=[("prototype", prototype)])
-    return stored_prototype
+            locks=prototype_locks, tags=prototype['prototype_tags'],
+            attributes=[("prototype", prototype)])
+    return stored_prototype.db.prototype
+
+# alias
+save_prototype = create_prototype
 
 
 def delete_prototype(key, caller=None):
