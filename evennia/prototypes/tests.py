@@ -4,6 +4,8 @@ Unit tests for the prototypes and spawner
 """
 
 from random import randint
+import mock
+from anything import Anything, Something
 from evennia.utils.test_resources import EvenniaTest
 from evennia.prototypes import spawner, prototypes as protlib
 
@@ -54,6 +56,99 @@ class TestSpawner(EvenniaTest):
         self.assertEqual([o.key for o in spawner.spawn(
                           _PROTPARENTS["GOBLIN"], _PROTPARENTS["GOBLIN_ARCHWIZARD"],
                           prototype_parents=_PROTPARENTS)], ['goblin grunt', 'goblin archwizard'])
+
+
+class TestUtils(EvenniaTest):
+
+    def test_prototype_from_object(self):
+        self.maxDiff = None
+        self.obj1.attributes.add("test", "testval")
+        self.obj1.tags.add('foo')
+        new_prot = spawner.prototype_from_object(self.obj1)
+        self.assertEqual(
+            {'attrs': [('test', 'testval', None, [''])],
+             'home': Something,
+             'key': 'Obj',
+             'location': Something,
+             'locks': ['call:true()',
+                       'control:perm(Developer)',
+                       'delete:perm(Admin)',
+                       'edit:perm(Admin)',
+                       'examine:perm(Builder)',
+                       'get:all()',
+                       'puppet:pperm(Developer)',
+                       'tell:perm(Admin)',
+                       'view:all()'],
+             'prototype_desc': 'Built from Obj',
+             'prototype_key': Something,
+             'prototype_locks': 'spawn:all();edit:all()',
+             'tags': [(u'foo', None, None)],
+             'typeclass': 'evennia.objects.objects.DefaultObject'}, new_prot)
+
+    def test_update_objects_from_prototypes(self):
+
+        self.maxDiff = None
+        self.obj1.attributes.add('oldtest', 'to_remove')
+
+        old_prot = spawner.prototype_from_object(self.obj1)
+
+        # modify object away from prototype
+        self.obj1.attributes.add('test', 'testval')
+        self.obj1.aliases.add('foo')
+        self.obj1.key = 'NewObj'
+
+        # modify prototype
+        old_prot['new'] = 'new_val'
+        old_prot['test'] = 'testval_changed'
+        old_prot['permissions'] = 'Builder'
+        # this will not update, since we don't update the prototype on-disk
+        old_prot['prototype_desc'] = 'New version of prototype'
+
+        # diff obj/prototype
+        pdiff = spawner.prototype_diff_from_object(old_prot, self.obj1)
+
+        self.assertEqual(
+             pdiff,
+             {'aliases': 'REMOVE',
+              'attrs': 'REPLACE',
+              'home': 'KEEP',
+              'key': 'UPDATE',
+              'location': 'KEEP',
+              'locks': 'KEEP',
+              'new': 'UPDATE',
+              'permissions': 'UPDATE',
+              'prototype_desc': 'UPDATE',
+              'prototype_key': 'UPDATE',
+              'prototype_locks': 'KEEP',
+              'test': 'UPDATE',
+              'typeclass': 'KEEP'})
+
+        # apply diff
+        count = spawner.batch_update_objects_with_prototype(
+            old_prot, diff=pdiff, objects=[self.obj1])
+        self.assertEqual(count, 1)
+
+        new_prot = spawner.prototype_from_object(self.obj1)
+        self.assertEqual({'attrs': [('test', 'testval_changed', None, ['']),
+                                    ('new', 'new_val', None, [''])],
+                          'home': Something,
+                          'key': 'Obj',
+                          'location': Something,
+                          'locks': ['call:true()',
+                                    'control:perm(Developer)',
+                                    'delete:perm(Admin)',
+                                    'edit:perm(Admin)',
+                                    'examine:perm(Builder)',
+                                    'get:all()',
+                                    'puppet:pperm(Developer)',
+                                    'tell:perm(Admin)',
+                                    'view:all()'],
+                          'permissions': 'builder',
+                          'prototype_desc': 'Built from Obj',
+                          'prototype_key': Something,
+                          'prototype_locks': 'spawn:all();edit:all()',
+                          'typeclass': 'evennia.objects.objects.DefaultObject'},
+                         new_prot)
 
 
 class TestPrototypeStorage(EvenniaTest):
