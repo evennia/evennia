@@ -137,7 +137,7 @@ LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
-# Max size of channel log files before they rotate
+# Max size (in bytes) of channel log files before they rotate
 CHANNEL_LOG_ROTATE_SIZE = 1000000
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
