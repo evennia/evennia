@@ -1325,6 +1325,7 @@ class TestTurnBattleRangeFunc(EvenniaTest):
 
 class TestTurnBattleItemsFunc(EvenniaTest):
 
+    @patch("evennia.contrib.turnbattle.tb_items.tickerhandler", new=MagicMock())
     def setUp(self):
         super(TestTurnBattleItemsFunc, self).setUp()
         self.testroom = create_object(DefaultRoom, key="Test Room")
