@@ -6,8 +6,9 @@ Unit tests for the prototypes and spawner
 from random import randint
 import mock
 from anything import Anything, Something
+from django.test.utils import override_settings
 from evennia.utils.test_resources import EvenniaTest
-from evennia.prototypes import spawner, prototypes as protlib
+from evennia.prototypes import spawner, prototypes as protlib, protfuncs
 
 from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
@@ -38,10 +39,6 @@ _PROTPARENTS = {
         "prototype": ("GOBLIN_WIZARD", "ARCHWIZARD")
     }
 }
-
-
-class TestPrototypes(EvenniaTest):
-    pass
 
 
 class TestSpawner(EvenniaTest):
@@ -168,6 +165,23 @@ class TestProtLib(EvenniaTest):
 
     def test_check_permission(self):
         pass
+
+
+@override_settings(PROT_FUNC_MODULES=['evennia.prototypes.protfuncs'])
+class TestProtFuncs(EvenniaTest):
+
+    def setUp(self):
+        super(TestProtFuncs, self).setUp()
+        self.prot = {"prototype_key": "test_prototype",
+                     "prototype_desc": "testing prot",
+                     "key": "ExampleObj"}
+
+    @mock.patch("random.random", new=mock.MagicMock(return_value=0.5))
+    @mock.patch("random.randint", new=mock.MagicMock(return_value=5))
+    def test_protfuncs(self):
+        self.assertEqual(protfuncs.protfunc_parser("$random()", 0.5))
+        self.assertEqual(protfuncs.protfunc_parser("$randint(1, 10)", 5))
+
 
 class TestPrototypeStorage(EvenniaTest):
 

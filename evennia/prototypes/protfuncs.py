@@ -15,7 +15,7 @@ In the prototype dict, the protfunc is specified as a string inside the prototyp
 and multiple functions can be nested (no keyword args are supported). The result will be used as the
 value for that prototype key for that individual spawn.
 
-Available protfuncs are callables in one of the modules of `settings.PROTOTYPEFUNC_MODULES`. They
+Available protfuncs are callables in one of the modules of `settings.PROT_FUNC_MODULES`. They
 are specified as functions
 
     def funcname (*args, **kwargs)
@@ -42,17 +42,16 @@ from django.conf import settings
 from evennia.utils import inlinefuncs
 from evennia.utils.utils import callables_from_module
 from evennia.utils.utils import justify as base_justify, is_iter
-from evennia.prototypes.prototypes import value_to_obj_or_any
 
+_PROTLIB = None
+_PROT_FUNCS = {}
 
-_PROTOTYPEFUNCS = {}
-
-for mod in settings.PROTOTYPEFUNC_MODULES:
+for mod in settings.PROT_FUNC_MODULES:
     try:
         callables = callables_from_module(mod)
         if mod == __name__:
-            callables.pop("protfunc_parser")
-        _PROTOTYPEFUNCS.update(callables)
+            callables.pop("protfunc_parser", None)
+        _PROT_FUNCS.update(callables)
     except ImportError:
         pass
 
@@ -62,7 +61,7 @@ def protfunc_parser(value, available_functions=None, **kwargs):
     Parse a prototype value string for a protfunc and process it.
 
     Available protfuncs are specified as callables in one of the modules of
-    `settings.PROTOTYPEFUNC_MODULES`, or specified on the command line.
+    `settings.PROTFUNC_MODULES`, or specified on the command line.
 
     Args:
         value (any): The value to test for a parseable protfunc. Only strings will be parsed for
@@ -81,16 +80,19 @@ def protfunc_parser(value, available_functions=None, **kwargs):
 
 
     """
+    global _PROTLIB
+    if not _PROTLIB:
+        from evennia.prototypes import prototypes as _PROTLIB
+
     if not isinstance(value, basestring):
         return value
-    available_functions = _PROTOTYPEFUNCS if available_functions is None else available_functions
+    available_functions = _PROT_FUNCS if available_functions is None else available_functions
     result = inlinefuncs.parse_inlinefunc(value, _available_funcs=available_functions, **kwargs)
-    result = value_to_obj_or_any(result)
+    result = _PROTLIB.value_to_obj_or_any(result)
     try:
         return literal_eval(result)
     except ValueError:
         return result
-
 
 
 # default protfuncs
