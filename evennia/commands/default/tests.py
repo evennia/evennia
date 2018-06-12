@@ -333,8 +333,8 @@ class TestBuilding(CommandTest):
 
     def test_find(self):
         self.call(building.CmdFind(), "oom2", "One Match")
-        expect = "One Match(#1#7, loc):\n   " +\
-                 "Char2(#7)  evennia.objects.objects.DefaultCharacter (location: Room(#1))"
+        expect = "One Match(#1-#7, loc):\n   " +\
+                 "Char2(#7) - evennia.objects.objects.DefaultCharacter (location: Room(#1))"
         self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
         self.call(building.CmdFind(), "/ex Char2",  # /ex is an ambiguous switch
                   "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|" + expect,
@@ -350,7 +350,7 @@ class TestBuilding(CommandTest):
     def test_teleport(self):
         self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#2)\n|Teleported to Room2.")
         self.call(building.CmdTeleport(), "/t",  # /t switch is abbreviated form of /tonone
-                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a Nonelocation.")
+                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a None-location.")
         self.call(building.CmdTeleport(), "/l Room2",  # /l switch is abbreviated form of /loc
                   "Destination has no location.")
         self.call(building.CmdTeleport(), "/q me to Room2",  # /q switch is abbreviated form of /quiet
@@ -507,5 +507,5 @@ class TestUnconnectedCommand(CommandTest):
         expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
                         settings.SERVERNAME,
                         datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
-                        SESSIONS.account_count(), utils.get_evennia_version().replace("-", ""))
+                        SESSIONS.account_count(), utils.get_evennia_version())
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
