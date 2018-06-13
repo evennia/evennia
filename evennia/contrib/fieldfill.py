@@ -233,7 +233,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
             for field in formtemplate:
                 if "required" in field.keys():
                     # If field is required but current form data for field is blank
-                    if field["required"] == True and formdata[field["fieldname"]] == None:
+                    if field["required"] is True and formdata[field["fieldname"]] is None:
                         # Add to blank and required fields
                         blank_and_required.append(field["fieldname"])
             if len(blank_and_required) > 0:
@@ -270,7 +270,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
             # Test to see if field can be cleared
             for field in formtemplate:
                 if field["fieldname"] == matched_field and "cantclear" in field.keys():
-                    if field["cantclear"] == True:
+                    if field["cantclear"] is True:
                         caller.msg("Field '%s' can't be cleared!" % matched_field)
                         text = (None, helptext)
                         return text, options
@@ -361,11 +361,11 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
         
         # Call verify function if present
         if verifyfunc:
-            if verifyfunc(caller, newvalue) == False:
+            if verifyfunc(caller, newvalue) is False:
                 # No error message is given - should be provided by verifyfunc
                 text = (None, helptext)
                 return text, options
-            elif verifyfunc(caller, newvalue) != True:
+            elif verifyfunc(caller, newvalue) is not True:
                 newvalue = verifyfunc(caller, newvalue)
         
         # If everything checks out, update form!!
