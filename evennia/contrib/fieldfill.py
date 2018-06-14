@@ -262,7 +262,6 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
         
         # Test for 'look' command
         if raw_string.lower().strip() == "look":
-            caller.msg(syntax_err)
             return text, options
         
         # Test for 'clear' command
