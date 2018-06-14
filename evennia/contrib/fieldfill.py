@@ -25,7 +25,7 @@ a brief character profile:
     PROFILE_TEMPLATE = [
     {"fieldname":"Name", "fieldtype":"text"},
     {"fieldname":"Age", "fieldtype":"number"},
-    {"fieldname":"History", "fieldtype":"text"}
+    {"fieldname":"History", "fieldtype":"text"},
     ]
     
 This will present the player with an EvMenu showing this basic form:
@@ -102,7 +102,10 @@ maximum character length for the player's input.
     
 There are lots of ways to present the form to the player - fields can have default
 values or show a custom message in place of a blank value, and player input can be
-verified by a custom function, allowing for a great deal of flexibility.
+verified by a custom function, allowing for a great deal of flexibility. There
+is also an option for 'bool' fields, which accept only a True / False input and
+can be customized to represent the choice to the player however you like (E.G.
+Yes/No, On/Off, Enabled/Disabled, etc.)
 
 This module contains a simple example form that demonstrates all of the included
 functionality - a command that allows a player to compose a message to another
@@ -113,11 +116,15 @@ CmdTestMenu to your default character's command set.
 FIELD TEMPLATE KEYS:
 Required:
     fieldname (str): Name of the field, as presented to the player.
-    fieldtype (str):Type of value required, either 'text' or 'number'.
+    fieldtype (str): Type of value required: 'text', 'number', or 'bool'.
 
 Optional:
     max (int): Maximum character length (if text) or value (if number).
     min (int): Minimum charater length (if text) or value (if number).
+    truestr (str): String for a 'True' value in a bool field.
+        (E.G. 'On', 'Enabled', 'Yes')
+    falsestr (str): String for a 'False' value in a bool field.
+        (E.G. 'Off', 'Disabled', 'No')
     default (str): Initial value (blank if not given).
     blankmsg (str): Message to show in place of value when field is blank.
     cantclear (bool): Field can't be cleared if True.
@@ -128,7 +135,8 @@ Optional:
         the input is rejected. Any other value returned will act as
         the field's new value, replacing the player's input. This
         allows for values that aren't strings or integers (such as
-        object dbrefs).
+        object dbrefs). For boolean fields, return '0' or '1' to set
+        the field to False or True.
 """
 
 from evennia.utils import evmenu, evtable, delay, list_to_string
@@ -264,12 +272,16 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                         # Add to blank and required fields
                         blank_and_required.append(field["fieldname"])
             if len(blank_and_required) > 0:
+                # List the required fields left empty to the player
                 caller.msg("The following blank fields require a value: %s" % list_to_string(blank_and_required))
                 text = (None, formhelptext)
                 return text, options
             
             # If everything checks out, pass form data to the callback and end the menu!
-            formcallback(caller, formdata)
+            try:
+                formcallback(caller, formdata)
+            except Exception:
+                log_trace("Error in fillable form callback.")
             return None, None
         
         # Test for 'look' command
@@ -318,7 +330,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
         fieldname = entry[0].strip()
         newvalue = entry[1].strip()
         
-        # Syntax error of field name is too short or blank
+        # Syntax error if field name is too short or blank
         if len(fieldname) < 1:
             caller.msg(syntax_err)
             text = (None, formhelptext)
@@ -341,6 +353,8 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
         fieldtype = None
         max_value = None
         min_value = None
+        truestr = "True"
+        falsestr = "False"
         verifyfunc = None
         for field in formtemplate:
             if field["fieldname"] == matched_field:
@@ -349,10 +363,14 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                     max_value = field["max"]
                 if "min" in field.keys():
                     min_value = field["min"]
+                if "truestr" in field.keys():
+                    truestr = field["truestr"]
+                if "falsestr" in field.keys():
+                    falsestr = field["falsestr"]
                 if "verifyfunc" in field.keys():
                     verifyfunc = field["verifyfunc"]
             
-        # Field type text update
+        # Field type text verification
         if fieldtype == "text":
             # Test for max/min
             if max_value != None:
@@ -366,7 +384,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                     text = (None, formhelptext)
                     return text, options
         
-        # Field type number update
+        # Field type number verification
         if fieldtype == "number":
             try:
                 newvalue = int(newvalue)
@@ -385,6 +403,17 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                     caller.msg("Field '%s' reqiures a minimum value of %i." % (matched_field, min_value))
                     text = (None, formhelptext)
                     return text, options
+                    
+        # Field type bool verification
+        if fieldtype == "bool":
+            if newvalue.lower() != truestr.lower() and newvalue.lower() != falsestr.lower():
+                caller.msg("Please enter '%s' or '%s' for field '%s'." % (truestr, falsestr, matched_field))
+                text = (None, formhelptext)
+                return text, options
+            if newvalue.lower() == truestr.lower():
+                newvalue = True
+            elif newvalue.lower() == falsestr.lower():
+                newvalue = False
         
         # Call verify function if present
         if verifyfunc:
@@ -394,11 +423,26 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                 return text, options
             elif verifyfunc(caller, newvalue) is not True:
                 newvalue = verifyfunc(caller, newvalue)
+                # Set '0' or '1' to True or False if the field type is bool
+                if fieldtype == "bool":
+                    if newvalue == 0:
+                        newvalue = False
+                    elif newvalue == 1:
+                        newvalue = True
         
         # If everything checks out, update form!!
         formdata.update({matched_field:newvalue})
         caller.ndb._menutree.formdata = formdata
-        caller.msg("Field '%s' set to: %s" % (matched_field, str(newvalue)))
+        
+        # Account for truestr and falsestr when updating a boolean form
+        announced_newvalue = newvalue
+        if newvalue is True:
+            announced_newvalue = truestr
+        elif newvalue is False:
+            announced_newvalue = falsestr
+        
+        # Announce the new value to the player
+        caller.msg("Field '%s' set to: %s" % (matched_field, str(announced_newvalue)))
         text = (None, formhelptext)
     
     return text, options
@@ -459,11 +503,15 @@ def display_formdata(formtemplate, formdata,
             new_fieldvalue = "|x" + str(field["blankmsg"]) + "|n"
         elif new_fieldvalue == None:
             new_fieldvalue = " "
+        # Replace True and False values with truestr and falsestr from template
+        if formdata[field["fieldname"]] is True and "truestr" in field:
+            new_fieldvalue = field["truestr"]
+        elif formdata[field["fieldname"]] is False and "falsestr" in field:
+            new_fieldvalue = field["falsestr"]
         # Add name and value to table
         formtable.add_row(new_fieldname, new_fieldvalue)
         
     formtable.reformat_column(0, align="r", width=field_name_width)
-    # formtable.reformat_column(1, pad_left=0)
         
     return pretext + "|/" + str(formtable) + "|/" + posttext
 
@@ -518,10 +566,32 @@ def verify_online_player(caller, value):
 
 # Form template for the example 'delayed message' form
 SAMPLE_FORM = [
-{"fieldname":"Character", "fieldtype":"text", "max":30, "blankmsg":"(Name of an online player)",
- "required":True, "verifyfunc":verify_online_player},
-{"fieldname":"Delay", "fieldtype":"number", "min":3, "max":30, "default":10, "cantclear":True},
-{"fieldname":"Message", "fieldtype":"text", "min":3, "max":200, "blankmsg":"(Message up to 200 characters)"}
+{"fieldname":"Character",
+ "fieldtype":"text",
+ "max":30,
+ "blankmsg":"(Name of an online player)",
+ "required":True,
+ "verifyfunc":verify_online_player
+ },
+{"fieldname":"Delay",
+ "fieldtype":"number",
+ "min":3,
+ "max":30,
+ "default":10,
+ "cantclear":True
+ },
+{"fieldname":"Message",
+ "fieldtype":"text",
+ "min":3,
+ "max":200,
+ "blankmsg":"(Message up to 200 characters)"
+ },
+{"fieldname":"Anonymous",
+ "fieldtype":"bool",
+ "truestr":"Yes",
+ "falsestr":"No",
+ "default":False
+ }
 ]
         
 class CmdTestMenu(Command):
@@ -579,7 +649,10 @@ def init_delayed_message(caller, formdata):
     # So we don't have to do any more searching or matching here!
     player_to_message = formdata["Character"]
     message_delay = formdata["Delay"]
-    message = ("Message from %s: " % caller) + str(formdata["Message"])
+    sender = str(caller)
+    if formdata["Anonymous"] is True:
+        sender = "anonymous"
+    message = ("Message from %s: " % sender) + str(formdata["Message"])
     
     caller.msg("Message sent to %s!" % player_to_message)
     # Make a deferred call to 'sendmessage' above.
