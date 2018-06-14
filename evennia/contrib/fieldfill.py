@@ -159,7 +159,7 @@ class FieldEvMenu(evmenu.EvMenu):
 
 def init_fill_field(formtemplate, caller, formcallback, pretext="", posttext="",
                     submitcmd="submit", borderstyle="cells", formhelptext=None,
-                    initial_formdata=None):
+                    persistent=False, initial_formdata=None):
     """
     Initializes a menu presenting a player with a fillable form - once the form
     is submitted, the data will be passed as a dictionary to your chosen
@@ -176,6 +176,7 @@ def init_fill_field(formtemplate, caller, formcallback, pretext="", posttext="",
         submitcmd (str): Command used to submit the form.
         borderstyle (str): Form's EvTable border style.
         formhelptext (str): Help text for the form menu (or default is provided).
+        persistent (bool): Whether to make the EvMenu persistent across reboots.
         initial_formdata (dict): Initial data for the form - a blank form with
             defaults specified in the template will be generated otherwise.
             In the case of a form used to edit properties on an object or a
@@ -211,7 +212,8 @@ def init_fill_field(formtemplate, caller, formcallback, pretext="", posttext="",
     }
     
     # Initialize menu of selections
-    FieldEvMenu(caller, "evennia.contrib.fieldfill", startnode="menunode_fieldfill", auto_look=False, **kwargs)
+    FieldEvMenu(caller, "evennia.contrib.fieldfill", startnode="menunode_fieldfill",
+                auto_look=False, persistent=persistent, **kwargs)
     
 
 def menunode_fieldfill(caller, raw_string, **kwargs):
@@ -221,15 +223,25 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
     submitted, the form data is passed to a callback as a dictionary.
     """
     
-    # Retrieve menu info
-    formdata = caller.ndb._menutree.formdata
-    formtemplate = caller.ndb._menutree.formtemplate
-    formcallback = caller.ndb._menutree.formcallback
-    pretext = caller.ndb._menutree.pretext
-    posttext = caller.ndb._menutree.posttext
-    submitcmd = caller.ndb._menutree.submitcmd
-    borderstyle = caller.ndb._menutree.borderstyle
-    formhelptext = caller.ndb._menutree.formhelptext
+    # Retrieve menu info - taken from ndb if not persistent or db if persistent
+    if not caller.db._menutree:
+        formdata = caller.ndb._menutree.formdata
+        formtemplate = caller.ndb._menutree.formtemplate
+        formcallback = caller.ndb._menutree.formcallback
+        pretext = caller.ndb._menutree.pretext
+        posttext = caller.ndb._menutree.posttext
+        submitcmd = caller.ndb._menutree.submitcmd
+        borderstyle = caller.ndb._menutree.borderstyle
+        formhelptext = caller.ndb._menutree.formhelptext
+    else:
+        formdata = caller.db._menutree.formdata
+        formtemplate = caller.db._menutree.formtemplate
+        formcallback = caller.db._menutree.formcallback
+        pretext = caller.db._menutree.pretext
+        posttext = caller.db._menutree.posttext
+        submitcmd = caller.db._menutree.submitcmd
+        borderstyle = caller.db._menutree.borderstyle
+        formhelptext = caller.db._menutree.formhelptext
     
     # Syntax error
     syntax_err = "Syntax: <field> = <new value>|/Or: clear <field>, help, look, quit|/'%s' to submit form" % submitcmd
