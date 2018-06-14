@@ -211,7 +211,7 @@ def init_fill_field(formtemplate, caller, formcallback, pretext="", posttext="",
     }
     
     # Initialize menu of selections
-    FieldEvMenu(caller, "evennia.contrib.fieldfill", startnode="menunode_fieldfill", **kwargs)
+    FieldEvMenu(caller, "evennia.contrib.fieldfill", startnode="menunode_fieldfill", auto_look=False, **kwargs)
     
 
 def menunode_fieldfill(caller, raw_string, **kwargs):
@@ -261,7 +261,7 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
             return None, None
         
         # Test for 'look' command
-        if raw_string.lower().strip() == "look":
+        if raw_string.lower().strip() == "look" or raw_string.lower().strip() == "l":
             return text, options
         
         # Test for 'clear' command
