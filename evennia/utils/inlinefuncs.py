@@ -157,6 +157,9 @@ def clr(*args, **kwargs):
     return text
 
 
+def null(*args, **kwargs):
+    return args[0] if args else ''
+
 # we specify a default nomatch function to use if no matching func was
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
@@ -177,10 +180,6 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
             raise
 
 
-# remove the core function if we include examples in this module itself
-#_INLINE_FUNCS.pop("inline_func_parse", None)
-
-
 # The stack size is a security measure. Set to <=0 to disable.
 try:
     _STACK_MAXSIZE = settings.INLINEFUNC_STACK_MAXSIZE
@@ -198,7 +197,7 @@ _RE_TOKEN = re.compile(r"""
                         (?P<end>(?<!\\)\))|                             # unescaped ) (end of function call)
                         (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname( (start of function call)
                         (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
-                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\|\(}{\[\]]+|\"{1}|\'{1}) # everything else should also be included""",
+                        (?P<rest>[\w\s.-\/#@$\>\<!%\^&\*;:=\-_`~\|\(}{\[\]]+|\"{1}|\'{1}) # everything else should also be included""",
                        re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
 
 
@@ -257,7 +256,7 @@ class InlinefuncError(RuntimeError):
     pass
 
 
-def parse_inlinefunc(string, strip=False, _available_funcs=None, **kwargs):
+def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
     """
     Parse the incoming string.
 
@@ -265,7 +264,7 @@ def parse_inlinefunc(string, strip=False, _available_funcs=None, **kwargs):
         string (str): The incoming string to parse.
         strip (bool, optional): Whether to strip function calls rather than
             execute them.
-        _available_funcs(dict, optional): Define an alterinative source of functions to parse for.
+        available_funcs (dict, optional): Define an alternative source of functions to parse for.
             If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
     Kwargs:
         session (Session): This is sent to this function by Evennia when triggering
@@ -276,9 +275,12 @@ def parse_inlinefunc(string, strip=False, _available_funcs=None, **kwargs):
     """
     global _PARSING_CACHE
 
-    _available_funcs = _INLINE_FUNCS if _available_funcs is None else _available_funcs
+    usecache = False
+    if not available_funcs:
+        available_funcs = _INLINE_FUNCS
+        usecache = True
 
-    if string in _PARSING_CACHE:
+    if usecache and string in _PARSING_CACHE:
         # stack is already cached
         stack = _PARSING_CACHE[string]
     elif not _RE_STARTTOKEN.search(string):
@@ -314,9 +316,9 @@ def parse_inlinefunc(string, strip=False, _available_funcs=None, **kwargs):
                 funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
                 try:
                     # try to fetch the matching inlinefunc from storage
-                    stack.append(_available_funcs[funcname])
+                    stack.append(available_funcs[funcname])
                 except KeyError:
-                    stack.append(_available_funcs["nomatch"])
+                    stack.append(available_funcs["nomatch"])
                     stack.append(funcname)
                 ncallable += 1
             elif gdict["escaped"]:
@@ -343,8 +345,8 @@ def parse_inlinefunc(string, strip=False, _available_funcs=None, **kwargs):
         if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
             # if stack is larger than limit, throw away parsing
             return string + gdict["stackfull"](*args, **kwargs)
-        else:
-            # cache the stack
+        elif usecache:
+            # cache the stack - we do this also if we don't check the cache above
             _PARSING_CACHE[string] = stack
 
     # run the stack recursively
@@ -368,8 +370,8 @@ def parse_inlinefunc(string, strip=False, _available_funcs=None, **kwargs):
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval, force_string=True)
 
-    # execute the stack from the cache
-    return "".join(_run_stack(item) for item in _PARSING_CACHE[string])
+    # execute the stack
+    return "".join(_run_stack(item) for item in stack)
 
 #
 # Nick templating

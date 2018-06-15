@@ -87,7 +87,14 @@ def protfunc_parser(value, available_functions=None, **kwargs):
     if not isinstance(value, basestring):
         return value
     available_functions = _PROT_FUNCS if available_functions is None else available_functions
-    result = inlinefuncs.parse_inlinefunc(value, _available_funcs=available_functions, **kwargs)
+    result = inlinefuncs.parse_inlinefunc(value, available_funcs=available_functions, **kwargs)
+    # at this point we have a string where all procfuncs were parsed
+    try:
+        result = literal_eval(result)
+    except ValueError:
+        # this is due to the string not being valid for literal_eval - keep it a string
+        pass
+
     result = _PROTLIB.value_to_obj_or_any(result)
     try:
         return literal_eval(result)
