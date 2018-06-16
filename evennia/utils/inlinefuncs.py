@@ -191,15 +191,14 @@ except AttributeError:
 _RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname{ (start of function call)
 
 _RE_TOKEN = re.compile(r"""
-                        (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
-                        (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"| # unescaped normal triple quotes (escapes all inside them)
-                        (?P<comma>(?<!\\)\,)|                           # unescaped , (argument separator)
-                        (?P<end>(?<!\\)\))|                             # unescaped ) (end of function call)
-                        (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname( (start of function call)
-                        (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
-                        (?P<rest>[\w\s.-\/#@$\>\<!%\^&\*;:=\-_`~\|\(}{\[\]]+|\"{1}|\'{1}) # everything else should also be included""",
+    (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
+    (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"| # unescaped normal triple quotes (escapes all inside them)
+    (?P<comma>(?<!\\)\,)|                           # unescaped , (argument separator)
+    (?P<end>(?<!\\)\))|                             # unescaped ) (end of function call)
+    (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname( (start of function call)
+    (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
+    (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\|\(}{\[\]@\$\\\+\<\>?]+|\"{1}|\'{1}) # everything else """,
                        re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
-
 
 # Cache for function lookups.
 _PARSING_CACHE = utils.LimitedSizeOrderedDict(size_limit=1000)
@@ -370,6 +369,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval, force_string=True)
 
+    print("STACK:\n{}".format(stack))
     # execute the stack
     return "".join(_run_stack(item) for item in stack)
 
@@ -405,6 +405,7 @@ Custom arg markers
    $N      argument position (1-99)
 
 """
+
 import fnmatch
 _RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
 _RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
@@ -446,7 +447,6 @@ def initialize_nick_templates(in_template, out_template):
     # validate the tempaltes - they should at least have the same number of args
     n_outargs = len(_RE_NICK_TEMPLATE_ARG.findall(out_template))
     if n_inargs != n_outargs:
-        print n_inargs, n_outargs
         raise NickTemplateInvalid
 
     return re.compile(regex_string), template_string
