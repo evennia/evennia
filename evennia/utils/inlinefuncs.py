@@ -191,15 +191,18 @@ except AttributeError:
 
 _RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname{ (start of function call)
 
+# note: this regex can be experimented with at https://regex101.com/r/kGR3vE/1
 _RE_TOKEN = re.compile(r"""
-                        (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'| # unescaped single-triples (escapes all inside them)
-                        (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"| # unescaped normal triple quotes (escapes all inside them)
-                        (?P<comma>(?<!\\)\,)|                           # unescaped , (argument separator)
-                        (?P<end>(?<!\\)\))|                             # unescaped ) (end of function call)
-                        (?P<start>(?<!\\)\$\w+\()|                      # unescaped $funcname( (start of function call)
-                        (?P<escaped>\\'|\\"|\\\)|\\$\w+\()|             # escaped tokens should re-appear in text
-                        (?P<rest>[\w\s.-\/#!%\^&\*;:=\-_`~\|\(}{\[\]]+|\"{1}|\'{1}) # everything else should also be included""",
-                       re.UNICODE + re.IGNORECASE + re.VERBOSE + re.DOTALL)
+      (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'|  # single-triplets escape all inside
+      (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"|  # double-triplets escape all inside
+      (?P<comma>(?<!\\)\,)|                            # , (argument sep)
+      (?P<end>(?<!\\)\))|                              # ) (end of func call)
+      (?P<start>(?<!\\)\$\w+\()|                       # $funcname (start of func call)
+      (?P<escaped>                                     # escaped tokens to re-insert sans backslash
+            \\\'|\\\"|\\\)|\\\$\w+\()|
+      (?P<rest>                                        # everything else to re-insert verbatim
+            \$(?!\w+\()|\'{1}|\"{1}|\\{1}|[^),$\'\"\\]+)""",
+                       re.UNICODE | re.IGNORECASE | re.VERBOSE | re.DOTALL)
 
 
 # Cache for function lookups.
