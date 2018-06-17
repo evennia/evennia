@@ -167,7 +167,7 @@ class TestProtLib(EvenniaTest):
         pass
 
 
-@override_settings(PROT_FUNC_MODULES=['evennia.prototypes.protfuncs'])
+@override_settings(PROT_FUNC_MODULES=['evennia.prototypes.protfuncs'], CLIENT_DEFAULT_WIDTH=20)
 class TestProtFuncs(EvenniaTest):
 
     def setUp(self):
@@ -176,11 +176,55 @@ class TestProtFuncs(EvenniaTest):
                      "prototype_desc": "testing prot",
                      "key": "ExampleObj"}
 
-    @mock.patch("random.random", new=mock.MagicMock(return_value=0.5))
-    @mock.patch("random.randint", new=mock.MagicMock(return_value=5))
+    @mock.patch("evennia.prototypes.protfuncs.base_random", new=mock.MagicMock(return_value=0.5))
+    @mock.patch("evennia.prototypes.protfuncs.base_randint", new=mock.MagicMock(return_value=5))
     def test_protfuncs(self):
-        self.assertEqual(protfuncs.protfunc_parser("$random()", 0.5))
-        self.assertEqual(protfuncs.protfunc_parser("$randint(1, 10)", 5))
+        self.assertEqual(protlib.protfunc_parser("$random()"), 0.5)
+        self.assertEqual(protlib.protfunc_parser("$randint(1, 10)"), 5)
+        self.assertEqual(protlib.protfunc_parser("$left_justify(  foo  )"), "foo                 ")
+        self.assertEqual(protlib.protfunc_parser("$right_justify( foo  )"), "                 foo")
+        self.assertEqual(protlib.protfunc_parser("$center_justify(foo  )"), "        foo         ")
+        self.assertEqual(protlib.protfunc_parser(
+            "$full_justify(foo bar moo too)"), 'foo   bar   moo  too')
+        self.assertEqual(
+            protlib.protfunc_parser("$right_justify( foo  )", testing=True),
+            ('unexpected indent (<unknown>, line 1)', '                 foo'))
+
+        test_prot = {"key1": "value1",
+                     "key2": 2}
+
+        self.assertEqual(protlib.protfunc_parser(
+            "$protkey(key1)", testing=True, prototype=test_prot), (None, "value1"))
+        self.assertEqual(protlib.protfunc_parser(
+            "$protkey(key2)", testing=True, prototype=test_prot), (None, 2))
+
+        self.assertEqual(protlib.protfunc_parser("$add(1, 2)"), 3)
+        self.assertEqual(protlib.protfunc_parser("$add(10, 25)"), 35)
+        self.assertEqual(protlib.protfunc_parser(
+            "$add('''[1,2,3]''', '''[4,5,6]''')"), [1, 2, 3, 4, 5, 6])
+        self.assertEqual(protlib.protfunc_parser("$add(foo, bar)"), "foo bar")
+
+        self.assertEqual(protlib.protfunc_parser("$sub(5, 2)"), 3)
+        self.assertRaises(TypeError, protlib.protfunc_parser, "$sub(5, test)")
+
+        self.assertEqual(protlib.protfunc_parser("$mult(5, 2)"), 10)
+        self.assertEqual(protlib.protfunc_parser("$mult(  5 ,   10)"), 50)
+        self.assertEqual(protlib.protfunc_parser("$mult('foo',3)"), "foofoofoo")
+        self.assertEqual(protlib.protfunc_parser("$mult(foo,3)"), "foofoofoo")
+        self.assertRaises(TypeError, protlib.protfunc_parser, "$mult(foo, foo)")
+
+        self.assertEqual(protlib.protfunc_parser("$toint(5.3)"), 5)
+
+        self.assertEqual(protlib.protfunc_parser("$div(5, 2)"), 2.5)
+        self.assertEqual(protlib.protfunc_parser("$toint($div(5, 2))"), 2)
+        self.assertEqual(protlib.protfunc_parser("$sub($add(5, 3), $add(10, 2))"), -4)
+
+        self.assertEqual(protlib.protfunc_parser("$eval('2')"), '2')
+
+        self.assertEqual(protlib.protfunc_parser(
+            "$eval(['test', 1, '2', 3.5, \"foo\"])"), ['test', 1, '2', 3.5, 'foo'])
+        self.assertEqual(protlib.protfunc_parser(
+            "$eval({'test': '1', 2:3, 3: $toint(3.5)})"), {'test': '1', 2: 3, 3: 3})
 
 
 class TestPrototypeStorage(EvenniaTest):
