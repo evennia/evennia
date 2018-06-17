@@ -61,6 +61,7 @@ Error handling:
 """
 
 import re
+import fnmatch
 from django.conf import settings
 from evennia.utils import utils
 
@@ -164,7 +165,8 @@ def null(*args, **kwargs):
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
 _INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN>",
-                 "stackfull": lambda *args, **kwargs: "\n (not parsed: inlinefunc stack size exceeded.)"}
+                 "stackfull": lambda *args, **kwargs: "\n (not parsed: "
+                                                      "inlinefunc stack size exceeded.)"}
 
 
 # load custom inline func modules.
@@ -175,7 +177,8 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
         if module == "server.conf.inlinefuncs":
             # a temporary warning since the default module changed name
             raise ImportError("Error: %s\nPossible reason: mygame/server/conf/inlinefunc.py should "
-                              "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)." % err)
+                              "be renamed to mygame/server/conf/inlinefuncs.py (note "
+                              "the S at the end)." % err)
         else:
             raise
 
@@ -190,17 +193,18 @@ except AttributeError:
 
 _RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname( (start of function call)
 
-# note: this regex can be experimented with at https://regex101.com/r/kGR3vE/1
+# note: this regex can be experimented with at https://regex101.com/r/kGR3vE/2
 _RE_TOKEN = re.compile(r"""
       (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'|  # single-triplets escape all inside
       (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"|  # double-triplets escape all inside
       (?P<comma>(?<!\\)\,)|                            # , (argument sep)
-      (?P<end>(?<!\\)\))|                              # ) (end of func call)
+      (?P<end>(?<!\\)\))|                              # ) (possible end of func call)
+      (?P<leftparens>(?<!\\)\()|                       # ( (lone left-parens)
       (?P<start>(?<!\\)\$\w+\()|                       # $funcname (start of func call)
       (?P<escaped>                                     # escaped tokens to re-insert sans backslash
-            \\\'|\\\"|\\\)|\\\$\w+\()|
+            \\\'|\\\"|\\\)|\\\$\w+\(|\\\()|
       (?P<rest>                                        # everything else to re-insert verbatim
-            \$(?!\w+\()|\'{1}|\"{1}|\\{1}|[^),$\'\"\\]+)""",
+            \$(?!\w+\()|\'|\"|\\|[^),$\'\"\\\(]+)""",
                        re.UNICODE | re.IGNORECASE | re.VERBOSE | re.DOTALL)
 
 # Cache for function lookups.
@@ -294,14 +298,24 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
 
         # process string on stack
         ncallable = 0
+        nlparens = 0
         for match in _RE_TOKEN.finditer(string):
             gdict = match.groupdict()
-            print("match: {}".format({key: val for key, val in gdict.items() if val}))
+            # print("match: {}".format({key: val for key, val in gdict.items() if val}))
             if gdict["singlequote"]:
                 stack.append(gdict["singlequote"])
             elif gdict["doublequote"]:
                 stack.append(gdict["doublequote"])
+            elif gdict["leftparens"]:
+                # we have a left-parens inside a callable
+                if ncallable:
+                    nlparens += 1
+                stack.append("(")
             elif gdict["end"]:
+                if nlparens > 0:
+                    nlparens -= 1
+                    stack.append(")")
+                    continue
                 if ncallable <= 0:
                     stack.append(")")
                     continue
@@ -373,7 +387,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval, force_string=True)
 
-    print("STACK:\n{}".format(stack))
+    # print("STACK:\n{}".format(stack))
     # execute the stack
     return "".join(_run_stack(item) for item in stack)
 
@@ -410,7 +424,6 @@ Custom arg markers
 
 """
 
-import fnmatch
 _RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
 _RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
 _RE_NICK_SPACE = re.compile(r"\\ ")
