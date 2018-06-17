@@ -5,17 +5,17 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 
 """
 
+from ast import literal_eval
 from django.conf import settings
-
 from evennia.scripts.scripts import DefaultScript
 from evennia.objects.models import ObjectDB
 from evennia.utils.create import create_script
 from evennia.utils.utils import (
-    all_from_module, make_iter, is_iter, dbid_to_obj)
+    all_from_module, make_iter, is_iter, dbid_to_obj, callables_from_module)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
+from evennia.utils import inlinefuncs
 from evennia.utils.evtable import EvTable
-from evennia.prototypes.protfuncs import protfunc_parser
 
 
 _MODULE_PROTOTYPE_MODULES = {}
@@ -23,6 +23,7 @@ _MODULE_PROTOTYPES = {}
 _PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
 _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
+_PROT_FUNCS = {}
 
 
 class PermissionError(RuntimeError):
@@ -34,6 +35,68 @@ class ValidationError(RuntimeError):
     Raised on prototype validation errors
     """
     pass
+
+
+# Protfunc parsing
+
+for mod in settings.PROT_FUNC_MODULES:
+    try:
+        callables = callables_from_module(mod)
+        _PROT_FUNCS.update(callables)
+    except ImportError:
+        logger.log_trace()
+        raise
+
+
+def protfunc_parser(value, available_functions=None, testing=False, **kwargs):
+    """
+    Parse a prototype value string for a protfunc and process it.
+
+    Available protfuncs are specified as callables in one of the modules of
+    `settings.PROTFUNC_MODULES`, or specified on the command line.
+
+    Args:
+        value (any): The value to test for a parseable protfunc. Only strings will be parsed for
+            protfuncs, all other types are returned as-is.
+        available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
+        testing (bool, optional): Passed to protfunc. If in a testing mode, some protfuncs may
+            behave differently.
+
+    Kwargs:
+        session (Session): Passed to protfunc. Session of the entity spawning the prototype.
+        protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
+        current_key(str): Passed to protfunc. The key in the prototype that will hold this value.
+        any (any): Passed on to the protfunc.
+
+    Returns:
+        testresult (tuple): If `testing` is set, returns a tuple (error, result) where error is
+            either None or a string detailing the error from protfunc_parser or seen when trying to
+            run `literal_eval` on the parsed string.
+        any (any): A structure to replace the string on the prototype level. If this is a
+            callable or a (callable, (args,)) structure, it will be executed as if one had supplied
+            it to the prototype directly. This structure is also passed through literal_eval so one
+            can get actual Python primitives out of it (not just strings). It will also identify
+            eventual object #dbrefs in the output from the protfunc.
+
+    """
+    if not isinstance(value, basestring):
+        return value
+    available_functions = _PROT_FUNCS if available_functions is None else available_functions
+    result = inlinefuncs.parse_inlinefunc(
+        value, available_funcs=available_functions, testing=testing, **kwargs)
+    # at this point we have a string where all procfuncs were parsed
+    # print("parse_inlinefuncs(\"{}\", available_funcs={}) => {}".format(value, available_functions, result))
+    result = value_to_obj_or_any(result)
+    err = None
+    try:
+        result = literal_eval(result)
+    except ValueError:
+        pass
+    except Exception as err:
+        err = str(err)
+    if testing:
+        return err, result
+    return result
 
 
 # helper functions

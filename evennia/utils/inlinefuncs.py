@@ -161,13 +161,15 @@ def clr(*args, **kwargs):
 def null(*args, **kwargs):
     return args[0] if args else ''
 
+_INLINE_FUNCS = {}
+
 # we specify a default nomatch function to use if no matching func was
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
-_INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN>",
-                 "stackfull": lambda *args, **kwargs: "\n (not parsed: "
-                                                      "inlinefunc stack size exceeded.)"}
+_DEFAULT_FUNCS = {"nomatch": lambda *args, **kwargs: "<UNKNOWN>",
+                  "stackfull": lambda *args, **kwargs: "\n (not parsed: "}
 
+_INLINE_FUNCS.update(_DEFAULT_FUNCS)
 
 # load custom inline func modules.
 for module in utils.make_iter(settings.INLINEFUNC_MODULES):
@@ -285,6 +287,11 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
     if not available_funcs:
         available_funcs = _INLINE_FUNCS
         usecache = True
+    else:
+        # make sure the default keys are available, but also allow overriding
+        tmp = _DEFAULT_FUNCS.copy()
+        tmp.update(available_funcs)
+        available_funcs = tmp
 
     if usecache and string in _PARSING_CACHE:
         # stack is already cached
@@ -299,9 +306,14 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
         # process string on stack
         ncallable = 0
         nlparens = 0
+
+        # print("STRING: {} =>".format(string))
+
         for match in _RE_TOKEN.finditer(string):
             gdict = match.groupdict()
-            # print("match: {}".format({key: val for key, val in gdict.items() if val}))
+
+            # print(" MATCH: {}".format({key: val for key, val in gdict.items() if val}))
+
             if gdict["singlequote"]:
                 stack.append(gdict["singlequote"])
             elif gdict["doublequote"]:
@@ -386,10 +398,10 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
                 kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval, force_string=True)
-
-    # print("STACK:\n{}".format(stack))
+    retval = "".join(_run_stack(item) for item in stack)
+    # print("STACK: \n{} => {}\n".format(stack, retval))
     # execute the stack
-    return "".join(_run_stack(item) for item in stack)
+    return retval
 
 #
 # Nick templating

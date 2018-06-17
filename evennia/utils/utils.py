@@ -43,8 +43,6 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
 
-_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
-
 
 def is_iter(iterable):
     """
@@ -80,7 +78,7 @@ def make_iter(obj):
     return not hasattr(obj, '__iter__') and [obj] or obj
 
 
-def wrap(text, width=_DEFAULT_WIDTH, indent=0):
+def wrap(text, width=None, indent=0):
     """
     Safely wrap text to a certain number of characters.
 
@@ -93,6 +91,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
         text (str): Properly wrapped text.
 
     """
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
     if not text:
         return ""
     text = to_unicode(text)
@@ -104,7 +103,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
 fill = wrap
 
 
-def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
+def pad(text, width=None, align="c", fillchar=" "):
     """
     Pads to a given width.
 
@@ -119,6 +118,7 @@ def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
         text (str): The padded text.
 
     """
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
     align = align if align in ('c', 'l', 'r') else 'c'
     fillchar = fillchar[0] if fillchar else " "
     if align == 'l':
@@ -129,7 +129,7 @@ def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
         return text.center(width, fillchar)
 
 
-def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
+def crop(text, width=None, suffix="[...]"):
     """
     Crop text to a certain width, throwing away text from too-long
     lines.
@@ -147,7 +147,7 @@ def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
         text (str): The cropped text.
 
     """
-
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
     utext = to_unicode(text)
     ltext = len(utext)
     if ltext <= width:
@@ -179,7 +179,7 @@ def dedent(text):
     return textwrap.dedent(text)
 
 
-def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
+def justify(text, width=None, align="f", indent=0):
     """
     Fully justify a text so that it fits inside `width`. When using
     full justification (default) this will be done by padding between
@@ -198,6 +198,7 @@ def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
         justified (str): The justified and indented block of text.
 
     """
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
 
     def _process_line(line):
         """
