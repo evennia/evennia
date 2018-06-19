@@ -226,6 +226,8 @@ class TestProtFuncs(EvenniaTest):
         self.assertEqual(protlib.protfunc_parser(
             "$eval({'test': '1', 2:3, 3: $toint(3.5)})"), {'test': '1', 2: 3, 3: 3})
 
+        self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
+
 
 class TestPrototypeStorage(EvenniaTest):
 

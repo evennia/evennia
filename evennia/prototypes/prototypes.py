@@ -5,6 +5,7 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 
 """
 
+import re
 from ast import literal_eval
 from django.conf import settings
 from evennia.scripts.scripts import DefaultScript
@@ -24,6 +25,9 @@ _PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "p
 _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 _PROT_FUNCS = {}
+
+
+_RE_DBREF = re.compile(r"(?<!\$obj\()#[0-9]+")
 
 
 class PermissionError(RuntimeError):
@@ -82,8 +86,13 @@ def protfunc_parser(value, available_functions=None, testing=False, **kwargs):
     if not isinstance(value, basestring):
         return value
     available_functions = _PROT_FUNCS if available_functions is None else available_functions
+
+    # insert $obj(#dbref) for #dbref
+    value = _RE_DBREF.sub("$obj(\\1)", value)
+
     result = inlinefuncs.parse_inlinefunc(
         value, available_funcs=available_functions, testing=testing, **kwargs)
+
     # at this point we have a string where all procfuncs were parsed
     # print("parse_inlinefuncs(\"{}\", available_funcs={}) => {}".format(value, available_functions, result))
     result = value_to_obj_or_any(result)
@@ -102,10 +111,24 @@ def protfunc_parser(value, available_functions=None, testing=False, **kwargs):
 # helper functions
 
 def value_to_obj(value, force=True):
+    "Always convert value(s) to Object, or None"
+    stype = type(value)
+    if is_iter(value):
+        if stype == dict:
+            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.iter()}
+        else:
+            return stype([value_to_obj_or_any(val) for val in value])
     return dbid_to_obj(value, ObjectDB)
 
 
 def value_to_obj_or_any(value):
+    "Convert value(s) to Object if possible, otherwise keep original value"
+    stype = type(value)
+    if is_iter(value):
+        if stype == dict:
+            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.items()}
+        else:
+            return stype([value_to_obj_or_any(val) for val in value])
     obj = dbid_to_obj(value, ObjectDB)
     return obj if obj is not None else value
 

@@ -248,27 +248,21 @@ def eval(*args, **kwargs):
 
     if isinstance(struct, basestring):
         # we must shield the string, otherwise it will be merged as a string and future
-        # literal_evals will pick up e.g. '2' as something that should be converted to a number
+        # literal_evas will pick up e.g. '2' as something that should be converted to a number
         struct = '"{}"'.format(struct)
 
-    def _recursive_parse(val):
-        # an extra round of recursive parsing after literal_eval, to catch any
-        # escaped $$profuncs. This is commonly useful for object references.
-        if is_iter(val):
-            stype = type(val)
-            if stype == dict:
-                return {_recursive_parse(key): _recursive_parse(v) for key, v in val.items()}
-            return stype((_recursive_parse(v) for v in val))
-        return _PROTLIB.protfunc_parser(val)
+    # convert any #dbrefs to objects (also in nested structures)
+    struct = _PROTLIB.value_to_obj_or_any(struct)
 
-    return _recursive_parse(struct)
+    return struct
 
 
-def _obj_search(return_list=False, *args, **kwargs):
+def _obj_search(*args, **kwargs):
     "Helper function to search for an object"
 
     query = "".join(args)
     session = kwargs.get("session", None)
+    return_list = kwargs.pop("return_list", False)
 
     if not session:
         raise ValueError("$obj called by Evennia without Session. This is not supported.")
@@ -276,6 +270,8 @@ def _obj_search(return_list=False, *args, **kwargs):
     if not account:
         raise ValueError("$obj requires a logged-in account session.")
     targets = search.search_object(query)
+
+    print("targets: {}".format(targets))
 
     if return_list:
         retlist = []
@@ -287,11 +283,11 @@ def _obj_search(return_list=False, *args, **kwargs):
         # single-match
         if not targets:
             raise ValueError("$obj: Query '{}' gave no matches.".format(query))
-        if targets.count() > 1:
+        if len(targets) > 1:
             raise ValueError("$obj: Query '{query}' gave {nmatches} matches. Limit your "
                              "query or use $objlist instead.".format(
-                                 query=query, nmatches=targets.count()))
-        target = target[0]
+                                 query=query, nmatches=len(targets)))
+        target = targets[0]
         if not target.access(account, target, 'control'):
             raise ValueError("$obj: Obj {target}(#{dbref} cannot be added - "
                              "Account {account} does not have 'control' access.".format(
@@ -305,7 +301,10 @@ def obj(*args, **kwargs):
     Returns one Object searched globally by key, alias or #dbref. Error if more than one.
 
     """
-    return _obj_search(*args, **kwargs)
+    obj = _obj_search(return_list=False, *args, **kwargs)
+    if obj:
+        return "#{}".format(obj.id)
+    return "".join(args)
 
 
 def objlist(*args, **kwargs):
@@ -314,4 +313,4 @@ def objlist(*args, **kwargs):
     Returns list with one or more Objects searched globally by key, alias or #dbref.
 
     """
-    return _obj_search(return_list=True, *args, **kwargs)
+    return ["#{}".format(obj.id) for obj in _obj_search(return_list=True, *args, **kwargs)]
