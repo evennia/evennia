@@ -91,7 +91,8 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
     @property
     def wholist(self):
         subs = self.subscriptions.all()
-        listening = [ob for ob in subs if ob.is_connected and ob not in self.mutelist]
+        muted = list(self.mutelist)
+        listening = [ob for ob in subs if ob.is_connected and ob not in muted]
         if subs:
             # display listening subscribers in bold
             string = ", ".join([account.key if account not in listening else "|w%s|n" % account.key for account in subs])
