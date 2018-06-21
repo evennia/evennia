@@ -63,7 +63,8 @@ Error handling:
 import re
 import fnmatch
 from django.conf import settings
-from evennia.utils import utils
+
+from evennia.utils import utils, logger
 
 
 # example/testing inline functions
@@ -264,7 +265,7 @@ class InlinefuncError(RuntimeError):
     pass
 
 
-def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
+def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False, **kwargs):
     """
     Parse the incoming string.
 
@@ -274,6 +275,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
             execute them.
         available_funcs (dict, optional): Define an alternative source of functions to parse for.
             If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
+        stacktrace (bool, optional): If set, print the stacktrace to log.
     Kwargs:
         session (Session): This is sent to this function by Evennia when triggering
             it. It is passed to the inlinefunc.
@@ -307,12 +309,18 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
         ncallable = 0
         nlparens = 0
 
-        # print("STRING: {} =>".format(string))
+        if stacktrace:
+            out = "STRING: {} =>".format(string)
+            print(out)
+            logger.log_info(out)
 
         for match in _RE_TOKEN.finditer(string):
             gdict = match.groupdict()
 
-            # print(" MATCH: {}".format({key: val for key, val in gdict.items() if val}))
+            if stacktrace:
+                out = " MATCH: {}".format({key: val for key, val in gdict.items() if val})
+                print(out)
+                logger.log_info(out)
 
             if gdict["singlequote"]:
                 stack.append(gdict["singlequote"])
@@ -399,7 +407,11 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, **kwargs):
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval, force_string=True)
     retval = "".join(_run_stack(item) for item in stack)
-    # print("STACK: \n{} => {}\n".format(stack, retval))
+    if stacktrace:
+        out = "STACK: \n{} => {}\n".format(stack, retval)
+        print(out)
+        logger.log_info(out)
+
     # execute the stack
     return retval
 

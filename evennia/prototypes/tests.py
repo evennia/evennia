@@ -5,10 +5,10 @@ Unit tests for the prototypes and spawner
 
 from random import randint
 import mock
-from anything import Anything, Something
+from anything import Something
 from django.test.utils import override_settings
 from evennia.utils.test_resources import EvenniaTest
-from evennia.prototypes import spawner, prototypes as protlib, protfuncs
+from evennia.prototypes import spawner, prototypes as protlib
 
 from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
@@ -227,6 +227,18 @@ class TestProtFuncs(EvenniaTest):
             "$eval({'test': '1', 2:3, 3: $toint(3.5)})"), {'test': '1', 2: 3, 3: 3})
 
         self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
+        self.assertEqual(protlib.protfunc_parser("#1", session=self.session), '#1')
+        self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
+        self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
+        self.assertEqual(protlib.protfunc_parser("$objlist(#1)", session=self.session), ['#1'])
+
+        self.assertEqual(protlib.value_to_obj(
+            protlib.protfunc_parser("#6", session=self.session)), self.char1)
+        self.assertEqual(protlib.value_to_obj_or_any(
+            protlib.protfunc_parser("#6", session=self.session)), self.char1)
+        self.assertEqual(protlib.value_to_obj_or_any(
+            protlib.protfunc_parser("[1,2,3,'#6',5]", session=self.session)),
+                [1, 2, 3, self.char1, 5])
 
 
 class TestPrototypeStorage(EvenniaTest):

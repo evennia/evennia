@@ -263,21 +263,21 @@ def _obj_search(*args, **kwargs):
     query = "".join(args)
     session = kwargs.get("session", None)
     return_list = kwargs.pop("return_list", False)
+    account = None
 
-    if not session:
-        raise ValueError("$obj called by Evennia without Session. This is not supported.")
-    account = session.account
-    if not account:
-        raise ValueError("$obj requires a logged-in account session.")
+    if session:
+        account = session.account
+
     targets = search.search_object(query)
-
-    print("targets: {}".format(targets))
 
     if return_list:
         retlist = []
-        for target in targets:
-            if target.access(account, target, 'control'):
-                retlist.append(target)
+        if account:
+            for target in targets:
+                if target.access(account, target, 'control'):
+                    retlist.append(target)
+        else:
+            retlist = targets
         return retlist
     else:
         # single-match
@@ -288,11 +288,12 @@ def _obj_search(*args, **kwargs):
                              "query or use $objlist instead.".format(
                                  query=query, nmatches=len(targets)))
         target = targets[0]
-        if not target.access(account, target, 'control'):
-            raise ValueError("$obj: Obj {target}(#{dbref} cannot be added - "
-                             "Account {account} does not have 'control' access.".format(
-                                target=target.key, dbref=target.id, account=account))
-            return target
+        if account:
+            if not target.access(account, target, 'control'):
+                raise ValueError("$obj: Obj {target}(#{dbref} cannot be added - "
+                                 "Account {account} does not have 'control' access.".format(
+                                    target=target.key, dbref=target.id, account=account))
+        return target
 
 
 def obj(*args, **kwargs):

@@ -27,7 +27,7 @@ _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 _PROT_FUNCS = {}
 
 
-_RE_DBREF = re.compile(r"(?<!\$obj\()#[0-9]+")
+_RE_DBREF = re.compile(r"(?<!\$obj\()(#[0-9]+)")
 
 
 class PermissionError(RuntimeError):
@@ -52,7 +52,7 @@ for mod in settings.PROT_FUNC_MODULES:
         raise
 
 
-def protfunc_parser(value, available_functions=None, testing=False, **kwargs):
+def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, **kwargs):
     """
     Parse a prototype value string for a protfunc and process it.
 
@@ -65,6 +65,7 @@ def protfunc_parser(value, available_functions=None, testing=False, **kwargs):
         available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
         testing (bool, optional): Passed to protfunc. If in a testing mode, some protfuncs may
             behave differently.
+        stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
 
     Kwargs:
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
@@ -91,11 +92,9 @@ def protfunc_parser(value, available_functions=None, testing=False, **kwargs):
     value = _RE_DBREF.sub("$obj(\\1)", value)
 
     result = inlinefuncs.parse_inlinefunc(
-        value, available_funcs=available_functions, testing=testing, **kwargs)
+        value, available_funcs=available_functions,
+        stacktrace=stacktrace, testing=testing, **kwargs)
 
-    # at this point we have a string where all procfuncs were parsed
-    # print("parse_inlinefuncs(\"{}\", available_funcs={}) => {}".format(value, available_functions, result))
-    result = value_to_obj_or_any(result)
     err = None
     try:
         result = literal_eval(result)
