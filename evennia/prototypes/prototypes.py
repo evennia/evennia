@@ -13,7 +13,7 @@ from evennia.objects.models import ObjectDB
 from evennia.utils.create import create_script
 from evennia.utils.utils import (
     all_from_module, make_iter, is_iter, dbid_to_obj, callables_from_module,
-    get_all_typeclasses)
+    get_all_typeclasses, to_str)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
 from evennia.utils import inlinefuncs
@@ -64,6 +64,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
         value (any): The value to test for a parseable protfunc. Only strings will be parsed for
             protfuncs, all other types are returned as-is.
         available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
+            If not set, use default sources.
         testing (bool, optional): Passed to protfunc. If in a testing mode, some protfuncs may
             behave differently.
         stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
@@ -86,7 +87,8 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
 
     """
     if not isinstance(value, basestring):
-        return value
+        value = to_str(value, force_string=True)
+
     available_functions = _PROT_FUNCS if available_functions is None else available_functions
 
     # insert $obj(#dbref) for #dbref

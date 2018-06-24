@@ -29,7 +29,7 @@ _MENU_ATTR_LITERAL_EVAL_ERROR = (
 
 
 def _get_menu_prototype(caller):
-
+    """Return currently active menu prototype."""
     prototype = None
     if hasattr(caller.ndb._menutree, "olc_prototype"):
         prototype = caller.ndb._menutree.olc_prototype
@@ -40,11 +40,23 @@ def _get_menu_prototype(caller):
 
 
 def _is_new_prototype(caller):
+    """Check if prototype is marked as new or was loaded from a saved one."""
     return hasattr(caller.ndb._menutree, "olc_new")
 
 
-def _format_property(prop, required=False, prototype=None, cropper=None):
+def _format_option_value(prop, required=False, prototype=None, cropper=None):
+    """
+    Format wizard option values.
 
+    Args:
+        prop (str): Name or value to format.
+        required (bool, optional): The option is required.
+        prototype (dict, optional): If given, `prop` will be considered a key in this prototype.
+        cropper (callable, optional): A function to crop the value to a certain width.
+
+    Returns:
+        value (str): The formatted value.
+    """
     if prototype is not None:
         prop = prototype.get(prop, '')
 
@@ -61,7 +73,8 @@ def _format_property(prop, required=False, prototype=None, cropper=None):
     return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
 
 
-def _set_prototype_value(caller, field, value):
+def _set_prototype_value(caller, field, value, parse=True):
+    """Set prototype's field in a safe way."""
     prototype = _get_menu_prototype(caller)
     prototype[field] = value
     caller.ndb._menutree.olc_prototype = prototype
@@ -70,15 +83,21 @@ def _set_prototype_value(caller, field, value):
 
 def _set_property(caller, raw_string, **kwargs):
     """
-    Update a property. To be called by the 'goto' option variable.
+    Add or update a property. To be called by the 'goto' option variable.
 
     Args:
         caller (Object, Account): The user of the wizard.
         raw_string (str): Input from user on given node - the new value to set.
+
     Kwargs:
+        test_parse (bool): If set (default True), parse raw_string for protfuncs and obj-refs and
+            try to run result through literal_eval. The parser will be run in 'testing' mode and any
+            parsing errors will shown to the user. Note that this is just for testing, the original
+            given string will be what is inserted.
         prop (str): Property name to edit with `raw_string`.
         processor (callable): Converts `raw_string` to a form suitable for saving.
         next_node (str): Where to redirect to after this has run.
+
     Returns:
         next_node (str): Next node to go to.
 
@@ -103,7 +122,7 @@ def _set_property(caller, raw_string, **kwargs):
     if not value:
         return next_node
 
-    prototype = _set_prototype_value(caller, "prototype_key", value)
+    prototype = _set_prototype_value(caller, prop, value)
 
     # typeclass and prototype_parent can't co-exist
     if propname_low == "typeclass":
@@ -113,16 +132,26 @@ def _set_property(caller, raw_string, **kwargs):
 
     caller.ndb._menutree.olc_prototype = prototype
 
-    caller.msg("Set {prop} to '{value}'.".format(prop=prop, value=str(value)))
+    out = [" Set {prop} to {value} ({typ}).".format(prop=prop, value=value, typ=type(value))]
+
+    if kwargs.get("test_parse", True):
+        out.append(" Simulating parsing ...")
+        err, parsed_value = protlib.protfunc_parser(value, testing=True)
+        if err:
+            out.append(" |yPython `literal_eval` warning: {}|n".format(err))
+        if parsed_value != value:
+            out.append(" |g(Example-)value when parsed ({}):|n {}".format(
+                type(parsed_value), parsed_value))
+        else:
+            out.append(" |gNo change.")
+
+    caller.msg("\n".join(out))
 
     return next_node
 
 
 def _wizard_options(curr_node, prev_node, next_node, color="|W"):
-    """
-    Creates default navigation options available in the wizard.
-
-    """
+    """Creates default navigation options available in the wizard."""
     options = []
     if prev_node:
         options.append({"key": ("|wb|Wack", "b"),
@@ -166,7 +195,7 @@ def node_index(caller):
 
     options = []
     options.append(
-        {"desc": "|WPrototype-Key|n|n{}".format(_format_property("Key", True, prototype, None)),
+        {"desc": "|WPrototype-Key|n|n{}".format(_format_option_value("Key", True, prototype, None)),
          "goto": "node_prototype_key"})
     for key in ('Prototype', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
@@ -178,13 +207,13 @@ def node_index(caller):
             cropper = _path_cropper
         options.append(
             {"desc": "|w{}|n{}".format(
-                key, _format_property(key, required, prototype, cropper=cropper)),
+                key, _format_option_value(key, required, prototype, cropper=cropper)),
              "goto": "node_{}".format(key.lower())})
     required = False
     for key in ('Desc', 'Tags', 'Locks'):
         options.append(
             {"desc": "|WPrototype-{}|n|n{}".format(
-                key, _format_property(key, required, prototype, None)),
+                key, _format_option_value(key, required, prototype, None)),
              "goto": "node_prototype_{}".format(key.lower())})
 
     return text, options
@@ -215,6 +244,7 @@ def _check_prototype_key(caller, key):
     olc_new = _is_new_prototype(caller)
     key = key.strip().lower()
     if old_prototype:
+        old_prototype = old_prototype[0]
         # we are starting a new prototype that matches an existing
         if not caller.locks.check_lockstring(
                 caller, old_prototype['prototype_locks'], access_type='edit'):
@@ -229,7 +259,7 @@ def _check_prototype_key(caller, key):
             caller.msg("Prototype already exists. Reloading.")
             return "node_index"
 
-    return _set_property(caller, key, prop='prototype_key', next_node="node_prototype")
+    return _set_property(caller, key, prop='prototype_key', next_node="node_prototype_parent")
 
 
 def node_prototype_key(caller):
@@ -250,27 +280,32 @@ def node_prototype_key(caller):
     return text, options
 
 
-def _all_prototypes(caller):
+def _all_prototype_parents(caller):
+    """Return prototype_key of all available prototypes for listing in menu"""
     return [prototype["prototype_key"]
             for prototype in protlib.search_prototype() if "prototype_key" in prototype]
 
 
-def _prototype_examine(caller, prototype_name):
+def _prototype_parent_examine(caller, prototype_name):
+    """Convert prototype to a string representation for closer inspection"""
     prototypes = protlib.search_prototype(key=prototype_name)
     if prototypes:
-        caller.msg(protlib.prototype_to_str(prototypes[0]))
-    caller.msg("Prototype not registered.")
-    return None
+        ret = protlib.prototype_to_str(prototypes[0])
+        caller.msg(ret)
+        return ret
+    else:
+        caller.msg("Prototype not registered.")
 
 
-def _prototype_select(caller, prototype):
-    ret = _set_property(caller, prototype, prop="prototype", processor=str, next_node="node_key")
+def _prototype_parent_select(caller, prototype):
+    ret = _set_property(caller, prototype['prototype_key'],
+                        prop="prototype_parent", processor=str, next_node="node_key")
     caller.msg("Selected prototype |y{}|n. Removed any set typeclass parent.".format(prototype))
     return ret
 
 
-@list_node(_all_prototypes, _prototype_select)
-def node_prototype(caller):
+@list_node(_all_prototype_parents, _prototype_parent_select)
+def node_prototype_parent(caller):
     prototype = _get_menu_prototype(caller)
 
     prot_parent_key = prototype.get('prototype')
@@ -289,18 +324,20 @@ def node_prototype(caller):
     text = "\n\n".join(text)
     options = _wizard_options("prototype", "prototype_key", "typeclass", color="|W")
     options.append({"key": "_default",
-                    "goto": _prototype_examine})
+                    "goto": _prototype_parent_examine})
 
     return text, options
 
 
 def _all_typeclasses(caller):
+    """Get name of available typeclasses."""
     return list(name for name in
                 sorted(utils.get_all_typeclasses("evennia.objects.models.ObjectDB").keys())
                 if name != "evennia.objects.models.ObjectDB")
 
 
 def _typeclass_examine(caller, typeclass_path):
+    """Show info (docstring) about given typeclass."""
     if typeclass_path is None:
         # this means we are exiting the listing
         return "node_key"
@@ -319,10 +356,11 @@ def _typeclass_examine(caller, typeclass_path):
     else:
         txt = "This is typeclass |y{}|n.".format(typeclass)
     caller.msg(txt)
-    return None
+    return txt
 
 
 def _typeclass_select(caller, typeclass):
+    """Select typeclass from list and add it to prototype. Return next node to go to."""
     ret = _set_property(caller, typeclass, prop='typeclass', processor=str, next_node="node_key")
     caller.msg("Selected typeclass |y{}|n. Removed any set prototype parent.".format(typeclass))
     return ret
@@ -350,7 +388,7 @@ def node_key(caller):
     prototype = _get_menu_prototype(caller)
     key = prototype.get("key")
 
-    text = ["Set the prototype's |yKey|n. This will retain case sensitivity."]
+    text = ["Set the prototype's name (|yKey|n.) This will retain case sensitivity."]
     if key:
         text.append("Current key value is '|y{key}|n'.".format(key=key))
     else:
@@ -370,7 +408,7 @@ def node_aliases(caller):
     aliases = prototype.get("aliases")
 
     text = ["Set the prototype's |yAliases|n. Separate multiple aliases with commas. "
-            "ill retain case sensitivity."]
+            "they'll retain case sensitivity."]
     if aliases:
         text.append("Current aliases are '|y{aliases}|n'.".format(aliases=aliases))
     else:
@@ -714,7 +752,7 @@ def start_olc(caller, session=None, prototype=None):
     menudata = {"node_index": node_index,
                 "node_validate_prototype": node_validate_prototype,
                 "node_prototype_key": node_prototype_key,
-                "node_prototype": node_prototype,
+                "node_prototype_parent": node_prototype_parent,
                 "node_typeclass": node_typeclass,
                 "node_key": node_key,
                 "node_aliases": node_aliases,

@@ -308,6 +308,91 @@ class TestPrototypeStorage(EvenniaTest):
         self.assertTrue(str(unicode(protlib.list_prototypes(self.char1))))
 
 
+class _MockMenu(object):
+    pass
+
+
+class TestMenuModule(EvenniaTest):
+
+    def setUp(self):
+        super(TestMenuModule, self).setUp()
+
+        # set up fake store
+        self.caller = self.char1
+        menutree = _MockMenu()
+        self.caller.ndb._menutree = menutree
+
+        self.test_prot = {"prototype_key": "test_prot",
+                          "prototype_locks": "edit:all();spawn:all()"}
+
+    def test_helpers(self):
+
+        caller = self.caller
+
+        # general helpers
+
+        self.assertEqual(olc_menus._get_menu_prototype(caller), {})
+        self.assertEqual(olc_menus._is_new_prototype(caller), True)
+
+        self.assertEqual(
+            olc_menus._set_prototype_value(caller, "key", "TestKey"), {"key": "TestKey"})
+        self.assertEqual(olc_menus._get_menu_prototype(caller), {"key": "TestKey"})
+
+        self.assertEqual(olc_menus._format_option_value(
+            "key", required=True, prototype=olc_menus._get_menu_prototype(caller)), " (TestKey|n)")
+        self.assertEqual(olc_menus._format_option_value(
+            [1, 2, 3, "foo"], required=True), ' (1, 2, 3, foo|n)')
+
+        self.assertEqual(olc_menus._set_property(
+            caller, "ChangedKey", prop="key", processor=str, next_node="foo"), "foo")
+        self.assertEqual(olc_menus._get_menu_prototype(caller), {"key": "ChangedKey"})
+
+        self.assertEqual(olc_menus._wizard_options(
+            "ThisNode", "PrevNode", "NextNode"),
+            [{'goto': 'node_PrevNode', 'key': ('|wb|Wack', 'b'), 'desc': '|W(PrevNode)|n'},
+             {'goto': 'node_NextNode', 'key': ('|wf|Worward', 'f'), 'desc': '|W(NextNode)|n'},
+             {'goto': 'node_index', 'key': ('|wi|Wndex', 'i')},
+             {'goto': ('node_validate_prototype', {'back': 'ThisNode'}),
+                 'key': ('|wv|Walidate prototype', 'v')}])
+
+    def test_node_helpers(self):
+
+        caller = self.caller
+
+        with mock.patch("evennia.prototypes.menus.protlib.search_prototype",
+                        new=mock.MagicMock(return_value=[self.test_prot])):
+            self.assertEqual(olc_menus._check_prototype_key(caller, "test_prot"),
+                             "node_prototype_parent")
+            caller.ndb._menutree.olc_new = True
+            self.assertEqual(olc_menus._check_prototype_key(caller, "test_prot"),
+                             "node_index")
+
+            self.assertEqual(olc_menus._all_prototype_parents(caller), ['test_prot'])
+            self.assertEqual(olc_menus._prototype_parent_examine(
+                caller, 'test_prot'),
+                '|cprototype key:|n test_prot, |ctags:|n None, |clocks:|n edit:all();spawn:all() '
+                '\n|cdesc:|n None \n|cprototype:|n {\n   \n}')
+            self.assertEqual(olc_menus._prototype_parent_select(caller, self.test_prot), "node_key")
+        self.assertEqual(olc_menus._get_menu_prototype(caller),
+                         {'prototype_key': 'test_prot',
+                          'prototype_locks': 'edit:all();spawn:all()',
+                          'prototype_parent': "test_prot"})
+
+        with mock.patch("evennia.utils.utils.get_all_typeclasses",
+                        new=mock.MagicMock(return_value={"foo": None, "bar": None})):
+            self.assertEqual(olc_menus._all_typeclasses(caller),  ["bar", "foo"])
+        self.assertTrue(olc_menus._typeclass_examine(
+            caller, "evennia.objects.objects.DefaultObject").startswith("Typeclass |y"))
+
+        self.assertEqual(olc_menus._typeclass_select(
+            caller, "evennia.objects.objects.DefaultObject"), "node_key")
+        # prototype_parent should be popped off here
+        self.assertEqual(olc_menus._get_menu_prototype(caller),
+                         {'prototype_key': 'test_prot',
+                          'prototype_locks': 'edit:all();spawn:all()',
+                          'typeclass': 'evennia.objects.objects.DefaultObject'})
+
+
 @mock.patch("evennia.prototypes.menus.protlib.search_prototype", new=mock.MagicMock(
    return_value=[{"prototype_key": "TestPrototype",
                   "typeclass": "TypeClassTest", "key": "TestObj"}]))
@@ -320,6 +405,7 @@ class TestOLCMenu(TestEvMenu):
     startnode = "node_index"
 
     debug_output = True
+    expect_all_nodes = True
 
     expected_node_texts = {
         "node_index": "|c --- Prototype wizard --- |n"
