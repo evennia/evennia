@@ -32,7 +32,7 @@ Possible keywords are:
     prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype
         in listings
 
-    parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or
+    prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or
         a list of parents, for multiple left-to-right inheritance.
     prototype: Deprecated. Same meaning as 'parent'.
     typeclass (str or callable, optional): if not set, will use typeclass of parent prototype or use
@@ -75,13 +75,13 @@ import random
 
 
 GOBLIN_WIZARD = {
- "parent": GOBLIN,
+ "prototype_parent": GOBLIN,
  "key": "goblin wizard",
  "spells": ["fire ball", "lighting bolt"]
  }
 
 GOBLIN_ARCHER = {
- "parent": GOBLIN,
+ "prototype_parent": GOBLIN,
  "key": "goblin archer",
  "attack_skill": (random, (5, 10))"
  "attacks": ["short bow"]
@@ -97,7 +97,7 @@ ARCHWIZARD = {
 
 GOBLIN_ARCHWIZARD = {
  "key" : "goblin archwizard"
- "parent": (GOBLIN_WIZARD, ARCHWIZARD),
+ "prototype_parent": (GOBLIN_WIZARD, ARCHWIZARD),
 }
 ```
 
@@ -460,11 +460,15 @@ def spawn(*prototypes, **kwargs):
         prototype_parents (dict): A dictionary holding a custom
             prototype-parent dictionary. Will overload same-named
             prototypes from prototype_modules.
-        return_prototypes (bool): Only return a list of the
+        return_parents (bool): Only return a dict of the
             prototype-parents (no object creation happens)
+        only_validate (bool): Only run validation of prototype/parents
+            (no object creation) and return the create-kwargs.
 
     Returns:
-        object (Object): Spawned object.
+        object (Object, dict or list): Spawned object. If `only_validate` is given, return
+            a list of the creation kwargs to build the object(s) without actually creating it. If
+            `return_parents` is set, return dict of prototype parents.
 
     """
     # get available protparents
@@ -474,17 +478,14 @@ def spawn(*prototypes, **kwargs):
     protparents.update(
         {key.lower(): value for key, value in kwargs.get("prototype_parents", {}).items()})
 
-    for key, prototype in protparents.items():
-        protlib.validate_prototype(prototype, key.lower(), protparents)
-
-    if "return_prototypes" in kwargs:
+    if "return_parents" in kwargs:
         # only return the parents
         return copy.deepcopy(protparents)
 
     objsparams = []
     for prototype in prototypes:
 
-        protlib.validate_prototype(prototype, None, protparents)
+        protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
         prot = _get_prototype(prototype, {}, protparents)
         if not prot:
             continue
@@ -556,4 +557,6 @@ def spawn(*prototypes, **kwargs):
         objsparams.append((create_kwargs, permission_string, lock_string,
                            alias_string, nattributes, attributes, tags, execs))
 
+    if kwargs.get("only_validate"):
+        return objsparams
     return batch_create_object(*objsparams)

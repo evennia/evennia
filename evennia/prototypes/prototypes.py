@@ -12,7 +12,8 @@ from evennia.scripts.scripts import DefaultScript
 from evennia.objects.models import ObjectDB
 from evennia.utils.create import create_script
 from evennia.utils.utils import (
-    all_from_module, make_iter, is_iter, dbid_to_obj, callables_from_module)
+    all_from_module, make_iter, is_iter, dbid_to_obj, callables_from_module,
+    get_all_typeclasses)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
 from evennia.utils import inlinefuncs
@@ -143,10 +144,10 @@ def prototype_to_str(prototype):
     header = (
         "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
         "|cdesc:|n {} \n|cprototype:|n ".format(
-           prototype['prototype_key'],
-           ", ".join(prototype['prototype_tags']),
-           prototype['prototype_locks'],
-           prototype['prototype_desc']))
+           prototype.get('prototype_key', None),
+           ", ".join(prototype.get('prototype_tags', ['None'])),
+           prototype.get('prototype_locks', None),
+           prototype.get('prototype_desc', None)))
     proto = ("{{\n  {} \n}}".format(
         "\n  ".join(
             "{!r}: {!r},".format(key, value) for key, value in
@@ -513,7 +514,8 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     return table
 
 
-def validate_prototype(prototype, protkey=None, protparents=None, _visited=None):
+def validate_prototype(prototype, protkey=None, protparents=None,
+                       is_prototype_base=True, _flags=None):
     """
     Run validation on a prototype, checking for inifinite regress.
 
@@ -523,33 +525,77 @@ def validate_prototype(prototype, protkey=None, protparents=None, _visited=None)
             dict needs to have the `prototype_key` field set.
         protpartents (dict, optional): The available prototype parent library. If
             note given this will be determined from settings/database.
-        _visited (list, optional): This is an internal work array and should not be set manually.
+        is_prototype_base (bool, optional): We are trying to create a new object *based on this
+            object*. This means we can't allow 'mixin'-style prototypes without typeclass/parent
+            etc.
+        _flags (dict, optional): Internal work dict that should not be set externally.
     Raises:
         RuntimeError: If prototype has invalid structure.
+        RuntimeWarning: If prototype has issues that would make it unsuitable to build an object
+            with (it may still be useful as a mix-in prototype).
 
     """
+    assert isinstance(prototype, dict)
+
+    if _flags is None:
+        _flags = {"visited": [], "depth": 0, "typeclass": False, "errors": [], "warnings": []}
+
     if not protparents:
         protparents = {prototype['prototype_key']: prototype for prototype in search_prototype()}
-    if _visited is None:
-        _visited = []
 
     protkey = protkey and protkey.lower() or prototype.get('prototype_key', None)
 
-    assert isinstance(prototype, dict)
+    if not bool(protkey):
+        _flags['errors'].append("Prototype lacks a `prototype_key`.")
+        protkey = "[UNSET]"
 
-    if id(prototype) in _visited:
-        raise RuntimeError("%s has infinite nesting of prototypes." % protkey or prototype)
+    typeclass = prototype.get('typeclass')
+    prototype_parent = prototype.get('prototype_parent', [])
 
-    _visited.append(id(prototype))
-    protstrings = prototype.get("prototype")
+    if not (typeclass or prototype_parent):
+        if is_prototype_base:
+            _flags['errors'].append("Prototype {} requires `typeclass` "
+                                    "or 'prototype_parent'.".format(protkey))
+        else:
+            _flags['warnings'].append("Prototype {} can only be used as a mixin since it lacks "
+                                      "a typeclass or a prototype_parent.".format(protkey))
 
-    if protstrings:
-        for protstring in make_iter(protstrings):
-            protstring = protstring.lower()
-            if protkey is not None and protstring == protkey:
-                raise RuntimeError("%s tries to prototype itself." % protkey or prototype)
-            protparent = protparents.get(protstring)
-            if not protparent:
-                raise RuntimeError(
-                    "%s's prototype '%s' was not found." % (protkey or prototype, protstring))
-            validate_prototype(protparent, protstring, protparents, _visited)
+    if typeclass and typeclass not in get_all_typeclasses("evennia.objects.models.ObjectDB"):
+        _flags['errors'].append(
+            "Prototype {} is based on typeclass {} which could not be imported!".format(
+                protkey, typeclass))
+
+    # recursively traverese prototype_parent chain
+
+    if id(prototype) in _flags['visited']:
+        _flags['errors'].append(
+            "{} has infinite nesting of prototypes.".format(protkey or prototype))
+
+    _flags['visited'].append(id(prototype))
+
+    for protstring in make_iter(prototype_parent):
+        protstring = protstring.lower()
+        if protkey is not None and protstring == protkey:
+            _flags['errors'].append("Protototype {} tries to parent itself.".format(protkey))
+        protparent = protparents.get(protstring)
+        if not protparent:
+            _flags['errors'].append("Prototype {}'s prototype_parent '{}' was not found.".format(
+                (protkey, protstring)))
+        _flags['depth'] += 1
+        validate_prototype(protparent, protstring, protparents, _flags)
+        _flags['depth'] -= 1
+
+    if typeclass and not _flags['typeclass']:
+        _flags['typeclass'] = typeclass
+
+    # if we get back to the current level without a typeclass it's an error.
+    if is_prototype_base and _flags['depth'] <= 0 and not _flags['typeclass']:
+        _flags['errors'].append("Prototype {} has no `typeclass` defined anywhere in its parent "
+                                "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
+                                "prototype with a typeclass.".format(protkey))
+
+    if _flags['depth'] <= 0:
+        if _flags['errors']:
+            raise RuntimeError("Error: " + "\nError: ".join(_flags['errors']))
+        if _flags['warnings']:
+            raise RuntimeWarning("Warning: " + "\nWarning: ".join(_flags['warnings']))
