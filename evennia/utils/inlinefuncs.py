@@ -162,6 +162,20 @@ def clr(*args, **kwargs):
 def null(*args, **kwargs):
     return args[0] if args else ''
 
+
+def nomatch(name, *args, **kwargs):
+    """
+    Default implementation of nomatch returns the function as-is as a string.
+
+    """
+    kwargs.pop("inlinefunc_stack_depth", None)
+    kwargs.pop("session")
+
+    return "${name}({args}{kwargs})".format(
+        name=name,
+        args=",".join(args),
+        kwargs=",".join("{}={}".format(key, val) for key, val in kwargs.items()))
+
 _INLINE_FUNCS = {}
 
 # we specify a default nomatch function to use if no matching func was
@@ -284,7 +298,6 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
 
     """
     global _PARSING_CACHE
-
     usecache = False
     if not available_funcs:
         available_funcs = _INLINE_FUNCS
@@ -357,6 +370,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
                 except KeyError:
                     stack.append(available_funcs["nomatch"])
                     stack.append(funcname)
+                    stack.append(None)
                 ncallable += 1
             elif gdict["escaped"]:
                 # escaped tokens
