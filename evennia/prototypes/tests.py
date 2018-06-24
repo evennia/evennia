@@ -8,7 +8,9 @@ import mock
 from anything import Something
 from django.test.utils import override_settings
 from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.tests.test_evmenu import TestEvMenu
 from evennia.prototypes import spawner, prototypes as protlib
+from evennia.prototypes import menus as olc_menus
 
 from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
@@ -304,3 +306,37 @@ class TestPrototypeStorage(EvenniaTest):
         self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
 
         self.assertTrue(str(unicode(protlib.list_prototypes(self.char1))))
+
+
+@mock.patch("evennia.prototypes.menus.protlib.search_prototype", new=mock.MagicMock(
+   return_value=[{"prototype_key": "TestPrototype",
+                  "typeclass": "TypeClassTest", "key": "TestObj"}]))
+@mock.patch("evennia.utils.utils.get_all_typeclasses", new=mock.MagicMock(
+   return_value={"TypeclassTest": None}))
+class TestOLCMenu(TestEvMenu):
+
+    maxDiff = None
+    menutree = "evennia.prototypes.menus"
+    startnode = "node_index"
+
+    debug_output = True
+
+    expected_node_texts = {
+        "node_index": "|c --- Prototype wizard --- |n"
+    }
+
+    expected_tree = \
+        ['node_index',
+         ['node_prototype_key',
+          'node_typeclass',
+          'node_aliases',
+          'node_attrs',
+          'node_tags',
+          'node_locks',
+          'node_permissions',
+          'node_location',
+          'node_home',
+          'node_destination',
+          'node_prototype_desc',
+          'node_prototype_tags',
+          'node_prototype_locks']]

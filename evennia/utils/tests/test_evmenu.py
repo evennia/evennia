@@ -58,7 +58,7 @@ class TestEvMenu(TestCase):
 
     def _debug_output(self, indent, msg):
         if self.debug_output:
-            print(" " * indent + msg)
+            print(" " * indent + ansi.strip_ansi(msg))
 
     def _test_menutree(self, menu):
         """
@@ -168,6 +168,7 @@ class TestEvMenu(TestCase):
             self.caller2.msg = MagicMock()
             self.session = MagicMock()
             self.session2 = MagicMock()
+
             self.menu = evmenu.EvMenu(self.caller, self.menutree, startnode=self.startnode,
                                       cmdset_mergetype=self.cmdset_mergetype,
                                       cmdset_priority=self.cmdset_priority,

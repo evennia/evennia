@@ -9,8 +9,8 @@ from django.conf import settings
 from evennia.utils.evmenu import EvMenu, list_node
 from evennia.utils.ansi import strip_ansi
 from evennia.utils import utils
-from evennia.utils.prototypes import prototypes as protlib
-from evennia.utils.prototypes import spawner
+from evennia.prototypes import prototypes as protlib
+from evennia.prototypes import spawner
 
 # ------------------------------------------------------------
 #
@@ -43,12 +43,6 @@ def _is_new_prototype(caller):
     return hasattr(caller.ndb._menutree, "olc_new")
 
 
-def _set_menu_prototype(caller, field, value):
-    prototype = _get_menu_prototype(caller)
-    prototype[field] = value
-    caller.ndb._menutree.olc_prototype = prototype
-
-
 def _format_property(prop, required=False, prototype=None, cropper=None):
 
     if prototype is not None:
@@ -65,6 +59,13 @@ def _format_property(prop, required=False, prototype=None, cropper=None):
     if not out and required:
         out = "|rrequired"
     return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
+
+
+def _set_prototype_value(caller, field, value):
+    prototype = _get_menu_prototype(caller)
+    prototype[field] = value
+    caller.ndb._menutree.olc_prototype = prototype
+    return prototype
 
 
 def _set_property(caller, raw_string, **kwargs):
@@ -102,22 +103,26 @@ def _set_property(caller, raw_string, **kwargs):
     if not value:
         return next_node
 
-    prototype = _get_menu_prototype(caller)
+    prototype = _set_prototype_value(caller, "prototype_key", value)
 
-    # typeclass and prototype can't co-exist
+    # typeclass and prototype_parent can't co-exist
     if propname_low == "typeclass":
-        prototype.pop("prototype", None)
-    if propname_low == "prototype":
+        prototype.pop("prototype_parent", None)
+    if propname_low == "prototype_parent":
         prototype.pop("typeclass", None)
 
     caller.ndb._menutree.olc_prototype = prototype
 
-    caller.msg("Set {prop} to '{value}'.".format(prop, value=str(value)))
+    caller.msg("Set {prop} to '{value}'.".format(prop=prop, value=str(value)))
 
     return next_node
 
 
 def _wizard_options(curr_node, prev_node, next_node, color="|W"):
+    """
+    Creates default navigation options available in the wizard.
+
+    """
     options = []
     if prev_node:
         options.append({"key": ("|wb|Wack", "b"),
@@ -154,8 +159,8 @@ def node_index(caller):
     text = ("|c --- Prototype wizard --- |n\n\n"
             "Define the |yproperties|n of the prototype. All prototype values can be "
             "over-ridden at the time of spawning an instance of the prototype, but some are "
-            "required.\n\n'|wMeta'-properties|n are not used in the prototype itself but are used "
-            "to organize and list prototypes. The 'Meta-Key' uniquely identifies the prototype "
+            "required.\n\n'|wprototype-'-properties|n are not used in the prototype itself but are used "
+            "to organize and list prototypes. The 'prototype-key' uniquely identifies the prototype "
             "and allows you to edit an existing prototype or save a new one for use by you or "
             "others later.\n\n(make choice; q to abort. If unsure, start from 1.)")
 
@@ -192,9 +197,12 @@ def node_validate_prototype(caller, raw_string, **kwargs):
     errors = "\n\n|g No validation errors found.|n (but errors could still happen at spawn-time)"
     try:
         # validate, don't spawn
-        spawner.spawn(prototype, return_prototypes=True)
+        spawner.spawn(prototype, only_validate=True)
     except RuntimeError as err:
-        errors = "\n\n|rError: {}|n".format(err)
+        errors = "\n\n|r{}|n".format(err)
+    except RuntimeWarning as err:
+        errors = "\n\n|y{}|n".format(err)
+
     text = (txt + errors)
 
     options = _wizard_options(None, kwargs.get("back"), None)
@@ -287,7 +295,9 @@ def node_prototype(caller):
 
 
 def _all_typeclasses(caller):
-    return list(sorted(utils.get_all_typeclasses().keys()))
+    return list(name for name in
+                sorted(utils.get_all_typeclasses("evennia.objects.models.ObjectDB").keys())
+                if name != "evennia.objects.models.ObjectDB")
 
 
 def _typeclass_examine(caller, typeclass_path):
@@ -403,7 +413,7 @@ def _add_attr(caller, attr_string, **kwargs):
     if attrname:
         prot = _get_menu_prototype(caller)
         prot['attrs'][attrname] = value
-        _set_menu_prototype(caller, "prototype", prot)
+        _set_prototype_value(caller, "prototype", prot)
         text = "Added"
     else:
         text = "Attribute must be given as 'attrname = <value>' where <value> uses valid Python."
@@ -468,7 +478,7 @@ def _add_tag(caller, tag, **kwargs):
     else:
         tags = [tag]
     prototype['tags'] = tags
-    _set_menu_prototype(caller, "prototype", prototype)
+    _set_prototype_value(caller, "prototype", prototype)
     text = kwargs.get("text")
     if not text:
         text = "Added tag {}. (return to continue)".format(tag)
@@ -485,7 +495,7 @@ def _edit_tag(caller, old_tag, new_tag, **kwargs):
     new_tag = new_tag.strip().lower()
     tags[tags.index(old_tag)] = new_tag
     prototype['tags'] = tags
-    _set_menu_prototype(caller, 'prototype', prototype)
+    _set_prototype_value(caller, 'prototype', prototype)
 
     text = kwargs.get('text')
     if not text:
