@@ -22,7 +22,11 @@ from evennia.utils.evtable import EvTable
 
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
-_PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
+_PROTOTYPE_META_NAMES = (
+    "prototype_key", "prototype_desc", "prototype_tags", "prototype_locks", "prototype_parent")
+_PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
+    "key", "aliases", "typeclass", "location", "home", "destination",
+    "permissions", "locks", "exec", "tags", "attrs")
 _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 _PROT_FUNCS = {}

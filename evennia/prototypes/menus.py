@@ -4,6 +4,7 @@ OLC Prototype menu nodes
 
 """
 
+import json
 from ast import literal_eval
 from django.conf import settings
 from evennia.utils.evmenu import EvMenu, list_node
@@ -132,10 +133,16 @@ def _set_property(caller, raw_string, **kwargs):
 
     caller.ndb._menutree.olc_prototype = prototype
 
-    out = [" Set {prop} to {value} ({typ}).".format(prop=prop, value=value, typ=type(value))]
+    try:
+        # TODO simple way to get rid of the u'' markers in list reprs, remove this when on py3.
+        repr_value = json.dumps(value)
+    except Exception:
+        repr_value = value
+
+    out = [" Set {prop} to {value} ({typ}).".format(prop=prop, value=repr_value, typ=type(value))]
 
     if kwargs.get("test_parse", True):
-        out.append(" Simulating parsing ...")
+        out.append(" Simulating prototype-func parsing ...")
         err, parsed_value = protlib.protfunc_parser(value, testing=True)
         if err:
             out.append(" |yPython `literal_eval` warning: {}|n".format(err))
@@ -143,7 +150,7 @@ def _set_property(caller, raw_string, **kwargs):
             out.append(" |g(Example-)value when parsed ({}):|n {}".format(
                 type(parsed_value), parsed_value))
         else:
-            out.append(" |gNo change.")
+            out.append(" |gNo change when parsed.")
 
     caller.msg("\n".join(out))
 
@@ -185,23 +192,24 @@ def _path_cropper(pythonpath):
 def node_index(caller):
     prototype = _get_menu_prototype(caller)
 
-    text = ("|c --- Prototype wizard --- |n\n\n"
-            "Define the |yproperties|n of the prototype. All prototype values can be "
-            "over-ridden at the time of spawning an instance of the prototype, but some are "
-            "required.\n\n'|wprototype-'-properties|n are not used in the prototype itself but are used "
-            "to organize and list prototypes. The 'prototype-key' uniquely identifies the prototype "
-            "and allows you to edit an existing prototype or save a new one for use by you or "
-            "others later.\n\n(make choice; q to abort. If unsure, start from 1.)")
+    text = (
+       "|c --- Prototype wizard --- |n\n\n"
+       "Define the |yproperties|n of the prototype. All prototype values can be "
+       "over-ridden at the time of spawning an instance of the prototype, but some are "
+       "required.\n\n'|wprototype-'-properties|n are not used in the prototype itself but are used "
+       "to organize and list prototypes. The 'prototype-key' uniquely identifies the prototype "
+       "and allows you to edit an existing prototype or save a new one for use by you or "
+       "others later.\n\n(make choice; q to abort. If unsure, start from 1.)")
 
     options = []
     options.append(
         {"desc": "|WPrototype-Key|n|n{}".format(_format_option_value("Key", True, prototype, None)),
          "goto": "node_prototype_key"})
-    for key in ('Prototype', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
+    for key in ('Typeclass', 'Prototype-parent', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
         required = False
         cropper = None
-        if key in ("Prototype", "Typeclass"):
+        if key in ("Prototype-parent", "Typeclass"):
             required = "prototype" not in prototype and "typeclass" not in prototype
         if key == 'Typeclass':
             cropper = _path_cropper
@@ -213,6 +221,12 @@ def node_index(caller):
     for key in ('Desc', 'Tags', 'Locks'):
         options.append(
             {"desc": "|WPrototype-{}|n|n{}".format(
+                key, _format_option_value(key, required, prototype, None)),
+             "goto": "node_prototype_{}".format(key.lower())})
+    for key in ("Load", "Save", "Spawn"):
+        options.append(
+            {"key": ("|w{}|W{}".format(key[0], key[1:]), key[0]),
+             "desc": "|W{}|n".format(
                 key, _format_option_value(key, required, prototype, None)),
              "goto": "node_prototype_{}".format(key.lower())})
 
@@ -429,54 +443,82 @@ def _caller_attrs(caller):
     return attrs
 
 
-def _attrparse(caller, attr_string):
-    "attr is entering on the form 'attr = value'"
+def _display_attribute(attr_tuple):
+    """Pretty-print attribute tuple"""
+    attrkey, value, category, locks, default_access = attr_tuple
+    value = protlib.protfunc_parser(value)
+    typ = type(value)
+    out = ("Attribute key: '{attrkey}' (category: {category}, "
+           "locks: {locks})\n"
+           "Value (parsed to {typ}): {value}").format(
+                   attrkey=attrkey,
+                   category=category, locks=locks,
+                   typ=typ, value=value)
+    return out
+
+
+def _add_attr(caller, attr_string, **kwargs):
+    """
+    Add new attrubute, parsing input.
+    attr is entered on these forms
+        attr = value
+        attr;category = value
+        attr;category;lockstring = value
+
+    """
+    attrname = ''
+    category = None
+    locks = ''
 
     if '=' in attr_string:
         attrname, value = (part.strip() for part in attr_string.split('=', 1))
         attrname = attrname.lower()
-    if attrname:
-        try:
-            value = literal_eval(value)
-        except SyntaxError:
-            caller.msg(_MENU_ATTR_LITERAL_EVAL_ERROR)
-        else:
-            return attrname, value
-    else:
-        return None, None
+        nameparts = attrname.split(";", 2)
+        nparts = len(nameparts)
+        if nparts == 2:
+            attrname, category = nameparts
+        elif nparts > 2:
+            attrname, category, locks = nameparts
+    attr_tuple = (attrname, category, locks)
 
-
-def _add_attr(caller, attr_string, **kwargs):
-    attrname, value = _attrparse(caller, attr_string)
     if attrname:
         prot = _get_menu_prototype(caller)
-        prot['attrs'][attrname] = value
-        _set_prototype_value(caller, "prototype", prot)
-        text = "Added"
+        attrs = prot.get('attrs', [])
+
+        try:
+            # replace existing attribute with the same name in the prototype
+            ind = [tup[0] for tup in attrs].index(attrname)
+            attrs[ind] = attr_tuple
+        except IndexError:
+            attrs.append(attr_tuple)
+
+        _set_prototype_value(caller, "attrs", attrs)
+
+        text = kwargs.get('text')
+        if not text:
+            if 'edit' in kwargs:
+                text = "Edited " + _display_attribute(attr_tuple)
+            else:
+                text = "Added " + _display_attribute(attr_tuple)
     else:
-        text = "Attribute must be given as 'attrname = <value>' where <value> uses valid Python."
+        text = "Attribute must be given as 'attrname[;category;locks] = <value>'."
+
     options = {"key": "_default",
                "goto": lambda caller: None}
     return text, options
 
 
 def _edit_attr(caller, attrname, new_value, **kwargs):
-    attrname, value = _attrparse("{}={}".format(caller, attrname, new_value))
-    if attrname:
-        prot = _get_menu_prototype(caller)
-        prot['attrs'][attrname] = value
-        text = "Edited Attribute {} = {}".format(attrname, value)
-    else:
-        text = "Attribute value must be valid Python."
-    options = {"key": "_default",
-               "goto": lambda caller: None}
-    return text, options
+
+    attr_string = "{}={}".format(attrname, new_value)
+
+    return _add_attr(caller, attr_string, edit=True)
 
 
 def _examine_attr(caller, selection):
     prot = _get_menu_prototype(caller)
-    value = prot['attrs'][selection]
-    return "Attribute {} = {}".format(selection, value)
+    attr_tuple = prot['attrs'][selection]
+    return _display_attribute(attr_tuple)
 
 
 @list_node(_caller_attrs)
@@ -484,8 +526,12 @@ def node_attrs(caller):
     prot = _get_menu_prototype(caller)
     attrs = prot.get("attrs")
 
-    text = ["Set the prototype's |yAttributes|n. Separate multiple attrs with commas. "
-            "Will retain case sensitivity."]
+    text = ["Set the prototype's |yAttributes|n. Enter attributes on one of these forms:\n"
+            " attrname=value\n attrname;category=value\n attrname;category;lockstring=value\n"
+            "To give an attribute without a category but with a lockstring, leave that spot empty "
+            "(attrname;;lockstring=value)."
+            "Separate multiple attrs with commas. Use quotes to escape inputs with commas and "
+            "semi-colon."]
     if attrs:
         text.append("Current attrs are '|y{attrs}|n'.".format(attrs=attrs))
     else:
@@ -506,46 +552,78 @@ def _caller_tags(caller):
     return tags
 
 
+def _display_tag(tag_tuple):
+    """Pretty-print attribute tuple"""
+    tagkey, category, data = tag_tuple
+    out = ("Tag: '{tagkey}' (category: {category}{})".format(
+           tagkey=tagkey, category=category, data=", data: {}".format(data) if data else ""))
+    return out
+
+
 def _add_tag(caller, tag, **kwargs):
+    """
+    Add tags to the system, parsing  this syntax:
+        tagname
+        tagname;category
+        tagname;category;data
+
+    """
+
     tag = tag.strip().lower()
-    prototype = _get_menu_prototype(caller)
-    tags = prototype.get('tags', [])
-    if tags:
-        if tag not in tags:
-            tags.append(tag)
+    category = None
+    data = ""
+
+    tagtuple = tag.split(";", 2)
+    ntuple = len(tagtuple)
+
+    if ntuple == 2:
+        tag, category = tagtuple
+    elif ntuple > 2:
+        tag, category, data = tagtuple
+
+    tag_tuple = (tag, category, data)
+
+    if tag:
+        prot = _get_menu_prototype(caller)
+        tags = prot.get('tags', [])
+
+        old_tag = kwargs.get("edit", None)
+
+        if old_tag:
+            # editing a tag means removing the old and replacing with new
+            try:
+                ind = [tup[0] for tup in tags].index(old_tag)
+                del tags[ind]
+            except IndexError:
+                pass
+
+        tags.append(tag_tuple)
+
+        _set_prototype_value(caller, "tags", tags)
+
+        text = kwargs.get('text')
+        if not text:
+            if 'edit' in kwargs:
+                text = "Edited " + _display_tag(tag_tuple)
+            else:
+                text = "Added " + _display_tag(tag_tuple)
     else:
-        tags = [tag]
-    prototype['tags'] = tags
-    _set_prototype_value(caller, "prototype", prototype)
-    text = kwargs.get("text")
-    if not text:
-        text = "Added tag {}. (return to continue)".format(tag)
+        text = "Tag must be given as 'tag[;category;data]."
+
     options = {"key": "_default",
                "goto": lambda caller: None}
     return text, options
 
 
 def _edit_tag(caller, old_tag, new_tag, **kwargs):
-    prototype = _get_menu_prototype(caller)
-    tags = prototype.get('tags', [])
-
-    old_tag = old_tag.strip().lower()
-    new_tag = new_tag.strip().lower()
-    tags[tags.index(old_tag)] = new_tag
-    prototype['tags'] = tags
-    _set_prototype_value(caller, 'prototype', prototype)
-
-    text = kwargs.get('text')
-    if not text:
-        text = "Changed tag {} to {}.".format(old_tag, new_tag)
-    options = {"key": "_default",
-               "goto": lambda caller: None}
-    return text, options
+    return _add_tag(caller, new_tag, edit=old_tag)
 
 
 @list_node(_caller_tags)
 def node_tags(caller):
-    text = "Set the prototype's |yTags|n."
+    text = ("Set the prototype's |yTags|n. Enter tags on one of the following forms:\n"
+            " tag\n tag;category\n tag;category;data\n"
+            "Note that 'data' is not commonly used.")
     options = _wizard_options("tags", "attrs", "locks")
     return text, options
 
@@ -650,7 +728,7 @@ def node_destination(caller):
 def node_prototype_desc(caller):
 
     prototype = _get_menu_prototype(caller)
-    text = ["The |wMeta-Description|n briefly describes the prototype for viewing in listings."]
+    text = ["The |wPrototype-Description|n briefly describes the prototype for viewing in listings."]
     desc = prototype.get("prototype_desc", None)
 
     if desc:
@@ -670,7 +748,7 @@ def node_prototype_desc(caller):
 
 def node_prototype_tags(caller):
     prototype = _get_menu_prototype(caller)
-    text = ["|wMeta-Tags|n can be used to classify and find prototypes. Tags are case-insensitive. "
+    text = ["|wPrototype-Tags|n can be used to classify and find prototypes. Tags are case-insensitive. "
             "Separate multiple by tags by commas."]
     tags = prototype.get('prototype_tags', [])
 
@@ -691,15 +769,15 @@ def node_prototype_tags(caller):
 
 def node_prototype_locks(caller):
     prototype = _get_menu_prototype(caller)
-    text = ["Set |wMeta-Locks|n on the prototype. There are two valid lock types: "
-            "'edit' (who can edit the prototype) and 'use' (who can apply the prototype)\n"
-            "(If you are unsure, leave as default.)"]
+    text = ["Set |wPrototype-Locks|n on the prototype. There are two valid lock types: "
+            "'edit' (who can edit the prototype) and 'spawn' (who can spawn new objects with this "
+            "prototype)\n(If you are unsure, leave as default.)"]
     locks = prototype.get('prototype_locks', '')
     if locks:
         text.append("Current lock is |w'{lockstring}'|n".format(lockstring=locks))
     else:
         text.append("Lock unset - if not changed the default lockstring will be set as\n"
-                    "   |w'use:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
+                    "   |w'spawn:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
     text = "\n\n".join(text)
     options = _wizard_options("prototype_locks", "prototype_tags", "index")
     options.append({"key": "_default",
@@ -708,6 +786,21 @@ def node_prototype_locks(caller):
                                   processor=lambda s: s.strip().lower(),
                                   next_node="node_index"))})
     return text, options
+
+
+def node_prototype_load(caller):
+    # load prototype from storage
+    pass
+
+
+def node_prototype_save(caller):
+    # save current prototype to disk
+    pass
+
+
+def node_prototype_spawn(caller):
+    # spawn an instance of this prototype
+    pass
 
 
 class OLCMenu(EvMenu):
@@ -766,5 +859,8 @@ def start_olc(caller, session=None, prototype=None):
                 "node_prototype_desc": node_prototype_desc,
                 "node_prototype_tags": node_prototype_tags,
                 "node_prototype_locks": node_prototype_locks,
+                "node_prototype_load": node_prototype_load,
+                "node_prototype_save": node_prototype_save,
+                "node_prototype_spawn": node_prototype_spawn
                 }
     OLCMenu(caller, menudata, startnode='node_index', session=session, olc_prototype=prototype)

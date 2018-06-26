@@ -31,10 +31,10 @@ Possible keywords are:
         supported are 'edit' and 'use'.
     prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype
         in listings
-
     prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or
         a list of parents, for multiple left-to-right inheritance.
     prototype: Deprecated. Same meaning as 'parent'.
+
     typeclass (str or callable, optional): if not set, will use typeclass of parent prototype or use
         `settings.BASE_OBJECT_TYPECLASS`
     key (str or callable, optional): the name of the spawned object. If not given this will set to a
