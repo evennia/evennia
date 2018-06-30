@@ -619,6 +619,42 @@ class TypeclassManager(TypedObjectManager):
         """
         return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).count()
 
+    def annotate(self, *args, **kwargs):
+        """
+        Overload annotate method to filter on typeclass before annotating.
+        Args:
+            *args (any): Positional arguments passed along to queryset annotate method.
+            **kwargs (any): Keyword arguments passed along to queryset annotate method.
+
+        Returns:
+            Annotated queryset.
+        """
+        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).annotate(*args, **kwargs)
+
+    def values(self, *args, **kwargs):
+        """
+        Overload values method to filter on typeclass first.
+        Args:
+            *args (any): Positional arguments passed along to values method.
+            **kwargs (any): Keyword arguments passed along to values method.
+
+        Returns:
+            Queryset of values dictionaries, just filtered by typeclass first.
+        """
+        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).values(*args, **kwargs)
+
+    def values_list(self, *args, **kwargs):
+        """
+        Overload values method to filter on typeclass first.
+        Args:
+            *args (any): Positional arguments passed along to values_list method.
+            **kwargs (any): Keyword arguments passed along to values_list method.
+
+        Returns:
+            Queryset of value_list tuples, just filtered by typeclass first.
+        """
+        return super(TypeclassManager, self).filter(db_typeclass_path=self.model.path).values_list(*args, **kwargs)
+
     def _get_subclasses(self, cls):
         """
         Recursively get all subclasses to a class.
