@@ -167,23 +167,23 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W"):
     """Creates default navigation options available in the wizard."""
     options = []
     if prev_node:
-        options.append({"key": ("|wb|Wack", "b"),
+        options.append({"key": ("|wB|Wack", "b"),
                         "desc": "{color}({node})|n".format(
                             color=color, node=prev_node.replace("_", "-")),
                         "goto": "node_{}".format(prev_node)})
     if next_node:
-        options.append({"key": ("|wf|Worward", "f"),
+        options.append({"key": ("|wF|Worward", "f"),
                         "desc": "{color}({node})|n".format(
                             color=color, node=next_node.replace("_", "-")),
                         "goto": "node_{}".format(next_node)})
 
     if "index" not in (prev_node, next_node):
-        options.append({"key": ("|wi|Wndex", "i"),
+        options.append({"key": ("|wI|Wndex", "i"),
                         "goto": "node_index"})
 
     if curr_node:
-        options.append({"key": ("|wv|Walidate prototype", "v"),
-                        "goto": ("node_view_prototype", {"back": curr_node})})
+        options.append({"key": ("|wV|Walidate prototype", "validate", "v"),
+                        "goto": ("node_validate_prototype", {"back": curr_node})})
 
     return options
 
@@ -229,19 +229,21 @@ def node_index(caller):
 
     options = []
     options.append(
-        {"desc": "|WPrototype-Key|n|n{}".format(_format_option_value("Key", True, prototype, None)),
+        {"desc": "|WPrototype-Key|n|n{}".format(
+            _format_option_value("Key", "prototype_key" not in prototype, prototype, None)),
          "goto": "node_prototype_key"})
-    for key in ('Typeclass', 'Prototype-parent', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
+    for key in ('Typeclass', 'Prototype_parent', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
         required = False
         cropper = None
         if key in ("Prototype-parent", "Typeclass"):
-            required = "prototype" not in prototype and "typeclass" not in prototype
+            required = "prototype_parent" not in prototype and "typeclass" not in prototype
         if key == 'Typeclass':
             cropper = _path_cropper
         options.append(
             {"desc": "|w{}|n{}".format(
-                key, _format_option_value(key, required, prototype, cropper=cropper)),
+                key.replace("_", "-"),
+                _format_option_value(key, required, prototype, cropper=cropper)),
              "goto": "node_{}".format(key.lower())})
     required = False
     for key in ('Desc', 'Tags', 'Locks'):
@@ -249,26 +251,26 @@ def node_index(caller):
             {"desc": "|WPrototype-{}|n|n{}".format(
                 key, _format_option_value(key, required, prototype, None)),
              "goto": "node_prototype_{}".format(key.lower())})
-    for key in ("Save", "Spawn", "Load"):
-        options.append(
-            {"key": ("|w{}|W{}".format(key[0], key[1:]), key[0]),
-             "desc": "|W{}|n".format(
-                key, _format_option_value(key, required, prototype, None)),
-             "goto": "node_prototype_{}".format(key.lower())})
+
+    options.extend((
+            {"key": ("|wV|Walidate prototype", "validate", "v"),
+             "goto": "node_validate_prototype"},
+            {"key": ("|wS|Wave prototype", "save", "s"),
+             "goto": "node_prototype_save"},
+            {"key": ("|wSP|Wawn prototype", "spawn", "sp"),
+             "goto": "node_prototype_spawn"},
+            {"key": ("|wL|Woad prototype", "load", "l"),
+             "goto": "node_prototype_load"}))
 
     return text, options
 
 
-def node_view_prototype(caller, raw_string, **kwargs):
+def node_validate_prototype(caller, raw_string, **kwargs):
     """General node to view and validate a protototype"""
-    prototype = kwargs.get('prototype', _get_menu_prototype(caller))
-    validate = kwargs.get("validate", True)
-    prev_node = kwargs.get("back", "node_index")
+    prototype = _get_menu_prototype(caller)
+    prev_node = kwargs.get("back", "index")
 
-    if validate:
-        _, text = _validate_prototype(prototype)
-    else:
-        text = protlib.prototype_to_str(prototype)
+    _, text = _validate_prototype(prototype)
 
     options = _wizard_options(None, prev_node, None)
 
@@ -310,7 +312,7 @@ def node_prototype_key(caller):
         text.append("The key is currently unset.")
     text.append("Enter text or make a choice (q for quit)")
     text = "\n\n".join(text)
-    options = _wizard_options("prototype_key", "index", "prototype")
+    options = _wizard_options("prototype_key", "index", "prototype_parent")
     options.append({"key": "_default",
                     "goto": _check_prototype_key})
     return text, options
@@ -334,7 +336,7 @@ def _prototype_parent_examine(caller, prototype_name):
 
 
 def _prototype_parent_select(caller, prototype):
-    ret = _set_property(caller, prototype['prototype_key'],
+    ret = _set_property(caller, "",
                         prop="prototype_parent", processor=str, next_node="node_key")
     caller.msg("Selected prototype |y{}|n. Removed any set typeclass parent.".format(prototype))
     return ret
@@ -358,7 +360,7 @@ def node_prototype_parent(caller):
     else:
         text.append("Parent prototype is not set")
     text = "\n\n".join(text)
-    options = _wizard_options("prototype", "prototype_key", "typeclass", color="|W")
+    options = _wizard_options("prototype_parent", "prototype_key", "typeclass", color="|W")
     options.append({"key": "_default",
                     "goto": _prototype_parent_examine})
 
@@ -414,7 +416,7 @@ def node_typeclass(caller):
         text.append("Using default typeclass {typeclass}.".format(
             typeclass=settings.BASE_OBJECT_TYPECLASS))
     text = "\n\n".join(text)
-    options = _wizard_options("typeclass", "prototype", "key", color="|W")
+    options = _wizard_options("typeclass", "prototype_parent", "key", color="|W")
     options.append({"key": "_default",
                     "goto": _typeclass_examine})
     return text, options
@@ -923,7 +925,7 @@ def node_prototype_spawn(caller, **kwargs):
     nspawned = spawned_objects.count()
     if spawned_objects:
         options.append(
-            {"desc": "Update {num} existing objects with this prototype".format(num=nspawned),
+           {"desc": "Update {num} existing objects with this prototype".format(num=nspawned),
              "goto": (_update_spawned,
                       dict(prototype=prototype,
                            opjects=spawned_objects))})
@@ -962,18 +964,19 @@ class OLCMenu(EvMenu):
         Split the options into two blocks - olc options and normal options
 
         """
-        olc_keys = ("index", "forward", "back", "previous", "next", "validate prototype")
+        olc_keys = ("index", "forward", "back", "previous", "next", "validate prototype",
+                    "save prototype", "load prototype", "spawn prototype")
         olc_options = []
         other_options = []
         for key, desc in optionlist:
-            raw_key = strip_ansi(key)
+            raw_key = strip_ansi(key).lower()
             if raw_key in olc_keys:
                 desc = " {}".format(desc) if desc else ""
                 olc_options.append("|lc{}|lt{}|le{}".format(raw_key, key, desc))
             else:
                 other_options.append((key, desc))
 
-        olc_options = " | ".join(olc_options) + " | " + "|wq|Wuit" if olc_options else ""
+        olc_options = " | ".join(olc_options) + " | " + "|wQ|Wuit" if olc_options else ""
         other_options = super(OLCMenu, self).options_formatter(other_options)
         sep = "\n\n" if olc_options and other_options else ""
 
@@ -992,7 +995,7 @@ def start_olc(caller, session=None, prototype=None):
 
     """
     menudata = {"node_index": node_index,
-                "node_view_prototype": node_view_prototype,
+                "node_validate_prototype": node_validate_prototype,
                 "node_prototype_key": node_prototype_key,
                 "node_prototype_parent": node_prototype_parent,
                 "node_typeclass": node_typeclass,
