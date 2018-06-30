@@ -5,7 +5,6 @@ OLC Prototype menu nodes
 """
 
 import json
-from ast import literal_eval
 from django.conf import settings
 from evennia.utils.evmenu import EvMenu, list_node
 from evennia.utils.ansi import strip_ansi
@@ -37,6 +36,13 @@ def _get_menu_prototype(caller):
     if not prototype:
         caller.ndb._menutree.olc_prototype = prototype = {}
         caller.ndb._menutree.olc_new = True
+    return prototype
+
+
+def _set_menu_prototype(caller, prototype):
+    """Set the prototype with existing one"""
+    caller.ndb._menutree.olc_prototype = prototype
+    caller.ndb._menutree.olc_new = False
     return prototype
 
 
@@ -177,7 +183,7 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W"):
 
     if curr_node:
         options.append({"key": ("|wv|Walidate prototype", "v"),
-                        "goto": ("node_validate_prototype", {"back": curr_node})})
+                        "goto": ("node_view_prototype", {"back": curr_node})})
 
     return options
 
@@ -185,6 +191,26 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W"):
 def _path_cropper(pythonpath):
     "Crop path to only the last component"
     return pythonpath.split('.')[-1]
+
+
+def _validate_prototype(prototype):
+    """Run validation on prototype"""
+
+    txt = protlib.prototype_to_str(prototype)
+    errors = "\n\n|g No validation errors found.|n (but errors could still happen at spawn-time)"
+    err = False
+    try:
+        # validate, don't spawn
+        spawner.spawn(prototype, only_validate=True)
+    except RuntimeError as err:
+        errors = "\n\n|r{}|n".format(err)
+        err = True
+    except RuntimeWarning as err:
+        errors = "\n\n|y{}|n".format(err)
+        err = True
+
+    text = (txt + errors)
+    return err, text
 
 
 # Menu nodes
@@ -223,7 +249,7 @@ def node_index(caller):
             {"desc": "|WPrototype-{}|n|n{}".format(
                 key, _format_option_value(key, required, prototype, None)),
              "goto": "node_prototype_{}".format(key.lower())})
-    for key in ("Load", "Save", "Spawn"):
+    for key in ("Save", "Spawn", "Load"):
         options.append(
             {"key": ("|w{}|W{}".format(key[0], key[1:]), key[0]),
              "desc": "|W{}|n".format(
@@ -233,22 +259,18 @@ def node_index(caller):
     return text, options
 
 
-def node_validate_prototype(caller, raw_string, **kwargs):
-    prototype = _get_menu_prototype(caller)
+def node_view_prototype(caller, raw_string, **kwargs):
+    """General node to view and validate a protototype"""
+    prototype = kwargs.get('prototype', _get_menu_prototype(caller))
+    validate = kwargs.get("validate", True)
+    prev_node = kwargs.get("back", "node_index")
 
-    txt = protlib.prototype_to_str(prototype)
-    errors = "\n\n|g No validation errors found.|n (but errors could still happen at spawn-time)"
-    try:
-        # validate, don't spawn
-        spawner.spawn(prototype, only_validate=True)
-    except RuntimeError as err:
-        errors = "\n\n|r{}|n".format(err)
-    except RuntimeWarning as err:
-        errors = "\n\n|y{}|n".format(err)
+    if validate:
+        _, text = _validate_prototype(prototype)
+    else:
+        text = protlib.prototype_to_str(prototype)
 
-    text = (txt + errors)
-
-    options = _wizard_options(None, kwargs.get("back"), None)
+    options = _wizard_options(None, prev_node, None)
 
     return text, options
 
@@ -728,7 +750,8 @@ def node_destination(caller):
 def node_prototype_desc(caller):
 
     prototype = _get_menu_prototype(caller)
-    text = ["The |wPrototype-Description|n briefly describes the prototype for viewing in listings."]
+    text = ["The |wPrototype-Description|n briefly describes the prototype for "
+            "viewing in listings."]
     desc = prototype.get("prototype_desc", None)
 
     if desc:
@@ -748,7 +771,8 @@ def node_prototype_desc(caller):
 
 def node_prototype_tags(caller):
     prototype = _get_menu_prototype(caller)
-    text = ["|wPrototype-Tags|n can be used to classify and find prototypes. Tags are case-insensitive. "
+    text = ["|wPrototype-Tags|n can be used to classify and find prototypes. "
+            "Tags are case-insensitive. "
             "Separate multiple by tags by commas."]
     tags = prototype.get('prototype_tags', [])
 
@@ -788,19 +812,144 @@ def node_prototype_locks(caller):
     return text, options
 
 
-def node_prototype_load(caller):
-    # load prototype from storage
-    pass
+def node_prototype_save(caller, **kwargs):
+    """Save prototype to disk """
+    # these are only set if we selected 'yes' to save on a previous pass
+    accept_save = kwargs.get("accept", False)
+    prototype = kwargs.get("prototype", None)
+
+    if accept_save and prototype:
+        # we already validated and accepted the save, so this node acts as a goto callback and
+        # should now only return the next node
+        protlib.save_prototype(**prototype)
+        caller.msg("|gPrototype saved.|n")
+        return "node_spawn"
+
+    # not validated yet
+    prototype = _get_menu_prototype(caller)
+    error, text = _validate_prototype(prototype)
+
+    text = [text]
+
+    if error:
+        # abort save
+        text.append(
+            "Validation errors were found. They need to be corrected before this prototype "
+            "can be saved (or used to spawn).")
+        options = _wizard_options("prototype_save", "prototype_locks", "index")
+        return "\n".join(text),  options
+
+    prototype_key = prototype['prototype_key']
+    if protlib.search_prototype(prototype_key):
+        text.append("Do you want to save/overwrite the existing prototype '{name}'?".format(
+            name=prototype_key))
+    else:
+        text.append("Do you want to save the prototype as '{name}'?".format(prototype_key))
+
+    options = (
+        {"key": ("[|wY|Wes|n]", "yes", "y"),
+         "goto": lambda caller:
+            node_prototype_save(caller,
+                                {"accept": True, "prototype": prototype})},
+        {"key": ("|wN|Wo|n", "n"),
+         "goto": "node_spawn"},
+        {"key": "_default",
+         "goto": lambda caller:
+            node_prototype_save(caller,
+                                {"accept": True, "prototype": prototype})})
+
+    return "\n".join(text),  options
 
 
-def node_prototype_save(caller):
-    # save current prototype to disk
-    pass
+def _spawn(caller, **kwargs):
+    """Spawn prototype"""
+    prototype = kwargs["prototype"].copy()
+    new_location = kwargs.get('location', None)
+    if new_location:
+        prototype['location'] = new_location
+    obj = spawner.spawn(prototype)
+    if obj:
+        caller.msg("|gNew instance|n {key} ({dbref}) |gspawned.|n".format(
+            key=obj.key, dbref=obj.dbref))
+    else:
+        caller.msg("|rError: Spawner did not return a new instance.|n")
 
 
-def node_prototype_spawn(caller):
-    # spawn an instance of this prototype
-    pass
+def _update_spawned(caller, **kwargs):
+    """update existing objects"""
+    prototype = kwargs['prototype']
+    objects = kwargs['objects']
+    num_changed = spawner.batch_update_objects_with_prototype(prototype, objects=objects)
+    caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
+
+
+def node_prototype_spawn(caller, **kwargs):
+    """Submenu for spawning the prototype"""
+
+    prototype = _get_menu_prototype(caller)
+    error, text = _validate_prototype(prototype)
+
+    text = [text]
+
+    if error:
+        text.append("|rPrototype validation failed. Correct the errors before spawning.|n")
+        options = _wizard_options("prototype_spawn", "prototype_locks", "index")
+        return "\n".join(text), options
+
+    # show spawn submenu options
+    options = []
+    prototype_key = prototype['prototype_key']
+    location = prototype.get('location', None)
+
+    if location:
+        options.append(
+            {"desc": "Spawn in prototype's defined location ({loc})".format(loc=location),
+             "goto": (_spawn,
+                      dict(prototype=prototype))})
+    caller_loc = caller.location
+    if location != caller_loc:
+        options.append(
+            {"desc": "Spawn in {caller}'s location ({loc})".format(
+                caller=caller, loc=caller_loc),
+             "goto": (_spawn,
+                      dict(prototype=prototype, location=caller_loc))})
+    if location != caller_loc != caller:
+        options.append(
+            {"desc": "Spawn in {caller}'s inventory".format(caller=caller),
+             "goto": (_spawn,
+                      dict(prototype=prototype, location=caller))})
+
+    spawned_objects = protlib.search_objects_with_prototype(prototype_key)
+    nspawned = spawned_objects.count()
+    if spawned_objects:
+        options.append(
+            {"desc": "Update {num} existing objects with this prototype".format(num=nspawned),
+             "goto": (_update_spawned,
+                      dict(prototype=prototype,
+                           opjects=spawned_objects))})
+    options.extend(_wizard_options("prototype_spawn", "prototype_save", "index"))
+    return text, options
+
+
+def _prototype_load_select(caller, prototype_key):
+    matches = protlib.search_prototype(key=prototype_key)
+    if matches:
+        prototype = matches[0]
+        _set_menu_prototype(caller, prototype)
+        caller.msg("|gLoaded prototype '{}'.".format(prototype_key))
+        return "node_index"
+    else:
+        caller.msg("|rFailed to load prototype '{}'.".format(prototype_key))
+        return None
+
+
+@list_node(_all_prototype_parents, _prototype_load_select)
+def node_prototype_load(caller, **kwargs):
+    text = ["Select a prototype to load. This will replace any currently edited prototype."]
+    options = _wizard_options("load", "save", "index")
+    options.append({"key": "_default",
+                    "goto": _prototype_parent_examine})
+    return "\n".join(text), options
 
 
 class OLCMenu(EvMenu):
@@ -843,7 +992,7 @@ def start_olc(caller, session=None, prototype=None):
 
     """
     menudata = {"node_index": node_index,
-                "node_validate_prototype": node_validate_prototype,
+                "node_view_prototype": node_view_prototype,
                 "node_prototype_key": node_prototype_key,
                 "node_prototype_parent": node_prototype_parent,
                 "node_typeclass": node_typeclass,
