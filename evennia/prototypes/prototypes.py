@@ -258,7 +258,7 @@ class DbPrototype(DefaultScript):
 # Prototype manager functions
 
 
-def create_prototype(**kwargs):
+def save_prototype(**kwargs):
     """
     Create/Store a prototype persistently.
 
@@ -335,7 +335,7 @@ def create_prototype(**kwargs):
     return stored_prototype.db.prototype
 
 # alias
-save_prototype = create_prototype
+create_prototype = save_prototype
 
 
 def delete_prototype(key, caller=None):
