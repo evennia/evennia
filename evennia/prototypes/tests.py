@@ -355,6 +355,8 @@ class TestMenuModule(EvenniaTest):
              {'goto': ('node_validate_prototype', {'back': 'ThisNode'}),
                  'key': ('|wv|Walidate prototype', 'v')}])
 
+        self.assertEqual(olc_menus._validate_prototype(self.test_prot, (False, Something)))
+
     def test_node_helpers(self):
 
         caller = self.caller
