@@ -5,6 +5,7 @@ OLC Prototype menu nodes
 """
 
 import json
+from random import choice
 from django.conf import settings
 from evennia.utils.evmenu import EvMenu, list_node
 from evennia.utils.ansi import strip_ansi
@@ -469,7 +470,7 @@ def _caller_attrs(caller):
 
 def _display_attribute(attr_tuple):
     """Pretty-print attribute tuple"""
-    attrkey, value, category, locks, default_access = attr_tuple
+    attrkey, value, category, locks = attr_tuple
     value = protlib.protfunc_parser(value)
     typ = type(value)
     out = ("Attribute key: '{attrkey}' (category: {category}, "
@@ -503,7 +504,7 @@ def _add_attr(caller, attr_string, **kwargs):
             attrname, category = nameparts
         elif nparts > 2:
             attrname, category, locks = nameparts
-    attr_tuple = (attrname, category, locks)
+    attr_tuple = (attrname, value, category, locks)
 
     if attrname:
         prot = _get_menu_prototype(caller)
@@ -513,7 +514,7 @@ def _add_attr(caller, attr_string, **kwargs):
             # replace existing attribute with the same name in the prototype
             ind = [tup[0] for tup in attrs].index(attrname)
             attrs[ind] = attr_tuple
-        except IndexError:
+        except ValueError:
             attrs.append(attr_tuple)
 
         _set_prototype_value(caller, "attrs", attrs)
@@ -541,7 +542,8 @@ def _edit_attr(caller, attrname, new_value, **kwargs):
 
 def _examine_attr(caller, selection):
     prot = _get_menu_prototype(caller)
-    attr_tuple = prot['attrs'][selection]
+    ind = [part[0] for part in prot['attrs']].index(selection)
+    attr_tuple = prot['attrs'][ind]
     return _display_attribute(attr_tuple)
 
 
@@ -572,15 +574,15 @@ def node_attrs(caller):
 
 def _caller_tags(caller):
     prototype = _get_menu_prototype(caller)
-    tags = prototype.get("tags")
+    tags = prototype.get("tags", [])
     return tags
 
 
 def _display_tag(tag_tuple):
     """Pretty-print attribute tuple"""
     tagkey, category, data = tag_tuple
-    out = ("Tag: '{tagkey}' (category: {category}{})".format(
-           tagkey=tagkey, category=category, data=", data: {}".format(data) if data else ""))
+    out = ("Tag: '{tagkey}' (category: {category}{dat})".format(
+           tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""))
     return out
 
 
@@ -613,15 +615,20 @@ def _add_tag(caller, tag, **kwargs):
 
         old_tag = kwargs.get("edit", None)
 
-        if old_tag:
-            # editing a tag means removing the old and replacing with new
+        if not old_tag:
+            # a fresh, new tag
+            tags.append(tag_tuple)
+        else:
+            # old tag exists; editing a tag means removing the old and replacing with new
             try:
                 ind = [tup[0] for tup in tags].index(old_tag)
                 del tags[ind]
+                if tags:
+                    tags.insert(ind, tag_tuple)
+                else:
+                    tags = [tag_tuple]
             except IndexError:
                 pass
-
-        tags.append(tag_tuple)
 
         _set_prototype_value(caller, "tags", tags)
 
@@ -814,18 +821,121 @@ def node_prototype_locks(caller):
     return text, options
 
 
+def _update_spawned(caller, **kwargs):
+    """update existing objects"""
+    prototype = kwargs['prototype']
+    objects = kwargs['objects']
+    back_node = kwargs['back_key']
+    num_changed = spawner.batch_update_objects_with_prototype(prototype, objects=objects)
+    caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
+    return back_key
+
+
+def _keep_diff(caller, **kwargs):
+    key = kwargs['key']
+    diff = kwargs['diff']
+    diff[key] = "KEEP"
+
+
+def node_update_objects(caller, **kwargs):
+    """Offer options for updating objects"""
+
+    def _keep_option(keyname, prototype, obj, obj_prototype, diff, objects, back_node):
+        """helper returning an option dict"""
+        options = {"desc": "Keep {} as-is".format(keyname),
+                   "goto": (_keep_diff,
+                            {"key": keyname, "prototype": prototype,
+                             "obj": obj, "obj_prototype": obj_prototype,
+                             "diff": diff, "objects": objects, "back_node": back_node})}
+        return options
+
+    prototype = kwargs.get("prototype", None)
+    update_objects = kwargs.get("objects", None)
+    back_node = kwargs.get("back_node", "node_index")
+    obj_prototype = kwargs.get("obj_prototype", None)
+    diff = kwargs.get("diff", None)
+
+    if not update_objects:
+        text = "There are no existing objects to update."
+        options = {"key": "_default",
+                   "goto": back_node}
+        return text, options
+
+    if not diff:
+        # use one random object as a reference to calculate a diff
+        obj = choice(update_objects)
+        diff, obj_prototype = spawner.prototype_diff_from_object(prototype, obj)
+
+    text = ["Suggested changes to {} objects".format(len(update_objects)),
+            "Showing random example obj to change: {name} (#{dbref}))\n".format(obj.key, obj.dbref)]
+    options = []
+    io = 0
+    for (key, inst) in sorted(((key, val) for key, val in diff.items()), key=lambda tup: tup[0]):
+        line = "{iopt}  |w{key}|n: {old}{sep}{new} {change}"
+        old_val = utils.crop(str(obj_prototype[key]), width=20)
+
+        if inst == "KEEP":
+            text.append(line.format(iopt='', key=key, old=old_val, sep=" ", new='', change=inst))
+            continue
+
+        new_val = utils.crop(str(spawner.init_spawn_value(prototype[key])), width=20)
+        io += 1
+        if inst in ("UPDATE", "REPLACE"):
+            text.append(line.format(iopt=io, key=key, old=old_val,
+                        sep=" |y->|n ", new=new_val, change=inst))
+            options.append(_keep_option(key, prototype,
+                           obj, obj_prototype, diff, objects, back_node))
+        elif inst == "REMOVE":
+            text.append(line.format(iopt=io, key=key, old=old_val,
+                        sep=" |r->|n ", new='', change=inst))
+            options.append(_keep_option(key, prototype,
+                           obj, obj_prototype, diff, objects, back_node))
+        options.extend(
+            [{"key": ("|wu|r update {} objects".format(len(update_objects)), "update", "u"),
+              "goto": (_update_spawned, {"prototype": prototype, "objects": objects,
+                                         "back_node": back_node, "diff": diff})},
+             {"key": ("|wr|neset changes", "reset", "r"),
+              "goto": ("node_update_objects", {"prototype": prototype, "back_node": back_node,
+                                               "objects": update_objects})},
+             {"key": "|wb|rack ({})".format(back_node[5:], 'b'),
+              "goto": back_node}])
+
+        return text, options
+
+
 def node_prototype_save(caller, **kwargs):
     """Save prototype to disk """
     # these are only set if we selected 'yes' to save on a previous pass
-    accept_save = kwargs.get("accept", False)
     prototype = kwargs.get("prototype", None)
+    accept_save = kwargs.get("accept_save", False)
 
     if accept_save and prototype:
         # we already validated and accepted the save, so this node acts as a goto callback and
         # should now only return the next node
+        prototype_key = prototype.get("prototype_key")
         protlib.save_prototype(**prototype)
-        caller.msg("|gPrototype saved.|n")
-        return "node_spawn"
+
+        spawned_objects = protlib.search_objects_with_prototype(prototype_key)
+        nspawned = spawned_objects.count()
+
+        if nspawned:
+            text = ("Do you want to update {} object(s) "
+                    "already using this prototype?".format(nspawned))
+            options = (
+                {"key": ("|wY|Wes|n", "yes", "y"),
+                 "goto": ("node_update_objects",
+                          {"accept_update": True, "objects": spawned_objects,
+                           "prototype": prototype, "back_node": "node_prototype_save"})},
+                {"key": ("[|wN|Wo|n]", "n"),
+                 "goto": "node_spawn"},
+                {"key": "_default",
+                 "goto": "node_spawn"})
+        else:
+            text = "|gPrototype saved.|n"
+            options = {"key": "_default",
+                       "goto": "node_spawn"}
+
+        return text, options
 
     # not validated yet
     prototype = _get_menu_prototype(caller)
@@ -850,15 +960,13 @@ def node_prototype_save(caller, **kwargs):
 
     options = (
         {"key": ("[|wY|Wes|n]", "yes", "y"),
-         "goto": lambda caller:
-            node_prototype_save(caller,
-                                {"accept": True, "prototype": prototype})},
+         "goto": ("node_prototype_save",
+                  {"accept": True, "prototype": prototype})},
         {"key": ("|wN|Wo|n", "n"),
          "goto": "node_spawn"},
         {"key": "_default",
-         "goto": lambda caller:
-            node_prototype_save(caller,
-                                {"accept": True, "prototype": prototype})})
+         "goto": ("node_prototype_save",
+                  {"accept": True, "prototype": prototype})})
 
     return "\n".join(text),  options
 
@@ -869,20 +977,15 @@ def _spawn(caller, **kwargs):
     new_location = kwargs.get('location', None)
     if new_location:
         prototype['location'] = new_location
+
     obj = spawner.spawn(prototype)
     if obj:
+        obj = obj[0]
         caller.msg("|gNew instance|n {key} ({dbref}) |gspawned.|n".format(
             key=obj.key, dbref=obj.dbref))
     else:
         caller.msg("|rError: Spawner did not return a new instance.|n")
-
-
-def _update_spawned(caller, **kwargs):
-    """update existing objects"""
-    prototype = kwargs['prototype']
-    objects = kwargs['objects']
-    num_changed = spawner.batch_update_objects_with_prototype(prototype, objects=objects)
-    caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
+    return obj
 
 
 def node_prototype_spawn(caller, **kwargs):
@@ -926,9 +1029,9 @@ def node_prototype_spawn(caller, **kwargs):
     if spawned_objects:
         options.append(
            {"desc": "Update {num} existing objects with this prototype".format(num=nspawned),
-             "goto": (_update_spawned,
-                      dict(prototype=prototype,
-                           opjects=spawned_objects))})
+            "goto": ("node_update_objects",
+                     dict(prototype=prototype, opjects=spawned_objects,
+                          back_node="node_prototype_spawn"))})
     options.extend(_wizard_options("prototype_spawn", "prototype_save", "index"))
     return text, options
 
@@ -1008,6 +1111,7 @@ def start_olc(caller, session=None, prototype=None):
                 "node_location": node_location,
                 "node_home": node_home,
                 "node_destination": node_destination,
+                "node_update_objects": node_o
                 "node_prototype_desc": node_prototype_desc,
                 "node_prototype_tags": node_prototype_tags,
                 "node_prototype_locks": node_prototype_locks,

@@ -1,7 +1,29 @@
-# Evennia Changelog
+# Changelog
 
-# Sept 2017:
-Release of Evennia 0.7; upgrade to Django 1.11, change 'Player' to 
+## Evennia 0.8 (2018)
+
+### Prototype changes
+
+- A new form of prototype - database-stored prototypes, editable from in-game. The old,
+  module-created prototypes remain as read-only prototypes.
+- All prototypes must have a key `prototype_key` identifying the prototype in listings. This is
+  checked to be server-unique. Prototypes created in a module will use the global variable name they
+  are assigned to if no `prototype_key` is given.
+- Prototype field `prototype` was renamed to `prototype_parent` to avoid mixing terms.
+- All prototypes must either have `typeclass` or `prototype_parent` defined. If using
+  `prototype_parent`, `typeclass` must be defined somewhere in the inheritance chain. This is a
+  change from Evennia 0.7 which allowed 'mixin' prototypes without `typeclass`/`prototype_key`. To
+  make a mixin now, give it a default typeclass, like `evennia.objects.objects.DefaultObject`  and just
+  override in the child as needed.
+- The spawn command was extended to accept a full prototype on one line.
+- The spawn command got the /save switch to save the defined prototype and its key.
+- The command spawn/menu will now start an OLC (OnLine Creation) menu to load/save/edit/spawn prototypes.
+
+
+# Overviews
+
+## Sept 2017:
+Release of Evennia 0.7; upgrade to Django 1.11, change 'Player' to
 'Account', rework the website template and a slew of other updates.
 Info on what changed and how to migrate is found here:
 https://groups.google.com/forum/#!msg/evennia/0JYYNGY-NfE/cDFaIwmPBAAJ
@@ -14,9 +36,9 @@ Lots of bugfixes and considerable uptick in contributors. Unittest coverage
 and PEP8 adoption and refactoring.
 
 ## May 2016:
-Evennia 0.6 with completely reworked Out-of-band system, making 
+Evennia 0.6 with completely reworked Out-of-band system, making
 the message path completely flexible and built around input/outputfuncs.
-A completely new webclient, split into the evennia.js library and a 
+A completely new webclient, split into the evennia.js library and a
 gui library, making it easier to customize.
 
 ## Feb 2016:
@@ -33,15 +55,15 @@ library format with a stand-alone launcher, in preparation for making
 an 'evennia' pypy package and using versioning. The version we will
 merge with will likely be 0.5. There is also work with an expanded
 testing structure and the use of threading for saves. We also now
-use Travis for automatic build checking. 
+use Travis for automatic build checking.
 
 ## Sept 2014:
 Updated to Django 1.7+ which means South dependency was dropped and
 minimum Python version upped to 2.7. MULTISESSION_MODE=3 was added
-and the web customization system was overhauled using the latest 
-functionality of django. Otherwise, mostly bug-fixes and 
+and the web customization system was overhauled using the latest
+functionality of django. Otherwise, mostly bug-fixes and
 implementation of various smaller feature requests as we got used
-to github. Many new users have appeared. 
+to github. Many new users have appeared.
 
 ## Jan 2014:
 Moved Evennia project from Google Code to github.com/evennia/evennia.
