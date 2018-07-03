@@ -179,6 +179,7 @@ def prototype_from_object(obj):
     prot = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
     if prot:
         prot = protlib.search_prototype(prot[0])
+
     if not prot or len(prot) > 1:
         # no unambiguous prototype found - build new prototype
         prot = {}
@@ -187,6 +188,8 @@ def prototype_from_object(obj):
         prot['prototype_desc'] = "Built from {}".format(str(obj))
         prot['prototype_locks'] = "spawn:all();edit:all()"
         prot['prototype_tags'] = []
+    else:
+        prot = prot[0]
 
     prot['key'] = obj.db_key or hashlib.md5(str(time.time())).hexdigest()[:6]
     prot['typeclass'] = obj.db_typeclass_path
@@ -233,6 +236,8 @@ def prototype_diff_from_object(prototype, obj):
 
     Returns:
         diff (dict): Mapping for every prototype key: {"keyname": "REMOVE|UPDATE|KEEP", ...}
+        other_prototype (dict): The prototype for the given object. The diff is a how to convert
+            this prototype into the new prototype.
 
     """
     prot1 = prototype
@@ -253,7 +258,7 @@ def prototype_diff_from_object(prototype, obj):
         if key not in diff and key not in prot1:
             diff[key] = "REMOVE"
 
-    return diff
+    return diff, prot2
 
 
 def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
@@ -475,8 +480,12 @@ def spawn(*prototypes, **kwargs):
     protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
 
     # overload module's protparents with specifically given protparents
-    protparents.update(
-        {key.lower(): value for key, value in kwargs.get("prototype_parents", {}).items()})
+    # we allow prototype_key to be the key of the protparent dict, to allow for module-level
+    # prototype imports. We need to insert prototype_key in this case
+    for key, protparent in kwargs.get("prototype_parents", {}).items():
+        key = str(key).lower()
+        protparent['prototype_key'] = str(protparent.get("prototype_key", key)).lower()
+        protparents[key] = protparent
 
     if "return_parents" in kwargs:
         # only return the parents
@@ -541,6 +550,9 @@ def spawn(*prototypes, **kwargs):
         simple_attributes = []
         for key, value in ((key, value) for key, value in prot.items()
                            if not (key.startswith("ndb_"))):
+            if key in _PROTOTYPE_META_NAMES:
+                continue
+
             if is_iter(value) and len(value) > 1:
                 # (value, category)
                 simple_attributes.append((key,

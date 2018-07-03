@@ -547,7 +547,8 @@ def validate_prototype(prototype, protkey=None, protparents=None,
         _flags = {"visited": [], "depth": 0, "typeclass": False, "errors": [], "warnings": []}
 
     if not protparents:
-        protparents = {prototype['prototype_key']: prototype for prototype in search_prototype()}
+        protparents = {prototype.get('prototype_key', "").lower(): prototype
+                       for prototype in search_prototype()}
 
     protkey = protkey and protkey.lower() or prototype.get('prototype_key', None)
 
@@ -568,16 +569,10 @@ def validate_prototype(prototype, protkey=None, protparents=None,
 
     if typeclass and typeclass not in get_all_typeclasses("evennia.objects.models.ObjectDB"):
         _flags['errors'].append(
-            "Prototype {} is based on typeclass {} which could not be imported!".format(
+            "Prototype {} is based on typeclass {}, which could not be imported!".format(
                 protkey, typeclass))
 
     # recursively traverese prototype_parent chain
-
-    if id(prototype) in _flags['visited']:
-        _flags['errors'].append(
-            "{} has infinite nesting of prototypes.".format(protkey or prototype))
-
-    _flags['visited'].append(id(prototype))
 
     for protstring in make_iter(prototype_parent):
         protstring = protstring.lower()
@@ -587,8 +582,15 @@ def validate_prototype(prototype, protkey=None, protparents=None,
         if not protparent:
             _flags['errors'].append("Prototype {}'s prototype_parent '{}' was not found.".format(
                 (protkey, protstring)))
+        if id(prototype) in _flags['visited']:
+            _flags['errors'].append(
+                "{} has infinite nesting of prototypes.".format(protkey or prototype))
+
+        _flags['visited'].append(id(prototype))
         _flags['depth'] += 1
-        validate_prototype(protparent, protstring, protparents, _flags)
+        validate_prototype(protparent, protstring, protparents,
+                           is_prototype_base=is_prototype_base, _flags=_flags)
+        _flags['visited'].pop()
         _flags['depth'] -= 1
 
     if typeclass and not _flags['typeclass']:
