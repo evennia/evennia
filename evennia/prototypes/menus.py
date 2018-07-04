@@ -825,10 +825,11 @@ def _update_spawned(caller, **kwargs):
     """update existing objects"""
     prototype = kwargs['prototype']
     objects = kwargs['objects']
-    back_node = kwargs['back_key']
-    num_changed = spawner.batch_update_objects_with_prototype(prototype, objects=objects)
+    back_node = kwargs['back_node']
+    diff = kwargs.get('diff', None)
+    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects)
     caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
-    return back_key
+    return back_node
 
 
 def _keep_diff(caller, **kwargs):
@@ -884,15 +885,15 @@ def node_update_objects(caller, **kwargs):
             text.append(line.format(iopt=io, key=key, old=old_val,
                         sep=" |y->|n ", new=new_val, change=inst))
             options.append(_keep_option(key, prototype,
-                           obj, obj_prototype, diff, objects, back_node))
+                           obj, obj_prototype, diff, update_objects, back_node))
         elif inst == "REMOVE":
             text.append(line.format(iopt=io, key=key, old=old_val,
                         sep=" |r->|n ", new='', change=inst))
             options.append(_keep_option(key, prototype,
-                           obj, obj_prototype, diff, objects, back_node))
+                           obj, obj_prototype, diff, update_objects, back_node))
         options.extend(
             [{"key": ("|wu|r update {} objects".format(len(update_objects)), "update", "u"),
-              "goto": (_update_spawned, {"prototype": prototype, "objects": objects,
+              "goto": (_update_spawned, {"prototype": prototype, "objects": update_objects,
                                          "back_node": back_node, "diff": diff})},
              {"key": ("|wr|neset changes", "reset", "r"),
               "goto": ("node_update_objects", {"prototype": prototype, "back_node": back_node,
@@ -1111,7 +1112,7 @@ def start_olc(caller, session=None, prototype=None):
                 "node_location": node_location,
                 "node_home": node_home,
                 "node_destination": node_destination,
-                "node_update_objects": node_o
+                "node_update_objects": node_update_objects,
                 "node_prototype_desc": node_prototype_desc,
                 "node_prototype_tags": node_prototype_tags,
                 "node_prototype_locks": node_prototype_locks,

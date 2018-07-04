@@ -446,13 +446,16 @@ class TestMenuModule(EvenniaTest):
 
         self.assertEqual(obj.typeclass_path, "evennia.objects.objects.DefaultObject")
         self.assertEqual(obj.tags.get(category=spawner._PROTOTYPE_TAG_CATEGORY), self.test_prot['prototype_key'])
-        self.assertEqual(olc_menus._update_spawned(caller, prototype=self.test_prot, objects=[obj]), 0)  # no changes to apply
-        self.test_prot['key'] = "updated key"  # change prototype
-        self.assertEqual(self._update_spawned(caller, prototype=self.test_prot, objects=[obj]), 1)  # apply change to the one obj
 
+        # update helpers
+        self.assertEqual(olc_menus._update_spawned(
+            caller, prototype=self.test_prot, back_node="foo", objects=[obj]), 'foo')  # no changes to apply
+        self.test_prot['key'] = "updated key"  # change prototype
+        self.assertEqual(olc_menus._update_spawned(
+            caller, prototype=self.test_prot, objects=[obj], back_node='foo'), 'foo')  # apply change to the one obj
 
         # load helpers
-
+        self.assertEqual(olc_menus._prototype_load_select(caller, self.test_prot['prototype_key']), "node_index")
 
 
 
