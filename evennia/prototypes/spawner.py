@@ -290,7 +290,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
         return 0
 
     if not diff:
-        diff = prototype_diff_from_object(new_prototype, objects[0])
+        diff, _ = prototype_diff_from_object(new_prototype, objects[0])
 
     changed = 0
     for obj in objects:
