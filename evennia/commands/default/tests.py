@@ -360,6 +360,7 @@ class TestBuilding(CommandTest):
             # check that it exists in the process.
             query = search_object(objKeyStr)
             commandTest.assertIsNotNone(query)
+            commandTest.assertTrue(bool(query))
             obj = query[0]
             commandTest.assertIsNotNone(obj)
             return obj
@@ -368,18 +369,20 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), " ", "Usage: @spawn")
 
         # Tests "@spawn <prototype_dictionary>" without specifying location.
-        self.call(building.CmdSpawn(),
-                  "{'prototype_key': 'testprot', 'key':'goblin', "
-                  "'typeclass':'evennia.DefaultCharacter'}", "Spawned goblin")
-        goblin = getObject(self, "goblin")
+        with mock.patch('evennia.commands.default.func', return_value=iter(['y'])) as mock_iter:
+            self.call(building.CmdSpawn(),
+                      "/save {'prototype_key': 'testprot', 'key':'Test Char', "
+                      "'typeclass':'evennia.objects.objects.DefaultCharacter'}", "")
+            mock_iter.assert_called()
 
-        # Tests that the spawned object's type is a DefaultCharacter.
-        self.assertIsInstance(goblin, DefaultCharacter)
+        self.call(building.CmdSpawn(), "/list", "foo")
 
+        self.call(building.CmdSpawn(), 'testprot', "Spawned Test Char")
         # Tests that the spawned object's location is the same as the caharacter's location, since
         # we did not specify it.
-        self.assertEqual(goblin.location, self.char1.location)
-        goblin.delete()
+        testchar = getObject(self, "Test Char")
+        self.assertEqual(testchar.location, self.char1.location)
+        testchar.delete()
 
         # Test "@spawn <prototype_dictionary>" with a location other than the character's.
         spawnLoc = self.room2
@@ -389,10 +392,13 @@ class TestBuilding(CommandTest):
             spawnLoc = self.room1
 
         self.call(building.CmdSpawn(),
-                  "{'prototype_key':'GOBLIN', 'key':'goblin', 'location':'%s'}"
-                  % spawnLoc.dbref, "Spawned goblin")
+                "{'prototype_key':'GOBLIN', 'typeclass':'evennia.objects.objects.DefaultCharacter', "
+                "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref, "Spawned goblin")
         goblin = getObject(self, "goblin")
+        # Tests that the spawned object's type is a DefaultCharacter.
+        self.assertIsInstance(goblin, DefaultCharacter)
         self.assertEqual(goblin.location, spawnLoc)
+
         goblin.delete()
 
         protlib.create_prototype(**{'key': 'Ball', 'prototype': 'GOBLIN', 'prototype_key': 'testball'})

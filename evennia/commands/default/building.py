@@ -2795,17 +2795,17 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     spawn objects from prototype
 
     Usage:
-      @spawn[/noloc] <prototype_name>
+      @spawn[/noloc] <prototype_key>
       @spawn[/noloc] <prototype_dict>
 
-      @spawn/search [key][;tag[,tag]]
-      @spawn/list [tag, tag]
-      @spawn/show [<key>]
-      @spawn/update <key>
+      @spawn/search [prototype_keykey][;tag[,tag]]
+      @spawn/list [tag, tag, ...]
+      @spawn/show [<prototype_key>]
+      @spawn/update <prototype_key>
 
-      @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>
-      @spawn/menu [<key>]
-      @olc     - equivalent to @spawn/menu
+      @spawn/save <prototype_dict>
+      @spawn/edit [<prototype_key>]
+      @olc     - equivalent to @spawn/edit
 
     Switches:
       noloc - allow location to be None if not specified explicitly. Otherwise,
@@ -2819,7 +2819,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                them with latest version of given prototype. If given with /save,
                will auto-update all objects with the old version of the prototype
                without asking first.
-      menu, olc - create/manipulate prototype in a menu interface.
+      edit, olc - create/manipulate prototype in a menu interface.
 
     Example:
       @spawn GOBLIN
@@ -2827,10 +2827,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       @spawn/save {"key": "grunt", prototype: "goblin"};;mobs;edit:all()
 
     Dictionary keys:
-      |wprototype  |n - name of parent prototype to use. Can be a list for
-                        multiple inheritance (inherits left to right)
+      |wprototype_parent  |n - name of parent prototype to use. Required if typeclass is
+                        not set. Can be a path or a list for multiple inheritance (inherits
+                        left to right). If set one of the parents must have a typeclass.
+      |wtypeclass  |n - string. Required if prototype_parent is not set.
       |wkey        |n - string, the main object identifier
-      |wtypeclass  |n - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
       |wlocation   |n - this should be a valid object or #dbref
       |whome       |n - valid object or #dbref
       |wdestination|n - only valid for exits (object or dbref)
@@ -2875,7 +2876,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                         string = ("{}\n|RCritical Python syntax error in argument. Only primitive "
                                   "Python structures are allowed. \nYou also need to use correct "
                                   "Python syntax. Remember especially to put quotes around all "
-                                  "strings inside lists and dicts.|n".format(err))
+                                  "strings inside lists and dicts.|n For more advanced uses, embed "
+                                  "inline functions in the strings.".format(err))
                     else:
                         string = "Expected {}, got {}.".format(expect, type(prototype))
                     self.caller.msg(string)
@@ -2896,9 +2898,9 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         def _search_show_prototype(query, prototypes=None):
             # prototype detail
             if not prototypes:
-                prototypes = spawner.search_prototype(key=query)
+                prototypes = protlib.search_prototype(key=query)
             if prototypes:
-                return "\n".join(spawner.prototype_to_str(prot) for prot in prototypes)
+                return "\n".join(protlib.prototype_to_str(prot) for prot in prototypes)
             else:
                 return False
 
@@ -2947,64 +2949,36 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         if 'list' in self.switches:
             # for list, all optional arguments are tags
+            # import pudb; pudb.set_trace()
+
             EvMore(caller, unicode(protlib.list_prototypes(caller,
                    tags=self.lhslist)), exit_on_lastpage=True)
             return
 
         if 'save' in self.switches:
             # store a prototype to the database store
-            if not self.args or not self.rhs:
+            if not self.args:
                 caller.msg(
                   "Usage: @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
                 return
 
-            # handle lhs
-            parts = self.lhs.split(";", 3)
-            nparts = len(parts)
-            if nparts == 1:
-                key = parts[0].strip()
-            elif nparts == 2:
-                key, desc = (part.strip() for part in parts)
-            elif nparts == 3:
-                key, desc, tags = (part.strip() for part in parts)
-                tags = [tag.strip().lower() for tag in tags.split(",") if tag]
-            else:
-                # lockstrings can itself contain ;
-                key, desc, tags, lockstring = (part.strip() for part in parts)
-                tags = [tag.strip().lower() for tag in tags.split(",") if tag]
-            if not key:
-                caller.msg("The prototype must have a key.")
-                return
-            if not desc:
-                desc = "User-created prototype"
-            if not tags:
-                tags = ["user"]
-            if not lockstring:
-                lockstring = "edit:id({}) or perm(Admin); use:all()".format(caller.id)
-
-            is_valid, err = caller.locks.validate(lockstring)
-            if not is_valid:
-                caller.msg("|rLock error|n: {}".format(err))
-                return
-
             # handle rhs:
-            prototype = _parse_prototype(self.rhs)
+            prototype = _parse_prototype(self.lhs.strip())
             if not prototype:
                 return
-
-            # inject the prototype_* keys into the prototype to save
-            prototype['prototype_key'] = prototype.get('prototype_key', key)
-            prototype['prototype_desc'] = prototype.get('prototype_desc', desc)
-            prototype['prototype_tags'] = prototype.get('prototype_tags', tags)
-            prototype['prototype_locks'] = prototype.get('prototype_locks', lockstring)
 
             # present prototype to save
             new_matchstring = _search_show_prototype("", prototypes=[prototype])
             string = "|yCreating new prototype:|n\n{}".format(new_matchstring)
             question = "\nDo you want to continue saving? [Y]/N"
 
+            prototype_key = prototype.get("prototype_key")
+            if not prototype_key:
+                caller.msg("\n|yTo save a prototype it must have the 'prototype_key' set.")
+                return
+
             # check for existing prototype,
-            old_matchstring = _search_show_prototype(key)
+            old_matchstring = _search_show_prototype(prototype_key)
 
             if old_matchstring:
                 string += "\n|yExisting saved prototype found:|n\n{}".format(old_matchstring)
@@ -3017,14 +2991,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                prot = spawner.save_db_prototype(
-                    caller, key, prototype, desc=desc, tags=tags, locks=lockstring)
+                prot = protlib.save_prototype(**prototype)
                 if not prot:
                     caller.msg("|rError saving:|R {}.|n".format(key))
                     return
-                prot.locks.append("edit", "perm(Admin)")
-                if not prot.locks.get("use"):
-                    prot.locks.add("use:all()")
             except PermissionError as err:
                 caller.msg("|rError saving:|R {}|n".format(err))
                 return
