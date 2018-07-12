@@ -506,7 +506,7 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
              ",".join(ptags)))
 
     if not display_tuples:
-        return None
+        return ""
 
     table = []
     width = 78
@@ -607,3 +607,14 @@ def validate_prototype(prototype, protkey=None, protparents=None,
             raise RuntimeError("Error: " + "\nError: ".join(_flags['errors']))
         if _flags['warnings']:
             raise RuntimeWarning("Warning: " + "\nWarning: ".join(_flags['warnings']))
+
+    # make sure prototype_locks are set to defaults
+    prototype_locks = [lstring.split(":", 1)
+                       for lstring in prototype.get("prototype_locks", "").split(';')]
+    locktypes = [tup[0].strip() for tup in prototype_locks]
+    if "spawn" not in locktypes:
+        prototype_locks.append(("spawn", "all()"))
+    if "edit" not in locktypes:
+        prototype_locks.append(("edit", "all()"))
+    prototype_locks = ";".join(":".join(tup) for tup in prototype_locks)
+    prototype['prototype_locks'] = prototype_locks
