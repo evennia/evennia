@@ -2993,22 +2993,22 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             try:
                 prot = protlib.save_prototype(**prototype)
                 if not prot:
-                    caller.msg("|rError saving:|R {}.|n".format(key))
+                    caller.msg("|rError saving:|R {}.|n".format(prototype_key))
                     return
-            except PermissionError as err:
+            except protlib.PermissionError as err:
                 caller.msg("|rError saving:|R {}|n".format(err))
                 return
-            caller.msg("|gSaved prototype:|n {}".format(key))
+            caller.msg("|gSaved prototype:|n {}".format(prototype_key))
 
             # check if we want to update existing objects
-            existing_objects = spawner.search_objects_with_prototype(key)
+            existing_objects = protlib.search_objects_with_prototype(prototype_key)
             if existing_objects:
                 if 'update' not in self.switches:
                     n_existing = len(existing_objects)
                     slow = " (note that this may be slow)" if n_existing > 10 else ""
                     string = ("There are {} objects already created with an older version "
                               "of prototype {}. Should it be re-applied to them{}? [Y]/N".format(
-                                  n_existing, key, slow))
+                                  n_existing, prototype_key, slow))
                     answer = yield(string)
                     if answer.lower() in ["n", "no"]:
                         caller.msg("|rNo update was done of existing objects. "
@@ -3036,7 +3036,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     return
                 try:
                     success = protlib.delete_db_prototype(caller, self.args)
-                except PermissionError as err:
+                except protlib.PermissionError as err:
                     caller.msg("|rError deleting:|R {}|n".format(err))
                 caller.msg("Deletion {}.".format(
                     'successful' if success else 'failed (does the prototype exist?)'))

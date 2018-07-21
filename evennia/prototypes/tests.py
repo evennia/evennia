@@ -114,24 +114,41 @@ class TestUtils(EvenniaTest):
 
         self.assertEqual(
              pdiff,
-             {'aliases': 'REMOVE',
-              'attrs': 'REPLACE',
-              'home': 'KEEP',
-              'key': 'UPDATE',
-              'location': 'KEEP',
-              'locks': 'KEEP',
-              'new': 'UPDATE',
-              'permissions': 'UPDATE',
-              'prototype_desc': 'UPDATE',
-              'prototype_key': 'UPDATE',
-              'prototype_locks': 'KEEP',
-              'prototype_tags': 'KEEP',
-              'test': 'UPDATE',
-              'typeclass': 'KEEP'})
+             ({'aliases': 'REMOVE',
+               'attrs': 'REPLACE',
+               'home': 'KEEP',
+               'key': 'UPDATE',
+               'location': 'KEEP',
+               'locks': 'KEEP',
+               'new': 'UPDATE',
+               'permissions': 'UPDATE',
+               'prototype_desc': 'UPDATE',
+               'prototype_key': 'UPDATE',
+               'prototype_locks': 'KEEP',
+               'prototype_tags': 'KEEP',
+               'test': 'UPDATE',
+               'typeclass': 'KEEP'},
+              {'attrs': [('oldtest', 'to_remove', None, ['']),
+                         ('test', 'testval', None, [''])],
+               'prototype_locks': 'spawn:all();edit:all()',
+               'prototype_key': Something,
+               'locks': ['call:true()', 'control:perm(Developer)',
+                         'delete:perm(Admin)', 'edit:perm(Admin)',
+                         'examine:perm(Builder)', 'get:all()',
+                         'puppet:pperm(Developer)', 'tell:perm(Admin)',
+                         'view:all()'],
+               'prototype_tags': [],
+               'location': self.room1,
+               'key': 'NewObj',
+               'home': self.room1,
+               'typeclass': 'evennia.objects.objects.DefaultObject',
+               'prototype_desc': 'Built from NewObj',
+               'aliases': 'foo'})
+              )
 
         # apply diff
         count = spawner.batch_update_objects_with_prototype(
-            old_prot, diff=pdiff, objects=[self.obj1])
+            old_prot, diff=pdiff[0], objects=[self.obj1])
         self.assertEqual(count, 1)
 
         new_prot = spawner.prototype_from_object(self.obj1)
@@ -470,7 +487,7 @@ class TestOLCMenu(TestEvMenu):
     menutree = "evennia.prototypes.menus"
     startnode = "node_index"
 
-    debug_output = True
+    # debug_output = True
     expect_all_nodes = True
 
     expected_node_texts = {
@@ -480,15 +497,37 @@ class TestOLCMenu(TestEvMenu):
     expected_tree = \
         ['node_index',
          ['node_prototype_key',
+          ['node_index',
+           'node_index',
+           'node_validate_prototype',
+           ['node_index'],
+           'node_index'],
           'node_typeclass',
-          'node_aliases',
-          'node_attrs',
-          'node_tags',
-          'node_locks',
-          'node_permissions',
-          'node_location',
-          'node_home',
-          'node_destination',
-          'node_prototype_desc',
-          'node_prototype_tags',
-          'node_prototype_locks']]
+          ['node_key',
+           ['node_typeclass',
+            'node_key',
+            'node_index',
+            'node_validate_prototype',
+            'node_validate_prototype'],
+           'node_index',
+           'node_index',
+           'node_index',
+           'node_validate_prototype',
+           'node_validate_prototype'],
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype',
+          'node_validate_prototype']]

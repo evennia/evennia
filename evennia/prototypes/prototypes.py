@@ -13,7 +13,7 @@ from evennia.objects.models import ObjectDB
 from evennia.utils.create import create_script
 from evennia.utils.utils import (
     all_from_module, make_iter, is_iter, dbid_to_obj, callables_from_module,
-    get_all_typeclasses, to_str)
+    get_all_typeclasses, to_str, dbref)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
 from evennia.utils import inlinefuncs
@@ -91,6 +91,10 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
 
     """
     if not isinstance(value, basestring):
+        try:
+            value = value.dbref
+        except AttributeError:
+            pass
         value = to_str(value, force_string=True)
 
     available_functions = _PROT_FUNCS if available_functions is None else available_functions
@@ -577,7 +581,7 @@ def validate_prototype(prototype, protkey=None, protparents=None,
     for protstring in make_iter(prototype_parent):
         protstring = protstring.lower()
         if protkey is not None and protstring == protkey:
-            _flags['errors'].append("Protototype {} tries to parent itself.".format(protkey))
+            _flags['errors'].append("Prototype {} tries to parent itself.".format(protkey))
         protparent = protparents.get(protstring)
         if not protparent:
             _flags['errors'].append("Prototype {}'s prototype_parent '{}' was not found.".format(
@@ -610,7 +614,7 @@ def validate_prototype(prototype, protkey=None, protparents=None,
 
     # make sure prototype_locks are set to defaults
     prototype_locks = [lstring.split(":", 1)
-                       for lstring in prototype.get("prototype_locks", "").split(';')]
+                       for lstring in prototype.get("prototype_locks", "").split(';') if ":" in lstring]
     locktypes = [tup[0].strip() for tup in prototype_locks]
     if "spawn" not in locktypes:
         prototype_locks.append(("spawn", "all()"))
