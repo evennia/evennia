@@ -321,6 +321,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
         # process string on stack
         ncallable = 0
         nlparens = 0
+        nvalid = 0
 
         if stacktrace:
             out = "STRING: {} =>".format(string)
@@ -367,6 +368,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
                 try:
                     # try to fetch the matching inlinefunc from storage
                     stack.append(available_funcs[funcname])
+                    nvalid += 1
                 except KeyError:
                     stack.append(available_funcs["nomatch"])
                     stack.append(funcname)
@@ -393,9 +395,9 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
             # this means not all inlinefuncs were complete
             return string
 
-        if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
+        if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < nvalid:
             # if stack is larger than limit, throw away parsing
-            return string + gdict["stackfull"](*args, **kwargs)
+            return string + available_funcs["stackfull"](*args, **kwargs)
         elif usecache:
             # cache the stack - we do this also if we don't check the cache above
             _PARSING_CACHE[string] = stack

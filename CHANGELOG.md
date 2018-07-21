@@ -19,6 +19,15 @@
 - The spawn command got the /save switch to save the defined prototype and its key.
 - The command spawn/menu will now start an OLC (OnLine Creation) menu to load/save/edit/spawn prototypes.
 
+### EvMenu
+
+- Added `EvMenu.helptext_formatter(helptext)`  to allow custom formatting of per-node help.
+- Added `evennia.utils.evmenu.list_node` decorator for turning an EvMenu node into a multi-page listing.
+- A `goto` option callable returning None (rather than the name of the next node) will now rerun the
+  current node instead of failing.
+- Better error handling of in-node syntax errors.
+
+
 
 # Overviews
 

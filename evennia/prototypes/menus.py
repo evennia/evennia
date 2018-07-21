@@ -8,6 +8,7 @@ import json
 from random import choice
 from django.conf import settings
 from evennia.utils.evmenu import EvMenu, list_node
+from evennia.utils import evmore
 from evennia.utils.ansi import strip_ansi
 from evennia.utils import utils
 from evennia.prototypes import prototypes as protlib
@@ -78,7 +79,9 @@ def _format_option_value(prop, required=False, prototype=None, cropper=None):
         out = ", ".join(str(pr) for pr in prop)
     if not out and required:
         out = "|rrequired"
-    return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
+    if out:
+        return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
+    return ""
 
 
 def _set_prototype_value(caller, field, value, parse=True):
@@ -214,31 +217,75 @@ def _validate_prototype(prototype):
     return err, text
 
 
-# Menu nodes
+def _format_protfuncs():
+    out = []
+    sorted_funcs = [(key, func) for key, func in
+                    sorted(protlib.PROT_FUNCS.items(), key=lambda tup: tup[0])]
+    for protfunc_name, protfunc in sorted_funcs:
+        out.append("- |c${name}|n - |W{docs}".format(
+            name=protfunc_name,
+            docs=utils.justify(protfunc.__doc__.strip(), align='l', indent=10).strip()))
+    return "\n       ".join(out)
+
+
+# Menu nodes ------------------------------
+
+
+# main index (start page) node
+
 
 def node_index(caller):
     prototype = _get_menu_prototype(caller)
 
-    text = (
-       "|c --- Prototype wizard --- |n\n\n"
-       "Define the |yproperties|n of the prototype. All prototype values can be "
-       "over-ridden at the time of spawning an instance of the prototype, but some are "
-       "required.\n\n'|wprototype-'-properties|n are not used in the prototype itself but are used "
-       "to organize and list prototypes. The 'prototype-key' uniquely identifies the prototype "
-       "and allows you to edit an existing prototype or save a new one for use by you or "
-       "others later.\n\n(make choice; q to abort. If unsure, start from 1.)")
+    text = """
+       |c --- Prototype wizard --- |n
+
+       A |cprototype|n is a 'template' for |wspawning|n an in-game entity. A field of the prototype
+       can be hard-coded or scripted using |w$protfuncs|n - for example to randomize the value
+       every time the prototype is used to spawn a new entity.
+
+       The prototype fields named 'prototype_*' are not used to create the entity itself but for
+       organizing the template when saving it for you (and maybe others) to use later.
+
+       Select prototype field to edit. If you are unsure, start from [|w1|n]. At any time you can
+       [|wV|n]alidate that the prototype works correctly and use it to [|wSP|n]awn a new entity. You
+       can also [|wSA|n]ve|n your work or [|wLO|n]oad an existing prototype to use as a base. Use
+       [|wL|n]ook to re-show a menu node. [|wQ|n]uit will always exit the menu and [|wH|n]elp will
+       show context-sensitive help.
+       """
+
+    helptxt = """
+       |c- prototypes |n
+
+       A prototype is really just a Python dictionary. When spawning, this dictionary is essentially
+       passed into `|wevennia.utils.create.create_object(**prototype)|n` to create a new object. By
+       using different prototypes you can customize instances of objects without having to do code
+       changes to their typeclass (something which requires code access). The classical example is
+       to spawn goblins with different names, looks, equipment and skill, each based on the same
+       `Goblin` typeclass.
+
+       |c- $protfuncs |n
+
+       Prototype-functions (protfuncs) allow for limited scripting within a prototype. These are
+       entered as a string $funcname(arg, arg, ...) and are evaluated |wat the time of spawning|n only.
+       They can also be nested for combined effects.
+
+       {pfuncs}
+       """.format(pfuncs=_format_protfuncs())
+
+    text = (text, helptxt)
 
     options = []
     options.append(
         {"desc": "|WPrototype-Key|n|n{}".format(
             _format_option_value("Key", "prototype_key" not in prototype, prototype, None)),
          "goto": "node_prototype_key"})
-    for key in ('Typeclass', 'Prototype_parent', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
+    for key in ('Typeclass', 'Prototype-parent', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
         required = False
         cropper = None
         if key in ("Prototype-parent", "Typeclass"):
-            required = "prototype_parent" not in prototype and "typeclass" not in prototype
+            required = ("prototype_parent" not in prototype) and ("typeclass" not in prototype)
         if key == 'Typeclass':
             cropper = _path_cropper
         options.append(
@@ -256,15 +303,17 @@ def node_index(caller):
     options.extend((
             {"key": ("|wV|Walidate prototype", "validate", "v"),
              "goto": "node_validate_prototype"},
-            {"key": ("|wS|Wave prototype", "save", "s"),
+            {"key": ("|wSA|Wve prototype", "save", "sa"),
              "goto": "node_prototype_save"},
             {"key": ("|wSP|Wawn prototype", "spawn", "sp"),
              "goto": "node_prototype_spawn"},
-            {"key": ("|wL|Woad prototype", "load", "l"),
+            {"key": ("|wLO|Wad prototype", "load", "lo"),
              "goto": "node_prototype_load"}))
 
     return text, options
 
+
+# validate prototype (available as option from all nodes)
 
 def node_validate_prototype(caller, raw_string, **kwargs):
     """General node to view and validate a protototype"""
@@ -273,9 +322,20 @@ def node_validate_prototype(caller, raw_string, **kwargs):
 
     _, text = _validate_prototype(prototype)
 
+    helptext = """
+    The validator checks if the prototype's various values are on the expected form. It also test
+    any $protfuncs.
+
+    """
+
+    text = (text, helptext)
+
     options = _wizard_options(None, prev_node, None)
 
     return text, options
+
+
+# prototype_key node
 
 
 def _check_prototype_key(caller, key):
@@ -303,20 +363,34 @@ def _check_prototype_key(caller, key):
 
 def node_prototype_key(caller):
     prototype = _get_menu_prototype(caller)
-    text = ["The prototype name, or |wMeta-Key|n, uniquely identifies the prototype. "
-            "It is used to find and use the prototype to spawn new entities. "
-            "It is not case sensitive."]
+    text = """
+        The |cPrototype-Key|n uniquely identifies the prototype. It must be specified. It is used to
+        find and use the prototype to spawn new entities. It is not case sensitive.
+
+        {current}"""
+
+    helptext = """
+        The prototype-key is not itself used to spawn the new object, but is only used for managing,
+        storing and loading the prototype. It must be globally unique, so existing keys will be
+        checked before a new key is accepted. If an existing key is picked, the existing prototype
+        will be loaded.
+        """
+
     old_key = prototype.get('prototype_key', None)
     if old_key:
-        text.append("Current key is '|w{key}|n'".format(key=old_key))
+        text = text.format(current="Currently set to '|w{key}|n'".format(key=old_key))
     else:
-        text.append("The key is currently unset.")
-    text.append("Enter text or make a choice (q for quit)")
-    text = "\n\n".join(text)
+        text = text.format(current="Currently |runset|n (required).")
+
     options = _wizard_options("prototype_key", "index", "prototype_parent")
     options.append({"key": "_default",
                     "goto": _check_prototype_key})
+
+    text = (text, helptext)
     return text, options
+
+
+# prototype_parents node
 
 
 def _all_prototype_parents(caller):
@@ -367,6 +441,8 @@ def node_prototype_parent(caller):
 
     return text, options
 
+
+# typeclasses node
 
 def _all_typeclasses(caller):
     """Get name of available typeclasses."""
@@ -423,6 +499,9 @@ def node_typeclass(caller):
     return text, options
 
 
+# key node
+
+
 def node_key(caller):
     prototype = _get_menu_prototype(caller)
     key = prototype.get("key")
@@ -440,6 +519,9 @@ def node_key(caller):
                                   processor=lambda s: s.strip(),
                                   next_node="node_aliases"))})
     return text, options
+
+
+# aliases node
 
 
 def node_aliases(caller):
@@ -460,6 +542,9 @@ def node_aliases(caller):
                                   processor=lambda s: [part.strip() for part in s.split(",")],
                                   next_node="node_attrs"))})
     return text, options
+
+
+# attributes node
 
 
 def _caller_attrs(caller):
@@ -572,6 +657,9 @@ def node_attrs(caller):
     return text, options
 
 
+# tags node
+
+
 def _caller_tags(caller):
     prototype = _get_menu_prototype(caller)
     tags = prototype.get("tags", [])
@@ -659,6 +747,9 @@ def node_tags(caller):
     return text, options
 
 
+# locks node
+
+
 def node_locks(caller):
     prototype = _get_menu_prototype(caller)
     locks = prototype.get("locks")
@@ -677,6 +768,9 @@ def node_locks(caller):
                                   processor=lambda s: s.strip(),
                                   next_node="node_permissions"))})
     return text, options
+
+
+# permissions node
 
 
 def node_permissions(caller):
@@ -699,6 +793,9 @@ def node_permissions(caller):
     return text, options
 
 
+# location node
+
+
 def node_location(caller):
     prototype = _get_menu_prototype(caller)
     location = prototype.get("location")
@@ -716,6 +813,9 @@ def node_location(caller):
                                   processor=lambda s: s.strip(),
                                   next_node="node_home"))})
     return text, options
+
+
+# home node
 
 
 def node_home(caller):
@@ -737,6 +837,9 @@ def node_home(caller):
     return text, options
 
 
+# destination node
+
+
 def node_destination(caller):
     prototype = _get_menu_prototype(caller)
     dest = prototype.get("dest")
@@ -754,6 +857,9 @@ def node_destination(caller):
                                   processor=lambda s: s.strip(),
                                   next_node="node_prototype_desc"))})
     return text, options
+
+
+# prototype_desc node
 
 
 def node_prototype_desc(caller):
@@ -778,6 +884,9 @@ def node_prototype_desc(caller):
     return text, options
 
 
+# prototype_tags node
+
+
 def node_prototype_tags(caller):
     prototype = _get_menu_prototype(caller)
     text = ["|wPrototype-Tags|n can be used to classify and find prototypes. "
@@ -800,6 +909,9 @@ def node_prototype_tags(caller):
     return text, options
 
 
+# prototype_locks node
+
+
 def node_prototype_locks(caller):
     prototype = _get_menu_prototype(caller)
     text = ["Set |wPrototype-Locks|n on the prototype. There are two valid lock types: "
@@ -819,6 +931,9 @@ def node_prototype_locks(caller):
                                   processor=lambda s: s.strip().lower(),
                                   next_node="node_index"))})
     return text, options
+
+
+# update existing objects node
 
 
 def _update_spawned(caller, **kwargs):
@@ -904,6 +1019,9 @@ def node_update_objects(caller, **kwargs):
         return text, options
 
 
+# prototype save node
+
+
 def node_prototype_save(caller, **kwargs):
     """Save prototype to disk """
     # these are only set if we selected 'yes' to save on a previous pass
@@ -972,6 +1090,9 @@ def node_prototype_save(caller, **kwargs):
     return "\n".join(text),  options
 
 
+# spawning node
+
+
 def _spawn(caller, **kwargs):
     """Spawn prototype"""
     prototype = kwargs["prototype"].copy()
@@ -1037,6 +1158,9 @@ def node_prototype_spawn(caller, **kwargs):
     return text, options
 
 
+# prototype load node
+
+
 def _prototype_load_select(caller, prototype_key):
     matches = protlib.search_prototype(key=prototype_key)
     if matches:
@@ -1052,10 +1176,13 @@ def _prototype_load_select(caller, prototype_key):
 @list_node(_all_prototype_parents, _prototype_load_select)
 def node_prototype_load(caller, **kwargs):
     text = ["Select a prototype to load. This will replace any currently edited prototype."]
-    options = _wizard_options("load", "save", "index")
+    options = _wizard_options("prototype_load", "prototype_save", "index")
     options.append({"key": "_default",
                     "goto": _prototype_parent_examine})
     return "\n".join(text), options
+
+
+# EvMenu definition, formatting and access functions
 
 
 class OLCMenu(EvMenu):
@@ -1085,6 +1212,15 @@ class OLCMenu(EvMenu):
         sep = "\n\n" if olc_options and other_options else ""
 
         return "{}{}{}".format(olc_options, sep, other_options)
+
+    def helptext_formatter(self, helptext):
+        """
+        Show help text
+        """
+        return "|c --- Help ---|n\n" + helptext
+
+    def display_helptext(self):
+        evmore.msg(self.caller, self.helptext, session=self._session)
 
 
 def start_olc(caller, session=None, prototype=None):

@@ -13,7 +13,7 @@ from evennia.objects.models import ObjectDB
 from evennia.utils.create import create_script
 from evennia.utils.utils import (
     all_from_module, make_iter, is_iter, dbid_to_obj, callables_from_module,
-    get_all_typeclasses, to_str, dbref)
+    get_all_typeclasses, to_str, dbref, justify)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
 from evennia.utils import inlinefuncs
@@ -29,7 +29,7 @@ _PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
     "permissions", "locks", "exec", "tags", "attrs")
 _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
-_PROT_FUNCS = {}
+PROT_FUNCS = {}
 
 
 _RE_DBREF = re.compile(r"(?<!\$obj\()(#[0-9]+)")
@@ -51,7 +51,7 @@ class ValidationError(RuntimeError):
 for mod in settings.PROT_FUNC_MODULES:
     try:
         callables = callables_from_module(mod)
-        _PROT_FUNCS.update(callables)
+        PROT_FUNCS.update(callables)
     except ImportError:
         logger.log_trace()
         raise
@@ -97,7 +97,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             pass
         value = to_str(value, force_string=True)
 
-    available_functions = _PROT_FUNCS if available_functions is None else available_functions
+    available_functions = PROT_FUNCS if available_functions is None else available_functions
 
     # insert $obj(#dbref) for #dbref
     value = _RE_DBREF.sub("$obj(\\1)", value)
@@ -116,6 +116,20 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
     if testing:
         return err, result
     return result
+
+
+def format_available_protfuncs():
+    """
+    Get all protfuncs in a pretty-formatted form.
+
+    Args:
+        clr (str, optional): What coloration tag to use.
+    """
+    out = []
+    for protfunc_name, protfunc in PROT_FUNCS.items():
+        out.append("- |c${name}|n - |W{docs}".format(
+            name=protfunc_name, docs=protfunc.__doc__.strip().replace("\n", "")))
+    return justify("\n".join(out), indent=8)
 
 
 # helper functions
