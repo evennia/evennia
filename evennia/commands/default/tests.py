@@ -28,7 +28,7 @@ from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
-from evennia.prototypes import spawner, prototypes as protlib
+from evennia.prototypes import prototypes as protlib
 
 
 # set up signal here since we are not starting the server
@@ -46,7 +46,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
     def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None,
-             receiver=None, cmdstring=None, obj=None):
+             receiver=None, cmdstring=None, obj=None, inputs=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -75,14 +75,31 @@ class CommandTest(EvenniaTest):
         cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
+        inputs = inputs or []
+
         try:
             receiver.msg = Mock()
             if cmdobj.at_pre_cmd():
                 return
             cmdobj.parse()
             ret = cmdobj.func()
+
+            # handle func's with yield in them (generators)
             if isinstance(ret, types.GeneratorType):
-                ret.next()
+                while True:
+                    try:
+                        inp = inputs.pop() if inputs else None
+                        if inp:
+                            try:
+                                ret.send(inp)
+                            except TypeError:
+                                ret.next()
+                                ret = ret.send(inp)
+                        else:
+                            ret.next()
+                    except StopIteration:
+                        break
+
             cmdobj.at_post_cmd()
         except StopIteration:
             pass
@@ -95,7 +112,7 @@ class CommandTest(EvenniaTest):
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             if msg is not None:
-                returned_msg = "||".join(_RE.sub("", mess) for mess in stored_msg)
+                returned_msg = "||".join(_RE.sub("", str(mess)) for mess in stored_msg)
                 returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
                     sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
@@ -369,13 +386,13 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), " ", "Usage: @spawn")
 
         # Tests "@spawn <prototype_dictionary>" without specifying location.
-        with mock.patch('evennia.commands.default.func', return_value=iter(['y'])) as mock_iter:
-            self.call(building.CmdSpawn(),
-                      "/save {'prototype_key': 'testprot', 'key':'Test Char', "
-                      "'typeclass':'evennia.objects.objects.DefaultCharacter'}", "")
-            mock_iter.assert_called()
 
-        self.call(building.CmdSpawn(), "/list", "foo")
+        self.call(building.CmdSpawn(),
+                  "/save {'prototype_key': 'testprot', 'key':'Test Char', "
+                  "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+                  "Saved prototype: testprot", inputs=['y'])
+
+        self.call(building.CmdSpawn(), "/list", "| Key ")
 
         self.call(building.CmdSpawn(), 'testprot', "Spawned Test Char")
         # Tests that the spawned object's location is the same as the caharacter's location, since
@@ -401,10 +418,14 @@ class TestBuilding(CommandTest):
 
         goblin.delete()
 
-        protlib.create_prototype(**{'key': 'Ball', 'prototype': 'GOBLIN', 'prototype_key': 'testball'})
+        # create prototype
+        protlib.create_prototype(**{'key': 'Ball',
+                                    'typeclass': 'evennia.objects.objects.DefaultCharacter',
+                                    'prototype_key': 'testball'})
 
         # Tests "@spawn <prototype_name>"
         self.call(building.CmdSpawn(), "testball", "Spawned Ball")
+
         ball = getObject(self, "Ball")
         self.assertEqual(ball.location, self.char1.location)
         self.assertIsInstance(ball, DefaultObject)
@@ -417,10 +438,14 @@ class TestBuilding(CommandTest):
         self.assertIsNone(ball.location)
         ball.delete()
 
+        self.call(building.CmdSpawn(),
+                "/noloc {'prototype_parent':'TESTBALL', 'prototype_key': 'testball', 'location':'%s'}"
+                % spawnLoc.dbref, "Error: Prototype testball tries to parent itself.")
+
         # Tests "@spawn/noloc ...", but DO specify a location.
         # Location should be the specified location.
         self.call(building.CmdSpawn(),
-                  "/noloc {'prototype':'TESTBALL', 'location':'%s'}"
+                "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo', 'location':'%s'}"
                   % spawnLoc.dbref, "Spawned Ball")
         ball = getObject(self, "Ball")
         self.assertEqual(ball.location, spawnLoc)

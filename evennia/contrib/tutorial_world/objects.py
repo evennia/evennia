@@ -905,19 +905,19 @@ WEAPON_PROTOTYPES = {
         "magic": False,
         "desc": "A generic blade."},
     "knife": {
-        "prototype": "weapon",
+        "prototype_parent": "weapon",
         "aliases": "sword",
         "key": "Kitchen knife",
         "desc": "A rusty kitchen knife. Better than nothing.",
         "damage": 3},
     "dagger": {
-        "prototype": "knife",
+        "prototype_parent": "knife",
         "key": "Rusty dagger",
         "aliases": ["knife", "dagger"],
         "desc": "A double-edged dagger with a nicked edge and a wooden handle.",
         "hit": 0.25},
     "sword": {
-        "prototype": "weapon",
+        "prototype_parent": "weapon",
         "key": "Rusty sword",
         "aliases": ["sword"],
         "desc": "A rusty shortsword. It has a leather-wrapped handle covered i food grease.",
@@ -925,28 +925,28 @@ WEAPON_PROTOTYPES = {
         "damage": 5,
         "parry": 0.5},
     "club": {
-        "prototype": "weapon",
+        "prototype_parent": "weapon",
         "key": "Club",
         "desc": "A heavy wooden club, little more than a heavy branch.",
         "hit": 0.4,
         "damage": 6,
         "parry": 0.2},
     "axe": {
-        "prototype": "weapon",
+        "prototype_parent": "weapon",
         "key": "Axe",
         "desc": "A woodcutter's axe with a keen edge.",
         "hit": 0.4,
         "damage": 6,
         "parry": 0.2},
     "ornate longsword": {
-        "prototype": "sword",
+        "prototype_parent": "sword",
         "key": "Ornate longsword",
         "desc": "A fine longsword with some swirling patterns on the handle.",
         "hit": 0.5,
         "magic": True,
         "damage": 5},
     "warhammer": {
-        "prototype": "club",
+        "prototype_parent": "club",
         "key": "Silver Warhammer",
         "aliases": ["hammer", "warhammer", "war"],
         "desc": "A heavy war hammer with silver ornaments. This huge weapon causes massive damage - if you can hit.",
@@ -954,21 +954,21 @@ WEAPON_PROTOTYPES = {
         "magic": True,
         "damage": 8},
     "rune axe": {
-        "prototype": "axe",
+        "prototype_parent": "axe",
         "key": "Runeaxe",
         "aliases": ["axe"],
         "hit": 0.4,
         "magic": True,
         "damage": 6},
     "thruning": {
-        "prototype": "ornate longsword",
+        "prototype_parent": "ornate longsword",
         "key": "Broadsword named Thruning",
         "desc": "This heavy bladed weapon is marked with the name 'Thruning'. It is very powerful in skilled hands.",
         "hit": 0.6,
         "parry": 0.6,
         "damage": 7},
     "slayer waraxe": {
-        "prototype": "rune axe",
+        "prototype_parent": "rune axe",
         "key": "Slayer waraxe",
         "aliases": ["waraxe", "war", "slayer"],
         "desc": "A huge double-bladed axe marked with the runes for 'Slayer'."
@@ -976,7 +976,7 @@ WEAPON_PROTOTYPES = {
         "hit": 0.7,
         "damage": 8},
     "ghostblade": {
-        "prototype": "ornate longsword",
+        "prototype_parent": "ornate longsword",
         "key": "The Ghostblade",
         "aliases": ["blade", "ghost"],
         "desc": "This massive sword is large as you are tall, yet seems to weigh almost nothing."
@@ -985,7 +985,7 @@ WEAPON_PROTOTYPES = {
         "parry": 0.8,
         "damage": 10},
     "hawkblade": {
-        "prototype": "ghostblade",
+        "prototype_parent": "ghostblade",
         "key": "The Hawkblade",
         "aliases": ["hawk", "blade"],
         "desc": "The weapon of a long-dead heroine and a more civilized age,"
