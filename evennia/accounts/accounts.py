@@ -798,7 +798,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             # any was deleted in the interim.
             self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(self.at_look(target=self.db._playable_characters,
-                                  session=session))
+                                  session=session), session=session)
 
     def at_failed_login(self, session, **kwargs):
         """

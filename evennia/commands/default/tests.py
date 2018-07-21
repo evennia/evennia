@@ -33,7 +33,7 @@ from evennia.prototypes import prototypes as protlib
 
 # set up signal here since we are not starting the server
 
-_RE = re.compile(r"^\+|-+\+|\+-+|--*|\|(?:\s|$)", re.MULTILINE)
+_RE = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 
 
 # ------------------------------------------------------------
@@ -112,8 +112,11 @@ class CommandTest(EvenniaTest):
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             if msg is not None:
-                returned_msg = "||".join(_RE.sub("", str(mess)) for mess in stored_msg)
-                returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+                # set our separator for returned messages based on parsing ansi or not
+                msg_sep = "|" if noansi else "||"
+                # Have to strip ansi for each returned message for the regex to handle it correctly
+                returned_msg = msg_sep.join(_RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi))
+                                            for mess in stored_msg).strip()
                 if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
                     sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
                     sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
@@ -147,11 +150,11 @@ class TestGeneral(CommandTest):
 
     def test_nick(self):
         self.call(general.CmdNick(), "testalias = testaliasedstring1",
-                  "Inputlinenick 'testalias' mapped to 'testaliasedstring1'.")
+                "Inputline-nick 'testalias' mapped to 'testaliasedstring1'.")
         self.call(general.CmdNick(), "/account testalias = testaliasedstring2",
-                  "Accountnick 'testalias' mapped to 'testaliasedstring2'.")
+                "Account-nick 'testalias' mapped to 'testaliasedstring2'.")
         self.call(general.CmdNick(), "/object testalias = testaliasedstring3",
-                  "Objectnick 'testalias' mapped to 'testaliasedstring3'.")
+                "Object-nick 'testalias' mapped to 'testaliasedstring3'.")
         self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
         self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
         self.assertEqual(None, self.char1.account.nicks.get("testalias", category="account"))
@@ -214,7 +217,7 @@ class TestSystem(CommandTest):
         self.call(system.CmdPy(), "1+2", ">>> 1+2|3")
 
     def test_scripts(self):
-        self.call(system.CmdScripts(), "", "| dbref |")
+        self.call(system.CmdScripts(), "", "dbref ")
 
     def test_objects(self):
         self.call(system.CmdObjects(), "", "Object subtype totals")
@@ -238,14 +241,14 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdWall(), "Test", "Announcing to all connected sessions ...")
 
     def test_ban(self):
-        self.call(admin.CmdBan(), "Char", "NameBan char was added.")
+        self.call(admin.CmdBan(), "Char", "Name-Ban char was added.")
 
 
 class TestAccount(CommandTest):
 
     def test_ooc_look(self):
         if settings.MULTISESSION_MODE < 2:
-            self.call(account.CmdOOCLook(), "", "You are outofcharacter (OOC).", caller=self.account)
+            self.call(account.CmdOOCLook(), "", "You are out-of-character (OOC).", caller=self.account)
         if settings.MULTISESSION_MODE == 2:
             self.call(account.CmdOOCLook(), "", "Account TestAccount (you are OutofCharacter)", caller=self.account)
 
@@ -302,8 +305,8 @@ class TestBuilding(CommandTest):
     def test_attribute_commands(self):
         self.call(building.CmdSetAttribute(), "Obj/test1=\"value1\"", "Created attribute Obj/test1 = 'value1'")
         self.call(building.CmdSetAttribute(), "Obj2/test2=\"value2\"", "Created attribute Obj2/test2 = 'value2'")
-        self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 > Obj.test3")
-        self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 > Obj2.test3")
+        self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
+        self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 -> Obj2.test3")
         self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
 
     def test_name(self):
@@ -329,7 +332,7 @@ class TestBuilding(CommandTest):
 
     def test_exit_commands(self):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
-        self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 > Room (one way).")
+        self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
 
     def test_set_home(self):
@@ -348,8 +351,8 @@ class TestBuilding(CommandTest):
 
     def test_find(self):
         self.call(building.CmdFind(), "oom2", "One Match")
-        expect = "One Match(#1#7, loc):\n   " +\
-                 "Char2(#7)  evennia.objects.objects.DefaultCharacter (location: Room(#1))"
+        expect = "One Match(#1-#7, loc):\n   " +\
+                 "Char2(#7) - evennia.objects.objects.DefaultCharacter (location: Room(#1))"
         self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
         self.call(building.CmdFind(), "/ex Char2",  # /ex is an ambiguous switch
                   "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|" + expect,
@@ -365,7 +368,7 @@ class TestBuilding(CommandTest):
     def test_teleport(self):
         self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#2)\n|Teleported to Room2.")
         self.call(building.CmdTeleport(), "/t",  # /t switch is abbreviated form of /tonone
-                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a Nonelocation.")
+                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a None-location.")
         self.call(building.CmdTeleport(), "/l Room2",  # /l switch is abbreviated form of /loc
                   "Destination has no location.")
         self.call(building.CmdTeleport(), "/q me to Room2",  # /q switch is abbreviated form of /quiet
@@ -392,7 +395,7 @@ class TestBuilding(CommandTest):
                   "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
                   "Saved prototype: testprot", inputs=['y'])
 
-        self.call(building.CmdSpawn(), "/list", "| Key ")
+        self.call(building.CmdSpawn(), "/list", "Key ")
 
         self.call(building.CmdSpawn(), 'testprot', "Spawned Test Char")
         # Tests that the spawned object's location is the same as the caharacter's location, since
@@ -455,7 +458,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST'")
 
         # Test listing commands
-        self.call(building.CmdSpawn(), "/list", "| Key ")
+        self.call(building.CmdSpawn(), "/list", "Key ")
 
 
 class TestComms(CommandTest):
@@ -512,7 +515,7 @@ class TestBatchProcess(CommandTest):
     def test_batch_commands(self):
         # cannot test batchcode here, it must run inside the server process
         self.call(batchprocess.CmdBatchCommands(), "example_batch_cmds",
-                  "Running Batchcommand processor  Automatic mode for example_batch_cmds")
+                "Running Batch-command processor - Automatic mode for example_batch_cmds")
         # we make sure to delete the button again here to stop the running reactor
         confirm = building.CmdDestroy.confirm
         building.CmdDestroy.confirm = False
@@ -542,5 +545,5 @@ class TestUnconnectedCommand(CommandTest):
         expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
                         settings.SERVERNAME,
                         datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
-                        SESSIONS.account_count(), utils.get_evennia_version().replace("-", ""))
+                        SESSIONS.account_count(), utils.get_evennia_version())
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
