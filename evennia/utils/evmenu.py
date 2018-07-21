@@ -796,7 +796,7 @@ class EvMenu(object):
 
         # handle the helptext
         if helptext:
-            self.helptext = helptext
+            self.helptext = self.helptext_formatter(helptext)
         elif options:
             self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
         else:
@@ -897,6 +897,19 @@ class EvMenu(object):
 
         """
         return dedent(nodetext).strip()
+
+    def helptext_formatter(self, helptext):
+        """
+        Format the node's help text
+
+        Args:
+            helptext (str): The unformatted help text for the node.
+
+        Returns:
+            helptext (str): The formatted help text.
+
+        """
+        return dedent(helptext).strip()
 
     def options_formatter(self, optionlist):
         """
