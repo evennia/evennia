@@ -97,15 +97,15 @@ def funcname(a, b, c, d=False, **kwargs):
     Args:
         a (str): This is a string argument that we can talk about
             over multiple lines.
-        b (int or str): Another argument
-        c (list): A list argument
-        d (bool, optional): An optional keyword argument
+        b (int or str): Another argument.
+        c (list): A list argument.
+        d (bool, optional): An optional keyword argument.
 
     Kwargs:
-        test (list): A test keyword
+        test (list): A test keyword.
 
     Returns:
-        e (str): The result of the function
+        e (str): The result of the function.
 
     Raises:
         RuntimeException: If there is a critical error,

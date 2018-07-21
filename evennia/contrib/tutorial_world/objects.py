@@ -674,7 +674,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
             # we found the button by moving the roots
             result = ["Having moved all the roots aside, you find that the center of the wall, "
                       "previously hidden by the vegetation, hid a curious square depression. It was maybe once "
-                      "concealed and made to look a part of the wall, but with the crumbling of stone around it,"
+                      "concealed and made to look a part of the wall, but with the crumbling of stone around it, "
                       "it's now easily identifiable as some sort of button."]
         elif self.db.exit_open:
             # we pressed the button; the exit is open
