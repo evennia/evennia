@@ -44,9 +44,10 @@ SSHUTD = chr(17)       # server shutdown
 PSTATUS = chr(18)      # ping server or portal status
 SRESET = chr(19)       # server shutdown in reset mode
 
+NUL = b'\0'
+NULNUL = '\0\0'
+
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
-BATCH_RATE = 250     # max commands/sec before switching to batch-sending
-BATCH_TIMEOUT = 0.5  # how often to poll to empty batch queue, in seconds
 
 # buffers
 _SENDBATCH = defaultdict(list)
@@ -61,11 +62,15 @@ _HTTP_WARNING = """
 HTTP/1.1 200 OK
 Content-Type: text/html
 
-<html><body>
-This is Evennia's interal AMP port. It handles communication
-between Evennia's different processes.<h3><p>This port should NOT be
-publicly visible.</p></h3>
-</body></html>""".strip()
+<html>
+  <body>
+    This is Evennia's internal AMP port. It handles communication
+    between Evennia's different processes.
+    <p>
+        <h3>This port should NOT be publicly visible.</h3>
+    </p>
+  </body>
+</html>""".strip()
 
 
 # Helper functions for pickling.
@@ -107,43 +112,45 @@ class Compressed(amp.String):
 
     def fromBox(self, name, strings, objects, proto):
         """
-        Converts from box representation to python. We
-        group very long data into batches.
+        Converts from box string representation to python. We read back too-long batched data and
+        put it back together here.
+
         """
         value = StringIO()
-        value.write(strings.get(name))
+        value.write(self.fromStringProto(strings.get(name), proto))
         for counter in count(2):
             # count from 2 upwards
             chunk = strings.get("%s.%d" % (name, counter))
             if chunk is None:
                 break
-            value.write(chunk)
+            value.write(self.fromStringProto(chunk, proto))
         objects[name] = value.getvalue()
 
     def toBox(self, name, strings, objects, proto):
         """
-        Convert from data to box. We handled too-long
-        batched data and put it together here.
+        Convert from python object to string box representation.
+        we break up too-long data snippets into multiple batches here.
+
         """
         value = StringIO(objects[name])
-        strings[name] = value.read(AMP_MAXLEN)
+        strings[name] = self.toStringProto(value.read(AMP_MAXLEN), proto)
         for counter in count(2):
             chunk = value.read(AMP_MAXLEN)
             if not chunk:
                 break
-            strings["%s.%d" % (name, counter)] = chunk
+            strings["%s.%d" % (name, counter)] = self.toStringProto(chunk, proto)
 
     def toString(self, inObject):
         """
-        Convert to send on the wire, with compression.
+        Convert to send as a string on the wire, with compression.
         """
-        return zlib.compress(inObject, 9)
+        return zlib.compress(super(Compressed, self).toString(inObject), 9)
 
     def fromString(self, inString):
         """
-        Convert (decompress) from the wire to Python.
+        Convert (decompress) from the string-representation on the wire to Python.
         """
-        return zlib.decompress(inString)
+        return super(Compressed, self).fromString(zlib.decompress(inString))
 
 
 class MsgLauncher2Portal(amp.Command):
@@ -261,16 +268,29 @@ class AMPMultiConnectionProtocol(amp.AMP):
         self.send_reset_time = time.time()
         self.send_mode = True
         self.send_task = None
+        self.multibatches = 0
 
     def dataReceived(self, data):
         """
         Handle non-AMP messages, such as HTTP communication.
         """
-        if data[0] != b'\0':
+        if data[0] == NUL:
+            # an AMP communication
+            if data[-2:] != NULNUL:
+                # an incomplete AMP box means more batches are forthcoming.
+                self.multibatches += 1
+            super(AMPMultiConnectionProtocol, self).dataReceived(data)
+        elif self.multibatches:
+            # invalid AMP, but we have a pending multi-batch that is not yet complete
+            if data[-2:] == NULNUL:
+                # end of existing multibatch
+                self.multibatches = max(0, self.multibatches - 1)
+            super(AMPMultiConnectionProtocol, self).dataReceived(data)
+        else:
+            # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
             self.transport.loseConnection()
-        else:
-            super(AMPMultiConnectionProtocol, self).dataReceived(data)
+            print("HTML received: %s" % data)
 
     def makeConnection(self, transport):
         """
