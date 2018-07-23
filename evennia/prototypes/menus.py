@@ -117,8 +117,6 @@ def _set_property(caller, raw_string, **kwargs):
     processor = kwargs.get("processor", None)
     next_node = kwargs.get("next_node", "node_index")
 
-    propname_low = prop.strip().lower()
-
     if callable(processor):
         try:
             value = processor(raw_string)
@@ -134,13 +132,6 @@ def _set_property(caller, raw_string, **kwargs):
         return next_node
 
     prototype = _set_prototype_value(caller, prop, value)
-
-    # typeclass and prototype_parent can't co-exist
-    if propname_low == "typeclass":
-        prototype.pop("prototype_parent", None)
-    if propname_low == "prototype_parent":
-        prototype.pop("typeclass", None)
-
     caller.ndb._menutree.olc_prototype = prototype
 
     try:
@@ -253,7 +244,6 @@ def node_index(caller):
        [|wL|n]ook to re-show a menu node. [|wQ|n]uit will always exit the menu and [|wH|n]elp will
        show context-sensitive help.
        """
-
     helptxt = """
        |c- prototypes |n
 
@@ -323,7 +313,7 @@ def node_validate_prototype(caller, raw_string, **kwargs):
     _, text = _validate_prototype(prototype)
 
     helptext = """
-    The validator checks if the prototype's various values are on the expected form. It also test
+    The validator checks if the prototype's various values are on the expected form. It also tests
     any $protfuncs.
 
     """
@@ -364,16 +354,15 @@ def _check_prototype_key(caller, key):
 def node_prototype_key(caller):
     prototype = _get_menu_prototype(caller)
     text = """
-        The |cPrototype-Key|n uniquely identifies the prototype. It must be specified. It is used to
+        The |cPrototype-Key|n uniquely identifies the prototype and is |wmandatory|n. It is used to
         find and use the prototype to spawn new entities. It is not case sensitive.
 
         {current}"""
-
     helptext = """
-        The prototype-key is not itself used to spawn the new object, but is only used for managing,
-        storing and loading the prototype. It must be globally unique, so existing keys will be
-        checked before a new key is accepted. If an existing key is picked, the existing prototype
-        will be loaded.
+        The prototype-key is not itself used when spawnng the new object, but is only used for
+        managing, storing and loading the prototype. It must be globally unique, so existing keys
+        will be checked before a new key is accepted. If an existing key is picked, the existing
+        prototype will be loaded.
         """
 
     old_key = prototype.get('prototype_key', None)
@@ -423,18 +412,36 @@ def node_prototype_parent(caller):
 
     prot_parent_key = prototype.get('prototype')
 
-    text = ["Set the prototype's |yParent Prototype|n. If this is unset, Typeclass will be used."]
+    text = """
+        The |cPrototype Parent|n allows you to |winherit|n prototype values from another named
+        prototype (given as that prototype's |wprototype_key|).  If not changing these values in the
+        current prototype, the parent's value will be used. Pick the available prototypes below.
+
+        Note that somewhere in the prototype's parentage, a |ctypeclass|n must be specified. If no
+        parent is given, this prototype must define the typeclass (next menu node).
+
+        {current}
+        """
+    helptext = """
+        Prototypes can inherit from one another. Changes in the child replace any values set in a
+        parent. The |wtypeclass|n key must exist |wsomewhere|n in the parent chain for the
+        prototype to be valid.
+        """
+
     if prot_parent_key:
         prot_parent = protlib.search_prototype(prot_parent_key)
         if prot_parent:
-            text.append(
-                "Current parent prototype is {}:\n{}".format(protlib.prototype_to_str(prot_parent)))
+            text.format(
+                current="Current parent prototype is {}:\n{}".format(
+                    protlib.prototype_to_str(prot_parent)))
         else:
-            text.append("Current parent prototype |r{prototype}|n "
+            text.format(
+                current="Current parent prototype |r{prototype}|n "
                         "does not appear to exist.".format(prot_parent_key))
     else:
-        text.append("Parent prototype is not set")
-    text = "\n\n".join(text)
+        text.format(current="Parent prototype is not set")
+    text = (text, helptext)
+
     options = _wizard_options("prototype_parent", "prototype_key", "typeclass", color="|W")
     options.append({"key": "_default",
                     "goto": _prototype_parent_examine})
@@ -477,7 +484,7 @@ def _typeclass_examine(caller, typeclass_path):
 def _typeclass_select(caller, typeclass):
     """Select typeclass from list and add it to prototype. Return next node to go to."""
     ret = _set_property(caller, typeclass, prop='typeclass', processor=str, next_node="node_key")
-    caller.msg("Selected typeclass |y{}|n. Removed any set prototype parent.".format(typeclass))
+    caller.msg("Selected typeclass |y{}|n.".format(typeclass))
     return ret
 
 
@@ -486,13 +493,32 @@ def node_typeclass(caller):
     prototype = _get_menu_prototype(caller)
     typeclass = prototype.get("typeclass")
 
-    text = ["Set the typeclass's parent |yTypeclass|n."]
+    text = """
+        The |cTypeclass|n defines what 'type' of object this is - the actual working code to use.
+
+        All spawned objects must have a typeclass. If not given here, the typeclass must be set in
+        one of the prototype's |cparents|n.
+
+        {current}
+    """
+    helptext = """
+        A |nTypeclass|n is specified by the actual python-path to the class definition in the
+        Evennia code structure.
+
+        Which |cAttributes|n, |cLocks|n and other properties have special
+        effects or expects certain values depend greatly on the code in play.
+    """
+
     if typeclass:
-        text.append("Current typeclass is |y{typeclass}|n.".format(typeclass=typeclass))
+        text.format(
+            current="Current typeclass is |y{typeclass}|n.".format(typeclass=typeclass))
     else:
-        text.append("Using default typeclass {typeclass}.".format(
-            typeclass=settings.BASE_OBJECT_TYPECLASS))
-    text = "\n\n".join(text)
+        text.format(
+            current="Using default typeclass {typeclass}.".format(
+                typeclass=settings.BASE_OBJECT_TYPECLASS))
+
+    text = (text, helptext)
+
     options = _wizard_options("typeclass", "prototype_parent", "key", color="|W")
     options.append({"key": "_default",
                     "goto": _typeclass_examine})
@@ -506,12 +532,27 @@ def node_key(caller):
     prototype = _get_menu_prototype(caller)
     key = prototype.get("key")
 
-    text = ["Set the prototype's name (|yKey|n.) This will retain case sensitivity."]
+    text = """
+        The |cKey|n is the given name of the object to spawn. This will retain the given case.
+
+        {current}
+    """
+    helptext = """
+        The key should often not be identical for every spawned object. Using a randomising
+        $protfunc can be used, for example |c$choice(Alan, Tom, John)|n will give one of the three
+        names every time an object of this prototype is spawned.
+
+        |c$protfuncs|n
+        {pfuncs}
+    """.format(pfuncs=_format_protfuncs())
+
     if key:
-        text.append("Current key value is '|y{key}|n'.".format(key=key))
+        text.format(current="Current key is '{key}'.".format(key=key))
     else:
-        text.append("Key is currently unset.")
-    text = "\n\n".join(text)
+        text.format(current="The key is currently unset.")
+
+    text = (text, helptext)
+
     options = _wizard_options("key", "typeclass", "aliases")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -528,13 +569,29 @@ def node_aliases(caller):
     prototype = _get_menu_prototype(caller)
     aliases = prototype.get("aliases")
 
-    text = ["Set the prototype's |yAliases|n. Separate multiple aliases with commas. "
-            "they'll retain case sensitivity."]
+    text = """
+        |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not
+        case sensitive.
+
+        Add multiple aliases separating with commas.
+
+        {current}
+    """
+    helptext = """
+        Aliases are fixed alternative identifiers and are stored with the new object.
+
+        |c$protfuncs|n
+
+        {pfuncs}
+    """.format(pfuncs=_format_protfuncs())
+
     if aliases:
-        text.append("Current aliases are '|y{aliases}|n'.".format(aliases=aliases))
+        text.format(current="Current aliases are '|c{aliases}|n'.".format(aliases=aliases))
     else:
-        text.append("No aliases are set.")
-    text = "\n\n".join(text)
+        text.format(current="No aliases are set.")
+
+    text = (text, helptext)
+
     options = _wizard_options("aliases", "key", "attrs")
     options.append({"key": "_default",
                     "goto": (_set_property,
