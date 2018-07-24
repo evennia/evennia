@@ -82,6 +82,8 @@ class TestEvMenu(TestCase):
                 self.assertIsNotNone(
                     bool(node_text),
                     "node: {}: node-text is None, which was not expected.".format(nodename))
+                if isinstance(node_text, tuple):
+                    node_text, helptext = node_text
                 node_text = ansi.strip_ansi(node_text.strip())
                 self.assertTrue(
                     node_text.startswith(compare_text),
