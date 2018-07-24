@@ -663,6 +663,19 @@ def validate_lockstring(lockstring):
     return _LOCK_HANDLER.validate(lockstring)
 
 
+def get_all_lockfuncs():
+    """
+    Get a dict of available lock funcs.
+
+    Returns:
+        lockfuncs (dict): Mapping {lockfuncname:func}.
+
+    """
+    if not _LOCKFUNCS:
+        _cache_lockfuncs()
+    return _LOCKFUNCS
+
+
 def _test():
     # testing
 
