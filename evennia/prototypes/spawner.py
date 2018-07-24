@@ -150,15 +150,32 @@ def _get_prototype(dic, prot, protparents):
     for infinite recursion here.
 
     """
-    if "prototype" in dic:
+    if "prototype_parent" in dic:
         # move backwards through the inheritance
-        for prototype in make_iter(dic["prototype"]):
+        for prototype in make_iter(dic["prototype_parent"]):
             # Build the prot dictionary in reverse order, overloading
             new_prot = _get_prototype(protparents.get(prototype.lower(), {}), prot, protparents)
             prot.update(new_prot)
     prot.update(dic)
-    prot.pop("prototype", None)  # we don't need this anymore
+    prot.pop("prototype_parent", None)  # we don't need this anymore
     return prot
+
+
+def flatten_prototype(prototype):
+    """
+    Produce a 'flattened' prototype, where all prototype parents in the inheritance tree have been
+    merged into a final prototype.
+
+    Args:
+        prototype (dict): Prototype to flatten. Its `prototype_parent` field will be parsed.
+
+    Returns:
+        flattened (dict): The final, flattened prototype.
+
+    """
+    protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
+    protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
+    return _get_prototype(prototype, {}, protparents)
 
 
 # obj-related prototype functions

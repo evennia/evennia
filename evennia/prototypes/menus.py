@@ -281,7 +281,7 @@ def node_index(caller):
         {"desc": "|WPrototype-Key|n|n{}".format(
             _format_option_value("Key", "prototype_key" not in prototype, prototype, None)),
          "goto": "node_prototype_key"})
-    for key in ('Typeclass', 'Prototype-parent', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
+    for key in ('Prototype-parent', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
         required = False
         cropper = None
@@ -412,8 +412,9 @@ def _prototype_parent_examine(caller, prototype_name):
 
 def _prototype_parent_select(caller, prototype):
     ret = _set_property(caller, "",
-                        prop="prototype_parent", processor=str, next_node="node_key")
-    caller.msg("Selected prototype |y{}|n. Removed any set typeclass parent.".format(prototype))
+                        prop="prototype_parent", processor=str, next_node="node_typeclass")
+    caller.msg("Selected prototype |y{}|n.".format(prototype))
+
     return ret
 
 
@@ -442,15 +443,15 @@ def node_prototype_parent(caller):
     if prot_parent_key:
         prot_parent = protlib.search_prototype(prot_parent_key)
         if prot_parent:
-            text.format(
+            text = text.format(
                 current="Current parent prototype is {}:\n{}".format(
                     protlib.prototype_to_str(prot_parent)))
         else:
-            text.format(
+            text = text.format(
                 current="Current parent prototype |r{prototype}|n "
                         "does not appear to exist.".format(prot_parent_key))
     else:
-        text.format(current="Parent prototype is not set")
+        text = text.format(current="Parent prototype is not set")
     text = (text, helptext)
 
     options = _wizard_options("prototype_parent", "prototype_key", "typeclass", color="|W")
@@ -521,10 +522,10 @@ def node_typeclass(caller):
     """
 
     if typeclass:
-        text.format(
+        text = text.format(
             current="Current typeclass is |y{typeclass}|n.".format(typeclass=typeclass))
     else:
-        text.format(
+        text = text.format(
             current="Using default typeclass {typeclass}.".format(
                 typeclass=settings.BASE_OBJECT_TYPECLASS))
 
@@ -558,9 +559,9 @@ def node_key(caller):
     """.format(pfuncs=_format_protfuncs())
 
     if key:
-        text.format(current="Current key is '{key}'.".format(key=key))
+        text = text.format(current="Current key is '{key}'.".format(key=key))
     else:
-        text.format(current="The key is currently unset.")
+        text = text.format(current="The key is currently unset.")
 
     text = (text, helptext)
 
@@ -597,9 +598,9 @@ def node_aliases(caller):
     """.format(pfuncs=_format_protfuncs())
 
     if aliases:
-        text.format(current="Current aliases are '|c{aliases}|n'.".format(aliases=aliases))
+        text = text.format(current="Current aliases are '|c{aliases}|n'.".format(aliases=aliases))
     else:
-        text.format(current="No aliases are set.")
+        text = text.format(current="No aliases are set.")
 
     text = (text, helptext)
 
@@ -729,10 +730,10 @@ def node_attrs(caller):
     """.format(pfuncs=_format_protfuncs())
 
     if attrs:
-        text.format(current="Current attrs {attrs}.".format(
+        text = text.format(current="Current attrs {attrs}.".format(
             attrs=attrs))
     else:
-        text.format(current="No attrs are set.")
+        text = text.format(current="No attrs are set.")
 
     text = (text, helptext)
 
@@ -884,9 +885,9 @@ def node_locks(caller):
     """.format(lfuncs=_format_lockfuncs())
 
     if locks:
-        text.format(current="Current locks are '|y{locks}|n'.".format(locks=locks))
+        text = text.format(current="Current locks are '|y{locks}|n'.".format(locks=locks))
     else:
-        text.format(current="No locks are set.")
+        text = text.format(current="No locks are set.")
 
     text = (text, helptext)
 
@@ -925,10 +926,10 @@ def node_permissions(caller):
     """.format(settings.PERMISSION_HIERARCHY)
 
     if permissions:
-        text.format(current="Current permissions are {permissions}.".format(
+        text = text.format(current="Current permissions are {permissions}.".format(
             permissions=permissions))
     else:
-        text.format(current="No permissions are set.")
+        text = text.format(current="No permissions are set.")
 
     text = (text, helptext)
 
@@ -964,9 +965,9 @@ def node_location(caller):
     """.format(pfuncs=_format_protfuncs)
 
     if location:
-        text.format(current="Current location is {location}.".format(location=location))
+        text = text.format(current="Current location is {location}.".format(location=location))
     else:
-        text.format(current="Default location is {}'s inventory.".format(caller))
+        text = text.format(current="Default location is {}'s inventory.".format(caller))
 
     text = (text, helptext)
 
@@ -1001,9 +1002,9 @@ def node_home(caller):
     """
 
     if home:
-        text.format(current="Current home location is {home}.".format(home=home))
+        text = text.format(current="Current home location is {home}.".format(home=home))
     else:
-        text.format(
+        text = text.format(
             current="Default home location ({home}) used.".format(home=settings.DEFAULT_HOME))
 
     text = (text, helptext)
@@ -1036,9 +1037,9 @@ def node_destination(caller):
     """
 
     if dest:
-        text.format(current="Current destination is {dest}.".format(dest=dest))
+        text = text.format(current="Current destination is {dest}.".format(dest=dest))
     else:
-        text.format("No destination is set (default).")
+        text = text.format("No destination is set (default).")
 
     text = (text, helptext)
 
@@ -1070,9 +1071,9 @@ def node_prototype_desc(caller):
     """
 
     if desc:
-        text.format(current="The current meta desc is:\n\"|w{desc}|n\"".format(desc=desc))
+        text = text.format(current="The current meta desc is:\n\"|w{desc}|n\"".format(desc=desc))
     else:
-        text.format(current="Prototype-Description is currently unset.")
+        text = text.format(current="Prototype-Description is currently unset.")
 
     text = (text, helptext)
 
@@ -1094,6 +1095,8 @@ def node_prototype_tags(caller):
     text = """
         |cPrototype-Tags|n can be used to classify and find prototypes in listings Tag names are not
         case-sensitive and can have not have a custom category. Separate multiple tags by commas.
+
+        {current}
         """
     helptext = """
         Using prototype-tags is a good way to organize and group large numbers of prototypes by
@@ -1104,9 +1107,9 @@ def node_prototype_tags(caller):
     tags = prototype.get('prototype_tags', [])
 
     if tags:
-        text.format(current="The current tags are:\n|w{tags}|n".format(tags=tags))
+        text = text.format(current="The current tags are:\n|w{tags}|n".format(tags=tags))
     else:
-        text.format(current="No tags are currently set.")
+        text = text.format(current="No tags are currently set.")
 
     text = (text, helptext)
 
@@ -1147,9 +1150,9 @@ def node_prototype_locks(caller):
         """
 
     if locks:
-        text.format(current="Current lock is |w'{lockstring}'|n".format(lockstring=locks))
+        text = text.format(current="Current lock is |w'{lockstring}'|n".format(lockstring=locks))
     else:
-        text.format(
+        text = text.format(
             current="Default lock set: |w'spawn:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
 
     text = (text, helptext)
