@@ -11,6 +11,7 @@ from evennia.utils.evmenu import EvMenu, list_node
 from evennia.utils import evmore
 from evennia.utils.ansi import strip_ansi
 from evennia.utils import utils
+from evennia.locks.lockhandler import get_all_lockfuncs
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes import spawner
 
@@ -217,6 +218,16 @@ def _format_protfuncs():
             name=protfunc_name,
             docs=utils.justify(protfunc.__doc__.strip(), align='l', indent=10).strip()))
     return "\n       ".join(out)
+
+
+def _format_lockfuncs():
+    out = []
+    sorted_funcs = [(key, func) for key, func in
+                    sorted(get_all_lockfuncs(), key=lambda tup: tup[0])]
+    for lockfunc_name, lockfunc in sorted_funcs:
+        out.append("- |c${name}|n - |W{docs}".format(
+            name=lockfunc_name,
+            docs=utils.justify(lockfunc.__doc__.strip(), align='l', indent=10).strip()))
 
 
 # Menu nodes ------------------------------
@@ -694,17 +705,37 @@ def node_attrs(caller):
     prot = _get_menu_prototype(caller)
     attrs = prot.get("attrs")
 
-    text = ["Set the prototype's |yAttributes|n. Enter attributes on one of these forms:\n"
-            " attrname=value\n attrname;category=value\n attrname;category;lockstring=value\n"
-            "To give an attribute without a category but with a lockstring, leave that spot empty "
-            "(attrname;;lockstring=value)."
-            "Separate multiple attrs with commas. Use quotes to escape inputs with commas and "
-            "semi-colon."]
+    text = """
+        |cAttributes|n are custom properties of the object. Enter attributes on one of these forms:
+
+        attrname=value
+        attrname;category=value
+        attrname;category;lockstring=value
+
+        To give an attribute without a category but with a lockstring, leave that spot empty
+        (attrname;;lockstring=value). Attribute values can have embedded $protfuncs.
+
+        {current}
+    """
+    helptext = """
+        Most commonly, Attributes don't need any categories or locks. If using locks, the lock-types
+        'attredit', 'attrread' are used to limiting editing and viewing of the Attribute. Putting
+        the lock-type `attrcreate` in the |clocks|n prototype key can be used to restrict builders
+        to add new Attributes.
+
+        |c$protfuncs
+
+        {pfuncs}
+    """.format(pfuncs=_format_protfuncs())
+
     if attrs:
-        text.append("Current attrs are '|y{attrs}|n'.".format(attrs=attrs))
+        text.format(current="Current attrs {attrs}.".format(
+            attrs=attrs))
     else:
-        text.append("No attrs are set.")
-    text = "\n\n".join(text)
+        text.format(current="No attrs are set.")
+
+    text = (text, helptext)
+
     options = _wizard_options("attrs", "aliases", "tags")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -797,9 +828,24 @@ def _edit_tag(caller, old_tag, new_tag, **kwargs):
 
 @list_node(_caller_tags)
 def node_tags(caller):
-    text = ("Set the prototype's |yTags|n. Enter tags on one of the following forms:\n"
-            " tag\n tag;category\n tag;category;data\n"
-            "Note that 'data' is not commonly used.")
+    text = """
+        |cTags|n are used to group objects so they can quickly be found later. Enter tags on one of
+        the following forms:
+            tagname
+            tagname;category
+            tagname;category;data
+    """
+    helptext = """
+        Tags are shared between all objects with that tag. So the 'data' field (which is not
+        commonly used) can only hold eventual info about the Tag itself, not about the individual
+        object on which it sits.
+
+        All objects created with this prototype will automatically get assigned a tag named the same
+        as the |cprototype_key|n and with a category "{tag_category}". This allows the spawner to
+        optionally update previously spawned objects when their prototype changes.
+    """.format(protlib._PROTOTYPE_TAG_CATEGORY)
+
+    text = (text, helptext)
     options = _wizard_options("tags", "attrs", "locks")
     return text, options
 
@@ -811,13 +857,39 @@ def node_locks(caller):
     prototype = _get_menu_prototype(caller)
     locks = prototype.get("locks")
 
-    text = ["Set the prototype's |yLock string|n. Separate multiple locks with semi-colons. "
-            "Will retain case sensitivity."]
+    text = """
+        The |cLock string|n defines limitations for accessing various properties of the object once
+        it's spawned. The string should be on one of the following forms:
+
+            locktype:[NOT] lockfunc(args)
+            locktype: [NOT] lockfunc(args) [AND|OR|NOT] lockfunc(args) [AND|OR|NOT] ...
+
+        Separate multiple lockstrings by semicolons (;).
+
+        {current}
+        """
+    helptext = """
+        Here is an example of a lock string constisting of two locks:
+
+            edit:false();call:tag(Foo) OR perm(Builder)
+
+        Above locks limit two things, 'edit' and 'call'. Which lock types are actually checked
+        depend on the typeclass of the object being spawned. Here 'edit' is never allowed by anyone
+        while 'call' is allowed to all accessors with a |ctag|n 'Foo' OR which has the
+        |cPermission|n 'Builder'.
+
+        |c$lockfuncs|n
+
+        {lfuncs}
+    """.format(lfuncs=_format_lockfuncs())
+
     if locks:
-        text.append("Current locks are '|y{locks}|n'.".format(locks=locks))
+        text.format(current="Current locks are '|y{locks}|n'.".format(locks=locks))
     else:
-        text.append("No locks are set.")
-    text = "\n\n".join(text)
+        text.format(current="No locks are set.")
+
+    text = (text, helptext)
+
     options = _wizard_options("locks", "tags", "permissions")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -834,13 +906,32 @@ def node_permissions(caller):
     prototype = _get_menu_prototype(caller)
     permissions = prototype.get("permissions")
 
-    text = ["Set the prototype's |yPermissions|n. Separate multiple permissions with commas. "
-            "Will retain case sensitivity."]
+    text = """
+        |cPermissions|n are simple strings used to grant access to this object. A permission is used
+        when a |clock|n is checked that contains the |wperm|n or |wpperm|n lock functions.
+
+        {current}
+    """
+    helptext = """
+        Any string can act as a permission as long as a lock is set to look for it. Depending on the
+        lock, having a permission could even be negative (i.e. the lock is only passed if you
+        |wdon't|n have the 'permission'). The most common permissions are the hierarchical
+        permissions:
+
+            {permissions}.
+
+        For example, a |clock|n string like "edit:perm(Builder)" will grant access to accessors
+        having the |cpermission|n "Builder" or higher.
+    """.format(settings.PERMISSION_HIERARCHY)
+
     if permissions:
-        text.append("Current permissions are '|y{permissions}|n'.".format(permissions=permissions))
+        text.format(current="Current permissions are {permissions}.".format(
+            permissions=permissions))
     else:
-        text.append("No permissions are set.")
-    text = "\n\n".join(text)
+        text.format(current="No permissions are set.")
+
+    text = (text, helptext)
+
     options = _wizard_options("permissions", "destination", "location")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -857,12 +948,28 @@ def node_location(caller):
     prototype = _get_menu_prototype(caller)
     location = prototype.get("location")
 
-    text = ["Set the prototype's |yLocation|n"]
+    text = """
+        The |cLocation|n of this object in the world. If not given, the object will spawn
+        in the inventory of |c{caller}|n instead.
+
+        {current}
+    """.format(caller=caller.key)
+    helptext = """
+        You get the most control by not specifying the location - you can then teleport the spawned
+        objects as needed later. Setting the location may be useful for quickly populating a given
+        location. One could also consider randomizing the location using a $protfunc.
+
+        |c$protfuncs|n
+        {pfuncs}
+    """.format(pfuncs=_format_protfuncs)
+
     if location:
-        text.append("Current location is |y{location}|n.".format(location=location))
+        text.format(current="Current location is {location}.".format(location=location))
     else:
-        text.append("Default location is {}'s inventory.".format(caller))
-    text = "\n\n".join(text)
+        text.format(current="Default location is {}'s inventory.".format(caller))
+
+    text = (text, helptext)
+
     options = _wizard_options("location", "permissions", "home")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -879,12 +986,28 @@ def node_home(caller):
     prototype = _get_menu_prototype(caller)
     home = prototype.get("home")
 
-    text = ["Set the prototype's |yHome location|n"]
+    text = """
+        The |cHome|n location of an object is often only used as a backup - this is where the object
+        will be moved to if its location is deleted. The home location can also be used as an actual
+        home for characters to quickly move back to. If unset, the global home default will be used.
+
+        {current}
+        """
+    helptext = """
+        The location can be specified as as #dbref but can also be explicitly searched for using
+        $obj(name).
+
+        The home location is often not used except as a backup. It should never be unset.
+    """
+
     if home:
-        text.append("Current home location is |y{home}|n.".format(home=home))
+        text.format(current="Current home location is {home}.".format(home=home))
     else:
-        text.append("Default home location (|y{home}|n) used.".format(home=settings.DEFAULT_HOME))
-    text = "\n\n".join(text)
+        text.format(
+            current="Default home location ({home}) used.".format(home=settings.DEFAULT_HOME))
+
+    text = (text, helptext)
+
     options = _wizard_options("home", "aliases", "destination")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -901,12 +1024,24 @@ def node_destination(caller):
     prototype = _get_menu_prototype(caller)
     dest = prototype.get("dest")
 
-    text = ["Set the prototype's |yDestination|n. This is usually only used for Exits."]
+    text = """
+        The object's |cDestination|n is usually only set for Exit-like objects and designates where
+        the exit 'leads to'. It's usually unset for all other types of objects.
+
+        {current}
+    """
+    helptext = """
+        The destination can be given as a #dbref but can also be explicitly searched for using
+        $obj(name).
+    """
+
     if dest:
-        text.append("Current destination is |y{dest}|n.".format(dest=dest))
+        text.format(current="Current destination is {dest}.".format(dest=dest))
     else:
-        text.append("No destination is set (default).")
-    text = "\n\n".join(text)
+        text.format("No destination is set (default).")
+
+    text = (text, helptext)
+
     options = _wizard_options("destination", "home", "prototype_desc")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -922,15 +1057,25 @@ def node_destination(caller):
 def node_prototype_desc(caller):
 
     prototype = _get_menu_prototype(caller)
-    text = ["The |wPrototype-Description|n briefly describes the prototype for "
-            "viewing in listings."]
     desc = prototype.get("prototype_desc", None)
 
+    text = """
+        The |cPrototype-Description|n optionally briefly describes the prototype when it's viewed in
+        listings.
+
+        {current}
+        """
+    helptext = """
+        Giving a brief description helps you and others to locate the prototype for use later.
+    """
+
     if desc:
-        text.append("The current meta desc is:\n\"|w{desc}|n\"".format(desc=desc))
+        text.format(current="The current meta desc is:\n\"|w{desc}|n\"".format(desc=desc))
     else:
-        text.append("Description is currently unset.")
-    text = "\n\n".join(text)
+        text.format(current="Prototype-Description is currently unset.")
+
+    text = (text, helptext)
+
     options = _wizard_options("prototype_desc", "prototype_key", "prototype_tags")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -946,16 +1091,25 @@ def node_prototype_desc(caller):
 
 def node_prototype_tags(caller):
     prototype = _get_menu_prototype(caller)
-    text = ["|wPrototype-Tags|n can be used to classify and find prototypes. "
-            "Tags are case-insensitive. "
-            "Separate multiple by tags by commas."]
+    text = """
+        |cPrototype-Tags|n can be used to classify and find prototypes in listings Tag names are not
+        case-sensitive and can have not have a custom category. Separate multiple tags by commas.
+        """
+    helptext = """
+        Using prototype-tags is a good way to organize and group large numbers of prototypes by
+        genre, type etc. Under the hood, prototypes' tags will all be stored with the category
+        '{tagmetacategory}'.
+    """.format(tagmetacategory=protlib._PROTOTYPE_TAG_META_CATEGORY)
+
     tags = prototype.get('prototype_tags', [])
 
     if tags:
-        text.append("The current tags are:\n|w{tags}|n".format(tags=tags))
+        text.format(current="The current tags are:\n|w{tags}|n".format(tags=tags))
     else:
-        text.append("No tags are currently set.")
-    text = "\n\n".join(text)
+        text.format(current="No tags are currently set.")
+
+    text = (text, helptext)
+
     options = _wizard_options("prototype_tags", "prototype_desc", "prototype_locks")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -971,16 +1125,35 @@ def node_prototype_tags(caller):
 
 def node_prototype_locks(caller):
     prototype = _get_menu_prototype(caller)
-    text = ["Set |wPrototype-Locks|n on the prototype. There are two valid lock types: "
-            "'edit' (who can edit the prototype) and 'spawn' (who can spawn new objects with this "
-            "prototype)\n(If you are unsure, leave as default.)"]
     locks = prototype.get('prototype_locks', '')
+
+    text = """
+        |cPrototype-Locks|n are used to limit access to this prototype when someone else is trying
+        to access it. By default any prototype can be edited only by the creator and by Admins while
+        they can be used by anyone with access to the spawn command. There are two valid lock types
+        the prototype access tools look for:
+
+            - 'edit': Who can edit the prototype.
+            - 'spawn': Who can spawn new objects with this prototype.
+
+        If unsure, leave as default.
+
+        {current}
+    """
+    helptext = """
+        Prototype locks can be used when there are different tiers of builders or for developers to
+        produce 'base prototypes' only meant for builders to inherit and expand on rather than
+        change.
+        """
+
     if locks:
-        text.append("Current lock is |w'{lockstring}'|n".format(lockstring=locks))
+        text.format(current="Current lock is |w'{lockstring}'|n".format(lockstring=locks))
     else:
-        text.append("Lock unset - if not changed the default lockstring will be set as\n"
-                    "   |w'spawn:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
-    text = "\n\n".join(text)
+        text.format(
+            current="Default lock set: |w'spawn:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
+
+    text = (text, helptext)
+
     options = _wizard_options("prototype_locks", "prototype_tags", "index")
     options.append({"key": "_default",
                     "goto": (_set_property,
@@ -1039,7 +1212,7 @@ def node_update_objects(caller, **kwargs):
         obj = choice(update_objects)
         diff, obj_prototype = spawner.prototype_diff_from_object(prototype, obj)
 
-    text = ["Suggested changes to {} objects".format(len(update_objects)),
+    text = ["Suggested changes to {} objects. ".format(len(update_objects)),
             "Showing random example obj to change: {name} (#{dbref}))\n".format(obj.key, obj.dbref)]
     options = []
     io = 0
@@ -1072,6 +1245,17 @@ def node_update_objects(caller, **kwargs):
                                                "objects": update_objects})},
              {"key": "|wb|rack ({})".format(back_node[5:], 'b'),
               "goto": back_node}])
+
+        helptext = """
+            Be careful with this operation! The upgrade mechanism will try to automatically estimate
+            what changes need to be applied. But the estimate is |wonly based on the analysis of one
+            randomly selected object|n among all objects spawned by this prototype. If that object
+            happens to be unusual in some way the estimate will be off and may lead to unexpected
+            results for other objects. Always test your objects carefully after an upgrade and
+            consider being conservative (switch to KEEP) or even do the update manually if you are
+            unsure that the results will be acceptable.  """
+
+        text = (text, helptext)
 
         return text, options
 
@@ -1144,7 +1328,17 @@ def node_prototype_save(caller, **kwargs):
          "goto": ("node_prototype_save",
                   {"accept": True, "prototype": prototype})})
 
-    return "\n".join(text),  options
+    helptext = """
+        Saving the prototype makes it available for use later. It can also be used to inherit from,
+        by name.  Depending on |cprototype-locks|n it also makes the prototype usable and/or
+        editable by others. Consider setting good |cPrototype-tags|n and to give a useful, brief
+        |cPrototype-desc|n to make the prototype easy to find later.
+
+    """
+
+    text = (text, helptext)
+
+    return text,  options
 
 
 # spawning node
@@ -1212,6 +1406,16 @@ def node_prototype_spawn(caller, **kwargs):
                      dict(prototype=prototype, opjects=spawned_objects,
                           back_node="node_prototype_spawn"))})
     options.extend(_wizard_options("prototype_spawn", "prototype_save", "index"))
+
+    helptext = """
+        Spawning is the act of instantiating a prototype into an actual object. As a new object is
+        spawned, every $protfunc in the prototype is called anew. Since this is a common thing to
+        do, you may also temporarily change the |clocation|n of this prototype to bypass whatever
+        value is set in the prototype.
+
+    """
+    text = (text, helptext)
+
     return text, options
 
 
@@ -1232,11 +1436,22 @@ def _prototype_load_select(caller, prototype_key):
 
 @list_node(_all_prototype_parents, _prototype_load_select)
 def node_prototype_load(caller, **kwargs):
-    text = ["Select a prototype to load. This will replace any currently edited prototype."]
+    """Load prototype"""
+
+    text = """
+        Select a prototype to load. This will replace any prototype currently being edited!
+    """
+    helptext = """
+        Loading a prototype will load it and return you to the main index. It can be a good idea to
+        examine the prototype before loading it.
+    """
+
+    text = (text, helptext)
+
     options = _wizard_options("prototype_load", "prototype_save", "index")
     options.append({"key": "_default",
                     "goto": _prototype_parent_examine})
-    return "\n".join(text), options
+    return text, options
 
 
 # EvMenu definition, formatting and access functions
