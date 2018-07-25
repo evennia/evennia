@@ -42,6 +42,17 @@ def _get_menu_prototype(caller):
     return prototype
 
 
+def _get_flat_menu_prototype(caller, refresh=False):
+    """Return prototype where parent values are included"""
+    flat_prototype = None
+    if not refresh and hasattr(caller.ndb._menutree, "olc_flat_prototype"):
+        flat_prototype = caller.ndb._menutree.olc_flat_prototype
+    if not flat_prototype:
+        prot = _get_menu_prototype(caller)
+        caller.ndb._menutree.olc_flat_prototype = flat_prototype = spawner.flatten_prototype(prot)
+    return flat_prototype
+
+
 def _set_menu_prototype(caller, prototype):
     """Set the prototype with existing one"""
     caller.ndb._menutree.olc_prototype = prototype
@@ -230,6 +241,19 @@ def _format_lockfuncs():
             docs=utils.justify(lockfunc.__doc__.strip(), align='l', indent=10).strip()))
 
 
+def _get_current_value(caller, keyname, formatter=str):
+    "Return current value, marking if value comes from parent or set in this prototype"
+    prot = _get_menu_prototype(caller)
+    if keyname in prot:
+        # value in current prot
+        return "Current {}: {}".format(keyname, formatter(prot[keyname]))
+    flat_prot = _get_flat_menu_prototype(caller)
+    if keyname in flat_prot:
+        # value in flattened prot
+        return "Current {} (|binherited|n): {}".format(keyname, formatter(flat_prot[keyname]))
+    return "[No {} set]".format(keyname)
+
+
 # Menu nodes ------------------------------
 
 
@@ -363,24 +387,19 @@ def _check_prototype_key(caller, key):
 
 
 def node_prototype_key(caller):
-    prototype = _get_menu_prototype(caller)
+
     text = """
         The |cPrototype-Key|n uniquely identifies the prototype and is |wmandatory|n. It is used to
         find and use the prototype to spawn new entities. It is not case sensitive.
 
-        {current}"""
+        {current}""".format(current=_get_current_value(caller, "prototype_key"))
+
     helptext = """
         The prototype-key is not itself used when spawnng the new object, but is only used for
         managing, storing and loading the prototype. It must be globally unique, so existing keys
         will be checked before a new key is accepted. If an existing key is picked, the existing
         prototype will be loaded.
         """
-
-    old_key = prototype.get('prototype_key', None)
-    if old_key:
-        text = text.format(current="Currently set to '|w{key}|n'".format(key=old_key))
-    else:
-        text = text.format(current="Currently |runset|n (required).")
 
     options = _wizard_options("prototype_key", "index", "prototype_parent")
     options.append({"key": "_default",
@@ -502,9 +521,6 @@ def _typeclass_select(caller, typeclass):
 
 @list_node(_all_typeclasses, _typeclass_select)
 def node_typeclass(caller):
-    prototype = _get_menu_prototype(caller)
-    typeclass = prototype.get("typeclass")
-
     text = """
         The |cTypeclass|n defines what 'type' of object this is - the actual working code to use.
 
@@ -512,7 +528,8 @@ def node_typeclass(caller):
         one of the prototype's |cparents|n.
 
         {current}
-    """
+    """.format(current=_get_current_value(caller, "typeclass"))
+
     helptext = """
         A |nTypeclass|n is specified by the actual python-path to the class definition in the
         Evennia code structure.
@@ -520,14 +537,6 @@ def node_typeclass(caller):
         Which |cAttributes|n, |cLocks|n and other properties have special
         effects or expects certain values depend greatly on the code in play.
     """
-
-    if typeclass:
-        text = text.format(
-            current="Current typeclass is |y{typeclass}|n.".format(typeclass=typeclass))
-    else:
-        text = text.format(
-            current="Using default typeclass {typeclass}.".format(
-                typeclass=settings.BASE_OBJECT_TYPECLASS))
 
     text = (text, helptext)
 
@@ -541,14 +550,12 @@ def node_typeclass(caller):
 
 
 def node_key(caller):
-    prototype = _get_menu_prototype(caller)
-    key = prototype.get("key")
-
     text = """
         The |cKey|n is the given name of the object to spawn. This will retain the given case.
 
         {current}
-    """
+    """.format(current=_get_current_value(caller, "key"))
+
     helptext = """
         The key should often not be identical for every spawned object. Using a randomising
         $protfunc can be used, for example |c$choice(Alan, Tom, John)|n will give one of the three
@@ -557,11 +564,6 @@ def node_key(caller):
         |c$protfuncs|n
         {pfuncs}
     """.format(pfuncs=_format_protfuncs())
-
-    if key:
-        text = text.format(current="Current key is '{key}'.".format(key=key))
-    else:
-        text = text.format(current="The key is currently unset.")
 
     text = (text, helptext)
 
@@ -578,8 +580,6 @@ def node_key(caller):
 
 
 def node_aliases(caller):
-    prototype = _get_menu_prototype(caller)
-    aliases = prototype.get("aliases")
 
     text = """
         |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not
@@ -588,7 +588,8 @@ def node_aliases(caller):
         Add multiple aliases separating with commas.
 
         {current}
-    """
+    """.format(current=_get_current_value(caller, "aliases"))
+
     helptext = """
         Aliases are fixed alternative identifiers and are stored with the new object.
 
@@ -596,11 +597,6 @@ def node_aliases(caller):
 
         {pfuncs}
     """.format(pfuncs=_format_protfuncs())
-
-    if aliases:
-        text = text.format(current="Current aliases are '|c{aliases}|n'.".format(aliases=aliases))
-    else:
-        text = text.format(current="No aliases are set.")
 
     text = (text, helptext)
 
@@ -703,8 +699,6 @@ def _examine_attr(caller, selection):
 
 @list_node(_caller_attrs)
 def node_attrs(caller):
-    prot = _get_menu_prototype(caller)
-    attrs = prot.get("attrs")
 
     text = """
         |cAttributes|n are custom properties of the object. Enter attributes on one of these forms:
@@ -717,7 +711,8 @@ def node_attrs(caller):
         (attrname;;lockstring=value). Attribute values can have embedded $protfuncs.
 
         {current}
-    """
+    """.format(current=_get_current_value(caller, "attrs"))
+
     helptext = """
         Most commonly, Attributes don't need any categories or locks. If using locks, the lock-types
         'attredit', 'attrread' are used to limiting editing and viewing of the Attribute. Putting
@@ -728,12 +723,6 @@ def node_attrs(caller):
 
         {pfuncs}
     """.format(pfuncs=_format_protfuncs())
-
-    if attrs:
-        text = text.format(current="Current attrs {attrs}.".format(
-            attrs=attrs))
-    else:
-        text = text.format(current="No attrs are set.")
 
     text = (text, helptext)
 
@@ -835,7 +824,10 @@ def node_tags(caller):
             tagname
             tagname;category
             tagname;category;data
-    """
+
+        {current}
+    """.format(current=_get_current_value(caller, 'tags'))
+
     helptext = """
         Tags are shared between all objects with that tag. So the 'data' field (which is not
         commonly used) can only hold eventual info about the Tag itself, not about the individual
@@ -855,8 +847,6 @@ def node_tags(caller):
 
 
 def node_locks(caller):
-    prototype = _get_menu_prototype(caller)
-    locks = prototype.get("locks")
 
     text = """
         The |cLock string|n defines limitations for accessing various properties of the object once
@@ -868,7 +858,8 @@ def node_locks(caller):
         Separate multiple lockstrings by semicolons (;).
 
         {current}
-        """
+        """.format(current=_get_current_value(caller, 'locks'))
+
     helptext = """
         Here is an example of a lock string constisting of two locks:
 
@@ -883,11 +874,6 @@ def node_locks(caller):
 
         {lfuncs}
     """.format(lfuncs=_format_lockfuncs())
-
-    if locks:
-        text = text.format(current="Current locks are '|y{locks}|n'.".format(locks=locks))
-    else:
-        text = text.format(current="No locks are set.")
 
     text = (text, helptext)
 
@@ -904,15 +890,14 @@ def node_locks(caller):
 
 
 def node_permissions(caller):
-    prototype = _get_menu_prototype(caller)
-    permissions = prototype.get("permissions")
 
     text = """
         |cPermissions|n are simple strings used to grant access to this object. A permission is used
         when a |clock|n is checked that contains the |wperm|n or |wpperm|n lock functions.
 
         {current}
-    """
+    """.format(current=_get_current_value(caller, "permissions"))
+
     helptext = """
         Any string can act as a permission as long as a lock is set to look for it. Depending on the
         lock, having a permission could even be negative (i.e. the lock is only passed if you
@@ -924,12 +909,6 @@ def node_permissions(caller):
         For example, a |clock|n string like "edit:perm(Builder)" will grant access to accessors
         having the |cpermission|n "Builder" or higher.
     """.format(settings.PERMISSION_HIERARCHY)
-
-    if permissions:
-        text = text.format(current="Current permissions are {permissions}.".format(
-            permissions=permissions))
-    else:
-        text = text.format(current="No permissions are set.")
 
     text = (text, helptext)
 
@@ -946,15 +925,14 @@ def node_permissions(caller):
 
 
 def node_location(caller):
-    prototype = _get_menu_prototype(caller)
-    location = prototype.get("location")
 
     text = """
         The |cLocation|n of this object in the world. If not given, the object will spawn
         in the inventory of |c{caller}|n instead.
 
         {current}
-    """.format(caller=caller.key)
+    """.format(caller=caller.key, current=_get_current_value(caller, "location"))
+
     helptext = """
         You get the most control by not specifying the location - you can then teleport the spawned
         objects as needed later. Setting the location may be useful for quickly populating a given
@@ -963,11 +941,6 @@ def node_location(caller):
         |c$protfuncs|n
         {pfuncs}
     """.format(pfuncs=_format_protfuncs)
-
-    if location:
-        text = text.format(current="Current location is {location}.".format(location=location))
-    else:
-        text = text.format(current="Default location is {}'s inventory.".format(caller))
 
     text = (text, helptext)
 
@@ -984,8 +957,6 @@ def node_location(caller):
 
 
 def node_home(caller):
-    prototype = _get_menu_prototype(caller)
-    home = prototype.get("home")
 
     text = """
         The |cHome|n location of an object is often only used as a backup - this is where the object
@@ -993,19 +964,13 @@ def node_home(caller):
         home for characters to quickly move back to. If unset, the global home default will be used.
 
         {current}
-        """
+        """.format(current=_get_current_value(caller, "home"))
     helptext = """
         The location can be specified as as #dbref but can also be explicitly searched for using
         $obj(name).
 
         The home location is often not used except as a backup. It should never be unset.
     """
-
-    if home:
-        text = text.format(current="Current home location is {home}.".format(home=home))
-    else:
-        text = text.format(
-            current="Default home location ({home}) used.".format(home=settings.DEFAULT_HOME))
 
     text = (text, helptext)
 
@@ -1022,24 +987,18 @@ def node_home(caller):
 
 
 def node_destination(caller):
-    prototype = _get_menu_prototype(caller)
-    dest = prototype.get("dest")
 
     text = """
         The object's |cDestination|n is usually only set for Exit-like objects and designates where
         the exit 'leads to'. It's usually unset for all other types of objects.
 
         {current}
-    """
+    """.format(current=_get_current_node(caller, "destination"))
+
     helptext = """
         The destination can be given as a #dbref but can also be explicitly searched for using
         $obj(name).
     """
-
-    if dest:
-        text = text.format(current="Current destination is {dest}.".format(dest=dest))
-    else:
-        text = text.format("No destination is set (default).")
 
     text = (text, helptext)
 
@@ -1057,23 +1016,16 @@ def node_destination(caller):
 
 def node_prototype_desc(caller):
 
-    prototype = _get_menu_prototype(caller)
-    desc = prototype.get("prototype_desc", None)
-
     text = """
         The |cPrototype-Description|n optionally briefly describes the prototype when it's viewed in
         listings.
 
         {current}
-        """
+        """.format(current=_get_current_value(caller, "prototype_desc"))
+
     helptext = """
         Giving a brief description helps you and others to locate the prototype for use later.
     """
-
-    if desc:
-        text = text.format(current="The current meta desc is:\n\"|w{desc}|n\"".format(desc=desc))
-    else:
-        text = text.format(current="Prototype-Description is currently unset.")
 
     text = (text, helptext)
 
@@ -1091,25 +1043,18 @@ def node_prototype_desc(caller):
 
 
 def node_prototype_tags(caller):
-    prototype = _get_menu_prototype(caller)
+
     text = """
         |cPrototype-Tags|n can be used to classify and find prototypes in listings Tag names are not
         case-sensitive and can have not have a custom category. Separate multiple tags by commas.
 
         {current}
-        """
+        """.format(current=_get_current_value(caller, "prototype_tags"))
     helptext = """
         Using prototype-tags is a good way to organize and group large numbers of prototypes by
         genre, type etc. Under the hood, prototypes' tags will all be stored with the category
         '{tagmetacategory}'.
     """.format(tagmetacategory=protlib._PROTOTYPE_TAG_META_CATEGORY)
-
-    tags = prototype.get('prototype_tags', [])
-
-    if tags:
-        text = text.format(current="The current tags are:\n|w{tags}|n".format(tags=tags))
-    else:
-        text = text.format(current="No tags are currently set.")
 
     text = (text, helptext)
 
@@ -1127,8 +1072,6 @@ def node_prototype_tags(caller):
 
 
 def node_prototype_locks(caller):
-    prototype = _get_menu_prototype(caller)
-    locks = prototype.get('prototype_locks', '')
 
     text = """
         |cPrototype-Locks|n are used to limit access to this prototype when someone else is trying
@@ -1142,18 +1085,13 @@ def node_prototype_locks(caller):
         If unsure, leave as default.
 
         {current}
-    """
+    """.format(current=_get_current_value(caller, "prototype_locks"))
+
     helptext = """
         Prototype locks can be used when there are different tiers of builders or for developers to
         produce 'base prototypes' only meant for builders to inherit and expand on rather than
         change.
         """
-
-    if locks:
-        text = text.format(current="Current lock is |w'{lockstring}'|n".format(lockstring=locks))
-    else:
-        text = text.format(
-            current="Default lock set: |w'spawn:all(); edit:id({dbref}) or perm(Admin)'|n".format(dbref=caller.id))
 
     text = (text, helptext)
 

@@ -173,9 +173,11 @@ def flatten_prototype(prototype):
         flattened (dict): The final, flattened prototype.
 
     """
-    protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
-    protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
-    return _get_prototype(prototype, {}, protparents)
+    if prototype:
+        protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
+        protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
+        return _get_prototype(prototype, {}, protparents)
+    return {}
 
 
 # obj-related prototype functions
