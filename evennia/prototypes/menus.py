@@ -42,14 +42,15 @@ def _get_menu_prototype(caller):
     return prototype
 
 
-def _get_flat_menu_prototype(caller, refresh=False):
+def _get_flat_menu_prototype(caller, refresh=False, validate=False):
     """Return prototype where parent values are included"""
     flat_prototype = None
     if not refresh and hasattr(caller.ndb._menutree, "olc_flat_prototype"):
         flat_prototype = caller.ndb._menutree.olc_flat_prototype
     if not flat_prototype:
         prot = _get_menu_prototype(caller)
-        caller.ndb._menutree.olc_flat_prototype = flat_prototype = spawner.flatten_prototype(prot)
+        caller.ndb._menutree.olc_flat_prototype = \
+            flat_prototype = spawner.flatten_prototype(prot, validate=validate)
     return flat_prototype
 
 
@@ -305,11 +306,11 @@ def node_index(caller):
         {"desc": "|WPrototype-Key|n|n{}".format(
             _format_option_value("Key", "prototype_key" not in prototype, prototype, None)),
          "goto": "node_prototype_key"})
-    for key in ('Prototype-parent', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
+    for key in ('Prototype_parent', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
         required = False
         cropper = None
-        if key in ("Prototype-parent", "Typeclass"):
+        if key in ("Prototype_parent", "Typeclass"):
             required = ("prototype_parent" not in prototype) and ("typeclass" not in prototype)
         if key == 'Typeclass':
             cropper = _path_cropper
@@ -429,11 +430,24 @@ def _prototype_parent_examine(caller, prototype_name):
         caller.msg("Prototype not registered.")
 
 
-def _prototype_parent_select(caller, prototype):
-    ret = _set_property(caller, "",
-                        prop="prototype_parent", processor=str, next_node="node_typeclass")
-    caller.msg("Selected prototype |y{}|n.".format(prototype))
+def _prototype_parent_select(caller, new_parent):
 
+    ret = None
+    prototype_parent = protlib.search_prototype(new_parent)
+    try:
+        if prototype_parent:
+            spawner.flatten_prototype(prototype_parent[0], validate=True)
+        else:
+            raise RuntimeError("Not found.")
+    except RuntimeError as err:
+        caller.msg("Selected prototype parent {} "
+                   "caused Error(s):\n|r{}|n".format(new_parent, err))
+    else:
+        ret = _set_property(caller, new_parent,
+                            prop="prototype_parent",
+                            processor=str, next_node="node_prototype_parent")
+        _get_flat_menu_prototype(caller, refresh=True)
+        caller.msg("Selected prototype parent |c{}|n.".format(new_parent))
     return ret
 
 
@@ -441,12 +455,12 @@ def _prototype_parent_select(caller, prototype):
 def node_prototype_parent(caller):
     prototype = _get_menu_prototype(caller)
 
-    prot_parent_key = prototype.get('prototype')
+    prot_parent_keys = prototype.get('prototype_parent')
 
     text = """
         The |cPrototype Parent|n allows you to |winherit|n prototype values from another named
-        prototype (given as that prototype's |wprototype_key|).  If not changing these values in the
-        current prototype, the parent's value will be used. Pick the available prototypes below.
+        prototype (given as that prototype's |wprototype_key|n).  If not changing these values in
+        the current prototype, the parent's value will be used. Pick the available prototypes below.
 
         Note that somewhere in the prototype's parentage, a |ctypeclass|n must be specified. If no
         parent is given, this prototype must define the typeclass (next menu node).
@@ -459,18 +473,23 @@ def node_prototype_parent(caller):
         prototype to be valid.
         """
 
-    if prot_parent_key:
-        prot_parent = protlib.search_prototype(prot_parent_key)
-        if prot_parent:
-            text = text.format(
-                current="Current parent prototype is {}:\n{}".format(
-                    protlib.prototype_to_str(prot_parent)))
-        else:
-            text = text.format(
-                current="Current parent prototype |r{prototype}|n "
-                        "does not appear to exist.".format(prot_parent_key))
-    else:
-        text = text.format(current="Parent prototype is not set")
+    ptexts = []
+    if prot_parent_keys:
+        for pkey in utils.make_iter(prot_parent_keys):
+            prot_parent = protlib.search_prototype(pkey)
+            if prot_parent:
+                prot_parent = prot_parent[0]
+                ptexts.append("|c -- {pkey} -- |n\n{prot}".format(
+                    pkey=pkey,
+                    prot=protlib.prototype_to_str(prot_parent)))
+            else:
+                ptexts.append("Prototype parent |r{pkey} was not found.".format(pkey=pkey))
+
+    if not ptexts:
+        ptexts.append("[No prototype_parent set]")
+
+    text = text.format(current="\n\n".join(ptexts))
+
     text = (text, helptext)
 
     options = _wizard_options("prototype_parent", "prototype_key", "typeclass", color="|W")
@@ -993,7 +1012,7 @@ def node_destination(caller):
         the exit 'leads to'. It's usually unset for all other types of objects.
 
         {current}
-    """.format(current=_get_current_node(caller, "destination"))
+    """.format(current=_get_current_value(caller, "destination"))
 
     helptext = """
         The destination can be given as a #dbref but can also be explicitly searched for using

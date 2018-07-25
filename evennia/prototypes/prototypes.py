@@ -539,7 +539,7 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
 
 
 def validate_prototype(prototype, protkey=None, protparents=None,
-                       is_prototype_base=True, _flags=None):
+                       is_prototype_base=True, strict=True, _flags=None):
     """
     Run validation on a prototype, checking for inifinite regress.
 
@@ -552,6 +552,8 @@ def validate_prototype(prototype, protkey=None, protparents=None,
         is_prototype_base (bool, optional): We are trying to create a new object *based on this
             object*. This means we can't allow 'mixin'-style prototypes without typeclass/parent
             etc.
+        strict (bool, optional): If unset, don't require needed keys, only check against infinite
+            recursion etc.
         _flags (dict, optional): Internal work dict that should not be set externally.
     Raises:
         RuntimeError: If prototype has invalid structure.
@@ -570,14 +572,14 @@ def validate_prototype(prototype, protkey=None, protparents=None,
 
     protkey = protkey and protkey.lower() or prototype.get('prototype_key', None)
 
-    if not bool(protkey):
+    if strict and not bool(protkey):
         _flags['errors'].append("Prototype lacks a `prototype_key`.")
         protkey = "[UNSET]"
 
     typeclass = prototype.get('typeclass')
     prototype_parent = prototype.get('prototype_parent', [])
 
-    if not (typeclass or prototype_parent):
+    if strict and not (typeclass or prototype_parent):
         if is_prototype_base:
             _flags['errors'].append("Prototype {} requires `typeclass` "
                                     "or 'prototype_parent'.".format(protkey))
@@ -585,7 +587,7 @@ def validate_prototype(prototype, protkey=None, protparents=None,
             _flags['warnings'].append("Prototype {} can only be used as a mixin since it lacks "
                                       "a typeclass or a prototype_parent.".format(protkey))
 
-    if typeclass and typeclass not in get_all_typeclasses("evennia.objects.models.ObjectDB"):
+    if strict and typeclass and typeclass not in get_all_typeclasses("evennia.objects.models.ObjectDB"):
         _flags['errors'].append(
             "Prototype {} is based on typeclass {}, which could not be imported!".format(
                 protkey, typeclass))
@@ -615,7 +617,7 @@ def validate_prototype(prototype, protkey=None, protparents=None,
         _flags['typeclass'] = typeclass
 
     # if we get back to the current level without a typeclass it's an error.
-    if is_prototype_base and _flags['depth'] <= 0 and not _flags['typeclass']:
+    if strict and is_prototype_base and _flags['depth'] <= 0 and not _flags['typeclass']:
         _flags['errors'].append("Prototype {} has no `typeclass` defined anywhere in its parent "
                                 "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
                                 "prototype with a typeclass.".format(protkey))
