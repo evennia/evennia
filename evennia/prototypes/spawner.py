@@ -161,13 +161,14 @@ def _get_prototype(dic, prot, protparents):
     return prot
 
 
-def flatten_prototype(prototype):
+def flatten_prototype(prototype, validate=False):
     """
     Produce a 'flattened' prototype, where all prototype parents in the inheritance tree have been
     merged into a final prototype.
 
     Args:
         prototype (dict): Prototype to flatten. Its `prototype_parent` field will be parsed.
+        validate (bool, optional): Validate for valid keys etc.
 
     Returns:
         flattened (dict): The final, flattened prototype.
@@ -175,7 +176,8 @@ def flatten_prototype(prototype):
     """
     if prototype:
         protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
-        protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
+        protlib.validate_prototype(prototype, None, protparents,
+                                   is_prototype_base=validate, strict=validate)
         return _get_prototype(prototype, {}, protparents)
     return {}
 
