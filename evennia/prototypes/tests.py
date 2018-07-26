@@ -384,6 +384,14 @@ class TestMenuModule(EvenniaTest):
             {"prototype_key": "testthing", "key": "mytest"}),
             (True, Something))
 
+        choices = ["test1", "test2", "test3", "test4"]
+        actions = (("examine", "e", "l"), ("add", "a"), ("foo", "f"))
+        self.assertEqual(olc_menus._default_parse("l4", choices, *actions), ('test4', 'examine'))
+        self.assertEqual(olc_menus._default_parse("add 2", choices, *actions), ('test2', 'add'))
+        self.assertEqual(olc_menus._default_parse("foo3", choices, *actions), ('test3', 'foo'))
+        self.assertEqual(olc_menus._default_parse("f3", choices, *actions), ('test3', 'foo'))
+        self.assertEqual(olc_menus._default_parse("f5", choices, *actions), (None, None))
+
     def test_node_helpers(self):
 
         caller = self.caller
@@ -399,15 +407,20 @@ class TestMenuModule(EvenniaTest):
 
             # prototype_parent helpers
             self.assertEqual(olc_menus._all_prototype_parents(caller), ['test_prot'])
-            self.assertEqual(olc_menus._prototype_parent_examine(
-                caller, 'test_prot'),
-                "|cprototype key:|n test_prot, |ctags:|n None, |clocks:|n edit:all();spawn:all() "
-                "\n|cdesc:|n None \n|cprototype:|n "
-                "{\n  'typeclass': 'evennia.objects.objects.DefaultObject', \n}")
-            self.assertEqual(olc_menus._prototype_parent_select(caller, self.test_prot), "node_key")
+            # self.assertEqual(olc_menus._prototype_parent_parse(
+            #     caller, 'test_prot'),
+            #     "|cprototype key:|n test_prot, |ctags:|n None, |clocks:|n edit:all();spawn:all() "
+            #     "\n|cdesc:|n None \n|cprototype:|n "
+            #     "{\n  'typeclass': 'evennia.objects.objects.DefaultObject', \n}")
+
+        with mock.patch("evennia.prototypes.menus.protlib.search_prototype",
+                        new=mock.MagicMock(return_value=[_PROTPARENTS['GOBLIN']])):
+            self.assertEqual(olc_menus._prototype_parent_select(caller, "goblin"), "node_prototype_parent")
+
         self.assertEqual(olc_menus._get_menu_prototype(caller),
                          {'prototype_key': 'test_prot',
                           'prototype_locks': 'edit:all();spawn:all()',
+                          'prototype_parent': 'goblin',
                           'typeclass': 'evennia.objects.objects.DefaultObject'})
 
         # typeclass helpers
@@ -423,6 +436,7 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(olc_menus._get_menu_prototype(caller),
                          {'prototype_key': 'test_prot',
                           'prototype_locks': 'edit:all();spawn:all()',
+                          'prototype_parent': 'goblin',
                           'typeclass': 'evennia.objects.objects.DefaultObject'})
 
         # attr helpers
@@ -459,7 +473,9 @@ class TestMenuModule(EvenniaTest):
         protlib.save_prototype(**self.test_prot)
 
         # spawn helpers
-        obj = olc_menus._spawn(caller, prototype=self.test_prot)
+        with mock.patch("evennia.prototypes.menus.protlib.search_prototype",
+                        new=mock.MagicMock(return_value=[_PROTPARENTS['GOBLIN']])):
+            obj = olc_menus._spawn(caller, prototype=self.test_prot)
 
         self.assertEqual(obj.typeclass_path, "evennia.objects.objects.DefaultObject")
         self.assertEqual(obj.tags.get(category=spawner._PROTOTYPE_TAG_CATEGORY), self.test_prot['prototype_key'])
@@ -473,7 +489,6 @@ class TestMenuModule(EvenniaTest):
 
         # load helpers
         self.assertEqual(olc_menus._prototype_load_select(caller, self.test_prot['prototype_key']), "node_index")
-
 
 
 @mock.patch("evennia.prototypes.menus.protlib.search_prototype", new=mock.MagicMock(

@@ -606,6 +606,8 @@ def validate_prototype(prototype, protkey=None, protparents=None,
             _flags['errors'].append(
                 "{} has infinite nesting of prototypes.".format(protkey or prototype))
 
+        if _flags['errors']:
+            raise RuntimeError("Error: " + "\nError: ".join(_flags['errors']))
         _flags['visited'].append(id(prototype))
         _flags['depth'] += 1
         validate_prototype(protparent, protstring, protparents,
@@ -618,7 +620,7 @@ def validate_prototype(prototype, protkey=None, protparents=None,
 
     # if we get back to the current level without a typeclass it's an error.
     if strict and is_prototype_base and _flags['depth'] <= 0 and not _flags['typeclass']:
-        _flags['errors'].append("Prototype {} has no `typeclass` defined anywhere in its parent "
+        _flags['errors'].append("Prototype {} has no `typeclass` defined anywhere in its parent\n "
                                 "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
                                 "prototype with a typeclass.".format(protkey))
 
