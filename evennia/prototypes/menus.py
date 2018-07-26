@@ -5,6 +5,7 @@ OLC Prototype menu nodes
 """
 
 import json
+import re
 from random import choice
 from django.conf import settings
 from evennia.utils.evmenu import EvMenu, list_node
@@ -242,6 +243,25 @@ def _format_lockfuncs():
             docs=utils.justify(lockfunc.__doc__.strip(), align='l', indent=10).strip()))
 
 
+def _format_list_actions(*args, **kwargs):
+    """Create footer text for nodes with extra list actions
+
+    Args:
+        actions (str): Available actions. The first letter of the action name will be assumed
+            to be a shortcut.
+    Kwargs:
+        prefix (str): Default prefix to use.
+    Returns:
+        string (str): Formatted footer for adding to the node text.
+
+    """
+    actions = []
+    prefix = kwargs.get('prefix', "|WSelect with |w<num>|W. Other actions:|n ")
+    for action in args:
+        actions.append("|w{}|n|W{} |w<num>|n".format(action[0], action[1:]))
+    return prefix + "|W,|n ".join(actions)
+
+
 def _get_current_value(caller, keyname, formatter=str):
     "Return current value, marking if value comes from parent or set in this prototype"
     prot = _get_menu_prototype(caller)
@@ -253,6 +273,32 @@ def _get_current_value(caller, keyname, formatter=str):
         # value in flattened prot
         return "Current {} (|binherited|n): {}".format(keyname, formatter(flat_prot[keyname]))
     return "[No {} set]".format(keyname)
+
+
+def _default_parse(raw_inp, choices, *args):
+    """
+    Helper to parse default input to a node decorated with the node_list decorator on
+    the form l1, l 2, look 1, etc. Spaces are ignored, as is case.
+
+    Args:
+        raw_inp (str): Input from the user.
+        choices (list): List of available options on the node listing (list of strings).
+        args (tuples): The available actions, each specifed as a tuple (name, alias, ...)
+    Returns:
+        choice (str): A choice among the choices, or None if no match was found.
+        action (str): The action operating on the choice, or None.
+
+    """
+    raw_inp = raw_inp.lower().strip()
+    mapping = {t.lower(): tup[0] for tup in args for t in tup}
+    match = re.match(r"(%s)\s*?(\d+)$" % "|".join(mapping.keys()), raw_inp)
+    if match:
+        action = mapping.get(match.group(1), None)
+        num = int(match.group(2)) - 1
+        num = num if 0 <= num < len(choices) else None
+        if action is not None and num is not None:
+            return choices[num], action
+    return None, None
 
 
 # Menu nodes ------------------------------
@@ -357,6 +403,26 @@ def node_validate_prototype(caller, raw_string, **kwargs):
     text = (text, helptext)
 
     options = _wizard_options(None, prev_node, None)
+    options.append({"key": "_default",
+                    "goto": "node_" + prev_node})
+
+    return text, options
+
+
+def node_examine_entity(caller, raw_string, **kwargs):
+    """
+    General node to view a text and then return to previous node.  Kwargs should contain "text" for
+    the text to show and 'back" pointing to the node to return to.
+    """
+    text = kwargs.get("text", "Nothing was found here.")
+    helptext = "Use |wback|n to return to the previous node."
+    prev_node = kwargs.get('back', 'index')
+
+    text = (text, helptext)
+
+    options = _wizard_options(None, prev_node, None)
+    options.append({"key": "_default",
+                    "goto": "node_" + prev_node})
 
     return text, options
 
@@ -419,15 +485,64 @@ def _all_prototype_parents(caller):
             for prototype in protlib.search_prototype() if "prototype_key" in prototype]
 
 
-def _prototype_parent_examine(caller, prototype_name):
-    """Convert prototype to a string representation for closer inspection"""
-    prototypes = protlib.search_prototype(key=prototype_name)
-    if prototypes:
-        ret = protlib.prototype_to_str(prototypes[0])
-        caller.msg(ret)
-        return ret
-    else:
-        caller.msg("Prototype not registered.")
+def _prototype_parent_actions(caller, raw_inp, **kwargs):
+    """Parse the default Convert prototype to a string representation for closer inspection"""
+    choices = kwargs.get("available_choices", [])
+    prototype_parent, action = _default_parse(
+        raw_inp, choices, ("examine", "e", "l"), ("add", "a"), ("remove", "r", 'delete', 'd'))
+
+    if prototype_parent:
+        # a selection of parent was made
+        prototype_parent = protlib.search_prototype(key=prototype_parent)[0]
+        prototype_parent_key = prototype_parent['prototype_key']
+
+        # which action to apply on the selection
+        if action == 'examine':
+            # examine the prototype
+            txt = protlib.prototype_to_str(prototype_parent)
+            kwargs['text'] = txt
+            kwargs['back'] = 'prototype_parent'
+            return "node_examine_entity", kwargs
+        elif action == 'add':
+            # add/append parent
+            prot = _get_menu_prototype(caller)
+            current_prot_parent = prot.get('prototype_parent', None)
+            if current_prot_parent:
+                current_prot_parent = utils.make_iter(current_prot_parent)
+                if prototype_parent_key in current_prot_parent:
+                    caller.msg("Prototype_parent {} is already used.".format(prototype_parent_key))
+                    return "node_prototype_parent"
+                else:
+                    current_prot_parent.append(prototype_parent_key)
+                    caller.msg("Add prototype parent for multi-inheritance.")
+            else:
+                current_prot_parent = prototype_parent_key
+            try:
+                if prototype_parent:
+                    spawner.flatten_prototype(prototype_parent, validate=True)
+                else:
+                    raise RuntimeError("Not found.")
+            except RuntimeError as err:
+                caller.msg("Selected prototype-parent {} "
+                           "caused Error(s):\n|r{}|n".format(prototype_parent, err))
+                return "node_prototype_parent"
+            _set_prototype_value(caller, "prototype_parent", current_prot_parent)
+            _get_flat_menu_prototype(caller, refresh=True)
+        elif action == "remove":
+            # remove prototype parent
+            prot = _get_menu_prototype(caller)
+            current_prot_parent = prot.get('prototype_parent', None)
+            if current_prot_parent:
+                current_prot_parent = utils.make_iter(current_prot_parent)
+                try:
+                    current_prot_parent.remove(prototype_parent_key)
+                    _set_prototype_value(caller, 'prototype_parent', current_prot_parent)
+                    _get_flat_menu_prototype(caller, refresh=True)
+                    caller.msg("Removed prototype parent {}.".format(prototype_parent_key))
+                except ValueError:
+                    caller.msg("|rPrototype-parent {} could not be removed.".format(
+                        prototype_parent_key))
+        return 'node_prototype_parent'
 
 
 def _prototype_parent_select(caller, new_parent):
@@ -440,7 +555,7 @@ def _prototype_parent_select(caller, new_parent):
         else:
             raise RuntimeError("Not found.")
     except RuntimeError as err:
-        caller.msg("Selected prototype parent {} "
+        caller.msg("Selected prototype-parent {} "
                    "caused Error(s):\n|r{}|n".format(new_parent, err))
     else:
         ret = _set_property(caller, new_parent,
@@ -466,6 +581,8 @@ def node_prototype_parent(caller):
         parent is given, this prototype must define the typeclass (next menu node).
 
         {current}
+
+        {actions}
         """
     helptext = """
         Prototypes can inherit from one another. Changes in the child replace any values set in a
@@ -488,13 +605,14 @@ def node_prototype_parent(caller):
     if not ptexts:
         ptexts.append("[No prototype_parent set]")
 
-    text = text.format(current="\n\n".join(ptexts))
+    text = text.format(current="\n\n".join(ptexts),
+                       actions=_format_list_actions("examine", "add", "remove"))
 
     text = (text, helptext)
 
     options = _wizard_options("prototype_parent", "prototype_key", "typeclass", color="|W")
     options.append({"key": "_default",
-                    "goto": _prototype_parent_examine})
+                    "goto": _prototype_parent_actions})
 
     return text, options
 
@@ -508,33 +626,45 @@ def _all_typeclasses(caller):
                 if name != "evennia.objects.models.ObjectDB")
 
 
-def _typeclass_examine(caller, typeclass_path):
-    """Show info (docstring) about given typeclass."""
-    if typeclass_path is None:
-        # this means we are exiting the listing
-        return "node_key"
+def _typeclass_actions(caller, raw_inp, **kwargs):
+    """Parse actions for typeclass listing"""
 
-    typeclass = utils.get_all_typeclasses().get(typeclass_path)
-    if typeclass:
-        docstr = []
-        for line in typeclass.__doc__.split("\n"):
-            if line.strip():
-                docstr.append(line)
-            elif docstr:
-                break
-        docstr = '\n'.join(docstr) if docstr else "<empty>"
-        txt = "Typeclass |y{typeclass_path}|n; First paragraph of docstring:\n\n{docstring}".format(
-                typeclass_path=typeclass_path, docstring=docstr)
-    else:
-        txt = "This is typeclass |y{}|n.".format(typeclass)
-    caller.msg(txt)
-    return txt
+    choices = kwargs.get("available_choices", [])
+    typeclass_path, action = _default_parse(
+        raw_inp, choices, ("examine", "e", "l"), ("remove", "r", "delete", "d"))
+
+    if typeclass_path:
+        if action == 'examine':
+            typeclass = utils.get_all_typeclasses().get(typeclass_path)
+            if typeclass:
+                docstr = []
+                for line in typeclass.__doc__.split("\n"):
+                    if line.strip():
+                        docstr.append(line)
+                    elif docstr:
+                        break
+                docstr = '\n'.join(docstr) if docstr else "<empty>"
+                txt = "Typeclass |c{typeclass_path}|n; " \
+                      "First paragraph of docstring:\n\n{docstring}".format(
+                        typeclass_path=typeclass_path, docstring=docstr)
+            else:
+                txt = "This is typeclass |y{}|n.".format(typeclass)
+            return "node_examine_entity", {"text": txt, "back": "typeclass"}
+        elif action == 'remove':
+            prototype = _get_menu_prototype(caller)
+            old_typeclass = prototype.pop('typeclass', None)
+            if old_typeclass:
+                _set_menu_prototype(caller, prototype)
+                caller.msg("Cleared typeclass {}.".format(old_typeclass))
+            else:
+                caller.msg("No typeclass to remove.")
+        return "node_typeclass"
 
 
 def _typeclass_select(caller, typeclass):
     """Select typeclass from list and add it to prototype. Return next node to go to."""
     ret = _set_property(caller, typeclass, prop='typeclass', processor=str, next_node="node_key")
-    caller.msg("Selected typeclass |y{}|n.".format(typeclass))
+    caller.msg("Selected typeclass |c{}|n.".format(typeclass))
     return ret
 
 
@@ -547,7 +677,10 @@ def node_typeclass(caller):
         one of the prototype's |cparents|n.
 
         {current}
-    """.format(current=_get_current_value(caller, "typeclass"))
+
+        {actions}
+    """.format(current=_get_current_value(caller, "typeclass"),
+               actions=_format_list_actions("examine", "remove"))
 
     helptext = """
         A |nTypeclass|n is specified by the actual python-path to the class definition in the
@@ -561,7 +694,7 @@ def node_typeclass(caller):
 
     options = _wizard_options("typeclass", "prototype_parent", "key", color="|W")
     options.append({"key": "_default",
-                    "goto": _typeclass_examine})
+                    "goto": _typeclass_actions})
     return text, options
 
 
@@ -598,16 +731,62 @@ def node_key(caller):
 # aliases node
 
 
+def _all_aliases(caller):
+    "Get aliases in prototype"
+    prototype = _get_menu_prototype(caller)
+    return prototype.get("aliases", [])
+
+
+def _aliases_select(caller, alias):
+    "Add numbers as aliases"
+    aliases = _all_aliases(caller)
+    try:
+        ind = str(aliases.index(alias) + 1)
+        if ind not in aliases:
+            aliases.append(ind)
+            _set_prototype_value(caller, "aliases", aliases)
+            caller.msg("Added alias '{}'.".format(ind))
+    except (IndexError, ValueError) as err:
+        caller.msg("Error: {}".format(err))
+
+    return "node_aliases"
+
+
+def _aliases_actions(caller, raw_inp, **kwargs):
+    """Parse actions for aliases listing"""
+    choices = kwargs.get("available_choices", [])
+    alias, action = _default_parse(
+        raw_inp, choices, ("remove", "r", "delete", "d"))
+
+    aliases = _all_aliases(caller)
+    if alias and action == 'remove':
+        try:
+            aliases.remove(alias)
+            _set_prototype_value(caller, "aliases", aliases)
+            caller.msg("Removed alias '{}'.".format(alias))
+        except ValueError:
+            caller.msg("No matching alias found to remove.")
+    else:
+        # if not a valid remove, add as a new alias
+        alias = raw_inp.lower().strip()
+        if alias not in aliases:
+            aliases.append(alias)
+            _set_prototype_value(caller, "aliases", aliases)
+            caller.msg("Added alias '{}'.".format(alias))
+        else:
+            caller.msg("Alias '{}' was already set.".format(alias))
+    return "node_aliases"
+
+
+@list_node(_all_aliases, _aliases_select)
 def node_aliases(caller):
 
     text = """
         |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not
         case sensitive.
 
-        Add multiple aliases separating with commas.
-
-        {current}
-    """.format(current=_get_current_value(caller, "aliases"))
+        {actions}
+    """.format(_format_list_actions("remove", prefix="|w<text>|W to add new alias. Other action: "))
 
     helptext = """
         Aliases are fixed alternative identifiers and are stored with the new object.
@@ -621,10 +800,7 @@ def node_aliases(caller):
 
     options = _wizard_options("aliases", "key", "attrs")
     options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="aliases",
-                                  processor=lambda s: [part.strip() for part in s.split(",")],
-                                  next_node="node_attrs"))})
+                    "goto": _aliases_actions})
     return text, options
 
 
@@ -633,8 +809,19 @@ def node_aliases(caller):
 
 def _caller_attrs(caller):
     prototype = _get_menu_prototype(caller)
-    attrs = prototype.get("attrs", [])
+    attrs = ["{}={}".format(tup[0], utils.crop(utils.to_str(tup[1]), width=10))
+             for tup in prototype.get("attrs", [])]
     return attrs
+
+
+def _get_tup_by_attrname(caller, attrname):
+    prototype = _get_menu_prototype(caller)
+    attrs = prototype.get("attrs", [])
+    try:
+        inp = [tup[0] for tup in attrs].index(attrname)
+        return attrs[inp]
+    except ValueError:
+        return None
 
 
 def _display_attribute(attr_tuple):
@@ -642,29 +829,42 @@ def _display_attribute(attr_tuple):
     attrkey, value, category, locks = attr_tuple
     value = protlib.protfunc_parser(value)
     typ = type(value)
-    out = ("Attribute key: '{attrkey}' (category: {category}, "
-           "locks: {locks})\n"
-           "Value (parsed to {typ}): {value}").format(
+    out = ("|cAttribute key:|n '{attrkey}' "
+           "(|ccategory:|n {category}, "
+           "|clocks:|n {locks})\n"
+           "|cValue|n |W(parsed to {typ})|n:\n{value}").format(
                    attrkey=attrkey,
-                   category=category, locks=locks,
+                   category=category if category else "|wNone|n",
+                   locks=locks if locks else "|wNone|n",
                    typ=typ, value=value)
     return out
 
 
 def _add_attr(caller, attr_string, **kwargs):
     """
-    Add new attrubute, parsing input.
-    attr is entered on these forms
-        attr = value
-        attr;category = value
-        attr;category;lockstring = value
+    Add new attribute, parsing input.
 
+    Args:
+        caller (Object): Caller of menu.
+        attr_string (str): Input from user
+            attr is entered on these forms
+                attr = value
+                attr;category = value
+                attr;category;lockstring = value
+    Kwargs:
+        delete (str): If this is set, attr_string is
+            considered the name of the attribute to delete and
+            no further parsing happens.
+    Returns:
+        result (str): Result string of action.
     """
     attrname = ''
     category = None
     locks = ''
 
-    if '=' in attr_string:
+    if 'delete' in kwargs:
+        attrname = attr_string
+    elif '=' in attr_string:
         attrname, value = (part.strip() for part in attr_string.split('=', 1))
         attrname = attrname.lower()
         nameparts = attrname.split(";", 2)
@@ -678,6 +878,15 @@ def _add_attr(caller, attr_string, **kwargs):
     if attrname:
         prot = _get_menu_prototype(caller)
         attrs = prot.get('attrs', [])
+
+        if 'delete' in kwargs:
+            try:
+                ind = [tup[0] for tup in attrs].index(attrname)
+                del attrs[ind]
+                _set_prototype_value(caller, "attrs", attrs)
+                return "Removed Attribute '{}'".format(attrname)
+            except IndexError:
+                return "Attribute to delete not found."
 
         try:
             # replace existing attribute with the same name in the prototype
@@ -697,26 +906,47 @@ def _add_attr(caller, attr_string, **kwargs):
     else:
         text = "Attribute must be given as 'attrname[;category;locks] = <value>'."
 
-    options = {"key": "_default",
-               "goto": lambda caller: None}
-    return text, options
+    return text
 
 
-def _edit_attr(caller, attrname, new_value, **kwargs):
+def _attr_select(caller, attrstr):
+    attrname, _ = attrstr.split("=", 1)
+    attrname = attrname.strip()
 
-    attr_string = "{}={}".format(attrname, new_value)
-
-    return _add_attr(caller, attr_string, edit=True)
-
-
-def _examine_attr(caller, selection):
-    prot = _get_menu_prototype(caller)
-    ind = [part[0] for part in prot['attrs']].index(selection)
-    attr_tuple = prot['attrs'][ind]
-    return _display_attribute(attr_tuple)
+    attr_tup = _get_tup_by_attrname(caller, attrname)
+    if attr_tup:
+        return "node_examine_entity", \
+            {"text": _display_attribute(attr_tup), "back": "attrs"}
+    else:
+        caller.msg("Attribute not found.")
+        return "node_attrs"
 
 
-@list_node(_caller_attrs)
+def _attrs_actions(caller, raw_inp, **kwargs):
+    """Parse actions for attribute listing"""
+    choices = kwargs.get("available_choices", [])
+    attrstr, action = _default_parse(
+        raw_inp, choices, ('examine', 'e'), ('remove', 'r', 'delete', 'd'))
+    if attrstr is None:
+        attrstr = raw_inp
+    attrname, _ = attrstr.split("=", 1)
+    attrname = attrname.strip()
+    attr_tup = _get_tup_by_attrname(caller, attrname)
+
+    if attr_tup:
+        if action == 'examine':
+            return "node_examine_entity", \
+                   {"text": _display_attribute(attr_tup), "back": "attrs"}
+        elif action == 'remove':
+            res = _add_attr(caller, attr_tup, delete=True)
+            caller.msg(res)
+    else:
+        res = _add_attr(caller, raw_inp)
+        caller.msg(res)
+    return "node_attrs"
+
+
+@list_node(_caller_attrs, _attr_select)
 def node_attrs(caller):
 
     text = """
@@ -729,8 +959,8 @@ def node_attrs(caller):
         To give an attribute without a category but with a lockstring, leave that spot empty
         (attrname;;lockstring=value). Attribute values can have embedded $protfuncs.
 
-        {current}
-    """.format(current=_get_current_value(caller, "attrs"))
+        {actions}
+    """.format(actions=_format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Most commonly, Attributes don't need any categories or locks. If using locks, the lock-types
@@ -747,10 +977,7 @@ def node_attrs(caller):
 
     options = _wizard_options("attrs", "aliases", "tags")
     options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="attrs",
-                                  processor=lambda s: [part.strip() for part in s.split(",")],
-                                  next_node="node_tags"))})
+                    "goto": _attrs_actions})
     return text, options
 
 
@@ -1410,7 +1637,7 @@ def node_prototype_load(caller, **kwargs):
 
     options = _wizard_options("prototype_load", "prototype_save", "index")
     options.append({"key": "_default",
-                    "goto": _prototype_parent_examine})
+                    "goto": _prototype_parent_actions})
     return text, options
 
 
@@ -1468,6 +1695,7 @@ def start_olc(caller, session=None, prototype=None):
     """
     menudata = {"node_index": node_index,
                 "node_validate_prototype": node_validate_prototype,
+                "node_examine_entity": node_examine_entity,
                 "node_prototype_key": node_prototype_key,
                 "node_prototype_parent": node_prototype_parent,
                 "node_typeclass": node_typeclass,
