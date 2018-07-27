@@ -863,7 +863,7 @@ def _add_attr(caller, attr_string, **kwargs):
     locks = ''
 
     if 'delete' in kwargs:
-        attrname = attr_string
+        attrname = attr_string.lower().strip()
     elif '=' in attr_string:
         attrname, value = (part.strip() for part in attr_string.split('=', 1))
         attrname = attrname.lower()
@@ -892,17 +892,12 @@ def _add_attr(caller, attr_string, **kwargs):
             # replace existing attribute with the same name in the prototype
             ind = [tup[0] for tup in attrs].index(attrname)
             attrs[ind] = attr_tuple
+            text = "Edited Attribute '{}'.".format(attrname)
         except ValueError:
             attrs.append(attr_tuple)
+            text = "Added Attribute " + _display_attribute(attr_tuple)
 
         _set_prototype_value(caller, "attrs", attrs)
-
-        text = kwargs.get('text')
-        if not text:
-            if 'edit' in kwargs:
-                text = "Edited " + _display_attribute(attr_tuple)
-            else:
-                text = "Added " + _display_attribute(attr_tuple)
     else:
         text = "Attribute must be given as 'attrname[;category;locks] = <value>'."
 
@@ -929,7 +924,12 @@ def _attrs_actions(caller, raw_inp, **kwargs):
         raw_inp, choices, ('examine', 'e'), ('remove', 'r', 'delete', 'd'))
     if attrstr is None:
         attrstr = raw_inp
-    attrname, _ = attrstr.split("=", 1)
+    try:
+        attrname, _ = attrstr.split("=", 1)
+    except ValueError:
+        caller.msg("|rNeed to enter the attribute on the form attrname=value.|n")
+        return "node_attrs"
+
     attrname = attrname.strip()
     attr_tup = _get_tup_by_attrname(caller, attrname)
 
@@ -938,7 +938,7 @@ def _attrs_actions(caller, raw_inp, **kwargs):
             return "node_examine_entity", \
                    {"text": _display_attribute(attr_tup), "back": "attrs"}
         elif action == 'remove':
-            res = _add_attr(caller, attr_tup, delete=True)
+            res = _add_attr(caller, attrname, delete=True)
             caller.msg(res)
     else:
         res = _add_attr(caller, raw_inp)
@@ -964,9 +964,9 @@ def node_attrs(caller):
 
     helptext = """
         Most commonly, Attributes don't need any categories or locks. If using locks, the lock-types
-        'attredit', 'attrread' are used to limiting editing and viewing of the Attribute. Putting
+        'attredit' and 'attrread' are used to limit editing and viewing of the Attribute. Putting
         the lock-type `attrcreate` in the |clocks|n prototype key can be used to restrict builders
-        to add new Attributes.
+        from adding new Attributes.
 
         |c$protfuncs
 
@@ -986,83 +986,128 @@ def node_attrs(caller):
 
 def _caller_tags(caller):
     prototype = _get_menu_prototype(caller)
-    tags = prototype.get("tags", [])
+    tags = [tup[0] for tup in prototype.get("tags", [])]
     return tags
 
 
+def _get_tup_by_tagname(caller, tagname):
+    prototype = _get_menu_prototype(caller)
+    tags = prototype.get("tags", [])
+    try:
+        inp = [tup[0] for tup in tags].index(tagname)
+        return tags[inp]
+    except ValueError:
+        return None
+
+
 def _display_tag(tag_tuple):
-    """Pretty-print attribute tuple"""
+    """Pretty-print tag tuple"""
     tagkey, category, data = tag_tuple
     out = ("Tag: '{tagkey}' (category: {category}{dat})".format(
            tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""))
     return out
 
 
-def _add_tag(caller, tag, **kwargs):
+def _add_tag(caller, tag_string, **kwargs):
     """
-    Add tags to the system, parsing  this syntax:
-        tagname
-        tagname;category
-        tagname;category;data
+    Add tags to the system, parsing input
+
+    Args:
+        caller (Object): Caller of menu.
+        tag_string (str): Input from user on one of these forms
+            tagname
+            tagname;category
+            tagname;category;data
+
+    Kwargs:
+        delete (str): If this is set, tag_string is considered
+            the name of the tag to delete.
+
+    Returns:
+        result (str): Result string of action.
 
     """
-
-    tag = tag.strip().lower()
+    tag = tag_string.strip().lower()
     category = None
     data = ""
 
-    tagtuple = tag.split(";", 2)
-    ntuple = len(tagtuple)
+    if 'delete' in kwargs:
+        tag = tag_string.lower().strip()
+    else:
+        nameparts = tag.split(";", 2)
+        ntuple = len(nameparts)
+        if ntuple == 2:
+            tag, category = nameparts
+        elif ntuple > 2:
+            tag, category, data = nameparts[:3]
 
-    if ntuple == 2:
-        tag, category = tagtuple
-    elif ntuple > 2:
-        tag, category, data = tagtuple
-
-    tag_tuple = (tag, category, data)
+    tag_tuple = (tag.lower(), category.lower() if category else None, data)
 
     if tag:
         prot = _get_menu_prototype(caller)
         tags = prot.get('tags', [])
 
-        old_tag = kwargs.get("edit", None)
+        old_tag = _get_tup_by_tagname(caller, tag)
 
-        if not old_tag:
+        if 'delete' in kwargs:
+
+            if old_tag:
+                tags.pop(tags.index(old_tag))
+                text = "Removed tag '{}'".format(tag)
+            else:
+                text = "Found no tag to remove."
+        elif not old_tag:
             # a fresh, new tag
             tags.append(tag_tuple)
+            text = "Added Tag '{}'".format(tag)
         else:
-            # old tag exists; editing a tag means removing the old and replacing with new
-            try:
-                ind = [tup[0] for tup in tags].index(old_tag)
-                del tags[ind]
-                if tags:
-                    tags.insert(ind, tag_tuple)
-                else:
-                    tags = [tag_tuple]
-            except IndexError:
-                pass
+            # old tag exists; editing a tag means replacing old with new
+            ind = tags.index(old_tag)
+            tags[ind] = tag_tuple
+            text = "Edited Tag '{}'".format(tag)
 
         _set_prototype_value(caller, "tags", tags)
-
-        text = kwargs.get('text')
-        if not text:
-            if 'edit' in kwargs:
-                text = "Edited " + _display_tag(tag_tuple)
-            else:
-                text = "Added " + _display_tag(tag_tuple)
     else:
-        text = "Tag must be given as 'tag[;category;data]."
+        text = "Tag must be given as 'tag[;category;data]'."
 
-    options = {"key": "_default",
-               "goto": lambda caller: None}
-    return text, options
+    return text
 
 
-def _edit_tag(caller, old_tag, new_tag, **kwargs):
-    return _add_tag(caller, new_tag, edit=old_tag)
+def _tag_select(caller, tagname):
+    tag_tup = _get_tup_by_tagname(caller, tagname)
+    if tag_tup:
+        return "node_examine_entity", \
+            {"text": _display_tag(tag_tup), "back": "attrs"}
+    else:
+        caller.msg("Tag not found.")
+        return "node_attrs"
 
 
-@list_node(_caller_tags)
+def _tags_actions(caller, raw_inp, **kwargs):
+    """Parse actions for tags listing"""
+    choices = kwargs.get("available_choices", [])
+    tagname, action = _default_parse(
+            raw_inp, choices, ('examine', 'e'), ('remove', 'r', 'delete', 'd'))
+
+    if tagname is None:
+        tagname = raw_inp.lower().strip()
+
+    tag_tup = _get_tup_by_tagname(caller, tagname)
+
+    if tag_tup:
+        if action == 'examine':
+            return "node_examine_entity", \
+                    {"text": _display_tag(tag_tup), 'back': 'tags'}
+        elif action == 'remove':
+            res = _add_tag(caller, tagname, delete=True)
+            caller.msg(res)
+    else:
+        res = _add_tag(caller, raw_inp)
+        caller.msg(res)
+    return "node_tags"
+
+
+@list_node(_caller_tags, _tag_select)
 def node_tags(caller):
     text = """
         |cTags|n are used to group objects so they can quickly be found later. Enter tags on one of
@@ -1071,8 +1116,8 @@ def node_tags(caller):
             tagname;category
             tagname;category;data
 
-        {current}
-    """.format(current=_get_current_value(caller, 'tags'))
+        {actions}
+    """.format(actions=_format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Tags are shared between all objects with that tag. So the 'data' field (which is not
@@ -1082,10 +1127,12 @@ def node_tags(caller):
         All objects created with this prototype will automatically get assigned a tag named the same
         as the |cprototype_key|n and with a category "{tag_category}". This allows the spawner to
         optionally update previously spawned objects when their prototype changes.
-    """.format(protlib._PROTOTYPE_TAG_CATEGORY)
+    """.format(tag_category=protlib._PROTOTYPE_TAG_CATEGORY)
 
     text = (text, helptext)
     options = _wizard_options("tags", "attrs", "locks")
+    options.append({"key": "_default",
+                    "goto": _tags_actions})
     return text, options
 
 

@@ -427,8 +427,6 @@ class TestMenuModule(EvenniaTest):
         with mock.patch("evennia.utils.utils.get_all_typeclasses",
                         new=mock.MagicMock(return_value={"foo": None, "bar": None})):
             self.assertEqual(olc_menus._all_typeclasses(caller),  ["bar", "foo"])
-        self.assertTrue(olc_menus._typeclass_examine(
-            caller, "evennia.objects.objects.DefaultObject").startswith("Typeclass |y"))
 
         self.assertEqual(olc_menus._typeclass_select(
             caller, "evennia.objects.objects.DefaultObject"), "node_key")
@@ -441,34 +439,35 @@ class TestMenuModule(EvenniaTest):
 
         # attr helpers
         self.assertEqual(olc_menus._caller_attrs(caller), [])
-        self.assertEqual(olc_menus._add_attr(caller, "test1=foo1"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._add_attr(caller, "test2;cat1=foo2"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._add_attr(caller, "test3;cat2;edit:false()=foo3"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._add_attr(caller, "test4;cat3;set:true();edit:false()=foo4"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._add_attr(caller, "test5;cat4;set:true();edit:false()=123"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._caller_attrs(
-            caller),
+        self.assertEqual(olc_menus._add_attr(caller, "test1=foo1"), Something)
+        self.assertEqual(olc_menus._add_attr(caller, "test2;cat1=foo2"), Something)
+        self.assertEqual(olc_menus._add_attr(caller, "test3;cat2;edit:false()=foo3"), Something)
+        self.assertEqual(olc_menus._add_attr(caller, "test4;cat3;set:true();edit:false()=foo4"), Something)
+        self.assertEqual(olc_menus._add_attr(caller, "test5;cat4;set:true();edit:false()=123"), Something)
+        self.assertEqual(olc_menus._get_menu_prototype(caller)['attrs'],
             [("test1", "foo1", None, ''),
              ("test2", "foo2", "cat1", ''),
              ("test3", "foo3", "cat2", "edit:false()"),
              ("test4", "foo4", "cat3", "set:true();edit:false()"),
              ("test5", '123', "cat4", "set:true();edit:false()")])
-        self.assertEqual(olc_menus._edit_attr(caller, "test1", "1;cat5;edit:all()"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._examine_attr(caller, "test1"), Something)
 
         # tag helpers
         self.assertEqual(olc_menus._caller_tags(caller), [])
-        self.assertEqual(olc_menus._add_tag(caller, "foo1"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._add_tag(caller, "foo2;cat1"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._add_tag(caller, "foo3;cat2;dat1"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._caller_tags(
-            caller),
+        self.assertEqual(olc_menus._add_tag(caller, "foo1"), Something)
+        self.assertEqual(olc_menus._add_tag(caller, "foo2;cat1"), Something)
+        self.assertEqual(olc_menus._add_tag(caller, "foo3;cat2;dat1"), Something)
+        self.assertEqual(olc_menus._caller_tags(caller), ['foo1', 'foo2', 'foo3'])
+        self.assertEqual(olc_menus._get_menu_prototype(caller)['tags'],
             [('foo1', None, ""),
              ('foo2', 'cat1', ""),
              ('foo3', 'cat2', "dat1")])
-        self.assertEqual(olc_menus._edit_tag(caller, "foo1", "bar1;cat1"), (Something, {"key": "_default", "goto": Something}))
-        self.assertEqual(olc_menus._display_tag(olc_menus._caller_tags(caller)[0]), Something)
-        self.assertEqual(olc_menus._caller_tags(caller)[0], ("bar1", "cat1", ""))
+        self.assertEqual(olc_menus._add_tag(caller, "foo1", delete=True), "Removed tag 'foo1'")
+        self.assertEqual(olc_menus._get_menu_prototype(caller)['tags'],
+            [('foo2', 'cat1', ""),
+             ('foo3', 'cat2', "dat1")])
+
+        self.assertEqual(olc_menus._display_tag(olc_menus._get_menu_prototype(caller)['tags'][0]), Something)
+        self.assertEqual(olc_menus._caller_tags(caller), ["foo2", "foo3"])
 
         protlib.save_prototype(**self.test_prot)
 
