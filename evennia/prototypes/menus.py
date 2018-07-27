@@ -236,11 +236,13 @@ def _format_protfuncs():
 def _format_lockfuncs():
     out = []
     sorted_funcs = [(key, func) for key, func in
-                    sorted(get_all_lockfuncs(), key=lambda tup: tup[0])]
+                    sorted(get_all_lockfuncs().items(), key=lambda tup: tup[0])]
     for lockfunc_name, lockfunc in sorted_funcs:
+        doc = (lockfunc.__doc__ or "").strip()
         out.append("- |c${name}|n - |W{docs}".format(
             name=lockfunc_name,
-            docs=utils.justify(lockfunc.__doc__.strip(), align='l', indent=10).strip()))
+            docs=utils.justify(doc, align='l', indent=10).strip()))
+    return "\n".join(out)
 
 
 def _format_list_actions(*args, **kwargs):
@@ -769,7 +771,7 @@ def _aliases_actions(caller, raw_inp, **kwargs):
     else:
         # if not a valid remove, add as a new alias
         alias = raw_inp.lower().strip()
-        if alias not in aliases:
+        if alias and alias not in aliases:
             aliases.append(alias)
             _set_prototype_value(caller, "aliases", aliases)
             caller.msg("Added alias '{}'.".format(alias))
@@ -786,7 +788,7 @@ def node_aliases(caller):
         case sensitive.
 
         {actions}
-    """.format(_format_list_actions("remove", prefix="|w<text>|W to add new alias. Other action: "))
+    """.format(actions=_format_list_actions("remove", prefix="|w<text>|W to add new alias. Other action: "))
 
     helptext = """
         Aliases are fixed alternative identifiers and are stored with the new object.
@@ -1053,9 +1055,9 @@ def _add_tag(caller, tag_string, **kwargs):
 
             if old_tag:
                 tags.pop(tags.index(old_tag))
-                text = "Removed tag '{}'".format(tag)
+                text = "Removed Tag '{}'.".format(tag)
             else:
-                text = "Found no tag to remove."
+                text = "Found no Tag to remove."
         elif not old_tag:
             # a fresh, new tag
             tags.append(tag_tuple)
@@ -1138,7 +1140,80 @@ def node_tags(caller):
 
 # locks node
 
+def _caller_locks(caller):
+    locks = _get_menu_prototype(caller).get("locks", "")
+    return [lck for lck in locks.split(";") if lck]
 
+
+def _locks_display(caller, lock):
+    try:
+        locktype, lockdef = lock.split(":", 1)
+    except ValueError:
+        txt = "Malformed lock string - Missing ':'"
+    else:
+        txt = ("{lockstr}\n\n"
+               "|WLocktype: |w{locktype}|n\n"
+               "|WLock def: |w{lockdef}|n\n").format(
+                       lockstr=lock,
+                       locktype=locktype,
+                       lockdef=lockdef)
+    return txt
+
+
+def _lock_select(caller, lockstr):
+    return "node_examine_entity", {"text": _locks_display(caller, lockstr), "back": "locks"}
+
+
+def _lock_add(caller, lock, **kwargs):
+    locks = _caller_locks(caller)
+
+    try:
+        locktype, lockdef = lock.split(":", 1)
+    except ValueError:
+        return "Lockstring lacks ':'."
+
+    locktype = locktype.strip().lower()
+
+    if 'delete' in kwargs:
+        try:
+            ind = locks.index(lock)
+            locks.pop(ind)
+            _set_prototype_value(caller, "locks", ";".join(locks), parse=False)
+            ret = "Lock {} deleted.".format(lock)
+        except ValueError:
+            ret = "No lock found to delete."
+        return ret
+    try:
+        locktypes = [lck.split(":", 1)[0].strip().lower() for lck in locks]
+        ind = locktypes.index(locktype)
+        locks[ind] = lock
+        ret = "Lock with locktype '{}' updated.".format(locktype)
+    except ValueError:
+        locks.append(lock)
+        ret = "Added lock '{}'.".format(lock)
+    _set_prototype_value(caller, "locks", ";".join(locks))
+    return ret
+
+
+def _locks_actions(caller, raw_inp, **kwargs):
+    choices = kwargs.get("available_choices", [])
+    lock, action = _default_parse(
+        raw_inp, choices, ("examine", "e"), ("remove", "r", "delete", "d"))
+
+    if lock:
+        if action == 'examine':
+            return "node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"}
+        elif action == 'remove':
+            ret = _lock_add(caller, lock, delete=True)
+            caller.msg(ret)
+    else:
+        ret = _lock_add(caller, raw_inp)
+        caller.msg(ret)
+
+    return "node_locks"
+
+
+@list_node(_caller_locks, _lock_select)
 def node_locks(caller):
 
     text = """
@@ -1148,22 +1223,21 @@ def node_locks(caller):
             locktype:[NOT] lockfunc(args)
             locktype: [NOT] lockfunc(args) [AND|OR|NOT] lockfunc(args) [AND|OR|NOT] ...
 
-        Separate multiple lockstrings by semicolons (;).
-
-        {current}
-        """.format(current=_get_current_value(caller, 'locks'))
+        {action}
+        """.format(action=_format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
-        Here is an example of a lock string constisting of two locks:
+        Here is an example of two lock strings:
 
-            edit:false();call:tag(Foo) OR perm(Builder)
+            edit:false()
+            call:tag(Foo) OR perm(Builder)
 
         Above locks limit two things, 'edit' and 'call'. Which lock types are actually checked
         depend on the typeclass of the object being spawned. Here 'edit' is never allowed by anyone
         while 'call' is allowed to all accessors with a |ctag|n 'Foo' OR which has the
         |cPermission|n 'Builder'.
 
-        |c$lockfuncs|n
+        |cAvailable lockfuncs:|n
 
         {lfuncs}
     """.format(lfuncs=_format_lockfuncs())
@@ -1172,24 +1246,87 @@ def node_locks(caller):
 
     options = _wizard_options("locks", "tags", "permissions")
     options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="locks",
-                                  processor=lambda s: s.strip(),
-                                  next_node="node_permissions"))})
+                    "goto": _locks_actions})
+
     return text, options
 
 
 # permissions node
 
+def _caller_permissions(caller):
+    prototype = _get_menu_prototype(caller)
+    perms = prototype.get("permissions", [])
+    return perms
 
+
+def _display_perm(caller, permission):
+    hierarchy = settings.PERMISSION_HIERARCHY
+    perm_low = permission.lower()
+    if perm_low in [prm.lower() for prm in hierarchy]:
+        txt = "Permission (in hieararchy): {}".format(
+            ", ".join(
+                ["|w[{}]|n".format(prm)
+                 if prm.lower() == perm_low else "|W{}|n".format(prm)
+                 for prm in hierarchy]))
+    else:
+        txt = "Permission: '{}'".format(permission)
+    return txt
+
+
+def _permission_select(caller, permission, **kwargs):
+    return "node_examine_entity", {"text": _display_perm(caller, permission), "back": "permissions"}
+
+
+def _add_perm(caller, perm, **kwargs):
+    if perm:
+        perm_low = perm.lower()
+        perms = _caller_permissions(caller)
+        perms_low = [prm.lower() for prm in perms]
+        if 'delete' in kwargs:
+            try:
+                ind = perms_low.index(perm_low)
+                del perms[ind]
+                text = "Removed Permission '{}'.".format(perm)
+            except ValueError:
+                text = "Found no Permission to remove."
+        else:
+            if perm_low in perms_low:
+                text = "Permission already set."
+            else:
+                perms.append(perm)
+                _set_prototype_value(caller, "permissions", perms)
+                text = "Added Permission '{}'".format(perm)
+        return text
+
+
+def _permissions_actions(caller, raw_inp, **kwargs):
+    """Parse actions for permission listing"""
+    choices = kwargs.get("available_choices", [])
+    perm, action = _default_parse(
+            raw_inp, choices, ('examine', 'e'), ('remove', 'r', 'delete', 'd'))
+
+    if perm:
+        if action == 'examine':
+            return "node_examine_entity", \
+                {"text": _display_perm(caller, perm), "back": "permissions"}
+        elif action == 'remove':
+            res = _add_perm(caller, perm, delete=True)
+            caller.msg(res)
+    else:
+        res = _add_perm(caller, raw_inp.strip())
+        caller.msg(res)
+    return "node_permissions"
+
+
+@list_node(_caller_permissions, _permission_select)
 def node_permissions(caller):
 
     text = """
         |cPermissions|n are simple strings used to grant access to this object. A permission is used
         when a |clock|n is checked that contains the |wperm|n or |wpperm|n lock functions.
 
-        {current}
-    """.format(current=_get_current_value(caller, "permissions"))
+        {actions}
+    """.format(actions=_format_list_actions("examine", "remove"), prefix="Actions: ")
 
     helptext = """
         Any string can act as a permission as long as a lock is set to look for it. Depending on the
@@ -1201,16 +1338,14 @@ def node_permissions(caller):
 
         For example, a |clock|n string like "edit:perm(Builder)" will grant access to accessors
         having the |cpermission|n "Builder" or higher.
-    """.format(settings.PERMISSION_HIERARCHY)
+    """.format(permissions=", ".join(settings.PERMISSION_HIERARCHY))
 
     text = (text, helptext)
 
-    options = _wizard_options("permissions", "destination", "location")
+    options = _wizard_options("permissions", "locks", "location")
     options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="permissions",
-                                  processor=lambda s: [part.strip() for part in s.split(",")],
-                                  next_node="node_location"))})
+                    "goto": _permissions_actions})
+
     return text, options
 
 

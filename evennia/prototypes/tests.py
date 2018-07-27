@@ -461,7 +461,7 @@ class TestMenuModule(EvenniaTest):
             [('foo1', None, ""),
              ('foo2', 'cat1', ""),
              ('foo3', 'cat2', "dat1")])
-        self.assertEqual(olc_menus._add_tag(caller, "foo1", delete=True), "Removed tag 'foo1'")
+        self.assertEqual(olc_menus._add_tag(caller, "foo1", delete=True), "Removed Tag 'foo1'.")
         self.assertEqual(olc_menus._get_menu_prototype(caller)['tags'],
             [('foo2', 'cat1', ""),
              ('foo3', 'cat2', "dat1")])
@@ -470,6 +470,18 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(olc_menus._caller_tags(caller), ["foo2", "foo3"])
 
         protlib.save_prototype(**self.test_prot)
+
+        # locks helpers
+        self.assertEqual(olc_menus._lock_add(caller, "foo:false()"), "Added lock 'foo:false()'.")
+        self.assertEqual(olc_menus._lock_add(caller, "foo2:false()"), "Added lock 'foo2:false()'.")
+        self.assertEqual(olc_menus._lock_add(caller, "foo2:true()"), "Lock with locktype 'foo2' updated.")
+        self.assertEqual(olc_menus._get_menu_prototype(caller)["locks"], "foo:false();foo2:true()")
+
+        # perm helpers
+        self.assertEqual(olc_menus._add_perm(caller, "foo"), "Added Permission 'foo'")
+        self.assertEqual(olc_menus._add_perm(caller, "foo2"), "Added Permission 'foo2'")
+        self.assertEqual(olc_menus._get_menu_prototype(caller)["permissions"], ["foo", "foo2"])
+
 
         # spawn helpers
         with mock.patch("evennia.prototypes.menus.protlib.search_prototype",
