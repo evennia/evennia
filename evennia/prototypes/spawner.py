@@ -150,6 +150,8 @@ def _get_prototype(dic, prot, protparents):
     for infinite recursion here.
 
     """
+    # we don't overload the prototype_key
+    prototype_key = prot.get('prototype_key', None)
     if "prototype_parent" in dic:
         # move backwards through the inheritance
         for prototype in make_iter(dic["prototype_parent"]):
@@ -157,6 +159,7 @@ def _get_prototype(dic, prot, protparents):
             new_prot = _get_prototype(protparents.get(prototype.lower(), {}), prot, protparents)
             prot.update(new_prot)
     prot.update(dic)
+    prot['prototype_key'] = prototype_key
     prot.pop("prototype_parent", None)  # we don't need this anymore
     return prot
 
@@ -217,19 +220,19 @@ def prototype_from_object(obj):
 
     location = obj.db_location
     if location:
-        prot['location'] = location
+        prot['location'] = location.dbref
     home = obj.db_home
     if home:
-        prot['home'] = home
+        prot['home'] = home.dbref
     destination = obj.db_destination
     if destination:
-        prot['destination'] = destination
+        prot['destination'] = destination.dbref
     locks = obj.locks.all()
     if locks:
-        prot['locks'] = locks
+        prot['locks'] = ";".join(locks)
     perms = obj.permissions.get()
     if perms:
-        prot['permissions'] = perms
+        prot['permissions'] = make_iter(perms)
     aliases = obj.aliases.get()
     if aliases:
         prot['aliases'] = aliases

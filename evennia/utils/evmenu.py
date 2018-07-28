@@ -1055,7 +1055,10 @@ def list_node(option_generator, select=None, pagesize=10):
             else:
                 if callable(select):
                     try:
-                        return select(caller, selection)
+                        if bool(getargspec(select).keywords):
+                            return select(caller, selection, available_choices=available_choices)
+                        else:
+                            return select(caller, selection)
                     except Exception:
                         logger.log_trace()
                 elif select:
@@ -1124,7 +1127,7 @@ def list_node(option_generator, select=None, pagesize=10):
             except Exception:
                 logger.log_trace()
             else:
-                if isinstance(decorated_options, {}):
+                if isinstance(decorated_options, dict):
                     decorated_options = [decorated_options]
                 else:
                     decorated_options = make_iter(decorated_options)
