@@ -482,6 +482,10 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(olc_menus._add_perm(caller, "foo2"), "Added Permission 'foo2'")
         self.assertEqual(olc_menus._get_menu_prototype(caller)["permissions"], ["foo", "foo2"])
 
+        # prototype_tags helpers
+        self.assertEqual(olc_menus._add_prototype_tag(caller, "foo"), "Added Tag 'foo'.")
+        self.assertEqual(olc_menus._add_prototype_tag(caller, "foo2"), "Added Tag 'foo2'.")
+        self.assertEqual(olc_menus._get_menu_prototype(caller)["prototype_tags"], ["foo", "foo2"])
 
         # spawn helpers
         with mock.patch("evennia.prototypes.menus.protlib.search_prototype",
