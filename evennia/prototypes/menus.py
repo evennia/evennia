@@ -7,7 +7,9 @@ OLC Prototype menu nodes
 import json
 import re
 from random import choice
+from django.db.models import Q
 from django.conf import settings
+from evennia.objects.models import ObjectDB
 from evennia.utils.evmenu import EvMenu, list_node
 from evennia.utils import evmore
 from evennia.utils.ansi import strip_ansi
@@ -273,7 +275,11 @@ def _get_current_value(caller, keyname, formatter=str):
     flat_prot = _get_flat_menu_prototype(caller)
     if keyname in flat_prot:
         # value in flattened prot
-        return "Current {} (|binherited|n): {}".format(keyname, formatter(flat_prot[keyname]))
+        if keyname == 'prototype_key':
+            # we don't inherit prototype_keys
+            return "[No prototype_key set] (|rnot inherited|n)"
+        else:
+            return "Current {} (|binherited|n): {}".format(keyname, formatter(flat_prot[keyname]))
     return "[No {} set]".format(keyname)
 
 
@@ -305,6 +311,180 @@ def _default_parse(raw_inp, choices, *args):
 
 # Menu nodes ------------------------------
 
+# helper nodes
+
+# validate prototype (available as option from all nodes)
+
+def node_validate_prototype(caller, raw_string, **kwargs):
+    """General node to view and validate a protototype"""
+    prototype = _get_flat_menu_prototype(caller, validate=False)
+    prev_node = kwargs.get("back", "index")
+
+    _, text = _validate_prototype(prototype)
+
+    helptext = """
+    The validator checks if the prototype's various values are on the expected form. It also tests
+    any $protfuncs.
+
+    """
+
+    text = (text, helptext)
+
+    options = _wizard_options(None, prev_node, None)
+    options.append({"key": "_default",
+                    "goto": "node_" + prev_node})
+
+    return text, options
+
+
+def node_examine_entity(caller, raw_string, **kwargs):
+    """
+    General node to view a text and then return to previous node.  Kwargs should contain "text" for
+    the text to show and 'back" pointing to the node to return to.
+    """
+    text = kwargs.get("text", "Nothing was found here.")
+    helptext = "Use |wback|n to return to the previous node."
+    prev_node = kwargs.get('back', 'index')
+
+    text = (text, helptext)
+
+    options = _wizard_options(None, prev_node, None)
+    options.append({"key": "_default",
+                    "goto": "node_" + prev_node})
+
+    return text, options
+
+
+def _search_object(caller):
+    "update search term based on query stored on menu; store match too"
+    try:
+        searchstring = caller.ndb._menutree.olc_search_object_term.strip()
+        caller.ndb._menutree.olc_search_object_matches = []
+    except AttributeError:
+        return []
+
+    if not searchstring:
+        caller.msg("Must specify a search criterion.")
+        return []
+
+    is_dbref = utils.dbref(searchstring)
+    is_account = searchstring.startswith("*")
+
+    if is_dbref or is_account:
+
+        if is_dbref:
+            # a dbref search
+            results = caller.search(searchstring, global_search=True, quiet=True)
+        else:
+            # an account search
+            searchstring = searchstring.lstrip("*")
+            results = caller.search_account(searchstring, quiet=True)
+    else:
+        keyquery = Q(db_key__istartswith=searchstring)
+        aliasquery = Q(db_tags__db_key__istartswith=searchstring,
+                       db_tags__db_tagtype__iexact="alias")
+        results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
+
+    caller.msg("Searching for '{}' ...".format(searchstring))
+    caller.ndb._menutree.olc_search_object_matches = results
+    return ["{}(#{})".format(obj.key, obj.id) for obj in results]
+
+
+def _object_select(caller, obj_entry, **kwargs):
+    choices = kwargs['available_choices']
+    num = choices.index(obj_entry)
+    matches = caller.ndb._menutree.olc_search_object_matches
+    obj = matches[num]
+
+    if not obj.access(caller, 'examine'):
+        caller.msg("|rYou don't have 'examine' access on this object.|n")
+        del caller.ndb._menutree.olc_search_object_term
+        return "node_search_object"
+
+    prot = spawner.prototype_from_object(obj)
+    txt = protlib.prototype_to_str(prot)
+    return "node_examine_entity", {"text": txt, "back": "search_object"}
+
+
+def _object_actions(caller, raw_inp, **kwargs):
+    "All this does is to queue a search query"
+    choices = kwargs['available_choices']
+    obj_entry, action = _default_parse(
+        raw_inp, choices, ("examine", "e"), ("create prototype from object", "create", "c"))
+
+    if obj_entry:
+
+        num = choices.index(obj_entry)
+        matches = caller.ndb._menutree.olc_search_object_matches
+        obj = matches[num]
+        prot = spawner.prototype_from_object(obj)
+
+        if action == "examine":
+
+            if not obj.access(caller, 'examine'):
+                caller.msg("\n|rYou don't have 'examine' access on this object.|n")
+                del caller.ndb._menutree.olc_search_object_term
+                return "node_search_object"
+
+            txt = protlib.prototype_to_str(prot)
+            return "node_examine_entity", {"text": txt, "back": "search_object"}
+        else:
+            # load prototype
+
+            if not obj.access(caller, 'control'):
+                caller.msg("|rYou don't have access to do this with this object.|n")
+                del caller.ndb._menutree.olc_search_object_term
+                return "node_search_object"
+
+            _set_menu_prototype(caller, prot)
+            caller.msg("Created prototype from object.")
+            return "node_index"
+    else:
+        caller.ndb._menutree.olc_search_object_term = raw_inp
+        return "node_search_object", kwargs
+
+
+@list_node(_search_object, _object_select)
+def node_search_object(caller, raw_inp, **kwargs):
+    """
+    Node for searching for an existing object.
+    """
+    try:
+        matches = caller.ndb._menutree.olc_search_object_matches
+    except AttributeError:
+        matches = []
+    nmatches = len(matches)
+    prev_node = kwargs.get("back", "index")
+
+    if matches:
+        text = """
+        Found {num} match{post}.
+
+        {actions}
+         (|RWarning: creating a prototype will |roverwrite|r |Rthe current prototype!)|n""".format(
+            num=nmatches, post="es" if nmatches > 1 else "",
+            actions=_format_list_actions(
+                "examine", "create prototype from object", prefix="Actions: "))
+    else:
+        text = "Enter search criterion."
+
+    helptext = """
+        You can search objects by specifying partial key, alias or its exact #dbref. Use *query to
+        search for an Account instead.
+
+        Once having found any matches you can choose to examine it or use |ccreate prototype from
+        object|n. If doing the latter, a prototype will be calculated from the selected object and
+        loaded as the new 'current' prototype. This is useful for having a base to build from but be
+        careful you are not throwing away any existing, unsaved, prototype work!
+        """
+
+    text = (text, helptext)
+
+    options = _wizard_options(None, prev_node, None)
+    options.append({"key": "_default",
+                    "goto": (_object_actions, {"back": prev_node})})
+
+    return text, options
 
 # main index (start page) node
 
@@ -382,49 +562,9 @@ def node_index(caller):
             {"key": ("|wSP|Wawn prototype", "spawn", "sp"),
              "goto": "node_prototype_spawn"},
             {"key": ("|wLO|Wad prototype", "load", "lo"),
-             "goto": "node_prototype_load"}))
-
-    return text, options
-
-
-# validate prototype (available as option from all nodes)
-
-def node_validate_prototype(caller, raw_string, **kwargs):
-    """General node to view and validate a protototype"""
-    prototype = _get_menu_prototype(caller)
-    prev_node = kwargs.get("back", "index")
-
-    _, text = _validate_prototype(prototype)
-
-    helptext = """
-    The validator checks if the prototype's various values are on the expected form. It also tests
-    any $protfuncs.
-
-    """
-
-    text = (text, helptext)
-
-    options = _wizard_options(None, prev_node, None)
-    options.append({"key": "_default",
-                    "goto": "node_" + prev_node})
-
-    return text, options
-
-
-def node_examine_entity(caller, raw_string, **kwargs):
-    """
-    General node to view a text and then return to previous node.  Kwargs should contain "text" for
-    the text to show and 'back" pointing to the node to return to.
-    """
-    text = kwargs.get("text", "Nothing was found here.")
-    helptext = "Use |wback|n to return to the previous node."
-    prev_node = kwargs.get('back', 'index')
-
-    text = (text, helptext)
-
-    options = _wizard_options(None, prev_node, None)
-    options.append({"key": "_default",
-                    "goto": "node_" + prev_node})
+             "goto": "node_prototype_load"},
+            {"key": ("|wSE|Warch objects|n", "search", "se"),
+             "goto": "node_search_object"}))
 
     return text, options
 
@@ -811,7 +951,7 @@ def node_aliases(caller):
 
 def _caller_attrs(caller):
     prototype = _get_menu_prototype(caller)
-    attrs = ["{}={}".format(tup[0], utils.crop(utils.to_str(tup[1]), width=10))
+    attrs = ["{}={}".format(tup[0], utils.crop(utils.to_str(tup[1], force_string=True), width=10))
              for tup in prototype.get("attrs", [])]
     return attrs
 
@@ -1837,7 +1977,7 @@ class OLCMenu(EvMenu):
 
         """
         olc_keys = ("index", "forward", "back", "previous", "next", "validate prototype",
-                    "save prototype", "load prototype", "spawn prototype")
+                    "save prototype", "load prototype", "spawn prototype", "search objects")
         olc_options = []
         other_options = []
         for key, desc in optionlist:
@@ -1878,6 +2018,7 @@ def start_olc(caller, session=None, prototype=None):
     menudata = {"node_index": node_index,
                 "node_validate_prototype": node_validate_prototype,
                 "node_examine_entity": node_examine_entity,
+                "node_search_object": node_search_object,
                 "node_prototype_key": node_prototype_key,
                 "node_prototype_parent": node_prototype_parent,
                 "node_typeclass": node_typeclass,

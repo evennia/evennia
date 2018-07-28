@@ -150,7 +150,8 @@ def value_to_obj_or_any(value):
     stype = type(value)
     if is_iter(value):
         if stype == dict:
-            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.items()}
+            return {value_to_obj_or_any(key):
+                    value_to_obj_or_any(val) for key, val in value.items()}
         else:
             return stype([value_to_obj_or_any(val) for val in value])
     obj = dbid_to_obj(value, ObjectDB)
@@ -165,18 +166,70 @@ def prototype_to_str(prototype):
         prototype (dict): The prototype.
     """
 
-    header = (
-        "|cprototype key:|n {}, |ctags:|n {}, |clocks:|n {} \n"
-        "|cdesc:|n {} \n|cprototype:|n ".format(
-           prototype.get('prototype_key', None),
-           ", ".join(prototype.get('prototype_tags', ['None'])),
-           prototype.get('prototype_locks', None),
-           prototype.get('prototype_desc', None)))
-    proto = ("{{\n  {} \n}}".format(
-        "\n  ".join(
-            "{!r}: {!r},".format(key, value) for key, value in
-             sorted(prototype.items()) if key not in _PROTOTYPE_META_NAMES)).rstrip(","))
-    return header + proto
+    header = """
+|cprototype-key:|n {prototype_key}, |c-tags:|n {prototype_tags}, |c-locks:|n {prototype_locks}|n
+|c-desc|n: {prototype_desc}
+|cprototype-parent:|n {prototype_parent}
+    \n""".format(
+            prototype_key=prototype.get('prototype_key', '|r[UNSET](required)|n'),
+            prototype_tags=prototype.get('prototype_tags', '|wNone|n'),
+            prototype_locks=prototype.get('prototype_locks', '|wNone|n'),
+            prototype_desc=prototype.get('prototype_desc', '|wNone|n'),
+            prototype_parent=prototype.get('prototype_parent', '|wNone|n'))
+
+    key = prototype.get('key', '')
+    if key:
+        key = "|ckey:|n {key}".format(key=key)
+    aliases = prototype.get("aliases", '')
+    if aliases:
+        aliases = "|caliases:|n {aliases}".format(
+            aliases=", ".join(aliases))
+    attrs = prototype.get("attrs", '')
+    if attrs:
+        out = []
+        for (attrkey, value, category, locks) in attrs:
+            locks = ", ".join(lock for lock in locks if lock)
+            category = "|ccategory:|n {}".format(category) if category else ''
+            cat_locks = ""
+            if category or locks:
+                cat_locks = "(|ccategory:|n {category}, ".format(
+                    category=category if category else "|wNone|n")
+            out.append(
+                "{attrkey} "
+                "{cat_locks}\n"
+                "  |c=|n {value}".format(
+                           attrkey=attrkey,
+                           cat_locks=cat_locks,
+                           locks=locks if locks else "|wNone|n",
+                           value=value))
+        attrs = "|cattrs:|n\n {attrs}".format(attrs="\n ".join(out))
+    tags = prototype.get('tags', '')
+    if tags:
+        out = []
+        for (tagkey, category, data) in tags:
+            out.append("{tagkey} (category: {category}{dat})".format(
+                tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""))
+        tags = "|ctags:|n\n {tags}".format(tags="\n ".join(out))
+    locks = prototype.get('locks', '')
+    if locks:
+        locks = "|clocks:|n\n {locks}".format(locks="\n ".join(locks.split(";")))
+    permissions = prototype.get("permissions", '')
+    if permissions:
+        permissions = "|cpermissions:|n {perms}".format(perms=", ".join(permissions))
+    location = prototype.get("location", '')
+    if location:
+        location = "|clocation:|n {location}".format(location=location)
+    home = prototype.get("home", '')
+    if home:
+        home = "|chome:|n {home}".format(home=home)
+    destination = prototype.get("destination", '')
+    if destination:
+        destination = "|cdestination:|n {destination}".format(destination=destination)
+
+    body = "\n".join(part for part in (key, aliases, attrs, tags, locks, permissions,
+                     location, home, destination) if part)
+
+    return header.lstrip() + body.strip()
 
 
 def check_permission(prototype_key, action, default=True):
