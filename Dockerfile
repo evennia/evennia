@@ -25,13 +25,14 @@ MAINTAINER www.evennia.com
 
 # install compilation environment
 RUN apk update && apk add python py-pip python-dev py-setuptools gcc \
-musl-dev jpeg-dev zlib-dev bash procps
+musl-dev jpeg-dev zlib-dev bash py2-openssl procps
 
 # add the project source
 ADD . /usr/src/evennia
 
 # install dependencies
 RUN pip install -e /usr/src/evennia --trusted-host pypi.python.org
+RUN pip install cryptography pyasn1 service_identity
 
 # add the game source when rebuilding a new docker image from inside
 # a game dir
