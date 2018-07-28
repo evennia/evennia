@@ -174,7 +174,7 @@ def _set_property(caller, raw_string, **kwargs):
     return next_node
 
 
-def _wizard_options(curr_node, prev_node, next_node, color="|W"):
+def _wizard_options(curr_node, prev_node, next_node, color="|W", search=False):
     """Creates default navigation options available in the wizard."""
     options = []
     if prev_node:
@@ -195,6 +195,9 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W"):
     if curr_node:
         options.append({"key": ("|wV|Walidate prototype", "validate", "v"),
                         "goto": ("node_validate_prototype", {"back": curr_node})})
+        if search:
+            options.append({"key": ("|wSE|Warch objects", "search object", "search", "se"),
+                            "goto": ("node_search_object", {"back": curr_node})})
 
     return options
 
@@ -1495,10 +1498,11 @@ def node_permissions(caller):
 def node_location(caller):
 
     text = """
-        The |cLocation|n of this object in the world. If not given, the object will spawn
-        in the inventory of |c{caller}|n instead.
+        The |cLocation|n of this object in the world. If not given, the object will spawn in the
+        inventory of |c{caller}|n by default.
 
         {current}
+
     """.format(caller=caller.key, current=_get_current_value(caller, "location"))
 
     helptext = """
@@ -1508,11 +1512,11 @@ def node_location(caller):
 
         |c$protfuncs|n
         {pfuncs}
-    """.format(pfuncs=_format_protfuncs)
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
-    options = _wizard_options("location", "permissions", "home")
+    options = _wizard_options("location", "permissions", "home", search=True)
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="location",
@@ -1529,20 +1533,27 @@ def node_home(caller):
     text = """
         The |cHome|n location of an object is often only used as a backup - this is where the object
         will be moved to if its location is deleted. The home location can also be used as an actual
-        home for characters to quickly move back to. If unset, the global home default will be used.
+        home for characters to quickly move back to.
+
+        If unset, the global home default (|w{default}|n) will be used.
 
         {current}
-        """.format(current=_get_current_value(caller, "home"))
+        """.format(default=settings.DEFAULT_HOME,
+                   current=_get_current_value(caller, "home"))
     helptext = """
-        The location can be specified as as #dbref but can also be explicitly searched for using
-        $obj(name).
+        The home can be given as a #dbref but can also be specified using the protfunc
+        '$obj(name)'. Use |wSE|nearch to find objects in the database.
 
-        The home location is often not used except as a backup. It should never be unset.
-    """
+        The home location is commonly not used except as a backup; using the global default is often
+        enough.
+
+        |c$protfuncs|n
+        {pfuncs}
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
-    options = _wizard_options("home", "aliases", "destination")
+    options = _wizard_options("home", "location", "destination", search=True)
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="home",
@@ -1557,20 +1568,23 @@ def node_home(caller):
 def node_destination(caller):
 
     text = """
-        The object's |cDestination|n is usually only set for Exit-like objects and designates where
+        The object's |cDestination|n is generally only used by Exit-like objects to designate where
         the exit 'leads to'. It's usually unset for all other types of objects.
 
         {current}
     """.format(current=_get_current_value(caller, "destination"))
 
     helptext = """
-        The destination can be given as a #dbref but can also be explicitly searched for using
-        $obj(name).
-    """
+        The destination can be given as a #dbref but can also be specified using the protfunc
+        '$obj(name)'. Use |wSEearch to find objects in the database.
+
+        |c$protfuncs|n
+        {pfuncs}
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
-    options = _wizard_options("destination", "home", "prototype_desc")
+    options = _wizard_options("destination", "home", "prototype_desc", search=True)
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="dest",
@@ -1585,8 +1599,7 @@ def node_destination(caller):
 def node_prototype_desc(caller):
 
     text = """
-        The |cPrototype-Description|n optionally briefly describes the prototype when it's viewed in
-        listings.
+        The |cPrototype-Description|n briefly describes the prototype when it's viewed in listings.
 
         {current}
         """.format(current=_get_current_value(caller, "prototype_desc"))
@@ -1602,7 +1615,7 @@ def node_prototype_desc(caller):
                     "goto": (_set_property,
                              dict(prop='prototype_desc',
                                   processor=lambda s: s.strip(),
-                                  next_node="node_prototype_tags"))})
+                                  next_node="node_prototype_desc"))})
 
     return text, options
 
@@ -1610,14 +1623,87 @@ def node_prototype_desc(caller):
 # prototype_tags node
 
 
+def _caller_prototype_tags(caller):
+    prototype = _get_menu_prototype(caller)
+    tags = prototype.get("prototype_tags", [])
+    return tags
+
+
+def _add_prototype_tag(caller, tag_string, **kwargs):
+    """
+    Add prototype_tags to the system. We only support straight tags, no
+    categories (category is assigned automatically).
+
+    Args:
+        caller (Object): Caller of menu.
+        tag_string (str): Input from user - only tagname
+
+    Kwargs:
+        delete (str): If this is set, tag_string is considered
+            the name of the tag to delete.
+
+    Returns:
+        result (str): Result string of action.
+
+    """
+    tag = tag_string.strip().lower()
+
+    if tag:
+        prot = _get_menu_prototype(caller)
+        tags = prot.get('prototype_tags', [])
+        exists = tag in tags
+
+        if 'delete' in kwargs:
+            if exists:
+                tags.pop(tags.index(tag))
+                text = "Removed Prototype-Tag '{}'.".format(tag)
+            else:
+                text = "Found no Prototype-Tag to remove."
+        elif not exists:
+            # a fresh, new tag
+            tags.append(tag)
+            text = "Added Prototype-Tag '{}'.".format(tag)
+        else:
+            text = "Prototype-Tag already added."
+
+        _set_prototype_value(caller, "prototype_tags", tags)
+    else:
+        text = "No Prototype-Tag specified."
+
+    return text
+
+
+def _prototype_tag_select(caller, tagname):
+    caller.msg("Prototype-Tag: {}".format(tagname))
+    return "node_prototype_tags"
+
+
+def _prototype_tags_actions(caller, raw_inp, **kwargs):
+    """Parse actions for tags listing"""
+    choices = kwargs.get("available_choices", [])
+    tagname, action = _default_parse(
+            raw_inp, choices, ('remove', 'r', 'delete', 'd'))
+
+    if tagname:
+        if action == 'remove':
+            res = _add_prototype_tag(caller, tagname, delete=True)
+            caller.msg(res)
+    else:
+        res = _add_prototype_tag(caller, raw_inp.lower().strip())
+        caller.msg(res)
+    return "node_prototype_tags"
+
+
+@list_node(_caller_prototype_tags, _prototype_tag_select)
 def node_prototype_tags(caller):
 
     text = """
         |cPrototype-Tags|n can be used to classify and find prototypes in listings Tag names are not
-        case-sensitive and can have not have a custom category. Separate multiple tags by commas.
+        case-sensitive and can have not have a custom category.
 
-        {current}
-        """.format(current=_get_current_value(caller, "prototype_tags"))
+        {actions}
+        """.format(actions=_format_list_actions(
+                "remove", prefix="|w<text>|n|W to add Tag. Other Action:|n "))
     helptext = """
         Using prototype-tags is a good way to organize and group large numbers of prototypes by
         genre, type etc. Under the hood, prototypes' tags will all be stored with the category
@@ -1628,17 +1714,73 @@ def node_prototype_tags(caller):
 
     options = _wizard_options("prototype_tags", "prototype_desc", "prototype_locks")
     options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="prototype_tags",
-                                  processor=lambda s: [
-                                    str(part.strip().lower()) for part in s.split(",")],
-                                  next_node="node_prototype_locks"))})
+                    "goto": _prototype_tags_actions})
+
     return text, options
 
 
 # prototype_locks node
 
 
+def _caller_prototype_locks(caller):
+    locks = _get_menu_prototype(caller).get("prototype_locks", "")
+    return [lck for lck in locks.split(";") if lck]
+
+
+def _prototype_lock_select(caller, lockstr):
+    return "node_examine_entity", {"text": _locks_display(caller, lockstr), "back": "prototype_locks"}
+
+
+def _prototype_lock_add(caller, lock, **kwargs):
+    locks = _caller_prototype_locks(caller)
+
+    try:
+        locktype, lockdef = lock.split(":", 1)
+    except ValueError:
+        return "Lockstring lacks ':'."
+
+    locktype = locktype.strip().lower()
+
+    if 'delete' in kwargs:
+        try:
+            ind = locks.index(lock)
+            locks.pop(ind)
+            _set_prototype_value(caller, "prototype_locks", ";".join(locks), parse=False)
+            ret = "Prototype-lock {} deleted.".format(lock)
+        except ValueError:
+            ret = "No Prototype-lock found to delete."
+        return ret
+    try:
+        locktypes = [lck.split(":", 1)[0].strip().lower() for lck in locks]
+        ind = locktypes.index(locktype)
+        locks[ind] = lock
+        ret = "Prototype-lock with locktype '{}' updated.".format(locktype)
+    except ValueError:
+        locks.append(lock)
+        ret = "Added Prototype-lock '{}'.".format(lock)
+    _set_prototype_value(caller, "prototype_locks", ";".join(locks))
+    return ret
+
+
+def _prototype_locks_actions(caller, raw_inp, **kwargs):
+    choices = kwargs.get("available_choices", [])
+    lock, action = _default_parse(
+        raw_inp, choices, ("examine", "e"), ("remove", "r", "delete", "d"))
+
+    if lock:
+        if action == 'examine':
+            return "node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"}
+        elif action == 'remove':
+            ret = _prototype_lock_add(caller, lock.strip(), delete=True)
+            caller.msg(ret)
+    else:
+        ret = _prototype_lock_add(caller, raw_inp.strip())
+        caller.msg(ret)
+
+    return "node_prototype_locks"
+
+
+@list_node(_caller_prototype_locks, _prototype_lock_select)
 def node_prototype_locks(caller):
 
     text = """
@@ -1650,25 +1792,23 @@ def node_prototype_locks(caller):
             - 'edit': Who can edit the prototype.
             - 'spawn': Who can spawn new objects with this prototype.
 
-        If unsure, leave as default.
+        If unsure, keep the open defaults.
 
-        {current}
-    """.format(current=_get_current_value(caller, "prototype_locks"))
+        {actions}
+    """.format(actions=_format_list_actions('examine', "remove", prefix="Actions: "))
 
     helptext = """
-        Prototype locks can be used when there are different tiers of builders or for developers to
-        produce 'base prototypes' only meant for builders to inherit and expand on rather than
-        change.
+        Prototype locks can be used to vary access for different tiers of builders. It also allows
+        developers to produce 'base prototypes' only meant for builders to inherit and expand on
+        rather than tweak in-place.
         """
 
     text = (text, helptext)
 
     options = _wizard_options("prototype_locks", "prototype_tags", "index")
     options.append({"key": "_default",
-                    "goto": (_set_property,
-                             dict(prop="prototype_locks",
-                                  processor=lambda s: s.strip().lower(),
-                                  next_node="node_index"))})
+                    "goto": _prototype_locks_actions})
+
     return text, options
 
 

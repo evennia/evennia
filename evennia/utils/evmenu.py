@@ -1117,11 +1117,18 @@ def list_node(option_generator, select=None, pagesize=10):
             # add data from the decorated node
 
             decorated_options = []
+            supports_kwargs = bool(getargspec(func).keywords)
             try:
-                text, decorated_options = func(caller, raw_string)
+                if supports_kwargs:
+                    text, decorated_options = func(caller, raw_string, **kwargs)
+                else:
+                    text, decorated_options = func(caller, raw_string)
             except TypeError:
                 try:
-                    text, decorated_options = func(caller)
+                    if supports_kwargs:
+                        text, decorated_options = func(caller, **kwargs)
+                    else:
+                        text, decorated_options = func(caller)
                 except Exception:
                     raise
             except Exception:
