@@ -1600,7 +1600,7 @@ def node_destination(caller):
     options = _wizard_options("destination", "home", "prototype_desc", search=True)
     options.append({"key": "_default",
                     "goto": (_set_property,
-                             dict(prop="dest",
+                             dict(prop="destination",
                                   processor=lambda s: s.strip()))})
     return text, options
 
