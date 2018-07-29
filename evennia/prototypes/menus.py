@@ -269,11 +269,13 @@ def _format_list_actions(*args, **kwargs):
     return prefix + "|W,|n ".join(actions)
 
 
-def _get_current_value(caller, keyname, formatter=str):
+def _get_current_value(caller, keyname, formatter=str, only_inherit=False):
     "Return current value, marking if value comes from parent or set in this prototype"
     prot = _get_menu_prototype(caller)
     if keyname in prot:
         # value in current prot
+        if only_inherit:
+            return ''
         return "Current {}: {}".format(keyname, formatter(prot[keyname]))
     flat_prot = _get_flat_menu_prototype(caller)
     if keyname in flat_prot:
@@ -282,7 +284,11 @@ def _get_current_value(caller, keyname, formatter=str):
             # we don't inherit prototype_keys
             return "[No prototype_key set] (|rnot inherited|n)"
         else:
-            return "Current {} (|binherited|n): {}".format(keyname, formatter(flat_prot[keyname]))
+            ret = "Current {} (|binherited|n): {}".format(keyname, formatter(flat_prot[keyname]))
+            if only_inherit:
+                return "{}\n\n".format(ret)
+            return ret
+
     return "[No {} set]".format(keyname)
 
 
@@ -930,7 +936,7 @@ def node_aliases(caller):
         |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not
         case sensitive.
 
-        {actions}
+        {current}{actions}
     """.format(actions=_format_list_actions("remove", prefix="|w<text>|W to add new alias. Other action: "))
 
     helptext = """
