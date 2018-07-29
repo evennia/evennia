@@ -297,10 +297,10 @@ def init_spawn_value(value, validator=None):
 for mod in settings.PROTOTYPE_MODULES:
     # to remove a default prototype, override it with an empty dict.
     # internally we store as (key, desc, locks, tags, prototype_dict)
-    prots = [(prototype_key, prot) for prototype_key, prot in all_from_module(mod).items()
+    prots = [(prototype_key.lower(), prot) for prototype_key, prot in all_from_module(mod).items()
              if prot and isinstance(prot, dict)]
     # assign module path to each prototype_key for easy reference
-    _MODULE_PROTOTYPE_MODULES.update({prototype_key: mod for prototype_key, _ in prots})
+    _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
     # make sure the prototype contains all meta info
     for prototype_key, prot in prots:
         actual_prot_key = prot.get('prototype_key', prototype_key).lower()
@@ -409,7 +409,7 @@ def save_prototype(**kwargs):
 create_prototype = save_prototype
 
 
-def delete_prototype(key, caller=None):
+def delete_prototype(prototype_key, caller=None):
     """
     Delete a stored prototype
 
@@ -424,14 +424,16 @@ def delete_prototype(key, caller=None):
 
     """
     if prototype_key in _MODULE_PROTOTYPES:
-        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
+        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key.lower(), "N/A")
         raise PermissionError("{} is a read-only prototype "
                               "(defined as code in {}).".format(prototype_key, mod))
 
-    stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
+    stored_prototype = DbPrototype.objects.filter(db_key__iexact=prototype_key)
 
     if not stored_prototype:
         raise PermissionError("Prototype {} was not found.".format(prototype_key))
+
+    stored_prototype = stored_prototype[0]
     if caller:
         if not stored_prototype.access(caller, 'edit'):
             raise PermissionError("{} does not have permission to "

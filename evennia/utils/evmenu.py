@@ -1145,7 +1145,6 @@ def list_node(option_generator, select=None, pagesize=10):
             for eopt in decorated_options:
                 cback = ("goto" in eopt and "goto") or ("exec" in eopt and "exec") or None
                 if cback:
-                    print("eopt, cback: {} {}".format(eopt, cback))
                     signature = eopt[cback]
                     if callable(signature):
                         # callable with no kwargs defined
