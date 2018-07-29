@@ -1874,10 +1874,25 @@ def node_update_objects(caller, **kwargs):
         diff, obj_prototype = spawner.prototype_diff_from_object(prototype, obj)
 
     text = ["Suggested changes to {} objects. ".format(len(update_objects)),
-            "Showing random example obj to change: {name} (#{dbref}))\n".format(obj.key, obj.dbref)]
-    options = []
+            "Showing random example obj to change: {name} ({dbref}))\n".format(
+                name=obj.key, dbref=obj.dbref)]
+
+    helptext = """
+        Be careful with this operation! The upgrade mechanism will try to automatically estimate
+        what changes need to be applied. But the estimate is |wonly based on the analysis of one
+        randomly selected object|n among all objects spawned by this prototype. If that object
+        happens to be unusual in some way the estimate will be off and may lead to unexpected
+        results for other objects. Always test your objects carefully after an upgrade and
+        consider being conservative (switch to KEEP) or even do the update manually if you are
+        unsure that the results will be acceptable.  """
+
+    options = _wizard_options("update_objects", back_node[5:], None)
     io = 0
     for (key, inst) in sorted(((key, val) for key, val in diff.items()), key=lambda tup: tup[0]):
+
+        if key in protlib._PROTOTYPE_META_NAMES:
+            continue
+
         line = "{iopt}  |w{key}|n: {old}{sep}{new} {change}"
         old_val = utils.crop(str(obj_prototype[key]), width=20)
 
@@ -1907,18 +1922,11 @@ def node_update_objects(caller, **kwargs):
              {"key": "|wb|rack ({})".format(back_node[5:], 'b'),
               "goto": back_node}])
 
-        helptext = """
-            Be careful with this operation! The upgrade mechanism will try to automatically estimate
-            what changes need to be applied. But the estimate is |wonly based on the analysis of one
-            randomly selected object|n among all objects spawned by this prototype. If that object
-            happens to be unusual in some way the estimate will be off and may lead to unexpected
-            results for other objects. Always test your objects carefully after an upgrade and
-            consider being conservative (switch to KEEP) or even do the update manually if you are
-            unsure that the results will be acceptable.  """
+    text = "\n".join(text)
 
-        text = (text, helptext)
+    text = (text, helptext)
 
-        return text, options
+    return text, options
 
 
 # prototype save node
@@ -1928,7 +1936,8 @@ def node_prototype_save(caller, **kwargs):
     """Save prototype to disk """
     # these are only set if we selected 'yes' to save on a previous pass
     prototype = kwargs.get("prototype", None)
-    accept_save = kwargs.get("accept_save", False)
+    # set to True/False if answered, None if first pass
+    accept_save = kwargs.get("accept_save", None)
 
     if accept_save and prototype:
         # we already validated and accepted the save, so this node acts as a goto callback and
@@ -1939,22 +1948,38 @@ def node_prototype_save(caller, **kwargs):
         spawned_objects = protlib.search_objects_with_prototype(prototype_key)
         nspawned = spawned_objects.count()
 
+        text = ["|gPrototype saved.|n"]
+
         if nspawned:
-            text = ("Do you want to update {} object(s) "
-                    "already using this prototype?".format(nspawned))
+            text.append("\nDo you want to update {} object(s) "
+                        "already using this prototype?".format(nspawned))
             options = (
                 {"key": ("|wY|Wes|n", "yes", "y"),
+                 "desc": "Go to updating screen",
                  "goto": ("node_update_objects",
                           {"accept_update": True, "objects": spawned_objects,
                            "prototype": prototype, "back_node": "node_prototype_save"})},
                 {"key": ("[|wN|Wo|n]", "n"),
-                 "goto": "node_spawn"},
+                 "desc": "Return to index",
+                 "goto": "node_index"},
                 {"key": "_default",
-                 "goto": "node_spawn"})
+                 "goto": "node_index"})
         else:
-            text = "|gPrototype saved.|n"
+            text.append("(press Return to continue)")
             options = {"key": "_default",
-                       "goto": "node_spawn"}
+                       "goto": "node_index"}
+
+        text = "\n".join(text)
+
+        helptext = """
+        Updating objects means that the spawner will find all objects previously created by this
+        prototype. You will be presented with a list of the changes the system will try to apply to
+        each of these objects and you can choose to customize that change if needed. If you have
+        done a lot of manual changes to your objects after spawning, you might want to update those
+        objects manually instead.
+        """
+
+        text = (text, helptext)
 
         return text, options
 
@@ -1967,27 +1992,19 @@ def node_prototype_save(caller, **kwargs):
     if error:
         # abort save
         text.append(
-            "Validation errors were found. They need to be corrected before this prototype "
-            "can be saved (or used to spawn).")
-        options = _wizard_options("prototype_save", "prototype_locks", "index")
+            "\n|yValidation errors were found. They need to be corrected before this prototype "
+            "can be saved (or used to spawn).|n")
+        options = _wizard_options("prototype_save", "index", None)
         return "\n".join(text),  options
 
     prototype_key = prototype['prototype_key']
     if protlib.search_prototype(prototype_key):
-        text.append("Do you want to save/overwrite the existing prototype '{name}'?".format(
+        text.append("\nDo you want to save/overwrite the existing prototype '{name}'?".format(
             name=prototype_key))
     else:
-        text.append("Do you want to save the prototype as '{name}'?".format(prototype_key))
+        text.append("\nDo you want to save the prototype as '{name}'?".format(name=prototype_key))
 
-    options = (
-        {"key": ("[|wY|Wes|n]", "yes", "y"),
-         "goto": ("node_prototype_save",
-                  {"accept": True, "prototype": prototype})},
-        {"key": ("|wN|Wo|n", "n"),
-         "goto": "node_spawn"},
-        {"key": "_default",
-         "goto": ("node_prototype_save",
-                  {"accept": True, "prototype": prototype})})
+    text = "\n".join(text)
 
     helptext = """
         Saving the prototype makes it available for use later. It can also be used to inherit from,
@@ -1998,6 +2015,18 @@ def node_prototype_save(caller, **kwargs):
     """
 
     text = (text, helptext)
+
+    options = (
+        {"key": ("[|wY|Wes|n]", "yes", "y"),
+         "desc": "Save prototype",
+         "goto": ("node_prototype_save",
+                  {"accept_save": True, "prototype": prototype})},
+        {"key": ("|wN|Wo|n", "n"),
+         "desc": "Abort and return to Index",
+         "goto": "node_index"},
+        {"key": "_default",
+         "goto": ("node_prototype_save",
+                  {"accept_save": True, "prototype": prototype})})
 
     return text,  options
 
@@ -2015,25 +2044,41 @@ def _spawn(caller, **kwargs):
     obj = spawner.spawn(prototype)
     if obj:
         obj = obj[0]
-        caller.msg("|gNew instance|n {key} ({dbref}) |gspawned.|n".format(
-            key=obj.key, dbref=obj.dbref))
+        text = "|gNew instance|n {key} ({dbref}) |gspawned.|n".format(
+                    key=obj.key, dbref=obj.dbref)
     else:
-        caller.msg("|rError: Spawner did not return a new instance.|n")
-    return obj
+        text = "|rError: Spawner did not return a new instance.|n"
+    return "node_examine_entity", {"text": text, "back": "prototype_spawn"}
 
 
 def node_prototype_spawn(caller, **kwargs):
     """Submenu for spawning the prototype"""
 
     prototype = _get_menu_prototype(caller)
-    error, text = _validate_prototype(prototype)
 
-    text = [text]
+    already_validated = kwargs.get("already_validated", False)
+
+    if already_validated:
+        error, text = None, []
+    else:
+        error, text = _validate_prototype(prototype)
+        text = [text]
 
     if error:
-        text.append("|rPrototype validation failed. Correct the errors before spawning.|n")
-        options = _wizard_options("prototype_spawn", "prototype_locks", "index")
+        text.append("\n|rPrototype validation failed. Correct the errors before spawning.|n")
+        options = _wizard_options("prototype_spawn", "index", None)
         return "\n".join(text), options
+
+    text = "\n".join(text)
+
+    helptext = """
+        Spawning is the act of instantiating a prototype into an actual object. As a new object is
+        spawned, every $protfunc in the prototype is called anew. Since this is a common thing to
+        do, you may also temporarily change the |clocation|n of this prototype to bypass whatever
+        value is set in the prototype.
+
+    """
+    text = (text, helptext)
 
     # show spawn submenu options
     options = []
@@ -2064,18 +2109,10 @@ def node_prototype_spawn(caller, **kwargs):
         options.append(
            {"desc": "Update {num} existing objects with this prototype".format(num=nspawned),
             "goto": ("node_update_objects",
-                     dict(prototype=prototype, opjects=spawned_objects,
-                          back_node="node_prototype_spawn"))})
-    options.extend(_wizard_options("prototype_spawn", "prototype_save", "index"))
-
-    helptext = """
-        Spawning is the act of instantiating a prototype into an actual object. As a new object is
-        spawned, every $protfunc in the prototype is called anew. Since this is a common thing to
-        do, you may also temporarily change the |clocation|n of this prototype to bypass whatever
-        value is set in the prototype.
-
-    """
-    text = (text, helptext)
+                     {"objects": list(spawned_objects),
+                      "prototype": prototype,
+                      "back_node": "node_prototype_spawn"})})
+    options.extend(_wizard_options("prototype_spawn", "index", None))
 
     return text, options
 
@@ -2088,11 +2125,33 @@ def _prototype_load_select(caller, prototype_key):
     if matches:
         prototype = matches[0]
         _set_menu_prototype(caller, prototype)
-        caller.msg("|gLoaded prototype '{}'.".format(prototype_key))
-        return "node_index"
+        return "node_examine_entity", \
+            {"text": "|gLoaded prototype {}.|n".format(prototype['prototype_key']),
+             "back": "index"}
     else:
         caller.msg("|rFailed to load prototype '{}'.".format(prototype_key))
         return None
+
+
+def _prototype_load_actions(caller, raw_inp, **kwargs):
+    """Parse the default Convert prototype to a string representation for closer inspection"""
+    choices = kwargs.get("available_choices", [])
+    prototype, action = _default_parse(
+        raw_inp, choices, ("examine", "e", "l"))
+
+    if prototype:
+        # a selection of parent was made
+        prototype = protlib.search_prototype(key=prototype)[0]
+
+        # which action to apply on the selection
+        if action == 'examine':
+            # examine the prototype
+            txt = protlib.prototype_to_str(prototype)
+            kwargs['text'] = txt
+            kwargs['back'] = 'prototype_load'
+            return "node_examine_entity", kwargs
+
+    return 'node_prototype_load'
 
 
 @list_node(_all_prototype_parents, _prototype_load_select)
@@ -2101,17 +2160,21 @@ def node_prototype_load(caller, **kwargs):
 
     text = """
         Select a prototype to load. This will replace any prototype currently being edited!
-    """
+
+        {actions}
+    """.format(actions=_format_list_actions("examine"))
+
     helptext = """
-        Loading a prototype will load it and return you to the main index. It can be a good idea to
-        examine the prototype before loading it.
+        Loading a prototype will load it and return you to the main index. It can be a good idea
+        to examine the prototype before loading it.
     """
 
     text = (text, helptext)
 
-    options = _wizard_options("prototype_load", "prototype_save", "index")
+    options = _wizard_options("prototype_load", "index", None)
     options.append({"key": "_default",
-                    "goto": _prototype_parent_actions})
+                    "goto": _prototype_load_actions})
+
     return text, options
 
 
