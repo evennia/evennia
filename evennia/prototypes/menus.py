@@ -131,7 +131,7 @@ def _set_property(caller, raw_string, **kwargs):
     """
     prop = kwargs.get("prop", "prototype_key")
     processor = kwargs.get("processor", None)
-    next_node = kwargs.get("next_node", "node_index")
+    next_node = kwargs.get("next_node", None)
 
     if callable(processor):
         try:
@@ -346,6 +346,8 @@ def node_validate_prototype(caller, raw_string, **kwargs):
     return text, options
 
 
+# node examine_entity
+
 def node_examine_entity(caller, raw_string, **kwargs):
     """
     General node to view a text and then return to previous node.  Kwargs should contain "text" for
@@ -363,6 +365,8 @@ def node_examine_entity(caller, raw_string, **kwargs):
 
     return text, options
 
+
+# node object_search
 
 def _search_object(caller):
     "update search term based on query stored on menu; store match too"
@@ -399,7 +403,7 @@ def _search_object(caller):
     return ["{}(#{})".format(obj.key, obj.id) for obj in results]
 
 
-def _object_select(caller, obj_entry, **kwargs):
+def _object_search_select(caller, obj_entry, **kwargs):
     choices = kwargs['available_choices']
     num = choices.index(obj_entry)
     matches = caller.ndb._menutree.olc_search_object_matches
@@ -415,11 +419,13 @@ def _object_select(caller, obj_entry, **kwargs):
     return "node_examine_entity", {"text": txt, "back": "search_object"}
 
 
-def _object_actions(caller, raw_inp, **kwargs):
+def _object_search_actions(caller, raw_inp, **kwargs):
     "All this does is to queue a search query"
     choices = kwargs['available_choices']
     obj_entry, action = _default_parse(
         raw_inp, choices, ("examine", "e"), ("create prototype from object", "create", "c"))
+
+    raw_inp = raw_inp.strip()
 
     if obj_entry:
 
@@ -448,12 +454,16 @@ def _object_actions(caller, raw_inp, **kwargs):
             _set_menu_prototype(caller, prot)
             caller.msg("Created prototype from object.")
             return "node_index"
-    else:
+    elif raw_inp:
         caller.ndb._menutree.olc_search_object_term = raw_inp
         return "node_search_object", kwargs
+    else:
+        # empty input - exit back to previous node
+        prev_node = "node_" + kwargs.get("back", "index")
+        return prev_node
 
 
-@list_node(_search_object, _object_select)
+@list_node(_search_object, _object_search_select)
 def node_search_object(caller, raw_inp, **kwargs):
     """
     Node for searching for an existing object.
@@ -491,7 +501,7 @@ def node_search_object(caller, raw_inp, **kwargs):
 
     options = _wizard_options(None, prev_node, None)
     options.append({"key": "_default",
-                    "goto": (_object_actions, {"back": prev_node})})
+                    "goto": (_object_search_actions, {"back": prev_node})})
 
     return text, options
 
@@ -601,7 +611,7 @@ def _check_prototype_key(caller, key):
             caller.msg("Prototype already exists. Reloading.")
             return "node_index"
 
-    return _set_property(caller, key, prop='prototype_key', next_node="node_prototype_parent")
+    return _set_property(caller, key, prop='prototype_key')
 
 
 def node_prototype_key(caller):
@@ -814,7 +824,7 @@ def _typeclass_actions(caller, raw_inp, **kwargs):
 
 def _typeclass_select(caller, typeclass):
     """Select typeclass from list and add it to prototype. Return next node to go to."""
-    ret = _set_property(caller, typeclass, prop='typeclass', processor=str, next_node="node_key")
+    ret = _set_property(caller, typeclass, prop='typeclass', processor=str)
     caller.msg("Selected typeclass |c{}|n.".format(typeclass))
     return ret
 
@@ -874,8 +884,7 @@ def node_key(caller):
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="key",
-                                  processor=lambda s: s.strip(),
-                                  next_node="node_aliases"))})
+                                  processor=lambda s: s.strip()))})
     return text, options
 
 
@@ -936,7 +945,7 @@ def node_aliases(caller):
         |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not
         case sensitive.
 
-        {current}{actions}
+        {actions}
     """.format(actions=_format_list_actions("remove", prefix="|w<text>|W to add new alias. Other action: "))
 
     helptext = """
@@ -1526,8 +1535,7 @@ def node_location(caller):
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="location",
-                                  processor=lambda s: s.strip(),
-                                  next_node="node_home"))})
+                                  processor=lambda s: s.strip()))})
     return text, options
 
 
@@ -1563,8 +1571,7 @@ def node_home(caller):
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="home",
-                                  processor=lambda s: s.strip(),
-                                  next_node="node_destination"))})
+                                  processor=lambda s: s.strip()))})
     return text, options
 
 
@@ -1594,8 +1601,7 @@ def node_destination(caller):
     options.append({"key": "_default",
                     "goto": (_set_property,
                              dict(prop="dest",
-                                  processor=lambda s: s.strip(),
-                                  next_node="node_prototype_desc"))})
+                                  processor=lambda s: s.strip()))})
     return text, options
 
 
