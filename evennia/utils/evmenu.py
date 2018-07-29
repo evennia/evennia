@@ -938,7 +938,7 @@ class EvMenu(object):
         for key, desc in optionlist:
             if not (key or desc):
                 continue
-            desc_string = ": %s" % (desc if desc else "")
+            desc_string = ": %s" % desc if desc else ""
             table_width_max = max(table_width_max,
                                   max(m_len(p) for p in key.split("\n")) +
                                   max(m_len(p) for p in desc_string.split("\n")) + colsep)
@@ -1140,9 +1140,12 @@ def list_node(option_generator, select=None, pagesize=10):
                     decorated_options = make_iter(decorated_options)
 
             extra_options = []
+            if isinstance(decorated_options, dict):
+                decorated_options = [decorated_options]
             for eopt in decorated_options:
                 cback = ("goto" in eopt and "goto") or ("exec" in eopt and "exec") or None
                 if cback:
+                    print("eopt, cback: {} {}".format(eopt, cback))
                     signature = eopt[cback]
                     if callable(signature):
                         # callable with no kwargs defined

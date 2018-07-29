@@ -553,7 +553,9 @@ def spawn(*prototypes, **kwargs):
         alias_string = init_spawn_value(val, make_iter)
 
         val = prot.pop("tags", [])
-        tags = init_spawn_value(val, make_iter)
+        tags = []
+        for (tag, category, data) in tags:
+            tags.append((init_spawn_value(val, str), category, data))
 
         prototype_key = prototype.get('prototype_key', None)
         if prototype_key:
@@ -567,9 +569,11 @@ def spawn(*prototypes, **kwargs):
         nattributes = dict((key.split("_", 1)[1], init_spawn_value(val, value_to_obj))
                            for key, val in prot.items() if key.startswith("ndb_"))
 
-        # the rest are attributes
-        val = prot.pop("attrs", [])
-        attributes = init_spawn_value(val, list)
+        # the rest are attribute tuples (attrname, value, category, locks)
+        val = make_iter(prot.pop("attrs", []))
+        attributes = []
+        for (attrname, value, category, locks) in val:
+            attributes.append((attrname, init_spawn_value(val), category, locks))
 
         simple_attributes = []
         for key, value in ((key, value) for key, value in prot.items()
