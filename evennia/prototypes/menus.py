@@ -518,14 +518,11 @@ def node_index(caller):
        can be hard-coded or scripted using |w$protfuncs|n - for example to randomize the value
        every time the prototype is used to spawn a new entity.
 
-       The prototype fields named 'prototype_*' are not used to create the entity itself but for
-       organizing the template when saving it for you (and maybe others) to use later.
+       The prototype fields whose names start with 'Prototype-' are not fields on the object itself
+       but are used in the template and when saving it for you (and maybe others) to use later.
+       Select prototype field to edit. If you are unsure, start from [|w1|n]. Enter [|wh|n]elp at
+       any menu node for more info.
 
-       Select prototype field to edit. If you are unsure, start from [|w1|n]. At any time you can
-       [|wV|n]alidate that the prototype works correctly and use it to [|wSP|n]awn a new entity. You
-       can also [|wSA|n]ve|n your work or [|wLO|n]oad an existing prototype to use as a base. Use
-       [|wL|n]ook to re-show a menu node. [|wQ|n]uit will always exit the menu and [|wH|n]elp will
-       show context-sensitive help.
        """
     helptxt = """
        |c- prototypes |n
@@ -536,6 +533,13 @@ def node_index(caller):
        changes to their typeclass (something which requires code access). The classical example is
        to spawn goblins with different names, looks, equipment and skill, each based on the same
        `Goblin` typeclass.
+
+       At any time you can [|wV|n]alidate that the prototype works correctly and use it to
+       [|wSP|n]awn a new entity. You can also [|wSA|n]ve|n your work, [|wLO|n]oad an existing
+       prototype to [|wSE|n]arch for existing objects to use as a base. Use [|wL|n]ook to re-show a
+       menu node. [|wQ|n]uit will always exit the menu and [|wH|n]elp will show context-sensitive
+       help.
+
 
        |c- $protfuncs |n
 
@@ -553,11 +557,11 @@ def node_index(caller):
         {"desc": "|WPrototype-Key|n|n{}".format(
             _format_option_value("Key", "prototype_key" not in prototype, prototype, None)),
          "goto": "node_prototype_key"})
-    for key in ('Prototype_parent', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
+    for key in ('Prototype_Parent', 'Typeclass', 'Key', 'Aliases', 'Attrs', 'Tags', 'Locks',
                 'Permissions', 'Location', 'Home', 'Destination'):
         required = False
         cropper = None
-        if key in ("Prototype_parent", "Typeclass"):
+        if key in ("Prototype_Parent", "Typeclass"):
             required = ("prototype_parent" not in prototype) and ("typeclass" not in prototype)
         if key == 'Typeclass':
             cropper = _path_cropper
@@ -1827,7 +1831,7 @@ def node_prototype_locks(caller):
 # update existing objects node
 
 
-def _update_spawned(caller, **kwargs):
+def _apply_diff(caller, **kwargs):
     """update existing objects"""
     prototype = kwargs['prototype']
     objects = kwargs['objects']
@@ -1844,7 +1848,7 @@ def _keep_diff(caller, **kwargs):
     diff[key] = "KEEP"
 
 
-def node_update_objects(caller, **kwargs):
+def node_apply_diff(caller, **kwargs):
     """Offer options for updating objects"""
 
     def _keep_option(keyname, prototype, obj, obj_prototype, diff, objects, back_node):
@@ -1886,8 +1890,9 @@ def node_update_objects(caller, **kwargs):
         consider being conservative (switch to KEEP) or even do the update manually if you are
         unsure that the results will be acceptable.  """
 
-    options = _wizard_options("update_objects", back_node[5:], None)
-    io = 0
+    options = []
+
+    ichanges = 0
     for (key, inst) in sorted(((key, val) for key, val in diff.items()), key=lambda tup: tup[0]):
 
         if key in protlib._PROTOTYPE_META_NAMES:
@@ -1897,30 +1902,40 @@ def node_update_objects(caller, **kwargs):
         old_val = utils.crop(str(obj_prototype[key]), width=20)
 
         if inst == "KEEP":
-            text.append(line.format(iopt='', key=key, old=old_val, sep=" ", new='', change=inst))
+            inst = "|b{}|n".format(inst)
+            text.append(line.format(iopt='', key=key, old=old_val,
+                                    sep=" ", new='', change=inst))
             continue
 
         new_val = utils.crop(str(spawner.init_spawn_value(prototype[key])), width=20)
-        io += 1
+        ichanges += 1
         if inst in ("UPDATE", "REPLACE"):
-            text.append(line.format(iopt=io, key=key, old=old_val,
+            inst = "|y{}|n".format(inst)
+            text.append(line.format(iopt=ichanges, key=key, old=old_val,
                         sep=" |y->|n ", new=new_val, change=inst))
             options.append(_keep_option(key, prototype,
                            obj, obj_prototype, diff, update_objects, back_node))
         elif inst == "REMOVE":
-            text.append(line.format(iopt=io, key=key, old=old_val,
+            inst = "|r{}|n".format(inst)
+            text.append(line.format(iopt=ichanges, key=key, old=old_val,
                         sep=" |r->|n ", new='', change=inst))
             options.append(_keep_option(key, prototype,
                            obj, obj_prototype, diff, update_objects, back_node))
         options.extend(
-            [{"key": ("|wu|r update {} objects".format(len(update_objects)), "update", "u"),
-              "goto": (_update_spawned, {"prototype": prototype, "objects": update_objects,
-                                         "back_node": back_node, "diff": diff})},
-             {"key": ("|wr|neset changes", "reset", "r"),
-              "goto": ("node_update_objects", {"prototype": prototype, "back_node": back_node,
-                                               "objects": update_objects})},
-             {"key": "|wb|rack ({})".format(back_node[5:], 'b'),
-              "goto": back_node}])
+            [{"key": ("|wu|Wupdate {} objects".format(len(update_objects)), "update", "u"),
+              "goto": (_apply_diff, {"prototye": prototype, "objects": update_objects,
+                                     "back_node": back_node, "diff": diff})},
+             {"key": ("|wr|Wneset changes", "reset", "r"),
+              "goto": ("node_apply_diff", {"prototype": prototype, "back_node": back_node,
+                                           "objects": update_objects})}])
+
+    if ichanges < 1:
+        text = ["Analyzed a random sample object (out of {}) - "
+                "found no changes to apply.".format(len(update_objects))]
+
+    options.extend(_wizard_options("update_objects", back_node[5:], None))
+    options.append({"key": "_default",
+                    "goto": back_node})
 
     text = "\n".join(text)
 
@@ -1956,7 +1971,7 @@ def node_prototype_save(caller, **kwargs):
             options = (
                 {"key": ("|wY|Wes|n", "yes", "y"),
                  "desc": "Go to updating screen",
-                 "goto": ("node_update_objects",
+                 "goto": ("node_apply_diff",
                           {"accept_update": True, "objects": spawned_objects,
                            "prototype": prototype, "back_node": "node_prototype_save"})},
                 {"key": ("[|wN|Wo|n]", "n"),
@@ -1995,6 +2010,8 @@ def node_prototype_save(caller, **kwargs):
             "\n|yValidation errors were found. They need to be corrected before this prototype "
             "can be saved (or used to spawn).|n")
         options = _wizard_options("prototype_save", "index", None)
+        options.append({"key": "_default",
+                        "goto": "node_index"})
         return "\n".join(text),  options
 
     prototype_key = prototype['prototype_key']
@@ -2044,8 +2061,8 @@ def _spawn(caller, **kwargs):
     obj = spawner.spawn(prototype)
     if obj:
         obj = obj[0]
-        text = "|gNew instance|n {key} ({dbref}) |gspawned.|n".format(
-                    key=obj.key, dbref=obj.dbref)
+        text = "|gNew instance|n {key} ({dbref}) |gspawned at location |n{loc}|n|g.|n".format(
+                    key=obj.key, dbref=obj.dbref, loc=prototype['location'])
     else:
         text = "|rError: Spawner did not return a new instance.|n"
     return "node_examine_entity", {"text": text, "back": "prototype_spawn"}
@@ -2108,11 +2125,13 @@ def node_prototype_spawn(caller, **kwargs):
     if spawned_objects:
         options.append(
            {"desc": "Update {num} existing objects with this prototype".format(num=nspawned),
-            "goto": ("node_update_objects",
+            "goto": ("node_apply_diff",
                      {"objects": list(spawned_objects),
                       "prototype": prototype,
                       "back_node": "node_prototype_spawn"})})
     options.extend(_wizard_options("prototype_spawn", "index", None))
+    options.append({"key": "_default",
+                    "goto": "node_index"})
 
     return text, options
 
@@ -2137,19 +2156,25 @@ def _prototype_load_actions(caller, raw_inp, **kwargs):
     """Parse the default Convert prototype to a string representation for closer inspection"""
     choices = kwargs.get("available_choices", [])
     prototype, action = _default_parse(
-        raw_inp, choices, ("examine", "e", "l"))
+        raw_inp, choices, ("examine", "e", "l"), ("delete", "del", "d"))
 
     if prototype:
-        # a selection of parent was made
-        prototype = protlib.search_prototype(key=prototype)[0]
 
         # which action to apply on the selection
         if action == 'examine':
             # examine the prototype
+            prototype = protlib.search_prototype(key=prototype)[0]
             txt = protlib.prototype_to_str(prototype)
-            kwargs['text'] = txt
-            kwargs['back'] = 'prototype_load'
-            return "node_examine_entity", kwargs
+            return "node_examine_entity", {"text": txt, "back": 'prototype_load'}
+        elif action == 'delete':
+            # delete prototype from disk
+            try:
+                protlib.delete_prototype(prototype, caller=caller)
+            except protlib.PermissionError as err:
+                txt = "|rDeletion error:|n {}".format(err)
+            else:
+                txt = "|gPrototype {} was deleted.|n".format(prototype)
+            return "node_examine_entity", {"text": txt, "back": "prototype_load"}
 
     return 'node_prototype_load'
 
@@ -2162,7 +2187,7 @@ def node_prototype_load(caller, **kwargs):
         Select a prototype to load. This will replace any prototype currently being edited!
 
         {actions}
-    """.format(actions=_format_list_actions("examine"))
+    """.format(actions=_format_list_actions("examine", "delete"))
 
     helptext = """
         Loading a prototype will load it and return you to the main index. It can be a good idea
@@ -2246,7 +2271,7 @@ def start_olc(caller, session=None, prototype=None):
                 "node_location": node_location,
                 "node_home": node_home,
                 "node_destination": node_destination,
-                "node_update_objects": node_update_objects,
+                "node_apply_diff": node_apply_diff,
                 "node_prototype_desc": node_prototype_desc,
                 "node_prototype_tags": node_prototype_tags,
                 "node_prototype_locks": node_prototype_locks,
