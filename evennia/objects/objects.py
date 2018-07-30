@@ -1753,6 +1753,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         else:
             msg_self = '{self} say, "{speech}"' if msg_self is True else msg_self
             msg_location = msg_location or '{object} says, "{speech}"'
+            msg_receivers = msg_receivers or message
 
         custom_mapping = kwargs.get('mapping', {})
         receivers = make_iter(receivers) if receivers else None
