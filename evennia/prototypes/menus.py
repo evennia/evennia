@@ -1023,6 +1023,7 @@ def _add_attr(caller, attr_string, **kwargs):
         result (str): Result string of action.
     """
     attrname = ''
+    value = ''
     category = None
     locks = ''
 
@@ -1097,7 +1098,7 @@ def _attrs_actions(caller, raw_inp, **kwargs):
     attrname = attrname.strip()
     attr_tup = _get_tup_by_attrname(caller, attrname)
 
-    if attr_tup:
+    if action and attr_tup:
         if action == 'examine':
             return "node_examine_entity", \
                    {"text": _display_attribute(attr_tup), "back": "attrs"}
@@ -2057,6 +2058,8 @@ def _spawn(caller, **kwargs):
     new_location = kwargs.get('location', None)
     if new_location:
         prototype['location'] = new_location
+    if not prototype.get('location'):
+        prototype['location'] = caller
 
     obj = spawner.spawn(prototype)
     if obj:
