@@ -74,7 +74,8 @@ class TestUtils(EvenniaTest):
              'home': Something,
              'key': 'Obj',
              'location': Something,
-             'locks': ['call:true()',
+             'locks': ";".join([
+                       'call:true()',
                        'control:perm(Developer)',
                        'delete:perm(Admin)',
                        'edit:perm(Admin)',
@@ -82,7 +83,7 @@ class TestUtils(EvenniaTest):
                        'get:all()',
                        'puppet:pperm(Developer)',
                        'tell:perm(Admin)',
-                       'view:all()'],
+                       'view:all()']),
              'prototype_desc': 'Built from Obj',
              'prototype_key': Something,
              'prototype_locks': 'spawn:all();edit:all()',
@@ -132,15 +133,16 @@ class TestUtils(EvenniaTest):
                          ('test', 'testval', None, [''])],
                'prototype_locks': 'spawn:all();edit:all()',
                'prototype_key': Something,
-               'locks': ['call:true()', 'control:perm(Developer)',
+               'locks': ";".join([
+                         'call:true()', 'control:perm(Developer)',
                          'delete:perm(Admin)', 'edit:perm(Admin)',
                          'examine:perm(Builder)', 'get:all()',
                          'puppet:pperm(Developer)', 'tell:perm(Admin)',
-                         'view:all()'],
+                         'view:all()']),
                'prototype_tags': [],
-               'location': self.room1,
+               'location': "#1",
                'key': 'NewObj',
-               'home': self.room1,
+               'home': '#1',
                'typeclass': 'evennia.objects.objects.DefaultObject',
                'prototype_desc': 'Built from NewObj',
                'aliases': 'foo'})
@@ -157,7 +159,8 @@ class TestUtils(EvenniaTest):
                           'home': Something,
                           'key': 'Obj',
                           'location': Something,
-                          'locks': ['call:true()',
+                          'locks': ";".join([
+                                    'call:true()',
                                     'control:perm(Developer)',
                                     'delete:perm(Admin)',
                                     'edit:perm(Admin)',
@@ -165,8 +168,8 @@ class TestUtils(EvenniaTest):
                                     'get:all()',
                                     'puppet:pperm(Developer)',
                                     'tell:perm(Admin)',
-                                    'view:all()'],
-                          'permissions': 'builder',
+                                    'view:all()']),
+                          'permissions': ['builder'],
                           'prototype_desc': 'Built from Obj',
                           'prototype_key': Something,
                           'prototype_locks': 'spawn:all();edit:all()',
@@ -184,7 +187,8 @@ class TestProtLib(EvenniaTest):
 
     def test_prototype_to_str(self):
         prstr = protlib.prototype_to_str(self.prot)
-        self.assertTrue(prstr.startswith("|cprototype key:|n"))
+        print("prst: {}".format(prstr))
+        self.assertTrue(prstr.startswith("|cprototype-key:|n"))
 
     def test_check_permission(self):
         pass
@@ -525,40 +529,4 @@ class TestOLCMenu(TestEvMenu):
         "node_index": "|c --- Prototype wizard --- |n"
     }
 
-    expected_tree = \
-        ['node_index',
-         ['node_prototype_key',
-          ['node_index',
-           'node_index',
-           'node_validate_prototype',
-           ['node_index'],
-           'node_index'],
-          'node_typeclass',
-          ['node_key',
-           ['node_typeclass',
-            'node_key',
-            'node_index',
-            'node_validate_prototype',
-            'node_validate_prototype'],
-           'node_index',
-           'node_index',
-           'node_index',
-           'node_validate_prototype',
-           'node_validate_prototype'],
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype',
-          'node_validate_prototype']]
+    expected_tree = ['node_index', ['node_prototype_key', ['node_index', 'node_index', 'node_validate_prototype', ['node_index', 'node_index'], 'node_index'], 'node_prototype_parent', ['node_prototype_parent', 'node_prototype_key', 'node_prototype_parent', 'node_index', 'node_validate_prototype', 'node_index'], 'node_typeclass', ['node_typeclass', 'node_prototype_parent', 'node_typeclass', 'node_index', 'node_validate_prototype', 'node_index'], 'node_key', ['node_typeclass', 'node_key', 'node_index', 'node_validate_prototype', 'node_index'], 'node_aliases', ['node_key', 'node_aliases', 'node_index', 'node_validate_prototype', 'node_index'], 'node_attrs', ['node_aliases', 'node_attrs', 'node_index', 'node_validate_prototype', 'node_index'], 'node_tags', ['node_attrs', 'node_tags', 'node_index', 'node_validate_prototype', 'node_index'], 'node_locks', ['node_tags', 'node_locks', 'node_index', 'node_validate_prototype', 'node_index'], 'node_permissions', ['node_locks', 'node_permissions', 'node_index', 'node_validate_prototype', 'node_index'], 'node_location', ['node_permissions', 'node_location', 'node_index', 'node_validate_prototype', 'node_index', 'node_index'], 'node_home', ['node_location', 'node_home', 'node_index', 'node_validate_prototype', 'node_index', 'node_index'], 'node_destination', ['node_home', 'node_destination', 'node_index', 'node_validate_prototype', 'node_index', 'node_index'], 'node_prototype_desc', ['node_prototype_key', 'node_prototype_parent', 'node_index', 'node_validate_prototype', 'node_index'], 'node_prototype_tags', ['node_prototype_desc', 'node_prototype_tags', 'node_index', 'node_validate_prototype', 'node_index'], 'node_prototype_locks', ['node_examine_entity', ['node_prototype_locks', 'node_prototype_locks', 'node_prototype_locks'], 'node_examine_entity', 'node_prototype_locks', 'node_index', 'node_validate_prototype', 'node_index'], 'node_validate_prototype', 'node_index', 'node_prototype_spawn', ['node_index', 'node_validate_prototype'], 'node_index', 'node_search_object', ['node_index', 'node_index']]]
