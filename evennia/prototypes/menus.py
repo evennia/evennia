@@ -845,7 +845,8 @@ def node_typeclass(caller):
 
         {actions}
     """.format(current=_get_current_value(caller, "typeclass"),
-               actions=_format_list_actions("examine", "remove"))
+               actions="|WSelect with |w<num>|W. Other actions: "
+                       "|we|Wxamine |w<num>|W, |wr|Wemove selection")
 
     helptext = """
         A |nTypeclass|n is specified by the actual python-path to the class definition in the
