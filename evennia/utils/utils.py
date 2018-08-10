@@ -7,6 +7,7 @@ be of use when designing your own game.
 
 """
 from __future__ import division, print_function
+import itertools
 from builtins import object, range
 from future.utils import viewkeys, raise_
 
@@ -32,6 +33,7 @@ from evennia.utils import logger
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
+
 
 try:
     import cPickle as pickle
@@ -210,18 +212,27 @@ def justify(text, width=None, align="f", indent=0):
         gap = " "  # minimum gap between words
         if line_rest > 0:
             if align == 'l':
-                line[-1] += " " * line_rest
+                if line[-1] == "\n\n":
+                    line[-1] = " " * (line_rest-1) + "\n" + " " * width + "\n" + " " * width
+                else:
+                    line[-1] += " " * line_rest
             elif align == 'r':
                 line[0] = " " * line_rest + line[0]
             elif align == 'c':
                 pad = " " * (line_rest // 2)
                 line[0] = pad + line[0]
-                line[-1] = line[-1] + pad + " " * (line_rest % 2)
+                if line[-1] == "\n\n":
+                    line[-1] = line[-1] + pad + " " * (line_rest % 2)
+                else:
+                    line[-1] = pad + " " * (line_rest % 2 - 1) + \
+                            "\n" + " " * width + "\n" + " " * width
             else:  # align 'f'
                 gap += " " * (line_rest // max(1, ngaps))
                 rest_gap = line_rest % max(1, ngaps)
                 for i in range(rest_gap):
                     line[i] += " "
+        elif not any(line):
+            return [" " * width]
         return gap.join(line)
 
     # split into paragraphs and words
@@ -260,6 +271,62 @@ def justify(text, width=None, align="f", indent=0):
         lines.append(_process_line(line))
     indentstring = " " * indent
     return "\n".join([indentstring + line for line in lines])
+
+
+def columnize(string, columns=2, spacing=4, align='l', width=None):
+    """
+    Break a string into a number of columns, using as little
+    vertical space as possible.
+
+    Args:
+        string (str): The string to columnize.
+        columns (int, optional): The number of columns to use.
+        spacing (int, optional): How much space to have between columns.
+        width (int, optional): The max width of the columns.
+            Defaults to client's default width.
+
+    Returns:
+        columns (str): Text divided into columns.
+
+    Raises:
+        RuntimeError: If given invalid values.
+
+    """
+    columns = max(1, columns)
+    spacing = max(1, spacing)
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
+
+    w_spaces = (columns - 1) * spacing
+    w_txt = max(1, width - w_spaces)
+
+    if w_spaces + columns > width:  # require at least 1 char per column
+        raise RuntimeError("Width too small to fit columns")
+
+    colwidth = int(w_txt / (1.0 * columns))
+
+    # first make a single column which we then split
+    onecol = justify(string, width=colwidth, align=align)
+    onecol = onecol.split("\n")
+
+    nrows, dangling = divmod(len(onecol), columns)
+    nrows = [nrows + 1 if i < dangling else nrows for i in range(columns)]
+
+    height = max(nrows)
+    cols = []
+    istart = 0
+    for irows in nrows:
+        cols.append(onecol[istart:istart+irows])
+        istart = istart + irows
+    for col in cols:
+        if len(col) < height:
+            col.append(" " * colwidth)
+
+    sep = " " * spacing
+    rows = []
+    for irow in range(height):
+        rows.append(sep.join(col[irow] for col in cols))
+
+    return "\n".join(rows)
 
 
 def list_to_string(inlist, endsep="and", addquote=False):
@@ -1548,6 +1615,7 @@ def format_table(table, extra_space=1):
     Examples:
 
         ```python
+        ftable = format_table([[...], [...], ...])
         for ir, row in enumarate(ftable):
             if ir == 0:
                 # make first row white

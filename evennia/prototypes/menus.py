@@ -57,6 +57,18 @@ def _get_flat_menu_prototype(caller, refresh=False, validate=False):
     return flat_prototype
 
 
+def _get_unchanged_inherited(caller, protname):
+    """Return prototype values inherited from parent(s), which are not replaced in child"""
+    protototype = _get_menu_prototype(caller)
+    if protname in prototype:
+        return protname[protname], False
+    else:
+        flattened = _get_flat_menu_prototype(caller)
+        if protname in flattened:
+            return protname[protname], True
+    return None, False
+
+
 def _set_menu_prototype(caller, prototype):
     """Set the prototype with existing one"""
     caller.ndb._menutree.olc_prototype = prototype
@@ -515,11 +527,11 @@ def node_index(caller):
        |c --- Prototype wizard --- |n
 
        A |cprototype|n is a 'template' for |wspawning|n an in-game entity. A field of the prototype
-       can be hard-coded or scripted using |w$protfuncs|n - for example to randomize the value
-       every time the prototype is used to spawn a new entity.
+       can either be hard-coded, left empty or scripted using |w$protfuncs|n - for example to
+       randomize the value every time a new entity is spawned. The fields whose names start with
+       'Prototype-' are not fields on the object itself but are used for prototype-inheritance, or
+       when saving and loading.
 
-       The prototype fields whose names start with 'Prototype-' are not fields on the object itself
-       but are used in the template and when saving it for you (and maybe others) to use later.
        Select prototype field to edit. If you are unsure, start from [|w1|n]. Enter [|wh|n]elp at
        any menu node for more info.
 
@@ -544,8 +556,8 @@ def node_index(caller):
        |c- $protfuncs |n
 
        Prototype-functions (protfuncs) allow for limited scripting within a prototype. These are
-       entered as a string $funcname(arg, arg, ...) and are evaluated |wat the time of spawning|n only.
-       They can also be nested for combined effects.
+       entered as a string $funcname(arg, arg, ...) and are evaluated |wat the time of spawning|n
+       only.  They can also be nested for combined effects.
 
        {pfuncs}
        """.format(pfuncs=_format_protfuncs())
@@ -951,7 +963,10 @@ def node_aliases(caller):
         case sensitive.
 
         {actions}
-    """.format(actions=_format_list_actions("remove", prefix="|w<text>|W to add new alias. Other action: "))
+        {current}
+    """.format(actions=_format_list_actions("remove",
+                                            prefix="|w<text>|W to add new alias. Other action: "),
+               current)
 
     helptext = """
         Aliases are fixed alternative identifiers and are stored with the new object.
