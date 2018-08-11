@@ -192,16 +192,14 @@ def prototype_to_str(prototype):
             category = "|ccategory:|n {}".format(category) if category else ''
             cat_locks = ""
             if category or locks:
-                cat_locks = "(|ccategory:|n {category}, ".format(
+                cat_locks = " (|ccategory:|n {category}, ".format(
                     category=category if category else "|wNone|n")
             out.append(
-                "{attrkey} "
-                "{cat_locks}\n"
-                "  |c=|n {value}".format(
-                           attrkey=attrkey,
-                           cat_locks=cat_locks,
-                           locks=locks if locks else "|wNone|n",
-                           value=value))
+                "{attrkey}{cat_locks} |c=|n {value}".format(
+                       attrkey=attrkey,
+                       cat_locks=cat_locks,
+                       locks=locks if locks else "|wNone|n",
+                       value=value))
         attrs = "|cattrs:|n\n {attrs}".format(attrs="\n ".join(out))
     tags = prototype.get('tags', '')
     if tags:
@@ -209,10 +207,10 @@ def prototype_to_str(prototype):
         for (tagkey, category, data) in tags:
             out.append("{tagkey} (category: {category}{dat})".format(
                 tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""))
-        tags = "|ctags:|n\n {tags}".format(tags="\n ".join(out))
+        tags = "|ctags:|n\n {tags}".format(tags=", ".join(out))
     locks = prototype.get('locks', '')
     if locks:
-        locks = "|clocks:|n\n {locks}".format(locks="\n ".join(locks.split(";")))
+        locks = "|clocks:|n\n {locks}".format(locks=locks)
     permissions = prototype.get("permissions", '')
     if permissions:
         permissions = "|cpermissions:|n {perms}".format(perms=", ".join(permissions))

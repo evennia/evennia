@@ -122,7 +122,8 @@ class EvMore(object):
     """
 
     def __init__(self, caller, text, always_page=False, session=None,
-                 justify_kwargs=None, exit_on_lastpage=False, **kwargs):
+                 justify_kwargs=None, exit_on_lastpage=False,
+                 exit_cmd=None, **kwargs):
         """
         Initialization of the text handler.
 
@@ -141,6 +142,10 @@ class EvMore(object):
                 page being completely filled, exit pager immediately. If unset,
                 another move forward is required to exit. If set, the pager
                 exit message will not be shown.
+            exit_cmd (str, optional): If given, this command-string will be executed on
+                the caller when the more page exits. Note that this will be using whatever
+                cmdset the user had *before* the evmore pager was activated (so none of
+                the evmore commands will be available when this is run).
             kwargs (any, optional): These will be passed on
                 to the `caller.msg` method.
 
@@ -151,6 +156,7 @@ class EvMore(object):
         self._npages = []
         self._npos = []
         self.exit_on_lastpage = exit_on_lastpage
+        self.exit_cmd = exit_cmd
         self._exit_msg = "Exited |wmore|n pager."
         if not session:
             # if not supplied, use the first session to
@@ -269,6 +275,8 @@ class EvMore(object):
         if not quiet:
             self._caller.msg(text=self._exit_msg, **self._kwargs)
         self._caller.cmdset.remove(CmdSetMore)
+        if self.exit_cmd:
+            self._caller.execute_cmd(self.exit_cmd, session=self._session)
 
 
 def msg(caller, text="", always_page=False, session=None,

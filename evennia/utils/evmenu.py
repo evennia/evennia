@@ -167,14 +167,13 @@ from __future__ import print_function
 import random
 from builtins import object, range
 
-from textwrap import dedent
 from inspect import isfunction, getargspec
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.utils import logger
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import mod_import, make_iter, pad, m_len, is_iter
+from evennia.utils.utils import mod_import, make_iter, pad, m_len, is_iter, dedent
 from evennia.commands import cmdhandler
 
 # read from protocol NAWS later?
@@ -896,7 +895,7 @@ class EvMenu(object):
             nodetext (str): The formatted node text.
 
         """
-        return dedent(nodetext).strip()
+        return dedent(nodetext.strip('\n'), baseline_index=0).rstrip()
 
     def helptext_formatter(self, helptext):
         """
@@ -909,7 +908,7 @@ class EvMenu(object):
             helptext (str): The formatted help text.
 
         """
-        return dedent(helptext).strip()
+        return dedent(helptext.strip('\n'), baseline_index=0).rstrip()
 
     def options_formatter(self, optionlist):
         """
