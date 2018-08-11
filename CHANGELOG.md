@@ -26,7 +26,22 @@
 - A `goto` option callable returning None (rather than the name of the next node) will now rerun the
   current node instead of failing.
 - Better error handling of in-node syntax errors.
+- Improve dedent of default text/helptext formatter. Right-strip whitespace.
 
+
+### Utils
+
+- Added new `columnize` function for easily splitting text into multiple columns. At this point it
+  is not working too well with ansi-colored text however.
+- Extend the `dedent` function with a new `baseline_index` kwarg. This allows to force all lines to
+  the indentation given by the given line regardless of if other lines were already a 0 indentation.
+  This removes a problem with the original `textwrap.dedent` which will only dedent to the least
+  indented part of a text.
+- Added `exit_cmd` to EvMore pager, to allow for calling a command (e.g. 'look') when leaving the pager.
+
+### Genaral
+
+- Start structuring the `CHANGELOG` to list features in more detail.
 
 
 # Overviews

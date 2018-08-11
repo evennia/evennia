@@ -214,6 +214,10 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W", search=False):
     return options
 
 
+def _set_actioninfo(caller, string):
+    caller.ndb._menutree.actioninfo = string
+
+
 def _path_cropper(pythonpath):
     "Crop path to only the last component"
     return pythonpath.split('.')[-1]
@@ -278,30 +282,65 @@ def _format_list_actions(*args, **kwargs):
     prefix = kwargs.get('prefix', "|WSelect with |w<num>|W. Other actions:|n ")
     for action in args:
         actions.append("|w{}|n|W{} |w<num>|n".format(action[0], action[1:]))
-    return prefix + "|W,|n ".join(actions)
+    return prefix + " |W|||n ".join(actions)
 
 
-def _get_current_value(caller, keyname, formatter=str, only_inherit=False):
-    "Return current value, marking if value comes from parent or set in this prototype"
-    prot = _get_menu_prototype(caller)
-    if keyname in prot:
-        # value in current prot
+def _get_current_value(caller, keyname, comparer=None, formatter=str, only_inherit=False):
+    """
+    Return current value, marking if value comes from parent or set in this prototype.
+
+    Args:
+        keyname (str): Name of prototoype key to get current value of.
+        comparer (callable, optional): This will be called as comparer(prototype_value,
+            flattened_value) and is expected to return the value to show as the current
+            or inherited one. If not given, a straight comparison is used and what is returned
+            depends on the only_inherit setting.
+        formatter (callable, optional)): This will be called with the result of comparer.
+        only_inherit (bool, optional): If a current value should only be shown if all
+            the values are inherited from the prototype parent (otherwise, show an empty string).
+    Returns:
+        current (str): The current value.
+
+    """
+    def _default_comparer(protval, flatval):
         if only_inherit:
-            return ''
-        return "Current {}: {}".format(keyname, formatter(prot[keyname]))
-    flat_prot = _get_flat_menu_prototype(caller)
-    if keyname in flat_prot:
-        # value in flattened prot
-        if keyname == 'prototype_key':
-            # we don't inherit prototype_keys
-            return "[No prototype_key set] (|rnot inherited|n)"
+            return "" if protval else flatval
         else:
-            ret = "Current {} (|binherited|n): {}".format(keyname, formatter(flat_prot[keyname]))
-            if only_inherit:
-                return "{}\n\n".format(ret)
-            return ret
+            return protval if protval else flatval
 
-    return "[No {} set]".format(keyname)
+    if not callable(comparer):
+        comparer = _default_comparer
+
+    prot = _get_menu_prototype(caller)
+    flat_prot = _get_flat_menu_prototype(caller)
+
+    out = ""
+    if keyname in prot:
+        if keyname in flat_prot:
+            out = formatter(comparer(prot[keyname], flat_prot[keyname]))
+            if only_inherit:
+                if out:
+                    return "|WCurrent|n {} |W(|binherited|W):|n {}".format(keyname, out)
+                return ""
+            else:
+                if out:
+                    return "|WCurrent|n {}|W:|n {}".format(keyname, out)
+                return "|W[No {} set]|n".format(keyname)
+        elif only_inherit:
+            return ""
+        else:
+            out = formatter(prot[keyname])
+            return "|WCurrent|n {}|W:|n {}".format(keyname, out)
+    elif keyname in flat_prot:
+        out = formatter(flat_prot[keyname])
+        if out:
+            return "|WCurrent|n {} |W(|n|binherited|W):|n {}".format(keyname, out)
+        else:
+            return ""
+    elif only_inherit:
+        return ""
+    else:
+        return "|W[No {} set]|n".format(keyname)
 
 
 def _default_parse(raw_inp, choices, *args):
@@ -491,10 +530,9 @@ def node_search_object(caller, raw_inp, **kwargs):
         text = """
         Found {num} match{post}.
 
-        {actions}
          (|RWarning: creating a prototype will |roverwrite|r |Rthe current prototype!)|n""".format(
-            num=nmatches, post="es" if nmatches > 1 else "",
-            actions=_format_list_actions(
+            num=nmatches, post="es" if nmatches > 1 else "")
+        _set_actioninfo(caller, _format_list_actions(
                 "examine", "create prototype from object", prefix="Actions: "))
     else:
         text = "Enter search criterion."
@@ -758,14 +796,14 @@ def node_prototype_parent(caller):
         parent is given, this prototype must define the typeclass (next menu node).
 
         {current}
-
-        {actions}
         """
     helptext = """
         Prototypes can inherit from one another. Changes in the child replace any values set in a
         parent. The |wtypeclass|n key must exist |wsomewhere|n in the parent chain for the
         prototype to be valid.
         """
+
+    _set_actioninfo(caller, _format_list_actions("examine", "add", "remove"))
 
     ptexts = []
     if prot_parent_keys:
@@ -782,8 +820,7 @@ def node_prototype_parent(caller):
     if not ptexts:
         ptexts.append("[No prototype_parent set]")
 
-    text = text.format(current="\n\n".join(ptexts),
-                       actions=_format_list_actions("examine", "add", "remove"))
+    text = text.format(current="\n\n".join(ptexts))
 
     text = (text, helptext)
 
@@ -854,8 +891,6 @@ def node_typeclass(caller):
         one of the prototype's |cparents|n.
 
         {current}
-
-        {actions}
     """.format(current=_get_current_value(caller, "typeclass"),
                actions="|WSelect with |w<num>|W. Other actions: "
                        "|we|Wxamine |w<num>|W, |wr|Wemove selection")
@@ -962,11 +997,15 @@ def node_aliases(caller):
         |cAliases|n are alternative ways to address an object, next to its |cKey|n.  Aliases are not
         case sensitive.
 
-        {actions}
         {current}
-    """.format(actions=_format_list_actions("remove",
-                                            prefix="|w<text>|W to add new alias. Other action: "),
-               current)
+    """.format(current=_get_current_value(
+                   caller, 'aliases',
+                   comparer=lambda propval, flatval: [al for al in flatval if al not in propval],
+                   formatter=lambda lst: "\n" + ", ".join(lst), only_inherit=True))
+    _set_actioninfo(caller,
+                    _format_list_actions(
+                        "remove",
+                        prefix="|w<text>|W to add new alias. Other action: "))
 
     helptext = """
         Aliases are fixed alternative identifiers and are stored with the new object.
@@ -1009,14 +1048,13 @@ def _display_attribute(attr_tuple):
     attrkey, value, category, locks = attr_tuple
     value = protlib.protfunc_parser(value)
     typ = type(value)
-    out = ("|cAttribute key:|n '{attrkey}' "
-           "(|ccategory:|n {category}, "
-           "|clocks:|n {locks})\n"
-           "|cValue|n |W(parsed to {typ})|n:\n{value}").format(
-                   attrkey=attrkey,
-                   category=category if category else "|wNone|n",
-                   locks=locks if locks else "|wNone|n",
-                   typ=typ, value=value)
+    out = ("{attrkey} |c=|n {value} |W({typ}{category}{locks})|n".format(
+            attrkey=attrkey,
+            value=value,
+            typ=typ,
+            category=", category={}".format(category) if category else '',
+            locks=", locks={}".format(";".join(locks)) if any(locks) else ''))
+
     return out
 
 
@@ -1130,6 +1168,12 @@ def _attrs_actions(caller, raw_inp, **kwargs):
 @list_node(_caller_attrs, _attr_select)
 def node_attrs(caller):
 
+    def _currentcmp(propval, flatval):
+        "match by key + category"
+        cmp1 = [(tup[0].lower(), tup[2].lower() if tup[2] else None) for tup in propval]
+        return [tup for tup in flatval if (tup[0].lower(), tup[2].lower()
+                if tup[2] else None) not in cmp1]
+
     text = """
         |cAttributes|n are custom properties of the object. Enter attributes on one of these forms:
 
@@ -1140,8 +1184,14 @@ def node_attrs(caller):
         To give an attribute without a category but with a lockstring, leave that spot empty
         (attrname;;lockstring=value). Attribute values can have embedded $protfuncs.
 
-        {actions}
-    """.format(actions=_format_list_actions("examine", "remove", prefix="Actions: "))
+        {current}
+    """.format(
+            current=_get_current_value(
+                caller, "attrs",
+                comparer=_currentcmp,
+                formatter=lambda lst: "\n" + "\n".join(_display_attribute(tup) for tup in lst),
+                only_inherit=True))
+    _set_actioninfo(caller, _format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Most commonly, Attributes don't need any categories or locks. If using locks, the lock-types
@@ -1290,6 +1340,13 @@ def _tags_actions(caller, raw_inp, **kwargs):
 
 @list_node(_caller_tags, _tag_select)
 def node_tags(caller):
+
+    def _currentcmp(propval, flatval):
+        "match by key + category"
+        cmp1 = [(tup[0].lower(), tup[1].lower() if tup[2] else None) for tup in propval]
+        return [tup for tup in flatval if (tup[0].lower(), tup[1].lower()
+                if tup[1] else None) not in cmp1]
+
     text = """
         |cTags|n are used to group objects so they can quickly be found later. Enter tags on one of
         the following forms:
@@ -1297,8 +1354,14 @@ def node_tags(caller):
             tagname;category
             tagname;category;data
 
-        {actions}
-    """.format(actions=_format_list_actions("examine", "remove", prefix="Actions: "))
+        {current}
+    """.format(
+            current=_get_current_value(
+                caller, 'tags',
+                comparer=_currentcmp,
+                formatter=lambda lst: "\n" + "\n".join(_display_tag(tup) for tup in lst),
+                only_inherit=True))
+    _set_actioninfo(caller, _format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Tags are shared between all objects with that tag. So the 'data' field (which is not
@@ -1325,18 +1388,7 @@ def _caller_locks(caller):
 
 
 def _locks_display(caller, lock):
-    try:
-        locktype, lockdef = lock.split(":", 1)
-    except ValueError:
-        txt = "Malformed lock string - Missing ':'"
-    else:
-        txt = ("{lockstr}\n\n"
-               "|WLocktype: |w{locktype}|n\n"
-               "|WLock def: |w{lockdef}|n\n").format(
-                       lockstr=lock,
-                       locktype=locktype,
-                       lockdef=lockdef)
-    return txt
+    return lock
 
 
 def _lock_select(caller, lockstr):
@@ -1395,6 +1447,11 @@ def _locks_actions(caller, raw_inp, **kwargs):
 @list_node(_caller_locks, _lock_select)
 def node_locks(caller):
 
+    def _currentcmp(propval, flatval):
+        "match by locktype"
+        cmp1 = [lck.split(":", 1)[0] for lck in propval.split(';')]
+        return ";".join(lstr for lstr in flatval.split(';') if lstr.split(':', 1)[0] not in cmp1)
+
     text = """
         The |cLock string|n defines limitations for accessing various properties of the object once
         it's spawned. The string should be on one of the following forms:
@@ -1402,8 +1459,15 @@ def node_locks(caller):
             locktype:[NOT] lockfunc(args)
             locktype: [NOT] lockfunc(args) [AND|OR|NOT] lockfunc(args) [AND|OR|NOT] ...
 
-        {action}
-        """.format(action=_format_list_actions("examine", "remove", prefix="Actions: "))
+        {current}{action}
+        """.format(
+                current=_get_current_value(
+                    caller, 'locks',
+                    comparer=_currentcmp,
+                    formatter=lambda lockstr: "\n".join(_locks_display(caller, lstr)
+                                                        for lstr in lockstr.split(';')),
+                    only_inherit=True),
+                action=_format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Here is an example of two lock strings:
@@ -1438,16 +1502,17 @@ def _caller_permissions(caller):
     return perms
 
 
-def _display_perm(caller, permission):
+def _display_perm(caller, permission, only_hierarchy=False):
     hierarchy = settings.PERMISSION_HIERARCHY
     perm_low = permission.lower()
+    txt = ''
     if perm_low in [prm.lower() for prm in hierarchy]:
         txt = "Permission (in hieararchy): {}".format(
             ", ".join(
                 ["|w[{}]|n".format(prm)
                  if prm.lower() == perm_low else "|W{}|n".format(prm)
                  for prm in hierarchy]))
-    else:
+    elif not only_hierarchy:
         txt = "Permission: '{}'".format(permission)
     return txt
 
@@ -1500,12 +1565,23 @@ def _permissions_actions(caller, raw_inp, **kwargs):
 @list_node(_caller_permissions, _permission_select)
 def node_permissions(caller):
 
+    def _currentcmp(pval, fval):
+        cmp1 = [perm.lower() for perm in pval]
+        return [perm for perm in fval if perm.lower() not in cmp1]
+
     text = """
         |cPermissions|n are simple strings used to grant access to this object. A permission is used
-        when a |clock|n is checked that contains the |wperm|n or |wpperm|n lock functions.
+        when a |clock|n is checked that contains the |wperm|n or |wpperm|n lock functions. Certain
+        permissions belong in the |cpermission hierarchy|n together with the |Wperm()|n lock
+        function.
 
-        {actions}
-    """.format(actions=_format_list_actions("examine", "remove"), prefix="Actions: ")
+        {current}
+    """.format(
+            current=_get_current_value(
+                caller, 'permissions',
+                comparer=_currentcmp,
+                formatter=lambda lst: "\n" + "\n".join(prm for prm in lst), only_inherit=True))
+    _set_actioninfo(caller, _format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Any string can act as a permission as long as a lock is set to look for it. Depending on the
@@ -1538,7 +1614,6 @@ def node_location(caller):
         inventory of |c{caller}|n by default.
 
         {current}
-
     """.format(caller=caller.key, current=_get_current_value(caller, "location"))
 
     helptext = """
@@ -1734,9 +1809,13 @@ def node_prototype_tags(caller):
         |cPrototype-Tags|n can be used to classify and find prototypes in listings Tag names are not
         case-sensitive and can have not have a custom category.
 
-        {actions}
-        """.format(actions=_format_list_actions(
-                "remove", prefix="|w<text>|n|W to add Tag. Other Action:|n "))
+        {current}
+        """.format(
+                current=_get_current_value(
+                    caller, 'prototype_tags',
+                    formatter=lambda lst: ", ".join(tg for tg in lst), only_inherit=True))
+    _set_actioninfo(caller, _format_list_actions(
+                    "remove", prefix="|w<text>|n|W to add Tag. Other Action:|n "))
     helptext = """
         Using prototype-tags is a good way to organize and group large numbers of prototypes by
         genre, type etc. Under the hood, prototypes' tags will all be stored with the category
@@ -1827,8 +1906,14 @@ def node_prototype_locks(caller):
 
         If unsure, keep the open defaults.
 
-        {actions}
-    """.format(actions=_format_list_actions('examine', "remove", prefix="Actions: "))
+        {current}
+    """.format(
+            current=_get_current_value(
+                caller, 'prototype_locks',
+                formatter=lambda lstring: "\n".join(_locks_display(caller, lstr)
+                                                    for lstr in lstring.split(';')),
+                only_inherit=True))
+    _set_actioninfo(caller, _format_list_actions('examine', "remove", prefix="Actions: "))
 
     helptext = """
         Prototype locks can be used to vary access for different tiers of builders. It also allows
@@ -2204,9 +2289,8 @@ def node_prototype_load(caller, **kwargs):
 
     text = """
         Select a prototype to load. This will replace any prototype currently being edited!
-
-        {actions}
-    """.format(actions=_format_list_actions("examine", "delete"))
+    """
+    _set_actioninfo(caller, _format_list_actions("examine", "delete"))
 
     helptext = """
         Loading a prototype will load it and return you to the main index. It can be a good idea
@@ -2230,6 +2314,13 @@ class OLCMenu(EvMenu):
     A custom EvMenu with a different formatting for the options.
 
     """
+    def nodetext_formatter(self, nodetext):
+        """
+        Format the node text itself.
+
+        """
+        return super(OLCMenu, self).nodetext_formatter(nodetext)
+
     def options_formatter(self, optionlist):
         """
         Split the options into two blocks - olc options and normal options
@@ -2237,6 +2328,7 @@ class OLCMenu(EvMenu):
         """
         olc_keys = ("index", "forward", "back", "previous", "next", "validate prototype",
                     "save prototype", "load prototype", "spawn prototype", "search objects")
+        actioninfo = self.actioninfo + "\n" if hasattr(self, 'actioninfo') else ''
         olc_options = []
         other_options = []
         for key, desc in optionlist:
@@ -2247,7 +2339,8 @@ class OLCMenu(EvMenu):
             else:
                 other_options.append((key, desc))
 
-        olc_options = " | ".join(olc_options) + " | " + "|wQ|Wuit" if olc_options else ""
+        olc_options = actioninfo + \
+            " |W|||n ".join(olc_options) + " |W|||n " + "|wQ|Wuit" if olc_options else ""
         other_options = super(OLCMenu, self).options_formatter(other_options)
         sep = "\n\n" if olc_options and other_options else ""
 
@@ -2257,10 +2350,10 @@ class OLCMenu(EvMenu):
         """
         Show help text
         """
-        return "|c --- Help ---|n\n" + helptext
+        return "|c --- Help ---|n\n" + utils.dedent(helptext)
 
     def display_helptext(self):
-        evmore.msg(self.caller, self.helptext, session=self._session)
+        evmore.msg(self.caller, self.helptext, session=self._session, exit_cmd='look')
 
 
 def start_olc(caller, session=None, prototype=None):
