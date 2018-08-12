@@ -187,7 +187,6 @@ class TestProtLib(EvenniaTest):
 
     def test_prototype_to_str(self):
         prstr = protlib.prototype_to_str(self.prot)
-        print("prst: {}".format(prstr))
         self.assertTrue(prstr.startswith("|cprototype-key:|n"))
 
     def test_check_permission(self):

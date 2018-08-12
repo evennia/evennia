@@ -7,7 +7,6 @@ be of use when designing your own game.
 
 """
 from __future__ import division, print_function
-import itertools
 from builtins import object, range
 from future.utils import viewkeys, raise_
 
@@ -233,10 +232,10 @@ def justify(text, width=None, align="f", indent=0):
                 pad = " " * (line_rest // 2)
                 line[0] = pad + line[0]
                 if line[-1] == "\n\n":
-                    line[-1] = line[-1] + pad + " " * (line_rest % 2)
-                else:
-                    line[-1] = pad + " " * (line_rest % 2 - 1) + \
+                    line[-1] += pad + " " * (line_rest % 2 - 1) + \
                             "\n" + " " * width + "\n" + " " * width
+                else:
+                    line[-1] = line[-1] + pad + " " * (line_rest % 2)
             else:  # align 'f'
                 gap += " " * (line_rest // max(1, ngaps))
                 rest_gap = line_rest % max(1, ngaps)
