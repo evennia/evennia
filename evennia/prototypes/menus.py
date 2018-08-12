@@ -1953,12 +1953,12 @@ def _keep_diff(caller, **kwargs):
 def node_apply_diff(caller, **kwargs):
     """Offer options for updating objects"""
 
-    def _keep_option(keyname, prototype, obj, obj_prototype, diff, objects, back_node):
+    def _keep_option(keyname, prototype, base_obj, obj_prototype, diff, objects, back_node):
         """helper returning an option dict"""
         options = {"desc": "Keep {} as-is".format(keyname),
                    "goto": (_keep_diff,
                             {"key": keyname, "prototype": prototype,
-                             "obj": obj, "obj_prototype": obj_prototype,
+                             "base_obj": base_obj, "obj_prototype": obj_prototype,
                              "diff": diff, "objects": objects, "back_node": back_node})}
         return options
 
@@ -1966,6 +1966,7 @@ def node_apply_diff(caller, **kwargs):
     update_objects = kwargs.get("objects", None)
     back_node = kwargs.get("back_node", "node_index")
     obj_prototype = kwargs.get("obj_prototype", None)
+    base_obj = kwargs.get("base_obj", None)
     diff = kwargs.get("diff", None)
 
     if not update_objects:
@@ -1976,12 +1977,12 @@ def node_apply_diff(caller, **kwargs):
 
     if not diff:
         # use one random object as a reference to calculate a diff
-        obj = choice(update_objects)
-        diff, obj_prototype = spawner.prototype_diff_from_object(prototype, obj)
+        base_obj = choice(update_objects)
+        diff, obj_prototype = spawner.prototype_diff_from_object(prototype, base_obj)
 
     text = ["Suggested changes to {} objects. ".format(len(update_objects)),
             "Showing random example obj to change: {name} ({dbref}))\n".format(
-                name=obj.key, dbref=obj.dbref)]
+                name=base_obj.key, dbref=base_obj.dbref)]
 
     helptext = """
         Be careful with this operation! The upgrade mechanism will try to automatically estimate
@@ -2001,7 +2002,7 @@ def node_apply_diff(caller, **kwargs):
             continue
 
         line = "{iopt}  |w{key}|n: {old}{sep}{new} {change}"
-        old_val = utils.crop(str(obj_prototype[key]), width=20)
+        old_val = str(obj_prototype.get(key, "<unset>"))
 
         if inst == "KEEP":
             inst = "|b{}|n".format(inst)
@@ -2009,25 +2010,29 @@ def node_apply_diff(caller, **kwargs):
                                     sep=" ", new='', change=inst))
             continue
 
-        new_val = utils.crop(str(spawner.init_spawn_value(prototype[key])), width=20)
+        if key in prototype:
+            new_val = str(spawner.init_spawn_value(prototype[key]))
+        else:
+            new_val = "<unset>"
         ichanges += 1
         if inst in ("UPDATE", "REPLACE"):
             inst = "|y{}|n".format(inst)
             text.append(line.format(iopt=ichanges, key=key, old=old_val,
                         sep=" |y->|n ", new=new_val, change=inst))
             options.append(_keep_option(key, prototype,
-                           obj, obj_prototype, diff, update_objects, back_node))
+                           base_obj, obj_prototype, diff, update_objects, back_node))
         elif inst == "REMOVE":
             inst = "|r{}|n".format(inst)
             text.append(line.format(iopt=ichanges, key=key, old=old_val,
                         sep=" |r->|n ", new='', change=inst))
             options.append(_keep_option(key, prototype,
-                           obj, obj_prototype, diff, update_objects, back_node))
+                           base_obj, obj_prototype, diff, update_objects, back_node))
         options.extend(
-            [{"key": ("|wu|Wupdate {} objects".format(len(update_objects)), "update", "u"),
-              "goto": (_apply_diff, {"prototye": prototype, "objects": update_objects,
-                                     "back_node": back_node, "diff": diff})},
-             {"key": ("|wr|Wneset changes", "reset", "r"),
+            [{"key": ("|wu|Wpdate {} objects".format(len(update_objects)), "update", "u"),
+              "desc": "Update {} objects".format(len(update_objects)),
+              "goto": (_apply_diff, {"prototype": prototype, "objects": update_objects,
+                  "back_node": back_node, "diff": diff, "base_obj": base_obj})},
+             {"key": ("|wr|Weset changes", "reset", "r"),
               "goto": ("node_apply_diff", {"prototype": prototype, "back_node": back_node,
                                            "objects": update_objects})}])
 
