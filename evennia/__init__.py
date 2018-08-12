@@ -174,7 +174,7 @@ def _init():
     from .utils import logger
     from .utils import gametime
     from .utils import ansi
-    from .utils.spawner import spawn
+    from .prototypes.spawner import spawn
     from . import contrib
     from .utils.evmenu import EvMenu
     from .utils.evtable import EvTable

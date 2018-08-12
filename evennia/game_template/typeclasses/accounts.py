@@ -65,7 +65,6 @@ class Account(DefaultAccount):
     * Helper methods
 
      msg(text=None, **kwargs)
-     swap_character(new_character, delete_old_character=False)
      execute_cmd(raw_string, session=None)
      search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, account=False)
      is_typeclass(typeclass, exact=False)
