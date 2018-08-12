@@ -2,9 +2,20 @@
 
 ## Evennia 0.8 (2018)
 
+### Server/Portal
+
+- Removed `evennia_runner`, completely refactor `evennia_launcher.py` (the 'evennia' program)
+  with different functionality).
+- Both Portal/Server are now stand-alone processes (easy to run as daemon)
+- Made Portal the AMP Server for starting/restarting the Server (the AMP client)
+- Dynamic logging now happens using `evennia -l` rather than by interactive.
+- Made AMP secure against erroneous HTTP requests on the wrong port (return error messages).
+
 ### Prototype changes
 
-- A new form of prototype - database-stored prototypes, editable from in-game. The old,
+- Moved evennia/utils/spawner.py into the new evennia/prototypes/ along with all new
+  functionality around prototypes.
+- A new form of prototype - database-stored prototypes, editable from in-game, was added. The old,
   module-created prototypes remain as read-only prototypes.
 - All prototypes must have a key `prototype_key` identifying the prototype in listings. This is
   checked to be server-unique. Prototypes created in a module will use the global variable name they
@@ -39,10 +50,23 @@
   indented part of a text.
 - Added `exit_cmd` to EvMore pager, to allow for calling a command (e.g. 'look') when leaving the pager.
 
-### Genaral
+### General
 
 - Start structuring the `CHANGELOG` to list features in more detail.
 
+### Contribs
+
+- `Health Bar` (Tim Ashley Jenkins): Easily create colorful bars/meters.
+- `Tree select` (Fluttersprite): Wrapper around EvMenu to easier create
+    a common form of menu from a string.
+- `Turnbattle suite` (Tim Ashley Jenkins)- the old `turnbattle.py` was moved into its own
+  `turnbattle/` package and reworked with many different flavors of combat systems:
+ - `tb_basic` - The basic turnbattle system, with initiative/turn order attack/defense/damage.
+ - `tb_equip` - Adds weapon and armor, wielding, accuracy modifiers.
+ - `tb_items` - Extends `tb_equip` with item use with conditions/status effects.
+ - `tb_magic` - Extends `tb_equip` with spellcasting.
+ - `tb_range` - Adds system for abstract positioning and movement.
+- Updates and some cleanup of existing contribs.
 
 # Overviews
 
