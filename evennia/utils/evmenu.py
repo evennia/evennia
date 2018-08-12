@@ -167,14 +167,13 @@ from __future__ import print_function
 import random
 from builtins import object, range
 
-from textwrap import dedent
 from inspect import isfunction, getargspec
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.utils import logger
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import mod_import, make_iter, pad, m_len, is_iter
+from evennia.utils.utils import mod_import, make_iter, pad, m_len, is_iter, dedent
 from evennia.commands import cmdhandler
 
 # read from protocol NAWS later?
@@ -796,7 +795,7 @@ class EvMenu(object):
 
         # handle the helptext
         if helptext:
-            self.helptext = helptext
+            self.helptext = self.helptext_formatter(helptext)
         elif options:
             self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
         else:
@@ -896,7 +895,20 @@ class EvMenu(object):
             nodetext (str): The formatted node text.
 
         """
-        return dedent(nodetext).strip()
+        return dedent(nodetext.strip('\n'), baseline_index=0).rstrip()
+
+    def helptext_formatter(self, helptext):
+        """
+        Format the node's help text
+
+        Args:
+            helptext (str): The unformatted help text for the node.
+
+        Returns:
+            helptext (str): The formatted help text.
+
+        """
+        return dedent(helptext.strip('\n'), baseline_index=0).rstrip()
 
     def options_formatter(self, optionlist):
         """
@@ -1042,7 +1054,10 @@ def list_node(option_generator, select=None, pagesize=10):
             else:
                 if callable(select):
                     try:
-                        return select(caller, selection)
+                        if bool(getargspec(select).keywords):
+                            return select(caller, selection, available_choices=available_choices)
+                        else:
+                            return select(caller, selection)
                     except Exception:
                         logger.log_trace()
                 elif select:
@@ -1101,22 +1116,31 @@ def list_node(option_generator, select=None, pagesize=10):
             # add data from the decorated node
 
             decorated_options = []
+            supports_kwargs = bool(getargspec(func).keywords)
             try:
-                text, decorated_options = func(caller, raw_string)
+                if supports_kwargs:
+                    text, decorated_options = func(caller, raw_string, **kwargs)
+                else:
+                    text, decorated_options = func(caller, raw_string)
             except TypeError:
                 try:
-                    text, decorated_options = func(caller)
+                    if supports_kwargs:
+                        text, decorated_options = func(caller, **kwargs)
+                    else:
+                        text, decorated_options = func(caller)
                 except Exception:
                     raise
             except Exception:
                 logger.log_trace()
             else:
-                if isinstance(decorated_options, {}):
+                if isinstance(decorated_options, dict):
                     decorated_options = [decorated_options]
                 else:
                     decorated_options = make_iter(decorated_options)
 
             extra_options = []
+            if isinstance(decorated_options, dict):
+                decorated_options = [decorated_options]
             for eopt in decorated_options:
                 cback = ("goto" in eopt and "goto") or ("exec" in eopt and "exec") or None
                 if cback:

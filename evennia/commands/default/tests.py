@@ -28,6 +28,7 @@ from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
 from evennia import DefaultObject, DefaultCharacter
+from evennia.prototypes import prototypes as protlib
 
 
 # set up signal here since we are not starting the server
@@ -45,7 +46,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
     def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None,
-             receiver=None, cmdstring=None, obj=None):
+             receiver=None, cmdstring=None, obj=None, inputs=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -74,14 +75,31 @@ class CommandTest(EvenniaTest):
         cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
+        inputs = inputs or []
+
         try:
             receiver.msg = Mock()
             if cmdobj.at_pre_cmd():
                 return
             cmdobj.parse()
             ret = cmdobj.func()
+
+            # handle func's with yield in them (generators)
             if isinstance(ret, types.GeneratorType):
-                ret.next()
+                while True:
+                    try:
+                        inp = inputs.pop() if inputs else None
+                        if inp:
+                            try:
+                                ret.send(inp)
+                            except TypeError:
+                                ret.next()
+                                ret = ret.send(inp)
+                        else:
+                            ret.next()
+                    except StopIteration:
+                        break
+
             cmdobj.at_post_cmd()
         except StopIteration:
             pass
@@ -362,6 +380,7 @@ class TestBuilding(CommandTest):
             # check that it exists in the process.
             query = search_object(objKeyStr)
             commandTest.assertIsNotNone(query)
+            commandTest.assertTrue(bool(query))
             obj = query[0]
             commandTest.assertIsNotNone(obj)
             return obj
@@ -370,17 +389,20 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), " ", "Usage: @spawn")
 
         # Tests "@spawn <prototype_dictionary>" without specifying location.
+
         self.call(building.CmdSpawn(),
-                  "{'key':'goblin', 'typeclass':'evennia.DefaultCharacter'}", "Spawned goblin")
-        goblin = getObject(self, "goblin")
+                  "/save {'prototype_key': 'testprot', 'key':'Test Char', "
+                  "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+                  "Saved prototype: testprot", inputs=['y'])
 
-        # Tests that the spawned object's type is a DefaultCharacter.
-        self.assertIsInstance(goblin, DefaultCharacter)
+        self.call(building.CmdSpawn(), "/list", "Key ")
 
+        self.call(building.CmdSpawn(), 'testprot', "Spawned Test Char")
         # Tests that the spawned object's location is the same as the caharacter's location, since
         # we did not specify it.
-        self.assertEqual(goblin.location, self.char1.location)
-        goblin.delete()
+        testchar = getObject(self, "Test Char")
+        self.assertEqual(testchar.location, self.char1.location)
+        testchar.delete()
 
         # Test "@spawn <prototype_dictionary>" with a location other than the character's.
         spawnLoc = self.room2
@@ -390,14 +412,23 @@ class TestBuilding(CommandTest):
             spawnLoc = self.room1
 
         self.call(building.CmdSpawn(),
-                  "{'prototype':'GOBLIN', 'key':'goblin', 'location':'%s'}"
-                  % spawnLoc.dbref, "Spawned goblin")
+                "{'prototype_key':'GOBLIN', 'typeclass':'evennia.objects.objects.DefaultCharacter', "
+                "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref, "Spawned goblin")
         goblin = getObject(self, "goblin")
+        # Tests that the spawned object's type is a DefaultCharacter.
+        self.assertIsInstance(goblin, DefaultCharacter)
         self.assertEqual(goblin.location, spawnLoc)
+
         goblin.delete()
 
+        # create prototype
+        protlib.create_prototype(**{'key': 'Ball',
+                                    'typeclass': 'evennia.objects.objects.DefaultCharacter',
+                                    'prototype_key': 'testball'})
+
         # Tests "@spawn <prototype_name>"
-        self.call(building.CmdSpawn(), "'BALL'", "Spawned Ball")
+        self.call(building.CmdSpawn(), "testball", "Spawned Ball")
+
         ball = getObject(self, "Ball")
         self.assertEqual(ball.location, self.char1.location)
         self.assertIsInstance(ball, DefaultObject)
@@ -410,10 +441,14 @@ class TestBuilding(CommandTest):
         self.assertIsNone(ball.location)
         ball.delete()
 
+        self.call(building.CmdSpawn(),
+                "/noloc {'prototype_parent':'TESTBALL', 'prototype_key': 'testball', 'location':'%s'}"
+                % spawnLoc.dbref, "Error: Prototype testball tries to parent itself.")
+
         # Tests "@spawn/noloc ...", but DO specify a location.
         # Location should be the specified location.
         self.call(building.CmdSpawn(),
-                  "/noloc {'prototype':'BALL', 'location':'%s'}"
+                "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo', 'location':'%s'}"
                   % spawnLoc.dbref, "Spawned Ball")
         ball = getObject(self, "Ball")
         self.assertEqual(ball.location, spawnLoc)
@@ -421,6 +456,9 @@ class TestBuilding(CommandTest):
 
         # test calling spawn with an invalid prototype.
         self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST'")
+
+        # Test listing commands
+        self.call(building.CmdSpawn(), "/list", "Key ")
 
 
 class TestComms(CommandTest):
