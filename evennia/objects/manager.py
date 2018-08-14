@@ -437,7 +437,7 @@ class ObjectDBManager(TypedObjectManager):
         """
         Create and return a new object as a copy of the original object. All
         will be identical to the original except for the arguments given
-        specifically to this method.
+        specifically to this method. Object contents will not be copied.
 
         Args:
             original_object (Object): The object to make a copy from.
@@ -501,6 +501,10 @@ class ObjectDBManager(TypedObjectManager):
         # copy over all scripts, if any
         for script in original_object.scripts.all():
             ScriptDB.objects.copy_script(script, new_obj=new_object)
+
+        # copy over all tags, if any
+        for tag in original_object.tags.get():
+            new_object.tags.add(tag)
 
         return new_object
 
