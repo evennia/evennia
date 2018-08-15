@@ -503,9 +503,9 @@ class ObjectDBManager(TypedObjectManager):
             ScriptDB.objects.copy_script(script, new_obj=new_object)
 
         # copy over all tags, if any
-        for tag in original_object.tags.get():
-            new_object.tags.add(tag)
-
+        for tag in original_object.tags.get(return_tagobj=True, return_list=True):
+            new_object.tags.add(tag=tag.key, category=tag.category, data=tag.data)
+    
         return new_object
 
     def clear_all_sessids(self):
