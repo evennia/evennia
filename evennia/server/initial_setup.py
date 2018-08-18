@@ -59,7 +59,7 @@ def create_objects():
 
     """
 
-    logger.log_info("Creating objects (Account #1 and Limbo room) ...")
+    logger.log_info("Initial setup: Creating objects (Account #1 and Limbo room) ...")
 
     # Set the initial User's account object's username on the #1 object.
     # This object is pure django and only holds name, email and password.
@@ -121,7 +121,7 @@ def create_channels():
     Creates some sensible default channels.
 
     """
-    logger.log_info("Creating default channels ...")
+    logger.log_info("Initial setup: Creating default channels ...")
 
     goduser = get_god_account()
     for channeldict in settings.DEFAULT_CHANNELS:
@@ -144,9 +144,19 @@ def at_initial_setup():
         mod = __import__(modname, fromlist=[None])
     except (ImportError, ValueError):
         return
-    logger.log_info(" Running at_initial_setup() hook.")
+    logger.log_info("Initial setup: Running at_initial_setup() hook.")
     if mod.__dict__.get("at_initial_setup", None):
         mod.at_initial_setup()
+
+
+def collectstatic():
+    """
+    Run collectstatic to make sure all web assets are loaded.
+
+    """
+    from django.core.management import call_command
+    logger.log_info("Initial setup: Gathering static resources using 'collectstatic'")
+    call_command('collectstatic', '--noinput')
 
 
 def reset_server():
@@ -159,8 +169,8 @@ def reset_server():
     """
     ServerConfig.objects.conf("server_epoch", time.time())
     from evennia.server.sessionhandler import SESSIONS
-    logger.log_info(" Initial setup complete. Restarting Server once.")
-    SESSIONS.server.shutdown(mode='reset')
+    logger.log_info("Initial setup complete. Restarting Server once.")
+    SESSIONS.portal_reset_server()
 
 
 def handle_setup(last_step):
@@ -186,6 +196,7 @@ def handle_setup(last_step):
     setup_queue = [create_objects,
                    create_channels,
                    at_initial_setup,
+                   collectstatic,
                    reset_server]
 
     # step through queue, from last completed function

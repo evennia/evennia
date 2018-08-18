@@ -116,7 +116,7 @@ class Ttype(object):
                 self.protocol.protocol_flags["FORCEDENDLINE"] = False
 
             if cupper.startswith("TINTIN++"):
-                self.protocol.protocol_flags["FORCEDENDLINE"] = False
+                self.protocol.protocol_flags["FORCEDENDLINE"] = True
 
             if (cupper.startswith("XTERM") or
                 cupper.endswith("-256COLOR") or
