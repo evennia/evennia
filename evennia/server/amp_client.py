@@ -51,7 +51,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
 
     def buildProtocol(self, addr):
         """
-        Creates an AMPProtocol instance when connecting to the server.
+        Creates an AMPProtocol instance when connecting to the AMP server.
 
         Args:
             addr (str): Connection address. Not used.
@@ -108,6 +108,8 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         # back with the Server side. We also need the startup mode (reload, reset, shutdown)
         self.send_AdminServer2Portal(
                 amp.DUMMYSESSION, operation=amp.PSYNC, spid=os.getpid(), info_dict=info_dict)
+        # run the intial setup if needed
+        self.factory.server.run_initial_setup()
 
     def data_to_portal(self, command, sessid, **kwargs):
         """

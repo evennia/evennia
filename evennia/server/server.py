@@ -181,9 +181,6 @@ class Evennia(object):
 
         self.start_time = time.time()
 
-        # Run the initial setup if needed
-        self.run_initial_setup()
-
         # initialize channelhandler
         channelhandler.CHANNELHANDLER.update()
 
@@ -274,6 +271,8 @@ class Evennia(object):
 
     def run_initial_setup(self):
         """
+        This is triggered by the amp protocol when the connection
+        to the portal has been established.
         This attempts to run the initial_setup script of the server.
         It returns if this is not the first time the server starts.
         Once finished the last_initial_setup_step is set to -1.
