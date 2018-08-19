@@ -507,10 +507,11 @@ ServerConfig.objects.conf("server_starting_mode", True)
 # what to execute from.
 application = service.Application('Evennia')
 
-# custom logging
-logfile = logger.WeeklyLogFile(os.path.basename(settings.SERVER_LOG_FILE),
-                               os.path.dirname(settings.SERVER_LOG_FILE))
-application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
+if "--nodaemon" not in sys.argv:
+    # custom logging, but only if we are not running in interactive mode
+    logfile = logger.WeeklyLogFile(os.path.basename(settings.SERVER_LOG_FILE),
+                                   os.path.dirname(settings.SERVER_LOG_FILE))
+    application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
 
 # The main evennia server program. This sets up the database
 # and is where we store all the other services.
