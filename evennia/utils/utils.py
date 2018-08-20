@@ -1010,17 +1010,17 @@ def delay(timedelay, callback, *args, **kwargs):
     Delay the return of a value.
 
     Args:
-      timedelay (int or float): The delay in seconds
-      callback (callable): Will be called with optional
-        arguments after `timedelay` seconds.
-      args (any, optional): Will be used as arguments to callback
+        timedelay (int or float): The delay in seconds
+        callback (callable): Will be called as `callback(*args, **kwargs)`
+            after `timedelay` seconds.
+        args (any, optional): Will be used as arguments to callback
     Kwargs:
-       persistent (bool, optional): should make the delay persistent
-           over a reboot or reload
-       any (any): Will be used to call the callback.
+        persistent (bool, optional): should make the delay persistent
+            over a reboot or reload
+        any (any): Will be used as keyword arguments to callback.
 
     Returns:
-        deferred (deferred): Will fire fire with callback after
+        deferred (deferred): Will fire with callback after
             `timedelay` seconds. Note that if `timedelay()` is used in the
             commandhandler callback chain, the callback chain can be
             defined directly in the command body and don't need to be
