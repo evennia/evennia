@@ -105,28 +105,28 @@ class CommandTest(EvenniaTest):
             pass
         except InterruptCommand:
             pass
-        finally:
-            # clean out evtable sugar. We only operate on text-type
-            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
-                          for name, args, kwargs in receiver.msg.mock_calls]
-            # Get the first element of a tuple if msg received a tuple instead of a string
-            stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
-            if msg is not None:
-                # set our separator for returned messages based on parsing ansi or not
-                msg_sep = "|" if noansi else "||"
-                # Have to strip ansi for each returned message for the regex to handle it correctly
-                returned_msg = msg_sep.join(_RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi))
-                                            for mess in stored_msg).strip()
-                if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
-                    sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
-                    sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
-                    sep3 = "\n" + "=" * 78
-                    retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
-                    raise AssertionError(retval)
-            else:
-                returned_msg = "\n".join(str(msg) for msg in stored_msg)
-                returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
-            receiver.msg = old_msg
+
+        # clean out evtable sugar. We only operate on text-type
+        stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+                      for name, args, kwargs in receiver.msg.mock_calls]
+        # Get the first element of a tuple if msg received a tuple instead of a string
+        stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
+        if msg is not None:
+            # set our separator for returned messages based on parsing ansi or not
+            msg_sep = "|" if noansi else "||"
+            # Have to strip ansi for each returned message for the regex to handle it correctly
+            returned_msg = msg_sep.join(_RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi))
+                                        for mess in stored_msg).strip()
+            if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
+                sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
+                sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
+                sep3 = "\n" + "=" * 78
+                retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
+                raise AssertionError(retval)
+        else:
+            returned_msg = "\n".join(str(msg) for msg in stored_msg)
+            returned_msg = ansi.parse_ansi(returned_msg, strip_ansi=noansi).strip()
+        receiver.msg = old_msg
 
         return returned_msg
 

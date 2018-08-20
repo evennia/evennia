@@ -10,6 +10,9 @@
 - Made Portal the AMP Server for starting/restarting the Server (the AMP client)
 - Dynamic logging now happens using `evennia -l` rather than by interactive.
 - Made AMP secure against erroneous HTTP requests on the wrong port (return error messages).
+- The `evennia istart` option will start/switch the Server in foreground (interactive) mode, where it logs
+  to terminal and can be stopped with Ctrl-C. Using `evennia reload`, or reloading in-game, will
+  return Server to normal daemon operation.
 
 ### Prototype changes
 
@@ -26,9 +29,13 @@
   change from Evennia 0.7 which allowed 'mixin' prototypes without `typeclass`/`prototype_key`. To
   make a mixin now, give it a default typeclass, like `evennia.objects.objects.DefaultObject`  and just
   override in the child as needed.
+- Spawning an object using a prototype will automatically assign a new tag to it, named the same as
+  the `prototype_key` and with the category `from_prototype`.
 - The spawn command was extended to accept a full prototype on one line.
 - The spawn command got the /save switch to save the defined prototype and its key.
 - The command spawn/menu will now start an OLC (OnLine Creation) menu to load/save/edit/spawn prototypes.
+- The OLC allows for updating all objects previously created using a given prototype with any
+  changes done.
 
 ### EvMenu
 
