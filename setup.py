@@ -14,6 +14,14 @@ import recommonmark
 setup(
     name='recommonmark',
     version=recommonmark.__version__,
+    description=('A docutils-compatibility bridge to CommonMark, '
+                 'enabling you to write CommonMark '
+                 'inside of Docutils & Sphinx projects.'),
+    url='https://github.com/rtfd/recommonmark',
+    license='MIT',
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+    ],
     install_requires=[
         'commonmark>=0.7.3',
         'docutils>=0.11',
