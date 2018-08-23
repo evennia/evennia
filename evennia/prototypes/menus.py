@@ -2396,4 +2396,5 @@ def start_olc(caller, session=None, prototype=None):
                 "node_prototype_save": node_prototype_save,
                 "node_prototype_spawn": node_prototype_spawn
                 }
-    OLCMenu(caller, menudata, startnode='node_index', session=session, olc_prototype=prototype)
+    OLCMenu(caller, menudata, startnode='node_index', session=session,
+            olc_prototype=prototype, debug=True)

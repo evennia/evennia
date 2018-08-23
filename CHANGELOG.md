@@ -45,7 +45,13 @@
   current node instead of failing.
 - Better error handling of in-node syntax errors.
 - Improve dedent of default text/helptext formatter. Right-strip whitespace.
+- Add `debug` option when creating menu - this turns of persistence and makes the `menudebug`
+  command available for examining the current menu state.
 
+
+### Webclient
+
+- Refactoring of webclient structure.
 
 ### Utils
 
@@ -60,6 +66,7 @@
 ### General
 
 - Start structuring the `CHANGELOG` to list features in more detail.
+- Inflection and grouping of multiple objects in default room (an box, three boxes)
 
 ### Contribs
 
