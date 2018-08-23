@@ -23,6 +23,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import search
 from evennia.utils import logger
+from evennia.utils import ansi
 from evennia.utils.utils import (variable_from_module, lazy_property,
                                  make_iter, to_unicode, is_iter, list_to_string,
                                  to_str)
@@ -305,12 +306,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             count (int): Number of objects of this type
             looker (Object): Onlooker. Not used by default.
         Kwargs:
-            key (str): Optional key to pluralize, use this instead of the object's key.
+            key (str): Optional key to pluralize, if given, use this instead of the object's key.
         Returns:
             singular (str): The singular form to display.
             plural (str): The determined plural form of the key, including the count.
         """
         key = kwargs.get("key", self.key)
+        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
         plural = _INFLECT.plural(key, 2)
         plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
         singular = _INFLECT.an(key)
