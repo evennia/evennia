@@ -165,6 +165,7 @@ evennia.utils.evmenu`.
 """
 from __future__ import print_function
 import random
+import inspect
 from builtins import object, range
 
 from inspect import isfunction, getargspec
@@ -173,7 +174,7 @@ from evennia import Command, CmdSet
 from evennia.utils import logger
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import mod_import, make_iter, pad, m_len, is_iter, dedent
+from evennia.utils.utils import mod_import, make_iter, pad, to_str, m_len, is_iter, dedent, crop
 from evennia.commands import cmdhandler
 
 # read from protocol NAWS later?
@@ -322,7 +323,7 @@ class EvMenu(object):
                  auto_quit=True, auto_look=True, auto_help=True,
                  cmd_on_exit="look",
                  persistent=False, startnode_input="", session=None,
-                 **kwargs):
+                 debug=False, **kwargs):
         """
         Initialize the menu tree and start the caller onto the first node.
 
@@ -375,7 +376,8 @@ class EvMenu(object):
                 *pickle*. When the server is reloaded, the latest node shown will be completely
                 re-run with the same input arguments - so be careful if you are counting
                 up some persistent counter or similar - the counter may be run twice if
-                reload happens on the node that does that.
+                reload happens on the node that does that. Note that if `debug` is True,
+                this setting is ignored and assumed to be False.
             startnode_input (str or (str, dict), optional): Send an input text to `startnode` as if
                 a user input text from a fictional previous node. If including the dict, this will
                 be passed as **kwargs to that node. When the server reloads,
@@ -385,6 +387,10 @@ class EvMenu(object):
                 for the very first display of the first node - after that, EvMenu itself
                 will keep the session updated from the command input. So a persistent
                 menu will *not* be using this same session anymore after a reload.
+            debug (bool, optional): If set, the 'menudebug' command will be made available
+                by default in all nodes of the menu. This will print out the current state of
+                the menu. Deactivate for production use! When the debug flag is active, the
+                `persistent` flag is deactivated.
 
         Kwargs:
             any (any): All kwargs will become initialization variables on `caller.ndb._menutree`,
@@ -408,7 +414,7 @@ class EvMenu(object):
         """
         self._startnode = startnode
         self._menutree = self._parse_menudata(menudata)
-        self._persistent = persistent
+        self._persistent = persistent if not debug else False
         self._quitting = False
 
         if startnode not in self._menutree:
@@ -422,6 +428,7 @@ class EvMenu(object):
         self.auto_quit = auto_quit
         self.auto_look = auto_look
         self.auto_help = auto_help
+        self.debug_mode = debug
         self._session = session
         if isinstance(cmd_on_exit, str):
             # At this point menu._session will have been replaced by the
@@ -844,6 +851,36 @@ class EvMenu(object):
             if self.cmd_on_exit is not None:
                 self.cmd_on_exit(self.caller, self)
 
+    def print_debug_info(self, arg):
+        """
+        Messages the caller with the current menu state, for debug purposes.
+
+        Args:
+            arg (str): Arg to debug instruction, either nothing, 'full' or the name
+                of a property to inspect.
+
+        """
+        all_props = inspect.getmembers(self)
+        all_methods = [name for name, _ in inspect.getmembers(self, predicate=inspect.ismethod)]
+        all_builtins = [name for name, _ in inspect.getmembers(self, predicate=inspect.isbuiltin)]
+        props = {prop: value for prop, value in all_props if prop not in all_methods and
+                 prop not in all_builtins and not prop.endswith("__")}
+
+        if arg:
+            if arg in props:
+                debugtxt = " |y* {}:|n\n{}".format(arg, props[arg])
+            elif arg == 'full':
+                debugtxt = ("|yMENU DEBUG full ... |n\n" + "\n".join(props) +
+                            "\n |y... END MENU DEBUG|n")
+            else:
+                debugtxt = "|yUsage: menudebug full|<name of property>|n"
+        else:
+            debugtxt = "|yMENU DEBUG properties:|n\n" + "\n".join("|y *|n {}: {}".format(
+                            prop, crop(to_str(value, force_string=True), width=50))
+                                for prop, value in sorted(props.items()))
+            debugtxt += "\n|y... END MENU DEBUG (use menudebug <name> for full value)|n"
+        self.caller.msg(debugtxt)
+
     def parse_input(self, raw_string):
         """
         Parses the incoming string from the menu user.
@@ -870,6 +907,8 @@ class EvMenu(object):
             self.display_helptext()
         elif self.auto_quit and cmd in ("quit", "q", "exit"):
             self.close_menu()
+        elif self.debug_mode and cmd.startswith("menudebug"):
+            self.print_debug_info(cmd[9:].strip())
         elif self.default:
             goto, goto_kwargs, execfunc, exec_kwargs = self.default
             self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
