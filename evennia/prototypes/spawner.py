@@ -143,25 +143,34 @@ _NON_CREATE_KWARGS = _CREATE_OBJECT_KWARGS + _PROTOTYPE_META_NAMES
 
 # Helper
 
-def _get_prototype(dic, prot, protparents):
+def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
     """
     Recursively traverse a prototype dictionary, including multiple
     inheritance. Use validate_prototype before this, we don't check
     for infinite recursion here.
 
+    Args:
+        inprot (dict): Prototype dict (the individual prototype, with no inheritance included).
+        protparents (dict): Available protparents, keyed by prototype_key.
+        uninherited (dict): Parts of prototype to not inherit.
+        _workprot (dict, optional): Work dict for the recursive algorithm.
+
     """
-    # we don't overload the prototype_key
-    prototype_key = prot.get('prototype_key', None)
-    if "prototype_parent" in dic:
+    _workprot = {} if _workprot is None else _workprot
+    if "prototype_parent" in inprot:
         # move backwards through the inheritance
-        for prototype in make_iter(dic["prototype_parent"]):
+        for prototype in make_iter(inprot["prototype_parent"]):
             # Build the prot dictionary in reverse order, overloading
-            new_prot = _get_prototype(protparents.get(prototype.lower(), {}), prot, protparents)
-            prot.update(new_prot)
-    prot.update(dic)
-    prot['prototype_key'] = prototype_key
-    prot.pop("prototype_parent", None)  # we don't need this anymore
-    return prot
+            new_prot = _get_prototype(protparents.get(prototype.lower(), {}),
+                                      protparents, _workprot=_workprot)
+            _workprot.update(new_prot)
+    # the inprot represents a higher level (a child prot), which should override parents
+    _workprot.update(inprot)
+    if uninherited:
+        # put back the parts that should not be inherited
+        _workprot.update(uninherited)
+    _workprot.pop("prototype_parent", None)  # we don't need this for spawning
+    return _workprot
 
 
 def flatten_prototype(prototype, validate=False):
@@ -181,7 +190,8 @@ def flatten_prototype(prototype, validate=False):
         protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
         protlib.validate_prototype(prototype, None, protparents,
                                    is_prototype_base=validate, strict=validate)
-        return _get_prototype(prototype, {}, protparents)
+        return _get_prototype(prototype, protparents,
+                              uninherited={"prototype_key": prototype.get("prototype_key")})
     return {}
 
 
@@ -519,7 +529,8 @@ def spawn(*prototypes, **kwargs):
     for prototype in prototypes:
 
         protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
-        prot = _get_prototype(prototype, {}, protparents)
+        prot = _get_prototype(prototype, protparents,
+                              uninherited={"prototype_key": prototype.get("prototype_key")})
         if not prot:
             continue
 

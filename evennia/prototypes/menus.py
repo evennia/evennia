@@ -377,7 +377,7 @@ def _default_parse(raw_inp, choices, *args):
 
 def node_validate_prototype(caller, raw_string, **kwargs):
     """General node to view and validate a protototype"""
-    prototype = _get_flat_menu_prototype(caller, validate=False)
+    prototype = _get_flat_menu_prototype(caller, refresh=True, validate=False)
     prev_node = kwargs.get("back", "index")
 
     _, text = _validate_prototype(prototype)
