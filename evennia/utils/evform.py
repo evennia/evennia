@@ -161,21 +161,12 @@ def _to_rect(lines):
         lines (list): list of `ANSIString`s
 
     Returns:
-        nlines (list): list of `ANSIString`s of
+        (list): list of `ANSIString`s of
         same length as the longest input line
 
     """
-    maxl = 0
-    for line in lines:
-        if isinstance(line, (ANSIString, basestring)):
-            maxl = max(len(line), maxl)
-        else:
-            raise ValueError()
-    nlines = []
-    for line in lines:
-        line += ' ' * (maxl - len(line))
-        nlines.append(line)
-    return nlines
+    maxl = max(len(line) for line in lines)
+    return [line + ' ' * (maxl - len(line)) for line in lines]
 
 
 def _to_ansi(obj, regexable=False):
