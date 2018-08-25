@@ -866,19 +866,34 @@ class EvMenu(object):
         props = {prop: value for prop, value in all_props if prop not in all_methods and
                  prop not in all_builtins and not prop.endswith("__")}
 
+        local = {key: var for key, var in locals().items()
+                 if key not in all_props and not key.endswith("__")}
+
         if arg:
             if arg in props:
                 debugtxt = " |y* {}:|n\n{}".format(arg, props[arg])
+            elif arg in local:
+                debugtxt = " |y* {}:|n\n{}".format(arg, local[arg])
             elif arg == 'full':
-                debugtxt = ("|yMENU DEBUG full ... |n\n" + "\n".join(props) +
+                debugtxt = ("|yMENU DEBUG full ... |n\n" + "\n".join(
+                                "|y *|n {}: {}".format(key, val)
+                                for key, val in sorted(props.items())) +
+                            "\n |yLOCAL VARS:|n\n" + "\n".join(
+                                "|y *|n {}: {}".format(key, val)
+                                for key, val in sorted(local.items())) +
                             "\n |y... END MENU DEBUG|n")
             else:
                 debugtxt = "|yUsage: menudebug full|<name of property>|n"
         else:
-            debugtxt = "|yMENU DEBUG properties:|n\n" + "\n".join("|y *|n {}: {}".format(
-                            prop, crop(to_str(value, force_string=True), width=50))
-                                for prop, value in sorted(props.items()))
-            debugtxt += "\n|y... END MENU DEBUG (use menudebug <name> for full value)|n"
+                debugtxt = ("|yMENU DEBUG properties ... |n\n" + "\n".join(
+                                "|y *|n {}: {}".format(
+                                    key, crop(to_str(val, force_string=True), width=50))
+                                for key, val in sorted(props.items())) +
+                            "\n |yLOCAL VARS:|n\n" + "\n".join(
+                                "|y *|n {}: {}".format(
+                                    key, crop(to_str(val, force_string=True), width=50))
+                                for key, val in sorted(local.items())) +
+                            "\n |y... END MENU DEBUG|n")
         self.caller.msg(debugtxt)
 
     def parse_input(self, raw_string):

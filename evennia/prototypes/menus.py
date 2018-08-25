@@ -2027,14 +2027,14 @@ def node_apply_diff(caller, **kwargs):
                         sep=" |r->|n ", new='', change=inst))
             options.append(_keep_option(key, prototype,
                            base_obj, obj_prototype, diff, update_objects, back_node))
-        options.extend(
-            [{"key": ("|wu|Wpdate {} objects".format(len(update_objects)), "update", "u"),
-              "desc": "Update {} objects".format(len(update_objects)),
-              "goto": (_apply_diff, {"prototype": prototype, "objects": update_objects,
-                  "back_node": back_node, "diff": diff, "base_obj": base_obj})},
-             {"key": ("|wr|Weset changes", "reset", "r"),
-              "goto": ("node_apply_diff", {"prototype": prototype, "back_node": back_node,
-                                           "objects": update_objects})}])
+    options.extend(
+        [{"key": ("|wu|Wpdate {} objects".format(len(update_objects)), "update", "u"),
+          "desc": "Update {} objects".format(len(update_objects)),
+          "goto": (_apply_diff, {"prototype": prototype, "objects": update_objects,
+              "back_node": back_node, "diff": diff, "base_obj": base_obj})},
+         {"key": ("|wr|Weset changes", "reset", "r"),
+          "goto": ("node_apply_diff", {"prototype": prototype, "back_node": back_node,
+                                       "objects": update_objects})}])
 
     if ichanges < 1:
         text = ["Analyzed a random sample object (out of {}) - "
