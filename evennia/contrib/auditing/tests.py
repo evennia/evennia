@@ -6,18 +6,16 @@ from django.conf import settings
 from evennia.contrib.auditing.server import AuditedServerSession
 from evennia.utils.test_resources import EvenniaTest
 
+# Configure session auditing settings
+settings.AUDIT_CALLBACK = "evennia.contrib.auditing.examples"
+settings.AUDIT_IN = True
+settings.AUDIT_OUT = True
+
+# Configure settings to use custom session
+settings.SERVER_SESSION_CLASS = "evennia.contrib.auditing.server.AuditedServerSession"
+
 class AuditingTest(EvenniaTest):
-    def setUp(self):
-        # Configure session auditing settings
-        settings.AUDIT_CALLBACK = "evennia.contrib.auditing.examples"
-        settings.AUDIT_IN = True
-        settings.AUDIT_OUT = True
-        
-        # Configure settings to use custom session
-        settings.SERVER_SESSION_CLASS = "evennia.contrib.auditing.server.AuditedServerSession"
-        
-        super(AuditingTest, self).setUp()
-        
+
     def test_mask(self):
         """
         Make sure the 'mask' function is properly masking potentially sensitive 

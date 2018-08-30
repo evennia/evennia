@@ -1,5 +1,4 @@
-from evennia.utils.logger import *
-from twisted.internet.threads import deferToThread
+from evennia.utils.logger import log_file
 import json
 
 def output(data, *args, **kwargs):
