@@ -32,7 +32,7 @@
 - Spawning an object using a prototype will automatically assign a new tag to it, named the same as
   the `prototype_key` and with the category `from_prototype`.
 - The spawn command was extended to accept a full prototype on one line.
-- The spawn command got the /save switch to save the defined prototype and its key.
+- The spawn command got the /save switch to save the defined prototype and its key
 - The command spawn/menu will now start an OLC (OnLine Creation) menu to load/save/edit/spawn prototypes.
 - The OLC allows for updating all objects previously created using a given prototype with any
   changes done.
@@ -53,6 +53,16 @@
 
 - Refactoring of webclient structure.
 
+### Locks
+
+- New function `evennia.locks.lockhandler.check_lockstring`. This allows for checking an object
+  against an arbitrary lockstring without needing the lock to be stored on an object first.
+- New function `evennia.locks.lockhandler.validate_lockstring` allows for stand-alone validation
+  of a lockstring.
+- New function `evennia.locks.lockhandler.get_all_lockfuncs` gives a dict {"name": lockfunc} for
+  all available lock funcs. This is useful for dynamic listings.
+
+
 ### Utils
 
 - Added new `columnize` function for easily splitting text into multiple columns. At this point it
@@ -62,6 +72,8 @@
   This removes a problem with the original `textwrap.dedent` which will only dedent to the least
   indented part of a text.
 - Added `exit_cmd` to EvMore pager, to allow for calling a command (e.g. 'look') when leaving the pager.
+- `get_all_typeclasses` will return  dict `{"path": typeclass, ...}` for all typeclasses available
+  in the system. This is used by the new `@typeclass/list` subcommand (useful for builders etc).
 
 ### General
 
