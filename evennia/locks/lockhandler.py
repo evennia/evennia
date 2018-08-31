@@ -114,6 +114,9 @@ from django.utils.translation import ugettext as _
 __all__ = ("LockHandler", "LockException")
 
 WARNING_LOG = settings.LOCKWARNING_LOG_FILE
+_LOCK_HANDLER = None
+
+
 
 #
 # Exception class. This will be raised
@@ -614,8 +617,6 @@ class LockHandler(object):
 class _ObjDummy:
     lock_storage = ''
 
-_LOCK_HANDLER = LockHandler(_ObjDummy())
-
 
 def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
                      default=False, access_type=None):
@@ -642,6 +643,9 @@ def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
         access (bool): If check is passed or not.
 
     """
+    global _LOCKHANDLER
+    if not _LOCKHANDLER:
+        _LOCKHANDLER = LockHandler(_ObjDummy())
     return _LOCK_HANDLER.check_lockstring(
         accessing_obj, lockstring, no_superuser_bypass=no_superuser_bypass,
         default=default, access_type=access_type)
@@ -660,6 +664,9 @@ def validate_lockstring(lockstring):
             if no error was found.
 
     """
+    global _LOCKHANDLER
+    if not _LOCKHANDLER:
+        _LOCKHANDLER = LockHandler(_ObjDummy())
     return _LOCK_HANDLER.validate(lockstring)
 
 
