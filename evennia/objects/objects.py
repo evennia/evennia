@@ -23,6 +23,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
 from evennia.utils import search
 from evennia.utils import logger
+from evennia.utils import ansi
 from evennia.utils.utils import (variable_from_module, lazy_property,
                                  make_iter, to_unicode, is_iter, list_to_string,
                                  to_str)
@@ -305,12 +306,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             count (int): Number of objects of this type
             looker (Object): Onlooker. Not used by default.
         Kwargs:
-            key (str): Optional key to pluralize, use this instead of the object's key.
+            key (str): Optional key to pluralize, if given, use this instead of the object's key.
         Returns:
             singular (str): The singular form to display.
             plural (str): The determined plural form of the key, including the count.
         """
         key = kwargs.get("key", self.key)
+        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
         plural = _INFLECT.plural(key, 2)
         plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
         singular = _INFLECT.an(key)
@@ -569,17 +571,19 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         except Exception:
             logger.log_trace()
 
-        if not (isinstance(text, basestring) or isinstance(text, tuple)):
-            # sanitize text before sending across the wire
-            try:
-                text = to_str(text, force_string=True)
-            except Exception:
-                text = repr(text)
+        if text is not None:
+            if not (isinstance(text, basestring) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text, force_string=True)
+                except Exception:
+                    text = repr(text)
+            kwargs['text'] = text
 
         # relay to session(s)
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
-            session.data_out(text=text, **kwargs)
+            session.data_out(**kwargs)
 
 
     def for_contents(self, func, exclude=None, **kwargs):
@@ -1001,14 +1005,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 cdict["location"].at_object_receive(self, None)
                 self.at_after_move(None)
             if cdict.get("tags"):
-                # this should be a list of tags
+                # this should be a list of tags, tuples (key, category) or (key, category, data)
                 self.tags.batch_add(*cdict["tags"])
             if cdict.get("attributes"):
-                # this should be a dict of attrname:value
+                # this should be tuples (key, val, ...)
                 self.attributes.batch_add(*cdict["attributes"])
             if cdict.get("nattributes"):
                 # this should be a dict of nattrname:value
-                for key, value in cdict["nattributes"].items():
+                for key, value in cdict["nattributes"]:
                     self.nattributes.add(key, value)
 
             del self._createdict
@@ -1751,6 +1755,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         else:
             msg_self = '{self} say, "{speech}"' if msg_self is True else msg_self
             msg_location = msg_location or '{object} says, "{speech}"'
+            msg_receivers = msg_receivers or message
 
         custom_mapping = kwargs.get('mapping', {})
         receivers = make_iter(receivers) if receivers else None
@@ -1873,7 +1878,7 @@ class DefaultCharacter(DefaultObject):
 
         """
         self.msg("\nYou become |c%s|n.\n" % self.name)
-        self.msg(self.at_look(self.location))
+        self.msg((self.at_look(self.location), {'type':'look'}), options = None)
 
         def message(obj, from_obj):
             obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)

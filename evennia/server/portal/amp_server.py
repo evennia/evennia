@@ -356,10 +356,13 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             packed_data (str): Pickled data (sessid, kwargs) coming over the wire.
 
         """
-        sessid, kwargs = self.data_in(packed_data)
-        session = self.factory.portal.sessions.get(sessid, None)
-        if session:
-            self.factory.portal.sessions.data_out(session, **kwargs)
+        try:
+            sessid, kwargs = self.data_in(packed_data)
+            session = self.factory.portal.sessions.get(sessid, None)
+            if session:
+                self.factory.portal.sessions.data_out(session, **kwargs)
+        except Exception:
+            logger.log_trace("packed_data len {}".format(len(packed_data)))
         return {}
 
     @amp.AdminServer2Portal.responder

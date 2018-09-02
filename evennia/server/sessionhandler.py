@@ -278,7 +278,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         super(ServerSessionHandler, self).__init__(*args, **kwargs)
-        self.server = None
+        self.server = None  # set at server initialization
         self.server_data = {"servername": _SERVERNAME}
 
     def _run_cmd_login(self, session):
@@ -289,7 +289,6 @@ class ServerSessionHandler(SessionHandler):
         """
         if not session.logged_in:
             self.data_in(session, text=[[CMD_LOGINSTART], {}])
-
 
     def portal_connect(self, portalsessiondata):
         """

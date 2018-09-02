@@ -467,9 +467,10 @@ ARG_OPTIONS = \
  stop   - shutdown server+portal
  reboot - shutdown server+portal, then start again
  reset  - restart server in 'shutdown' mode
- sstart - start only server (requires portal)
+ istart - start server in the foreground (until reload)
+ sstop  - stop only server
  kill   - send kill signal to portal+server (force)
- skill  = send kill signal only to server
+ skill  - send kill signal only to server
  status - show server and portal run state
  info   - show server and portal port info
  menu   - show a menu of options
@@ -955,14 +956,39 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
-def stop_server_only():
+def start_server_interactive():
+    """
+    Start the Server under control of the launcher process (foreground)
+
+    """
+    def _iserver():
+        _, server_twistd_cmd = _get_twistd_cmdline(False, False)
+        server_twistd_cmd.append("--nodaemon")
+        print("Starting Server in interactive mode (stop with Ctrl-C)...")
+        try:
+            Popen(server_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
+        except KeyboardInterrupt:
+            print("... Stopped Server with Ctrl-C.")
+        else:
+            print("... Server stopped (leaving interactive mode).")
+    stop_server_only(when_stopped=_iserver)
+
+
+def stop_server_only(when_stopped=None):
     """
     Only stop the Server-component of Evennia (this is not useful except for debug)
 
+    Args:
+        when_stopped (callable): This will be called with no arguments when Server has stopped (or
+            if it had already stopped when this is called).
+
     """
     def _server_stopped(*args):
-        print("... Server stopped.")
-        _reactor_stop()
+        if when_stopped:
+            when_stopped()
+        else:
+            print("... Server stopped.")
+            _reactor_stop()
 
     def _portal_running(response):
         _, srun, _, _, _, _ = _parse_status(response)
@@ -971,8 +997,11 @@ def stop_server_only():
             wait_for_status_reply(_server_stopped)
             send_instruction(SSHUTD, {})
         else:
-            print("Server is not running.")
-            _reactor_stop()
+            if when_stopped:
+                when_stopped()
+            else:
+                print("Server is not running.")
+                _reactor_stop()
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
@@ -1037,9 +1066,11 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
         new_linecount = sum(blck.count("\n") for blck in _block(filehandle))
 
         if new_linecount < old_linecount:
-            # this could happen if the file was manually deleted or edited
-            print("Log file has shrunk. Restart log reader.")
-            sys.exit()
+            # this happens if the file was cycled or manually deleted/edited.
+            print(" ** Log file {filename} has cycled or been edited. "
+                  "Restarting log. ".format(filehandle.name))
+            new_linecount = 0
+            old_linecount = 0
 
         lines_to_get = max(0, new_linecount - old_linecount)
 
@@ -1935,7 +1966,7 @@ def main():
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif option in ('status', 'info', 'start', 'reload', 'reboot',
+    elif option in ('status', 'info', 'start', 'istart', 'reload', 'reboot',
                     'reset', 'stop', 'sstop', 'kill', 'skill'):
         # operate the server directly
         if not SERVER_LOGFILE:
@@ -1946,6 +1977,8 @@ def main():
             query_info()
         elif option == "start":
             start_evennia(args.profiler, args.profiler)
+        elif option == "istart":
+            start_server_interactive()
         elif option == 'reload':
             reload_evennia(args.profiler)
         elif option == 'reboot':
