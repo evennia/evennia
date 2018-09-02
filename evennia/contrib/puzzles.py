@@ -85,6 +85,7 @@ def proto_def(obj, with_tags=True):
     and compare recipe with candidate part
     """
     protodef = {
+        # FIXME: Don't we need to honor ALL properties? locks, perms, etc.
         'key': obj.key,
         'typeclass': 'evennia.contrib.puzzles.PuzzlePartObject',  # FIXME: what if obj is another typeclass
         'desc': obj.db.desc,
@@ -260,7 +261,6 @@ class CmdArmPuzzle(MuxCommand):
             puzzle.name, puzzle.dbref, puzzle.db.puzzle_name, len(puzzle.db.parts)))
 
         for proto_part in puzzle.db.parts:
-            # caller.msg('Protopart %r %r' % (proto_part, type(proto_part)))
             part = spawn(proto_part)[0]
             caller.msg("Part %s(%s) spawned and placed at %s(%s)" % (part.name, part.dbref, part.location, part.location.dbref))
             part.mark_as_puzzle_member(puzzle.db.puzzle_name)
@@ -351,6 +351,8 @@ class CmdUsePuzzleParts(MuxCommand):
             else:
                 puzzles.extend(_puzzles)
 
+        logger.log_info("PUZZLES %r" % ([p.dbref for p in puzzles]))
+
         # Create lookup dict
         puzzles_dict = dict((puzzle.dbref, puzzle) for puzzle in puzzles)
 
@@ -371,8 +373,6 @@ class CmdUsePuzzleParts(MuxCommand):
                 if part == puzzlepart:
                     pz += 1
                     matched_dbrefparts.add(dbref)
-                else:
-                    pass
                 p += 1
             else:
                 if len(puzzleparts) == len(matched_dbrefparts):
@@ -387,27 +387,33 @@ class CmdUsePuzzleParts(MuxCommand):
 
         puzzletuples = sorted(matched_puzzles.items(), key=lambda t: len(t[1]), reverse=True)
 
+        logger.log_info("MATCHED PUZZLES %r" % (puzzletuples))
+
         # sort all matched puzzles and pick largest one(s)
         puzzledbref, matched_dbrefparts = puzzletuples[0]
         nparts = len(matched_dbrefparts)
+        puzzle = puzzles_dict[puzzledbref]
         largest_puzzles = list(itertools.takewhile(lambda t: len(t[1]) == nparts, puzzletuples))
 
-        # if there are more than one, let user pick
+        # if there are more than one, ...
         if len(largest_puzzles) > 1:
             # FIXME: pick a random one or let user choose?
+            # FIXME: do we show the puzzle name or something else?
             caller.msg(
                 'Your gears start turning and a bunch of ideas come to your mind ...\n%s' % (
-                ' ...\n'.join([lp.db.puzzle_name for lp in largest_puzzles]))
+                ' ...\n'.join([puzzles_dict[lp[0]].db.puzzle_name for lp in largest_puzzles]))
             )
-            puzzle = choice(largest_puzzles)
+            puzzletuple = choice(largest_puzzles)
+            puzzle = puzzles_dict[puzzletuple[0]]
             caller.msg("You try %s ..." % (puzzle.db.puzzle_name))
 
         # got one, spawn its results
-        puzzle = puzzles_dict[puzzledbref]
         # FIXME: DRY with parts
+        result_names = []
         for proto_result in puzzle.db.results:
             result = spawn(proto_result)[0]
             result.mark_as_puzzle_member(puzzle.db.puzzle_name)
+            result_names.append(result.name)
             # FIXME: add 'ramdon' messages:
             # Hmmm ... did I search result.location?
             # What was that? ... I heard something in result.location?
@@ -420,7 +426,16 @@ class CmdUsePuzzleParts(MuxCommand):
         # FIXME: Add random messages
         #    You are a genius ... no matter what your 2nd grade teacher told you
         #    You hear thunders and a cloud of dust raises leaving
-        caller.msg("Puzzle solved |gsuccessfully|n.")
+        result_names = ', '.join(result_names)
+        caller.msg(
+            "You are a |wG|re|wn|ri|wu|rs|n!!!\nYou just created %s" % (
+            result_names
+        ))
+        caller.location.msg_contents(
+            "|c%s|n performs some kind of tribal dance"
+            " and seems to create |y%s|n from thin air" % (
+            caller, result_names), exclude=(caller,)
+        )
 
 
 class CmdListPuzzleRecipes(MuxCommand):
@@ -465,7 +480,7 @@ class PuzzleSystemCmdSet(CmdSet):
     """
 
     def at_cmdset_creation(self):
-        super(PuzzleSystemCmdSetCmdSet, self).at_cmdset_creation()
+        super(PuzzleSystemCmdSet, self).at_cmdset_creation()
 
         self.add(CmdCreatePuzzleRecipe())
         self.add(CmdArmPuzzle())
