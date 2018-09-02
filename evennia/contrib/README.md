@@ -31,6 +31,7 @@ things you want from here into your game folder and change them there.
   multiple descriptions for time and season as well as details.
 * GenderSub (Griatch 2015) - Simple example (only) of storing gender
   on a character and access it in an emote with a custom marker.
+* Health Bar (Tim Ashley Jenkins 2017) - Tool to create colorful bars/meters.
 * Mail (grungies1138 2016) - An in-game mail system for communication.
 * Menu login (Griatch 2011) - A login system using menus asking
   for name/password rather than giving them as one command.
@@ -53,6 +54,9 @@ things you want from here into your game folder and change them there.
 * Tree Select (FlutterSprite 2017) - A simple system for creating a
   branching EvMenu with selection options sourced from a single
   multi-line string.
+* Turnbattle  (Tim Ashley Jenkins 2017) - This is a framework for a turn-based
+  combat system with different levels of complexity, including versions with
+  equipment and magic as well as ranged combat.
 * Wilderness (titeuf87 2017) - Make infinitely large wilderness areas
   with dynamically created locations.
 * UnixCommand (Vincent Le Geoff 2017) - Add commands with UNIX-style syntax.

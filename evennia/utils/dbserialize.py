@@ -237,9 +237,12 @@ class _SaverList(_SaverMutable, MutableSequence):
         self._data = list()
 
     @_save
-    def __add__(self, otherlist):
+    def __iadd__(self, otherlist):
         self._data = self._data.__add__(otherlist)
         return self._data
+
+    def __add__(self, otherlist):
+        return list(self._data) + otherlist
 
     @_save
     def insert(self, index, value):

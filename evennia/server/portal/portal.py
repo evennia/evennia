@@ -343,7 +343,7 @@ if WEBSERVER_ENABLED:
             proxy_service = internet.TCPServer(proxyport,
                                                web_root,
                                                interface=interface)
-            proxy_service.setName('EvenniaWebProxy%s' % pstring)
+            proxy_service.setName('EvenniaWebProxy%s:%s' % (ifacestr, proxyport))
             PORTAL.services.addService(proxy_service)
             INFO_DICT["webserver_proxy"].append("webserver-proxy%s: %s" % (ifacestr, proxyport))
             INFO_DICT["webserver_internal"].append("webserver: %s" % serverport)

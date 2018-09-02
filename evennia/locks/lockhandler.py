@@ -287,7 +287,7 @@ class LockHandler(object):
         """
         self.lock_bypass = hasattr(obj, "is_superuser") and obj.is_superuser
 
-    def add(self, lockstring):
+    def add(self, lockstring, validate_only=False):
         """
         Add a new lockstring to handler.
 
@@ -296,10 +296,12 @@ class LockHandler(object):
                 `"<access_type>:<functions>"`.  Multiple access types
                 should be separated by semicolon (`;`). Alternatively,
                 a list with lockstrings.
-
+            validate_only (bool, optional): If True, validate the lockstring but
+                don't actually store it.
         Returns:
             success (bool): The outcome of the addition, `False` on
-                error.
+                error. If `validate_only` is True, this will be a tuple
+                (bool, error), for pass/fail and a string error.
 
         """
         if isinstance(lockstring, basestring):
@@ -308,21 +310,41 @@ class LockHandler(object):
             lockdefs = [lockdef for locks in lockstring for lockdef in locks.split(";")]
             lockstring = ";".join(lockdefs)
 
+        err = ""
         # sanity checks
         for lockdef in lockdefs:
             if ':' not in lockdef:
-                self._log_error(_("Lock: '%s' contains no colon (:).") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' contains no colon (:).").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
             access_type, rhs = [part.strip() for part in lockdef.split(':', 1)]
             if not access_type:
-                self._log_error(_("Lock: '%s' has no access_type (left-side of colon is empty).") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' has no access_type "
+                        "(left-side of colon is empty).").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
             if rhs.count('(') != rhs.count(')'):
-                self._log_error(_("Lock: '%s' has mismatched parentheses.") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' has mismatched parentheses.").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
             if not _RE_FUNCS.findall(rhs):
-                self._log_error(_("Lock: '%s' has no valid lock functions.") % lockdef)
-                return False
+                err = _("Lock: '{lockdef}' has no valid lock functions.").format(lockdef=lockdef)
+                if validate_only:
+                    return False, err
+                else:
+                    self._log_error(err)
+                    return False
+        if validate_only:
+            return True, None
         # get the lock string
         storage_lockstring = self.obj.lock_storage
         if storage_lockstring:
@@ -333,6 +355,18 @@ class LockHandler(object):
         self._cache_locks(storage_lockstring)
         self._save_locks()
         return True
+
+    def validate(self, lockstring):
+        """
+        Validate lockstring syntactically, without saving it.
+
+        Args:
+            lockstring (str): Lockstring to validate.
+        Returns:
+            valid (bool): If validation passed or not.
+
+        """
+        return self.add(lockstring, validate_only=True)
 
     def replace(self, lockstring):
         """
@@ -421,6 +455,28 @@ class LockHandler(object):
         self._cache_locks(self.obj.lock_storage)
         self.cache_lock_bypass(self.obj)
 
+    def append(self, access_type, lockstring, op='or'):
+        """
+        Append a lock definition to access_type if it doesn't already exist.
+
+        Args:
+            access_type (str): Access type.
+            lockstring (str): A valid lockstring, without the operator to
+                link it to an eventual existing lockstring.
+            op (str): An operator 'and', 'or', 'and not', 'or not' used
+                for appending the lockstring to an existing access-type.
+        Note:
+            The most common use of this method is for use in commands where
+            the user can specify their own lockstrings. This method allows
+            the system to auto-add things like Admin-override access.
+
+        """
+        old_lockstring = self.get(access_type)
+        if not lockstring.strip().lower() in old_lockstring.lower():
+            lockstring = "{old} {op} {new}".format(
+                old=old_lockstring, op=op, new=lockstring.strip())
+            self.add(lockstring)
+
     def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
         """
         Checks a lock of the correct type by passing execution off to
@@ -459,9 +515,13 @@ class LockHandler(object):
                 return True
         except AttributeError:
             # happens before session is initiated.
-            if not no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
-                                            (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser) or
-                                            (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
+            if not no_superuser_bypass and (
+                (hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
+                (hasattr(accessing_obj, 'account') and
+                    hasattr(accessing_obj.account, 'is_superuser') and
+                    accessing_obj.account.is_superuser) or
+                (hasattr(accessing_obj, 'get_account') and
+                    (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
 
         # no superuser or bypass -> normal lock operation
@@ -469,7 +529,8 @@ class LockHandler(object):
             # we have a lock, test it.
             evalstring, func_tup, raw_string = self.locks[access_type]
             # execute all lock funcs in the correct order, producing a tuple of True/False results.
-            true_false = tuple(bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
+            true_false = tuple(bool(
+                tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
             # the True/False tuple goes into evalstring, which combines them
             # with AND/OR/NOT in order to get the final result.
             return eval(evalstring % true_false)
@@ -520,9 +581,13 @@ class LockHandler(object):
             if accessing_obj.locks.lock_bypass and not no_superuser_bypass:
                 return True
         except AttributeError:
-            if no_superuser_bypass and ((hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
-                                        (hasattr(accessing_obj, 'account') and hasattr(accessing_obj.account, 'is_superuser') and accessing_obj.account.is_superuser) or
-                                        (hasattr(accessing_obj, 'get_account') and (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
+            if no_superuser_bypass and (
+                (hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
+                (hasattr(accessing_obj, 'account') and
+                    hasattr(accessing_obj.account, 'is_superuser') and
+                    accessing_obj.account.is_superuser) or
+                (hasattr(accessing_obj, 'get_account') and
+                    (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
                 return True
         if ":" not in lockstring:
             lockstring = "%s:%s" % ("_dummy", lockstring)
@@ -538,7 +603,77 @@ class LockHandler(object):
         else:
             # if no access types was given and multiple locks were
             # embedded in the lockstring we assume all must be true
-            return all(self._eval_access_type(accessing_obj, locks, access_type) for access_type in locks)
+            return all(self._eval_access_type(
+                accessing_obj, locks, access_type) for access_type in locks)
+
+
+# convenience access function
+
+# dummy to be able to call check_lockstring from the outside
+
+class _ObjDummy:
+    lock_storage = ''
+
+_LOCK_HANDLER = LockHandler(_ObjDummy())
+
+
+def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
+                     default=False, access_type=None):
+    """
+    Do a direct check against a lockstring ('atype:func()..'),
+    without any intermediary storage on the accessed object.
+
+    Args:
+        accessing_obj (object or None): The object seeking access.
+            Importantly, this can be left unset if the lock functions
+            don't access it, no updating or storage of locks are made
+            against this object in this method.
+        lockstring (str): Lock string to check, on the form
+            `"access_type:lock_definition"` where the `access_type`
+            part can potentially be set to a dummy value to just check
+            a lock condition.
+        no_superuser_bypass  (bool, optional): Force superusers to heed lock.
+        default (bool, optional): Fallback result to use if `access_type` is set
+            but no such `access_type` is found in the given `lockstring`.
+        access_type (str, bool): If set, only this access_type will be looked up
+            among the locks defined by `lockstring`.
+
+    Return:
+        access (bool): If check is passed or not.
+
+    """
+    return _LOCK_HANDLER.check_lockstring(
+        accessing_obj, lockstring, no_superuser_bypass=no_superuser_bypass,
+        default=default, access_type=access_type)
+
+
+def validate_lockstring(lockstring):
+    """
+    Validate so lockstring is on a valid form.
+
+    Args:
+        lockstring (str): Lockstring to validate.
+
+    Returns:
+        is_valid (bool): If the lockstring is valid or not.
+        error (str or None): A string describing the error, or None
+            if no error was found.
+
+    """
+    return _LOCK_HANDLER.validate(lockstring)
+
+
+def get_all_lockfuncs():
+    """
+    Get a dict of available lock funcs.
+
+    Returns:
+        lockfuncs (dict): Mapping {lockfuncname:func}.
+
+    """
+    if not _LOCKFUNCS:
+        _cache_lockfuncs()
+    return _LOCKFUNCS
 
 
 def _test():

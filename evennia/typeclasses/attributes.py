@@ -435,6 +435,7 @@ class AttributeHandler(object):
             def __init__(self):
                 self.key = None
                 self.value = default
+                self.category = None
                 self.strvalue = str(default) if default is not None else None
 
         ret = []
@@ -530,8 +531,8 @@ class AttributeHandler(object):
         repeat-calling add when having many Attributes to add.
 
         Args:
-            indata (tuple): Tuples of varying length representing the
-                Attribute to add to this object.
+            indata (list): List of tuples of varying length representing the
+                Attribute to add to this object. Supported tuples are
                     - `(key, value)`
                     - `(key, value, category)`
                     - `(key, value, category, lockstring)`
