@@ -19,31 +19,34 @@ As a Builder:
     @create/drop mango
     @create/drop yogurt
     @create/drop blender
+    @create/drop fruit smoothie
 
-    @puzzle smoothie puzzle, orange, mango, yogurt, blender = fruit smoothie
+    @puzzle smoothie, orange, mango, yogurt, blender = fruit smoothie
     ...
-    Puzzle smoothie puzzle (#1234) created successfuly.
+    Puzzle smoothie(#1234) created successfuly.
 
-    @destroy/force orange, mango, yogurt, blender
+    @destroy/force orange, mango, yogurt, blender, fruit smoothie
 
     @armpuzzle #1234
     Part orange is spawned at ...
     Part mango is spawned at ...
     ....
-    Puzzle smoothie puzzle (#1234) has been armed successfully
+    Puzzle smoothie(#1234) has been armed successfully
 
 As Player:
 
     use orange, mango, yogurt, blender
     ...
-    Genius, you blended all fruits to create a yummy smoothie!
+    Genius, you blended all fruits to create a fruit smoothie!
 
 Details:
 
 Puzzles are created from existing objects. The given
 objects are introspected to create prototypes for the
-puzzle parts. These prototypes become the puzzle recipe.
-(See PuzzleRecipeObject and @puzzle command).
+puzzle parts and results. These prototypes become the
+puzzle recipe. (See PuzzleRecipeObject and @puzzle
+command). Once the recipe is created, all parts and result
+can be disposed (i.e. destroyed).
 
 At a later time, a Builder or a Script can arm the puzzle
 and spawn all puzzle parts (PuzzlePartObject) in their
