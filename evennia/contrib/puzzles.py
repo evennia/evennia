@@ -77,6 +77,12 @@ from evennia.utils.utils import inherits_from
 from evennia.utils import search, utils, logger
 from evennia.utils.spawner import spawn
 
+# Tag used by puzzles
+_PUZZLES_TAG_CATEGORY = 'puzzles'
+_PUZZLES_TAG_RECIPE = 'puzzle_recipe'
+# puzzle part and puzzle result
+_PUZZLES_TAG_MEMBER = 'puzzle_member'
+
 # ----------- UTILITY FUNCTIONS ------------
 
 def proto_def(obj, with_tags=True):
@@ -98,13 +104,6 @@ def proto_def(obj, with_tags=True):
     return protodef
 
 # ------------------------------------------
-
-# Tag used by puzzles
-_PUZZLES_TAG_CATEGORY = 'puzzles'
-_PUZZLES_TAG_RECIPE = 'puzzle_recipe'
-# puzzle part and puzzle result
-_PUZZLES_TAG_MEMBER = 'puzzle_member'
-
 
 class PuzzlePartObject(DefaultObject):
     """
@@ -452,7 +451,30 @@ class CmdListPuzzleRecipes(MuxCommand):
 
     def func(self):
         caller = self.caller
-        # TODO: use @tags/search puzzle_recipe : puzzles
+
+        recipes = search.search_tag(
+            _PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
+
+        div = "-" * 60
+        text = [div]
+        msgf_recipe = "Puzzle |y'%s' %s(%s)|n"
+        msgf_item = "%2s|c%15s|n: |w%s|n"
+        for recipe in recipes:
+            text.append(msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref))
+            text.append('Parts')
+            for protopart in recipe.db.parts[:]:
+                mark = '-'
+                for k, v in protopart.items():
+                    text.append(msgf_item % (mark, k, v))
+                    mark = ''
+            text.append('Results')
+            for protoresult in recipe.db.results[:]:
+                mark = '-'
+                for k, v in protoresult.items():
+                    text.append(msgf_item % (mark, k, v))
+                    mark = ''
+            text.append(div)
+        caller.msg('\n'.join(text))
 
 
 class CmdListArmedPuzzles(MuxCommand):
@@ -469,7 +491,26 @@ class CmdListArmedPuzzles(MuxCommand):
 
     def func(self):
         caller = self.caller
-        # TODO: use @tags/search puzzle_member : puzzles
+
+        armed_puzzles = search.search_tag(
+            _PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY)
+
+        armed_puzzles = dict((k, list(g)) for k, g in itertools.groupby(
+            armed_puzzles,
+            lambda ap: ap.db.puzzle_name))
+
+        div = '-' * 60
+        msgf_pznm = "Puzzle name: |y%s|n"
+        msgf_item = "|m%25s|w(%s)|n at |c%25s|w(%s)|n"
+        text = [div]
+        for pzname, items in armed_puzzles.items():
+            text.append(msgf_pznm % (pzname))
+            for item in items:
+                text.append(msgf_item % (
+                    item.name, item.dbref,
+                    item.location.name, item.location.dbref))
+            text.append(div)
+        caller.msg('\n'.join(text))
 
 
 class PuzzleSystemCmdSet(CmdSet):
@@ -484,4 +525,6 @@ class PuzzleSystemCmdSet(CmdSet):
 
         self.add(CmdCreatePuzzleRecipe())
         self.add(CmdArmPuzzle())
+        self.add(CmdListPuzzleRecipes())
+        self.add(CmdListArmedPuzzles())
         self.add(CmdUsePuzzleParts())
