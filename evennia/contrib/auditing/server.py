@@ -1,7 +1,7 @@
 """
 Auditable Server Sessions:
 Extension of the stock ServerSession that yields objects representing 
-all user input and all system output.
+user inputs and system outputs.
 
 Evennia contribution - Johnny 2017
 """
@@ -19,39 +19,27 @@ from evennia.server.serversession import ServerSession
 AUDIT_CALLBACK = getattr(ev_settings, 'AUDIT_CALLBACK', None)
 AUDIT_IN = getattr(ev_settings, 'AUDIT_IN', False)
 AUDIT_OUT = getattr(ev_settings, 'AUDIT_OUT', False)
-AUDIT_MASK_IGNORE = set(['@ccreate', '@create'] + getattr(ev_settings, 'AUDIT_IGNORE', []))
-AUDIT_MASK_KEEP_BIGRAM = set(['create', 'connect', '@userpassword'] + getattr(ev_settings, 'AUDIT_MASK_KEEP_BIGRAM', []))
+AUDIT_MASKS = [
+    {'connect': r"^[@\s]*[connect]{5,8}\s+(\".+?\"|[^\s]+)\s+(?P<secret>.+)"},
+    {'connect': r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w\\]+)"},
+    {'create': r"^[^@]?[create]{5,7}\s+(\w+|\".+?\")\s+(?P<secret>[\w\\]+)"},
+    {'create': r"^[^@]?[create]{5,7}\s+(?P<secret>[\w\\]+)"},
+    {'userpassword': r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w\\]+)"},
+    {'password': r"^[@\s]*[password]{6,9}\s+(?P<secret>.*)"},
+] + getattr(ev_settings, 'AUDIT_MASKS', [])
 
 if AUDIT_CALLBACK:
     try:
-        AUDIT_CALLBACK = mod_import(AUDIT_CALLBACK).output
+        AUDIT_CALLBACK = getattr(mod_import('.'.join(AUDIT_CALLBACK.split('.')[:-1])), AUDIT_CALLBACK.split('.')[-1])
         logger.log_info("Auditing module online.")
-        logger.log_info("Recording user input = %s." % AUDIT_IN)
-        logger.log_info("Recording server output = %s." % AUDIT_OUT)
+        logger.log_info("Recording user input: %s" % AUDIT_IN)
+        logger.log_info("Recording server output: %s" % AUDIT_OUT)
+        logger.log_info("Log destination: %s" % AUDIT_CALLBACK)
     except Exception as e:
         logger.log_err("Failed to activate Auditing module. %s" % e)
 
 class AuditedServerSession(ServerSession):
     """
-    This class represents a player's session and is a template for
-    both portal- and server-side sessions.
-
-    Each connection will see two session instances created:
-
-     1. A Portal session. This is customized for the respective connection
-        protocols that Evennia supports, like Telnet, SSH etc. The Portal
-        session must call init_session() as part of its initialization. The
-        respective hook methods should be connected to the methods unique
-        for the respective protocol so that there is a unified interface
-        to Evennia.
-     2. A Server session. This is the same for all connected accounts,
-        regardless of how they connect.
-
-    The Portal and Server have their own respective sessionhandlers. These
-    are synced whenever new connections happen or the Server restarts etc,
-    which means much of the same information must be stored in both places
-    e.g. the portal can re-sync with the server when the server reboots.
-
     This particular implementation parses all server inputs and/or outputs and 
     passes a dict containing the parsed metadata to a callback method of your 
     creation. This is useful for recording player activity where necessary for 
@@ -75,7 +63,7 @@ class AuditedServerSession(ServerSession):
     # called 'output()' you've written that accepts a dict object as its sole 
     # argument. From that function you can store/forward the message received
     # as you please. An example file-logger is below:
-    AUDIT_CALLBACK = 'evennia.contrib.auditing.examples'
+    AUDIT_CALLBACK = 'evennia.contrib.auditing.outputs.to_file'
     
     # Log all user input? Be ethical about this; it will log all private and 
     # public communications between players and/or admins.
@@ -86,12 +74,17 @@ class AuditedServerSession(ServerSession):
     # will be very voluminous!
     AUDIT_OUT = True/False
     
-    # What commands do you NOT want masked for sensitivity?
-    AUDIT_MASK_IGNORE = ['@ccreate', '@create']
+    # Any custom regexes to detect and mask sensitive information, to be used
+    # to detect and mask any sensitive custom commands you may develop.
+    # Takes the form of a list of dictionaries, one k:v pair per dictionary
+    # where the key name is the canonical name of a command and gets displayed
+    # at the tail end of the message so you can tell which regex masked it.
+    # The sensitive data itself must be captured in a named group with a
+    # label of 'secret'.
+    AUDIT_MASKS = [
+        {'authentication': r"^@auth\s+(?P<secret>[\w]+)"},
+    ]
     
-    # What commands do you want to keep the first two terms of, masking the rest?
-    # This only triggers if there are more than two terms in the message.
-    AUDIT_MASK_KEEP_BIGRAM = ['create', 'connect', '@userpassword']
     """
     def audit(self, **kwargs):
         """
@@ -100,8 +93,8 @@ class AuditedServerSession(ServerSession):
     
         Kwargs:
             src (str): Source of data; 'client' or 'server'. Indicates direction.
-            text (list): Message sent from client to server.
-            text (str): Message from server back to client.
+            text (str or list): Client sends messages to server in the form of
+                lists. Server sends messages to client as string.
     
         Returns:
             log (dict): Dictionary object containing parsed system and user data
@@ -115,7 +108,7 @@ class AuditedServerSession(ServerSession):
         # Sanitize user input
         session = self
         src = kwargs.pop('src', '?')
-        bytes = 0
+        bytecount = 0
         
         if src == 'client':
             try:
@@ -125,19 +118,9 @@ class AuditedServerSession(ServerSession):
                 return False
                 
         elif src == 'server':
-            # Server outputs can be unpredictable-- sometimes tuples, sometimes
-            # plain strings. Try to parse both.
-            try: 
-                if isinstance(kwargs.get('text', ''), (tuple,list)):
-                    data = kwargs['text'][0]
-                elif not 'text' in kwargs and len(kwargs.keys()) == 1:
-                    data = kwargs.keys()[0]
-                else:
-                    data = str(kwargs['text'])
-                    
-            except: data = str(kwargs)
+            data = str(kwargs)
             
-        bytes = len(data.encode('utf-8'))
+        bytecount = len(data.encode('utf-8'))
                 
         data = data.strip()
             
@@ -167,7 +150,7 @@ class AuditedServerSession(ServerSession):
             room_token = '%s%s' % (room.key, room.dbref)
             
         # Mask any PII in message, where possible
-        data = self.mask(data, **kwargs)
+        data = self.mask(data)
             
         # Compile the IP, Account, Character, Room, and the message.
         log = {
@@ -184,7 +167,7 @@ class AuditedServerSession(ServerSession):
             'character': char_token,
             'room': room_token,
             'msg': '%s' % data,
-            'bytes': bytes,
+            'bytes': bytecount,
             'objects': {
                 'time': time_obj,
                 'session': self,
@@ -196,7 +179,7 @@ class AuditedServerSession(ServerSession):
 
         return log
         
-    def mask(self, msg, **kwargs):
+    def mask(self, msg):
         """
         Masks potentially sensitive user information within messages before
         writing to log. Recording cleartext password attempts is bad policy.
@@ -208,27 +191,38 @@ class AuditedServerSession(ServerSession):
             msg (str): Text string with sensitive information masked out.
 
         """
-        # Get command based on fuzzy match
-        command = next((x for x in re.findall('^(?:Command\s\')*[\s]*([create]{5,6}|[connect]{6,7}|[@userpassword]{6,13}).*', msg, flags=re.IGNORECASE)), None)
-        if not command or command in AUDIT_MASK_IGNORE:
-            return msg
-            
-        # Break msg into terms
-        terms = [x.strip() for x in re.split('[\s\=]+', msg) if x]
-        num_terms = len(terms)
+        # Check to see if the command is embedded within server output
+        _msg = msg
+        is_embedded = False
+        match = re.match(".*Command.*'(.+)'.*is not available.*", msg, flags=re.IGNORECASE)
+        if match:
+            msg = match.group(1).replace('\\', '')
+            submsg = msg
+            is_embedded = True
         
-        # If the first term was typed correctly, grab the appropriate number
-        # of subsequent terms and mask the remainder
-        if command in AUDIT_MASK_KEEP_BIGRAM and num_terms >= 3:
-            terms = terms[:2] + ['*' * sum([len(x.zfill(8)) for x in terms[2:]])]
-        else:
-            # If the first term was not typed correctly, doesn't have the right
-            # number of terms or is clearly password-related,
-            # only grab the first term (minimizes chances of capturing passwords
-            # conjoined with username i.e. 'conect johnnypassword1234!').
-            terms = [terms[0]] + ['*' * sum([len(x.zfill(8)) for x in terms[1:]])]
-        
-        msg = ' '.join(terms)
+        for mask in AUDIT_MASKS:
+            for command, regex in mask.iteritems():
+                try:
+                    match = re.match(regex, msg, flags=re.IGNORECASE)
+                except Exception as e:
+                    logger.log_err(modified_regex)
+                    logger.log_err(e)
+                    continue
+                    
+                if match:
+                    term = match.group('secret')
+                    try:
+                        masked = re.sub(term, '*' * len(term.zfill(8)), msg)
+                    except Exception as e:
+                        print(msg, regex, term)
+                        quit()
+                    
+                    if is_embedded:
+                        msg = re.sub(submsg, masked, _msg, flags=re.IGNORECASE)
+                    else: msg = masked
+                    
+                    return '%s <Masked: %s>' % (msg, command)
+                    
         return msg
     
     def data_out(self, **kwargs):
@@ -242,7 +236,7 @@ class AuditedServerSession(ServerSession):
         if AUDIT_CALLBACK and AUDIT_OUT:
             try:
                 log = self.audit(src='server', **kwargs)
-                if log: AUDIT_CALLBACK(log, **kwargs)
+                if log: AUDIT_CALLBACK(log)
             except Exception as e:
                 logger.log_err(e)
         
@@ -259,7 +253,7 @@ class AuditedServerSession(ServerSession):
         if AUDIT_CALLBACK and AUDIT_IN:
             try:
                 log = self.audit(src='client', **kwargs)
-                if log: AUDIT_CALLBACK(log, **kwargs)
+                if log: AUDIT_CALLBACK(log)
             except Exception as e:
                 logger.log_err(e)
             
