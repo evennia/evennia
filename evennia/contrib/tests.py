@@ -1712,7 +1712,6 @@ class TestBuildingMenu(CommandTest):
         super(TestBuildingMenu, self).setUp()
         self.menu = BuildingMenu(caller=self.char1, obj=self.room1, title="test")
         self.menu.add_choice("title", key="t", attr="key")
-        self.menu.add_choice_quit()
 
     def test_quit(self):
         """Try to quit the building menu."""
@@ -1774,9 +1773,9 @@ class TestBuildingMenu(CommandTest):
         def on_nomatch_t2(caller, menu):
             menu.move("t3") # this time the key matters
 
-        t1 = self.menu.add_choice("what", key="t1", attr="t1", on_nomatch=on_nomatch_t1)
-        t2 = self.menu.add_choice("and", key="t1.*", attr="t2", on_nomatch=on_nomatch_t2)
-        t3 = self.menu.add_choice("why", key="t1.*.t3", attr="t3")
+        t1 = self.menu.add_choice("what", key="t1", on_nomatch=on_nomatch_t1)
+        t2 = self.menu.add_choice("and", key="t1.*", on_nomatch=on_nomatch_t2)
+        t3 = self.menu.add_choice("why", key="t1.*.t3")
         self.menu.open()
 
         # Move into t1
