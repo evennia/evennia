@@ -3,11 +3,39 @@ Module containing the building menu system.
 
 Evennia contributor: vincent-lg 2018
 
-Building menus are similar to `EvMenu`, except that they have been
-specifically designed to edit information as a builder.  Creating a
-building menu in a command allows builders quick-editing of a
-given object, like a room.  Here is an example of output you could
-obtain when editing the room:
+Building menus are in-game menus, not unlike `EvMenu` though using a
+different approach.  Building menus have been specifically designed to edit
+information as a builder.  Creating a building menu in a command allows
+builders quick-editing of a given object, like a room.  If you follow the
+steps below to add the contrib, you will have access to an `@edit` command
+that will edit any default object offering to change its key and description.
+
+1. Import the `GenericBuildingCmd` class from this contrib in your `mygame/commands/default_cmdset.py` file:
+
+    ```python
+    from evennia.contrib.building_menu import GenericBuildingCmd
+    ```
+
+2. Below, add the command in the `CharacterCmdSet`:
+
+    ```python
+    # ... These lines should exist in the file
+    class CharacterCmdSet(default_cmds.CharacterCmdSet):
+        key = "DefaultCharacter"
+
+        def at_cmdset_creation(self):
+            super(CharacterCmdSet, self).at_cmdset_creation()
+            # ... add the line below
+            self.add(GenericBuildingCmd())
+    ```
+
+The `@edit` command will allow you to edit any object.  You will need to
+specify the object name or ID as an argument.  For instance: `@edit here`
+will edit the current room.  However, building menus can perform much more
+than this very simple example, read on for more details.
+
+Building menus can be set to edit about anything.  Here is an example of
+output you could obtain when editing the room:
 
 ```
  Editing the room: Limbo(#2)
@@ -51,11 +79,23 @@ and enter t, she will be in the title choice.  She can change the title
 (it will write in the room's `key` attribute) and then go back to the
 main menu using `@`.
 
-`add_choice` has a lot of arguments and offer a great deal of
+`add_choice` has a lot of arguments and offers a great deal of
 flexibility.  The most useful ones is probably the usage of callbacks,
 as you can set almost any argument in `add_choice` to be a callback, a
 function that you have defined above in your module.  This function will be
 called when the menu element is triggered.
+
+Notice that in order to edit a description, the best method to call isn't
+`add_choice`, but `add_choice_edit`.  This is a convenient shortcut
+which is available to quickly open an `EvEditor` when entering this choice
+and going back to the menu when the editor closes.
+
+```
+class RoomBuildingMenu(BuildingMenu):
+    def init(self, room):
+        self.add_choice("title", "t", attr="key")
+        self.add_choice_edit("description", key="d", attr="db.desc")
+```
 
 When you wish to create a building menu, you just need to import your
 class, create it specifying your intended caller and object to edit,
@@ -65,6 +105,8 @@ then call `open`:
 from <wherever> import RoomBuildingMenu
 
 class CmdEdit(Command):
+
+    key = "redit"
 
     def func(self):
         menu = RoomBuildingMenu(self.caller, self.caller.location)
@@ -114,7 +156,7 @@ def _menu_savefunc(caller, buf):
     return True
 
 def _menu_quitfunc(caller):
-    caller.cmdset.add(BuildingMenuCmdSet, permanent=calelr.ndb._building_menu and caller.ndb._building_menu.persistent or False)
+    caller.cmdset.add(BuildingMenuCmdSet, permanent=caller.ndb._building_menu and caller.ndb._building_menu.persistent or False)
     if caller.ndb._building_menu:
         caller.ndb._building_menu.move(back=True)
 
@@ -129,7 +171,7 @@ def _call_or_get(value, menu=None, choice=None, string=None, obj=None, caller=No
         menu (BuildingMenu, optional): the building menu to pass to value
                 if it is a callable.
         choice (Choice, optional): the choice to pass to value if a callable.
-        string (str, optional): the raw string to pass to value if a callback.        if a callable.
+        string (str, optional): the raw string to pass to value if a callback.
         obj (Object): the object to pass to value if a callable.
         caller (Account or Object, optional): the caller to pass to value
                 if a callable.
@@ -202,7 +244,10 @@ def menu_setattr(menu, choice, obj, string):
     """
     attr = getattr(choice, "attr", None) if choice else None
     if choice is None or string is None or attr is None or menu is None:
-        log_err("The `menu_setattr` function was called to set the attribute {} of object {} to {}, but the choice {} of menu {} or another information is missing.".format(attr, obj, repr(string), choice, menu))
+        log_err(dedent("""
+                The `menu_setattr` function was called to set the attribute {} of object {} to {},
+                but the choice {} of menu {} or another information is missing.
+            """.format(attr, obj, repr(string), choice, menu)).strip("\n")).strip()
         return
 
     for part in attr.split(".")[:-1]:
@@ -219,6 +264,11 @@ def menu_quit(caller, menu):
         caller (Account or Object): the caller.
         menu (BuildingMenu): the building menu to close.
 
+    Note:
+        This callback is used by default when using the
+        `BuildingMenu.add_choice_quit` method.  This method is called
+        automatically if the menu has no parent.
+
     """
     if caller is None or menu is None:
         log_err("The function `menu_quit` was called with missing arguments: caller={}, menu={}".format(caller, menu))
@@ -231,7 +281,7 @@ def menu_quit(caller, menu):
 
 def menu_edit(caller, choice, obj):
     """
-    Open the EvEditor to edit a specified field.
+    Open the EvEditor to edit a specified attribute.
 
     Args:
         caller (Account or Object): the caller.
@@ -437,13 +487,13 @@ class BuildingMenu(object):
     """
     Class allowing to create and set building menus to edit specific objects.
 
-    A building menu is a kind of `EvMenu` designed to edit objects by
-    builders, although it can be used for players in some contexts.  You
-    could, for instance, create a building menu to edit a room with a
+    A building menu is somewhat similar to `EvMenu`, but designed to edit
+    objects by builders, although it can be used for players in some contexts.
+    You could, for instance, create a building menu to edit a room with a
     sub-menu for the room's key, another for the room's description,
     another for the room's exits, and so on.
 
-    To add choices (sub-menus), you should call `add_choice` (see the
+    To add choices (simple sub-menus), you should call `add_choice` (see the
     full documentation of this method).  With most arguments, you can
     specify either a plain string or a callback.  This callback will be
     called when the operation is to be performed.
@@ -492,9 +542,13 @@ class BuildingMenu(object):
         self.persistent = persistent
         self.choices = []
         self.cmds = {}
+        self.can_quit = False
 
         if obj:
             self.init(obj)
+            if not parents and not self.can_quit:
+                # Automatically add the menu to quit
+                self.add_choice_quit(key=None)
             self._add_keys_choice()
 
     @property
@@ -686,15 +740,25 @@ class BuildingMenu(object):
         key = key.lower()
         aliases = aliases or []
         aliases = [a.lower() for a in aliases]
-        if on_enter is None and on_nomatch is None:
-            if attr is None:
-                raise ValueError("The choice {} has neither attr nor callback, specify one of these as arguments".format(title))
-
         if attr and on_nomatch is None:
             on_nomatch = menu_setattr
 
         if key and key in self.cmds:
             raise ValueError("A conflict exists between {} and {}, both use key or alias {}".format(self.cmds[key], title, repr(key)))
+
+        if attr:
+            if glance is None:
+                glance = "{obj." + attr + "}"
+            if text is None:
+                text = """
+                        -------------------------------------------------------------------------------
+                        {attr} for {{obj}}(#{{obj.id}})
+
+                        You can change this value simply by entering it.
+                        Use |y{back}|n to go back to the main menu.
+
+                        Current value: |c{{{obj_attr}}}|n
+                """.format(attr=attr, obj_attr="obj." + attr, back="|n or |y".join(self.keys_go_back))
 
         choice = Choice(title, key=key, aliases=aliases, attr=attr, text=text, glance=glance, on_enter=on_enter, on_nomatch=on_nomatch, on_leave=on_leave,
                 menu=self, caller=self.caller, obj=self.obj)
@@ -731,7 +795,7 @@ class BuildingMenu(object):
 
         """
         on_enter = on_enter or menu_edit
-        return self.add_choice(title, key=key, aliases=aliases, attr=attr, glance=glance, on_enter=on_enter)
+        return self.add_choice(title, key=key, aliases=aliases, attr=attr, glance=glance, on_enter=on_enter, text="")
 
     def add_choice_quit(self, title="quit the menu", key="q", aliases=None, on_enter=None):
         """
@@ -753,6 +817,7 @@ class BuildingMenu(object):
 
         """
         on_enter = on_enter or menu_quit
+        self.can_quit = True
         return self.add_choice(title, key=key, aliases=aliases, on_enter=on_enter)
 
     def open(self):
@@ -767,6 +832,11 @@ class BuildingMenu(object):
         """
         caller = self.caller
         self._save()
+
+        # Remove the same-key cmdset if exists
+        if caller.cmdset.has(BuildingMenuCmdSet):
+            caller.cmdset.remove(BuildingMenuCmdSet)
+
         self.caller.cmdset.add(BuildingMenuCmdSet, permanent=self.persistent)
         self.display()
 
@@ -923,7 +993,11 @@ class BuildingMenu(object):
 
         if choice.glance:
             glance = _call_or_get(choice.glance, menu=self, choice=choice, caller=self.caller, string="", obj=self.obj)
-            glance = glance.format(obj=self.obj, caller=self.caller)
+            try:
+                glance = glance.format(obj=self.obj, caller=self.caller)
+            except:
+                import pdb;pdb.set_trace()
+
             ret += ": " + glance
 
         return ret
@@ -978,3 +1052,70 @@ class BuildingMenu(object):
                 return
 
             return building_menu
+
+
+# Generic building menu and command
+class GenericBuildingMenu(BuildingMenu):
+
+    """A generic building menu, allowing to edit any object.
+
+    This is more a demonstration menu.  By default, it allows to edit the
+    object key and description.  Nevertheless, it will be useful to demonstrate
+    how building menus are meant to be used.
+
+    """
+
+    def init(self, obj):
+        """Build the meny, adding the 'key' and 'description' choices.
+
+        Args:
+            obj (Object): any object to be edited, like a character or room.
+
+        Note:
+            The 'quit' choice will be automatically added, though you can
+            call `add_choice_quit` to add this choice with different options.
+
+        """
+        self.add_choice("key", key="k", attr="key", glance="{obj.key}", text="""
+                -------------------------------------------------------------------------------
+                Editing the key of {{obj.key}}(#{{obj.id}})
+
+                You can change the simply by entering it.
+                Use |y{back}|n to go back to the main menu.
+
+                Current key: |c{{obj.key}}|n
+        """.format(back="|n or |y".join(self.keys_go_back)))
+        self.add_choice_edit("description", key="d", attr="db.desc")
+
+
+class GenericBuildingCmd(Command):
+
+    """
+    Generic building command.
+
+    Syntax:
+      @edit [object]
+
+    Open a building menu to edit the specified object.  This menu allows to
+    change the object's key and description.
+
+    Examples:
+      @edit here
+      @edit self
+      @edit #142
+
+    """
+
+    key = "@edit"
+
+    def func(self):
+        if not self.args.strip():
+            self.msg("You should provide an argument to this function: the object to edit.")
+            return
+
+        obj = self.caller.search(self.args.strip(), global_search=True)
+        if not obj:
+            return
+
+        menu = GenericBuildingMenu(self.caller, obj)
+        menu.open()
