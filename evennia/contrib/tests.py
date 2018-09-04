@@ -1170,3 +1170,115 @@ class TestRandomStringGenerator(EvenniaTest):
         # We can't generate one more
         with self.assertRaises(random_string_generator.ExhaustedGenerator):
             SIMPLE_GENERATOR.get()
+
+
+# Test of the Puzzles module
+
+from evennia.contrib import puzzles
+from evennia.utils import search
+
+class TestPuzzles(CommandTest):
+
+    def setUp(self):
+        super(TestPuzzles, self).setUp()
+        self.stone = create_object(key='stone', location=self.char1.location)
+        self.flint = create_object(key='flint', location=self.char1.location)
+        self.fire = create_object(key='fire', location=self.char1.location)
+
+    def _assert_msg_matched(self, msg, regexs, re_flags=0):
+        matches = []
+        for regex in regexs:
+            m = re.search(regex, msg, re_flags)
+            self.assertIsNotNone(m, "%r didn't match %r" % (regex, msg))
+            matches.append(m)
+        return matches
+
+    def _assert_recipe(self, name, parts, results, and_destroy_it=True):
+
+        def _keys(items):
+            return [item['key'] for item in items]
+
+        recipes = search.search_tag('', category=puzzles._PUZZLES_TAG_CATEGORY)
+        self.assertEqual(1, len(recipes))
+        self.assertEqual(name, recipes[0].db.puzzle_name)
+        self.assertEqual(parts, _keys(recipes[0].db.parts))
+        self.assertEqual(results, _keys(recipes[0].db.results))
+        self.assertEqual(
+            puzzles._PUZZLES_TAG_RECIPE,
+            recipes[0].tags.get(category=puzzles._PUZZLES_TAG_CATEGORY)
+        )
+        if and_destroy_it:
+            recipes[0].delete()
+
+    def _assert_no_recipes(self):
+        self.assertEqual(
+            0,
+            len(search.search_tag('', category=puzzles._PUZZLES_TAG_CATEGORY))
+        )
+
+    def test_cmd_use(self):
+        def _use(cmdstr, msg):
+            self.call(puzzles.CmdUsePuzzleParts(), cmdstr, msg, caller=self.char1)
+
+        _use('', 'Use what?')
+        _use('stone', 'You have no idea how this can be used')
+        _use('stone flint', 'There is no stone flint around.')
+        _use('stone, flint', 'You have no idea how these can be used')
+
+    def test_cmd_puzzle(self):
+        self._assert_no_recipes()
+
+        # bad syntax
+        def _bad_syntax(cmdstr):
+            self.call(
+                puzzles.CmdCreatePuzzleRecipe(),
+                cmdstr,
+                'Usage: @puzzle name,<part1[,...]> = <result1[,...]>',
+                caller=self.char1
+            )
+
+        _bad_syntax('')
+        _bad_syntax('=')
+        _bad_syntax('nothing =')
+        _bad_syntax('= nothing')
+        _bad_syntax('nothing')
+        _bad_syntax(',nothing')
+        _bad_syntax('name, nothing')
+        _bad_syntax('name, nothing =')
+        # _bad_syntax(', = ,')  # FIXME: got: Could not find ''.
+
+        self._assert_no_recipes()
+
+        # good recipes
+        def _good_recipe(name, parts, results):
+            regexs = []
+            for p in parts:
+                regexs.append(r'^Part %s\(#\d+\)$' % (p))
+            for r in results:
+                regexs.append(r'^Result %s\(#\d+\)$' % (r))
+            regexs.append(r"^Puzzle '%s' %s\(#\d+\) has been created successfully.$" % (name, name))
+            lhs = [name] + parts
+            cmdstr = ','.join(lhs) + '=' + ','.join(results)
+            msg = self.call(
+                puzzles.CmdCreatePuzzleRecipe(),
+                cmdstr,
+                caller=self.char1
+            )
+            matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
+            self._assert_recipe(name, parts, results)
+
+        _good_recipe('makefire', ['stone', 'flint'], ['fire', 'stone', 'flint'])
+        _good_recipe('hot stones', ['stone', 'fire'], ['stone', 'fire'])
+        _good_recipe('hot stones', ['stone', 'fire'], ['stone', 'fire'])
+
+        # bad recipes
+        def _bad_recipe(name, parts, results, fail_regex):
+            with self.assertRaisesRegexp(AssertionError, fail_regex):
+                _good_recipe(name, parts, results)
+                self.assert_no_recipes()
+
+        _bad_recipe('name', ['nothing'], ['neither'], r"Could not find 'nothing'.")
+        _bad_recipe('name', ['stone'], ['nothing'], r"Could not find 'nothing'.")
+        # _bad_recipe('', ['stone', 'fire'], ['stone', 'fire'], '')  # FIXME: no name becomes '' #N(#N)
+
+        self._assert_no_recipes()

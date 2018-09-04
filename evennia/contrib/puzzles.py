@@ -69,7 +69,6 @@ Alternatively:
 
 import itertools
 from random import choice
-from django.conf import settings
 from evennia import create_object
 from evennia import CmdSet
 from evennia import DefaultObject
@@ -180,7 +179,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             # located.
             # Parts and results may have different valid locations
             # TODO: handle contents of a given part
-            if not inherits_from(obj.location, settings.BASE_ROOM_TYPECLASS):
+            if not inherits_from(obj.location, DefaultRoom):
                 caller.msg('Invalid location for %s' % (obj.key))
                 valid = False
             return valid
