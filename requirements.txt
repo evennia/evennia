@@ -1,5 +1,6 @@
 # Evennia dependencies, for Linux/Mac platforms
 
+# general
 django > 1.10, < 2.0
 twisted == 16.0.0
 pillow == 2.9.0
@@ -8,5 +9,6 @@ future >= 0.15.2
 django-sekizai
 inflect
 
+# testing
 mock >= 1.0.1
 anything
