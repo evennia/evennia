@@ -319,3 +319,53 @@ def _init():
 del object
 del absolute_import
 del print_function
+
+
+def set_trace(debugger="auto", term_size=(140, 40)):
+    """
+    Helper function for running a debugger inside the Evennia event loop.
+
+    Args:
+        debugger (str, optional): One of 'auto', 'pdb' or 'pudb'. Pdb is the standard debugger. Pudb
+            is an external package with a different, more 'graphical', ncurses-based UI. With
+            'auto', will use pudb if possible, otherwise fall back to pdb. Pudb is available through
+            `pip install pudb`.
+        term_size (tuple, optional): Only used for Pudb and defines the size of the terminal
+            (width, height) in number of characters.
+
+    Notes:
+        To use:
+
+        1) add this to a line to act as a breakpoint for entering the debugger:
+
+            from evennia import set_trace; set_trace()
+
+        2) restart evennia in interactive mode
+
+            evennia istart
+
+        3) debugger will appear in the interactive terminal when breakpoint is reached. Exit
+           with 'q', remove the break line and restart server when finished.
+
+    """
+    import sys
+    dbg = None
+
+    if debugger in ('auto', 'pudb'):
+        try:
+            from pudb import debugger
+            dbg = debugger.Debugger(stdout=sys.__stdout__,
+                                    term_size=term_size)
+        except ImportError:
+            if debugger == 'pudb':
+                raise
+            pass
+
+    if not dbg:
+        import pdb
+        dbg = pdb.Pdb(stdout=sys.__stdout__)
+
+    #
+    # stopped at breakpoint. Use 'n' (next) to continue into the code.
+    #
+    dbg.set_trace()
