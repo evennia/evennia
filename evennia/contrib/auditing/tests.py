@@ -53,8 +53,8 @@ class AuditingTest(EvenniaTest):
             ('@passwd password1234 = password2345', '@passwd ***************************'),
             ('@userpassword johnny = password234', '@userpassword johnny = ***********'),
             ('craete johnnypassword123', 'craete *****************'),
-            ("Command 'conncect teddy teddy' is not available. Maybe you meant \"@encode\"?", 'Command \'conncect ***** *****\' is not available. Maybe you meant "@encode"?'),
-            ("{'text': u'Command \\'conncect jsis dfiidf\\' is not available. Type \"help\" for help.'}", "{'text': u'Command \\'conncect jsis ******\\' is not available. Type \"help\" for help.'}")
+            ("Command 'conncect teddy teddy' is not available. Maybe you meant \"@encode\"?", 'Command \'conncect ******** ********\' is not available. Maybe you meant "@encode"?'),
+            ("{'text': u'Command \\'conncect jsis dfiidf\\' is not available. Type \"help\" for help.'}", "{'text': u'Command \\'conncect jsis ********\\' is not available. Type \"help\" for help.'}")
         )
         
         for index, (unsafe, safe) in enumerate(unsafe_cmds):
