@@ -5,26 +5,26 @@ user inputs and system outputs.
 
 Evennia contribution - Johnny 2017
 """
-
 import os
 import re
 import socket
 
 from django.utils import timezone
 from django.conf import settings as ev_settings
-from evennia.utils import logger, mod_import, get_evennia_version
+from evennia.utils import utils, logger, mod_import, get_evennia_version
 from evennia.server.serversession import ServerSession
 
 # Attributes governing auditing of commands and where to send log objects
 AUDIT_CALLBACK = getattr(ev_settings, 'AUDIT_CALLBACK', None)
 AUDIT_IN = getattr(ev_settings, 'AUDIT_IN', False)
 AUDIT_OUT = getattr(ev_settings, 'AUDIT_OUT', False)
+AUDIT_ALLOW_SPARSE = getattr(ev_settings, 'AUDIT_ALLOW_SPARSE', False)
 AUDIT_MASKS = [
     {'connect': r"^[@\s]*[connect]{5,8}\s+(\".+?\"|[^\s]+)\s+(?P<secret>.+)"},
-    {'connect': r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w\\]+)"},
-    {'create': r"^[^@]?[create]{5,7}\s+(\w+|\".+?\")\s+(?P<secret>[\w\\]+)"},
-    {'create': r"^[^@]?[create]{5,7}\s+(?P<secret>[\w\\]+)"},
-    {'userpassword': r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w\\]+)"},
+    {'connect': r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w]+)"},
+    {'create': r"^[^@]?[create]{5,6}\s+(\w+|\".+?\")\s+(?P<secret>[\w]+)"},
+    {'create': r"^[^@]?[create]{5,6}\s+(?P<secret>[\w]+)"},
+    {'userpassword': r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w]+)"},
     {'password': r"^[@\s]*[password]{6,9}\s+(?P<secret>.*)"},
 ] + getattr(ev_settings, 'AUDIT_MASKS', [])
 
@@ -34,7 +34,8 @@ if AUDIT_CALLBACK:
         logger.log_info("Auditing module online.")
         logger.log_info("Recording user input: %s" % AUDIT_IN)
         logger.log_info("Recording server output: %s" % AUDIT_OUT)
-        logger.log_info("Log destination: %s" % AUDIT_CALLBACK)
+        logger.log_info("Recording sparse values: %s" % AUDIT_ALLOW_SPARSE)
+        logger.log_info("Log callback destination: %s" % AUDIT_CALLBACK)
     except Exception as e:
         logger.log_err("Failed to activate Auditing module. %s" % e)
 
@@ -69,16 +70,25 @@ class AuditedServerSession(ServerSession):
     # public communications between players and/or admins.
     AUDIT_IN = True/False
     
-    # Log all server output? This will result in logging of ALL system
+    # Log server output? This will result in logging of ALL system
     # messages and ALL broadcasts to connected players, so on a busy MUD this 
     # will be very voluminous!
     AUDIT_OUT = True/False
     
+    # The default output is a dict. Do you want to allow key:value pairs with
+    # null/blank values? If you're just writing to disk, disabling this saves 
+    # some disk space, but whether you *want* sparse values or not is more of a 
+    # consideration if you're shipping logs to a NoSQL/schemaless database.
+    AUDIT_ALLOW_SPARSE = True/False
+    
     # Any custom regexes to detect and mask sensitive information, to be used
-    # to detect and mask any sensitive custom commands you may develop.
+    # to detect and mask any custom commands you may develop.
     # Takes the form of a list of dictionaries, one k:v pair per dictionary
-    # where the key name is the canonical name of a command and gets displayed
-    # at the tail end of the message so you can tell which regex masked it.
+    # where the key name is the canonical name of a command which gets displayed
+    # at the tail end of the message so you can tell which regex masked it--
+    # i.e. for a log entry with a typoed `connect` command:
+    # `conncect johnny *********** <Masked: connect>`
+    #
     # The sensitive data itself must be captured in a named group with a
     # label of 'secret'.
     AUDIT_MASKS = [
@@ -105,28 +115,13 @@ class AuditedServerSession(ServerSession):
         time_obj = timezone.now()
         time_str = str(time_obj)
         
-        # Sanitize user input
         session = self
         src = kwargs.pop('src', '?')
         bytecount = 0
         
-        if src == 'client':
-            try:
-                data = str(kwargs['text'][0][0])
-            except IndexError:
-                logger.log_err('Failed to parse client-submitted string!')
-                return False
-                
-        elif src == 'server':
-            data = str(kwargs)
-            
-        bytecount = len(data.encode('utf-8'))
-                
-        data = data.strip()
-            
         # Do not log empty lines
-        if not data: return {}
-        
+        if not kwargs: return {}
+
         # Get current session's IP address
         client_ip = session.address
         
@@ -148,10 +143,25 @@ class AuditedServerSession(ServerSession):
         if char:
             room = char.location
             room_token = '%s%s' % (room.key, room.dbref)
-            
+        
+        # Try to compile an input/output string
+        def drill(obj, bucket):
+            if isinstance(obj, dict): return bucket
+            elif utils.is_iter(obj):
+                for sub_obj in obj:
+                    bucket.extend(drill(sub_obj, []))
+            else:
+                bucket.append(obj)
+            return bucket
+        
+        text = kwargs.pop('text', '')
+        if utils.is_iter(text):
+            text = '|'.join(drill(text, []))
+        
         # Mask any PII in message, where possible
-        data = self.mask(data)
-            
+        bytecount = len(text.encode('utf-8'))
+        text = self.mask(text)
+        
         # Compile the IP, Account, Character, Room, and the message.
         log = {
             'time': time_str,
@@ -166,8 +176,9 @@ class AuditedServerSession(ServerSession):
             'account': account_token,
             'character': char_token,
             'room': room_token,
-            'msg': '%s' % data,
+            'text': text.strip(),
             'bytes': bytecount,
+            'data': kwargs,
             'objects': {
                 'time': time_obj,
                 'session': self,
@@ -176,6 +187,12 @@ class AuditedServerSession(ServerSession):
                 'room': room,
             }
         }
+        
+        # Remove any keys with blank values
+        if AUDIT_ALLOW_SPARSE == False:
+            log['data'] = {k:v for k,v in log['data'].iteritems() if v}
+            log['objects'] = {k:v for k,v in log['objects'].iteritems() if v}
+            log = {k:v for k,v in log.iteritems() if v}
 
         return log
         
@@ -205,25 +222,21 @@ class AuditedServerSession(ServerSession):
                 try:
                     match = re.match(regex, msg, flags=re.IGNORECASE)
                 except Exception as e:
-                    logger.log_err(modified_regex)
+                    logger.log_err(regex)
                     logger.log_err(e)
                     continue
                     
                 if match:
                     term = match.group('secret')
-                    try:
-                        masked = re.sub(term, '*' * len(term.zfill(8)), msg)
-                    except Exception as e:
-                        print(msg, regex, term)
-                        quit()
+                    masked = re.sub(term, '*' * len(term.zfill(8)), msg)
                     
                     if is_embedded:
-                        msg = re.sub(submsg, masked, _msg, flags=re.IGNORECASE)
+                        msg = re.sub(submsg, '%s <Masked: %s>' % (masked, command), _msg, flags=re.IGNORECASE)
                     else: msg = masked
                     
-                    return '%s <Masked: %s>' % (msg, command)
+                    return msg
                     
-        return msg
+        return _msg
     
     def data_out(self, **kwargs):
         """
