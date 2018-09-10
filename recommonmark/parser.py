@@ -6,7 +6,7 @@ from os.path import splitext
 from docutils import parsers, nodes
 from sphinx import addnodes
 
-from CommonMark import Parser
+from commonmark import Parser
 
 from warnings import warn
 
