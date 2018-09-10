@@ -44,7 +44,7 @@ Details:
 Puzzles are created from existing objects. The given
 objects are introspected to create prototypes for the
 puzzle parts and results. These prototypes become the
-puzzle recipe. (See PuzzleRecipeObject and @puzzle
+puzzle recipe. (See PuzzleRecipe and @puzzle
 command). Once the recipe is created, all parts and result
 can be disposed (i.e. destroyed).
 
@@ -69,9 +69,10 @@ Alternatively:
 
 import itertools
 from random import choice
-from evennia import create_object
+from evennia import create_object, create_script
 from evennia import CmdSet
 from evennia import DefaultObject
+from evennia import DefaultScript
 from evennia import DefaultCharacter
 from evennia import DefaultRoom
 from evennia.commands.default.muxcommand import MuxCommand
@@ -127,7 +128,7 @@ class PuzzlePartObject(DefaultObject):
         self.db.puzzle_name = puzzle_name
 
 
-class PuzzleRecipeObject(DefaultObject):
+class PuzzleRecipe(DefaultScript):
     """
     Definition of a Puzzle Recipe
     """
@@ -217,7 +218,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         proto_parts = [proto_def(obj) for obj in parts]
         proto_results = [proto_def(obj) for obj in results]
 
-        puzzle = create_object(PuzzleRecipeObject, key=puzzle_name)
+        puzzle = create_script(PuzzleRecipe, key=puzzle_name)
         puzzle.save_recipe(puzzle_name, proto_parts, proto_results)
 
         caller.msg(
@@ -253,10 +254,12 @@ class CmdArmPuzzle(MuxCommand):
             caller.msg("A puzzle recipe's #dbref must be specified")
             return
 
-        puzzle = caller.search(self.args, global_search=True)
-        if not puzzle or not inherits_from(puzzle, PuzzleRecipeObject):
+        puzzle = search.search_script(self.args)
+        if not puzzle or not inherits_from(puzzle[0], PuzzleRecipe):
+            caller.msg('Invalid puzzle %r'  % (self.args))
             return
 
+        puzzle = puzzle[0]
         caller.msg(
             "Puzzle Recipe %s(%s) '%s' found.\nSpawning %d parts ..." % (
             puzzle.name, puzzle.dbref, puzzle.db.puzzle_name, len(puzzle.db.parts)))
@@ -336,17 +339,16 @@ class CmdUsePuzzleParts(MuxCommand):
                 (part.dbref, proto_def(part, with_tags=False))
             )
 
+
         # Find all puzzles by puzzle name
         # FIXME: we rely on obj.db.puzzle_name which is visible and may be cnaged afterwards. Can we lock it and hide it?
         puzzles = []
         for puzzle_name, parts in puzzle_ingredients.items():
-            _puzzles = caller.search(
-                    puzzle_name,
-                    typeclass=[PuzzleRecipeObject],
-                    attribute_name='puzzle_name',
-                    quiet=True,
-                    exact=True,
-                    global_search=True)
+            _puzzles = search.search_script_attribute(
+                    key='puzzle_name',
+                    value=puzzle_name
+            )
+            _puzzles = list(filter(lambda p: isinstance(p, PuzzleRecipe), _puzzles))
             if not _puzzles:
                 continue
             else:
@@ -356,12 +358,11 @@ class CmdUsePuzzleParts(MuxCommand):
 
         # Create lookup dict
         puzzles_dict = dict((puzzle.dbref, puzzle) for puzzle in puzzles)
-
         # Check if parts can be combined to solve a puzzle
         matched_puzzles = dict()
         for puzzle in puzzles:
-            puzzleparts = puzzle.db.parts[:]
-            parts = puzzle_ingredients[puzzle.db.puzzle_name][:]
+            puzzleparts = list(sorted(puzzle.db.parts[:], key=lambda p: p['key']))
+            parts = list(sorted(puzzle_ingredients[puzzle.db.puzzle_name][:], key=lambda p: p[1]['key']))
             pz = 0
             p = 0
             matched_dbrefparts = set()
@@ -454,7 +455,7 @@ class CmdListPuzzleRecipes(MuxCommand):
     def func(self):
         caller = self.caller
 
-        recipes = search.search_tag(
+        recipes = search.search_script_tag(
             _PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
 
         div = "-" * 60
