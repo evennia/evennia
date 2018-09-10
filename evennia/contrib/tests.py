@@ -1198,7 +1198,7 @@ class TestPuzzles(CommandTest):
         def _keys(items):
             return [item['key'] for item in items]
 
-        recipes = search.search_tag('', category=puzzles._PUZZLES_TAG_CATEGORY)
+        recipes = search.search_script_tag('', category=puzzles._PUZZLES_TAG_CATEGORY)
         self.assertEqual(1, len(recipes))
         self.assertEqual(name, recipes[0].db.puzzle_name)
         self.assertEqual(parts, _keys(recipes[0].db.parts))
@@ -1207,8 +1207,10 @@ class TestPuzzles(CommandTest):
             puzzles._PUZZLES_TAG_RECIPE,
             recipes[0].tags.get(category=puzzles._PUZZLES_TAG_CATEGORY)
         )
+        recipe_dbref = recipes[0].dbref
         if and_destroy_it:
             recipes[0].delete()
+        return recipe_dbref if not and_destroy_it else None
 
     def _assert_no_recipes(self):
         self.assertEqual(
@@ -1216,14 +1218,41 @@ class TestPuzzles(CommandTest):
             len(search.search_tag('', category=puzzles._PUZZLES_TAG_CATEGORY))
         )
 
-    def test_cmd_use(self):
-        def _use(cmdstr, msg):
-            self.call(puzzles.CmdUsePuzzleParts(), cmdstr, msg, caller=self.char1)
+    # good recipes
+    def _good_recipe(self, name, parts, results, and_destroy_it=True):
+        regexs = []
+        for p in parts:
+            regexs.append(r'^Part %s\(#\d+\)$' % (p))
+        for r in results:
+            regexs.append(r'^Result %s\(#\d+\)$' % (r))
+        regexs.append(r"^Puzzle '%s' %s\(#\d+\) has been created successfully.$" % (name, name))
+        lhs = [name] + parts
+        cmdstr = ','.join(lhs) + '=' + ','.join(results)
+        msg = self.call(
+            puzzles.CmdCreatePuzzleRecipe(),
+            cmdstr,
+            caller=self.char1
+        )
+        matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
+        recipe_dbref = self._assert_recipe(name, parts, results, and_destroy_it)
+        return recipe_dbref
 
-        _use('', 'Use what?')
-        _use('stone', 'You have no idea how this can be used')
-        _use('stone flint', 'There is no stone flint around.')
-        _use('stone, flint', 'You have no idea how these can be used')
+    def _arm(self, recipe_dbref):
+        msg = self.call(
+            puzzles.CmdArmPuzzle(),
+            recipe_dbref,
+            caller=self.char1
+        )
+        print(msg)
+        # TODO: add regex for parts and whatnot
+        # similar to _good_recipe
+        '''
+        Puzzle Recipe makefire(#2) 'makefire' found.
+Spawning 2 parts ...
+Part stone(#11) spawned and placed at Room(#1)
+Part flint(#12) spawned and placed at Room(#1)
+Puzzle armed successfully.'''
+        self.assertIsNotNone(re.match(r"Puzzle Recipe .* found.*Puzzle armed successfully.", msg, re.MULTILINE | re.DOTALL))
 
     def test_cmd_puzzle(self):
         self._assert_no_recipes()
@@ -1249,32 +1278,14 @@ class TestPuzzles(CommandTest):
 
         self._assert_no_recipes()
 
-        # good recipes
-        def _good_recipe(name, parts, results):
-            regexs = []
-            for p in parts:
-                regexs.append(r'^Part %s\(#\d+\)$' % (p))
-            for r in results:
-                regexs.append(r'^Result %s\(#\d+\)$' % (r))
-            regexs.append(r"^Puzzle '%s' %s\(#\d+\) has been created successfully.$" % (name, name))
-            lhs = [name] + parts
-            cmdstr = ','.join(lhs) + '=' + ','.join(results)
-            msg = self.call(
-                puzzles.CmdCreatePuzzleRecipe(),
-                cmdstr,
-                caller=self.char1
-            )
-            matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
-            self._assert_recipe(name, parts, results)
-
-        _good_recipe('makefire', ['stone', 'flint'], ['fire', 'stone', 'flint'])
-        _good_recipe('hot stones', ['stone', 'fire'], ['stone', 'fire'])
-        _good_recipe('hot stones', ['stone', 'fire'], ['stone', 'fire'])
+        self._good_recipe('makefire', ['stone', 'flint'], ['fire', 'stone', 'flint'])
+        self._good_recipe('hot stones', ['stone', 'fire'], ['stone', 'fire'])
+        self._good_recipe('furnace', ['stone', 'stone', 'fire'], ['stone', 'stone', 'fire', 'fire', 'fire', 'fire'])
 
         # bad recipes
         def _bad_recipe(name, parts, results, fail_regex):
             with self.assertRaisesRegexp(AssertionError, fail_regex):
-                _good_recipe(name, parts, results)
+                self._good_recipe(name, parts, results)
                 self.assert_no_recipes()
 
         _bad_recipe('name', ['nothing'], ['neither'], r"Could not find 'nothing'.")
@@ -1282,3 +1293,44 @@ class TestPuzzles(CommandTest):
         # _bad_recipe('', ['stone', 'fire'], ['stone', 'fire'], '')  # FIXME: no name becomes '' #N(#N)
 
         self._assert_no_recipes()
+
+    def test_cmd_armpuzzle(self):
+        recipe_dbref = self._good_recipe('makefile', ['stone', 'flint'], ['fire', 'stone', 'flint'], and_destroy_it=False)
+        self._arm(recipe_dbref)
+
+    def test_cmd_use(self):
+        def _use(cmdstr, msg):
+            msg = self.call(puzzles.CmdUsePuzzleParts(), cmdstr, msg, caller=self.char1)
+            return msg
+
+        _use('', 'Use what?')
+        _use('something', 'There is no something around.')
+        _use('stone', 'You have no idea how this can be used')
+        _use('stone flint', 'There is no stone flint around.')
+        _use('stone, flint', 'You have no idea how these can be used')
+
+        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
+
+        # although there is stone and flint
+        # those aren't valid puzzle parts because
+        # the puzzle hasn't been armed
+        _use('stone', 'You have no idea how this can be used')
+        _use('stone, flint', 'You have no idea how these can be used')
+        self._arm(recipe_dbref)
+
+        # there are duplicated objects now
+        msg = _use('stone', None)
+        self.assertIsNotNone(re.match(r'^Which stone. There are many.*', msg))
+        msg = _use('flint', None)
+        self.assertIsNotNone(re.match(r'^Which flint. There are many.*', msg))
+        # delete them
+        self.stone.delete()
+        self.flint.delete()
+
+        msg = _use('stone, flint', None)
+        self.assertIsNotNone(re.match(r"^You are a Genius.*", msg))
+
+        # trying again will fail as it was resolved already
+        # and the parts were destroyed
+        _use('stone, flint', 'There is no stone around')
+        _use('flint, stone', 'There is no flint around')
