@@ -1237,22 +1237,20 @@ class TestPuzzles(CommandTest):
         recipe_dbref = self._assert_recipe(name, parts, results, and_destroy_it)
         return recipe_dbref
 
-    def _arm(self, recipe_dbref):
+    def _arm(self, recipe_dbref, name, parts):
+        regexs = [
+            r"^Puzzle Recipe %s\(#\d+\) '%s' found.$" % (name, name),
+            r"^Spawning %d parts ...$" % (len(parts)),
+        ]
+        for p in parts:
+            regexs.append(r'^Part %s\(#\d+\) spawned .*$' % (p))
+        regexs.append(r"^Puzzle armed successfully.$")
         msg = self.call(
             puzzles.CmdArmPuzzle(),
             recipe_dbref,
             caller=self.char1
         )
-        print(msg)
-        # TODO: add regex for parts and whatnot
-        # similar to _good_recipe
-        '''
-        Puzzle Recipe makefire(#2) 'makefire' found.
-Spawning 2 parts ...
-Part stone(#11) spawned and placed at Room(#1)
-Part flint(#12) spawned and placed at Room(#1)
-Puzzle armed successfully.'''
-        self.assertIsNotNone(re.match(r"Puzzle Recipe .* found.*Puzzle armed successfully.", msg, re.MULTILINE | re.DOTALL))
+        matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
 
     def test_cmd_puzzle(self):
         self._assert_no_recipes()
@@ -1295,8 +1293,23 @@ Puzzle armed successfully.'''
         self._assert_no_recipes()
 
     def test_cmd_armpuzzle(self):
-        recipe_dbref = self._good_recipe('makefile', ['stone', 'flint'], ['fire', 'stone', 'flint'], and_destroy_it=False)
-        self._arm(recipe_dbref)
+        # bad arms
+        self.call(
+            puzzles.CmdArmPuzzle(),
+            '1',
+            "A puzzle recipe's #dbref must be specified",
+            caller=self.char1
+        )
+        self.call(
+            puzzles.CmdArmPuzzle(),
+            '#1',
+            "Invalid puzzle '#1'",
+            caller=self.char1
+        )
+
+        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire', 'stone', 'flint'], and_destroy_it=False)
+        # goo arm
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
 
     def test_cmd_use(self):
         def _use(cmdstr, msg):
@@ -1316,7 +1329,7 @@ Puzzle armed successfully.'''
         # the puzzle hasn't been armed
         _use('stone', 'You have no idea how this can be used')
         _use('stone, flint', 'You have no idea how these can be used')
-        self._arm(recipe_dbref)
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
 
         # there are duplicated objects now
         msg = _use('stone', None)
