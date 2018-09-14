@@ -36,7 +36,7 @@ prototype key (this value must be possible to serialize in an Attribute).
 """
 
 from ast import literal_eval
-from random import randint as base_randint, random as base_random
+from random import randint as base_randint, random as base_random, choice as base_choice
 
 from evennia.utils import search
 from evennia.utils.utils import justify as base_justify, is_iter, to_str
@@ -98,6 +98,16 @@ def center_justify(*args, **kwargs):
     """
     if args:
         return base_justify(args[0], align='c')
+    return ""
+
+
+def choice(*args, **kwargs):
+    """
+    Usage: $choice(val, val, val, ...)
+    Returns one of the values randomly
+    """
+    if args:
+        return base_choice(args)
     return ""
 
 

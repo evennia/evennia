@@ -59,7 +59,7 @@ def _get_flat_menu_prototype(caller, refresh=False, validate=False):
 
 def _get_unchanged_inherited(caller, protname):
     """Return prototype values inherited from parent(s), which are not replaced in child"""
-    protototype = _get_menu_prototype(caller)
+    prototype = _get_menu_prototype(caller)
     if protname in prototype:
         return protname[protname], False
     else:
@@ -1968,6 +1968,7 @@ def node_apply_diff(caller, **kwargs):
     obj_prototype = kwargs.get("obj_prototype", None)
     base_obj = kwargs.get("base_obj", None)
     diff = kwargs.get("diff", None)
+    custom_location = kwargs.get("custom_location", None)
 
     if not update_objects:
         text = "There are no existing objects to update."
@@ -1978,24 +1979,36 @@ def node_apply_diff(caller, **kwargs):
     if not diff:
         # use one random object as a reference to calculate a diff
         base_obj = choice(update_objects)
-        diff, obj_prototype = spawner.prototype_diff_from_object(prototype, base_obj)
+
+        # from evennia import set_trace
+        diff, obj_prototype = spawner.prototype_diff_from_object(
+                prototype, base_obj, exceptions={"location": "KEEP"})
 
     text = ["Suggested changes to {} objects. ".format(len(update_objects)),
             "Showing random example obj to change: {name} ({dbref}))\n".format(
                 name=base_obj.key, dbref=base_obj.dbref)]
 
     helptext = """
+        This will go through all existing objects and apply the changes you accept.
+
         Be careful with this operation! The upgrade mechanism will try to automatically estimate
         what changes need to be applied. But the estimate is |wonly based on the analysis of one
         randomly selected object|n among all objects spawned by this prototype. If that object
         happens to be unusual in some way the estimate will be off and may lead to unexpected
-        results for other objects. Always test your objects carefully after an upgrade and
-        consider being conservative (switch to KEEP) or even do the update manually if you are
-        unsure that the results will be acceptable.  """
+        results for other objects. Always test your objects carefully after an upgrade and consider
+        being conservative (switch to KEEP) for things you are unsure of. For complex upgrades it
+        may be better to get help from an administrator with access to the `@py` command for doing
+        this manually.
+
+        Note that the `location` will never be auto-adjusted because it's so rare to want to
+        homogenize the location of all object instances."""
 
     options = []
 
     ichanges = 0
+
+    # convert diff to a menu text + options to edit
+
     for (key, inst) in sorted(((key, val) for key, val in diff.items()), key=lambda tup: tup[0]):
 
         if key in protlib._PROTOTYPE_META_NAMES:
