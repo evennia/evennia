@@ -1233,8 +1233,8 @@ class TestPuzzles(CommandTest):
             cmdstr,
             caller=self.char1
         )
-        matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
         recipe_dbref = self._assert_recipe(name, parts, results, and_destroy_it)
+        matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
         return recipe_dbref
 
     def _arm(self, recipe_dbref, name, parts):
@@ -1272,7 +1272,7 @@ class TestPuzzles(CommandTest):
         _bad_syntax(',nothing')
         _bad_syntax('name, nothing')
         _bad_syntax('name, nothing =')
-        # _bad_syntax(', = ,')  # FIXME: got: Could not find ''.
+        # _bad_syntax(', = ,')  # FIXME: MuxCommand issue?
 
         self._assert_no_recipes()
 
@@ -1282,13 +1282,19 @@ class TestPuzzles(CommandTest):
 
         # bad recipes
         def _bad_recipe(name, parts, results, fail_regex):
-            with self.assertRaisesRegexp(AssertionError, fail_regex):
-                self._good_recipe(name, parts, results)
-                self.assert_no_recipes()
+            cmdstr = ','.join([name] + parts) \
+                    + '=' + ','.join(results)
+            msg = self.call(
+                puzzles.CmdCreatePuzzleRecipe(),
+                cmdstr,
+                caller=self.char1
+            )
+            self._assert_no_recipes()
+            self.assertIsNotNone(re.match(fail_regex, msg), msg)
 
         _bad_recipe('name', ['nothing'], ['neither'], r"Could not find 'nothing'.")
         _bad_recipe('name', ['stone'], ['nothing'], r"Could not find 'nothing'.")
-        # _bad_recipe('', ['stone', 'fire'], ['stone', 'fire'], '')  # FIXME: no name becomes '' #N(#N)
+        _bad_recipe('', ['stone', 'fire'], ['stone', 'fire'], r"^Invalid puzzle name ''.")
 
         self._assert_no_recipes()
 
