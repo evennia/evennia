@@ -128,6 +128,7 @@ import hashlib
 import time
 
 from django.conf import settings
+
 import evennia
 from evennia.objects.models import ObjectDB
 from evennia.utils.utils import make_iter, is_iter
@@ -138,6 +139,8 @@ from evennia.prototypes.prototypes import (
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
+_PROTOTYPE_ROOT_NAMES = ('typeclass', 'key', 'aliases', 'attrs', 'tags', 'locks', 'permissions',
+                         'location', 'home', 'destination')
 _NON_CREATE_KWARGS = _CREATE_OBJECT_KWARGS + _PROTOTYPE_META_NAMES
 
 
@@ -240,10 +243,10 @@ def prototype_from_object(obj):
     locks = obj.locks.all()
     if locks:
         prot['locks'] = ";".join(locks)
-    perms = obj.permissions.get()
+    perms = obj.permissions.get(return_list=True)
     if perms:
         prot['permissions'] = make_iter(perms)
-    aliases = obj.aliases.get()
+    aliases = obj.aliases.get(return_list=True)
     if aliases:
         prot['aliases'] = aliases
     tags = [(tag.db_key, tag.db_category, tag.db_data)
@@ -258,7 +261,160 @@ def prototype_from_object(obj):
     return prot
 
 
-def prototype_diff_from_object(prototype, obj):
+def get_detailed_prototype_diff(prototype1, prototype2):
+    """
+    A 'detailed' diff specifies differences down to individual sub-sectiions
+    of the prototype, like individual attributes, permissions etc. It is used
+    by the menu to allow a user to customize what should be kept.
+
+    Args:
+        prototype1 (dict): Original prototype.
+        prototype2 (dict): Comparison prototype.
+
+    Returns:
+        diff (dict): A structure detailing how to convert prototype1 to prototype2.
+
+    Notes:
+        A detailed diff has instructions REMOVE, ADD, UPDATE and KEEP.
+
+    """
+    def _recursive_diff(old, new):
+
+        old_type = type(old)
+        new_type = type(new)
+
+        if old_type != new_type:
+            if old and not new:
+                return (old, new, "REMOVE")
+            elif not old and new:
+                return (old, new, "ADD")
+            else:
+                return (old, new, "UPDATE")
+        elif new_type == dict:
+            all_keys = set(old.keys() + new.keys())
+            return {key: _recursive_diff(old.get(key), new.get(key)) for key in all_keys}
+        elif is_iter(new):
+            old_map = {part[0] if is_iter(part) else part: part for part in old}
+            new_map = {part[0] if is_iter(part) else part: part for part in new}
+            all_keys = set(old_map.keys() + new_map.keys())
+            return new_type(_recursive_diff(old_map.get(key), new_map.get(key))
+                            for key in all_keys)
+        elif old != new:
+            return (old, new, "UPDATE")
+        else:
+            return (old, new, "KEEP")
+
+    diff = _recursive_diff(prototype1, prototype2)
+
+    return diff
+
+
+def flatten_diff(detailed_diff):
+    """
+    For spawning, a 'detailed' diff is not necessary, rather we just
+    want instructions on how to handle each root key.
+
+    Args:
+        detailed_diff (dict): Diff produced by `get_detailed_prototype_diff` and
+            possibly modified by the user.
+
+    Returns:
+        flattened_diff (dict): A flat structure detailing how to operate on each
+            root component of the prototype.
+
+    Notes:
+        The flattened diff has the following possible instructions:
+            UPDATE, REPLACE, REMOVE
+        Many of the detailed diff's values can hold nested structures with their own
+        individual instructions. A detailed diff can have the following instructions:
+            REMOVE, ADD, UPDATE, KEEP
+        Here's how they are translated:
+            - All REMOVE -> REMOVE
+            - All ADD|UPDATE -> UPDATE
+            - All KEEP -> (remove from flattened diff)
+            - Mix KEEP, UPDATE, ADD -> UPDATE
+            - Mix REMOVE, KEEP, UPDATE, ADD -> REPLACE
+    """
+
+        typ = type(diffpart)
+        if typ == tuple and _is_diff_instruction(diffpart):
+            key = args[0]
+            _, val, inst = diffpart
+        elif typ == dict:
+            for key, subdiffpart in diffpart:
+                _apply_diff(subdiffpart, obj, *(args + (key, )))
+        else:
+            # all other types in the diff are iterables (tups or lists) and
+            # are identified by their first element.
+            for tup in diffpart:
+                _apply_diff(tup, obj, *(args + (tup[0], )))
+
+
+
+
+def _is_diff_instruction(obj):
+    return (isinstance(obj, tuple) and
+            len(obj) == 3 and
+            obj[2] in ('KEEP', 'REMOVE', 'ADD', 'UPDATE'))
+
+
+def apply_diff_to_prototype(prototype, diff):
+    """
+    When spawning we don't need the full details of the diff; we have (in the menu) had our
+    chance to customize we just want to know if the
+    current root key should be
+
+    """
+
+
+def menu_format_diff(diff):
+    """
+    Reformat the diff in a way suitable for the olc menu.
+
+    Args:
+        diff (dict): A diff as produced by `prototype_diff`. The root level of this diff
+            (which is always a dict) is used to group sub-changes.
+
+    Returns:
+
+
+    """
+
+    def _apply_diff(diffpart, obj, *args):
+        """
+        Recursively apply the diff for a given rootname.
+
+        Args:
+            diffpart (tuple or dict): Part of diff to apply.
+            obj (Object): Object to apply diff to.
+            args (str): Listing of identifiers for the part to apply,
+                starting from the root.
+
+        """
+        typ = type(diffpart)
+        if typ == tuple and _is_diff_instruction(diffpart):
+            key = args[0]
+            _, val, inst = diffpart
+        elif typ == dict:
+            for key, subdiffpart in diffpart:
+                _apply_diff(subdiffpart, obj, *(args + (key, )))
+        else:
+            # all other types in the diff are iterables (tups or lists) and
+            # are identified by their first element.
+            for tup in diffpart:
+                _apply_diff(tup, obj, *(args + (tup[0], )))
+
+
+    def _iter_diff(obj):
+        if _is_diff_instruction(obj):
+            old, new, inst = obj
+
+    out_dict = {}
+    for root_key, root_val in diff.items():
+        pass
+
+
+def prototype_diff_from_object(prototype, obj, exceptions=None):
     """
     Get a simple diff for a prototype compared to an object which may or may not already have a
     prototype (or has one but changed locally). For more complex migratations a manual diff may be
@@ -266,32 +422,25 @@ def prototype_diff_from_object(prototype, obj):
 
     Args:
         prototype (dict): Prototype.
-        obj (Object): Object to
+        obj (Object): Object to compare prototype against.
+        exceptions (dict, optional): A mapping {"key": "KEEP|REPLACE|UPDATE|REMOVE" for
+            enforcing a specific outcome for that key regardless of the diff.
 
     Returns:
         diff (dict): Mapping for every prototype key: {"keyname": "REMOVE|UPDATE|KEEP", ...}
         other_prototype (dict): The prototype for the given object. The diff is a how to convert
             this prototype into the new prototype.
 
+    diff = {"key": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"),
+            "attrs": {"attrkey": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"),
+                      "attrkey": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"), ...},
+            "aliases": {"aliasname": (old, new, "KEEP...", ...},
+            ... }
+
+
     """
-    prot1 = prototype
     prot2 = prototype_from_object(obj)
-
-    diff = {}
-    for key, value in prot1.items():
-        diff[key] = "KEEP"
-        if key in prot2:
-            if callable(prot2[key]) or value != prot2[key]:
-                if key in ('attrs', 'tags', 'permissions', 'locks', 'aliases'):
-                    diff[key] = 'REPLACE'
-                else:
-                    diff[key] = "UPDATE"
-        elif key not in prot2:
-            diff[key] = "UPDATE"
-    for key in prot2:
-        if key not in diff and key not in prot1:
-            diff[key] = "REMOVE"
-
+    diff = prototype_diff(prototype, prot2)
     return diff, prot2
 
 
@@ -589,17 +738,12 @@ def spawn(*prototypes, **kwargs):
         simple_attributes = []
         for key, value in ((key, value) for key, value in prot.items()
                            if not (key.startswith("ndb_"))):
+            # we don't support categories, nor locks for simple attributes
             if key in _PROTOTYPE_META_NAMES:
                 continue
-
-            if is_iter(value) and len(value) > 1:
-                # (value, category)
-                simple_attributes.append((key,
-                                          init_spawn_value(value[0], value_to_obj_or_any),
-                                          init_spawn_value(value[1], str)))
             else:
-                simple_attributes.append((key,
-                                          init_spawn_value(value, value_to_obj_or_any)))
+                simple_attributes.append(
+                    (key, init_spawn_value(value, value_to_obj_or_any), None, None))
 
         attributes = attributes + simple_attributes
         attributes = [tup for tup in attributes if not tup[0] in _NON_CREATE_KWARGS]
