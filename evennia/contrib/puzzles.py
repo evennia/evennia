@@ -167,6 +167,9 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             return
 
         puzzle_name = self.lhslist[0]
+        if len(puzzle_name) == 0:
+            caller.msg('Invalid puzzle name %r.' % puzzle_name)
+            return
 
         def is_valid_obj_location(obj):
             valid = True
