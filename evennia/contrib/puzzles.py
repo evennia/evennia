@@ -75,6 +75,7 @@ from evennia import DefaultObject
 from evennia import DefaultScript
 from evennia import DefaultCharacter
 from evennia import DefaultRoom
+from evennia import DefaultExit
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils.utils import inherits_from
 from evennia.utils import search, utils, logger
@@ -193,12 +194,28 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         def is_valid_result_location(part):
             return is_valid_obj_location(part)
 
+        def is_valid_inheritance(obj):
+            valid = not inherits_from(obj, DefaultCharacter) \
+                    and not inherits_from(obj, DefaultRoom) \
+                    and not inherits_from(obj, DefaultExit)
+            if not valid:
+                caller.msg('Invalid typeclass for %s' % (obj))
+            return valid
+
+        def is_valid_part(part):
+            return is_valid_inheritance(part) \
+                    and is_valid_part_location(part)
+
+        def is_valid_result(result):
+            return is_valid_inheritance(result) \
+                    and is_valid_result_location(result)
+
         parts = []
         for objname in self.lhslist[1:]:
             obj = caller.search(objname)
             if not obj:
                 return
-            if not is_valid_part_location(obj):
+            if not is_valid_part(obj):
                 return
             parts.append(obj)
 
@@ -207,7 +224,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             obj = caller.search(objname)
             if not obj:
                 return
-            if not is_valid_result_location(obj):
+            if not is_valid_result(obj):
                 return
             results.append(obj)
 

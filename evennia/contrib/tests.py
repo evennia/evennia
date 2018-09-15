@@ -1215,7 +1215,7 @@ class TestPuzzles(CommandTest):
     def _assert_no_recipes(self):
         self.assertEqual(
             0,
-            len(search.search_tag('', category=puzzles._PUZZLES_TAG_CATEGORY))
+            len(search.search_script_tag('', category=puzzles._PUZZLES_TAG_CATEGORY))
         )
 
     # good recipes
@@ -1294,6 +1294,11 @@ class TestPuzzles(CommandTest):
         _bad_recipe('name', ['nothing'], ['neither'], r"Could not find 'nothing'.")
         _bad_recipe('name', ['stone'], ['nothing'], r"Could not find 'nothing'.")
         _bad_recipe('', ['stone', 'fire'], ['stone', 'fire'], r"^Invalid puzzle name ''.")
+        self.stone.location = self.char1
+        _bad_recipe('name', ['stone'], ['fire'], r"^Invalid location for stone$")
+        _bad_recipe('name', ['flint'], ['stone'], r"^Invalid location for stone$")
+        _bad_recipe('name', ['self'], ['fire'], r"^Invalid typeclass for Char$")
+        _bad_recipe('name', ['here'], ['fire'], r"^Invalid typeclass for Room$")
 
         self._assert_no_recipes()
 
@@ -1352,3 +1357,77 @@ class TestPuzzles(CommandTest):
         # and the parts were destroyed
         _use('stone, flint', 'There is no stone around')
         _use('flint, stone', 'There is no flint around')
+
+    def test_lspuzzlerecipes_lsarmedpuzzles(self):
+        msg = self.call(
+            puzzles.CmdListPuzzleRecipes(),
+            '',
+            caller=self.char1
+        )
+        self._assert_msg_matched(
+                msg,
+                [
+                    r"^-+$",
+                    r"^-+$",
+                ],
+                re.MULTILINE | re.DOTALL
+        )
+
+        recipe_dbref = self._good_recipe(
+                'makefire', ['stone', 'flint'], ['fire'],
+                and_destroy_it=False)
+
+        msg = self.call(
+            puzzles.CmdListPuzzleRecipes(),
+            '',
+            caller=self.char1
+        )
+        self._assert_msg_matched(
+                msg,
+                [
+                    r"^-+$",
+                    r"^Puzzle 'makefire'.*$",
+                    r"^Parts$",
+                    r"^.*key: stone$",
+                    r"^.*key: flint$",
+                    r"^Results$",
+                    r"^.*key: fire$",
+                    r"^.*key: stone$",
+                    r"^.*key: flint$",
+                    r"^-+$",
+                ],
+                re.MULTILINE | re.DOTALL
+        )
+
+        msg = self.call(
+            puzzles.CmdListArmedPuzzles(),
+            '',
+            caller=self.char1
+        )
+        self._assert_msg_matched(
+                msg,
+                [
+                    r"^-+$",
+                    r"^-+$"
+                ],
+                re.MULTILINE | re.DOTALL
+        )
+
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+
+        msg = self.call(
+            puzzles.CmdListArmedPuzzles(),
+            '',
+            caller=self.char1
+        )
+        self._assert_msg_matched(
+                msg,
+                [
+                    r"^-+$",
+                    r"^Puzzle name: makefire$",
+                    r"^.*stone.* at \s+ Room.*$",
+                    r"^.*flint.* at \s+ Room.*$",
+                    r"^-+$",
+                ],
+                re.MULTILINE | re.DOTALL
+        )
