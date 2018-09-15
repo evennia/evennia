@@ -118,11 +118,6 @@ class MuxCommand(Command):
             lhs, rhs = [arg.strip() for arg in args.split('=', 1)]
             lhslist = [arg.strip() for arg in lhs.split(',')]
             rhslist = [arg.strip() for arg in rhs.split(',')]
-        # eliminate all empty-strings
-        # if len(lhslist) > 0:
-        #     lhslist = list(filter(lambda i: len(i) > 0, lhslist))
-        # if len(rhslist) > 0:
-        #     rhslist = list(filter(lambda i: len(i) > 0, rhslist))
 
         # save to object properties:
         self.raw = raw

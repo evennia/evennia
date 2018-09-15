@@ -99,7 +99,6 @@ def proto_def(obj, with_tags=True):
         'typeclass': 'evennia.contrib.puzzles.PuzzlePartObject',  # FIXME: what if obj is another typeclass
         'desc': obj.db.desc,
         'location': obj.location,
-        # FIXME: Can tags be INVISIBLE? We don't want player to know an object belongs to a puzzle
         'tags': [(_PUZZLES_TAG_MEMBER, _PUZZLES_TAG_CATEGORY)],
     }
     if not with_tags:
@@ -234,10 +233,6 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             '    @armpuzzle <puzzle #dbref>\n\n'
             'Or programmatically.\n'
         )
-
-        # FIXME: puzzle recipe object exists but it has no location
-        # should we create a PuzzleLibrary where all puzzles are
-        # kept and cannot be reached by players?
 
 
 class CmdArmPuzzle(MuxCommand):
