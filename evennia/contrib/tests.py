@@ -1272,7 +1272,6 @@ class TestPuzzles(CommandTest):
         _bad_syntax(',nothing')
         _bad_syntax('name, nothing')
         _bad_syntax('name, nothing =')
-        # _bad_syntax(', = ,')  # FIXME: MuxCommand issue?
 
         self._assert_no_recipes()
 
