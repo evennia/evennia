@@ -664,9 +664,9 @@ def validate_lockstring(lockstring):
             if no error was found.
 
     """
-    global _LOCKHANDLER
-    if not _LOCKHANDLER:
-        _LOCKHANDLER = LockHandler(_ObjDummy())
+    global _LOCK_HANDLER
+    if not _LOCK_HANDLER:
+        _LOCK_HANDLER = LockHandler(_ObjDummy())
     return _LOCK_HANDLER.validate(lockstring)
 
 
