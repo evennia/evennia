@@ -365,7 +365,6 @@ def set_trace(debugger="auto", term_size=(140, 40)):
         import pdb
         dbg = pdb.Pdb(stdout=sys.__stdout__)
 
-    #
-    # stopped at breakpoint. Use 'n' (next) to continue into the code.
-    #
-    dbg.set_trace()
+    # Start debugger, forcing it up one stack frame (otherwise `set_trace` will start # debugger at
+    # this point, not the actual code location)
+    dbg.set_trace(sys._getframe().f_back)
