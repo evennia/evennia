@@ -1174,8 +1174,10 @@ class TestRandomStringGenerator(EvenniaTest):
 
 # Test of the Puzzles module
 
+import itertools
 from evennia.contrib import puzzles
 from evennia.utils import search
+from evennia.utils.utils import inherits_from
 
 class TestPuzzles(CommandTest):
 
@@ -1193,23 +1195,23 @@ class TestPuzzles(CommandTest):
             matches.append(m)
         return matches
 
-    def _assert_recipe(self, name, parts, results, and_destroy_it=True):
+    def _assert_recipe(self, name, parts, results, and_destroy_it=True, expected_count=1):
 
         def _keys(items):
             return [item['key'] for item in items]
 
         recipes = search.search_script_tag('', category=puzzles._PUZZLES_TAG_CATEGORY)
-        self.assertEqual(1, len(recipes))
-        self.assertEqual(name, recipes[0].db.puzzle_name)
-        self.assertEqual(parts, _keys(recipes[0].db.parts))
-        self.assertEqual(results, _keys(recipes[0].db.results))
+        self.assertEqual(expected_count, len(recipes))
+        self.assertEqual(name, recipes[expected_count-1].db.puzzle_name)
+        self.assertEqual(parts, _keys(recipes[expected_count-1].db.parts))
+        self.assertEqual(results, _keys(recipes[expected_count-1].db.results))
         self.assertEqual(
             puzzles._PUZZLES_TAG_RECIPE,
-            recipes[0].tags.get(category=puzzles._PUZZLES_TAG_CATEGORY)
+            recipes[expected_count-1].tags.get(category=puzzles._PUZZLES_TAG_CATEGORY)
         )
-        recipe_dbref = recipes[0].dbref
+        recipe_dbref = recipes[expected_count-1].dbref
         if and_destroy_it:
-            recipes[0].delete()
+            recipes[expected_count-1].delete()
         return recipe_dbref if not and_destroy_it else None
 
     def _assert_no_recipes(self):
@@ -1219,7 +1221,7 @@ class TestPuzzles(CommandTest):
         )
 
     # good recipes
-    def _good_recipe(self, name, parts, results, and_destroy_it=True):
+    def _good_recipe(self, name, parts, results, and_destroy_it=True, expected_count=1):
         regexs = []
         for p in parts:
             regexs.append(r'^Part %s\(#\d+\)$' % (p))
@@ -1233,9 +1235,18 @@ class TestPuzzles(CommandTest):
             cmdstr,
             caller=self.char1
         )
-        recipe_dbref = self._assert_recipe(name, parts, results, and_destroy_it)
+        recipe_dbref = self._assert_recipe(name, parts, results, and_destroy_it, expected_count)
         matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
         return recipe_dbref
+
+    def _check_room_contents(self, expected):
+        by_obj_key = lambda o: o.key
+        room1_contents = sorted(self.room1.contents, key=by_obj_key)
+        for key, grp in itertools.groupby(room1_contents, by_obj_key):
+            if key in expected:
+                grp = list(grp)
+                self.assertEqual(expected[key], len(grp),
+                        "Expected %d but got %d for %s" % (expected[key], len(grp), key))
 
     def _arm(self, recipe_dbref, name, parts):
         regexs = [
@@ -1318,12 +1329,19 @@ class TestPuzzles(CommandTest):
         )
 
         recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire', 'stone', 'flint'], and_destroy_it=False)
-        # goo arm
+
+        # delete proto parts and proto result
+        self.stone.delete()
+        self.flint.delete()
+        self.fire.delete()
+
+        # good arm
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._check_room_contents({'stone': 1, 'flint': 1})
 
     def test_cmd_use(self):
-        def _use(cmdstr, msg):
-            msg = self.call(puzzles.CmdUsePuzzleParts(), cmdstr, msg, caller=self.char1)
+        def _use(cmdstr, expmsg):
+            msg = self.call(puzzles.CmdUsePuzzleParts(), cmdstr, expmsg, caller=self.char1)
             return msg
 
         _use('', 'Use what?')
@@ -1333,6 +1351,8 @@ class TestPuzzles(CommandTest):
         _use('stone, flint', 'You have no idea how these can be used')
 
         recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
+        recipe2_dbref = self._good_recipe('makefire2', ['stone', 'flint'], ['fire'] , and_destroy_it=False,
+                expected_count=2)
 
         # although there is stone and flint
         # those aren't valid puzzle parts because
@@ -1340,23 +1360,56 @@ class TestPuzzles(CommandTest):
         _use('stone', 'You have no idea how this can be used')
         _use('stone, flint', 'You have no idea how these can be used')
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._check_room_contents({'stone': 2, 'flint': 2})
 
         # there are duplicated objects now
-        msg = _use('stone', None)
-        self.assertIsNotNone(re.match(r'^Which stone. There are many.*', msg))
-        msg = _use('flint', None)
-        self.assertIsNotNone(re.match(r'^Which flint. There are many.*', msg))
-        # delete them
+        _use('stone', 'Which stone. There are many')
+        _use('flint', 'Which flint. There are many')
+
+        # delete proto parts
         self.stone.delete()
         self.flint.delete()
+        # delete proto result
+        self.fire.delete()
 
-        msg = _use('stone, flint', None)
-        self.assertIsNotNone(re.match(r"^You are a Genius.*", msg))
+        # solve puzzle
+        _use('stone, flint', 'You are a Genius')
+        self.assertEqual(1,
+            len(list(filter(
+                lambda o: o.key == 'fire' \
+                    and inherits_from(o,'evennia.contrib.puzzles.PuzzlePartObject'),
+                self.room1.contents))))
+        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 1})
 
         # trying again will fail as it was resolved already
         # and the parts were destroyed
         _use('stone, flint', 'There is no stone around')
         _use('flint, stone', 'There is no flint around')
+
+        # arm same puzzle twice so there are duplicated parts
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 1})
+
+        # try solving with multiple parts but incomplete set
+        _use('1-stone, 2-stone', 'As you try to utilize these, nothing happens.')
+
+        # arm the other puzzle. Their parts are identical
+        self._arm(recipe2_dbref, 'makefire2', ['stone', 'flint'])
+        self._check_room_contents({'stone': 3, 'flint': 3, 'fire': 1})
+
+        # solve with multiple parts for
+        # multiple puzzles. Both can be solved but
+        # only one is.
+        _use(
+            '1-stone, 2-flint, 3-stone, 3-flint',
+            'Your gears start turning and a bunch of ideas come to your mind ... ')
+        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 2})
+
+        # solve all
+        _use('1-stone, 1-flint', 'You are a Genius')
+        _use('stone, flint', 'You are a Genius')
+        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 4})
 
     def test_lspuzzlerecipes_lsarmedpuzzles(self):
         msg = self.call(
