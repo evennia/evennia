@@ -1945,9 +1945,79 @@ def _apply_diff(caller, **kwargs):
 
 
 def _keep_diff(caller, **kwargs):
-    key = kwargs['key']
+    path = kwargs['path']
     diff = kwargs['diff']
-    diff[key] = "KEEP"
+    tmp = diff
+    for key in path[:-1]:
+        tmp = diff[key]
+    tmp[path[-1]] = "KEEP"
+
+
+def _format_diff_text_and_options(diff, exclude=None):
+    """
+    Reformat the diff in a way suitable for the olc menu.
+
+    Args:
+        diff (dict): A diff as produced by `prototype_diff`.
+        exclude (list, optional): List of root keys to skip, regardless
+            of diff instruction.
+
+    Returns:
+        options (list): List of options dict.
+
+    """
+    valid_instructions = ('KEEP', 'REMOVE', 'ADD', 'UPDATE')
+
+    def _visualize(obj, rootname, get_name=False):
+        if utils.is_iter(obj):
+            if get_name:
+                return obj[0]
+            if rootname == "attrs":
+                return "{} |W=|n {} |W(category:|n {}|W, locks:|n {}|W)|n".format(*obj)
+            elif rootname == "tags":
+                return "{} |W(category:|n {}|W)|n".format(obj[0], obj[1])
+        return obj
+
+    def _parse_diffpart(diffpart, optnum, indent, *args):
+        typ = type(diffpart)
+        texts = []
+        options = []
+        if typ == tuple and len(diffpart) == 3 and diffpart[2] in valid_instructions:
+            old, new, instruction = diffpart
+            if instruction == 'KEEP':
+                texts.append("{old} |gKEEP|n".format(old=old))
+            else:
+                texts.append("{indent}|c({num}) {inst}|W:|n {old} |W->|n {new}".format(
+                    indent=" " * indent,
+                    inst="|rREMOVE|n" if instruction == 'REMOVE' else "|y{}|n".format(instruction),
+                    num=optnum,
+                    old=_visualize(old, args[-1]),
+                    new=_visualize(new, args[-1])))
+                options.append({"key": str(optnum),
+                                "desc": "|gKEEP|n {}".format(
+                                    _visualize(old, args[-1], get_name=True)),
+                                "goto": (_keep_diff, {"path": args, "diff": diff})})
+                optnum += 1
+        else:
+            for key, subdiffpart in diffpart.items():
+                text, option, optnum = _parse_diffpart(
+                        subdiffpart, optnum, indent + 1, *(args + (key, )))
+                texts.extend(text)
+                options.extend(option)
+        return text, options, optnum
+
+    texts = []
+    options = []
+    # we use this to allow for skipping full KEEP instructions
+    flattened_diff = spawner.flatten_diff(diff)
+    optnum = 1
+
+    for root_key, diffpart in flattened_diff.items():
+        text, option, optnum = _parse_diffpart(diffpart, optnum, 1, root_key)
+        texts.extend(text)
+        options.extend(option)
+
+    return texts, options
 
 
 def node_apply_diff(caller, **kwargs):
@@ -1984,10 +2054,6 @@ def node_apply_diff(caller, **kwargs):
         diff, obj_prototype = spawner.prototype_diff_from_object(
                 prototype, base_obj, exceptions={"location": "KEEP"})
 
-    text = ["Suggested changes to {} objects. ".format(len(update_objects)),
-            "Showing random example obj to change: {name} ({dbref}))\n".format(
-                name=base_obj.key, dbref=base_obj.dbref)]
-
     helptext = """
         This will go through all existing objects and apply the changes you accept.
 
@@ -2003,53 +2069,21 @@ def node_apply_diff(caller, **kwargs):
         Note that the `location` will never be auto-adjusted because it's so rare to want to
         homogenize the location of all object instances."""
 
-    options = []
+    txt, options = _format_diff_text_and_options(diff, exclude=['location'] if custom_location else None)
 
-    ichanges = 0
-
-    # convert diff to a menu text + options to edit
-
-    for (key, inst) in sorted(((key, val) for key, val in diff.items()), key=lambda tup: tup[0]):
-
-        if key in protlib._PROTOTYPE_META_NAMES:
-            continue
-
-        line = "{iopt}  |w{key}|n: {old}{sep}{new} {change}"
-        old_val = str(obj_prototype.get(key, "<unset>"))
-
-        if inst == "KEEP":
-            inst = "|b{}|n".format(inst)
-            text.append(line.format(iopt='', key=key, old=old_val,
-                                    sep=" ", new='', change=inst))
-            continue
-
-        if key in prototype:
-            new_val = str(spawner.init_spawn_value(prototype[key]))
-        else:
-            new_val = "<unset>"
-        ichanges += 1
-        if inst in ("UPDATE", "REPLACE"):
-            inst = "|y{}|n".format(inst)
-            text.append(line.format(iopt=ichanges, key=key, old=old_val,
-                        sep=" |y->|n ", new=new_val, change=inst))
-            options.append(_keep_option(key, prototype,
-                           base_obj, obj_prototype, diff, update_objects, back_node))
-        elif inst == "REMOVE":
-            inst = "|r{}|n".format(inst)
-            text.append(line.format(iopt=ichanges, key=key, old=old_val,
-                        sep=" |r->|n ", new='', change=inst))
-            options.append(_keep_option(key, prototype,
-                           base_obj, obj_prototype, diff, update_objects, back_node))
-    options.extend(
-        [{"key": ("|wu|Wpdate {} objects".format(len(update_objects)), "update", "u"),
-          "desc": "Update {} objects".format(len(update_objects)),
-          "goto": (_apply_diff, {"prototype": prototype, "objects": update_objects,
-              "back_node": back_node, "diff": diff, "base_obj": base_obj})},
-         {"key": ("|wr|Weset changes", "reset", "r"),
-          "goto": ("node_apply_diff", {"prototype": prototype, "back_node": back_node,
-                                       "objects": update_objects})}])
-
-    if ichanges < 1:
+    if options:
+        text = ["Suggested changes to {} objects. ".format(len(update_objects)),
+                "Showing random example obj to change: {name} ({dbref}))\n".format(
+                    name=base_obj.key, dbref=base_obj.dbref)] + txt
+        options.extend(
+            [{"key": ("|wu|Wpdate {} objects".format(len(update_objects)), "update", "u"),
+              "desc": "Update {} objects".format(len(update_objects)),
+              "goto": (_apply_diff, {"prototype": prototype, "objects": update_objects,
+                       "back_node": back_node, "diff": diff, "base_obj": base_obj})},
+             {"key": ("|wr|Weset changes", "reset", "r"),
+              "goto": ("node_apply_diff", {"prototype": prototype, "back_node": back_node,
+                                           "objects": update_objects})}])
+    else:
         text = ["Analyzed a random sample object (out of {}) - "
                 "found no changes to apply.".format(len(update_objects))]
 
@@ -2058,7 +2092,6 @@ def node_apply_diff(caller, **kwargs):
                     "goto": back_node})
 
     text = "\n".join(text)
-
     text = (text, helptext)
 
     return text, options

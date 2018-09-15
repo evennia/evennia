@@ -261,7 +261,7 @@ def prototype_from_object(obj):
     return prot
 
 
-def get_detailed_prototype_diff(prototype1, prototype2):
+def prototype_diff(prototype1, prototype2):
     """
     A 'detailed' diff specifies differences down to individual sub-sectiions
     of the prototype, like individual attributes, permissions etc. It is used
@@ -272,10 +272,12 @@ def get_detailed_prototype_diff(prototype1, prototype2):
         prototype2 (dict): Comparison prototype.
 
     Returns:
-        diff (dict): A structure detailing how to convert prototype1 to prototype2.
-
-    Notes:
-        A detailed diff has instructions REMOVE, ADD, UPDATE and KEEP.
+        diff (dict): A structure detailing how to convert prototype1 to prototype2. All
+            nested structures are dicts with keys matching either the prototype's matching
+            key or the first element in the tuple describing the prototype value (so for
+            a tag tuple `(tagname, category)` the second-level key in the diff would be tagname).
+            The the bottom level of the diff consist of tuples `(old, new, instruction)`, where
+            instruction can be one of "REMOVE", "ADD", "UPDATE" or "KEEP".
 
     """
     def _recursive_diff(old, new):
@@ -297,8 +299,7 @@ def get_detailed_prototype_diff(prototype1, prototype2):
             old_map = {part[0] if is_iter(part) else part: part for part in old}
             new_map = {part[0] if is_iter(part) else part: part for part in new}
             all_keys = set(old_map.keys() + new_map.keys())
-            return new_type(_recursive_diff(old_map.get(key), new_map.get(key))
-                            for key in all_keys)
+            return {key: _recursive_diff(old_map.get(key), new_map.get(key)) for key in all_keys}
         elif old != new:
             return (old, new, "UPDATE")
         else:
@@ -309,14 +310,15 @@ def get_detailed_prototype_diff(prototype1, prototype2):
     return diff
 
 
-def flatten_diff(detailed_diff):
+def flatten_diff(diff):
     """
-    For spawning, a 'detailed' diff is not necessary, rather we just
-    want instructions on how to handle each root key.
+    For spawning, a 'detailed' diff is not necessary, rather we just want instructions on how to
+    handle each root key.
 
     Args:
-        detailed_diff (dict): Diff produced by `get_detailed_prototype_diff` and
-            possibly modified by the user.
+        diff (dict): Diff produced by `prototype_diff` and
+            possibly modified by the user. Note that also a pre-flattened diff will come out
+            unchanged by this function.
 
     Returns:
         flattened_diff (dict): A flat structure detailing how to operate on each
@@ -331,117 +333,77 @@ def flatten_diff(detailed_diff):
         Here's how they are translated:
             - All REMOVE -> REMOVE
             - All ADD|UPDATE -> UPDATE
-            - All KEEP -> (remove from flattened diff)
+            - All KEEP -> KEEP
             - Mix KEEP, UPDATE, ADD -> UPDATE
             - Mix REMOVE, KEEP, UPDATE, ADD -> REPLACE
     """
 
+    valid_instructions = ('KEEP', 'REMOVE', 'ADD', 'UPDATE')
+
+    def _get_all_nested_diff_instructions(diffpart):
+        "Started for each root key, returns all instructions nested under it"
+        out = []
         typ = type(diffpart)
-        if typ == tuple and _is_diff_instruction(diffpart):
-            key = args[0]
-            _, val, inst = diffpart
-        elif typ == dict:
-            for key, subdiffpart in diffpart:
-                _apply_diff(subdiffpart, obj, *(args + (key, )))
+        if typ == tuple and len(diffpart) == 3 and diffpart[2] in valid_instructions:
+            out = [diffpart[2]]
+        elif type == dict:
+            # all other are dicts
+            for val in diffpart.values():
+                out.extend(_get_all_nested_diff_instructions(val))
         else:
-            # all other types in the diff are iterables (tups or lists) and
-            # are identified by their first element.
-            for tup in diffpart:
-                _apply_diff(tup, obj, *(args + (tup[0], )))
+            raise RuntimeError("Diff contains non-dicts that are not on the "
+                               "form (old, new, inst): {}".format(diff))
+        return out
 
+    flat_diff = {}
 
-
-
-def _is_diff_instruction(obj):
-    return (isinstance(obj, tuple) and
-            len(obj) == 3 and
-            obj[2] in ('KEEP', 'REMOVE', 'ADD', 'UPDATE'))
-
-
-def apply_diff_to_prototype(prototype, diff):
-    """
-    When spawning we don't need the full details of the diff; we have (in the menu) had our
-    chance to customize we just want to know if the
-    current root key should be
-
-    """
-
-
-def menu_format_diff(diff):
-    """
-    Reformat the diff in a way suitable for the olc menu.
-
-    Args:
-        diff (dict): A diff as produced by `prototype_diff`. The root level of this diff
-            (which is always a dict) is used to group sub-changes.
-
-    Returns:
-
-
-    """
-
-    def _apply_diff(diffpart, obj, *args):
-        """
-        Recursively apply the diff for a given rootname.
-
-        Args:
-            diffpart (tuple or dict): Part of diff to apply.
-            obj (Object): Object to apply diff to.
-            args (str): Listing of identifiers for the part to apply,
-                starting from the root.
-
-        """
-        typ = type(diffpart)
-        if typ == tuple and _is_diff_instruction(diffpart):
-            key = args[0]
-            _, val, inst = diffpart
-        elif typ == dict:
-            for key, subdiffpart in diffpart:
-                _apply_diff(subdiffpart, obj, *(args + (key, )))
+    # flatten diff based on rules
+    for rootkey, diffpart in diff.items():
+        insts = _get_all_nested_diff_instructions(diffpart)
+        if all(inst == "KEEP" for inst in insts):
+            rootinst = "KEEP"
+        elif all(inst in ("ADD", "UPDATE") for inst in insts):
+            rootinst = "UPDATE"
+        elif all(inst == "REMOVE" for inst in insts):
+            rootinst = "REMOVE"
+        elif "REMOVE" in insts:
+            rootinst = "REPLACE"
         else:
-            # all other types in the diff are iterables (tups or lists) and
-            # are identified by their first element.
-            for tup in diffpart:
-                _apply_diff(tup, obj, *(args + (tup[0], )))
+            rootinst = "UPDATE"
+
+        flat_diff[rootkey] = rootinst
+
+    return flat_diff
 
 
-    def _iter_diff(obj):
-        if _is_diff_instruction(obj):
-            old, new, inst = obj
-
-    out_dict = {}
-    for root_key, root_val in diff.items():
-        pass
-
-
-def prototype_diff_from_object(prototype, obj, exceptions=None):
+def prototype_diff_from_object(prototype, obj):
     """
     Get a simple diff for a prototype compared to an object which may or may not already have a
     prototype (or has one but changed locally). For more complex migratations a manual diff may be
     needed.
 
     Args:
-        prototype (dict): Prototype.
+        prototype (dict): New prototype.
         obj (Object): Object to compare prototype against.
-        exceptions (dict, optional): A mapping {"key": "KEEP|REPLACE|UPDATE|REMOVE" for
-            enforcing a specific outcome for that key regardless of the diff.
 
     Returns:
         diff (dict): Mapping for every prototype key: {"keyname": "REMOVE|UPDATE|KEEP", ...}
-        other_prototype (dict): The prototype for the given object. The diff is a how to convert
-            this prototype into the new prototype.
+        obj_prototype (dict): The prototype calculated for the given object. The diff is how to
+            convert this prototype into the new prototype.
 
-    diff = {"key": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"),
-            "attrs": {"attrkey": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"),
-                      "attrkey": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"), ...},
-            "aliases": {"aliasname": (old, new, "KEEP...", ...},
-            ... }
+    Notes:
+        The `diff` is on the following form:
 
+            {"key": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"),
+                "attrs": {"attrkey": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"),
+                          "attrkey": (old, new, "KEEP|REPLACE|UPDATE|REMOVE"), ...},
+                "aliases": {"aliasname": (old, new, "KEEP...", ...},
+                ... }
 
     """
-    prot2 = prototype_from_object(obj)
-    diff = prototype_diff(prototype, prot2)
-    return diff, prot2
+    obj_prototype = prototype_from_object(obj)
+    diff = prototype_diff(obj_prototype, prototype)
+    return diff, obj_prototype
 
 
 def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
@@ -474,6 +436,9 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
 
     if not diff:
         diff, _ = prototype_diff_from_object(new_prototype, objects[0])
+
+    # make sure the diff is flattened
+    diff = flatten_diff(diff)
 
     changed = 0
     for obj in objects:
