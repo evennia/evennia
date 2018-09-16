@@ -1440,17 +1440,23 @@ class TestPuzzles(CommandTest):
         self.fire.delete()
 
         def _puzzleedit(swt, dbref, args, expmsg):
+            if (swt is None) and (dbref is None) and (args is None):
+                cmdstr = ''
+            else:
+                cmdstr = '%s %s%s' % (swt, dbref, args)
             self.call(
                 puzzles.CmdEditPuzzle(),
-                '%s %s%s' % (swt, dbref, args),
+                cmdstr,
                 expmsg,
                 caller=self.char1
             )
 
         # bad syntax
+        _puzzleedit(None, None, None, "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', '1', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', '', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', recipe_dbref, 'dummy', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
+        _puzzleedit('', self.script.dbref, '', 'Script(#1) is not a puzzle')
 
         # no permissions
         _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', "You don't have permission")
