@@ -1487,7 +1487,7 @@ class TestPuzzles(CommandTest):
                 [
                     r"^-+$",
                     r"^Puzzle 'makefire'.*$",
-                    r"^Success message: .*$",
+                    r"^Success message:$",
                     r"^Parts$",
                     r"^.*key: stone$",
                     r"^.*key: flint$",
@@ -1609,3 +1609,105 @@ class TestPuzzles(CommandTest):
         # TODO: results has NPC
 
         # TODO: results has Room
+
+        # TODO: parts' location can be different from Character's location
+
+    def test_e2e_interchangeable_parts_and_results(self):
+        # Parts and Results can be used in multiple puzzles
+        egg = create_object(key='egg', location=self.char1.location)
+        flour = create_object(key='flour', location=self.char1.location)
+        boiling_water = create_object(key='boiling water', location=self.char1.location)
+        boiled_egg = create_object(key='boiled egg', location=self.char1.location)
+        dough = create_object(key='dough', location=self.char1.location)
+        pasta = create_object(key='pasta', location=self.char1.location)
+
+        # Three recipes:
+        # 1. breakfast: egg + boiling water = boiled egg & boiling water
+        # 2. dough: egg + flour = dough
+        # 3. entree: dough + boiling water = pasta & boiling water
+        # tag interchangeable parts according to their puzzles' name
+        egg.tags.add('breakfast', category=puzzles._PUZZLES_TAG_CATEGORY)
+        egg.tags.add('dough', category=puzzles._PUZZLES_TAG_CATEGORY)
+        dough.tags.add('entree', category=puzzles._PUZZLES_TAG_CATEGORY)
+        boiling_water.tags.add('breakfast', category=puzzles._PUZZLES_TAG_CATEGORY)
+        boiling_water.tags.add('entree', category=puzzles._PUZZLES_TAG_CATEGORY)
+
+        # create recipes
+        recipe1_dbref = self._good_recipe('breakfast', ['egg', 'boiling water'], ['boiled egg', 'boiling water'] , and_destroy_it=False)
+        recipe2_dbref = self._good_recipe('dough', ['egg', 'flour'], ['dough'] , and_destroy_it=False, expected_count=2)
+        recipe3_dbref = self._good_recipe('entree', ['dough', 'boiling water'], ['pasta', 'boiling water'] , and_destroy_it=False, expected_count=3)
+
+        # delete protoparts
+        for obj in [egg, flour, boiling_water,
+                boiled_egg, dough, pasta]:
+            obj.delete()
+
+        # arm each puzzle and group its parts
+        def _group_parts(parts, excluding=set()):
+            group = dict()
+            dbrefs = dict()
+            for o in self.room1.contents:
+                if o.key in parts and o.dbref not in excluding:
+                    if o.key not in group:
+                        group[o.key] = []
+                    group[o.key].append(o.dbref)
+                    dbrefs[o.dbref] = o
+            return group, dbrefs
+
+        self._arm(recipe1_dbref, 'breakfast', ['egg', 'boiling water'])
+        breakfast_parts, breakfast_dbrefs = _group_parts(['egg', 'boiling water'])
+        self._arm(recipe2_dbref, 'dough', ['egg', 'flour'])
+        dough_parts, dough_dbrefs = _group_parts(['egg', 'flour'], excluding=breakfast_dbrefs.keys())
+        self._arm(recipe3_dbref, 'entree', ['dough', 'boiling water'])
+        entree_parts, entree_dbrefs = _group_parts(['dough', 'boiling water'], excluding=set(breakfast_dbrefs.keys() + dough_dbrefs.keys()))
+
+        # create a box so we can put all objects in
+        # so that they can't be found during puzzle resolution
+        self.box = create_object(key='box', location=self.char1.location)
+        def _box_all():
+            # print "boxing all\n", "-"*20
+            for o in self.room1.contents:
+                if o not in [self.char1, self.char2, self.exit,
+                        self.obj1, self.obj2, self.box]:
+                    o.location = self.box
+                    # print o.key, o.dbref, "boxed"
+                else:
+                    # print "skipped", o.key, o.dbref
+                    pass
+
+        def _unbox(dbrefs):
+            # print "unboxing", dbrefs, "\n", "-"*20
+            for o in self.box.contents:
+                if o.dbref in dbrefs:
+                    o.location = self.room1
+                    # print "unboxed", o.key, o.dbref
+
+        # solve dough puzzle using breakfast's egg
+        # and dough's flour. A new dough will be created
+        _box_all()
+        _unbox(breakfast_parts.pop('egg') + dough_parts.pop('flour'))
+        self._use('egg, flour', 'You are a Genius')
+
+        # solve entree puzzle with newly created dough
+        # and breakfast's boiling water. A new
+        # boiling water and pasta will be created
+        _unbox(breakfast_parts.pop('boiling water'))
+        self._use('boiling water, dough', 'You are a Genius')
+
+        # solve breakfast puzzle with dough's egg
+        # and newly created boiling water. A new
+        # boiling water and boiled egg will be created
+        _unbox(dough_parts.pop('egg'))
+        self._use('boiling water, egg', 'You are a Genius')
+
+        # solve entree puzzle using entree's dough
+        # and newly created boiling water. A new
+        # boiling water and pasta will be created
+        _unbox(entree_parts.pop('dough'))
+        self._use('boiling water, dough', 'You are a Genius')
+
+        self._check_room_contents({
+            'boiling water': 1,
+            'pasta': 2,
+            'boiled egg': 1,
+        })
