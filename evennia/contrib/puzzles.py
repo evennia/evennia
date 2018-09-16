@@ -87,6 +87,9 @@ _PUZZLES_TAG_RECIPE = 'puzzle_recipe'
 # puzzle part and puzzle result
 _PUZZLES_TAG_MEMBER = 'puzzle_member'
 
+_PUZZLE_DEFAULT_FAIL_USE_MESSAGE = 'You try to utilize %s but nothing happens ... something amiss?'
+_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = 'You are a Genius!!!'
+
 # ----------- UTILITY FUNCTIONS ------------
 
 def proto_def(obj, with_tags=True):
@@ -105,6 +108,15 @@ def proto_def(obj, with_tags=True):
     if not with_tags:
         del(protodef['tags'])
     return protodef
+
+# Colorize the default success message
+_i = 0
+_colors = ['|r', '|g', '|y']
+_msg = []
+for l in _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE:
+    _msg += _colors[_i] + l
+    _i = (_i + 1) % len(_colors)
+_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = ''.join(_msg) + '|n'
 
 # ------------------------------------------
 
@@ -138,6 +150,7 @@ class PuzzleRecipe(DefaultScript):
         self.db.parts = tuple(parts)
         self.db.results = tuple(results)
         self.tags.add(_PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
+        self.db.use_success_message = _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE
 
 
 class CmdCreatePuzzleRecipe(MuxCommand):
@@ -246,10 +259,78 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         caller.msg(
             'You may now dispose all parts and results. '
             'Typically, results and parts are useless afterwards.\n'
+            'Remember to add a "success message" via:\n'
+            '    @puzzleedit #dbref/use_success_message = <Your custom success message>\n'
             'You are now able to arm this puzzle using Builder command:\n'
-            '    @armpuzzle <puzzle #dbref>\n\n'
-            'Or programmatically.\n'
+            '    @armpuzzle <puzzle #dbref>\n'
         )
+
+
+class CmdEditPuzzle(MuxCommand):
+    """
+    Edits puzzle properties
+
+    Usage:
+        @puzzleedit[/delete] <#dbref>
+        @puzzleedit <#dbref>/use_success_message = <Your custom message>
+
+    Switches:
+      delete - deletes the recipe. Existing parts and results aren't modified
+
+    """
+
+    key = '@puzzleedit'
+    # FIXME: permissions for scripts?
+    locks = 'cmd:perm(puzzleedit) or perm(Builder)'
+    help_category = 'Puzzles'
+
+    def func(self):
+        _USAGE = "Usage: @puzzleedit[/switches] <dbref>[/attribute = <value>]"
+        caller = self.caller
+
+        if not self.lhslist:
+            caller.msg(_USAGE)
+            return
+
+        if '/' in self.lhslist[0]:
+            recipe_dbref, attr = self.lhslist[0].split('/')
+        else:
+            recipe_dbref = self.lhslist[0]
+
+        if not utils.dbref(recipe_dbref):
+            caller.msg("A puzzle recipe's #dbref must be specified.\n" + _USAGE)
+            return
+
+        puzzle = search.search_script(recipe_dbref)
+        if not puzzle or not inherits_from(puzzle[0], PuzzleRecipe):
+            caller.msg('Invalid puzzle %r'  % (recipe_dbref))
+            return
+
+        puzzle = puzzle[0]
+        puzzle_name_id = '%s(%s)' % (puzzle.name, puzzle.dbref)
+
+        if 'delete' in self.switches:
+            if not (puzzle.access(caller, 'control') or puzzle.access(caller, 'delete')):
+                caller.msg("You don't have permission to delete %s." % puzzle_name_id)
+                return
+
+            puzzle.delete()
+            caller.msg('%s was deleted' % puzzle_name_id)
+            return
+
+        else:
+            # edit attributes
+
+            if not (puzzle.access(caller, 'control') or puzzle.access(caller, 'edit')):
+                caller.msg("You don't have permission to edit %s." % puzzle_name_id)
+                return
+
+            if attr == 'use_success_message':
+                puzzle.db.use_success_message = self.rhs
+                caller.msg(
+                    "%s use_success_message = %s\n" % (puzzle_name_id, puzzle.db.use_success_message)
+                )
+            return
 
 
 class CmdArmPuzzle(MuxCommand):
@@ -396,10 +477,10 @@ class CmdUsePuzzleParts(MuxCommand):
                     matched_puzzles[puzzle.dbref] = matched_dbrefparts
 
         if len(matched_puzzles) == 0:
-            # FIXME: Add more random messages
+            # TODO: we could use part.fail_message instead, if any
             #    random part falls and lands on your feet
             #    random part hits you square on the face
-            caller.msg("As you try to utilize %s, nothing happens." % (many))
+            caller.msg(_PUZZLE_DEFAULT_FAIL_USE_MESSAGE % (many))
             return
 
         puzzletuples = sorted(matched_puzzles.items(), key=lambda t: len(t[1]), reverse=True)
@@ -440,17 +521,11 @@ class CmdUsePuzzleParts(MuxCommand):
         for dbref in matched_dbrefparts:
             parts_dict[dbref].delete()
 
-        # FIXME: Add random messages
-        #    You are a genius ... no matter what your 2nd grade teacher told you
-        #    You hear thunders and a cloud of dust raises leaving
         result_names = ', '.join(result_names)
-        caller.msg(
-            "You are a |wG|re|wn|ri|wu|rs|n!!!\nYou just created %s" % (
-            result_names
-        ))
+        caller.msg(puzzle.db.use_success_message)
         caller.location.msg_contents(
             "|c%s|n performs some kind of tribal dance"
-            " and seems to create |y%s|n from thin air" % (
+            " and |y%s|n seems to appear from thin air" % (
             caller, result_names), exclude=(caller,)
         )
 
@@ -479,6 +554,7 @@ class CmdListPuzzleRecipes(MuxCommand):
         msgf_item = "%2s|c%15s|n: |w%s|n"
         for recipe in recipes:
             text.append(msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref))
+            text.append('Success message: ' + recipe.db.use_success_message)
             text.append('Parts')
             for protopart in recipe.db.parts[:]:
                 mark = '-'
@@ -542,6 +618,7 @@ class PuzzleSystemCmdSet(CmdSet):
         super(PuzzleSystemCmdSet, self).at_cmdset_creation()
 
         self.add(CmdCreatePuzzleRecipe())
+        self.add(CmdEditPuzzle())
         self.add(CmdArmPuzzle())
         self.add(CmdListPuzzleRecipes())
         self.add(CmdListArmedPuzzles())
