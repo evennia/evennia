@@ -1186,6 +1186,12 @@ class TestPuzzles(CommandTest):
         self.stone = create_object(key='stone', location=self.char1.location)
         self.flint = create_object(key='flint', location=self.char1.location)
         self.fire = create_object(key='fire', location=self.char1.location)
+        self.stone.tags.add('tag-stone')
+        self.stone.tags.add('tag-stone', category='tagcat')
+        self.flint.tags.add('tag-flint')
+        self.flint.tags.add('tag-flint', category='tagcat')
+        self.fire.tags.add('tag-fire')
+        self.fire.tags.add('tag-fire', category='tagcat')
 
     def _assert_msg_matched(self, msg, regexs, re_flags=0):
         matches = []
@@ -1239,7 +1245,7 @@ class TestPuzzles(CommandTest):
         matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
         return recipe_dbref
 
-    def _check_room_contents(self, expected):
+    def _check_room_contents(self, expected, check_test_tags=False):
         by_obj_key = lambda o: o.key
         room1_contents = sorted(self.room1.contents, key=by_obj_key)
         for key, grp in itertools.groupby(room1_contents, by_obj_key):
@@ -1247,6 +1253,11 @@ class TestPuzzles(CommandTest):
                 grp = list(grp)
                 self.assertEqual(expected[key], len(grp),
                         "Expected %d but got %d for %s" % (expected[key], len(grp), key))
+                if check_test_tags:
+                    for gi in grp:
+                        tags = gi.tags.all(return_key_and_category=True)
+                        self.assertIn(('tag-' + gi.key, None), tags)
+                        self.assertIn(('tag-' + gi.key, 'tagcat'), tags)
 
     def _arm(self, recipe_dbref, name, parts):
         regexs = [
@@ -1341,7 +1352,7 @@ class TestPuzzles(CommandTest):
 
         # good arm
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
-        self._check_room_contents({'stone': 1, 'flint': 1})
+        self._check_room_contents({'stone': 1, 'flint': 1}, check_test_tags=True)
 
     def _use(self, cmdstr, expmsg):
         msg = self.call(
@@ -1370,7 +1381,7 @@ class TestPuzzles(CommandTest):
         self._use('stone', 'You have no idea how this can be used')
         self._use('stone, flint', 'You have no idea how these can be used')
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
-        self._check_room_contents({'stone': 2, 'flint': 2})
+        self._check_room_contents({'stone': 2, 'flint': 2}, check_test_tags=True)
 
         # there are duplicated objects now
         self._use('stone', 'Which stone. There are many')
@@ -1388,7 +1399,7 @@ class TestPuzzles(CommandTest):
                 lambda o: o.key == 'fire' \
                     and inherits_from(o,'evennia.contrib.puzzles.PuzzlePartObject'),
                 self.room1.contents))))
-        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 1})
+        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 1}, check_test_tags=True)
 
         # trying again will fail as it was resolved already
         # and the parts were destroyed
@@ -1398,14 +1409,14 @@ class TestPuzzles(CommandTest):
         # arm same puzzle twice so there are duplicated parts
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
-        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 1})
+        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 1}, check_test_tags=True)
 
         # try solving with multiple parts but incomplete set
         self._use('1-stone, 2-stone', 'You try to utilize these but nothing happens ... something amiss?')
 
         # arm the other puzzle. Their parts are identical
         self._arm(recipe2_dbref, 'makefire2', ['stone', 'flint'])
-        self._check_room_contents({'stone': 3, 'flint': 3, 'fire': 1})
+        self._check_room_contents({'stone': 3, 'flint': 3, 'fire': 1}, check_test_tags=True)
 
         # solve with multiple parts for
         # multiple puzzles. Both can be solved but
@@ -1413,12 +1424,12 @@ class TestPuzzles(CommandTest):
         self._use(
             '1-stone, 2-flint, 3-stone, 3-flint',
             'Your gears start turning and a bunch of ideas come to your mind ... ')
-        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 2})
+        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 2}, check_test_tags=True)
 
         # solve all
         self._use('1-stone, 1-flint', 'You are a Genius')
         self._use('stone, flint', 'You are a Genius')
-        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 4})
+        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 4}, check_test_tags=True)
 
     def test_puzzleedit(self):
         recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)

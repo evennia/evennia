@@ -108,7 +108,7 @@ def proto_def(obj, with_tags=True):
         'permissions': obj.permissions.all()[:],
     }
     if with_tags:
-        tags = obj.tags.all()[:]
+        tags = obj.tags.all(return_key_and_category=True)
         tags.append((_PUZZLES_TAG_MEMBER, _PUZZLES_TAG_CATEGORY))
         protodef['tags'] = tags
     return protodef
