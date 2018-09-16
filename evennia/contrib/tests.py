@@ -1265,6 +1265,7 @@ class TestPuzzles(CommandTest):
 
     def test_cmdset_puzzle(self):
         self.char1.cmdset.add('evennia.contrib.puzzles.PuzzleSystemCmdSet')
+        # FIXME: testing nothing, this is just to bump up coverage
 
     def test_cmd_puzzle(self):
         self._assert_no_recipes()
@@ -1375,10 +1376,9 @@ class TestPuzzles(CommandTest):
         self._use('stone', 'Which stone. There are many')
         self._use('flint', 'Which flint. There are many')
 
-        # delete proto parts
+        # delete proto parts and proto results
         self.stone.delete()
         self.flint.delete()
-        # delete proto result
         self.fire.delete()
 
         # solve puzzle
@@ -1401,7 +1401,7 @@ class TestPuzzles(CommandTest):
         self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 1})
 
         # try solving with multiple parts but incomplete set
-        self._use('1-stone, 2-stone', 'As you try to utilize these, nothing happens.')
+        self._use('1-stone, 2-stone', 'You try to utilize these but nothing happens ... something amiss?')
 
         # arm the other puzzle. Their parts are identical
         self._arm(recipe2_dbref, 'makefire2', ['stone', 'flint'])
@@ -1419,6 +1419,44 @@ class TestPuzzles(CommandTest):
         self._use('1-stone, 1-flint', 'You are a Genius')
         self._use('stone, flint', 'You are a Genius')
         self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 4})
+
+    def test_puzzleedit(self):
+        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
+
+        # delete proto parts and proto results
+        self.stone.delete()
+        self.flint.delete()
+        self.fire.delete()
+
+        def _puzzleedit(swt, dbref, args, expmsg):
+            self.call(
+                puzzles.CmdEditPuzzle(),
+                '%s %s%s' % (swt, dbref, args),
+                expmsg,
+                caller=self.char1
+            )
+
+        # bad syntax
+        _puzzleedit('', '1', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
+        _puzzleedit('', '', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
+        _puzzleedit('', recipe_dbref, 'dummy', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
+
+        # no permissions
+        _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', "You don't have permission")
+        _puzzleedit('/delete', recipe_dbref, '', "You don't have permission")
+
+        # grant perm to char1
+        puzzle = search.search_script(recipe_dbref)[0]
+        puzzle.locks.add('control:id(%s)' % self.char1.dbref[1:])
+
+        # edit use_success_message
+        _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', 'makefire(%s) use_success_message = Yes!' % recipe_dbref)
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._use('stone, flint', 'Yes!')
+
+        # delete
+        _puzzleedit('/delete', recipe_dbref, '', 'makefire(%s) was deleted' % recipe_dbref)
+        self._assert_no_recipes()
 
     def test_lspuzzlerecipes_lsarmedpuzzles(self):
         msg = self.call(
@@ -1449,6 +1487,7 @@ class TestPuzzles(CommandTest):
                 [
                     r"^-+$",
                     r"^Puzzle 'makefire'.*$",
+                    r"^Success message: .*$",
                     r"^Parts$",
                     r"^.*key: stone$",
                     r"^.*key: flint$",
