@@ -305,7 +305,7 @@ class CmdEditPuzzle(MuxCommand):
 
         puzzle = search.search_script(recipe_dbref)
         if not puzzle or not inherits_from(puzzle[0], PuzzleRecipe):
-            caller.msg('Invalid puzzle %r'  % (recipe_dbref))
+            caller.msg('%s(%s) is not a puzzle'  % (puzzle[0].name, recipe_dbref))
             return
 
         puzzle = puzzle[0]
