@@ -98,15 +98,19 @@ def proto_def(obj, with_tags=True):
     and compare recipe with candidate part
     """
     protodef = {
-        # FIXME: Don't we need to honor ALL properties? locks, perms, etc.
+        # FIXME: Don't we need to honor ALL properties? attributes, contents, etc.
         'key': obj.key,
         'typeclass': 'evennia.contrib.puzzles.PuzzlePartObject',  # FIXME: what if obj is another typeclass
         'desc': obj.db.desc,
         'location': obj.location,
-        'tags': [(_PUZZLES_TAG_MEMBER, _PUZZLES_TAG_CATEGORY)],
+        'home': obj.home,
+        'locks': ';'.join(obj.locks.all()),
+        'permissions': obj.permissions.all()[:],
     }
-    if not with_tags:
-        del(protodef['tags'])
+    if with_tags:
+        tags = obj.tags.all()[:]
+        tags.append((_PUZZLES_TAG_MEMBER, _PUZZLES_TAG_CATEGORY))
+        protodef['tags'] = tags
     return protodef
 
 # Colorize the default success message
@@ -128,16 +132,10 @@ class PuzzlePartObject(DefaultObject):
     def mark_as_puzzle_member(self, puzzle_name):
         """
         Marks this object as a member of puzzle named
-        puzzle_name
+        'puzzle_name'
         """
-        # FIXME: if multiple puzzles have the same
-        # puzzle_name, their ingredients may be
-        # combined but leave other parts orphan
-        # Similarly, if a puzzle_name were changed,
-        # its parts will become orphan
-        # Perhaps we should use #dbref but that will
-        # force specific parts to be combined
         self.db.puzzle_name = puzzle_name
+        self.tags.add(puzzle_name, category=_PUZZLES_TAG_CATEGORY)
 
 
 class PuzzleRecipe(DefaultScript):
@@ -183,6 +181,10 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         if len(puzzle_name) == 0:
             caller.msg('Invalid puzzle name %r.' % puzzle_name)
             return
+
+        # TODO: if there is another puzzle with same name
+        # warn user that parts and results will be
+        # interchangable
 
         def is_valid_obj_location(obj):
             valid = True
@@ -422,24 +424,24 @@ class CmdUsePuzzleParts(MuxCommand):
             # a valid part
             parts.append(part)
 
-        # Create lookup dict
-        parts_dict = dict((part.dbref, part) for part in parts)
-
-        # Group parts by their puzzle name
+        # Create lookup dicts by part's dbref and by puzzle_name(tags)
+        parts_dict = dict()
+        puzzlename_tags_dict = dict()
         puzzle_ingredients = dict()
         for part in parts:
-            puzzle_name = part.db.puzzle_name
-            if puzzle_name not in puzzle_ingredients:
-                puzzle_ingredients[puzzle_name] = []
-            puzzle_ingredients[puzzle_name].append(
-                (part.dbref, proto_def(part, with_tags=False))
-            )
+            parts_dict[part.dbref] = part
+            puzzle_ingredients[part.dbref] = proto_def(part, with_tags=False)
+            tags_categories = part.tags.all(return_key_and_category=True)
+            for tag, category in tags_categories:
+                if category != _PUZZLES_TAG_CATEGORY:
+                    continue
+                if tag not in puzzlename_tags_dict:
+                    puzzlename_tags_dict[tag] = []
+                puzzlename_tags_dict[tag].append(part.dbref)
 
-
-        # Find all puzzles by puzzle name
-        # FIXME: we rely on obj.db.puzzle_name which is visible and may be cnaged afterwards. Can we lock it and hide it?
+        # Find all puzzles by puzzle name (i.e. tag name)
         puzzles = []
-        for puzzle_name, parts in puzzle_ingredients.items():
+        for puzzle_name, parts in puzzlename_tags_dict.items():
             _puzzles = search.search_script_attribute(
                     key='puzzle_name',
                     value=puzzle_name
@@ -450,30 +452,26 @@ class CmdUsePuzzleParts(MuxCommand):
             else:
                 puzzles.extend(_puzzles)
 
-        logger.log_info("PUZZLES %r" % ([p.dbref for p in puzzles]))
+        logger.log_info("PUZZLES %r" % ([(p.dbref, p.db.puzzle_name) for p in puzzles]))
 
-        # Create lookup dict
+        # Create lookup dict of puzzles by dbref
         puzzles_dict = dict((puzzle.dbref, puzzle) for puzzle in puzzles)
         # Check if parts can be combined to solve a puzzle
         matched_puzzles = dict()
         for puzzle in puzzles:
-            puzzleparts = list(sorted(puzzle.db.parts[:], key=lambda p: p['key']))
-            parts = list(sorted(puzzle_ingredients[puzzle.db.puzzle_name][:], key=lambda p: p[1]['key']))
-            pz = 0
-            p = 0
-            matched_dbrefparts = set()
-            while pz < len(puzzleparts) and p < len(parts):
-                puzzlepart = puzzleparts[pz]
-                if 'tags' in puzzlepart:
-                    # remove 'tags' as they will prevent equality
-                    del(puzzlepart['tags'])
-                dbref, part = parts[p]
-                if part == puzzlepart:
-                    pz += 1
-                    matched_dbrefparts.add(dbref)
-                p += 1
+            puzzle_protoparts = list(puzzle.db.parts[:])
+            # remove tags as they prevent equality
+            for puzzle_protopart in puzzle_protoparts:
+                del(puzzle_protopart['tags'])
+            matched_dbrefparts = []
+            parts_dbrefs = puzzlename_tags_dict[puzzle.db.puzzle_name]
+            for part_dbref in parts_dbrefs:
+                protopart = puzzle_ingredients[part_dbref]
+                if protopart in puzzle_protoparts:
+                    puzzle_protoparts.remove(protopart)
+                    matched_dbrefparts.append(part_dbref)
             else:
-                if len(puzzleparts) == len(matched_dbrefparts):
+                if len(puzzle_protoparts) == 0:
                     matched_puzzles[puzzle.dbref] = matched_dbrefparts
 
         if len(matched_puzzles) == 0:
@@ -506,7 +504,6 @@ class CmdUsePuzzleParts(MuxCommand):
             caller.msg("You try %s ..." % (puzzle.db.puzzle_name))
 
         # got one, spawn its results
-        # FIXME: DRY with parts
         result_names = []
         for proto_result in puzzle.db.results:
             result = spawn(proto_result)[0]
@@ -523,6 +520,7 @@ class CmdUsePuzzleParts(MuxCommand):
 
         result_names = ', '.join(result_names)
         caller.msg(puzzle.db.use_success_message)
+        # TODO: allow custom message for location and channels
         caller.location.msg_contents(
             "|c%s|n performs some kind of tribal dance"
             " and |y%s|n seems to appear from thin air" % (
@@ -554,7 +552,7 @@ class CmdListPuzzleRecipes(MuxCommand):
         msgf_item = "%2s|c%15s|n: |w%s|n"
         for recipe in recipes:
             text.append(msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref))
-            text.append('Success message: ' + recipe.db.use_success_message)
+            text.append('Success message:\n' + recipe.db.use_success_message + '\n')
             text.append('Parts')
             for protopart in recipe.db.parts[:]:
                 mark = '-'
