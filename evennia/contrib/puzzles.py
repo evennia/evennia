@@ -565,6 +565,9 @@ class CmdListPuzzleRecipes(MuxCommand):
                 for k, v in protoresult.items():
                     text.append(msgf_item % (mark, k, v))
                     mark = ''
+        else:
+            text.append(div)
+            text.append('%d puzzle(s).' % (len(recipes)))
             text.append(div)
         caller.msg('\n'.join(text))
 
@@ -601,6 +604,9 @@ class CmdListArmedPuzzles(MuxCommand):
                 text.append(msgf_item % (
                     item.name, item.dbref,
                     item.location.name, item.location.dbref))
+        else:
+            text.append(div)
+            text.append('%d armed puzzle(s).' % (len(armed_puzzles)))
             text.append(div)
         caller.msg('\n'.join(text))
 

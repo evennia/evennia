@@ -1485,7 +1485,8 @@ class TestPuzzles(CommandTest):
                 msg,
                 [
                     r"^-+$",
-                    r"^-+$",
+                    r"^0 puzzle\(s\)\.$",
+                    r"-+$",
                 ],
                 re.MULTILINE | re.DOTALL
         )
@@ -1513,6 +1514,8 @@ class TestPuzzles(CommandTest):
                     r"^.*key: stone$",
                     r"^.*key: flint$",
                     r"^-+$",
+                    r"^1 puzzle\(s\)\.$",
+                    r"^-+$",
                 ],
                 re.MULTILINE | re.DOTALL
         )
@@ -1526,6 +1529,8 @@ class TestPuzzles(CommandTest):
                 msg,
                 [
                     r"^-+$",
+                    r"^-+$",
+                    r"^0 armed puzzle\(s\)\.$",
                     r"^-+$"
                 ],
                 re.MULTILINE | re.DOTALL
@@ -1545,6 +1550,7 @@ class TestPuzzles(CommandTest):
                     r"^Puzzle name: makefire$",
                     r"^.*stone.* at \s+ Room.*$",
                     r"^.*flint.* at \s+ Room.*$",
+                    r"^1 armed puzzle\(s\)\.$",
                     r"^-+$",
                 ],
                 re.MULTILINE | re.DOTALL
