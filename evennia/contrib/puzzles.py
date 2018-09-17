@@ -567,7 +567,7 @@ class CmdListPuzzleRecipes(MuxCommand):
                     mark = ''
         else:
             text.append(div)
-            text.append('%d puzzle(s).' % (len(recipes)))
+            text.append('Found |r%d|n puzzle(s).' % (len(recipes)))
             text.append(div)
         caller.msg('\n'.join(text))
 
@@ -606,7 +606,7 @@ class CmdListArmedPuzzles(MuxCommand):
                     item.location.name, item.location.dbref))
         else:
             text.append(div)
-            text.append('%d armed puzzle(s).' % (len(armed_puzzles)))
+            text.append('Found |r%d|n armed puzzle(s).' % (len(armed_puzzles)))
             text.append(div)
         caller.msg('\n'.join(text))
 
