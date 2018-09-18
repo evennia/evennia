@@ -1426,8 +1426,11 @@ class TestPuzzles(CommandTest):
             'Your gears start turning and a bunch of ideas come to your mind ... ')
         self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 2}, check_test_tags=True)
 
+        self.room1.msg_contents = Mock()
+
         # solve all
         self._use('1-stone, 1-flint', 'You are a Genius')
+        self.room1.msg_contents.assert_called_once_with('|cChar|n performs some kind of tribal dance and |yfire|n seems to appear from thin air', exclude=(self.char1,))
         self._use('stone, flint', 'You are a Genius')
         self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 4}, check_test_tags=True)
 
@@ -1466,10 +1469,13 @@ class TestPuzzles(CommandTest):
         puzzle = search.search_script(recipe_dbref)[0]
         puzzle.locks.add('control:id(%s)' % self.char1.dbref[1:])
 
-        # edit use_success_message
+        # edit use_success_message and use_success_location_message
         _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', 'makefire(%s) use_success_message = Yes!' % recipe_dbref)
+        _puzzleedit('', recipe_dbref, '/use_success_location_message = {result_names} Yeah baby! {caller}', 'makefire(%s) use_success_location_message = {result_names} Yeah baby! {caller}' % recipe_dbref)
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self.room1.msg_contents = Mock()
         self._use('stone, flint', 'Yes!')
+        self.room1.msg_contents.assert_called_once_with('fire Yeah baby! Char', exclude=(self.char1,))
 
         # delete
         _puzzleedit('/delete', recipe_dbref, '', 'makefire(%s) was deleted' % recipe_dbref)
@@ -1505,7 +1511,8 @@ class TestPuzzles(CommandTest):
                 [
                     r"^-+$",
                     r"^Puzzle 'makefire'.*$",
-                    r"^Success message:$",
+                    r"^Success Caller message:$",
+                    r"^Success Location message:$",
                     r"^Parts$",
                     r"^.*key: stone$",
                     r"^.*key: flint$",
