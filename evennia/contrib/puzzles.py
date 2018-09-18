@@ -89,6 +89,7 @@ _PUZZLES_TAG_MEMBER = 'puzzle_member'
 
 _PUZZLE_DEFAULT_FAIL_USE_MESSAGE = 'You try to utilize %s but nothing happens ... something amiss?'
 _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = 'You are a Genius!!!'
+_PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE = "|c{caller}|n performs some kind of tribal dance and |y{result_names}|n seems to appear from thin air"
 
 # ----------- UTILITY FUNCTIONS ------------
 
@@ -114,13 +115,17 @@ def proto_def(obj, with_tags=True):
     return protodef
 
 # Colorize the default success message
-_i = 0
-_colors = ['|r', '|g', '|y']
-_msg = []
-for l in _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE:
-    _msg += _colors[_i] + l
-    _i = (_i + 1) % len(_colors)
-_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = ''.join(_msg) + '|n'
+def _colorize_message(msg):
+    _i = 0
+    _colors = ['|r', '|g', '|y']
+    _msg = []
+    for l in msg:
+        _msg += _colors[_i] + l
+        _i = (_i + 1) % len(_colors)
+    msg = ''.join(_msg) + '|n'
+    return msg
+
+_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = _colorize_message(_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE)
 
 # ------------------------------------------
 
@@ -149,6 +154,7 @@ class PuzzleRecipe(DefaultScript):
         self.db.results = tuple(results)
         self.tags.add(_PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
         self.db.use_success_message = _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE
+        self.db.use_success_location_message = _PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE
 
 
 class CmdCreatePuzzleRecipe(MuxCommand):
@@ -168,6 +174,9 @@ class CmdCreatePuzzleRecipe(MuxCommand):
     locks = 'cmd:perm(puzzle) or perm(Builder)'
     help_category = 'Puzzles'
 
+    confirm = True
+    default_confirm = 'no'
+
     def func(self):
         caller = self.caller
 
@@ -182,9 +191,25 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             caller.msg('Invalid puzzle name %r.' % puzzle_name)
             return
 
-        # TODO: if there is another puzzle with same name
+        # if there is another puzzle with same name
         # warn user that parts and results will be
         # interchangable
+        _puzzles = search.search_script_attribute(
+                key='puzzle_name',
+                value=puzzle_name
+        )
+        _puzzles = list(filter(lambda p: isinstance(p, PuzzleRecipe), _puzzles))
+        if _puzzles:
+            confirm = 'There are %d puzzles with the same name.\n' % len(_puzzles) \
+                + 'Its parts and results will be interchangeable.\n' \
+                + 'Continue yes/[no]? '
+            answer = ''
+            while answer.strip().lower() not in ('y', 'yes', 'n', 'no'):
+                answer = yield(confirm)
+                answer = self.default_confirm if answer == '' else answer
+            if answer.strip().lower() in ('n', 'no'):
+                caller.msg('Cancelled: no puzzle created.')
+                return
 
         def is_valid_obj_location(obj):
             valid = True
@@ -275,14 +300,16 @@ class CmdEditPuzzle(MuxCommand):
     Usage:
         @puzzleedit[/delete] <#dbref>
         @puzzleedit <#dbref>/use_success_message = <Your custom message>
+        @puzzleedit <#dbref>/use_success_location_message = <Your custom message from {caller} producing {result_names}>
 
     Switches:
       delete - deletes the recipe. Existing parts and results aren't modified
 
+      use_success_location_message containing {result_names} and {caller} will automatically be replaced with correct values. Both are optional.
+
     """
 
     key = '@puzzleedit'
-    # FIXME: permissions for scripts?
     locks = 'cmd:perm(puzzleedit) or perm(Builder)'
     help_category = 'Puzzles'
 
@@ -332,7 +359,13 @@ class CmdEditPuzzle(MuxCommand):
                 caller.msg(
                     "%s use_success_message = %s\n" % (puzzle_name_id, puzzle.db.use_success_message)
                 )
-            return
+                return
+            elif attr == 'use_success_location_message':
+                puzzle.db.use_success_location_message = self.rhs
+                caller.msg(
+                    "%s use_success_location_message = %s\n" % (puzzle_name_id, puzzle.db.use_success_location_message)
+                )
+                return
 
 
 class CmdArmPuzzle(MuxCommand):
@@ -341,7 +374,6 @@ class CmdArmPuzzle(MuxCommand):
     """
 
     key = '@armpuzzle'
-    # FIXME: permissions for scripts?
     locks = 'cmd:perm(armpuzzle) or perm(Builder)'
     help_category = 'Puzzles'
 
@@ -520,11 +552,10 @@ class CmdUsePuzzleParts(MuxCommand):
 
         result_names = ', '.join(result_names)
         caller.msg(puzzle.db.use_success_message)
-        # TODO: allow custom message for location and channels
         caller.location.msg_contents(
-            "|c%s|n performs some kind of tribal dance"
-            " and |y%s|n seems to appear from thin air" % (
-            caller, result_names), exclude=(caller,)
+            puzzle.db.use_success_location_message.format(
+                caller=caller, result_names=result_names),
+            exclude=(caller,)
         )
 
 
@@ -552,7 +583,8 @@ class CmdListPuzzleRecipes(MuxCommand):
         msgf_item = "%2s|c%15s|n: |w%s|n"
         for recipe in recipes:
             text.append(msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref))
-            text.append('Success message:\n' + recipe.db.use_success_message + '\n')
+            text.append('Success Caller message:\n' + recipe.db.use_success_message + '\n')
+            text.append('Success Location message:\n' + recipe.db.use_success_location_message + '\n')
             text.append('Parts')
             for protopart in recipe.db.parts[:]:
                 mark = '-'
