@@ -1,7 +1,7 @@
 """
 
 Handling storage of prototypes, both database-based ones (DBPrototypes) and those defined in modules
-(Read-only prototypes).
+(Read-only prototypes). Also contains utility functions, formatters and manager functions.
 
 """
 
@@ -31,7 +31,6 @@ _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 PROT_FUNCS = {}
 
-
 _RE_DBREF = re.compile(r"(?<!\$obj\()(#[0-9]+)")
 
 
@@ -46,248 +45,29 @@ class ValidationError(RuntimeError):
     pass
 
 
-# Protfunc parsing
-
-for mod in settings.PROT_FUNC_MODULES:
-    try:
-        callables = callables_from_module(mod)
-        PROT_FUNCS.update(callables)
-    except ImportError:
-        logger.log_trace()
-        raise
-
-
-def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, **kwargs):
+def homogenize_prototype(prototype, custom_keys=None):
     """
-    Parse a prototype value string for a protfunc and process it.
-
-    Available protfuncs are specified as callables in one of the modules of
-    `settings.PROTFUNC_MODULES`, or specified on the command line.
+    Homogenize the more free-form prototype (where undefined keys are non-category attributes)
+    into the stricter form using `attrs` required by the system.
 
     Args:
-        value (any): The value to test for a parseable protfunc. Only strings will be parsed for
-            protfuncs, all other types are returned as-is.
-        available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
-            If not set, use default sources.
-        testing (bool, optional): Passed to protfunc. If in a testing mode, some protfuncs may
-            behave differently.
-        stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
-
-    Kwargs:
-        session (Session): Passed to protfunc. Session of the entity spawning the prototype.
-        protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
-        current_key(str): Passed to protfunc. The key in the prototype that will hold this value.
-        any (any): Passed on to the protfunc.
+        prototype (dict): Prototype.
+        custom_keys (list, optional): Custom keys which should not be interpreted as attrs, beyond
+            the default reserved keys.
 
     Returns:
-        testresult (tuple): If `testing` is set, returns a tuple (error, result) where error is
-            either None or a string detailing the error from protfunc_parser or seen when trying to
-            run `literal_eval` on the parsed string.
-        any (any): A structure to replace the string on the prototype level. If this is a
-            callable or a (callable, (args,)) structure, it will be executed as if one had supplied
-            it to the prototype directly. This structure is also passed through literal_eval so one
-            can get actual Python primitives out of it (not just strings). It will also identify
-            eventual object #dbrefs in the output from the protfunc.
-
+        homogenized (dict): Prototype where all non-identified keys grouped as attributes.
     """
-    if not isinstance(value, basestring):
-        try:
-            value = value.dbref
-        except AttributeError:
-            pass
-        value = to_str(value, force_string=True)
-
-    available_functions = PROT_FUNCS if available_functions is None else available_functions
-
-    # insert $obj(#dbref) for #dbref
-    value = _RE_DBREF.sub("$obj(\\1)", value)
-
-    result = inlinefuncs.parse_inlinefunc(
-        value, available_funcs=available_functions,
-        stacktrace=stacktrace, testing=testing, **kwargs)
-
-    err = None
-    try:
-        result = literal_eval(result)
-    except ValueError:
-        pass
-    except Exception as err:
-        err = str(err)
-    if testing:
-        return err, result
-    return result
-
-
-def format_available_protfuncs():
-    """
-    Get all protfuncs in a pretty-formatted form.
-
-    Args:
-        clr (str, optional): What coloration tag to use.
-    """
-    out = []
-    for protfunc_name, protfunc in PROT_FUNCS.items():
-        out.append("- |c${name}|n - |W{docs}".format(
-            name=protfunc_name, docs=protfunc.__doc__.strip().replace("\n", "")))
-    return justify("\n".join(out), indent=8)
-
-
-# helper functions
-
-def value_to_obj(value, force=True):
-    "Always convert value(s) to Object, or None"
-    stype = type(value)
-    if is_iter(value):
-        if stype == dict:
-            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.iter()}
+    reserved = _PROTOTYPE_RESERVED_KEYS + (custom_keys or ())
+    attrs = list(prototype.get('attrs', []))  # break reference
+    homogenized = {}
+    for key, val in prototype.items():
+        if key in reserved:
+            homogenized[key] = val
         else:
-            return stype([value_to_obj_or_any(val) for val in value])
-    return dbid_to_obj(value, ObjectDB)
-
-
-def value_to_obj_or_any(value):
-    "Convert value(s) to Object if possible, otherwise keep original value"
-    stype = type(value)
-    if is_iter(value):
-        if stype == dict:
-            return {value_to_obj_or_any(key):
-                    value_to_obj_or_any(val) for key, val in value.items()}
-        else:
-            return stype([value_to_obj_or_any(val) for val in value])
-    obj = dbid_to_obj(value, ObjectDB)
-    return obj if obj is not None else value
-
-
-def prototype_to_str(prototype):
-    """
-    Format a prototype to a nice string representation.
-
-    Args:
-        prototype (dict): The prototype.
-    """
-
-    header = """
-|cprototype-key:|n {prototype_key}, |c-tags:|n {prototype_tags}, |c-locks:|n {prototype_locks}|n
-|c-desc|n: {prototype_desc}
-|cprototype-parent:|n {prototype_parent}
-    \n""".format(
-            prototype_key=prototype.get('prototype_key', '|r[UNSET](required)|n'),
-            prototype_tags=prototype.get('prototype_tags', '|wNone|n'),
-            prototype_locks=prototype.get('prototype_locks', '|wNone|n'),
-            prototype_desc=prototype.get('prototype_desc', '|wNone|n'),
-            prototype_parent=prototype.get('prototype_parent', '|wNone|n'))
-
-    key = prototype.get('key', '')
-    if key:
-        key = "|ckey:|n {key}".format(key=key)
-    aliases = prototype.get("aliases", '')
-    if aliases:
-        aliases = "|caliases:|n {aliases}".format(
-            aliases=", ".join(aliases))
-    attrs = prototype.get("attrs", '')
-    if attrs:
-        out = []
-        for (attrkey, value, category, locks) in attrs:
-            locks = ", ".join(lock for lock in locks if lock)
-            category = "|ccategory:|n {}".format(category) if category else ''
-            cat_locks = ""
-            if category or locks:
-                cat_locks = " (|ccategory:|n {category}, ".format(
-                    category=category if category else "|wNone|n")
-            out.append(
-                "{attrkey}{cat_locks} |c=|n {value}".format(
-                       attrkey=attrkey,
-                       cat_locks=cat_locks,
-                       locks=locks if locks else "|wNone|n",
-                       value=value))
-        attrs = "|cattrs:|n\n {attrs}".format(attrs="\n ".join(out))
-    tags = prototype.get('tags', '')
-    if tags:
-        out = []
-        for (tagkey, category, data) in tags:
-            out.append("{tagkey} (category: {category}{dat})".format(
-                tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""))
-        tags = "|ctags:|n\n {tags}".format(tags=", ".join(out))
-    locks = prototype.get('locks', '')
-    if locks:
-        locks = "|clocks:|n\n {locks}".format(locks=locks)
-    permissions = prototype.get("permissions", '')
-    if permissions:
-        permissions = "|cpermissions:|n {perms}".format(perms=", ".join(permissions))
-    location = prototype.get("location", '')
-    if location:
-        location = "|clocation:|n {location}".format(location=location)
-    home = prototype.get("home", '')
-    if home:
-        home = "|chome:|n {home}".format(home=home)
-    destination = prototype.get("destination", '')
-    if destination:
-        destination = "|cdestination:|n {destination}".format(destination=destination)
-
-    body = "\n".join(part for part in (key, aliases, attrs, tags, locks, permissions,
-                     location, home, destination) if part)
-
-    return header.lstrip() + body.strip()
-
-
-def check_permission(prototype_key, action, default=True):
-    """
-    Helper function to check access to actions on given prototype.
-
-    Args:
-        prototype_key (str): The prototype to affect.
-        action (str): One of "spawn" or "edit".
-        default (str): If action is unknown or prototype has no locks
-
-    Returns:
-        passes (bool): If permission for action is granted or not.
-
-    """
-    if action == 'edit':
-        if prototype_key in _MODULE_PROTOTYPES:
-            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
-            logger.log_err("{} is a read-only prototype "
-                           "(defined as code in {}).".format(prototype_key, mod))
-            return False
-
-    prototype = search_prototype(key=prototype_key)
-    if not prototype:
-        logger.log_err("Prototype {} not found.".format(prototype_key))
-        return False
-
-    lockstring = prototype.get("prototype_locks")
-
-    if lockstring:
-        return check_lockstring(None, lockstring, default=default, access_type=action)
-    return default
-
-
-def init_spawn_value(value, validator=None):
-    """
-    Analyze the prototype value and produce a value useful at the point of spawning.
-
-    Args:
-        value (any): This can be:
-            callable - will be called as callable()
-            (callable, (args,)) - will be called as callable(*args)
-            other - will be assigned depending on the variable type
-            validator (callable, optional): If given, this will be called with the value to
-                check and guarantee the outcome is of a given type.
-
-    Returns:
-        any (any): The (potentially pre-processed value to use for this prototype key)
-
-    """
-    value = protfunc_parser(value)
-    validator = validator if validator else lambda o: o
-    if callable(value):
-        return validator(value())
-    elif value and is_iter(value) and callable(value[0]):
-        # a structure (callable, (args, ))
-        args = value[1:]
-        return validator(value[0](*make_iter(args)))
-    else:
-        return validator(value)
+            attrs.append((key, val, None, ''))
+    homogenized['attrs'] = attrs
+    return homogenized
 
 
 # module-based prototypes
@@ -295,7 +75,8 @@ def init_spawn_value(value, validator=None):
 for mod in settings.PROTOTYPE_MODULES:
     # to remove a default prototype, override it with an empty dict.
     # internally we store as (key, desc, locks, tags, prototype_dict)
-    prots = [(prototype_key.lower(), prot) for prototype_key, prot in all_from_module(mod).items()
+    prots = [(prototype_key.lower(), homogenize_prototype(prot))
+             for prototype_key, prot in all_from_module(mod).items()
              if prot and isinstance(prot, dict)]
     # assign module path to each prototype_key for easy reference
     _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
@@ -346,6 +127,8 @@ def save_prototype(**kwargs):
         is expected to have valid permissions.
 
     """
+
+    kwargs = homogenize_prototype(kwargs)
 
     def _to_batchtuple(inp, *args):
         "build tuple suitable for batch-creation"
@@ -403,8 +186,7 @@ def save_prototype(**kwargs):
             attributes=[("prototype", prototype)])
     return stored_prototype.db.prototype
 
-# alias
-create_prototype = save_prototype
+create_prototype = save_prototype   # alias
 
 
 def delete_prototype(prototype_key, caller=None):
@@ -640,7 +422,8 @@ def validate_prototype(prototype, protkey=None, protparents=None,
             _flags['warnings'].append("Prototype {} can only be used as a mixin since it lacks "
                                       "a typeclass or a prototype_parent.".format(protkey))
 
-    if strict and typeclass and typeclass not in get_all_typeclasses("evennia.objects.models.ObjectDB"):
+    if (strict and typeclass and typeclass not
+            in get_all_typeclasses("evennia.objects.models.ObjectDB")):
         _flags['errors'].append(
             "Prototype {} is based on typeclass {}, which could not be imported!".format(
                 protkey, typeclass))
@@ -685,7 +468,8 @@ def validate_prototype(prototype, protkey=None, protparents=None,
 
     # make sure prototype_locks are set to defaults
     prototype_locks = [lstring.split(":", 1)
-                       for lstring in prototype.get("prototype_locks", "").split(';') if ":" in lstring]
+                       for lstring in prototype.get("prototype_locks", "").split(';')
+                       if ":" in lstring]
     locktypes = [tup[0].strip() for tup in prototype_locks]
     if "spawn" not in locktypes:
         prototype_locks.append(("spawn", "all()"))
@@ -693,3 +477,249 @@ def validate_prototype(prototype, protkey=None, protparents=None,
         prototype_locks.append(("edit", "all()"))
     prototype_locks = ";".join(":".join(tup) for tup in prototype_locks)
     prototype['prototype_locks'] = prototype_locks
+
+
+# Protfunc parsing (in-prototype functions)
+
+for mod in settings.PROT_FUNC_MODULES:
+    try:
+        callables = callables_from_module(mod)
+        PROT_FUNCS.update(callables)
+    except ImportError:
+        logger.log_trace()
+        raise
+
+
+def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, **kwargs):
+    """
+    Parse a prototype value string for a protfunc and process it.
+
+    Available protfuncs are specified as callables in one of the modules of
+    `settings.PROTFUNC_MODULES`, or specified on the command line.
+
+    Args:
+        value (any): The value to test for a parseable protfunc. Only strings will be parsed for
+            protfuncs, all other types are returned as-is.
+        available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
+            If not set, use default sources.
+        testing (bool, optional): Passed to protfunc. If in a testing mode, some protfuncs may
+            behave differently.
+        stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
+
+    Kwargs:
+        session (Session): Passed to protfunc. Session of the entity spawning the prototype.
+        protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
+        current_key(str): Passed to protfunc. The key in the prototype that will hold this value.
+        any (any): Passed on to the protfunc.
+
+    Returns:
+        testresult (tuple): If `testing` is set, returns a tuple (error, result) where error is
+            either None or a string detailing the error from protfunc_parser or seen when trying to
+            run `literal_eval` on the parsed string.
+        any (any): A structure to replace the string on the prototype level. If this is a
+            callable or a (callable, (args,)) structure, it will be executed as if one had supplied
+            it to the prototype directly. This structure is also passed through literal_eval so one
+            can get actual Python primitives out of it (not just strings). It will also identify
+            eventual object #dbrefs in the output from the protfunc.
+
+    """
+    if not isinstance(value, basestring):
+        try:
+            value = value.dbref
+        except AttributeError:
+            pass
+        value = to_str(value, force_string=True)
+
+    available_functions = PROT_FUNCS if available_functions is None else available_functions
+
+    # insert $obj(#dbref) for #dbref
+    value = _RE_DBREF.sub("$obj(\\1)", value)
+
+    result = inlinefuncs.parse_inlinefunc(
+        value, available_funcs=available_functions,
+        stacktrace=stacktrace, testing=testing, **kwargs)
+
+    err = None
+    try:
+        result = literal_eval(result)
+    except ValueError:
+        pass
+    except Exception as err:
+        err = str(err)
+    if testing:
+        return err, result
+    return result
+
+
+# Various prototype utilities
+
+def format_available_protfuncs():
+    """
+    Get all protfuncs in a pretty-formatted form.
+
+    Args:
+        clr (str, optional): What coloration tag to use.
+    """
+    out = []
+    for protfunc_name, protfunc in PROT_FUNCS.items():
+        out.append("- |c${name}|n - |W{docs}".format(
+            name=protfunc_name, docs=protfunc.__doc__.strip().replace("\n", "")))
+    return justify("\n".join(out), indent=8)
+
+
+def prototype_to_str(prototype):
+    """
+    Format a prototype to a nice string representation.
+
+    Args:
+        prototype (dict): The prototype.
+    """
+
+    prototype = homogenize_prototype(prototype)
+
+    header = """
+|cprototype-key:|n {prototype_key}, |c-tags:|n {prototype_tags}, |c-locks:|n {prototype_locks}|n
+|c-desc|n: {prototype_desc}
+|cprototype-parent:|n {prototype_parent}
+    \n""".format(
+            prototype_key=prototype.get('prototype_key', '|r[UNSET](required)|n'),
+            prototype_tags=prototype.get('prototype_tags', '|wNone|n'),
+            prototype_locks=prototype.get('prototype_locks', '|wNone|n'),
+            prototype_desc=prototype.get('prototype_desc', '|wNone|n'),
+            prototype_parent=prototype.get('prototype_parent', '|wNone|n'))
+
+    key = prototype.get('key', '')
+    if key:
+        key = "|ckey:|n {key}".format(key=key)
+    aliases = prototype.get("aliases", '')
+    if aliases:
+        aliases = "|caliases:|n {aliases}".format(
+            aliases=", ".join(aliases))
+    attrs = prototype.get("attrs", '')
+    if attrs:
+        out = []
+        for (attrkey, value, category, locks) in attrs:
+            locks = ", ".join(lock for lock in locks if lock)
+            category = "|ccategory:|n {}".format(category) if category else ''
+            cat_locks = ""
+            if category or locks:
+                cat_locks = " (|ccategory:|n {category}, ".format(
+                    category=category if category else "|wNone|n")
+            out.append(
+                "{attrkey}{cat_locks} |c=|n {value}".format(
+                       attrkey=attrkey,
+                       cat_locks=cat_locks,
+                       locks=locks if locks else "|wNone|n",
+                       value=value))
+        attrs = "|cattrs:|n\n {attrs}".format(attrs="\n ".join(out))
+    tags = prototype.get('tags', '')
+    if tags:
+        out = []
+        for (tagkey, category, data) in tags:
+            out.append("{tagkey} (category: {category}{dat})".format(
+                tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""))
+        tags = "|ctags:|n\n {tags}".format(tags=", ".join(out))
+    locks = prototype.get('locks', '')
+    if locks:
+        locks = "|clocks:|n\n {locks}".format(locks=locks)
+    permissions = prototype.get("permissions", '')
+    if permissions:
+        permissions = "|cpermissions:|n {perms}".format(perms=", ".join(permissions))
+    location = prototype.get("location", '')
+    if location:
+        location = "|clocation:|n {location}".format(location=location)
+    home = prototype.get("home", '')
+    if home:
+        home = "|chome:|n {home}".format(home=home)
+    destination = prototype.get("destination", '')
+    if destination:
+        destination = "|cdestination:|n {destination}".format(destination=destination)
+
+    body = "\n".join(part for part in (key, aliases, attrs, tags, locks, permissions,
+                     location, home, destination) if part)
+
+    return header.lstrip() + body.strip()
+
+
+def check_permission(prototype_key, action, default=True):
+    """
+    Helper function to check access to actions on given prototype.
+
+    Args:
+        prototype_key (str): The prototype to affect.
+        action (str): One of "spawn" or "edit".
+        default (str): If action is unknown or prototype has no locks
+
+    Returns:
+        passes (bool): If permission for action is granted or not.
+
+    """
+    if action == 'edit':
+        if prototype_key in _MODULE_PROTOTYPES:
+            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
+            logger.log_err("{} is a read-only prototype "
+                           "(defined as code in {}).".format(prototype_key, mod))
+            return False
+
+    prototype = search_prototype(key=prototype_key)
+    if not prototype:
+        logger.log_err("Prototype {} not found.".format(prototype_key))
+        return False
+
+    lockstring = prototype.get("prototype_locks")
+
+    if lockstring:
+        return check_lockstring(None, lockstring, default=default, access_type=action)
+    return default
+
+
+def init_spawn_value(value, validator=None):
+    """
+    Analyze the prototype value and produce a value useful at the point of spawning.
+
+    Args:
+        value (any): This can be:
+            callable - will be called as callable()
+            (callable, (args,)) - will be called as callable(*args)
+            other - will be assigned depending on the variable type
+            validator (callable, optional): If given, this will be called with the value to
+                check and guarantee the outcome is of a given type.
+
+    Returns:
+        any (any): The (potentially pre-processed value to use for this prototype key)
+
+    """
+    value = protfunc_parser(value)
+    validator = validator if validator else lambda o: o
+    if callable(value):
+        return validator(value())
+    elif value and is_iter(value) and callable(value[0]):
+        # a structure (callable, (args, ))
+        args = value[1:]
+        return validator(value[0](*make_iter(args)))
+    else:
+        return validator(value)
+
+
+def value_to_obj_or_any(value):
+    "Convert value(s) to Object if possible, otherwise keep original value"
+    stype = type(value)
+    if is_iter(value):
+        if stype == dict:
+            return {value_to_obj_or_any(key):
+                    value_to_obj_or_any(val) for key, val in value.items()}
+        else:
+            return stype([value_to_obj_or_any(val) for val in value])
+    obj = dbid_to_obj(value, ObjectDB)
+    return obj if obj is not None else value
+
+
+def value_to_obj(value, force=True):
+    "Always convert value(s) to Object, or None"
+    stype = type(value)
+    if is_iter(value):
+        if stype == dict:
+            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.iter()}
+        else:
+            return stype([value_to_obj_or_any(val) for val in value])
+    return dbid_to_obj(value, ObjectDB)

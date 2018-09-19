@@ -1092,7 +1092,7 @@ def _add_attr(caller, attr_string, **kwargs):
             attrname, category = nameparts
         elif nparts > 2:
             attrname, category, locks = nameparts
-    attr_tuple = (attrname, value, category, locks)
+    attr_tuple = (attrname, value, category, str(locks))
 
     if attrname:
         prot = _get_menu_prototype(caller)
