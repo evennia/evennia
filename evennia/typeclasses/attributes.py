@@ -564,7 +564,7 @@ class AttributeHandler(object):
             ntup = len(tup)
             keystr = str(tup[0]).strip().lower()
             new_value = tup[1]
-            category = str(tup[2]).strip().lower() if ntup > 2 else None
+            category = str(tup[2]).strip().lower() if ntup > 2 and tup[2] is not None else None
             lockstring = tup[3] if ntup > 3 else ""
 
             attr_objs = self._getcache(keystr, category)

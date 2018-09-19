@@ -5,11 +5,14 @@ The spawner takes input files containing object definitions in
 dictionary forms. These use a prototype architecture to define
 unique objects without having to make a Typeclass for each.
 
-The main function is `spawn(*prototype)`, where the `prototype`
+There  main function is `spawn(*prototype)`, where the `prototype`
 is a dictionary like this:
 
 ```python
-GOBLIN = {
+from evennia.prototypes import prototypes
+
+prot = {
+ "prototype_key": "goblin",
  "typeclass": "types.objects.Monster",
  "key": "goblin grunt",
  "health": lambda: randint(20,30),
@@ -18,7 +21,10 @@ GOBLIN = {
  "weaknesses": ["fire", "light"]
  "tags": ["mob", "evil", ('greenskin','mob')]
  "attrs": [("weapon", "sword")]
- }
+}
+
+prot = prototypes.create_prototype(**prot)
+
 ```
 
 Possible keywords are:
@@ -57,7 +63,7 @@ Possible keywords are:
         form allows more complex Attributes to be set. Tuples at least specify `(key, value)`
         but can also specify up to `(key, value, category, lockstring)`. If you want to specify a
         lockstring but not a category, set the category to `None`.
-    ndb_<name> (any): value of a nattribute (ndb_ is stripped)
+    ndb_<name> (any): value of a nattribute (ndb_ is stripped) - this is of limited use.
     other (any): any other name is interpreted as the key of an Attribute with
         its value. Such Attributes have no categories.
 
@@ -66,15 +72,16 @@ return the value to enter into the field and will be called every time
 the prototype is used to spawn an object. Note, if you want to store
 a callable in an Attribute, embed it in a tuple to the `args` keyword.
 
-By specifying the "prototype" key, the prototype becomes a child of
-that prototype, inheritng all prototype slots it does not explicitly
+By specifying the "prototype_parent" key, the prototype becomes a child of
+the given prototype, inheritng all prototype slots it does not explicitly
 define itself, while overloading those that it does specify.
 
 ```python
 import random
 
 
-GOBLIN_WIZARD = {
+{
+ "prototype_key": "goblin_wizard",
  "prototype_parent": GOBLIN,
  "key": "goblin wizard",
  "spells": ["fire ball", "lighting bolt"]
@@ -189,7 +196,9 @@ def flatten_prototype(prototype, validate=False):
         flattened (dict): The final, flattened prototype.
 
     """
+
     if prototype:
+        prototype = protlib.homogenize_prototype(prototype)
         protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
         protlib.validate_prototype(prototype, None, protparents,
                                    is_prototype_base=validate, strict=validate)
@@ -253,7 +262,7 @@ def prototype_from_object(obj):
             for tag in obj.tags.get(return_tagobj=True, return_list=True) if tag]
     if tags:
         prot['tags'] = tags
-    attrs = [(attr.key, attr.value, attr.category, attr.locks.all())
+    attrs = [(attr.key, attr.value, attr.category, ';'.join(attr.locks.all()))
              for attr in obj.attributes.get(return_obj=True, return_list=True) if attr]
     if attrs:
         prot['attrs'] = attrs
@@ -261,7 +270,7 @@ def prototype_from_object(obj):
     return prot
 
 
-def prototype_diff(prototype1, prototype2):
+def prototype_diff(prototype1, prototype2, maxdepth=2):
     """
     A 'detailed' diff specifies differences down to individual sub-sectiions
     of the prototype, like individual attributes, permissions etc. It is used
@@ -270,6 +279,9 @@ def prototype_diff(prototype1, prototype2):
     Args:
         prototype1 (dict): Original prototype.
         prototype2 (dict): Comparison prototype.
+        maxdepth (int, optional): The maximum depth into the diff we go before treating the elements
+            of iterables as individual entities to compare. This is important since a single
+            attr/tag (for example) are represented by a tuple.
 
     Returns:
         diff (dict): A structure detailing how to convert prototype1 to prototype2. All
@@ -280,7 +292,7 @@ def prototype_diff(prototype1, prototype2):
             instruction can be one of "REMOVE", "ADD", "UPDATE" or "KEEP".
 
     """
-    def _recursive_diff(old, new):
+    def _recursive_diff(old, new, depth=0):
 
         old_type = type(old)
         new_type = type(new)
@@ -292,14 +304,14 @@ def prototype_diff(prototype1, prototype2):
                 return (old, new, "ADD")
             else:
                 return (old, new, "UPDATE")
-        elif new_type == dict:
+        elif depth < maxdepth and new_type == dict:
             all_keys = set(old.keys() + new.keys())
-            return {key: _recursive_diff(old.get(key), new.get(key)) for key in all_keys}
-        elif is_iter(new):
+            return {key: _recursive_diff(old.get(key), new.get(key), depth=depth + 1) for key in all_keys}
+        elif depth < maxdepth and is_iter(new):
             old_map = {part[0] if is_iter(part) else part: part for part in old}
             new_map = {part[0] if is_iter(part) else part: part for part in new}
             all_keys = set(old_map.keys() + new_map.keys())
-            return {key: _recursive_diff(old_map.get(key), new_map.get(key)) for key in all_keys}
+            return {key: _recursive_diff(old_map.get(key), new_map.get(key), depth=depth + 1) for key in all_keys}
         elif old != new:
             return (old, new, "UPDATE")
         else:
@@ -346,13 +358,13 @@ def flatten_diff(diff):
         typ = type(diffpart)
         if typ == tuple and len(diffpart) == 3 and diffpart[2] in valid_instructions:
             out = [diffpart[2]]
-        elif type == dict:
+        elif typ == dict:
             # all other are dicts
             for val in diffpart.values():
                 out.extend(_get_all_nested_diff_instructions(val))
         else:
             raise RuntimeError("Diff contains non-dicts that are not on the "
-                               "form (old, new, inst): {}".format(diff))
+                               "form (old, new, inst): {}".format(diffpart))
         return out
 
     flat_diff = {}
@@ -402,7 +414,7 @@ def prototype_diff_from_object(prototype, obj):
 
     """
     obj_prototype = prototype_from_object(obj)
-    diff = prototype_diff(obj_prototype, prototype)
+    diff = prototype_diff(obj_prototype, protlib.homogenize_prototype(prototype))
     return diff, obj_prototype
 
 
@@ -421,6 +433,8 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
         changed (int): The number of objects that had changes applied to them.
 
     """
+    prototype = protlib.homogenize_prototype(prototype)
+
     if isinstance(prototype, basestring):
         new_prototype = protlib.search_prototype(prototype)
     else:
@@ -439,7 +453,6 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
 
     # make sure the diff is flattened
     diff = flatten_diff(diff)
-
     changed = 0
     for obj in objects:
         do_save = False
@@ -619,9 +632,9 @@ def spawn(*prototypes, **kwargs):
             (no object creation) and return the create-kwargs.
 
     Returns:
-        object (Object, dict or list): Spawned object. If `only_validate` is given, return
+        object (Object, dict or list): Spawned object(s). If `only_validate` is given, return
             a list of the creation kwargs to build the object(s) without actually creating it. If
-            `return_parents` is set, return dict of prototype parents.
+            `return_parents` is set, instead return dict of prototype parents.
 
     """
     # get available protparents

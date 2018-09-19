@@ -70,7 +70,7 @@ class TestUtils(EvenniaTest):
         self.obj1.tags.add('foo')
         new_prot = spawner.prototype_from_object(self.obj1)
         self.assertEqual(
-            {'attrs': [('test', 'testval', None, [''])],
+            {'attrs': [('test', 'testval', None, '')],
              'home': Something,
              'key': 'Obj',
              'location': Something,
@@ -94,14 +94,15 @@ class TestUtils(EvenniaTest):
     def test_update_objects_from_prototypes(self):
 
         self.maxDiff = None
-        self.obj1.attributes.add('oldtest', 'to_remove')
+        self.obj1.attributes.add('oldtest', 'to_keep')
 
         old_prot = spawner.prototype_from_object(self.obj1)
 
         # modify object away from prototype
         self.obj1.attributes.add('test', 'testval')
+        self.obj1.attributes.add('desc', 'changed desc')
         self.obj1.aliases.add('foo')
-        self.obj1.key = 'NewObj'
+        self.obj1.tags.add('footag', 'foocategory')
 
         # modify prototype
         old_prot['new'] = 'new_val'
@@ -109,53 +110,111 @@ class TestUtils(EvenniaTest):
         old_prot['permissions'] = 'Builder'
         # this will not update, since we don't update the prototype on-disk
         old_prot['prototype_desc'] = 'New version of prototype'
+        old_prot['attrs'] += (("fooattr", "fooattrval", None, ''),)
 
         # diff obj/prototype
-        pdiff = spawner.prototype_diff_from_object(old_prot, self.obj1)
+        old_prot_copy = old_prot.copy()
 
+        pdiff, obj_prototype = spawner.prototype_diff_from_object(old_prot, self.obj1)
+
+        self.assertEqual(old_prot_copy, old_prot)
+
+        self.assertEqual(obj_prototype,
+                         {'aliases': ['foo'],
+                          'attrs': [('oldtest', 'to_keep', None, ''),
+                                    ('test', 'testval', None, ''),
+                                    ('desc', 'changed desc', None, '')],
+                          'key': 'Obj',
+                          'home': '#1',
+                          'location': '#1',
+                          'locks': 'call:true();control:perm(Developer);delete:perm(Admin);'
+                                   'edit:perm(Admin);examine:perm(Builder);get:all();'
+                                   'puppet:pperm(Developer);tell:perm(Admin);view:all()',
+                          'prototype_desc': 'Built from Obj',
+                          'prototype_key': Something,
+                          'prototype_locks': 'spawn:all();edit:all()',
+                          'prototype_tags': [],
+                          'typeclass': 'evennia.objects.objects.DefaultObject'})
+
+        self.assertEqual(old_prot,
+                         {'attrs': [('oldtest', 'to_keep', None, ''),
+                                    ('fooattr', 'fooattrval', None, '')],
+                          'home': '#1',
+                          'key': 'Obj',
+                          'location': '#1',
+                          'locks': 'call:true();control:perm(Developer);delete:perm(Admin);'
+                                   'edit:perm(Admin);examine:perm(Builder);get:all();'
+                                   'puppet:pperm(Developer);tell:perm(Admin);view:all()',
+                          'new': 'new_val',
+                          'permissions': 'Builder',
+                          'prototype_desc': 'New version of prototype',
+                          'prototype_key': Something,
+                          'prototype_locks': 'spawn:all();edit:all()',
+                          'prototype_tags': [],
+                          'test': 'testval_changed',
+                          'typeclass': 'evennia.objects.objects.DefaultObject'})
+
+        # from evennia import set_trace; set_trace(term_size=(182, 50))
         self.assertEqual(
              pdiff,
-             ({'aliases': 'REMOVE',
-               'attrs': 'REPLACE',
-               'home': 'KEEP',
-               'key': 'UPDATE',
-               'location': 'KEEP',
-               'locks': 'KEEP',
-               'new': 'UPDATE',
-               'permissions': 'UPDATE',
-               'prototype_desc': 'UPDATE',
-               'prototype_key': 'UPDATE',
-               'prototype_locks': 'KEEP',
-               'prototype_tags': 'KEEP',
-               'test': 'UPDATE',
-               'typeclass': 'KEEP'},
-              {'attrs': [('oldtest', 'to_remove', None, ['']),
-                         ('test', 'testval', None, [''])],
-               'prototype_locks': 'spawn:all();edit:all()',
-               'prototype_key': Something,
-               'locks': ";".join([
-                         'call:true()', 'control:perm(Developer)',
-                         'delete:perm(Admin)', 'edit:perm(Admin)',
-                         'examine:perm(Builder)', 'get:all()',
-                         'puppet:pperm(Developer)', 'tell:perm(Admin)',
-                         'view:all()']),
-               'prototype_tags': [],
-               'location': "#1",
-               'key': 'NewObj',
-               'home': '#1',
-               'typeclass': 'evennia.objects.objects.DefaultObject',
-               'prototype_desc': 'Built from NewObj',
-               'aliases': 'foo'})
+             {'home': ('#1', '#1', 'KEEP'),
+              'prototype_locks': ('spawn:all();edit:all()',
+                                  'spawn:all();edit:all()', 'KEEP'),
+              'prototype_key': (Something, Something, 'UPDATE'),
+              'location': ('#1', '#1', 'KEEP'),
+              'locks': ('call:true();control:perm(Developer);delete:perm(Admin);'
+                        'edit:perm(Admin);examine:perm(Builder);get:all();'
+                        'puppet:pperm(Developer);tell:perm(Admin);view:all()',
+                        'call:true();control:perm(Developer);delete:perm(Admin);'
+                        'edit:perm(Admin);examine:perm(Builder);get:all();'
+                        'puppet:pperm(Developer);tell:perm(Admin);view:all()', 'KEEP'),
+              'prototype_tags': {},
+              'attrs': {'oldtest': (('oldtest', 'to_keep', None, ''),
+                                    ('oldtest', 'to_keep', None, ''), 'KEEP'),
+                        'test': (('test', 'testval', None, ''),
+                                 None, 'REMOVE'),
+                        'desc': (('desc', 'changed desc', None, ''),
+                                 None, 'REMOVE'),
+                        'fooattr': (None, ('fooattr', 'fooattrval', None, ''), 'ADD'),
+                        'test': (('test', 'testval', None, ''),
+                                 ('test', 'testval_changed', None, ''), 'UPDATE'),
+                        'new':  (None, ('new', 'new_val', None, ''), 'ADD')},
+              'key': ('Obj', 'Obj', 'KEEP'),
+              'typeclass': ('evennia.objects.objects.DefaultObject',
+                            'evennia.objects.objects.DefaultObject', 'KEEP'),
+              'aliases': (['foo'], None, 'REMOVE'),
+              'prototype_desc': ('Built from Obj',
+                                 'New version of prototype', 'UPDATE'),
+              'permissions': (None, 'Builder', 'ADD')}
               )
+
+        # from evennia import set_trace;set_trace()
+        self.assertEqual(
+           spawner.flatten_diff(pdiff),
+           {'aliases': 'REMOVE',
+            'attrs': 'REPLACE',
+            'home': 'KEEP',
+            'key': 'KEEP',
+            'location': 'KEEP',
+            'locks': 'KEEP',
+            'permissions': 'UPDATE',
+            'prototype_desc': 'UPDATE',
+            'prototype_key': 'UPDATE',
+            'prototype_locks': 'KEEP',
+            'prototype_tags': 'KEEP',
+            'typeclass': 'KEEP'}
+            )
 
         # apply diff
         count = spawner.batch_update_objects_with_prototype(
-            old_prot, diff=pdiff[0], objects=[self.obj1])
+            old_prot, diff=pdiff, objects=[self.obj1])
         self.assertEqual(count, 1)
 
         new_prot = spawner.prototype_from_object(self.obj1)
-        self.assertEqual({'attrs': [('test', 'testval_changed', None, ['']),
-                                    ('new', 'new_val', None, [''])],
+        self.assertEqual({'attrs': [('oldtest', 'to_keep', None, ''),
+                                    ('fooattr', 'fooattrval', None, ''),
+                                    ('new', 'new_val', None, ''),
+                                    ('test', 'testval_changed', None, '')],
                           'home': Something,
                           'key': 'Obj',
                           'location': Something,
