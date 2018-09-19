@@ -573,7 +573,7 @@ class AttributeHandler(object):
                 attr_obj = attr_objs[0]
                 # update an existing attribute object
                 attr_obj.db_category = category
-                attr_obj.db_lock_storage = lockstring
+                attr_obj.db_lock_storage = lockstring or ''
                 attr_obj.save(update_fields=["db_category", "db_lock_storage"])
                 if strattr:
                     # store as a simple string (will not notify OOB handlers)
@@ -590,7 +590,7 @@ class AttributeHandler(object):
                           "db_attrtype": self._attrtype,
                           "db_value": None if strattr else to_pickle(new_value),
                           "db_strvalue": new_value if strattr else None,
-                          "db_lock_storage": lockstring}
+                          "db_lock_storage": lockstring or ''}
                 new_attr = Attribute(**kwargs)
                 new_attr.save()
                 new_attrobjs.append(new_attr)
