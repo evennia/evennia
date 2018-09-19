@@ -301,11 +301,21 @@ class CmdEditPuzzle(MuxCommand):
         @puzzleedit[/delete] <#dbref>
         @puzzleedit <#dbref>/use_success_message = <Your custom message>
         @puzzleedit <#dbref>/use_success_location_message = <Your custom message from {caller} producing {result_names}>
+        @puzzleedit[/addpart] <#dbref> = <obj[,obj2,...]>
+        @puzzleedit[/delpart] <#dbref> = <obj[,obj2,...]>
+        @puzzleedit[/addresult] <#dbref> = <obj[,obj2,...]>
+        @puzzleedit[/delresult] <#dbref> = <obj[,obj2,...]>
 
     Switches:
+      addpart - adds parts to the puzzle
+      delpart - removes parts from the puzzle
+      addresult - adds results to the puzzle
+      delresult - removes results from the puzzle
       delete - deletes the recipe. Existing parts and results aren't modified
 
       use_success_location_message containing {result_names} and {caller} will automatically be replaced with correct values. Both are optional.
+
+      When removing parts/results, it's possible to remove all.
 
     """
 
@@ -314,11 +324,11 @@ class CmdEditPuzzle(MuxCommand):
     help_category = 'Puzzles'
 
     def func(self):
-        _USAGE = "Usage: @puzzleedit[/switches] <dbref>[/attribute = <value>]"
+        self._USAGE = "Usage: @puzzleedit[/switches] <dbref>[/attribute = <value>]"
         caller = self.caller
 
         if not self.lhslist:
-            caller.msg(_USAGE)
+            caller.msg(self._USAGE)
             return
 
         if '/' in self.lhslist[0]:
@@ -327,7 +337,7 @@ class CmdEditPuzzle(MuxCommand):
             recipe_dbref = self.lhslist[0]
 
         if not utils.dbref(recipe_dbref):
-            caller.msg("A puzzle recipe's #dbref must be specified.\n" + _USAGE)
+            caller.msg("A puzzle recipe's #dbref must be specified.\n" + self._USAGE)
             return
 
         puzzle = search.search_script(recipe_dbref)
@@ -345,6 +355,34 @@ class CmdEditPuzzle(MuxCommand):
 
             puzzle.delete()
             caller.msg('%s was deleted' % puzzle_name_id)
+            return
+
+        elif 'addpart' in self.switches:
+            objs = self._get_objs()
+            if objs:
+                added = self._add_parts(objs, puzzle)
+                caller.msg('%s were added to parts' % (', '.join(added)))
+            return
+
+        elif 'delpart' in self.switches:
+            objs = self._get_objs()
+            if objs:
+                removed = self._remove_parts(objs, puzzle)
+                caller.msg('%s were removed from parts' % (', '.join(removed)))
+            return
+
+        elif 'addresult' in self.switches:
+            objs = self._get_objs()
+            if objs:
+                added = self._add_results(objs, puzzle)
+                caller.msg('%s were added to results' % (', '.join(added)))
+            return
+
+        elif 'delresult' in self.switches:
+            objs = self._get_objs()
+            if objs:
+                removed = self._remove_results(objs, puzzle)
+                caller.msg('%s were removed from results' % (', '.join(removed)))
             return
 
         else:
@@ -366,6 +404,58 @@ class CmdEditPuzzle(MuxCommand):
                     "%s use_success_location_message = %s\n" % (puzzle_name_id, puzzle.db.use_success_location_message)
                 )
                 return
+
+    def _get_objs(self):
+        if not self.rhslist:
+            self.caller.msg(self._USAGE)
+            return
+        objs = []
+        for o in self.rhslist:
+            obj = self.caller.search(o)
+            if obj:
+                objs.append(obj)
+        return objs
+
+    def _add_objs_to(self, objs, to):
+        """Adds propto objs to the given set (parts or results)"""
+        added = []
+        toobjs = list(to[:])
+        for obj in objs:
+            protoobj = proto_def(obj)
+            toobjs.append(protoobj)
+            added.append(obj.key)
+        return added, toobjs
+
+    def _remove_objs_from(self, objs, frm):
+        """Removes propto objs from the given set (parts or results)"""
+        removed = []
+        fromobjs = list(frm[:])
+        for obj in objs:
+            protoobj = proto_def(obj)
+            if protoobj in fromobjs:
+                fromobjs.remove(protoobj)
+                removed.append(obj.key)
+        return removed, fromobjs
+
+    def _add_parts(self, objs, puzzle):
+        added, toobjs = self._add_objs_to(objs, puzzle.db.parts)
+        puzzle.db.parts = tuple(toobjs)
+        return added
+
+    def _remove_parts(self, objs, puzzle):
+        removed, fromobjs = self._remove_objs_from(objs, puzzle.db.parts)
+        puzzle.db.parts = tuple(fromobjs)
+        return removed
+
+    def _add_results(self, objs, puzzle):
+        added, toobjs = self._add_objs_to(objs, puzzle.db.results)
+        puzzle.db.results = tuple(toobjs)
+        return added
+
+    def _remove_results(self, objs, puzzle):
+        removed, fromobjs = self._remove_objs_from(objs, puzzle.db.results)
+        puzzle.db.results = tuple(fromobjs)
+        return removed
 
 
 class CmdArmPuzzle(MuxCommand):

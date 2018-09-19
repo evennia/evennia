@@ -1437,11 +1437,6 @@ class TestPuzzles(CommandTest):
     def test_puzzleedit(self):
         recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
 
-        # delete proto parts and proto results
-        self.stone.delete()
-        self.flint.delete()
-        self.fire.delete()
-
         def _puzzleedit(swt, dbref, args, expmsg):
             if (swt is None) and (dbref is None) and (args is None):
                 cmdstr = ''
@@ -1453,6 +1448,11 @@ class TestPuzzles(CommandTest):
                 expmsg,
                 caller=self.char1
             )
+
+        # delete proto parts and proto results
+        self.stone.delete()
+        self.flint.delete()
+        self.fire.delete()
 
         # bad syntax
         _puzzleedit(None, None, None, "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
@@ -1472,6 +1472,7 @@ class TestPuzzles(CommandTest):
         # edit use_success_message and use_success_location_message
         _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', 'makefire(%s) use_success_message = Yes!' % recipe_dbref)
         _puzzleedit('', recipe_dbref, '/use_success_location_message = {result_names} Yeah baby! {caller}', 'makefire(%s) use_success_location_message = {result_names} Yeah baby! {caller}' % recipe_dbref)
+
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
         self.room1.msg_contents = Mock()
         self._use('stone, flint', 'Yes!')
@@ -1480,6 +1481,67 @@ class TestPuzzles(CommandTest):
         # delete
         _puzzleedit('/delete', recipe_dbref, '', 'makefire(%s) was deleted' % recipe_dbref)
         self._assert_no_recipes()
+
+    def test_puzzleedit_add_remove_parts_results(self):
+        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
+
+        def _puzzleedit(swt, dbref, rhslist, expmsg):
+            cmdstr = '%s %s = %s' % (swt, dbref, ', '.join(rhslist))
+            self.call(
+                puzzles.CmdEditPuzzle(),
+                cmdstr,
+                expmsg,
+                caller=self.char1
+            )
+
+        red_stone = create_object(key='red stone', location=self.char1.location)
+        smoke = create_object(key='smoke', location=self.char1.location)
+
+        _puzzleedit('/addresult', recipe_dbref, ['smoke'], 'smoke were added to results')
+        _puzzleedit('/addpart', recipe_dbref, ['red stone', 'stone'], 'red stone, stone were added to parts')
+
+        # create a box so we can put all objects in
+        # so that they can't be found during puzzle resolution
+        self.box = create_object(key='box', location=self.char1.location)
+        def _box_all():
+            for o in self.room1.contents:
+                if o not in [self.char1, self.char2, self.exit,
+                        self.obj1, self.obj2, self.box]:
+                    o.location = self.box
+        _box_all()
+
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint', 'red stone', 'stone'])
+        self._check_room_contents({
+            'stone': 2,
+            'red stone': 1,
+            'flint': 1,
+        })
+        self._use('1-stone, flint', 'You try to utilize these but nothing happens ... something amiss?')
+        self._use('1-stone, flint, red stone, 3-stone', 'You are a Genius')
+        self._check_room_contents({
+            'smoke': 1,
+            'fire': 1
+        })
+        _box_all()
+
+        self.fire.location = self.room1
+        self.stone.location = self.room1
+
+        _puzzleedit('/delresult', recipe_dbref, ['fire'], 'fire were removed from results')
+        _puzzleedit('/delpart', recipe_dbref, ['stone', 'stone'], 'stone, stone were removed from parts')
+
+        _box_all()
+
+        self._arm(recipe_dbref, 'makefire', ['flint', 'red stone'])
+        self._check_room_contents({
+            'red stone': 1,
+            'flint': 1,
+        })
+        self._use('red stone, flint', 'You are a Genius')
+        self._check_room_contents({
+            'smoke': 1,
+            'fire': 0
+        })
 
     def test_lspuzzlerecipes_lsarmedpuzzles(self):
         msg = self.call(
