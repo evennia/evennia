@@ -66,7 +66,8 @@ def homogenize_prototype(prototype, custom_keys=None):
             homogenized[key] = val
         else:
             attrs.append((key, val, None, ''))
-    homogenized['attrs'] = attrs
+    if attrs:
+        homogenized['attrs'] = attrs
     return homogenized
 
 
