@@ -2380,6 +2380,7 @@ class OLCMenu(EvMenu):
         olc_keys = ("index", "forward", "back", "previous", "next", "validate prototype",
                     "save prototype", "load prototype", "spawn prototype", "search objects")
         actioninfo = self.actioninfo + "\n" if hasattr(self, 'actioninfo') else ''
+        self.actioninfo = ''  # important, or this could bleed over to other nodes
         olc_options = []
         other_options = []
         for key, desc in optionlist:
