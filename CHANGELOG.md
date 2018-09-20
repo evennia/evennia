@@ -74,6 +74,9 @@
 - Added `exit_cmd` to EvMore pager, to allow for calling a command (e.g. 'look') when leaving the pager.
 - `get_all_typeclasses` will return  dict `{"path": typeclass, ...}` for all typeclasses available
   in the system. This is used by the new `@typeclass/list` subcommand (useful for builders etc).
+- `evennia.utils.dbserialize.deserialize(obj)` is a new helper function to *completely* disconnect
+  a mutable recovered from an Attribute from the database. This will convert all nested `_Saver*`
+  classes to their plain-Python counterparts. 
 
 ### General
 
