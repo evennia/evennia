@@ -821,7 +821,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
     {
-        'NAME': 'evennia.contrib.security.validators.EvenniaPasswordValidator',
+        'NAME': 'evennia.server.validators.EvenniaPasswordValidator',
     },
 ]
 

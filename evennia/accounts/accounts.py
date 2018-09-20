@@ -13,6 +13,8 @@ instead for most things).
 
 import time
 from django.conf import settings
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
@@ -357,7 +359,66 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     puppet = property(__get_single_puppet)
 
     # utility methods
-
+    @classmethod
+    def validate_password(cls, password, account=None):
+        """
+        Checks the given password against the list of Django validators enabled 
+        in the server.conf file.
+        
+        Args:
+            password (str): Password to validate
+            
+        Kwargs:
+            account (DefaultAccount, optional): Account object to validate the
+                password for. Optional, but Django includes some validators to
+                do things like making sure users aren't setting passwords to the 
+                same value as their username. If left blank, these user-specific
+                checks are skipped.
+            
+        Returns:
+            valid (bool): Whether or not the password passed validation
+            error (ValidationError, None): Any validation error(s) raised. Multiple
+                errors can be nested within a single object.
+        
+        """
+        valid = False
+        error = None
+        
+        # Validation returns None on success; invert it and return a more sensible bool
+        try: 
+            valid = not password_validation.validate_password(password, user=account)
+        except ValidationError as e:
+            error = e
+            
+        return valid, error
+    
+    def set_password(self, password, force=False):
+        """
+        Applies the given password to the account if it passes validation checks.
+        Can be overridden by using the 'force' flag.
+        
+        Args:
+            password (str): Password to set
+            
+        Kwargs:
+            force (bool): Sets password without running validation checks.
+            
+        Raises:
+            ValidationError
+        
+        Returns:
+            None (None): Does not return a value.
+        
+        """
+        if not force:
+            # Run validation checks
+            valid, error = self.validate_password(password, account=self)
+            if error: raise error
+            
+        super(DefaultAccount, self).set_password(password)
+        logger.log_info("Password succesfully changed for %s." % self)
+        self.at_password_change()
+    
     def delete(self, *args, **kwargs):
         """
         Deletes the account permanently.
@@ -707,6 +768,17 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         is established and usually no character is yet assigned at
         this point. This hook is intended for account-specific setup
         like configurations.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        """
+        pass
+    
+    def at_password_change(self, **kwargs):
+        """
+        Called after a successful password set/modify.
 
         Args:
             **kwargs (dict): Arbitrary, optional arguments for users
