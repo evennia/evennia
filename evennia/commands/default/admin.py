@@ -428,12 +428,23 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
         account = caller.search_account(self.lhs)
         if not account:
             return
-        account.set_password(self.rhs)
+        
+        newpass = self.rhs
+        
+        # Validate password
+        validated, error = account.validate_password(newpass)
+        if not validated:
+            errors = [e for suberror in error.messages for e in error.messages]
+            string = "\n".join(errors)
+            caller.msg(string)
+            return
+        
+        account.set_password(newpass)
         account.save()
-        self.msg("%s - new password set to '%s'." % (account.name, self.rhs))
+        self.msg("%s - new password set to '%s'." % (account.name, newpass))
         if account.character != caller:
             account.msg("%s has changed your password to '%s'." % (caller.name,
-                                                                   self.rhs))
+                                                                   newpass))
 
 
 class CmdPerm(COMMAND_DEFAULT_CLASS):

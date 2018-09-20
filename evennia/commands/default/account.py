@@ -627,10 +627,16 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
             return
         oldpass = self.lhslist[0]  # Both of these are
         newpass = self.rhslist[0]  # already stripped by parse()
+        
+        # Validate password
+        validated, error = account.validate_password(newpass)
+        
         if not account.check_password(oldpass):
             self.msg("The specified old password isn't correct.")
-        elif len(newpass) < 3:
-            self.msg("Passwords must be at least three characters long.")
+        elif not validated:
+            errors = [e for suberror in error.messages for e in error.messages]
+            string = "\n".join(errors)
+            self.msg(string)
         else:
             account.set_password(newpass)
             account.save()
