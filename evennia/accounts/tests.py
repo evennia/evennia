@@ -57,6 +57,29 @@ class TestDefaultAccount(TestCase):
     def setUp(self):
         self.s1 = Session()
         self.s1.sessid = 0
+        
+    def test_password_validation(self):
+        "Check password validators deny bad passwords"
+        
+        self.account = create.create_account("TestAccount%s" % randint(0, 9), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        for bad in ('', '123', 'password', 'TestAccount', '#', 'xyzzy'):
+            self.assertFalse(self.account.validate_password(bad, account=self.account)[0])
+            
+        "Check validators allow sufficiently complex passwords"
+        for better in ('Mxyzptlk', "j0hn, i'M 0n1y d4nc1nG"):
+            self.assertTrue(self.account.validate_password(better, account=self.account)[0])
+            
+    def test_password_change(self):
+        "Check password setting and validation is working as expected"
+        self.account = create.create_account("TestAccount%s" % randint(0, 9), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        
+        from django.core.exceptions import ValidationError
+        # Try setting some bad passwords
+        for bad in ('', '#', 'TestAccount', 'password'):
+            self.assertRaises(ValidationError, self.account.set_password, bad)
+            
+        # Try setting a better password (test for False; returns None on success)
+        self.assertFalse(self.account.set_password('Mxyzptlk'))
 
     def test_puppet_object_no_object(self):
         "Check puppet_object method called with no object param"
