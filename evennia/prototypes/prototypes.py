@@ -16,7 +16,7 @@ from evennia.utils.utils import (
     get_all_typeclasses, to_str, dbref, justify)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
-from evennia.utils import inlinefuncs
+from evennia.utils import inlinefuncs, dbserialize
 from evennia.utils.evtable import EvTable
 
 
@@ -102,8 +102,17 @@ class DbPrototype(DefaultScript):
     """
     def at_script_creation(self):
         self.key = "empty prototype"  # prototype_key
-        self.desc = "A prototype"     # prototype_desc
+        self.desc = "A prototype"     # prototype_desc (.tags are used for prototype_tags)
         self.db.prototype = {}        # actual prototype
+
+    @property
+    def prototype(self):
+        "Make sure to decouple from db!"
+        return dbserialize.deserialize(self.attributes.get('prototype', {}))
+
+    @prototype.setter
+    def prototype(self, prototype):
+        self.attributes.add('prototype', prototype)
 
 
 # Prototype manager functions
@@ -152,7 +161,7 @@ def save_prototype(**kwargs):
 
     # make sure meta properties are included with defaults
     stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
-    prototype = dict(stored_prototype[0].db.prototype) if stored_prototype else {}
+    prototype = stored_prototype[0].prototype if stored_prototype else {}
 
     kwargs['prototype_desc'] = kwargs.get("prototype_desc", prototype.get("prototype_desc", ""))
     prototype_locks = kwargs.get(
@@ -185,7 +194,7 @@ def save_prototype(**kwargs):
             DbPrototype, key=prototype_key, desc=prototype['prototype_desc'], persistent=True,
             locks=prototype_locks, tags=prototype['prototype_tags'],
             attributes=[("prototype", prototype)])
-    return stored_prototype.db.prototype
+    return stored_prototype.prototype
 
 create_prototype = save_prototype   # alias
 
@@ -279,7 +288,7 @@ def search_prototype(key=None, tags=None):
         # exact or partial match on key
         db_matches = db_matches.filter(db_key=key) or db_matches.filter(db_key__icontains=key)
         # return prototype
-    db_prototypes = [dict(dbprot.attributes.get("prototype", {})) for dbprot in db_matches]
+    db_prototypes = [dbprot.prototype for dbprot in db_matches]
 
     matches = db_prototypes + module_prototypes
     nmatches = len(matches)
