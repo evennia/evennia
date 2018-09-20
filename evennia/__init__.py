@@ -350,12 +350,14 @@ def set_trace(debugger="auto", term_size=(140, 40)):
     """
     import sys
     dbg = None
+    pudb_mode = False
 
     if debugger in ('auto', 'pudb'):
         try:
             from pudb import debugger
             dbg = debugger.Debugger(stdout=sys.__stdout__,
                                     term_size=term_size)
+            pudb_mode = True
         except ImportError:
             if debugger == 'pudb':
                 raise
@@ -364,7 +366,12 @@ def set_trace(debugger="auto", term_size=(140, 40)):
     if not dbg:
         import pdb
         dbg = pdb.Pdb(stdout=sys.__stdout__)
+        pudb_mode = False
 
-    # Start debugger, forcing it up one stack frame (otherwise `set_trace` will start # debugger at
-    # this point, not the actual code location)
-    dbg.set_trace(sys._getframe().f_back)
+    if pudb_mode:
+        # Stopped at breakpoint. Press 'n' to continue into the code.
+        dbg.set_trace()
+    else:
+        # Start debugger, forcing it up one stack frame (otherwise `set_trace` will start debugger
+        # this point, not the actual code location)
+        dbg.set_trace(sys._getframe().f_back)

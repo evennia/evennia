@@ -200,9 +200,8 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W", search=False):
                             color=color, node=next_node.replace("_", "-")),
                         "goto": "node_{}".format(next_node)})
 
-    if "index" not in (prev_node, next_node):
-        options.append({"key": ("|wI|Wndex", "i"),
-                        "goto": "node_index"})
+    options.append({"key": ("|wI|Wndex", "i"),
+                    "goto": "node_index"})
 
     if curr_node:
         options.append({"key": ("|wV|Walidate prototype", "validate", "v"),
@@ -319,7 +318,7 @@ def _get_current_value(caller, keyname, comparer=None, formatter=str, only_inher
         if keyname in flat_prot:
             out = formatter(comparer(prot[keyname], flat_prot[keyname]))
             if only_inherit:
-                if out:
+                if str(out).strip():
                     return "|WCurrent|n {} |W(|binherited|W):|n {}".format(keyname, out)
                 return ""
             else:
@@ -1953,14 +1952,12 @@ def _keep_diff(caller, **kwargs):
     tmp[path[-1]] = "KEEP"
 
 
-def _format_diff_text_and_options(diff, exclude=None):
+def _format_diff_text_and_options(diff):
     """
     Reformat the diff in a way suitable for the olc menu.
 
     Args:
         diff (dict): A diff as produced by `prototype_diff`.
-        exclude (list, optional): List of root keys to skip, regardless
-            of diff instruction.
 
     Returns:
         options (list): List of options dict.
@@ -2051,8 +2048,7 @@ def node_apply_diff(caller, **kwargs):
         base_obj = choice(update_objects)
 
         # from evennia import set_trace
-        diff, obj_prototype = spawner.prototype_diff_from_object(
-                prototype, base_obj, exceptions={"location": "KEEP"})
+        diff, obj_prototype = spawner.prototype_diff_from_object(prototype, base_obj)
 
     helptext = """
         This will go through all existing objects and apply the changes you accept.
@@ -2069,7 +2065,10 @@ def node_apply_diff(caller, **kwargs):
         Note that the `location` will never be auto-adjusted because it's so rare to want to
         homogenize the location of all object instances."""
 
-    txt, options = _format_diff_text_and_options(diff, exclude=['location'] if custom_location else None)
+    if not custom_location:
+        diff.pop("location", None)
+
+    txt, options = _format_diff_text_and_options(diff)
 
     if options:
         text = ["Suggested changes to {} objects. ".format(len(update_objects)),
@@ -2261,7 +2260,7 @@ def node_prototype_spawn(caller, **kwargs):
         options.append(
             {"desc": "Spawn in prototype's defined location ({loc})".format(loc=location),
              "goto": (_spawn,
-                      dict(prototype=prototype))})
+                      dict(prototype=prototype, location=location, custom_location=True))})
     caller_loc = caller.location
     if location != caller_loc:
         options.append(
