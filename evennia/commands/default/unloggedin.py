@@ -4,7 +4,6 @@ Commands that are available from the connect screen.
 import re
 import time
 import datetime
-from collections import defaultdict, deque
 from random import getrandbits
 from django.conf import settings
 from django.contrib.auth import authenticate
