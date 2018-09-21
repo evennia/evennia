@@ -88,32 +88,38 @@ class ThrottleTest(EvenniaTest):
     def test_throttle(self):
         ips = ('94.100.176.153', '45.56.148.77', '5.196.1.129')
         kwargs = {
-            'maxlim': 5, 
-            'timeout': 5 * 60
+            'limit': 5, 
+            'timeout': 15 * 60
         }
+        
+        throttle = Throttle(**kwargs)
         
         for ip in ips:
             # Throttle should not be engaged by default
-            self.assertFalse(Throttle.check(ip, **kwargs))
+            self.assertFalse(throttle.check(ip))
             
             # Pretend to fail a bunch of events
-            for x in xrange(5):
-                obj = Throttle.update(ip)
+            for x in xrange(50):
+                obj = throttle.update(ip)
                 self.assertFalse(obj)
             
             # Next ones should be blocked
-            self.assertTrue(Throttle.check(ip, **kwargs))
+            self.assertTrue(throttle.check(ip))
             
-            for x in xrange(Throttle.cache_size * 2):
-                obj = Throttle.update(ip)
+            for x in xrange(throttle.cache_size * 2):
+                obj = throttle.update(ip)
                 self.assertFalse(obj)
                 
             # Should still be blocked
-            self.assertTrue(Throttle.check(ip, **kwargs))
+            self.assertTrue(throttle.check(ip))
             
             # Number of values should be limited by cache size
-            self.assertEqual(Throttle.cache_size, len(Throttle.get(ip)))
+            self.assertEqual(throttle.cache_size, len(throttle.get(ip)))
+            
+        cache = throttle.get()
+            
+        # Make sure there are entries for each IP
+        self.assertEqual(len(ips), len(cache.keys()))
             
         # There should only be (cache_size * num_ips) total in the Throttle cache
-        cache = Throttle.get()
-        self.assertEqual(sum([len(cache[x]) for x in cache.keys()]), Throttle.cache_size * len(ips))
+        self.assertEqual(sum([len(cache[x]) for x in cache.keys()]), throttle.cache_size * len(ips))
