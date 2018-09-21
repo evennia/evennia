@@ -26,6 +26,9 @@ except ImportError:
 
 from django.test.runner import DiscoverRunner
 
+from evennia.server.throttle import Throttle
+from evennia.utils.test_resources import EvenniaTest
+
 from .deprecations import check_errors
 
 
@@ -77,3 +80,40 @@ class TestDeprecations(TestCase):
             self.assertRaises(DeprecationWarning, check_errors, MockSettings(setting))
         # test check for WEBSERVER_PORTS having correct value
         self.assertRaises(DeprecationWarning, check_errors, MockSettings("WEBSERVER_PORTS", value=["not a tuple"]))
+
+class ThrottleTest(EvenniaTest):
+    """
+    Class for testing the connection/IP throttle.
+    """
+    def test_throttle(self):
+        ips = ('94.100.176.153', '45.56.148.77', '5.196.1.129')
+        kwargs = {
+            'maxlim': 5, 
+            'timeout': 5 * 60
+        }
+        
+        for ip in ips:
+            # Throttle should not be engaged by default
+            self.assertFalse(Throttle.check(ip, **kwargs))
+            
+            # Pretend to fail a bunch of events
+            for x in xrange(5):
+                obj = Throttle.update(ip)
+                self.assertFalse(obj)
+            
+            # Next ones should be blocked
+            self.assertTrue(Throttle.check(ip, **kwargs))
+            
+            for x in xrange(Throttle.cache_size * 2):
+                obj = Throttle.update(ip)
+                self.assertFalse(obj)
+                
+            # Should still be blocked
+            self.assertTrue(Throttle.check(ip, **kwargs))
+            
+            # Number of values should be limited by cache size
+            self.assertEqual(Throttle.cache_size, len(Throttle.get(ip)))
+            
+        # There should only be (cache_size * num_ips) total in the Throttle cache
+        cache = Throttle.get()
+        self.assertEqual(sum([len(cache[x]) for x in cache.keys()]), Throttle.cache_size * len(ips))
