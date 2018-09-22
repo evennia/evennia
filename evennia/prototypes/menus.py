@@ -1965,6 +1965,7 @@ def _format_diff_text_and_options(diff, **kwargs):
         any (any): Forwarded into the generated options as arguments to the callable.
 
     Returns:
+        texts (list): List of texts.
         options (list): List of options dict.
 
     """
@@ -1978,7 +1979,7 @@ def _format_diff_text_and_options(diff, **kwargs):
                 return "{} |W=|n {} |W(category:|n {}|W, locks:|n {}|W)|n".format(*obj)
             elif rootname == "tags":
                 return "{} |W(category:|n {}|W)|n".format(obj[0], obj[1])
-        return obj
+        return "{}".format(obj)
 
     def _parse_diffpart(diffpart, optnum, *args):
         typ = type(diffpart)
@@ -1988,7 +1989,7 @@ def _format_diff_text_and_options(diff, **kwargs):
             rootname = args[0]
             old, new, instruction = diffpart
             if instruction == 'KEEP':
-                texts.append("   |gKEEP|W:|n {old}".format(old=old))
+                texts.append("   |gKEEP|W:|n {old}".format(old=_visualize(old, rootname)))
             else:
                 vold = _visualize(old, rootname)
                 vnew = _visualize(new, rootname)

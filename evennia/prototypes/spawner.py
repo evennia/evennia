@@ -502,19 +502,26 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
                 elif key == 'permissions':
                     if directive == 'REPLACE':
                         obj.permissions.clear()
-                    obj.permissions.batch_add(*init_spawn_value(val, make_iter))
+                    obj.permissions.batch_add(*(init_spawn_value(perm, str) for perm in val))
                 elif key == 'aliases':
                     if directive == 'REPLACE':
                         obj.aliases.clear()
-                    obj.aliases.batch_add(*init_spawn_value(val, make_iter))
+                    obj.aliases.batch_add(*(init_spawn_value(alias, str) for alias in val))
                 elif key == 'tags':
                     if directive == 'REPLACE':
                         obj.tags.clear()
-                    obj.tags.batch_add(*init_spawn_value(val, make_iter))
+                    obj.tags.batch_add(*(
+                        (init_spawn_value(ttag, str), tcategory, tdata)
+                        for ttag, tcategory, tdata in val))
                 elif key == 'attrs':
                     if directive == 'REPLACE':
                         obj.attributes.clear()
-                    obj.attributes.batch_add(*init_spawn_value(val, make_iter))
+                    obj.attributes.batch_add(*(
+                        (init_spawn_value(akey, str),
+                         init_spawn_value(aval, value_to_obj),
+                         acategory,
+                         alocks)
+                        for akey, aval, acategory, alocks in val))
                 elif key == 'exec':
                     # we don't auto-rerun exec statements, it would be huge security risk!
                     pass
