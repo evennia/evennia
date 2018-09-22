@@ -299,19 +299,31 @@ def prototype_diff(prototype1, prototype2, maxdepth=2):
 
         if old_type != new_type:
             if old and not new:
+                if depth < maxdepth and old_type == dict:
+                    return {key: (part, None, "REMOVE") for key, part in old.items()}
+                elif depth < maxdepth and is_iter(old):
+                    return {part[0] if is_iter(part) else part:
+                            (part, None, "REMOVE") for part in old}
                 return (old, new, "REMOVE")
             elif not old and new:
+                if depth < maxdepth and new_type == dict:
+                    return {key: (None, part, "ADD") for key, part in new.items()}
+                elif depth < maxdepth and is_iter(new):
+                    return {part[0] if is_iter(part) else part: (None, part, "ADD") for part in new}
                 return (old, new, "ADD")
             else:
+                # this condition should not occur in a standard diff
                 return (old, new, "UPDATE")
         elif depth < maxdepth and new_type == dict:
             all_keys = set(old.keys() + new.keys())
-            return {key: _recursive_diff(old.get(key), new.get(key), depth=depth + 1) for key in all_keys}
+            return {key: _recursive_diff(old.get(key), new.get(key), depth=depth + 1)
+                    for key in all_keys}
         elif depth < maxdepth and is_iter(new):
             old_map = {part[0] if is_iter(part) else part: part for part in old}
             new_map = {part[0] if is_iter(part) else part: part for part in new}
             all_keys = set(old_map.keys() + new_map.keys())
-            return {key: _recursive_diff(old_map.get(key), new_map.get(key), depth=depth + 1) for key in all_keys}
+            return {key: _recursive_diff(old_map.get(key), new_map.get(key), depth=depth + 1)
+                    for key in all_keys}
         elif old != new:
             return (old, new, "UPDATE")
         else:

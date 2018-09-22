@@ -45,7 +45,7 @@
   current node instead of failing.
 - Better error handling of in-node syntax errors.
 - Improve dedent of default text/helptext formatter. Right-strip whitespace.
-- Add `debug` option when creating menu - this turns of persistence and makes the `menudebug`
+- Add `debug` option when creating menu - this turns off persistence and makes the `menudebug`
   command available for examining the current menu state.
 
 
@@ -76,7 +76,7 @@
   in the system. This is used by the new `@typeclass/list` subcommand (useful for builders etc).
 - `evennia.utils.dbserialize.deserialize(obj)` is a new helper function to *completely* disconnect
   a mutable recovered from an Attribute from the database. This will convert all nested `_Saver*`
-  classes to their plain-Python counterparts. 
+  classes to their plain-Python counterparts.
 
 ### General
 

@@ -569,6 +569,37 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(olc_menus._prototype_load_select(caller, self.test_prot['prototype_key']),
                          ('node_examine_entity', {'text': '|gLoaded prototype test_prot.|n', 'back': 'index'}) )
 
+        # diff helpers
+        obj_diff = {
+            'attrs': {
+                u'desc': ((u'desc', u'This is User #1.', None, ''),
+                          (u'desc', u'This is User #1.', None, ''),
+                          'KEEP'),
+                u'foo': (None,
+                         (u'foo', u'bar', None, ''),
+                         'ADD'),
+                u'prelogout_location': ((u'prelogout_location', "#2", None, ''),
+                                        (u'prelogout_location', "#2", None, ''),
+                                        'KEEP')},
+                'home': ('#2', '#2', 'KEEP'),
+                'key': (u'TestChar', u'TestChar', 'KEEP'),
+                'locks': ('boot:false();call:false();control:perm(Developer);delete:false();'
+                          'edit:false();examine:perm(Developer);get:false();msg:all();'
+                          'puppet:false();tell:perm(Admin);view:all()',
+                          'boot:false();call:false();control:perm(Developer);delete:false();'
+                          'edit:false();examine:perm(Developer);get:false();msg:all();'
+                          'puppet:false();tell:perm(Admin);view:all()',
+                          'KEEP'),
+                'permissions': {'developer': ('developer', 'developer', 'KEEP')},
+                'prototype_desc': ('Testobject build', None, 'REMOVE'),
+                'prototype_key': ('TestDiffKey', 'TestDiffKey', 'KEEP'),
+                'prototype_locks': ('spawn:all();edit:all()', 'spawn:all();edit:all()', 'KEEP'),
+                'prototype_tags': {},
+                'tags': {'foo': (None, ('foo', None, ''), 'ADD')},
+                'typeclass': (u'typeclasses.characters.Character',
+                              u'typeclasses.characters.Character', 'KEEP')}
+        self.assertEqual(olc_menus._format_diff_text_and_options(obj_diff), "")
+
 
 @mock.patch("evennia.prototypes.menus.protlib.search_prototype", new=mock.MagicMock(
    return_value=[{"prototype_key": "TestPrototype",

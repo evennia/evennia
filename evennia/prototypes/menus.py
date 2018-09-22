@@ -1944,20 +1944,25 @@ def _apply_diff(caller, **kwargs):
 
 
 def _keep_diff(caller, **kwargs):
+    """Change to KEEP setting for a given section of a diff"""
+    # from evennia import set_trace;set_trace(term_size=(182, 50))
     path = kwargs['path']
     diff = kwargs['diff']
     tmp = diff
     for key in path[:-1]:
-        tmp = diff[key]
-    tmp[path[-1]] = "KEEP"
+        tmp = tmp[key]
+    tmp[path[-1]] = tuple(list(tmp[path[-1]][:-1]) + ["KEEP"])
 
 
-def _format_diff_text_and_options(diff):
+def _format_diff_text_and_options(diff, **kwargs):
     """
     Reformat the diff in a way suitable for the olc menu.
 
     Args:
         diff (dict): A diff as produced by `prototype_diff`.
+
+    Kwargs:
+        any (any): Forwarded into the generated options as arguments to the callable.
 
     Returns:
         options (list): List of options dict.
@@ -1968,49 +1973,60 @@ def _format_diff_text_and_options(diff):
     def _visualize(obj, rootname, get_name=False):
         if utils.is_iter(obj):
             if get_name:
-                return obj[0]
+                return obj[0] if obj[0] else "<unset>"
             if rootname == "attrs":
                 return "{} |W=|n {} |W(category:|n {}|W, locks:|n {}|W)|n".format(*obj)
             elif rootname == "tags":
                 return "{} |W(category:|n {}|W)|n".format(obj[0], obj[1])
         return obj
 
-    def _parse_diffpart(diffpart, optnum, indent, *args):
+    def _parse_diffpart(diffpart, optnum, *args):
         typ = type(diffpart)
         texts = []
         options = []
         if typ == tuple and len(diffpart) == 3 and diffpart[2] in valid_instructions:
+            rootname = args[0]
             old, new, instruction = diffpart
             if instruction == 'KEEP':
-                texts.append("{old} |gKEEP|n".format(old=old))
+                texts.append("   |gKEEP|W:|n {old}".format(old=old))
             else:
-                texts.append("{indent}|c({num}) {inst}|W:|n {old} |W->|n {new}".format(
-                    indent=" " * indent,
-                    inst="|rREMOVE|n" if instruction == 'REMOVE' else "|y{}|n".format(instruction),
-                    num=optnum,
-                    old=_visualize(old, args[-1]),
-                    new=_visualize(new, args[-1])))
+                vold = _visualize(old, rootname)
+                vnew = _visualize(new, rootname)
+                vsep = "" if len(vold) < 78 else "\n"
+                vinst = "|rREMOVE|n" if instruction == 'REMOVE' else "|y{}|n".format(instruction)
+                texts.append("   |c[{num}] {inst}|W:|n {old} |W->|n{sep} {new}".format(
+                    inst=vinst, num=optnum, old=vold, sep=vsep, new=vnew))
                 options.append({"key": str(optnum),
-                                "desc": "|gKEEP|n {}".format(
-                                    _visualize(old, args[-1], get_name=True)),
-                                "goto": (_keep_diff, {"path": args, "diff": diff})})
+                                "desc": "|gKEEP|n ({}) {}".format(
+                                    rootname, _visualize(old, args[-1], get_name=True)),
+                                "goto": (_keep_diff, dict((("path",  args),
+                                                           ("diff", diff)), **kwargs))})
                 optnum += 1
         else:
             for key, subdiffpart in diffpart.items():
                 text, option, optnum = _parse_diffpart(
-                        subdiffpart, optnum, indent + 1, *(args + (key, )))
+                        subdiffpart, optnum, *(args + (key, )))
                 texts.extend(text)
                 options.extend(option)
-        return text, options, optnum
+        return texts, options, optnum
 
     texts = []
     options = []
     # we use this to allow for skipping full KEEP instructions
-    flattened_diff = spawner.flatten_diff(diff)
     optnum = 1
 
-    for root_key, diffpart in flattened_diff.items():
-        text, option, optnum = _parse_diffpart(diffpart, optnum, 1, root_key)
+    for root_key in sorted(diff):
+        diffpart = diff[root_key]
+        text, option, optnum = _parse_diffpart(diffpart, optnum, root_key)
+
+        heading = "- |w{}:|n ".format(root_key)
+        if root_key in ("attrs", "tags", "permissions"):
+            texts.append(heading)
+        elif text:
+            text = [heading + text[0]] + text[1:]
+        else:
+            text = [heading]
+
         texts.extend(text)
         options.extend(option)
 
@@ -2047,7 +2063,6 @@ def node_apply_diff(caller, **kwargs):
         # use one random object as a reference to calculate a diff
         base_obj = choice(update_objects)
 
-        # from evennia import set_trace
         diff, obj_prototype = spawner.prototype_diff_from_object(prototype, base_obj)
 
     helptext = """
@@ -2068,7 +2083,7 @@ def node_apply_diff(caller, **kwargs):
     if not custom_location:
         diff.pop("location", None)
 
-    txt, options = _format_diff_text_and_options(diff)
+    txt, options = _format_diff_text_and_options(diff, objects=update_objects, base_obj=base_obj)
 
     if options:
         text = ["Suggested changes to {} objects. ".format(len(update_objects)),
