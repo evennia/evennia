@@ -107,7 +107,7 @@ class TestUtils(EvenniaTest):
         # modify prototype
         old_prot['new'] = 'new_val'
         old_prot['test'] = 'testval_changed'
-        old_prot['permissions'] = 'Builder'
+        old_prot['permissions'] = ['Builder']
         # this will not update, since we don't update the prototype on-disk
         old_prot['prototype_desc'] = 'New version of prototype'
         old_prot['attrs'] += (("fooattr", "fooattrval", None, ''),)
@@ -146,7 +146,7 @@ class TestUtils(EvenniaTest):
                                    'edit:perm(Admin);examine:perm(Builder);get:all();'
                                    'puppet:pperm(Developer);tell:perm(Admin);view:all()',
                           'new': 'new_val',
-                          'permissions': 'Builder',
+                          'permissions': ['Builder'],
                           'prototype_desc': 'New version of prototype',
                           'prototype_key': Something,
                           'prototype_locks': 'spawn:all();edit:all()',
@@ -154,7 +154,6 @@ class TestUtils(EvenniaTest):
                           'test': 'testval_changed',
                           'typeclass': 'evennia.objects.objects.DefaultObject'})
 
-        # from evennia import set_trace; set_trace(term_size=(182, 50))
         self.assertEqual(
              pdiff,
              {'home': ('#1', '#1', 'KEEP'),
@@ -182,13 +181,12 @@ class TestUtils(EvenniaTest):
               'key': ('Obj', 'Obj', 'KEEP'),
               'typeclass': ('evennia.objects.objects.DefaultObject',
                             'evennia.objects.objects.DefaultObject', 'KEEP'),
-              'aliases': (['foo'], None, 'REMOVE'),
+              'aliases': {'foo': ('foo', None, 'REMOVE')},
               'prototype_desc': ('Built from Obj',
                                  'New version of prototype', 'UPDATE'),
-              'permissions': (None, 'Builder', 'ADD')}
-              )
+              'permissions': {"Builder": (None, 'Builder', 'ADD')}
+              })
 
-        # from evennia import set_trace;set_trace()
         self.assertEqual(
            spawner.flatten_diff(pdiff),
            {'aliases': 'REMOVE',
@@ -598,7 +596,37 @@ class TestMenuModule(EvenniaTest):
                 'tags': {'foo': (None, ('foo', None, ''), 'ADD')},
                 'typeclass': (u'typeclasses.characters.Character',
                               u'typeclasses.characters.Character', 'KEEP')}
-        self.assertEqual(olc_menus._format_diff_text_and_options(obj_diff), "")
+
+        texts, options = olc_menus._format_diff_text_and_options(obj_diff)
+        self.assertEqual(
+            "\n".join(texts),
+            '- |wattrs:|n \n'
+            '   |c[1] |yADD|n|W:|n None |W->|n foo |W=|n bar |W(category:|n None|W, locks:|n |W)|n\n'
+            '   |gKEEP|W:|n prelogout_location |W=|n #2 |W(category:|n None|W, locks:|n |W)|n\n'
+            '   |gKEEP|W:|n desc |W=|n This is User #1. |W(category:|n None|W, locks:|n |W)|n\n'
+            '- |whome:|n    |gKEEP|W:|n #2\n'
+            '- |wkey:|n    |gKEEP|W:|n TestChar\n'
+            '- |wlocks:|n    |gKEEP|W:|n boot:false();call:false();control:perm(Developer);delete:false();edit:false();examine:perm(Developer);get:false();msg:all();puppet:false();tell:perm(Admin);view:all()\n'
+            '- |wpermissions:|n \n'
+            '   |gKEEP|W:|n developer\n'
+            '- |wprototype_desc:|n    |c[2] |rREMOVE|n|W:|n Testobject build |W->|n None\n'
+            '- |wprototype_key:|n    |gKEEP|W:|n TestDiffKey\n'
+            '- |wprototype_locks:|n    |gKEEP|W:|n spawn:all();edit:all()\n'
+            '- |wprototype_tags:|n \n'
+            '- |wtags:|n \n'
+            '   |c[3] |yADD|n|W:|n None |W->|n foo |W(category:|n None|W)|n\n'
+            '- |wtypeclass:|n    |gKEEP|W:|n typeclasses.characters.Character')
+        self.assertEqual(
+            options,
+            [{'goto': (Something, Something),
+              'key': '1',
+              'desc': '|gKEEP|n (attrs) None'},
+             {'goto': (Something, Something),
+              'key': '2',
+              'desc': '|gKEEP|n (prototype_desc) Testobject build'},
+             {'goto': (Something, Something),
+              'key': '3',
+              'desc': '|gKEEP|n (tags) None'}])
 
 
 @mock.patch("evennia.prototypes.menus.protlib.search_prototype", new=mock.MagicMock(
