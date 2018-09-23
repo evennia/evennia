@@ -192,9 +192,9 @@ class Evennia(object):
             from twisted.internet.defer import Deferred
             if hasattr(self, "web_root"):
                 d = self.web_root.empty_threadpool()
-                d.addCallback(lambda _: self.shutdown("shutdown", _reactor_stopping=True))
+                d.addCallback(lambda _: self.shutdown("reload", _reactor_stopping=True))
             else:
-                d = Deferred(lambda _: self.shutdown("shutdown", _reactor_stopping=True))
+                d = Deferred(lambda _: self.shutdown("reload", _reactor_stopping=True))
             d.addCallback(lambda _: reactor.stop())
             reactor.callLater(1, d.callback, None)
         reactor.sigInt = _wrap_sigint_handler
