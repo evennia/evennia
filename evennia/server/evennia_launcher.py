@@ -971,16 +971,17 @@ def start_server_interactive():
             print("... Stopped Server with Ctrl-C.")
         else:
             print("... Server stopped (leaving interactive mode).")
-    stop_server_only(when_stopped=_iserver)
+    stop_server_only(when_stopped=_iserver, interactive=True)
 
 
-def stop_server_only(when_stopped=None):
+def stop_server_only(when_stopped=None, interactive=False):
     """
     Only stop the Server-component of Evennia (this is not useful except for debug)
 
     Args:
         when_stopped (callable): This will be called with no arguments when Server has stopped (or
             if it had already stopped when this is called).
+        interactive (bool, optional): Set if this is called as part of the interactive reload mechanism.
 
     """
     def _server_stopped(*args):
@@ -995,7 +996,10 @@ def stop_server_only(when_stopped=None):
         if srun:
             print("Server stopping ...")
             wait_for_status_reply(_server_stopped)
-            send_instruction(SSHUTD, {})
+            if interactive:
+                send_instruction(SRELOAD, {})
+            else:
+                send_instruction(SSHUTD, {})
         else:
             if when_stopped:
                 when_stopped()
@@ -1005,6 +1009,8 @@ def stop_server_only(when_stopped=None):
 
     def _portal_not_running(fail):
         print("Evennia is not running.")
+        if interactive:
+            print("Start Evennia normally first, then use `istart` to switch to interactive mode.")
         _reactor_stop()
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
