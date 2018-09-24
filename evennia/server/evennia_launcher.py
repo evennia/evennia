@@ -42,7 +42,6 @@ EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 import evennia  # noqa
 EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
 EVENNIA_SERVER = os.path.join(EVENNIA_LIB, "server")
-EVENNIA_RUNNER = os.path.join(EVENNIA_SERVER, "evennia_runner.py")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_LIB, "game_template")
 EVENNIA_PROFILING = os.path.join(EVENNIA_SERVER, "profiling")
 EVENNIA_DUMMYRUNNER = os.path.join(EVENNIA_PROFILING, "dummyrunner.py")
@@ -462,18 +461,19 @@ SERVER_INFO = \
 
 ARG_OPTIONS = \
     """Actions on installed server. One of:
- start  - launch server+portal if not running
- reload - restart server in 'reload' mode
- stop   - shutdown server+portal
- reboot - shutdown server+portal, then start again
- reset  - restart server in 'shutdown' mode
- istart - start server in the foreground (until reload)
- sstop  - stop only server
- kill   - send kill signal to portal+server (force)
- skill  - send kill signal only to server
- status - show server and portal run state
- info   - show server and portal port info
- menu   - show a menu of options
+ start   - launch server+portal if not running
+ reload  - restart server in 'reload' mode
+ stop    - shutdown server+portal
+ reboot  - shutdown server+portal, then start again
+ reset   - restart server in 'shutdown' mode
+ istart  - start server in foreground (until reload)
+ ipstart - start portal in foreground
+ sstop   - stop only server
+ kill    - send kill signal to portal+server (force)
+ skill   - send kill signal only to server
+ status  - show server and portal run state
+ info    - show server and portal port info
+ menu    - show a menu of options
 Others, like migrate, test and shell is passed on to Django."""
 
 # ------------------------------------------------------------
@@ -974,6 +974,47 @@ def start_server_interactive():
     stop_server_only(when_stopped=_iserver, interactive=True)
 
 
+def start_portal_interactive():
+    """
+    Start the Portal under control of the launcher process (foreground)
+
+    Notes:
+        In a normal start, the launcher waits for the Portal to start, then
+        tells it to start the Server. Since we can't do this here, we instead
+        start the Server first and then starts the Portal - the Server will
+        auto-reconnect to the Portal. To allow the Server to be reloaded, this
+        relies on a fixed server server-cmdline stored as a fallback on the
+        portal application in evennia/server/portal/portal.py.
+
+    """
+    def _iportal(fail):
+        portal_twistd_cmd, server_twistd_cmd = _get_twistd_cmdline(False, False)
+        portal_twistd_cmd.append("--nodaemon")
+
+        # starting Server first - it will auto-connect once Portal comes up
+        if _is_windows():
+            # Windows requires special care
+            create_no_window = 0x08000000
+            Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
+                  creationflags=create_no_window)
+        else:
+            Popen(server_twistd_cmd, env=getenv(), bufsize=-1)
+
+        print("Starting Portal in interactive mode (stop with Ctrl-C)...")
+        try:
+            Popen(portal_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
+        except KeyboardInterrupt:
+            print("... Stopped Portal with Ctrl-C.")
+        else:
+            print("... Portal stopped (leaving interactive mode).")
+
+    def _portal_running(response):
+        print("Evennia must be shut down completely before running Portal in interactive mode.")
+        _reactor_stop()
+
+    send_instruction(PSTATUS, None, _portal_running, _iportal)
+
+
 def stop_server_only(when_stopped=None, interactive=False):
     """
     Only stop the Server-component of Evennia (this is not useful except for debug)
@@ -981,7 +1022,8 @@ def stop_server_only(when_stopped=None, interactive=False):
     Args:
         when_stopped (callable): This will be called with no arguments when Server has stopped (or
             if it had already stopped when this is called).
-        interactive (bool, optional): Set if this is called as part of the interactive reload mechanism.
+        interactive (bool, optional): Set if this is called as part of the interactive reload
+            mechanism.
 
     """
     def _server_stopped(*args):
@@ -1972,7 +2014,7 @@ def main():
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif option in ('status', 'info', 'start', 'istart', 'reload', 'reboot',
+    elif option in ('status', 'info', 'start', 'istart', 'ipstart', 'reload', 'reboot',
                     'reset', 'stop', 'sstop', 'kill', 'skill'):
         # operate the server directly
         if not SERVER_LOGFILE:
@@ -1985,6 +2027,8 @@ def main():
             start_evennia(args.profiler, args.profiler)
         elif option == "istart":
             start_server_interactive()
+        elif option == "ipstart":
+            start_portal_interactive()
         elif option == 'reload':
             reload_evennia(args.profiler)
         elif option == 'reboot':

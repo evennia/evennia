@@ -12,6 +12,7 @@ from builtins import object
 import sys
 import os
 
+from os.path import dirname, abspath
 from twisted.application import internet, service
 from twisted.internet import protocol, reactor
 from twisted.python.log import ILogObserver
@@ -113,41 +114,46 @@ class Portal(object):
         self.server_restart_mode = "shutdown"
         self.server_info_dict = {}
 
+        # in non-interactive portal mode, this gets overwritten by
+        # cmdline sent by the evennia launcher
+        self.server_twistd_cmd = self._get_backup_server_twistd_cmd()
+
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown', self.shutdown, _reactor_stopping=True)
+        reactor.addSystemEventTrigger('before', 'shutdown',
+                                      self.shutdown, _reactor_stopping=True, _stop_server=True)
+
+    def _get_backup_server_twistd_cmd(self):
+        """
+        For interactive Portal mode there is no way to get the server cmdline from the launcher, so
+        we need to guess it here (it's very likely to not change)
+
+        Returns:
+            server_twistd_cmd (list): An instruction for starting the server, to pass to Popen.
+        """
+        server_twistd_cmd = [
+            "twistd",
+            "--python={}".format(os.path.join(dirname(dirname(abspath(__file__))), "server.py"))]
+        if os.name != 'nt':
+            gamedir = os.getcwd()
+            server_twistd_cmd.append("--pidfile={}".format(
+                os.path.join(gamedir, "server", "server.pid")))
+        return server_twistd_cmd
 
     def get_info_dict(self):
         "Return the Portal info, for display."
         return INFO_DICT
 
-    def set_restart_mode(self, mode=None):
-        """
-        This manages the flag file that tells the runner if the server
-        should be restarted or is shutting down.
-
-        Args:
-            mode (bool or None): Valid modes are True/False and None.
-                If mode is None, no change will be done to the flag file.
-
-        """
-        if mode is None:
-            return
-        with open(PORTAL_RESTART, 'w') as f:
-            f.write(str(mode))
-
-    def shutdown(self, restart=None, _reactor_stopping=False):
+    def shutdown(self, _reactor_stopping=False, _stop_server=False):
         """
         Shuts down the server from inside it.
 
         Args:
-            restart (bool or None, optional): True/False sets the
-                flags so the server will be restarted or not. If None, the
-                current flag setting (set at initialization or previous
-                runs) is used.
             _reactor_stopping (bool, optional): This is set if server
                 is already in the process of shutting down; in this case
                 we don't need to stop it again.
+            _stop_server (bool, optional): Only used in portal-interactive mode;
+                makes sure to stop the Server cleanly.
 
         Note that restarting (regardless of the setting) will not work
         if the Portal is currently running in daemon mode. In that
@@ -158,8 +164,10 @@ class Portal(object):
             # we get here due to us calling reactor.stop below. No need
             # to do the shutdown procedure again.
             return
+
         self.sessions.disconnect_all()
-        self.set_restart_mode(restart)
+        if _stop_server:
+            self.amp_protocol.stop_server(mode='shutdown')
 
         if not _reactor_stopping:
             # shutting down the reactor will trigger another signal. We set
@@ -179,9 +187,11 @@ class Portal(object):
 application = service.Application('Portal')
 
 # custom logging
-logfile = logger.WeeklyLogFile(os.path.basename(settings.PORTAL_LOG_FILE),
-                               os.path.dirname(settings.PORTAL_LOG_FILE))
-application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
+
+if "--nodaemon" not in sys.argv:
+    logfile = logger.WeeklyLogFile(os.path.basename(settings.PORTAL_LOG_FILE),
+                                   os.path.dirname(settings.PORTAL_LOG_FILE))
+    application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
 
 # The main Portal server program. This sets up the database
 # and is where we store all the other services.
@@ -331,7 +341,8 @@ if WEBSERVER_ENABLED:
                     factory.noisy = False
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
-                    websocket_service = internet.TCPServer(port, WebSocketFactory(factory), interface=w_interface)
+                    websocket_service = internet.TCPServer(port, WebSocketFactory(factory),
+                                                           interface=w_interface)
                     websocket_service.setName('EvenniaWebSocket%s:%s' % (w_ifacestr, port))
                     PORTAL.services.addService(websocket_service)
                     websocket_started = True
