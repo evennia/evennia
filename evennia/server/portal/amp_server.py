@@ -336,9 +336,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         elif operation == amp.PSHUTD:  # portal + server shutdown  #16
             if server_connected:
                 self.factory.server_connection.wait_for_disconnect(
-                    self.factory.portal.shutdown, restart=False)
+                    self.factory.portal.shutdown )
             else:
-                self.factory.portal.shutdown(restart=False)
+                self.factory.portal.shutdown()
 
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
@@ -414,7 +414,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         elif operation == amp.PSHUTD:  # full server+server shutdown
             self.factory.server_connection.wait_for_disconnect(
-                self.factory.portal.shutdown, restart=False)
+                self.factory.portal.shutdown)
             self.stop_server(mode='shutdown')
 
         elif operation == amp.PSYNC:  # portal sync
