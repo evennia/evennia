@@ -802,28 +802,15 @@ INSTALLED_APPS = (
 # This should usually not be changed.
 AUTH_USER_MODEL = "accounts.AccountDB"
 
-# Password validation
+# Password validation plugins
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 8,
-        }
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-    {
-        'NAME': 'evennia.server.validators.EvenniaPasswordValidator',
-    },
-]
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8}},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {'NAME': 'evennia.server.validators.EvenniaPasswordValidator'}]
 
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
