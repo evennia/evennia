@@ -23,6 +23,9 @@ try:
     from django.utils import unittest
 except ImportError:
     import unittest
+    
+from evennia.server.validators import EvenniaPasswordValidator
+from evennia.utils.test_resources import EvenniaTest
 
 from django.test.runner import DiscoverRunner
 
@@ -77,3 +80,16 @@ class TestDeprecations(TestCase):
             self.assertRaises(DeprecationWarning, check_errors, MockSettings(setting))
         # test check for WEBSERVER_PORTS having correct value
         self.assertRaises(DeprecationWarning, check_errors, MockSettings("WEBSERVER_PORTS", value=["not a tuple"]))
+
+class ValidatorTest(EvenniaTest):
+    
+    def test_validator(self):
+        # Validator returns None on success and ValidationError on failure.
+        validator = EvenniaPasswordValidator()
+        
+        # This password should meet Evennia standards.
+        self.assertFalse(validator.validate('testpassword', user=self.account))
+        
+        # This password contains illegal characters and should raise an Exception.
+        from django.core.exceptions import ValidationError
+        self.assertRaises(ValidationError, validator.validate, '(#)[#]<>', user=self.account)

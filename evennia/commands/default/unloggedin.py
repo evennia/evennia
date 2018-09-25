@@ -294,10 +294,14 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             string = "\n\r That name is reserved. Please choose another Accountname."
             session.msg(string)
             return
-        if not re.findall(r"^[\w. @+\-']+$", password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characters. Letters, spaces, digits and @/./+/-/_/' only." \
-                     "\nFor best security, make it longer than 8 characters. You can also use a phrase of" \
-                     "\nmany words if you enclose the password in double quotes."
+        
+        # Validate password
+        Account = utils.class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+        # Have to create a dummy Account object to check username similarity
+        valid, error = Account.validate_password(password, account=Account(username=accountname))
+        if error:
+            errors = [e for suberror in error.messages for e in error.messages]
+            string = "\n".join(errors)
             session.msg(string)
             return
 
