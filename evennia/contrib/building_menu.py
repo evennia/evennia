@@ -130,12 +130,14 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.logger import log_err, log_trace
 from evennia.utils.utils import class_from_module
 
-## Constants
+
+# Constants
 _MAX_TEXT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 
-## Private functions
+
+# Private functions
 def _menu_loadfunc(caller):
     obj, attr = caller.attributes.get("_building_menu_to_edit", [None, None])
     if obj and attr:
@@ -143,6 +145,7 @@ def _menu_loadfunc(caller):
             obj = getattr(obj, part)
 
     return getattr(obj, attr.split(".")[-1]) if obj is not None else ""
+
 
 def _menu_savefunc(caller, buf):
     obj, attr = caller.attributes.get("_building_menu_to_edit", [None, None])
@@ -155,10 +158,14 @@ def _menu_savefunc(caller, buf):
     caller.attributes.remove("_building_menu_to_edit")
     return True
 
+
 def _menu_quitfunc(caller):
-    caller.cmdset.add(BuildingMenuCmdSet, permanent=caller.ndb._building_menu and caller.ndb._building_menu.persistent or False)
+    caller.cmdset.add(BuildingMenuCmdSet,
+                      permanent=caller.ndb._building_menu and
+                      caller.ndb._building_menu.persistent or False)
     if caller.ndb._building_menu:
         caller.ndb._building_menu.move(back=True)
+
 
 def _call_or_get(value, menu=None, choice=None, string=None, obj=None, caller=None):
     """
@@ -224,7 +231,8 @@ def _call_or_get(value, menu=None, choice=None, string=None, obj=None, caller=No
 
     return value
 
-## Helper functions, to be used in menu choices
+
+# Helper functions, to be used in menu choices
 
 def menu_setattr(menu, choice, obj, string):
     """
@@ -256,6 +264,7 @@ def menu_setattr(menu, choice, obj, string):
     setattr(obj, attr.split(".")[-1], string)
     return True
 
+
 def menu_quit(caller, menu):
     """
     Quit the menu, closing the CmdSet.
@@ -271,13 +280,15 @@ def menu_quit(caller, menu):
 
     """
     if caller is None or menu is None:
-        log_err("The function `menu_quit` was called with missing arguments: caller={}, menu={}".format(caller, menu))
+        log_err("The function `menu_quit` was called with missing "
+                "arguments: caller={}, menu={}".format(caller, menu))
 
     if caller.cmdset.has(BuildingMenuCmdSet):
         menu.close()
         caller.msg("Closing the building menu.")
     else:
         caller.msg("It looks like the building menu has already been closed.")
+
 
 def menu_edit(caller, choice, obj):
     """
@@ -292,10 +303,11 @@ def menu_edit(caller, choice, obj):
     attr = choice.attr
     caller.db._building_menu_to_edit = (obj, attr)
     caller.cmdset.remove(BuildingMenuCmdSet)
-    EvEditor(caller, loadfunc=_menu_loadfunc, savefunc=_menu_savefunc, quitfunc=_menu_quitfunc, key="editor", persistent=True)
+    EvEditor(caller, loadfunc=_menu_loadfunc, savefunc=_menu_savefunc, quitfunc=_menu_quitfunc,
+             key="editor", persistent=True)
 
 
-## Building menu commands and CmdSet
+# Building menu commands and CmdSet
 
 class CmdNoInput(Command):
 
@@ -380,14 +392,16 @@ class BuildingMenuCmdSet(CmdSet):
         for cmd in cmds:
             self.add(cmd(building_menu=menu))
 
-## Menu classes
+
+# Menu classes
 
 class Choice(object):
 
     """A choice object, created by `add_choice`."""
 
-    def __init__(self, title, key=None, aliases=None, attr=None, text=None, glance=None, on_enter=None, on_nomatch=None, on_leave=None,
-            menu=None, caller=None, obj=None):
+    def __init__(self, title, key=None, aliases=None, attr=None, text=None,
+                 glance=None, on_enter=None, on_nomatch=None, on_leave=None,
+                 menu=None, caller=None, obj=None):
         """Constructor.
 
         Args:
@@ -452,7 +466,8 @@ class Choice(object):
 
         """
         if self.on_enter:
-            _call_or_get(self.on_enter, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
+            _call_or_get(self.on_enter, menu=self.menu, choice=self, string=string,
+                         caller=self.caller, obj=self.obj)
 
     def nomatch(self, string):
         """Called when the user entered something in the choice.
@@ -467,7 +482,8 @@ class Choice(object):
 
         """
         if self.on_nomatch:
-            return _call_or_get(self.on_nomatch, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
+            return _call_or_get(self.on_nomatch, menu=self.menu, choice=self,
+                                string=string, caller=self.caller, obj=self.obj)
 
         return True
 
@@ -479,7 +495,8 @@ class Choice(object):
 
         """
         if self.on_leave:
-            _call_or_get(self.on_leave, menu=self.menu, choice=self, string=string, caller=self.caller, obj=self.obj)
+            _call_or_get(self.on_leave, menu=self.menu, choice=self,
+                         string=string, caller=self.caller, obj=self.obj)
 
 
 class BuildingMenu(object):
@@ -505,12 +522,13 @@ class BuildingMenu(object):
 
     """
 
-    keys_go_back = ["@"] # The keys allowing to go back in the menu tree
-    sep_keys = "." # The key separator for menus with more than 2 levels
-    joker_key = "*" # The special key meaning "anything" in a choice key
-    min_shortcut = 1 # The minimum length of shorcuts when `key` is not set
+    keys_go_back = ["@"]  # The keys allowing to go back in the menu tree
+    sep_keys = "."  # The key separator for menus with more than 2 levels
+    joker_key = "*"  # The special key meaning "anything" in a choice key
+    min_shortcut = 1  # The minimum length of shorcuts when `key` is not set
 
-    def __init__(self, caller=None, obj=None, title="Building menu: {obj}", keys=None, parents=None, persistent=False):
+    def __init__(self, caller=None, obj=None, title="Building menu: {obj}",
+                 keys=None, parents=None, persistent=False):
         """Constructor, you shouldn't override.  See `init` instead.
 
         Args:
@@ -681,7 +699,7 @@ class BuildingMenu(object):
         pass
 
     def add_choice(self, title, key=None, aliases=None, attr=None, text=None, glance=None,
-            on_enter=None, on_nomatch=None, on_leave=None):
+                   on_enter=None, on_nomatch=None, on_leave=None):
         """
         Add a choice, a valid sub-menu, in the current builder menu.
 
@@ -744,7 +762,8 @@ class BuildingMenu(object):
             on_nomatch = menu_setattr
 
         if key and key in self.cmds:
-            raise ValueError("A conflict exists between {} and {}, both use key or alias {}".format(self.cmds[key], title, repr(key)))
+            raise ValueError("A conflict exists between {} and {}, both use "
+                             "key or alias {}".format(self.cmds[key], title, repr(key)))
 
         if attr:
             if glance is None:
@@ -758,10 +777,12 @@ class BuildingMenu(object):
                         Use |y{back}|n to go back to the main menu.
 
                         Current value: |c{{{obj_attr}}}|n
-                """.format(attr=attr, obj_attr="obj." + attr, back="|n or |y".join(self.keys_go_back))
+                """.format(attr=attr, obj_attr="obj." + attr,
+                           back="|n or |y".join(self.keys_go_back))
 
-        choice = Choice(title, key=key, aliases=aliases, attr=attr, text=text, glance=glance, on_enter=on_enter, on_nomatch=on_nomatch, on_leave=on_leave,
-                menu=self, caller=self.caller, obj=self.obj)
+        choice = Choice(title, key=key, aliases=aliases, attr=attr, text=text, glance=glance,
+                        on_enter=on_enter, on_nomatch=on_nomatch, on_leave=on_leave,
+                        menu=self, caller=self.caller, obj=self.obj)
         self.choices.append(choice)
         if key:
             self.cmds[key] = choice
@@ -771,7 +792,8 @@ class BuildingMenu(object):
 
         return choice
 
-    def add_choice_edit(self, title="description", key="d", aliases=None, attr="db.desc", glance="\n   {obj.db.desc}", on_enter=None):
+    def add_choice_edit(self, title="description", key="d", aliases=None, attr="db.desc",
+                        glance="\n   {obj.db.desc}", on_enter=None):
         """
         Add a simple choice to edit a given attribute in the EvEditor.
 
@@ -795,7 +817,8 @@ class BuildingMenu(object):
 
         """
         on_enter = on_enter or menu_edit
-        return self.add_choice(title, key=key, aliases=aliases, attr=attr, glance=glance, on_enter=on_enter, text="")
+        return self.add_choice(title, key=key, aliases=aliases, attr=attr,
+                               glance=glance, on_enter=on_enter, text="")
 
     def add_choice_quit(self, title="quit the menu", key="q", aliases=None, on_enter=None):
         """
@@ -860,14 +883,17 @@ class BuildingMenu(object):
             try:
                 menu_class = class_from_module(parent_class)
             except Exception:
-                log_trace("BuildingMenu: attempting to load class {} failed".format(repr(parent_class)))
+                log_trace("BuildingMenu: attempting to load class {} failed".format(
+                    repr(parent_class)))
                 return
 
             # Create the parent menu
             try:
-                building_menu = menu_class(self.caller, parent_obj, keys=parent_keys, parents=tuple(parents))
+                building_menu = menu_class(self.caller, parent_obj,
+                                           keys=parent_keys, parents=tuple(parents))
             except Exception:
-                log_trace("An error occurred while creating building menu {}".format(repr(parent_class)))
+                log_trace("An error occurred while creating building menu {}".format(
+                    repr(parent_class)))
                 return
             else:
                 return building_menu.open()
@@ -942,12 +968,12 @@ class BuildingMenu(object):
         if choice:
             choice.leave("")
 
-        if not back: # Move forward
+        if not back:  # Move forward
             if not key:
                 raise ValueError("you are asking to move forward, you should specify a key.")
 
             self.keys.append(key)
-        else: # Move backward
+        else:  # Move backward
             if not self.keys:
                 raise ValueError("you already are at the top of the tree, you cannot move backward.")
 
@@ -992,11 +1018,9 @@ class BuildingMenu(object):
             ret += "[|y" + choice.key.title() + "|n] " + title
 
         if choice.glance:
-            glance = _call_or_get(choice.glance, menu=self, choice=choice, caller=self.caller, string="", obj=self.obj)
-            try:
-                glance = glance.format(obj=self.obj, caller=self.caller)
-            except:
-                import pdb;pdb.set_trace()
+            glance = _call_or_get(choice.glance, menu=self, choice=choice,
+                                  caller=self.caller, string="", obj=self.obj)
+            glance = glance.format(obj=self.obj, caller=self.caller)
 
             ret += ": " + glance
 
@@ -1030,7 +1054,8 @@ class BuildingMenu(object):
         if menu:
             class_name = menu.get("class")
             if not class_name:
-                log_err("BuildingMenu: on caller {}, a persistent attribute holds building menu data, but no class could be found to restore the menu".format(caller))
+                log_err("BuildingMenu: on caller {}, a persistent attribute holds building menu "
+                        "data, but no class could be found to restore the menu".format(caller))
                 return
 
             try:
@@ -1046,7 +1071,8 @@ class BuildingMenu(object):
             parents = menu.get("parents")
             persistent = menu.get("persistent", False)
             try:
-                building_menu = menu_class(caller, obj, title=title, keys=keys, parents=parents, persistent=persistent)
+                building_menu = menu_class(caller, obj, title=title, keys=keys,
+                                           parents=parents, persistent=persistent)
             except Exception:
                 log_trace("An error occurred while creating building menu {}".format(repr(class_name)))
                 return

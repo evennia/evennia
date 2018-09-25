@@ -17,6 +17,8 @@ things you want from here into your game folder and change them there.
 
 * Barter system (Griatch 2012) - A safe and effective barter-system
   for any game. Allows safe trading of any goods (including coin).
+* Building menu (vincent-lg 2018) - An @edit command for modifying
+  objects using a generated menu. Customizable for different games.
 * CharGen (Griatch 2011) - A simple Character creator for OOC mode.
   Meant as a starting point for a more fleshed-out system.
 * Clothing (FlutterSprite 2017) - A layered clothing system with
