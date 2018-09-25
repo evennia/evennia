@@ -52,49 +52,7 @@ class AuditedServerSession(ServerSession):
     have their arguments masked by default, but you must mask or mask any
     custom commands of your own that handle sensitive information.
     
-    Installation:
-
-    Designate this class as the SERVER_SESSION_CLASS in `settings.py`, then set
-    some additional options concerning what to log and where to send it.
-    
-    settings.py:
-    SERVER_SESSION_CLASS = 'evennia.contrib.auditing.server.AuditedServerSession'
-    
-    # Where to send logs? Define the path to a module containing a function 
-    # called 'output()' you've written that accepts a dict object as its sole 
-    # argument. From that function you can store/forward the message received
-    # as you please. An example file-logger is below:
-    AUDIT_CALLBACK = 'evennia.contrib.auditing.outputs.to_file'
-    
-    # Log all user input? Be ethical about this; it will log all private and 
-    # public communications between players and/or admins.
-    AUDIT_IN = True/False
-    
-    # Log server output? This will result in logging of ALL system
-    # messages and ALL broadcasts to connected players, so on a busy MUD this 
-    # will be very voluminous!
-    AUDIT_OUT = True/False
-    
-    # The default output is a dict. Do you want to allow key:value pairs with
-    # null/blank values? If you're just writing to disk, disabling this saves 
-    # some disk space, but whether you *want* sparse values or not is more of a 
-    # consideration if you're shipping logs to a NoSQL/schemaless database.
-    AUDIT_ALLOW_SPARSE = True/False
-    
-    # Any custom regexes to detect and mask sensitive information, to be used
-    # to detect and mask any custom commands you may develop.
-    # Takes the form of a list of dictionaries, one k:v pair per dictionary
-    # where the key name is the canonical name of a command which gets displayed
-    # at the tail end of the message so you can tell which regex masked it--
-    # i.e. for a log entry with a typoed `connect` command:
-    # `conncect johnny *********** <Masked: connect>`
-    #
-    # The sensitive data itself must be captured in a named group with a
-    # label of 'secret'.
-    AUDIT_MASKS = [
-        {'authentication': r"^@auth\s+(?P<secret>[\w]+)"},
-    ]
-    
+    See README.md for installation/configuration instructions.
     """
     def audit(self, **kwargs):
         """
