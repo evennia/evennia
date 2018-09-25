@@ -44,6 +44,8 @@ class AuditingTest(EvenniaTest):
             self.assertEqual(self.session.mask(cmd), cmd)
             
         unsafe_cmds = (
+            ("something - new password set to 'asdfghjk'.", "something - new password set to '********'."),
+            ("someone has changed your password to 'something'.", "someone has changed your password to '*********'."),
             ('connect johnny password123', 'connect johnny ***********'),
             ('concnct johnny password123', 'concnct johnny ***********'),
             ('concnct johnnypassword123', 'concnct *****************'),
