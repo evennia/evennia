@@ -254,6 +254,23 @@ def log_dep(depmsg):
 
 log_depmsg = log_dep
 
+def log_sec(secmsg):
+    """
+    Prints a security-related message.
+
+    Args:
+        secmsg (str): The security message to log.
+    """
+    try:
+        secmsg = str(secmsg)
+    except Exception as e:
+        secmsg = str(e)
+    for line in secmsg.splitlines():
+        log_msg('[SS] %s' % line)
+
+
+log_secmsg = log_sec
+
 
 # Arbitrary file logger
 
