@@ -87,9 +87,10 @@
 
 ### Contribs
 
+- `Build Menu` (vincent-lg): New @edit command to edit object properties in a menu.
+- `Field Fill` (Tim Ashley Jenkins): Wraps EvMenu for creating submittable forms.
 - `Health Bar` (Tim Ashley Jenkins): Easily create colorful bars/meters.
-- `Tree select` (Fluttersprite): Wrapper around EvMenu to easier create
-    a common form of menu from a string.
+- `Tree select` (Fluttersprite): Wrap EvMenu to create a common type of menu from a string.
 - `Turnbattle suite` (Tim Ashley Jenkins)- the old `turnbattle.py` was moved into its own
   `turnbattle/` package and reworked with many different flavors of combat systems:
  - `tb_basic` - The basic turnbattle system, with initiative/turn order attack/defense/damage.
