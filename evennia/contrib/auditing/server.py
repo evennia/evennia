@@ -25,6 +25,8 @@ AUDIT_MASKS = [
     {'create': r"^[^@]?[create]{5,6}\s+(\w+|\".+?\")\s+(?P<secret>[\w]+)"},
     {'create': r"^[^@]?[create]{5,6}\s+(?P<secret>[\w]+)"},
     {'userpassword': r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w]+)"},
+    {'userpassword': r"^.*new password set to '(?P<secret>[^']+)'\."},
+    {'userpassword': r"^.* has changed your password to '(?P<secret>[^']+)'\."},
     {'password': r"^[@\s]*[password]{6,9}\s+(?P<secret>.*)"},
 ] + getattr(ev_settings, 'AUDIT_MASKS', [])
 
