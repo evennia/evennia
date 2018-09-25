@@ -81,6 +81,7 @@
 ### General
 
 - Start structuring the `CHANGELOG` to list features in more detail.
+- Docker image `evennia/evennia:develop` is now auto-built, tracking the develop branch.
 - Inflection and grouping of multiple objects in default room (an box, three boxes)
 - `evennia.set_trace()` is now a shortcut for launching pdb/pudb on a line in the Evennia event loop.
 
