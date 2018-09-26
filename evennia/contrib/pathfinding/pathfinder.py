@@ -68,7 +68,7 @@ the "map" and keep it updated.
     
     # Get line of sight between consecutive rooms, no further than 3 rooms away
     # 'look east'
-    pfinder.get_directions(room1, 'east', 3)
+    pfinder.get_line_of_sight(room1, 'east', 3)
     >> [<DefaultRoom: Railcar #0>, <DefaultRoom: Railcar #1>, <DefaultRoom: Railcar #2>]
     
     # Refresh the Pathfinder to add/remove new/old rooms and exits
