@@ -1,4 +1,4 @@
-from evennia import create_script, DefaultScript
+from evennia import create_script, DefaultScript, DefaultRoom
 from evennia.contrib.pathfinding.pathfinder import Pathfinder
 from evennia.contrib.pathfinding.scripts import PathfinderScript
 from evennia.utils import create
@@ -30,6 +30,21 @@ class PathfinderTest(EvenniaTest):
         # Get path from bedroom to treasure room
         path = self.pfinder.get_path(self.bed1, self.treasure_room)
         self.assertTrue(path, 'No path was computed from bedroom to treasure room.')
+        
+    def test_get_queryset(self):
+        "Make sure get_queryset functionality works as intended"
+        # Create a dummy pathfinder with a specific queryset
+        dummy = Pathfinder(DefaultRoom.objects.all()[:10])
+        
+        # Make sure we get a valid generator back
+        self.assertEqual(len([x for x in dummy.get_queryset()]), 10)
+        
+        # Try again, setting queryset after init
+        dummy = Pathfinder()
+        dummy.queryset = DefaultRoom.objects.all()[:10]
+        
+        # Make sure we get a valid generator back
+        self.assertEqual(len([x for x in dummy.get_queryset()]), 10)
         
     def test_get_directions(self):
         "Get list of fewest movements required to go from Kitchen to Lair"
@@ -153,4 +168,4 @@ class PathfinderTest(EvenniaTest):
         create.create_object(self.exit_typeclass, key='down', location=stairs, destination=stairs)
         
         # map is a reserved keyword
-        self.pfinder = Pathfinder()
+        self.pfinder = Pathfinder().update()

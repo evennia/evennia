@@ -5,9 +5,8 @@ Contrib - Johnny 2018
 
 A batteries-included abstraction for in-MUD navigation.
 
-Upon initialization, the Pathfinder will quietly build a "map" (directional 
-graph) of all of your game's Rooms and Exits, even accounting for one-way 
-travel.
+Builds a queryable "map" (directional graph) of all of your game's Rooms and 
+Exits, even accounting for one-way travel.
 
 Requires the `networkx` library, not included with Evennia, but only a
 `pip install networkx` away.
@@ -60,23 +59,23 @@ the "map" and keep it updated.
     # Instantiation
     pathfinder = Pathfinder()
     
+    # Refresh the Pathfinder to add/remove new/old rooms and exits
+    pathfinder.update()
+    
     # Get directions from one character to another
     room1 = char1.location
     room2 = char2.location
-    pfinder.get_directions(room1, room2)
+    pathfinder.get_directions(room1, room2)
     >> ['down', 'east', 'down', 'north', 'down']
     
     # Get line of sight between consecutive rooms, no further than 3 rooms away
     # 'look east'
-    pfinder.get_line_of_sight(room1, 'east', 3)
+    pathfinder.get_line_of_sight(room1, 'east', 3)
     >> [<DefaultRoom: Railcar #0>, <DefaultRoom: Railcar #1>, <DefaultRoom: Railcar #2>]
-    
-    # Refresh the Pathfinder to add/remove new/old rooms and exits
-    pfinder.update()
 
 """
 
-from evennia import DefaultRoom as Room
+from evennia import DefaultExit as Exit, DefaultRoom as Room
 from networkx.readwrite import json_graph
 import networkx as nx
 import json
@@ -90,12 +89,18 @@ class Pathfinder(object):
     # name since it will interfere with parsing.
     delimiter = '[(:@_@:)]'
     
-    def __init__(self):
+    def __init__(self, queryset=None):
         """
         Creates the graph and initializes it.
+        
+        Kwargs:
+            queryset (QuerySet, optional): QuerySet of Room objects to be 
+                included in the graph
+                
         """
+        self.queryset = queryset
+        
         self._graph = nx.DiGraph()
-        self.update()
         
     def get_key(self, room):
         """
@@ -109,20 +114,33 @@ class Pathfinder(object):
         
         """
         return self.delimiter.join([room.db_key, str(room.id)])
+        
+    def get_queryset(self):
+        """
+        Get all the Room objects to be included in this graph.
+        
+        Returns:
+            queryset (generator): Any iterable generator of Room objects you
+                wish to be part of the graph.
+            
+        """
+        if self.queryset: 
+            return (x for x in self.queryset)
+        else:
+            return Room.objects.all().iterator()
     
     def update(self):
         """
         Updates the graph, adding or deleting any new/old Rooms and Exits.
 
         Returns:
-            graph (DiGraph): Networkx directional graph of your game's
-                rooms and exits.
+            self (Pathfinder): This object.
 
         """
         graph = self._graph
         
         # Get all Room objects in play
-        all_rooms = Room.objects.all().iterator()
+        all_rooms = self.get_queryset()
         
         for src in all_rooms:
             # Create node for src room
@@ -144,7 +162,7 @@ class Pathfinder(object):
                 # Create an edge representing the exit
                 graph.add_edge(src_key, dst_key, direction=exit.db_key, id=exit.id, type='exit')
                 
-        return graph
+        return self
                 
     def get_path(self, source, dest):
         """
