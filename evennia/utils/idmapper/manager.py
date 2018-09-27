@@ -5,10 +5,6 @@ from django.db.models.manager import Manager
 
 
 class SharedMemoryManager(Manager):
-    # CL: this ensures our manager is used when accessing instances via
-    # ForeignKey etc. (see docs)
-    use_for_related_fields = True
-
     # TODO: improve on this implementation
     # We need a way to handle reverse lookups so that this model can
     # still use the singleton cache, but the active model isn't required
