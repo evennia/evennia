@@ -8,10 +8,12 @@ class PathfinderTest(EvenniaTest):
     
     def test_script(self):
         "Tests handling of script"
-        
         # Initialize the script as an obj
         pf_script = PathfinderScript.spawn()
         self.assertTrue(pf_script, 'The Pathfinder script was not retrieved.')
+        
+        # Make sure it has nodes
+        self.assertTrue(pf_script.map.nodes(), 'Pathfinder has no nodes.')
         
         # Ask script for directions
         directions = pf_script.map.get_directions(self.basement, self.bedmaster)
@@ -34,7 +36,7 @@ class PathfinderTest(EvenniaTest):
     def test_get_queryset(self):
         "Make sure get_queryset functionality works as intended"
         # Create a dummy pathfinder with a specific queryset
-        dummy = Pathfinder(DefaultRoom.objects.all()[:10])
+        dummy = Pathfinder(queryset=DefaultRoom.objects.all()[:10])
         
         # Make sure we get a valid generator back
         self.assertEqual(len([x for x in dummy.get_queryset()]), 10)

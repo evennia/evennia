@@ -54,7 +54,7 @@ class PathfinderScript(DefaultScript):
         """
         Returns a reference to the stored Pathfinder.
         """
-        return self.db.pathfinder
+        return self.pathfinder
         
     @classmethod
     def spawn(cls, **kwargs):
@@ -82,12 +82,12 @@ class PathfinderScript(DefaultScript):
         self.interval = 60 * 30 # every 30 minutes
         self.persistent = True
         
-        self.db.pathfinder = Pathfinder()
+        self.pathfinder = Pathfinder()
         logger.log_info('PathfinderScript initialized.')
 
     def at_repeat(self):
         "Periodically updates the graph to add or remove rooms and exits."        
-        try: result = self.db.pathfinder.update()
+        try: result = self.pathfinder.update()
         except Exception as e:
             logger.log_err('PathfinderScript failed to update.')
             logger.log_err(e)

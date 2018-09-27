@@ -80,7 +80,7 @@ from networkx.readwrite import json_graph
 import networkx as nx
 import json
 
-class Pathfinder(object):
+class Pathfinder(nx.DiGraph):
     """
     Creates a directional graph of your entire network of rooms and exits.
     """
@@ -89,7 +89,7 @@ class Pathfinder(object):
     # name since it will interfere with parsing.
     delimiter = '[(:@_@:)]'
     
-    def __init__(self, queryset=None):
+    def __init__(self, *args, **kwargs):
         """
         Creates the graph and initializes it.
         
@@ -98,9 +98,8 @@ class Pathfinder(object):
                 included in the graph
                 
         """
-        self.queryset = queryset
-        
-        self._graph = nx.DiGraph()
+        self.queryset = kwargs.pop('queryset', None)
+        super(Pathfinder, self).__init__(*args, **kwargs)
         
     def get_key(self, room):
         """
@@ -120,7 +119,7 @@ class Pathfinder(object):
         Get all the Room objects to be included in this graph.
         
         Returns:
-            queryset (generator): Any iterable generator of Room objects you
+            objs (generator): Any iterable generator of Room objects you
                 wish to be part of the graph.
             
         """
@@ -137,8 +136,6 @@ class Pathfinder(object):
             self (Pathfinder): This object.
 
         """
-        graph = self._graph
-        
         # Get all Room objects in play
         all_rooms = self.get_queryset()
         
@@ -147,8 +144,8 @@ class Pathfinder(object):
             src_key = self.get_key(src)
             
             # Check if node exists
-            try: graph[src_key]
-            except: graph.add_node(src_key, key=src.db_key, id=src.id, type='room')
+            try: self[src_key]
+            except: self.add_node(src_key, key=src.db_key, id=src.id, type='room')
             
             for exit in src.exits:
                 # Get destination room
@@ -156,11 +153,11 @@ class Pathfinder(object):
                 
                 # Create a node for dst room
                 dst_key = self.get_key(dst)
-                try: graph[dst_key]
-                except: graph.add_node(dst_key, key=dst.db_key, id=dst.id, type='room')
+                try: self[dst_key]
+                except: self.add_node(dst_key, key=dst.db_key, id=dst.id, type='room')
                 
                 # Create an edge representing the exit
-                graph.add_edge(src_key, dst_key, direction=exit.db_key, id=exit.id, type='exit')
+                self.add_edge(src_key, dst_key, direction=exit.db_key, id=exit.id, type='exit')
                 
         return self
                 
@@ -185,8 +182,9 @@ class Pathfinder(object):
         dst_key = self.get_key(dest)
         
         # Get the shortest path
-        try: path = nx.shortest_path(self._graph, source=src_key, target=dst_key)
+        try: path = nx.shortest_path(self, source=src_key, target=dst_key)
         except nx.NetworkXNoPath: path = []
+        except nx.NodeNotFound: path = []
         
         return path
         
@@ -211,7 +209,7 @@ class Pathfinder(object):
         # Get the edge attributes for each hop
         edge_ids = zip(path[0:], path[1:])
         for src, dst in edge_ids:
-            direction = self._graph[src][dst]['direction']
+            direction = self[src][dst]['direction']
             steps.append(direction)
         
         return steps
@@ -268,7 +266,7 @@ class Pathfinder(object):
             
             # This should realistically only ever find a single out_edge since 
             # you can't have multiple exits with the same name
-            edges = ((src, dst) for src, dst in self._graph.out_edges(src_key) if self._graph[src][dst]['direction'] == direction)
+            edges = ((src, dst) for src, dst in self.out_edges(src_key) if self[src][dst]['direction'] == direction)
             for src, dst in edges:
                 follow(dst, direction, counter, bucket)
                 if counter <= 0: return
@@ -283,7 +281,7 @@ class Pathfinder(object):
             # If unordered, we can query all objects in bulk (it's faster)
             return list(Room.objects.filter(id__in=ids))
 
-    def draw_graph(self, filename='map.png'):
+    def export_png(self, filename='map.png'):
         """
         Draws the graph and its connections as a PNG.
         
@@ -305,8 +303,8 @@ class Pathfinder(object):
             print(msg)
             return None
             
-        pos = nx.spring_layout(self._graph, scale=5, k=0.5,iterations=20)
-        nx.draw(self._graph, pos, with_labels=True)
+        pos = nx.spring_layout(self, scale=5, k=0.5,iterations=20)
+        nx.draw(self, pos, with_labels=True)
         
         plt.savefig(filename)
         
@@ -325,5 +323,5 @@ class Pathfinder(object):
             data (str): Serialized JSON string comprising the graph data.
             
         """
-        data = json_graph.node_link_data(self._graph, **kwargs)
+        data = json_graph.node_link_data(self, **kwargs)
         return json.dumps(data, indent=4)
