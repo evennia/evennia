@@ -34,7 +34,7 @@ COPY ./evennia/VERSION.txt /usr/src/evennia/evennia/
 COPY ./bin /usr/src/evennia/bin/
 
 # install dependencies
-RUN pip install -e /usr/src/evennia --trusted-host pypi.python.org
+RUN pip install --upgrade pip && pip install -e /usr/src/evennia --trusted-host pypi.python.org
 RUN pip install cryptography pyasn1 service_identity
 
 # add the project source; this should always be done after all
@@ -58,7 +58,7 @@ WORKDIR /usr/src/game
 ENV PS1 "evennia|docker \w $ "
 
 # startup a shell when we start the container
-ENTRYPOINT  ["bash"]
+ENTRYPOINT bash -c "source /usr/src/evennia/bin/unix/evennia-docker-start.sh"
 
 # expose the telnet, webserver and websocket client ports
 EXPOSE 4000 4001 4005

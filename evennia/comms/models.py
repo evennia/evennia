@@ -107,7 +107,7 @@ class Msg(SharedMemoryModel):
     # it, or as a separate store for the mail subject line maybe.
     db_header = models.TextField('header', null=True, blank=True)
     # the message body itself
-    db_message = models.TextField('messsage')
+    db_message = models.TextField('message')
     # send date
     db_date_created = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
     # lock storage
