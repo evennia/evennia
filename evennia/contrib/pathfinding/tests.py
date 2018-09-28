@@ -33,6 +33,44 @@ class PathfinderTest(EvenniaTest):
         path = self.pfinder.get_path(self.bed1, self.treasure_room)
         self.assertTrue(path, 'No path was computed from bedroom to treasure room.')
         
+    def test_get_usable_path(self):
+        "Make sure pathfinding abides by locks"
+        
+        # Create a hall
+        halls = [create.create_object(self.room_typeclass, key="Subway Passage %i" % x, nohome=True) for x in xrange(6)]
+        hall_pairs = zip(halls[0:], halls[1:])
+        for source, dest in hall_pairs:
+            create.create_object(self.exit_typeclass, key='east', location=source, destination=dest)
+            create.create_object(self.exit_typeclass, key='west', location=dest, destination=source)
+            
+        # Block traversal through the subway
+        for exit in halls[-2].exits:
+            exit.locks.add('traverse:none()')
+        
+        # Create a much longer maintenance tunnel that routes around the locked door
+        tunnels = [create.create_object(self.room_typeclass, key="Maintenance Tunnel %i" % x, nohome=True) for x in xrange(15)]
+        tunnel_pairs = zip(tunnels[0:], tunnels[1:])
+        for source, dest in tunnel_pairs:
+            create.create_object(self.exit_typeclass, key='east', location=source, destination=dest)
+            create.create_object(self.exit_typeclass, key='west', location=dest, destination=source)
+            
+        # Tie the start/end of the tunnels to the start/end of the passage
+        create.create_object(self.exit_typeclass, key='north', location=halls[0], destination=tunnels[0])
+        create.create_object(self.exit_typeclass, key='south', location=tunnels[0], destination=halls[0])
+        create.create_object(self.exit_typeclass, key='north', location=halls[-1], destination=tunnels[-1])
+        create.create_object(self.exit_typeclass, key='south', location=tunnels[-1], destination=halls[-1])
+        
+        self.char3 = create.create_object(self.character_typeclass, key="Char3", location=halls[0], home=halls[0])
+        for x in xrange(10):
+            self.char3.execute_cmd('east')
+        self.assertTrue(self.char3.location != halls[-1], 'Character walked through a locked door.')
+        
+        # Update pathfinder
+        self.pfinder.update()
+        
+        path = self.pfinder.get_usable_path(halls[0], halls[-1], self.char3)
+        self.assertTrue(len(path) > 6, 'Character was routed through a locked door.')
+        
     def test_get_queryset(self):
         "Make sure get_queryset functionality works as intended"
         # Create a dummy pathfinder with a specific queryset
@@ -56,18 +94,18 @@ class PathfinderTest(EvenniaTest):
         
     def test_get_line_of_sight(self):
         "Returns all Room objects in line of sight from source"
-        objs = self.pfinder.get_line_of_sight(self.kitchen, 'down')
+        objs = self.pfinder.get_line_of_sight(self.kitchen, 'down', None)
         self.assertTrue(objs)
         self.assertEqual(2, len(objs))
         
         # Test line of sight for invalid direction
-        objs = self.pfinder.get_line_of_sight(self.kitchen, 'yonder')
+        objs = self.pfinder.get_line_of_sight(self.kitchen, 'yonder', None)
         self.assertTrue(len(objs) == 1, 'There is no line of sight from Kitchen to "yonder"; this should not have returned anything further than the Kitchen (%s).' % objs)
         
         # Make sure distance limiter works.
         caboose = self.dungeon_train[0]
-        objs = self.pfinder.get_line_of_sight(caboose, 'east', 3)
-        self.assertEqual(len(objs), 3, 'Player should only be able to see 3 cars ahead on the Dungeon Train.')
+        objs = self.pfinder.get_line_of_sight(caboose, 'east', None, 3)
+        self.assertEqual(len(objs), 3, 'Player should only be able to see 3 cars ahead on the Dungeon Train (sees %s).' % objs)
         
         # Make sure we break out of circular paths
         stairs = self.stairs

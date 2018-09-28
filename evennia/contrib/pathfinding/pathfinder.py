@@ -76,9 +76,22 @@ the "map" and keep it updated.
 """
 
 from evennia import DefaultExit as Exit, DefaultRoom as Room
+from evennia.locks.lockhandler import LockHandler
+from itertools import chain
 from networkx.readwrite import json_graph
 import networkx as nx
 import json
+
+# Define a dummy class to do lock checks against
+class Edge(object):
+    def __init__(self, edge, source_graph):
+        self.src = edge[0]
+        self.dst = edge[1]
+        
+        attrs = source_graph[self.src][self.dst]
+        self.key = attrs.get('key', attrs.get('direction'))
+        self.lock_storage = attrs['locks_str']
+        self.locks = LockHandler(self)
 
 class Pathfinder(nx.DiGraph):
     """
@@ -145,7 +158,7 @@ class Pathfinder(nx.DiGraph):
             
             # Check if node exists
             try: self[src_key]
-            except: self.add_node(src_key, key=src.db_key, id=src.id, type='room')
+            except: self.add_node(src_key, key=src.db_key, id=src.id, type='room', locks_str=str(src.locks))
             
             for exit in src.exits:
                 # Get destination room
@@ -154,10 +167,10 @@ class Pathfinder(nx.DiGraph):
                 # Create a node for dst room
                 dst_key = self.get_key(dst)
                 try: self[dst_key]
-                except: self.add_node(dst_key, key=dst.db_key, id=dst.id, type='room')
+                except: self.add_node(dst_key, key=dst.db_key, id=dst.id, type='room', locks_str=str(dst.locks))
                 
                 # Create an edge representing the exit
-                self.add_edge(src_key, dst_key, direction=exit.db_key, id=exit.id, type='exit')
+                self.add_edge(src_key, dst_key, direction=exit.db_key, id=exit.id, type='exit', locks_str=str(exit.locks))
                 
         return self
                 
@@ -188,7 +201,35 @@ class Pathfinder(nx.DiGraph):
         
         return path
         
-    def get_directions(self, source, dest):
+    def get_usable_path(self, source, dest, caller):
+        """
+        Returns the shortest possible usable path by the caller.
+        """
+        # Get keys for source and dest
+        src_key = self.get_key(source)
+        dst_key = self.get_key(dest)
+                
+        # Get all edges that are traversable by the caller
+        user_graph = nx.DiGraph()
+        for edge in chain(self.out_edges(), self.in_edges()):
+            edge_obj = Edge(edge, self)
+            
+            # Perform the check
+            result = edge_obj.locks.check(caller, 'traverse')
+        
+            # If passes, add to user_graph
+            if result:
+                user_graph.add_edge(edge_obj.src, edge_obj.dst, direction=edge_obj.key)
+            
+        # Now that we have a graph of all possible ways the object can get to
+        # the destination, calculate the shortest path
+        try: path = nx.shortest_path(user_graph, source=src_key, target=dst_key)
+        except nx.NetworkXNoPath: path = []
+        except nx.NodeNotFound: path = []
+        
+        return path
+        
+    def get_directions(self, source, dest, caller=None):
         """
         Computes shortest path between source and dest objects.
         
@@ -198,12 +239,20 @@ class Pathfinder(nx.DiGraph):
         Args:
             source (Room): Origin Room object.
             dest (Room): Destination Room object.
+            caller (DefaultObject): Object needing directions.
 
         Returns:
             steps (list): List of directional commands.
 
         """
-        path = self.get_path(source, dest)
+        # Account for object permissions during traversal if possible
+        if caller:
+            path = self.get_usable_path(source, dest, caller)
+            
+        # Get a straight point-A-to-B path
+        else:
+            path = self.get_path(source, dest)
+            
         steps = []
         
         # Get the edge attributes for each hop
@@ -214,7 +263,7 @@ class Pathfinder(nx.DiGraph):
         
         return steps
         
-    def get_line_of_sight(self, source, direction, distance=10, **kwargs):
+    def get_line_of_sight(self, source, direction, caller=None, distance=10, **kwargs):
         """
         Returns a list of Room objects accessible by following the given
         direction from the given origin. The list terminates when a Room does
@@ -232,6 +281,7 @@ class Pathfinder(nx.DiGraph):
             source (Room): Origin Room object.
             direction (str): Any implemented direction a character can travel
                 from their source location.
+            caller (DefaultObject): The object to calculate line-of-sight for.
             distance (int): Max number of Rooms to span. Uses 10 as a sane
                 default, though you should define to suit your geospatial needs.
                 
@@ -266,9 +316,26 @@ class Pathfinder(nx.DiGraph):
             
             # This should realistically only ever find a single out_edge since 
             # you can't have multiple exits with the same name
-            edges = ((src, dst) for src, dst in self.out_edges(src_key) if self[src][dst]['direction'] == direction)
-            for src, dst in edges:
-                follow(dst, direction, counter, bucket)
+            edges = ((src, dst, self[src][dst]['locks_str']) for src, dst in self.out_edges(src_key) if self[src][dst]['direction'] == direction)
+            for src, dst, locks_str in edges:
+                can_view = True
+                
+                # Block view if the caller was provided and they do not have
+                # view rights to the room
+                if caller:
+                    # Create an edge object
+                    edge_obj = Edge((src, dst), self)
+                    
+                    # Check locks
+                    can_view = edge_obj.locks.check(caller, 'traverse')
+                    
+                if can_view:
+                    follow(dst, direction, counter, bucket)
+                else: 
+                    # If the player can't see into a room, it doesn't make any
+                    # sense that they would see past it either. Abort.
+                    counter == -1
+                
                 if counter <= 0: return
             
         follow(src_key, direction, counter, bucket)
