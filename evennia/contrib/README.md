@@ -51,6 +51,7 @@ things you want from here into your game folder and change them there.
   speaking unfamiliar languages. Also obfuscates whispers.
 * RPSystem (Griatch 2015) - Full director-style emoting system
   replacing names with sdescs/recogs. Supports wearing masks.
+* Security/Auditing (Johhny 2018) - Log server input/output for debug/security.
 * Simple Door - Example of an exit that can be opened and closed.
 * Slow exit (Griatch 2014) - Custom Exit class that takes different
   time to pass depending on if you are walking/running etc.

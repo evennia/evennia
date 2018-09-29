@@ -33,14 +33,14 @@ Installation/Configuration:
 Deployment is completed by configuring a few settings in server.conf. This line
 is required:
 
-    SERVER_SESSION_CLASS = 'evennia.contrib.auditing.server.AuditedServerSession'
+    SERVER_SESSION_CLASS = 'evennia.contrib.security.auditing.server.AuditedServerSession'
 
 This tells Evennia to use this ServerSession instead of its own. Below are the
 other possible options along with the default value that will be used if unset.
 
     # Where to send logs? Define the path to a module containing your callback
     # function. It should take a single dict argument as input
-    AUDIT_CALLBACK = 'evennia.contrib.auditing.outputs.to_file'
+    AUDIT_CALLBACK = 'evennia.contrib.security.auditing.outputs.to_file'
 
     # Log user input? Be ethical about this; it will log all private and
     # public communications between players and/or admins (default: False).
