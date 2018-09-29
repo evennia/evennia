@@ -7,13 +7,13 @@ from evennia.utils.test_resources import EvenniaTest
 import re
 
 # Configure session auditing settings
-settings.AUDIT_CALLBACK = "evennia.contrib.auditing.outputs.to_syslog"
+settings.AUDIT_CALLBACK = "evennia.security.contrib.auditing.outputs.to_syslog"
 settings.AUDIT_IN = True
 settings.AUDIT_OUT = True
 settings.AUDIT_ALLOW_SPARSE = True
 
 # Configure settings to use custom session
-settings.SERVER_SESSION_CLASS = "evennia.contrib.auditing.server.AuditedServerSession"
+settings.SERVER_SESSION_CLASS = "evennia.contrib.security.auditing.server.AuditedServerSession"
 
 
 class AuditingTest(EvenniaTest):
