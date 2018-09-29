@@ -3,7 +3,6 @@ Module containing the test cases for the Audit system.
 """
 
 from django.conf import settings
-from evennia.contrib.auditing.server import AuditedServerSession
 from evennia.utils.test_resources import EvenniaTest
 import re
 
@@ -16,11 +15,12 @@ settings.AUDIT_ALLOW_SPARSE = True
 # Configure settings to use custom session
 settings.SERVER_SESSION_CLASS = "evennia.contrib.auditing.server.AuditedServerSession"
 
+
 class AuditingTest(EvenniaTest):
 
     def test_mask(self):
         """
-        Make sure the 'mask' function is properly masking potentially sensitive 
+        Make sure the 'mask' function is properly masking potentially sensitive
         information from strings.
         """
         safe_cmds = (
@@ -39,10 +39,10 @@ class AuditingTest(EvenniaTest):
             '@create johnny password123',
             '{"text": "Command \'do stuff\' is not available. Type \"help\" for help."}'
         )
-        
+
         for cmd in safe_cmds:
             self.assertEqual(self.session.mask(cmd), cmd)
-            
+
         unsafe_cmds = (
             ("something - new password set to 'asdfghjk'.", "something - new password set to '********'."),
             ("someone has changed your password to 'something'.", "someone has changed your password to '*********'."),
@@ -60,10 +60,10 @@ class AuditingTest(EvenniaTest):
             ("Command 'conncect teddy teddy' is not available. Maybe you meant \"@encode\"?", 'Command \'conncect ******** ********\' is not available. Maybe you meant "@encode"?'),
             ("{'text': u'Command \\'conncect jsis dfiidf\\' is not available. Type \"help\" for help.'}", "{'text': u'Command \\'conncect jsis ********\\' is not available. Type \"help\" for help.'}")
         )
-        
+
         for index, (unsafe, safe) in enumerate(unsafe_cmds):
             self.assertEqual(re.sub(' <Masked: .+>', '', self.session.mask(unsafe)).strip(), safe)
-            
+
         # Make sure scrubbing is not being abused to evade monitoring
         secrets = [
             'say password password password; ive got a secret that i cant explain',
@@ -73,7 +73,7 @@ class AuditingTest(EvenniaTest):
         ]
         for secret in secrets:
             self.assertEqual(self.session.mask(secret), secret)
-        
+
     def test_audit(self):
         """
         Make sure the 'audit' function is returning a dictionary based on values
@@ -87,7 +87,7 @@ class AuditingTest(EvenniaTest):
             'application': 'Evennia',
             'text': 'hello'
         })
-        
+
         # Make sure OOB data is being recorded
         log = self.session.audit(src='client', text="connect johnny password123", prompt="hp=20|st=10|ma=15", pane=2)
         self.assertEqual(log['text'], 'connect johnny ***********')
