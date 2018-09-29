@@ -13,6 +13,7 @@
 - The `evennia istart` option will start/switch the Server in foreground (interactive) mode, where it logs
   to terminal and can be stopped with Ctrl-C. Using `evennia reload`, or reloading in-game, will
   return Server to normal daemon operation.
+- For validating passwords, use safe Django password-validation backend instead of custom Evennia one.
 
 ### Prototype changes
 
@@ -80,11 +81,13 @@
 
 ### General
 
-- Up requirements to Django 1.11.x, Twited 18 and pillow 5.2.0
+- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
 - Start structuring the `CHANGELOG` to list features in more detail.
 - Docker image `evennia/evennia:develop` is now auto-built, tracking the develop branch.
 - Inflection and grouping of multiple objects in default room (an box, three boxes)
 - `evennia.set_trace()` is now a shortcut for launching pdb/pudb on a line in the Evennia event loop.
+- Removed the enforcing of `MAX_NR_CHARACTERS=1` for `MULTISESSION_MODE` `0` and `1` by default.
+- Add `evennia.utils.logger.log_sec` for logging security-related messages (marked SS in log).
 
 ### Contribs
 

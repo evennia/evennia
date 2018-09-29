@@ -552,9 +552,7 @@ PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
 #  3 - like mode 2, except multiple sessions can puppet one character, each
 #      session getting the same data.
 MULTISESSION_MODE = 0
-# The maximum number of characters allowed for MULTISESSION_MODE 2, 3.
-# This is checked by the default ooc char-creation command. Forced to 1 for
-# MULTISESSION_MODE 0 and 1.
+# The maximum number of characters allowed by the default ooc char-creation command
 MAX_NR_CHARACTERS = 1
 # The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
