@@ -63,15 +63,21 @@ JQuery available.
     </script>
     <script src={% static "webclient/js/evennia.js" %} language="javascript" type="text/javascript" charset="utf-8"/></script>
 
-
     <!-- set up splits before loading the GUI -->
     <script src="https://unpkg.com/split.js/split.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
-    <script src={% static "webclient/js/splithandler.js" %} language="javascript"></script>
 
     <!-- Load gui library -->
     {% block guilib_import %}
         <script src={% static "webclient/js/webclient_gui.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
+        <script src={% static "webclient/js/plugins/popups.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/options.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/history.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/default_in.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/oob.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/notifications.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/splithandler.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/default_out.js" %} language="javascript" type="text/javascript"></script>
     {% endblock %}
 
     <script src="https://cdn.rawgit.com/ejci/favico.js/master/favico-0.3.10.min.js" language="javascript" type="text/javascript" charset="utf-8"></script>
