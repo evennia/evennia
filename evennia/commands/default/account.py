@@ -136,7 +136,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         key = self.lhs
         desc = self.rhs
 
-        charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
+        charmax = _MAX_NR_CHARACTERS
 
         if not account.is_superuser and \
                 (account.db._playable_characters and
@@ -627,10 +627,10 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
             return
         oldpass = self.lhslist[0]  # Both of these are
         newpass = self.rhslist[0]  # already stripped by parse()
-        
+
         # Validate password
         validated, error = account.validate_password(newpass)
-        
+
         if not account.check_password(oldpass):
             self.msg("The specified old password isn't correct.")
         elif not validated:
