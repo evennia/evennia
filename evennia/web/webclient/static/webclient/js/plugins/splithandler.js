@@ -7,9 +7,9 @@ let splithandler_plugin = (function () {
 
     var num_splits = 0;
     var split_panes = {};
-    var backout_list = new Array;
+    var backout_list = [];
 
-    var known_types = new Array();
+    var known_types = ['all', 'rest'];
 
     // Exported Functions
 
@@ -283,40 +283,77 @@ let splithandler_plugin = (function () {
 
         plugins['popups'].closePopup("#splitdialog");
     }
+    //
+    // helper function sending text to a pane
+    var txtToPane = function (panekey, txt) {
+	var pane = split_panes[panekey];
+	var text_div = $('#' + panekey + '-sub');
+
+	if ( pane['update_method'] == 'replace' ) {
+	    text_div.html(txt)
+	} else {
+	    text_div.append(txt);
+	    var scrollHeight = text_div.parent().prop("scrollHeight");
+	    text_div.parent().animate({ scrollTop: scrollHeight }, 0);
+	}
+    }
+
 
     //
     // plugin functions
     //
 
+
     //
     // Accept plugin onText events
     var onText = function (args, kwargs) {
+
+	// If the message is not itself tagged, we'll assume it
+	// should go into any panes with 'all' or 'rest' set
+        var msgtype = "rest";
+
         if ( kwargs && 'type' in kwargs ) {
-            var msgtype = kwargs['type'];
+	    msgtype = kwargs['type'];
             if ( ! known_types.includes(msgtype) ) {
                 // this is a new output type that can be mapped to panes
                 console.log('detected new output type: ' + msgtype)
                 known_types.push(msgtype);
             }
-
-            for ( var key in split_panes) {
-                var pane = split_panes[key];
-
-                // is this message type mapped to this pane?
-                if ( (pane['types'].length > 0) && pane['types'].includes(msgtype) ) {
-                    // yes, so append/replace this pane's inner div with this message
-                    var text_div = $('#'+key+'-sub');
-                    if ( pane['update_method'] == 'replace' ) {
-                        text_div.html(args[0])
-                    } else {
-                        text_div.append(args[0]);
-                        var scrollHeight = text_div.parent().prop("scrollHeight");
-                        text_div.parent().animate({ scrollTop: scrollHeight }, 0);
-                    }
-                    return true;
-                }
-            }
-        }
+	}
+	var target_panes = [];
+	var rest_panes = [];
+	    
+	for (var key in split_panes) {
+	    var pane = split_panes[key];
+	    // is this message type mapped to this pane (or does the pane has an 'all' type)?
+	    if (pane['types'].length > 0) {	
+		if (pane['types'].includes(msgtype) || pane['types'].includes('all')) {
+		    target_panes.push(key);
+		} else if (pane['types'].includes('rest')) {
+		    // store rest-panes in case we have no explicit to send to
+		    rest_panes.push(key);
+		}
+	    } else {
+		// unassigned panes are assumed to be rest-panes too
+		rest_panes.push(key);
+	    }
+	}
+	var ntargets = target_panes.length;
+	var nrests = rest_panes.length;
+	if (ntargets > 0) {
+	    // we have explicit target panes to send to
+	    for (var i=0; i<ntargets; i++) {
+		txtToPane(target_panes[i], args[0]);
+	    }
+	    return true;
+	} else if (nrests > 0) {
+	    // no targets, send remainder to rest-panes/unassigned
+	    for (var i=0; i<nrests; i++) {
+		txtToPane(rest_panes[i], args[0]);
+	    }
+	    return true;
+	}
+	// unhandled message
         return false;
     }
 
