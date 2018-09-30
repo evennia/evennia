@@ -1,0 +1,34 @@
+# Evennia systemd unit script
+#
+# Copy this to /usr/lib/systemd/system/ and Edit the paths to match your game.
+#
+# Then, register with systemd using:
+#
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable evennia.service
+#
+
+[Unit]
+Description=Evennia Server
+
+[Service]
+Type=simple
+
+#
+# Change this to the user the game should run as.
+# Don't run this as root.  Please, I beg you.
+#
+User=your-user
+
+#
+# The command to start Evennia as a Systemd service.  NOTE:  These must be absolute paths.
+# Replace /your/path/to with whatever is appropriate.
+#
+ExecStart=/your/path/to/pyenv/bin/python /your/path/to/evennia/bin/unix/evennia ipstart --gamedir /your/path/to/mygame
+
+# restart on all failures, wait 3 seconds before doing so.
+Restart=on-failure
+RestartSec=3
+
+ [Install]
+WantedBy=default.target
