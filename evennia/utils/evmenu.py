@@ -731,11 +731,14 @@ class EvMenu(object):
 
         Args:
             nodename (str or callable): Name of node or a callable
-                to be called as `function(caller, raw_string)` or `function(caller)`
-                to return the actual goto string.
+                to be called as `function(caller, raw_string, **kwargs)` or
+                `function(caller, **kwargs)` to return the actual goto string or
+                a ("nodename", kwargs) tuple.
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
+        Kwargs:
+            any: Extra arguments to goto callables.
 
         """
 

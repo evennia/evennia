@@ -8,15 +8,17 @@
   with different functionality).
 - Both Portal/Server are now stand-alone processes (easy to run as daemon)
 - Made Portal the AMP Server for starting/restarting the Server (the AMP client)
-- Dynamic logging now happens using `evennia -l` rather than by interactive.
+- Dynamic logging now happens using `evennia -l` rather than by interactive mode.
 - Made AMP secure against erroneous HTTP requests on the wrong port (return error messages).
 - The `evennia istart` option will start/switch the Server in foreground (interactive) mode, where it logs
   to terminal and can be stopped with Ctrl-C. Using `evennia reload`, or reloading in-game, will
   return Server to normal daemon operation.
 - For validating passwords, use safe Django password-validation backend instead of custom Evennia one.
+- Alias `evennia restart` to mean the same as `evennia reload`. 
 
 ### Prototype changes
 
+- New OLC started from `olc` command for loading/saving/manipulating prototypes in a menu.
 - Moved evennia/utils/spawner.py into the new evennia/prototypes/ along with all new
   functionality around prototypes.
 - A new form of prototype - database-stored prototypes, editable from in-game, was added. The old,
@@ -35,8 +37,6 @@
 - The spawn command was extended to accept a full prototype on one line.
 - The spawn command got the /save switch to save the defined prototype and its key
 - The command spawn/menu will now start an OLC (OnLine Creation) menu to load/save/edit/spawn prototypes.
-- The OLC allows for updating all objects previously created using a given prototype with any
-  changes done.
 
 ### EvMenu
 
@@ -52,7 +52,11 @@
 
 ### Webclient
 
-- Refactoring of webclient structure.
+- Webclient now uses a plugin system to inject new components from the html file.
+- Split-windows - divide input field into any number of horizontal/vertical panes and
+  assign different types of server messages to them.
+- Lots of cleanup and bug fixes.
+- Hot buttons plugin (friarzen) (disabled by default).
 
 ### Locks
 
@@ -91,6 +95,7 @@
 
 ### Contribs
 
+- `Auditing` (Johnny): Log and filter server input/output for security purposes
 - `Build Menu` (vincent-lg): New @edit command to edit object properties in a menu.
 - `Field Fill` (Tim Ashley Jenkins): Wraps EvMenu for creating submittable forms.
 - `Health Bar` (Tim Ashley Jenkins): Easily create colorful bars/meters.
