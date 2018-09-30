@@ -225,7 +225,8 @@ div {margin:0px;}
     z-index: 10;
     background-color: #fefefe;
     border: 1px solid #888;
-    color: black;
+    color: lightgray;
+    background-color: #2c2c2c;
 
 }
 
@@ -263,11 +264,12 @@ div {margin:0px;}
     cursor: move;
     font-weight: bold;
     font-size: 16px;
-    background-color: #d9d9d9;
+    color: white;
+    background-color: #595959;
 }
 
 .dialogclose {
-    color: #aaa;
+    color: #d5d5d5;
     float: right;
     font-size: 28px;
     font-weight: bold;

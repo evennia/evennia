@@ -30,11 +30,11 @@ let splithandler_plugin = (function () {
     }
 
     function addSplitDialog () {
-        plugins['popups'].createDialog('splitdialog', 'Split Dialog', '');
+        plugins['popups'].createDialog('splitdialog', 'Split Pane', '');
     }
 
     function addPaneDialog () {
-        plugins['popups'].createDialog('panedialog', 'Pane Dialog', '');
+        plugins['popups'].createDialog('panedialog', 'Assign Pane Options', '');
     }
 
     //
@@ -183,28 +183,27 @@ let splithandler_plugin = (function () {
         var dialog = $("#splitdialogcontent");
         dialog.empty();
 
-        dialog.append("<h3>Split?</h3>");
-        dialog.append('<input type="radio" name="direction" value="vertical" checked> top/bottom<br />');
-        dialog.append('<input type="radio" name="direction" value="horizontal"> side-by-side<br />');
-
-        dialog.append("<h3>Split Which Pane?</h3>");
+	var selection = '<select name="pane">';
         for ( var pane in split_panes ) {
-            dialog.append('<input type="radio" name="pane" value="'+ pane +'">'+ pane +'<br />');
+	    selection = selection + '<option value="' + pane + '">' + pane + '</option>';
         }
+	selection = "Pane to split: " + selection + "</select> ";
+	dialog.append(selection);
 
-        dialog.append("<h3>New Pane Names</h3>");
-        dialog.append('<input type="text" name="new_pane1" value="" />');
-        dialog.append('<input type="text" name="new_pane2" value="" />');
+        dialog.append('<input type="radio" name="direction" value="vertical" checked> top/bottom </>');
+        dialog.append('<input type="radio" name="direction" value="horizontal"> side-by-side <hr />');
 
-        dialog.append("<h3>New First Pane Flow</h3>");
-        dialog.append('<input type="radio" name="flow1" value="append" checked>append<br />');
-        dialog.append('<input type="radio" name="flow1" value="replace">replace<br />');
+        dialog.append('Pane 1: <input type="text" name="new_pane1" value="" />');
+        dialog.append('<input type="radio" name="flow1" value="linefeed" checked>line feed </>');
+        dialog.append('<input type="radio" name="flow1" value="append">append </>');
+        dialog.append('<input type="radio" name="flow1" value="replace">replace content<hr />');
 
-        dialog.append("<h3>New Second Pane Flow</h3>");
-        dialog.append('<input type="radio" name="flow2" value="append" checked>append<br />');
-        dialog.append('<input type="radio" name="flow2" value="replace">replace<br />');
+        dialog.append('Pane 2: <input type="text" name="new_pane2" value="" />');
+        dialog.append('<input type="radio" name="flow2" value="linefeed" checked>line feed </>');
+        dialog.append('<input type="radio" name="flow2" value="append">append </>');
+        dialog.append('<input type="radio" name="flow2" value="replace">replace content <hr />');
 
-        dialog.append('<div id="splitclose" class="button">Split It</div>');
+	dialog.append('<div id="splitclose" class="btn btn-large btn-outline-primary float-right">Split</div>');
 
         $("#splitclose").bind("click", onSplitDialogClose);
 
@@ -214,7 +213,7 @@ let splithandler_plugin = (function () {
     //
     // Close "Split Controls" Dialog
     var onSplitDialogClose = function () {
-        var pane      = $("input[name=pane]:checked").attr("value");
+        var pane      = $("select[name=pane]").val();
         var direction = $("input[name=direction]:checked").attr("value");
         var new_pane1 = $("input[name=new_pane1]").val();
         var new_pane2 = $("input[name=new_pane2]").val();
@@ -249,39 +248,44 @@ let splithandler_plugin = (function () {
     //
     // Draw "Pane Controls" dialog
     var onPaneControlDialog = function () {
-        var dialog = $("#splitdialogcontent");
+        var dialog = $("#panedialogcontent");
         dialog.empty();
 
-        dialog.append("<h3>Set Which Pane?</h3>");
+	var selection = '<select name="assign-pane">';
         for ( var pane in split_panes ) {
-            dialog.append('<input type="radio" name="pane" value="'+ pane +'">'+ pane +'<br />');
+	    selection = selection + '<option value="' + pane + '">' + pane + '</option>';
         }
+	selection = "Assign to pane: " + selection + "</select> <hr />";
+	dialog.append(selection);
 
-        dialog.append("<h3>Which content types?</h3>");
+	var multiple = '<select multiple name="assign-type">';
         for ( var type in known_types ) {
-            dialog.append('<input type="checkbox" value="'+ known_types[type] +'">'+ known_types[type] +'<br />');
+	    multiple = multiple + '<option value="' + known_types[type] + '">' + known_types[type] + '</option>';
         }
+	multiple = "Content types: " + multiple + "</select> <hr />";
+	dialog.append(multiple);
 
-        dialog.append('<div id="paneclose" class="button">Make It So</div>');
+	dialog.append('<div id="paneclose" class="btn btn-large btn-outline-primary float-right">Assign</div>');
 
         $("#paneclose").bind("click", onPaneControlDialogClose);
 
-        plugins['popups'].togglePopup("#splitdialog");
+        plugins['popups'].togglePopup("#panedialog");
     }
 
     //
     // Close "Pane Controls" dialog
     var onPaneControlDialogClose = function () {
-        var pane = $("input[name=pane]:checked").attr("value");
+        var pane = $("select[name=assign-pane]").val();
+	var types = $("select[name=assign-type]").val();
 
-        var types = new Array; 
-        $('#splitdialogcontent input[type=checkbox]:checked').each(function() {
-            types.push( $(this).attr('value') );
-        });
+	// var types = new Array; 
+        // $('#splitdialogcontent input[type=checkbox]:checked').each(function() {
+        //     types.push( $(this).attr('value') );
+        // });
 
         set_pane_types( pane, types );
 
-        plugins['popups'].closePopup("#splitdialog");
+        plugins['popups'].closePopup("#panedialog");
     }
     //
     // helper function sending text to a pane
@@ -291,6 +295,10 @@ let splithandler_plugin = (function () {
 
 	if ( pane['update_method'] == 'replace' ) {
 	    text_div.html(txt)
+	} else if ( pane['update_method'] == 'linefeed' ) {
+	    text_div.append("<div class='out'>" + txt + "</div>");
+	    var scrollHeight = text_div.parent().prop("scrollHeight");
+	    text_div.parent().animate({ scrollTop: scrollHeight }, 0);
 	} else {
 	    text_div.append(txt);
 	    var scrollHeight = text_div.parent().prop("scrollHeight");
