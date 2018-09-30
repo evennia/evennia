@@ -747,7 +747,7 @@ class CmdLookDark(Command):
         """
         caller = self.caller
 
-        if random.random() < 0.8:
+        if random.random() < 0.75:
             # we don't find anything
             caller.msg(random.choice(DARK_MESSAGES))
         else:
