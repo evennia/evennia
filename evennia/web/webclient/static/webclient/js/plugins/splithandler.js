@@ -190,18 +190,18 @@ let splithandler_plugin = (function () {
 	selection = "Pane to split: " + selection + "</select> ";
 	dialog.append(selection);
 
-        dialog.append('<input type="radio" name="direction" value="vertical" checked> top/bottom </>');
-        dialog.append('<input type="radio" name="direction" value="horizontal"> side-by-side <hr />');
+        dialog.append('<input type="radio" name="direction" value="vertical" checked>top/bottom </>');
+        dialog.append('<input type="radio" name="direction" value="horizontal">side-by-side <hr />');
 
         dialog.append('Pane 1: <input type="text" name="new_pane1" value="" />');
-        dialog.append('<input type="radio" name="flow1" value="linefeed" checked>line feed </>');
-        dialog.append('<input type="radio" name="flow1" value="append">append </>');
-        dialog.append('<input type="radio" name="flow1" value="replace">replace content<hr />');
+        dialog.append('<input type="radio" name="flow1" value="linefeed" checked>newlines </>');
+        dialog.append('<input type="radio" name="flow1" value="replace">replace </>');
+        dialog.append('<input type="radio" name="flow1" value="append">append <hr />');
 
         dialog.append('Pane 2: <input type="text" name="new_pane2" value="" />');
-        dialog.append('<input type="radio" name="flow2" value="linefeed" checked>line feed </>');
-        dialog.append('<input type="radio" name="flow2" value="append">append </>');
-        dialog.append('<input type="radio" name="flow2" value="replace">replace content <hr />');
+        dialog.append('<input type="radio" name="flow2" value="linefeed" checked>newlines </>');
+        dialog.append('<input type="radio" name="flow2" value="replace">replace </>');
+        dialog.append('<input type="radio" name="flow2" value="append">append <hr />');
 
 	dialog.append('<div id="splitclose" class="btn btn-large btn-outline-primary float-right">Split</div>');
 
@@ -295,15 +295,16 @@ let splithandler_plugin = (function () {
 
 	if ( pane['update_method'] == 'replace' ) {
 	    text_div.html(txt)
-	} else if ( pane['update_method'] == 'linefeed' ) {
-	    text_div.append("<div class='out'>" + txt + "</div>");
-	    var scrollHeight = text_div.parent().prop("scrollHeight");
-	    text_div.parent().animate({ scrollTop: scrollHeight }, 0);
-	} else {
+	} else if ( pane['update_method'] == 'append' ) {
 	    text_div.append(txt);
 	    var scrollHeight = text_div.parent().prop("scrollHeight");
 	    text_div.parent().animate({ scrollTop: scrollHeight }, 0);
+	} else {  // line feed
+	    text_div.append("<div class='out'>" + txt + "</div>");
+	    var scrollHeight = text_div.parent().prop("scrollHeight");
+	    text_div.parent().animate({ scrollTop: scrollHeight }, 0);
 	}
+	
     }
 
 
@@ -377,7 +378,7 @@ let splithandler_plugin = (function () {
             minSize: [50,50],
         });
 
-        split_panes['main']  = { 'types': [], 'update_method': 'append' };
+        split_panes['main']  = { 'types': [], 'update_method': 'linefeed' };
 
         // Create our UI
         addToolbarButtons();
