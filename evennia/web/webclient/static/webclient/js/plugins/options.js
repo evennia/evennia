@@ -10,13 +10,11 @@ let options_plugin = (function () {
     // addOptionsUI
     var addOptionsUI = function () {
         var content = [ // TODO  dynamically create this based on the options{} hash
-            '<h3>Output display</h3>',
             '<label><input type="checkbox" data-setting="gagprompt" value="value">Don\'t echo prompts to the main text area</label>',
             '<br />',
             '<label><input type="checkbox" data-setting="helppopup" value="value">Open help in popup window</label>',
             '<br />',
             '<hr />',
-            '<h3>Notifications</h3>',
             '<label><input type="checkbox" data-setting="notification_popup" value="value">Popup notification</label>',
             '<br />',
             '<label><input type="checkbox" data-setting="notification_sound" value="value">Play a sound</label>',
