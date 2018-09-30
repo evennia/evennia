@@ -2014,7 +2014,7 @@ def main():
         # launch menu for operation
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
-    elif option in ('status', 'info', 'start', 'istart', 'ipstart', 'reload', 'reboot',
+    elif option in ('status', 'info', 'start', 'istart', 'ipstart', 'reload', 'restart', 'reboot',
                     'reset', 'stop', 'sstop', 'kill', 'skill'):
         # operate the server directly
         if not SERVER_LOGFILE:
@@ -2029,7 +2029,7 @@ def main():
             start_server_interactive()
         elif option == "ipstart":
             start_portal_interactive()
-        elif option == 'reload':
+        elif option in ('reload', 'restart'):
             reload_evennia(args.profiler)
         elif option == 'reboot':
             reboot_evennia(args.profiler, args.profiler)
