@@ -7,12 +7,13 @@ import datetime
 from random import getrandbits
 from django.conf import settings
 from django.contrib.auth import authenticate
+from evennia.accounts.accounts import CREATION_THROTTLE, LOGIN_THROTTLE
 from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
-from evennia.server.models import ServerConfig
-from evennia.server.throttle import Throttle
 from evennia.comms.models import ChannelDB
+from evennia.server.models import ServerConfig
 from evennia.server.sessionhandler import SESSIONS
+from evennia.server.throttle import Throttle
 
 from evennia.utils import create, logger, utils, gametime
 from evennia.commands.cmdhandler import CMD_LOGINSTART
@@ -26,11 +27,8 @@ __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
-# Create throttles for too many connections, account-creations and login attempts
+# Create throttles for too many connections
 CONNECTION_THROTTLE = Throttle(limit=5, timeout=1 * 60)
-CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
-LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
-
 
 def create_guest_account(session):
     """
