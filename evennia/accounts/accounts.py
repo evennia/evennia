@@ -10,7 +10,7 @@ character object, so you should customize that
 instead for most things).
 
 """
-
+import re
 import time
 from django.conf import settings
 from django.contrib.auth import password_validation
@@ -359,6 +359,27 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     puppet = property(__get_single_puppet)
 
     # utility methods
+    @classmethod
+    def normalize_username(cls, username):
+        """
+        Django: Applies NFKC Unicode normalization to usernames so that visually 
+        identical characters with different Unicode code points are considered 
+        identical.
+        
+        (This deals with the Turkish "i" problem and similar
+        annoyances. Only relevant if you go out of your way to allow Unicode 
+        usernames though-- Evennia accepts ASCII by default.)
+        
+        In this case we're simply piggybacking on this feature to apply
+        additional normalization per Evennia's standards.
+        """
+        username = super(DefaultAccount, cls).normalize_username(username)
+        
+        # strip excessive spaces in accountname
+        username = re.sub(r"\s+", " ", username).strip()
+        
+        return username
+    
     @classmethod
     def validate_password(cls, password, account=None):
         """
