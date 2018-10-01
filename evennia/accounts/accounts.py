@@ -23,6 +23,7 @@ from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
+from evennia.server.throttle import Throttle
 from evennia.utils import logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, to_unicode, is_iter,
@@ -44,6 +45,9 @@ _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _CONNECT_CHANNEL = None
 
+# Create throttles for too many account-creations and login attempts
+CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
+LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
 
 class AccountSessionHandler(object):
     """
@@ -413,15 +417,27 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         errors = []
         if ip: ip = str(ip)
         
+        # See if authentication is currently being throttled
+        if ip and LOGIN_THROTTLE.check(ip):
+            errors.append('Too many login failures; please try again in a few minutes.')
+            
+            # With throttle active, do not log continued hits-- it is a
+            # waste of storage and can be abused to make your logs harder to
+            # read and fill up your disk.
+            return None, errors
+        
         # Authenticate and get Account object
         account = authenticate(username=username, password=password)
         if not account:
             # User-facing message
             errors.append('Username and/or password is incorrect.')
             
-            # System log message
+            # Log auth failures while throttle is inactive
             logger.log_sec('Authentication Failure: %s (IP: %s).' % (username, ip))
             
+            # Update throttle
+            if ip: LOGIN_THROTTLE.update(ip)
+
             return None, errors
         
         # Account successfully authenticated
@@ -543,7 +559,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             if error: raise error
 
         super(DefaultAccount, self).set_password(password)
-        logger.log_info("Password succesfully changed for %s." % self)
+        logger.log_sec("Password successfully changed for %s." % self)
         self.at_password_change()
 
     def delete(self, *args, **kwargs):
