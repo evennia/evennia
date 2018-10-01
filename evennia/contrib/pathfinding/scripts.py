@@ -25,7 +25,7 @@ Add this import to the top of the file:
     from evennia.contrib.pathfinding.scripts import PathfinderScript
     
 Add this line to the beginning or end of your `at_server_start()` function, but
-above the word 'pass' if it's there:
+replace the word 'pass' if it's there:
 
     # This will preload graph creation before the game is live
     pathfinder = PathfinderScript.spawn()

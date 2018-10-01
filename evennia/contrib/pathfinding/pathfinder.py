@@ -6,7 +6,7 @@ Contrib - Johnny 2018
 A batteries-included abstraction for in-MUD navigation.
 
 Builds a queryable "map" (directional graph) of all of your game's Rooms and 
-Exits, even accounting for one-way travel.
+Exits, even accounting for one-way travel and locked doors.
 
 Requires the `networkx` library, not included with Evennia, but only a
 `pip install networkx` away.
@@ -107,8 +107,8 @@ class Pathfinder(nx.DiGraph):
         Creates the graph and initializes it.
         
         Kwargs:
-            queryset (QuerySet, optional): QuerySet of Room objects to be 
-                included in the graph
+            queryset (iterable, optional): QuerySet, list or any other iterable 
+                of Room objects to be included in the graph
                 
         """
         self.queryset = kwargs.pop('queryset', None)
@@ -137,7 +137,7 @@ class Pathfinder(nx.DiGraph):
             
         """
         if self.queryset: 
-            return (x for x in self.queryset)
+            return self.queryset
         else:
             return Room.objects.all().iterator()
     
