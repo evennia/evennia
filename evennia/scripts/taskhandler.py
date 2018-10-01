@@ -4,7 +4,8 @@ Module containing the task handler for Evennia deferred tasks, persistent or not
 
 from datetime import datetime, timedelta
 
-from twisted.internet import reactor, task
+from twisted.internet import reactor
+from twisted.internet.task import deferLater
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize
@@ -143,7 +144,7 @@ class TaskHandler(object):
             args = [task_id]
             kwargs = {}
 
-        return task.deferLater(reactor, timedelay, callback, *args, **kwargs)
+        return deferLater(reactor, timedelay, callback, *args, **kwargs)
 
     def remove(self, task_id):
         """Remove a persistent task without executing it.
@@ -189,7 +190,7 @@ class TaskHandler(object):
         now = datetime.now()
         for task_id, (date, callbac, args, kwargs) in self.tasks.items():
             seconds = max(0, (date - now).total_seconds())
-            task.deferLater(reactor, seconds, self.do_task, task_id)
+            deferLater(reactor, seconds, self.do_task, task_id)
 
 
 # Create the soft singleton

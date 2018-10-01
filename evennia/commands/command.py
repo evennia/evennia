@@ -310,7 +310,7 @@ class Command(with_metaclass(CommandMeta, object)):
         Args:
             srcobj (Object): Object trying to gain permission
             access_type (str, optional): The lock type to check.
-            default (bool, optional): The fallbacl result if no lock
+            default (bool, optional): The fallback result if no lock
                 of matching `access_type` is found on this Command.
 
         """

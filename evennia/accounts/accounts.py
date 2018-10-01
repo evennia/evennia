@@ -13,6 +13,8 @@ instead for most things).
 
 import time
 from django.conf import settings
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
@@ -21,7 +23,7 @@ from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.utils import logger
-from evennia.utils.utils import (lazy_property,
+from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, is_iter,
                                  variable_from_module)
 from evennia.typeclasses.attributes import NickHandler
@@ -357,6 +359,65 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     puppet = property(__get_single_puppet)
 
     # utility methods
+    @classmethod
+    def validate_password(cls, password, account=None):
+        """
+        Checks the given password against the list of Django validators enabled
+        in the server.conf file.
+
+        Args:
+            password (str): Password to validate
+
+        Kwargs:
+            account (DefaultAccount, optional): Account object to validate the
+                password for. Optional, but Django includes some validators to
+                do things like making sure users aren't setting passwords to the
+                same value as their username. If left blank, these user-specific
+                checks are skipped.
+
+        Returns:
+            valid (bool): Whether or not the password passed validation
+            error (ValidationError, None): Any validation error(s) raised. Multiple
+                errors can be nested within a single object.
+
+        """
+        valid = False
+        error = None
+
+        # Validation returns None on success; invert it and return a more sensible bool
+        try:
+            valid = not password_validation.validate_password(password, user=account)
+        except ValidationError as e:
+            error = e
+
+        return valid, error
+
+    def set_password(self, password, force=False):
+        """
+        Applies the given password to the account if it passes validation checks.
+        Can be overridden by using the 'force' flag.
+
+        Args:
+            password (str): Password to set
+
+        Kwargs:
+            force (bool): Sets password without running validation checks.
+
+        Raises:
+            ValidationError
+
+        Returns:
+            None (None): Does not return a value.
+
+        """
+        if not force:
+            # Run validation checks
+            valid, error = self.validate_password(password, account=self)
+            if error: raise error
+
+        super(DefaultAccount, self).set_password(password)
+        logger.log_info("Password succesfully changed for %s." % self)
+        self.at_password_change()
 
     def delete(self, *args, **kwargs):
         """
@@ -421,10 +482,19 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         kwargs["options"] = options
 
+        if text is not None:
+            if not (isinstance(text, basestring) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text, force_string=True)
+                except Exception:
+                    text = repr(text)
+            kwargs['text'] = text
+
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
         for session in sessions:
-            session.data_out(text=text, **kwargs)
+            session.data_out(**kwargs)
 
     def execute_cmd(self, raw_string, session=None, **kwargs):
         """
@@ -456,7 +526,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                                      callertype="account", session=session, **kwargs)
 
     def search(self, searchdata, return_puppet=False, search_object=False,
-               typeclass=None, nofound_string=None, multimatch_string=None, **kwargs):
+               typeclass=None, nofound_string=None, multimatch_string=None, use_nicks=True, **kwargs):
         """
         This is similar to `DefaultObject.search` but defaults to searching
         for Accounts only.
@@ -480,6 +550,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             multimatch_string (str, optional): A one-time error
                 message to echo if `searchdata` leads to multiple matches.
                 If not given, will fall back to the default handler.
+            use_nicks (bool, optional): Use account-level nick replacement.
 
         Return:
             match (Account, Object or None): A single Account or Object match.
@@ -495,8 +566,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             if searchdata.lower() in ("me", "*me", "self", "*self",):
                 return self
         if search_object:
-            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
+            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass, use_nicks=use_nicks)
         else:
+            searchdata = self.nicks.nickreplace(searchdata, categories=("account", ), include_account=False)
+
             matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
         matches = _AT_SEARCH_RESULT(matches, self, query=searchdata,
                                     nofound_string=nofound_string,
@@ -615,15 +688,36 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         self.basetype_setup()
         self.at_account_creation()
 
-        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
+        permissions = [settings.PERMISSION_ACCOUNT_DEFAULT]
         if hasattr(self, "_createdict"):
             # this will only be set if the utils.create_account
             # function was used to create the object.
             cdict = self._createdict
+            updates = []
+            if not cdict.get("key"):
+                if not self.db_key:
+                    self.db_key = "#%i" % self.dbid
+                    updates.append("db_key")
+            elif self.key != cdict.get("key"):
+                updates.append("db_key")
+                self.db_key = cdict["key"]
+            if updates:
+                self.save(update_fields=updates)
+
             if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
             if cdict.get("permissions"):
                 permissions = cdict["permissions"]
+            if cdict.get("tags"):
+                # this should be a list of tags, tuples (key, category) or (key, category, data)
+                self.tags.batch_add(*cdict["tags"])
+            if cdict.get("attributes"):
+                # this should be tuples (key, val, ...)
+                self.attributes.batch_add(*cdict["attributes"])
+            if cdict.get("nattributes"):
+                # this should be a dict of nattrname:value
+                for key, value in cdict["nattributes"]:
+                    self.nattributes.add(key, value)
             del self._createdict
 
         self.permissions.batch_add(*permissions)
@@ -673,6 +767,17 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         is established and usually no character is yet assigned at
         this point. This hook is intended for account-specific setup
         like configurations.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        """
+        pass
+
+    def at_password_change(self, **kwargs):
+        """
+        Called after a successful password set/modify.
 
         Args:
             **kwargs (dict): Arbitrary, optional arguments for users
@@ -764,7 +869,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             # any was deleted in the interim.
             self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(self.at_look(target=self.db._playable_characters,
-                                  session=session))
+                                  session=session), session=session)
 
     def at_failed_login(self, session, **kwargs):
         """
@@ -916,7 +1021,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             result.append("\n\n |whelp|n - more commands")
             result.append("\n |wooc <Text>|n - talk on public channel")
 
-            charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
+            charmax = _MAX_NR_CHARACTERS
 
             if is_su or len(characters) < charmax:
                 if not characters:

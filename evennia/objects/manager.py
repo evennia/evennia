@@ -76,10 +76,14 @@ class ObjectDBManager(TypedObjectManager):
         # simplest case - search by dbref
         dbref = self.dbref(ostring)
         if dbref:
-            return dbref
+            try:
+                return self.get(id=dbref)
+            except self.model.DoesNotExist:
+                pass
+
         # not a dbref. Search by name.
-        cand_restriction = candidates is not None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates)
-                                                                if obj]) or Q()
+        cand_restriction = candidates is not None and Q(
+                pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         if exact:
             return self.filter(cand_restriction & Q(db_account__username__iexact=ostring))
         else:  # fuzzy matching
@@ -431,7 +435,7 @@ class ObjectDBManager(TypedObjectManager):
         """
         Create and return a new object as a copy of the original object. All
         will be identical to the original except for the arguments given
-        specifically to this method.
+        specifically to this method. Object contents will not be copied.
 
         Args:
             original_object (Object): The object to make a copy from.
@@ -496,6 +500,10 @@ class ObjectDBManager(TypedObjectManager):
         for script in original_object.scripts.all():
             ScriptDB.objects.copy_script(script, new_obj=new_object)
 
+        # copy over all tags, if any
+        for tag in original_object.tags.get(return_tagobj=True, return_list=True):
+            new_object.tags.add(tag=tag.key, category=tag.category, data=tag.data)
+    
         return new_object
 
     def clear_all_sessids(self):

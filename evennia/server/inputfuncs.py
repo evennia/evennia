@@ -161,10 +161,10 @@ def client_options(session, *args, **kwargs):
         raw (bool): Turn off parsing
 
     """
-    flags = session.protocol_flags
+    old_flags = session.protocol_flags
     if not kwargs or kwargs.get("get", False):
         # return current settings
-        options = dict((key, flags[key]) for key in flags
+        options = dict((key, old_flags[key]) for key in old_flags
                        if key.upper() in ("ANSI", "XTERM256", "MXP",
                                           "UTF-8", "SCREENREADER", "ENCODING",
                                           "MCCP", "SCREENHEIGHT",
@@ -190,6 +190,7 @@ def client_options(session, *args, **kwargs):
             return True if val.lower() in ("true", "on", "1") else False
         return bool(val)
 
+    flags = {}
     for key, value in kwargs.items():
         key = key.lower()
         if key == "client":
@@ -231,9 +232,11 @@ def client_options(session, *args, **kwargs):
             err = _ERROR_INPUT.format(
                 name="client_settings", session=session, inp=key)
             session.msg(text=err)
-    session.protocol_flags = flags
-    # we must update the portal as well
-    session.sessionhandler.session_portal_sync(session)
+
+    session.protocol_flags.update(flags)
+    # we must update the protocol flags on the portal session copy as well
+    session.sessionhandler.session_portal_partial_sync(
+            {session.sessid: {"protocol_flags": flags}})
 
 
 # GMCP alias

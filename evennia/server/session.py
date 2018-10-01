@@ -7,7 +7,6 @@ from builtins import object
 
 import time
 
-
 #------------------------------------------------------------
 # Server Session
 #------------------------------------------------------------
@@ -47,8 +46,8 @@ class Session(object):
         a new session is established.
 
         Args:
-            protocol_key (str): By default, one of 'telnet', 'ssh',
-                'ssl' or 'web'.
+            protocol_key (str): By default, one of 'telnet', 'telnet/ssl', 'ssh',
+                'webclient/websocket' or 'webclient/ajax'.
             address (str): Client address.
             sessionhandler (SessionHandler): Reference to the
                 main sessionhandler instance.
@@ -118,7 +117,13 @@ class Session(object):
 
         """
         for propname, value in sessdata.items():
-            setattr(self, propname, value)
+            if (propname == "protocol_flags" and isinstance(value, dict) and
+                    hasattr(self, "protocol_flags") and
+                    isinstance(self.protocol_flags, dict)):
+                # special handling to allow partial update of protocol flags
+                self.protocol_flags.update(value)
+            else:
+                setattr(self, propname, value)
 
     def at_sync(self):
         """
@@ -127,7 +132,8 @@ class Session(object):
         on uid etc).
 
         """
-        self.protocol_flags.update(self.account.attributs.get("_saved_protocol_flags"), {})
+        if self.account:
+            self.protocol_flags.update(self.account.attributes.get("_saved_protocol_flags", {}))
 
     # access hooks
 

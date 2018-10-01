@@ -708,12 +708,15 @@ class RecogHandler(object):
                 than `max_length`.
 
         """
+        if not obj.access(self.obj, "enable_recog", default=True):
+            raise SdescError("This person is unrecognizeable.")
+
         # strip emote components from recog
-        recog = _RE_REF.sub(r"\1",
-                            _RE_REF_LANG.sub(r"\1",
-                                             _RE_SELF_REF.sub(r"",
-                                                              _RE_LANGUAGE.sub(r"",
-                                                                               _RE_OBJ_REF_START.sub(r"", recog)))))
+        recog = _RE_REF.sub(
+            r"\1", _RE_REF_LANG.sub(
+                r"\1", _RE_SELF_REF.sub(
+                    r"", _RE_LANGUAGE.sub(
+                        r"", _RE_OBJ_REF_START.sub(r"", recog)))))
 
         # make an recog clean of ANSI codes
         cleaned_recog = ansi.strip_ansi(recog)
@@ -1085,7 +1088,7 @@ class CmdMask(RPCommand):
         if self.cmdstring == "mask":
             # wear a mask
             if not self.args:
-                caller.msg("Usage: (un)wearmask sdesc")
+                caller.msg("Usage: (un)mask sdesc")
                 return
             if caller.db.unmasked_sdesc:
                 caller.msg("You are already wearing a mask.")
@@ -1108,7 +1111,7 @@ class CmdMask(RPCommand):
             del caller.db.unmasked_sdesc
             caller.locks.remove("enable_recog")
             caller.sdesc.add(old_sdesc)
-            caller.msg("You remove your mask and is again '%s'." % old_sdesc)
+            caller.msg("You remove your mask and are again '%s'." % old_sdesc)
 
 
 class RPSystemCmdSet(CmdSet):
@@ -1200,7 +1203,7 @@ class ContribRPObject(DefaultObject):
                 below.
             exact (bool): if unset (default) - prefers to match to beginning of
                 string rather than not matching at all. If set, requires
-                exact mathing of entire string.
+                exact matching of entire string.
             candidates (list of objects): this is an optional custom list of objects
                 to search (filter) between. It is ignored if `global_search`
                 is given. If not set, this list will automatically be defined

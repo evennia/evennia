@@ -1,6 +1,7 @@
 """
 General Character commands usually available to all characters
 """
+import re
 from django.conf import settings
 from evennia.utils import utils, evtable
 from evennia.typeclasses.attributes import NickTemplateInvalid
@@ -70,42 +71,45 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
             target = caller.search(self.args)
             if not target:
                 return
-        self.msg(caller.at_look(target))
+        self.msg((caller.at_look(target), {'type': 'look'}), options=None)
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
     """
-    define a personal alias/nick
+    define a personal alias/nick by defining a string to
+    match and replace it with another on the fly
 
     Usage:
       nick[/switches] <string> [= [replacement_string]]
       nick[/switches] <template> = <replacement_template>
       nick/delete <string> or number
-      nick/test <test string>
+      nicks
 
     Switches:
       inputline - replace on the inputline (default)
       object    - replace on object-lookup
-      account    - replace on account-lookup
-      delete    - remove nick by name or by index given by /list
-      clearall  - clear all nicks
+      account   - replace on account-lookup
       list      - show all defined aliases (also "nicks" works)
-      test      - test input to see what it matches with
+      delete    - remove nick by index in /list
+      clearall  - clear all nicks
 
     Examples:
       nick hi = say Hello, I'm Sarah!
       nick/object tom = the tall man
-      nick build $1 $2 = @create/drop $1;$2     - (template)
-      nick tell $1 $2=@page $1=$2               - (template)
+      nick build $1 $2 = @create/drop $1;$2
+      nick tell $1 $2=@page $1=$2
+      nick tm?$1=@page tallman=$1
+      nick tm\=$1=@page tallman=$1
 
     A 'nick' is a personal string replacement. Use $1, $2, ... to catch arguments.
     Put the last $-marker without an ending space to catch all remaining text. You
-    can also use unix-glob matching:
+    can also use unix-glob matching for the left-hand side <string>:
 
         * - matches everything
-        ? - matches a single character
-        [seq] - matches all chars in sequence
-        [!seq] - matches everything not in sequence
+        ? - matches 0 or 1 single characters
+        [abcd] - matches these chars in any order
+        [!abcd] - matches everything not among these chars
+        \= - escape literal '=' you want in your <string>
 
     Note that no objects are actually renamed or changed by this command - your nicks
     are only available to you. If you want to permanently add keywords to an object
@@ -113,17 +117,40 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     """
     key = "nick"
-    aliases = ["nickname", "nicks", "alias"]
+    switch_options = ("inputline", "object", "account", "list", "delete", "clearall")
+    aliases = ["nickname", "nicks"]
     locks = "cmd:all()"
+
+    def parse(self):
+        """
+        Support escaping of = with \=
+        """
+        super(CmdNick, self).parse()
+        args = (self.lhs or "") + (" = %s" % self.rhs if self.rhs else "")
+        parts = re.split(r"(?<!\\)=", args, 1)
+        self.rhs = None
+        if len(parts) < 2:
+            self.lhs = parts[0].strip()
+        else:
+            self.lhs, self.rhs = [part.strip() for part in parts]
+        self.lhs = self.lhs.replace("\=", "=")
 
     def func(self):
         """Create the nickname"""
 
+        def _cy(string):
+            "add color to the special markers"
+            return re.sub(r"(\$[0-9]+|\*|\?|\[.+?\])", r"|Y\1|n", string)
+
         caller = self.caller
         switches = self.switches
-        nicktypes = [switch for switch in switches if switch in ("object", "account", "inputline")] or ["inputline"]
+        nicktypes = [switch for switch in switches if switch in ("object", "account", "inputline")]
+        specified_nicktype = bool(nicktypes)
+        nicktypes = nicktypes if specified_nicktype else ["inputline"]
 
-        nicklist = utils.make_iter(caller.nicks.get(return_obj=True) or [])
+        nicklist = (utils.make_iter(caller.nicks.get(category="inputline", return_obj=True) or []) +
+                    utils.make_iter(caller.nicks.get(category="object", return_obj=True) or []) +
+                    utils.make_iter(caller.nicks.get(category="account", return_obj=True) or []))
 
         if 'list' in switches or self.cmdstring in ("nicks", "@nicks"):
 
@@ -133,24 +160,121 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 table = evtable.EvTable("#", "Type", "Nick match", "Replacement")
                 for inum, nickobj in enumerate(nicklist):
                     _, _, nickvalue, replacement = nickobj.value
-                    table.add_row(str(inum + 1), nickobj.db_category, nickvalue, replacement)
+                    table.add_row(str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement))
                 string = "|wDefined Nicks:|n\n%s" % table
             caller.msg(string)
             return
 
         if 'clearall' in switches:
             caller.nicks.clear()
+            caller.account.nicks.clear()
             caller.msg("Cleared all nicks.")
+            return
+
+        if 'delete' in switches or 'del' in switches:
+            if not self.args or not self.lhs:
+                caller.msg("usage nick/delete <nick> or <#num> ('nicks' for list)")
+                return
+            # see if a number was given
+            arg = self.args.lstrip("#")
+            oldnicks = []
+            if arg.isdigit():
+                # we are given a index in nicklist
+                delindex = int(arg)
+                if 0 < delindex <= len(nicklist):
+                    oldnicks.append(nicklist[delindex - 1])
+                else:
+                    caller.msg("Not a valid nick index. See 'nicks' for a list.")
+                    return
+            else:
+                if not specified_nicktype:
+                    nicktypes = ("object", "account", "inputline")
+                for nicktype in nicktypes:
+                    oldnicks.append(caller.nicks.get(arg, category=nicktype, return_obj=True))
+
+            oldnicks = [oldnick for oldnick in oldnicks if oldnick]
+            if oldnicks:
+                for oldnick in oldnicks:
+                    nicktype = oldnick.category
+                    nicktypestr = "%s-nick" % nicktype.capitalize()
+                    _, _, old_nickstring, old_replstring = oldnick.value
+                    caller.nicks.remove(old_nickstring, category=nicktype)
+                    caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
+                               nicktypestr, old_nickstring, old_replstring))
+            else:
+                caller.msg("No matching nicks to remove.")
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                nicks = utils.make_iter(caller.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                if nicktype == "account":
+                    obj = account
+                else:
+                    obj = caller
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
+            return
+
+        if not self.rhs and self.lhs:
+            # check what a nick is set to
+            strings = []
+            if not specified_nicktype:
+                nicktypes = ("object", "account", "inputline")
+            for nicktype in nicktypes:
+                if nicktype == "account":
+                    obj = account
+                else:
+                    obj = caller
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
+                for nick in nicks:
+                    _, _, nick, repl = nick.value
+                    if nick.startswith(self.lhs):
+                        strings.append("{}-nick: '{}' -> '{}'".format(
+                            nicktype.capitalize(), nick, repl))
+            if strings:
+                caller.msg("\n".join(strings))
+            else:
+                caller.msg("No nicks found matching '{}'".format(self.lhs))
             return
 
         if not self.args or not self.lhs:
             caller.msg("Usage: nick[/switches] nickname = [realname]")
             return
 
+        # setting new nicks
+
         nickstring = self.lhs
         replstring = self.rhs
-        old_nickstring = None
-        old_replstring = None
 
         if replstring == nickstring:
             caller.msg("No point in setting nick same as the string to replace...")
@@ -160,36 +284,24 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         errstring = ""
         string = ""
         for nicktype in nicktypes:
+            nicktypestr = "%s-nick" % nicktype.capitalize()
+            old_nickstring = None
+            old_replstring = None
+
             oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
             if oldnick:
                 _, _, old_nickstring, old_replstring = oldnick.value
-            else:
-                # no old nick, see if a number was given
-                arg = self.args.lstrip("#")
-                if arg.isdigit():
-                    # we are given a index in nicklist
-                    delindex = int(arg)
-                    if 0 < delindex <= len(nicklist):
-                        oldnick = nicklist[delindex - 1]
-                        _, _, old_nickstring, old_replstring = oldnick.value
-                    else:
-                        errstring += "Not a valid nick index."
-                else:
-                    errstring += "Nick not found."
-            if "delete" in switches or "del" in switches:
-                # clear the nick
-                if old_nickstring and caller.nicks.has(old_nickstring, category=nicktype):
-                    caller.nicks.remove(old_nickstring, category=nicktype)
-                    string += "\nNick removed: '|w%s|n' -> |w%s|n." % (old_nickstring, old_replstring)
-                else:
-                    errstring += "\nNick '|w%s|n' was not deleted." % old_nickstring
-            elif replstring:
+            if replstring:
                 # creating new nick
                 errstring = ""
                 if oldnick:
-                    string += "\nNick '|w%s|n' updated to map to '|w%s|n'." % (old_nickstring, replstring)
+                    if replstring == old_replstring:
+                        string += "\nIdentical %s already set." % nicktypestr.lower()
+                    else:
+                        string += "\n%s '|w%s|n' updated to map to '|w%s|n'." % (
+                                nicktypestr, old_nickstring, replstring)
                 else:
-                    string += "\nNick '|w%s|n' mapped to '|w%s|n'." % (nickstring, replstring)
+                    string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (nicktypestr, nickstring, replstring)
                 try:
                     caller.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
@@ -197,10 +309,10 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     return
             elif old_nickstring and old_replstring:
                 # just looking at the nick
-                string += "\nNick '|w%s|n' maps to '|w%s|n'." % (old_nickstring, old_replstring)
+                string += "\n%s '|w%s|n' maps to '|w%s|n'." % (nicktypestr, old_nickstring, old_replstring)
                 errstring = ""
         string = errstring if errstring else string
-        caller.msg(string)
+        caller.msg(_cy(string))
 
 
 class CmdInventory(COMMAND_DEFAULT_CLASS):
@@ -330,12 +442,13 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     give away something to someone
 
     Usage:
-      give <inventory obj> = <target>
+      give <inventory obj> <to||=> <target>
 
     Gives an items from your inventory to another character,
     placing it in their inventory.
     """
     key = "give"
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
@@ -439,7 +552,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
 
     Usage:
       whisper <character> = <message>
-      whisper <char1>, <char2> = <message?
+      whisper <char1>, <char2> = <message>
 
     Talk privately to one or more characters in your current location, without
     others in the room being informed.

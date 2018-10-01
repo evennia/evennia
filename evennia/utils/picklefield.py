@@ -120,9 +120,11 @@ def dbsafe_decode(value, compress_object=False):
 
 class PickledWidget(Textarea):
     def render(self, name, value, attrs=None):
+        """Display of the PickledField in django admin"""
         value = repr(value)
         try:
-            literal_eval(value)
+            # necessary to convert it back after repr(), otherwise validation errors will mutate it
+            value = literal_eval(value)
         except ValueError:
             return value
 

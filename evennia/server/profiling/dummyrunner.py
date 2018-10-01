@@ -106,7 +106,7 @@ ERROR_NO_MIXIN = \
     error completely.
 
     Warning: Don't run dummyrunner on a production database! It will
-    create a lot of spammy objects and account accounts!
+    create a lot of spammy objects and accounts!
     """
 
 

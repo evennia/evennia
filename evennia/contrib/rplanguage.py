@@ -21,30 +21,30 @@ in the game in various ways:
 Usage:
 
     ```python
-    from evennia.contrib import rplanguages
+    from evennia.contrib import rplanguage
 
     # need to be done once, here we create the "default" lang
-    rplanguages.add_language()
+    rplanguage.add_language()
 
     say = "This is me talking."
     whisper = "This is me whispering.
 
-    print rplanguages.obfuscate_language(say, level=0.0)
+    print rplanguage.obfuscate_language(say, level=0.0)
     <<< "This is me talking."
-    print rplanguages.obfuscate_language(say, level=0.5)
+    print rplanguage.obfuscate_language(say, level=0.5)
     <<< "This is me byngyry."
-    print rplanguages.obfuscate_language(say, level=1.0)
+    print rplanguage.obfuscate_language(say, level=1.0)
     <<< "Daly ly sy byngyry."
 
-    result = rplanguages.obfuscate_whisper(whisper, level=0.0)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.0)
     <<< "This is me whispering"
-    result = rplanguages.obfuscate_whisper(whisper, level=0.2)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.2)
     <<< "This is m- whisp-ring"
-    result = rplanguages.obfuscate_whisper(whisper, level=0.5)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.5)
     <<< "---s -s -- ---s------"
-    result = rplanguages.obfuscate_whisper(whisper, level=0.7)
+    result = rplanguage.obfuscate_whisper(whisper, level=0.7)
     <<< "---- -- -- ----------"
-    result = rplanguages.obfuscate_whisper(whisper, level=1.0)
+    result = rplanguage.obfuscate_whisper(whisper, level=1.0)
     <<< "..."
 
     ```
@@ -71,7 +71,7 @@ Usage:
     manual_translations = {"the":"y'e", "we":"uyi", "she":"semi", "he":"emi",
                           "you": "do", 'me':'mi','i':'me', 'be':"hy'e", 'and':'y'}
 
-    rplanguages.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
+    rplanguage.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
                              word_length_variance=word_length_variance,
                              noun_postfix=noun_postfix, vowels=vowels,
                              manual_translations=manual_translations
@@ -96,6 +96,7 @@ import re
 from random import choice, randint
 from collections import defaultdict
 from evennia import DefaultScript
+from evennia.utils import logger
 
 
 #------------------------------------------------------------
@@ -105,21 +106,26 @@ from evennia import DefaultScript
 #------------------------------------------------------------
 
 # default language grammar
-_PHONEMES = "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh s z sh zh ch jh k ng g m n l r w"
+_PHONEMES = "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh " \
+            "s z sh zh ch jh k ng g m n l r w"
 _VOWELS = "eaoiuy"
 # these must be able to be constructed from phonemes (so for example,
-# if you have v here, there must exixt at least one single-character
+# if you have v here, there must exist at least one single-character
 # vowel phoneme defined above)
 _GRAMMAR = "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv"
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 _RE_GRAMMAR = re.compile(r"vv|cc|v|c", _RE_FLAGS)
 _RE_WORD = re.compile(r'\w+', _RE_FLAGS)
+_RE_EXTRA_CHARS = re.compile(r'\s+(?=\W)|[,.?;](?=[,.?;]|\s+[,.?;])', _RE_FLAGS)
 
 
-class LanguageExistsError(Exception):
-    message = "Language is already created. Re-adding it will re-build" \
-              " its dictionary map. Use 'force=True' keyword if you are sure."
+class LanguageError(RuntimeError):
+    pass
+
+
+class LanguageExistsError(LanguageError):
+    pass
 
 
 class LanguageHandler(DefaultScript):
@@ -156,8 +162,11 @@ class LanguageHandler(DefaultScript):
         self.db.language_storage = {}
 
     def add(self, key="default", phonemes=_PHONEMES,
-            grammar=_GRAMMAR, word_length_variance=0, noun_prefix="",
-            noun_postfix="", vowels=_VOWELS, manual_translations=None,
+            grammar=_GRAMMAR, word_length_variance=0,
+            noun_translate=False,
+            noun_prefix="",
+            noun_postfix="",
+            vowels=_VOWELS, manual_translations=None,
             auto_translations=None, force=False):
         """
         Add a new language. Note that you generally only need to do
@@ -170,14 +179,21 @@ class LanguageHandler(DefaultScript):
                 will be used as an identifier for the language so it
                 should be short and unique.
             phonemes (str, optional): Space-separated string of all allowed
-                phonemes in this language.
+                phonemes in this language. If either of the base phonemes
+                (c, v, cc, vv) are present in the grammar, the phoneme list must
+                at least include one example of each.
             grammar (str): All allowed consonant (c) and vowel (v) combinations
-                allowed to build up words. For example cvv would be a consonant
-                followed by two vowels (would allow for a word like 'die').
+                allowed to build up words. Grammars are broken into the base phonemes
+                (c, v, cc, vv) prioritizing the longer bases. So cvv would be a
+                the c + vv (would allow for a word like 'die' whereas
+                cvcvccc would be c+v+c+v+cc+c (a word like 'galosch').
             word_length_variance (real): The variation of length of words.
                 0 means a minimal variance, higher variance may mean words
                 have wildly varying length; this strongly affects how the
                 language "looks".
+            noun_translate (bool, optional): If a proper noun, identified as a
+                capitalized word, should be translated or not. By default they
+                will not, allowing for e.g. the names of characters to be understandable.
             noun_prefix (str, optional): A prefix to go before every noun
                 in this language (if any).
             noun_postfix (str, optuonal): A postfix to go after every noun
@@ -213,20 +229,27 @@ class LanguageHandler(DefaultScript):
 
         """
         if key in self.db.language_storage and not force:
-            raise LanguageExistsError
-
-        # allowed grammar are grouped by length
-        gramdict = defaultdict(list)
-        for gram in grammar.split():
-            gramdict[len(gram)].append(gram)
-        grammar = dict(gramdict)
+            raise LanguageExistsError(
+                "Language is already created. Re-adding it will re-build"
+                " its dictionary map. Use 'force=True' keyword if you are sure.")
 
         # create grammar_component->phoneme mapping
         # {"vv": ["ea", "oh", ...], ...}
         grammar2phonemes = defaultdict(list)
         for phoneme in phonemes.split():
+            if re.search("\W", phoneme):
+                raise LanguageError("The phoneme '%s' contains an invalid character" % phoneme)
             gram = "".join(["v" if char in vowels else "c" for char in phoneme])
             grammar2phonemes[gram].append(phoneme)
+
+        # allowed grammar are grouped by length
+        gramdict = defaultdict(list)
+        for gram in grammar.split():
+            if re.search("\W|(!=[cv])", gram):
+                raise LanguageError("The grammar '%s' is invalid (only 'c' and 'v' are allowed)" % gram)
+            gramdict[len(gram)].append(gram)
+        grammar = dict(gramdict)
+
 
         # create automatic translation
         translation = {}
@@ -261,6 +284,7 @@ class LanguageHandler(DefaultScript):
                    "grammar": grammar,
                    "grammar2phonemes": dict(grammar2phonemes),
                    "word_length_variance": word_length_variance,
+                   "noun_translate": noun_translate,
                    "noun_prefix": noun_prefix,
                    "noun_postfix": noun_postfix}
         self.db.language_storage[key] = storage
@@ -282,34 +306,63 @@ class LanguageHandler(DefaultScript):
         """
         word = match.group()
         lword = len(word)
+
         if len(word) <= self.level:
             # below level. Don't translate
             new_word = word
         else:
-            # translate the word
+            # try to translate the word from dictionary
             new_word = self.language["translation"].get(word.lower(), "")
             if not new_word:
-                if word.istitle():
-                    # capitalized word we don't have a translation for -
-                    # treat as a name (don't translate)
-                    new_word = "%s%s%s" % (self.language["noun_prefix"], word, self.language["noun_postfix"])
-                else:
-                    # make up translation on the fly. Length can
-                    # vary from un-translated word.
-                    wlen = max(0, lword + sum(randint(-1, 1) for i
-                                              in range(self.language["word_length_variance"])))
-                    grammar = self.language["grammar"]
-                    if wlen not in grammar:
+                # no dictionary translation. Generate one
+
+                # find out what preceeded this word
+                wpos = match.start()
+                preceeding = match.string[:wpos].strip()
+                start_sentence = preceeding.endswith(".") or not preceeding
+
+                # make up translation on the fly. Length can
+                # vary from un-translated word.
+                wlen = max(0, lword + sum(randint(-1, 1) for i
+                                          in range(self.language["word_length_variance"])))
+                grammar = self.language["grammar"]
+                if wlen not in grammar:
+                    if randint(0, 1) == 0:
                         # this word has no direct translation!
-                        return ""
+                        wlen = 0
+                        new_word = ''
+                    else:
+                        # use random word length
+                        wlen = choice(grammar.keys())
+
+                if wlen:
                     structure = choice(grammar[wlen])
                     grammar2phonemes = self.language["grammar2phonemes"]
                     for match in _RE_GRAMMAR.finditer(structure):
                         # there are only four combinations: vv,cc,c,v
-                        new_word += choice(grammar2phonemes[match.group()])
-            if word.istitle():
-                # capitalize words the same way
-                new_word = new_word.capitalize()
+                        try:
+                            new_word += choice(grammar2phonemes[match.group()])
+                        except KeyError:
+                            logger.log_trace("You need to supply at least one example of each of "
+                                             "the four base phonemes (c, v, cc, vv)")
+                            # abort translation here
+                            new_word = ''
+                            break
+
+                if word.istitle():
+                    title_word = ''
+                    if not start_sentence and not self.language.get("noun_translate", False):
+                        # don't translate what we identify as proper nouns (names)
+                        title_word = word
+                    elif new_word:
+                        title_word = new_word
+
+                    if title_word:
+                        # Regardless of if we translate or not, we will add the custom prefix/postfixes
+                        new_word = "%s%s%s" % (self.language["noun_prefix"],
+                                               title_word.capitalize(),
+                                               self.language["noun_postfix"])
+
             if len(word) > 1 and word.isupper():
                 # keep LOUD words loud also when translated
                 new_word = new_word.upper()
@@ -341,7 +394,9 @@ class LanguageHandler(DefaultScript):
 
         # configuring the translation
         self.level = int(10 * (1.0 - max(0, min(level, 1.0))))
-        return _RE_WORD.sub(self._translate_sub, text)
+        translation = _RE_WORD.sub(self._translate_sub, text)
+        # the substitution may create too long empty spaces, remove those
+        return _RE_EXTRA_CHARS.sub("", translation)
 
 
 # Language access functions

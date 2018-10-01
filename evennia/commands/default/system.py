@@ -58,7 +58,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
         SESSIONS.announce_all(" Server restart initiated %s..." % reason)
-        SESSIONS.server.shutdown(mode='reload')
+        SESSIONS.portal_restart_server()
 
 
 class CmdReset(COMMAND_DEFAULT_CLASS):
@@ -91,7 +91,7 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
         Reload the system.
         """
         SESSIONS.announce_all(" Server resetting/restarting ...")
-        SESSIONS.server.shutdown(mode='reset')
+        SESSIONS.portal_reset_server()
 
 
 class CmdShutdown(COMMAND_DEFAULT_CLASS):
@@ -119,7 +119,6 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
             announcement += "%s\n" % self.args
         logger.log_info('Server shutdown by %s.' % self.caller.name)
         SESSIONS.announce_all(announcement)
-        SESSIONS.server.shutdown(mode='shutdown')
         SESSIONS.portal_shutdown()
 
 
@@ -246,6 +245,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     """
     key = "@py"
     aliases = ["!"]
+    switch_options = ("time", "edit")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
 
@@ -329,6 +329,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     """
     key = "@scripts"
     aliases = ["@globalscript", "@listscripts"]
+    switch_options = ("start", "stop", "kill", "validate")
     locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
@@ -522,6 +523,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
 
     key = "@service"
     aliases = ["@services"]
+    switch_options = ("list", "start", "stop", "delete")
     locks = "cmd:perm(service) or perm(Developer)"
     help_category = "System"
 
@@ -673,7 +675,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     Usage:
        @server[/mem]
 
-    Switch:
+    Switches:
         mem - return only a string of the current memory usage
         flushmem - flush the idmapper cache
 
@@ -704,6 +706,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     """
     key = "@server"
     aliases = ["@serverload", "@serverprocess"]
+    switch_options = ("mem", "flushmem")
     locks = "cmd:perm(list) or perm(Developer)"
     help_category = "System"
 
