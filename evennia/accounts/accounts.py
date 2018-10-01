@@ -13,9 +13,10 @@ instead for most things).
 import re
 import time
 from django.conf import settings
-from django.contrib.auth import password_validation
-from django.core.exceptions import ValidationError
+from django.contrib.auth import authenticate, password_validation
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
+from django.utils.module_loading import import_string
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
@@ -360,6 +361,74 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
     # utility methods
     @classmethod
+    def get_username_validators(cls, validator_config=getattr(settings, 'AUTH_USERNAME_VALIDATORS', [])):
+        """
+        Retrieves and instantiates validators for usernames.
+        
+        Args:
+            validator_config (list): List of dicts comprising the battery of
+                validators to apply to a username.
+                
+        Returns:
+            validators (list): List of instantiated Validator objects.
+        """
+        
+        objs = []
+        for validator in validator_config:
+            try:
+                klass = import_string(validator['NAME'])
+            except ImportError:
+                msg = "The module in NAME could not be imported: %s. Check your AUTH_USERNAME_VALIDATORS setting."
+                raise ImproperlyConfigured(msg % validator['NAME'])
+            objs.append(klass(**validator.get('OPTIONS', {})))
+        return objs
+    
+    @classmethod
+    def authenticate(cls, username, password, ip=None):
+        """
+        Checks the given username/password against the database to see if the 
+        credentials are valid.
+        
+        Note that this simply checks credentials and returns a valid reference
+        to the user-- it does not log them in!
+        
+        To finish the job:
+        After calling this from a Command, associate the account with a Session:
+        - session.sessionhandler.login(session, account)
+        
+        ...or after calling this from a View, associate it with an HttpRequest:
+        - django.contrib.auth.login(account, request)
+        
+        Args:
+            username (str): Username of account
+            password (str): Password of account
+            ip (str, optional): IP address of client
+            
+        Returns:
+            account (DefaultAccount, None): Account whose credentials were
+                provided if not banned.
+            errors (list): Error messages of any failures.
+        
+        """
+        errors = []
+        if ip: ip = str(ip)
+        
+        # Authenticate and get Account object
+        account = authenticate(username=username, password=password)
+        if not account:
+            # User-facing message
+            errors.append('Username and/or password is incorrect.')
+            
+            # System log message
+            logger.log_sec('Authentication Failure: %s (IP: %s).' % (username, ip))
+            
+            return None, errors
+        
+        # Account successfully authenticated
+        logger.log_sec('Authentication Success: %s (IP: %s).' % (account, ip))
+        return account, errors
+    
+    @classmethod
     def normalize_username(cls, username):
         """
         Django: Applies NFKC Unicode normalization to usernames so that visually 
@@ -379,6 +448,43 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         username = re.sub(r"\s+", " ", username).strip()
         
         return username
+        
+    @classmethod
+    def validate_username(cls, username):
+        """
+        Checks the given username against the username validator associated with
+        Account objects, and also checks the database to make sure it is unique.
+        
+        Args:
+            username (str): Username to validate
+            
+        Returns:
+            valid (bool): Whether or not the password passed validation
+            errors (list): Error messages of any failures
+        
+        """
+        valid = []
+        errors = []
+        
+        # Make sure we're at least using the default validator
+        validators = cls.get_username_validators()
+        if not validators:
+            validators = [cls.username_validator]
+
+        # Try username against all enabled validators
+        for validator in validators:
+            try:
+                valid.append(not validator(username))
+            except ValidationError as e:
+                valid.append(False)
+                [errors.append(x) for x in e.messages]
+                
+        # Disqualify if any check failed
+        if False in valid:
+            valid = False
+        else: valid = True
+        
+        return valid, errors
     
     @classmethod
     def validate_password(cls, password, account=None):
