@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from mock import Mock
 from random import randint
 from unittest import TestCase
@@ -59,6 +61,33 @@ class TestDefaultAccount(TestCase):
         self.s1 = Session()
         self.s1.puppet = None
         self.s1.sessid = 0
+        
+        self.password = "testpassword"
+        self.account = create.create_account("TestAccount%s" % randint(100000, 999999), email="test@test.com", password=self.password, typeclass=DefaultAccount)
+        
+    def test_authentication(self):
+        "Confirm Account authentication method is authenticating/denying users."
+        # Valid credentials
+        obj, errors = DefaultAccount.authenticate(self.account.name, self.password)
+        self.assertTrue(obj, 'Account did not authenticate given valid credentials.')
+        
+        # Invalid credentials
+        obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy')
+        self.assertFalse(obj, 'Account authenticated using invalid credentials.')
+        
+    def test_username_validation(self):
+        "Check username validators deny relevant usernames"
+        # Should not accept Unicode by default, lest users pick names like this
+        result, error = DefaultAccount.validate_username('¯\_(ツ)_/¯')
+        self.assertFalse(result, "Validator allowed kanji in username.")
+        
+        # Should not allow duplicate username
+        result, error = DefaultAccount.validate_username(self.account.name)
+        self.assertFalse(result, "Duplicate username should not have passed validation.")
+        
+        # Should not allow username too short
+        result, error = DefaultAccount.validate_username('xx')
+        self.assertFalse(result, "2-character username passed validation.")
 
     def test_password_validation(self):
         "Check password validators deny bad passwords"
