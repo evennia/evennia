@@ -2,7 +2,7 @@ from django.contrib import admin
 from evennia.typeclasses.models import Tag
 from django import forms
 from evennia.utils.picklefield import PickledFormField
-from evennia.utils.dbserialize import from_pickle
+from evennia.utils.dbserialize import from_pickle, _SaverSet
 import traceback
 
 
@@ -164,12 +164,12 @@ class AttributeForm(forms.ModelForm):
     attr_category = forms.CharField(label="Category",
                                     help_text="type of attribute, for sorting",
                                     required=False,
-                                    max_length=4)
+                                    max_length=128)
     attr_value = PickledFormField(label="Value", help_text="Value to pickle/save", required=False)
     attr_type = forms.CharField(label="Type",
                                 help_text="Internal use. Either unset (normal Attribute) or \"nick\"",
                                 required=False,
-                                max_length=4)
+                                max_length=16)
     attr_strvalue = forms.CharField(label="String Value",
                                     help_text="Only set when using the Attribute as a string-only store",
                                     required=False,
@@ -213,6 +213,9 @@ class AttributeForm(forms.ModelForm):
         self.instance.attr_key = attr_key
         self.instance.attr_category = attr_category
         self.instance.attr_value = attr_value
+        # prevent set from being transformed to unicode
+        if isinstance(attr_value, set) or isinstance(attr_value, _SaverSet):
+            self.fields['attr_value'].disabled = True
         self.instance.deserialized_value = from_pickle(attr_value)
         self.instance.attr_strvalue = attr_strvalue
         self.instance.attr_type = attr_type
@@ -236,6 +239,17 @@ class AttributeForm(forms.ModelForm):
         instance.attr_type = self.cleaned_data['attr_type'] or None
         instance.attr_lockstring = self.cleaned_data['attr_lockstring']
         return instance
+
+    def clean_attr_value(self):
+        """
+        Prevent Sets from being cleaned due to literal_eval failing on them. Otherwise they will be turned into
+        unicode.
+        """
+        data = self.cleaned_data['attr_value']
+        initial = self.instance.attr_value
+        if isinstance(initial, set) or isinstance(initial, _SaverSet):
+            return initial
+        return data
 
 
 class AttributeFormSet(forms.BaseInlineFormSet):

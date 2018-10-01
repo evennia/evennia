@@ -31,10 +31,12 @@ class BodyFunctions(DefaultScript):
         This gets called every self.interval seconds. We make
         a random check here so as to only return 33% of the time.
         """
-
         if random.random() < 0.66:
             # no message this time
             return
+        self.send_random_message()
+
+    def send_random_message(self):
         rand = random.random()
         # return a random message
         if rand < 0.1:

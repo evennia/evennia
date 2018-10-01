@@ -355,15 +355,16 @@ class ChannelDBManager(TypedObjectManager):
             channel (Channel or None): A channel match.
 
         """
-        # first check the channel key
-        channels = self.filter(db_key__iexact=channelkey)
-        if not channels:
-            # also check aliases
-            channels = [channel for channel in self.all()
-                        if channelkey in channel.aliases.all()]
-        if channels:
-            return channels[0]
-        return None
+        dbref = self.dbref(channelkey)
+        if dbref:
+            try:
+                return self.get(id=dbref)
+            except self.model.DoesNotExist:
+                pass
+        results = self.filter(Q(db_key__iexact=channelkey) |
+                              Q(db_tags__db_tagtype__iexact="alias",
+                                db_tags__db_key__iexact=channelkey)).distinct()
+        return results[0] if results else None
 
     def get_subscriptions(self, subscriber):
         """
@@ -393,26 +394,20 @@ class ChannelDBManager(TypedObjectManager):
                 case sensitive) match.
 
         """
-        channels = []
-        if not ostring:
-            return channels
-        try:
-            # try an id match first
-            dbref = int(ostring.strip('#'))
-            channels = self.filter(id=dbref)
-        except Exception:
-            # Usually because we couldn't convert to int - not a dbref
-            pass
-        if not channels:
-            # no id match. Search on the key.
-            if exact:
-                channels = self.filter(db_key__iexact=ostring)
-            else:
-                channels = self.filter(db_key__icontains=ostring)
-        if not channels:
-            # still no match. Search by alias.
-            channels = [channel for channel in self.all()
-                        if ostring.lower() in [a.lower for a in channel.aliases.all()]]
+        dbref = self.dbref(ostring)
+        if dbref:
+            try:
+                return self.get(id=dbref)
+            except self.model.DoesNotExist:
+                pass
+        if exact:
+            channels = self.filter(Q(db_key__iexact=ostring) |
+                                   Q(db_tags__db_tagtype__iexact="alias",
+                                     db_tags__db_key__iexact=ostring)).distinct()
+        else:
+            channels = self.filter(Q(db_key__icontains=ostring) |
+                                   Q(db_tags__db_tagtype__iexact="alias",
+                                     db_tags__db_key__icontains=ostring)).distinct()
         return channels
     # back-compatibility alias
     channel_search = search_channel

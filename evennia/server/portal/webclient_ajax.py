@@ -297,7 +297,7 @@ class AjaxWebClientSession(session.Session):
     """
 
     def __init__(self, *args, **kwargs):
-        self.protocol_name = "ajax/comet"
+        self.protocol_key = "webclient/ajax"
         super().__init__(*args, **kwargs)
 
     def get_client_session(self):

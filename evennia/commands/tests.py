@@ -264,14 +264,20 @@ class TestCmdSetMergers(TestCase):
 # test cmdhandler functions
 
 
+import sys
 from evennia.commands import cmdhandler
 from twisted.trial.unittest import TestCase as TwistedTestCase
+
+
+def _mockdelay(time, func, *args, **kwargs):
+    return func(*args, **kwargs)
 
 
 class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
     "Test the cmdhandler.get_and_merge_cmdsets function."
 
     def setUp(self):
+        self.patch(sys.modules['evennia.server.sessionhandler'], 'delay', _mockdelay)
         super().setUp()
         self.cmdset_a = _CmdSetA()
         self.cmdset_b = _CmdSetB()
@@ -325,6 +331,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         a.no_exits = True
         a.no_channels = True
         self.set_cmdsets(self.obj1, a, b, c, d)
+
         deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
 
         def _callback(cmdset):

@@ -272,14 +272,15 @@ class TagHandler(object):
 
     def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False):
         """
-        Get the tag for the given key or list of tags.
+        Get the tag for the given key, category or combination of the two.
 
         Args:
-            key (str or list): The tag or tags to retrieve.
+            key (str or list, optional): The tag or tags to retrieve.
             default (any, optional): The value to return in case of no match.
             category (str, optional): The Tag category to limit the
                 request to. Note that `None` is the valid, default
-                category.
+                category. If no `key` is given, all tags of this category will be
+                returned.
             return_tagobj (bool, optional): Return the Tag object itself
                 instead of a string representation of the Tag.
             return_list (bool, optional): Always return a list, regardless

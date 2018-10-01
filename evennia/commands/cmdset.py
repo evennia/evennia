@@ -296,9 +296,9 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             result (any): An instantiated Command or the input unmodified.
 
         """
-        try:
+        if callable(cmd):
             return cmd()
-        except TypeError:
+        else:
             return cmd
 
     def _duplicate(self):

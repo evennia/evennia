@@ -2,18 +2,19 @@
 Commands that are available from the connect screen.
 """
 import re
-import time
+import datetime
 from codecs import lookup as codecs_lookup
-from collections import defaultdict
 from random import getrandbits
 from django.conf import settings
 from django.contrib.auth import authenticate
 from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.server.models import ServerConfig
+from evennia.server.throttle import Throttle
 from evennia.comms.models import ChannelDB
+from evennia.server.sessionhandler import SESSIONS
 
-from evennia.utils import create, logger, utils
+from evennia.utils import create, logger, utils, gametime
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -25,57 +26,10 @@ __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
-# Helper function to throttle failed connection attempts.
-# This can easily be used to limit account creation too,
-# (just supply a different storage dictionary), but this
-# would also block dummyrunner, so it's not added as default.
-
-_LATEST_FAILED_LOGINS = defaultdict(list)
-
-
-def _throttle(session, maxlim=None, timeout=None, storage=_LATEST_FAILED_LOGINS):
-    """
-    This will check the session's address against the
-    _LATEST_LOGINS dictionary to check they haven't
-    spammed too many fails recently.
-
-    Args:
-        session (Session): Session failing
-        maxlim (int): max number of attempts to allow
-        timeout (int): number of timeout seconds after
-            max number of tries has been reached.
-
-    Returns:
-        throttles (bool): True if throttling is active,
-            False otherwise.
-
-    Notes:
-        If maxlim and/or timeout are set, the function will
-        just do the comparison, not append a new datapoint.
-
-    """
-    address = session.address
-    if isinstance(address, tuple):
-        address = address[0]
-    now = time.time()
-    if maxlim and timeout:
-        # checking mode
-        latest_fails = storage[address]
-        if latest_fails and len(latest_fails) >= maxlim:
-            # too many fails recently
-            if now - latest_fails[-1] < timeout:
-                # too soon - timeout in play
-                return True
-            else:
-                # timeout has passed. Reset faillist
-                storage[address] = []
-                return False
-        else:
-            return False
-    else:
-        # store the time of the latest fail
-        storage[address].append(time.time())
-        return False
+# Create throttles for too many connections, account-creations and login attempts
+CONNECTION_THROTTLE = Throttle(limit=5, timeout=1 * 60)
+CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
+LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
 
 
 def create_guest_account(session):
@@ -148,8 +102,11 @@ def create_normal_account(session, name, password):
         account (Account): the account which was created from the name and password.
     """
     # check for too many login errors too quick.
-    if _throttle(session, maxlim=5, timeout=5 * 60):
-        # timeout is 5 minutes.
+    address = session.address
+    if isinstance(address, tuple):
+        address = address[0]
+
+    if LOGIN_THROTTLE.check(address):
         session.msg("|RYou made too many connection attempts. Try again in a few minutes.|n")
         return None
 
@@ -160,7 +117,7 @@ def create_normal_account(session, name, password):
         # No accountname or password match
         session.msg("Incorrect login information given.")
         # this just updates the throttle
-        _throttle(session)
+        LOGIN_THROTTLE.update(address)
         # calls account hook for a failed login if possible.
         account = AccountDB.objects.get_account_from_name(name)
         if account:
@@ -170,7 +127,6 @@ def create_normal_account(session, name, password):
     # Check IP and/or name bans
     bans = ServerConfig.objects.conf("server_bans")
     if bans and (any(tup[0] == account.name.lower() for tup in bans) or
-
                  any(tup[2].match(session.address) for tup in bans if tup[2])):
         # this is a banned IP or name!
         string = "|rYou have been banned and cannot continue from here." \
@@ -210,7 +166,10 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         session = self.caller
 
         # check for too many login errors too quick.
-        if _throttle(session, maxlim=5, timeout=5 * 60, storage=_LATEST_FAILED_LOGINS):
+        address = session.address
+        if isinstance(address, tuple):
+            address = address[0]
+        if CONNECTION_THROTTLE.check(address):
             # timeout is 5 minutes.
             session.msg("|RYou made too many connection attempts. Try again in a few minutes.|n")
             return
@@ -233,6 +192,7 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
             session.msg("\n\r Usage (without <>): connect <name> <password>")
             return
 
+        CONNECTION_THROTTLE.update(address)
         name, password = parts
         account = create_normal_account(session, name, password)
         if account:
@@ -261,6 +221,15 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
         session = self.caller
         args = self.args.strip()
+
+        # Rate-limit account creation.
+        address = session.address
+
+        if isinstance(address, tuple):
+            address = address[0]
+        if CREATION_THROTTLE.check(address):
+            session.msg("|RYou are creating too many accounts. Try again in a few minutes.|n")
+            return
 
         # extract double quoted parts
         parts = [part.strip() for part in re.split(r"\"", args) if part.strip()]
@@ -293,10 +262,14 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             string = "\n\r That name is reserved. Please choose another Accountname."
             session.msg(string)
             return
-        if not re.findall(r"^[\w. @+\-']+$", password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characters. Letters, spaces, digits and @/./+/-/_/' only." \
-                     "\nFor best security, make it longer than 8 characters. You can also use a phrase of" \
-                     "\nmany words if you enclose the password in double quotes."
+
+        # Validate password
+        Account = utils.class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+        # Have to create a dummy Account object to check username similarity
+        valid, error = Account.validate_password(password, account=Account(username=accountname))
+        if error:
+            errors = [e for suberror in error.messages for e in error.messages]
+            string = "\n".join(errors)
             session.msg(string)
             return
 
@@ -321,6 +294,10 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
                 if MULTISESSION_MODE < 2:
                     default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
                     _create_character(session, new_account, typeclass, default_home, permissions)
+
+                # Update the throttle to indicate a new account was created from this IP
+                CREATION_THROTTLE.update(address)
+
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
                 if " " in accountname:
@@ -515,6 +492,24 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
         string = "Screenreader mode turned |w%s|n." % ("on" if new_setting else "off")
         self.caller.msg(string)
         self.session.sessionhandler.session_portal_sync(self.session)
+
+
+class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
+    """
+    Provides MUDINFO output, so that Evennia games can be added to Mudconnector
+    and Mudstats.  Sadly, the MUDINFO specification seems to have dropped off the
+    face of the net, but it is still used by some crawlers.  This implementation
+    was created by looking at the MUDINFO implementation in MUX2, TinyMUSH, Rhost,
+    and PennMUSH.
+    """
+    key = "info"
+    locks = "cmd:all()"
+
+    def func(self):
+        self.caller.msg("## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
+                        settings.SERVERNAME,
+                        datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
+                        SESSIONS.account_count(), utils.get_evennia_version()))
 
 
 def _create_account(session, accountname, password, permissions, typeclass=None, email=None):

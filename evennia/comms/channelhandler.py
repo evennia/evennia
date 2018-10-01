@@ -159,7 +159,7 @@ class ChannelHandler(object):
     """
     The ChannelHandler manages all active in-game channels and
     dynamically creates channel commands for users so that they can
-    just give the channek's key or alias to write to it. Whenever a
+    just give the channel's key or alias to write to it. Whenever a
     new channel is created in the database, the update() method on
     this handler must be called to sync it with the database (this is
     done automatically if creating the channel with

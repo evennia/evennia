@@ -153,6 +153,22 @@ INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 _ANSI_ESCAPE = re.compile(r"\|\|")
 
 
+def _to_rect(lines):
+    """
+    Forces all lines to be as long as the longest
+
+    Args:
+        lines (list): list of `ANSIString`s
+
+    Returns:
+        (list): list of `ANSIString`s of
+        same length as the longest input line
+
+    """
+    maxl = max(len(line) for line in lines)
+    return [line + ' ' * (maxl - len(line)) for line in lines]
+
+
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
     if isinstance(obj, str):
@@ -184,7 +200,7 @@ class EvForm(object):
             filename (str): Path to template file.
             cells (dict): A dictionary mapping of {id:text}
             tables (dict): A dictionary mapping of {id:EvTable}.
-            form (dict): A dictionary of {"CELLCHAR":char,
+            form (dict): A dictionary of {"FORMCHAR":char,
                                           "TABLECHAR":char,
                                           "FORM":templatestring}
                     if this is given, filename is not read.
@@ -407,7 +423,9 @@ class EvForm(object):
         self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
 
         # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        self.raw_form = _to_ansi(datadict.get("FORM", "").split("\n"))
+        raw_form = _to_ansi(datadict.get("FORM", "").split("\n"))
+        self.raw_form = _to_rect(raw_form)
+
         # strip first line
         self.raw_form = self.raw_form[1:] if self.raw_form else self.raw_form
 
@@ -439,7 +457,8 @@ def _test():
                     6: 5,
                     7: 18,
                     8: 10,
-                    9: 3})
+                    9: 3,
+                    "F": "rev 1"})
     # create the EvTables
     tableA = EvTable("HP", "MV", "MP",
                      table=[["**"], ["*****"], ["***"]],
