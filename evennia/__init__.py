@@ -18,8 +18,6 @@ See www.evennia.com for full documentation.
 
 """
 
-
-
 # Delayed loading of properties
 
 # Typeclasses
@@ -316,11 +314,6 @@ def _init():
     syscmdkeys = SystemCmds()
     del SystemCmds
     del _EvContainer
-
-
-del object
-del absolute_import
-del print_function
 
 
 def set_trace(debugger="auto", term_size=(140, 40)):

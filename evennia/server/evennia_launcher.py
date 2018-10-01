@@ -11,22 +11,16 @@ Run the script with the -h flag to see usage information.
 
 """
 
-from builtins import input, range
-
 import os
 import sys
 import signal
 import shutil
 import importlib
+import pickle
 from distutils.version import LooseVersion
 from argparse import ArgumentParser
 import argparse
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 
 from twisted.protocols import amp
 from twisted.internet import reactor, endpoints
