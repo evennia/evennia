@@ -1,5 +1,13 @@
 # Changelog
 
+## Evennia 0.9 (2019)
+
+Update to Python 3
+
+- Use `python3 -m venv <myenvname>`
+- Use `python3 -m pdb <script>` for debugging
+
+
 ## Evennia 0.8 (2018)
 
 ### Server/Portal
