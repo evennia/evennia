@@ -436,7 +436,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             logger.log_sec('Authentication Failure: %s (IP: %s).' % (username, ip))
             
             # Update throttle
-            if ip: LOGIN_THROTTLE.update(ip)
+            if ip: LOGIN_THROTTLE.update(ip, 'Too many authentication failures')
 
             return None, errors
         
