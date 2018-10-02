@@ -1183,9 +1183,15 @@ class TestPuzzles(CommandTest):
 
     def setUp(self):
         super(TestPuzzles, self).setUp()
-        self.stone = create_object(key='stone', location=self.char1.location)
-        self.flint = create_object(key='flint', location=self.char1.location)
-        self.fire = create_object(key='fire', location=self.char1.location)
+        self.stone = create_object(
+                self.object_typeclass,
+                key='stone', location=self.char1.location)
+        self.flint = create_object(
+                self.object_typeclass,
+                key='flint', location=self.char1.location)
+        self.fire = create_object(
+                self.object_typeclass,
+                key='fire', location=self.char1.location)
         self.stone.tags.add('tag-stone')
         self.stone.tags.add('tag-stone', category='tagcat')
         self.flint.tags.add('tag-flint')
@@ -1397,7 +1403,10 @@ class TestPuzzles(CommandTest):
         self.assertEqual(1,
             len(list(filter(
                 lambda o: o.key == 'fire' \
-                    and inherits_from(o,'evennia.contrib.puzzles.PuzzlePartObject'),
+                    and ('makefire', puzzles._PUZZLES_TAG_CATEGORY) \
+                    in o.tags.all(return_key_and_category=True) \
+                    and (puzzles._PUZZLES_TAG_MEMBER, puzzles._PUZZLES_TAG_CATEGORY) \
+                    in o.tags.all(return_key_and_category=True),
                 self.room1.contents))))
         self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 1}, check_test_tags=True)
 
@@ -1494,15 +1503,21 @@ class TestPuzzles(CommandTest):
                 caller=self.char1
             )
 
-        red_stone = create_object(key='red stone', location=self.char1.location)
-        smoke = create_object(key='smoke', location=self.char1.location)
+        red_stone = create_object(
+                self.object_typeclass,
+                key='red stone', location=self.char1.location)
+        smoke = create_object(
+                self.object_typeclass,
+                key='smoke', location=self.char1.location)
 
         _puzzleedit('/addresult', recipe_dbref, ['smoke'], 'smoke were added to results')
         _puzzleedit('/addpart', recipe_dbref, ['red stone', 'stone'], 'red stone, stone were added to parts')
 
         # create a box so we can put all objects in
         # so that they can't be found during puzzle resolution
-        self.box = create_object(key='box', location=self.char1.location)
+        self.box = create_object(
+                self.object_typeclass,
+                key='box', location=self.char1.location)
         def _box_all():
             for o in self.room1.contents:
                 if o not in [self.char1, self.char2, self.exit,
@@ -1634,12 +1649,24 @@ class TestPuzzles(CommandTest):
 
         # parts don't survive resolution
         # but produce a large result set
-        tree = create_object(key='tree', location=self.char1.location)
-        axe = create_object(key='axe', location=self.char1.location)
-        sweat = create_object(key='sweat', location=self.char1.location)
-        dull_axe = create_object(key='dull axe', location=self.char1.location)
-        timber = create_object(key='timber', location=self.char1.location)
-        log = create_object(key='log', location=self.char1.location)
+        tree = create_object(
+                self.object_typeclass,
+                key='tree', location=self.char1.location)
+        axe = create_object(
+                self.object_typeclass,
+                key='axe', location=self.char1.location)
+        sweat = create_object(
+                self.object_typeclass,
+                key='sweat', location=self.char1.location)
+        dull_axe = create_object(
+                self.object_typeclass,
+                key='dull axe', location=self.char1.location)
+        timber = create_object(
+                self.object_typeclass,
+                key='timber', location=self.char1.location)
+        log = create_object(
+                self.object_typeclass,
+                key='log', location=self.char1.location)
         parts = ['tree', 'axe']
         results = (['sweat'] * 10) + ['dull axe'] + (['timber'] * 20) + (['log'] * 50)
         recipe_dbref = self._good_recipe(
@@ -1666,9 +1693,15 @@ class TestPuzzles(CommandTest):
         # parts also appear in results
         # causing a new puzzle to be armed 'automatically'
         # i.e. the puzzle is self-sustaining
-        hole = create_object(key='hole', location=self.char1.location)
-        shovel = create_object(key='shovel', location=self.char1.location)
-        dirt = create_object(key='dirt', location=self.char1.location)
+        hole = create_object(
+                self.object_typeclass,
+                key='hole', location=self.char1.location)
+        shovel = create_object(
+                self.object_typeclass,
+                key='shovel', location=self.char1.location)
+        dirt = create_object(
+                self.object_typeclass,
+                key='dirt', location=self.char1.location)
 
         parts = ['shovel', 'hole']
         results = ['dirt', 'hole', 'shovel']
@@ -1706,12 +1739,24 @@ class TestPuzzles(CommandTest):
 
     def test_e2e_interchangeable_parts_and_results(self):
         # Parts and Results can be used in multiple puzzles
-        egg = create_object(key='egg', location=self.char1.location)
-        flour = create_object(key='flour', location=self.char1.location)
-        boiling_water = create_object(key='boiling water', location=self.char1.location)
-        boiled_egg = create_object(key='boiled egg', location=self.char1.location)
-        dough = create_object(key='dough', location=self.char1.location)
-        pasta = create_object(key='pasta', location=self.char1.location)
+        egg = create_object(
+                self.object_typeclass,
+                key='egg', location=self.char1.location)
+        flour = create_object(
+                self.object_typeclass,
+                key='flour', location=self.char1.location)
+        boiling_water = create_object(
+                self.object_typeclass,
+                key='boiling water', location=self.char1.location)
+        boiled_egg = create_object(
+                self.object_typeclass,
+                key='boiled egg', location=self.char1.location)
+        dough = create_object(
+                self.object_typeclass,
+                key='dough', location=self.char1.location)
+        pasta = create_object(
+                self.object_typeclass,
+                key='pasta', location=self.char1.location)
 
         # Three recipes:
         # 1. breakfast: egg + boiling water = boiled egg & boiling water
@@ -1755,7 +1800,9 @@ class TestPuzzles(CommandTest):
 
         # create a box so we can put all objects in
         # so that they can't be found during puzzle resolution
-        self.box = create_object(key='box', location=self.char1.location)
+        self.box = create_object(
+                self.object_typeclass,
+                key='box', location=self.char1.location)
         def _box_all():
             # print "boxing all\n", "-"*20
             for o in self.room1.contents:
