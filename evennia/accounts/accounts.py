@@ -23,8 +23,9 @@ from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
+from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
-from evennia.utils import logger
+from evennia.utils import create, logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, to_unicode, is_iter,
                                  variable_from_module)
@@ -34,6 +35,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 
 from django.utils.translation import ugettext as _
 from future.utils import with_metaclass
+from random import getrandbits
 
 __all__ = ("DefaultAccount",)
 
@@ -365,6 +367,31 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
     # utility methods
     @classmethod
+    def is_banned(cls, **kwargs):
+        """
+        Checks if a given username or IP is banned.
+        
+        Kwargs:
+            ip (str, optional): IP address.
+            username (str, optional): Username.
+            
+        Returns:
+            is_banned (bool): Whether either is banned or not.
+            
+        """
+        
+        ip = kwargs.get('ip', '').strip()
+        username = kwargs.get('username', '').lower().strip()
+        
+        # Check IP and/or name bans
+        bans = ServerConfig.objects.conf("server_bans")
+        if bans and (any(tup[0] == username for tup in bans if username) or
+                     any(tup[2].match(ip) for tup in bans if ip and tup[2])):
+            return True
+            
+        return False
+    
+    @classmethod
     def get_username_validators(cls, validator_config=getattr(settings, 'AUTH_USERNAME_VALIDATORS', [])):
         """
         Retrieves and instantiates validators for usernames.
@@ -386,9 +413,85 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 raise ImproperlyConfigured(msg % validator['NAME'])
             objs.append(klass(**validator.get('OPTIONS', {})))
         return objs
+        
+    @classmethod
+    def authenticate_guest(cls, **kwargs):
+        """
+        Gets or creates a Guest account object.
+        
+        Kwargs:
+            ip (str, optional): IP address of requestor; used for ban checking,
+                throttling and logging
+        
+        """
+        errors = []
+        account = None
+        username = None
+        ip = kwargs.get('ip', '').strip()
+        
+        # check if guests are enabled.
+        if not settings.GUEST_ENABLED:
+            errors.append('Guest accounts are not enabled on this server.')
+            return None, errors
+        
+        # See if authentication is currently being throttled
+        if ip and LOGIN_THROTTLE.check(ip):
+            errors.append('Too many login failures; please try again in a few minutes.')
+            
+            # With throttle active, do not log continued hits-- it is a
+            # waste of storage and can be abused to make your logs harder to
+            # read and/or fill up your disk.
+            return None, errors
+        
+        # check if IP banned
+        if ip and cls.is_banned(ip=ip):
+            errors.append("|rYou have been banned and cannot continue from here." \
+                     "\nIf you feel this ban is in error, please email an admin.|x")
+            logger.log_sec('Authentication Denied (Banned): %s (IP: %s).' % ('guest', ip))
+            LOGIN_THROTTLE.update(ip, 'Too many sightings of banned IP.')
+            return None, errors
+        
+        try:
+            # Find an available guest name.
+            for name in settings.GUEST_LIST:
+                if not AccountDB.objects.filter(username__iexact=name).count():
+                    username = name
+                    break
+            if not username:
+                errors.append("All guest accounts are in use. Please try again later.")
+                if ip: LOGIN_THROTTLE.update(ip, 'Too many requests for Guest access.')
+                return None, errors
+            else:
+                # build a new account with the found guest username
+                password = "%016x" % getrandbits(64)
+                home = ObjectDB.objects.get_id(settings.GUEST_HOME)
+                permissions = settings.PERMISSION_GUEST_DEFAULT
+                character_typeclass = settings.BASE_CHARACTER_TYPECLASS
+                account_typeclass = settings.BASE_GUEST_TYPECLASS
+                account, errs = cls.create(
+                    guest=True,
+                    username=username, 
+                    password=password, 
+                    permissions=permissions, 
+                    account_typeclass=account_typeclass, 
+                    character_typeclass=character_typeclass,
+                    ip=ip,
+                )
+                errors.extend(errs)
+                return account, errors
+    
+        except Exception:
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't,
+            # we won't see any errors at all.
+            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            logger.log_trace()
+            return None, errors
+            
+        return account, errors
     
     @classmethod
-    def authenticate(cls, username, password, ip=None):
+    def authenticate(cls, username, password, ip='', **kwargs):
         """
         Checks the given username/password against the database to see if the 
         credentials are valid.
@@ -408,6 +511,9 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             password (str): Password of account
             ip (str, optional): IP address of client
             
+        Kwargs:
+            session (Session, optional): Session requesting authentication
+            
         Returns:
             account (DefaultAccount, None): Account whose credentials were
                 provided if not banned.
@@ -423,7 +529,17 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             
             # With throttle active, do not log continued hits-- it is a
             # waste of storage and can be abused to make your logs harder to
-            # read and fill up your disk.
+            # read and/or fill up your disk.
+            return None, errors
+            
+        # Check IP and/or name bans
+        banned = cls.is_banned(username=username, ip=ip)
+        if banned:
+            # this is a banned IP or name!
+            errors.append("|rYou have been banned and cannot continue from here." \
+                     "\nIf you feel this ban is in error, please email an admin.|x")
+            logger.log_sec('Authentication Denied (Banned): %s (IP: %s).' % (username, ip))
+            LOGIN_THROTTLE.update(ip, 'Too many sightings of banned artifact.')
             return None, errors
         
         # Authenticate and get Account object
@@ -436,7 +552,14 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             logger.log_sec('Authentication Failure: %s (IP: %s).' % (username, ip))
             
             # Update throttle
-            if ip: LOGIN_THROTTLE.update(ip, 'Too many authentication failures')
+            if ip: LOGIN_THROTTLE.update(ip, 'Too many authentication failures.')
+            
+            # Try to call post-failure hook
+            session = kwargs.get('session', None)
+            if session:
+                account = AccountDB.objects.get_account_from_name(username)
+                if account:
+                    account.at_failed_login(session)
 
             return None, errors
         
@@ -493,7 +616,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 valid.append(not validator(username))
             except ValidationError as e:
                 valid.append(False)
-                [errors.append(x) for x in e.messages]
+                errors.extend(e.messages)
                 
         # Disqualify if any check failed
         if False in valid:
@@ -561,6 +684,142 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         super(DefaultAccount, self).set_password(password)
         logger.log_sec("Password successfully changed for %s." % self)
         self.at_password_change()
+        
+    @classmethod
+    def create(cls, *args, **kwargs):
+        """
+        Creates an Account (or Account/Character pair for MM<2) with default
+        (or overridden) permissions and having joined them to the appropriate
+        default channels.
+        
+        Kwargs:
+            username (str): Username of Account owner
+            password (str): Password of Account owner
+            email (str, optional): Email address of Account owner
+            ip (str, optional): IP address of requesting connection
+            guest (bool, optional): Whether or not this is to be a Guest account
+            
+            permissions (str, optional): Default permissions for the Account
+            account_typeclass (str, optional): Typeclass to use for new Account
+            character_typeclass (str, optional): Typeclass to use for new char
+                when applicable.
+                
+        Returns:
+            account (Account): Account if successfully created; None if not
+            errors (list): List of error messages in string form
+            
+        """
+        
+        account = None
+        errors = []
+        
+        username = kwargs.get('username')
+        password = kwargs.get('password')
+        email = kwargs.get('email', '').strip()
+        guest = kwargs.get('guest', False)
+        
+        permissions = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
+        account_typeclass = kwargs.get('account_typeclass', settings.BASE_ACCOUNT_TYPECLASS)
+        character_typeclass = kwargs.get('character_typeclass', settings.BASE_CHARACTER_TYPECLASS)
+        
+        ip = kwargs.get('ip', '')
+        if ip and CREATION_THROTTLE.check(ip):
+            errors.append("You are creating too many accounts. Please log into an existing account.")
+            return None, errors
+        
+        # Normalize username
+        username = cls.normalize_username(username)
+
+        # Validate username
+        if not guest:
+            valid, errs = cls.validate_username(username)
+            if not valid:
+                # this echoes the restrictions made by django's auth
+                # module (except not allowing spaces, for convenience of
+                # logging in).
+                errors.extend(errs)
+                return None, errors
+
+        # Validate password
+        # Have to create a dummy Account object to check username similarity
+        valid, errs = cls.validate_password(password, account=cls(username=username))
+        if not valid:
+            errors.extend(errs)
+            return None, errors
+
+        # Check IP and/or name bans
+        banned = cls.is_banned(username=username, ip=ip)
+        if banned:
+            # this is a banned IP or name!
+            string = "|rYou have been banned and cannot continue from here." \
+                     "\nIf you feel this ban is in error, please email an admin.|x"
+            errors.append(string)
+            return None, errors
+        
+        # everything's ok. Create the new account account.
+        try:
+            try:
+                account = create.create_account(username, email, password, permissions=permissions, typeclass=account_typeclass)
+                logger.log_sec('Account Created: %s (IP: %s).' % (account, ip))
+        
+            except Exception as e:
+                errors.append("There was an error creating the Account. If this problem persists, contact an admin.")
+                logger.log_trace()
+                return None, errors
+        
+            # This needs to be set so the engine knows this account is
+            # logging in for the first time. (so it knows to call the right
+            # hooks during login later)
+            account.db.FIRST_LOGIN = True
+            
+            # Record IP address of creation, if available
+            if ip: account.db.creator_ip = ip
+        
+            # join the new account to the public channel
+            pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
+            if not pchannel or not pchannel.connect(account):
+                string = "New account '%s' could not connect to public channel!" % account.key
+                errors.append(string)
+                logger.log_err(string)
+            
+            if account:
+                if settings.MULTISESSION_MODE < 2:
+                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
+                    
+                    try:
+                        character = create.create_object(character_typeclass, key=account.key, home=default_home, permissions=permissions)
+                        
+                        # set playable character list
+                        account.db._playable_characters.append(character)
+                
+                        # allow only the character itself and the account to puppet this character (and Developers).
+                        character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
+                                                (character.id, account.id))
+                
+                        # If no description is set, set a default description
+                        if not character.db.desc:
+                            character.db.desc = "This is a character."
+                        # We need to set this to have @ic auto-connect to this character
+                        account.db._last_puppet = character
+                        
+                        # Record creator id and creation IP
+                        if ip: character.db.creator_ip = ip
+                        character.db.creator_id = account.id
+                        
+                    except Exception as e:
+                        errors.append("There was an error creating a Character. If this problem persists, contact an admin.")
+                        logger.log_trace()
+
+        except Exception:
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't,
+            # we won't see any errors at all.
+            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            logger.log_trace()
+            
+        # Update the throttle to indicate a new account was created from this IP
+        if ip and not guest: CREATION_THROTTLE.update(ip, 'Too many accounts being created.')
+        return account, errors
 
     def delete(self, *args, **kwargs):
         """

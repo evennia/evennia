@@ -23,7 +23,7 @@ class EvenniaUsernameAvailabilityValidator:
         """
         
         # Check guest list
-        if settings.GUEST_LIST and username.lower() in (guest.lower() for guest in settings.GUEST_LIST):
+        if (settings.GUEST_LIST and username.lower() in (guest.lower() for guest in settings.GUEST_LIST)):
             raise ValidationError(
                 _('Sorry, that username is reserved.'),
                 code='evennia_username_reserved',
