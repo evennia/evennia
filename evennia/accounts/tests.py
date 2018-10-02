@@ -75,6 +75,41 @@ class TestDefaultAccount(TestCase):
         obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy')
         self.assertFalse(obj, 'Account authenticated using invalid credentials.')
         
+    def test_create(self):
+        "Confirm Account creation is working as expected."
+        # Create a normal account
+        account, errors = DefaultAccount.create(username='ziggy', password='stardust11')
+        self.assertTrue(account, 'New account should have been created.')
+        
+        # Try creating a duplicate account
+        account, errors = DefaultAccount.create(username='Ziggy', password='starman11')
+        self.assertFalse(account, 'Duplicate account name should not have been allowed.')
+        
+        # Guest account should not be permitted
+        account, errors = DefaultAccount.authenticate_guest()
+        self.assertFalse(account, 'Guest account was created despite being disabled.')
+        
+        settings.GUEST_ENABLED = True
+        settings.GUEST_LIST = ['bruce_wayne']
+        
+        # Create a guest account
+        account, errors = DefaultAccount.authenticate_guest()
+        self.assertTrue(account, 'Guest account should have been created.')
+        
+        # Create a second guest account
+        account, errors = DefaultAccount.authenticate_guest()
+        self.assertFalse(account, 'Two guest accounts were created despite a single entry on the guest list!')
+        
+        settings.GUEST_ENABLED = False
+        
+    def test_throttle(self):
+        "Confirm throttle activates on too many failures."
+        for x in xrange(20):
+            obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy', ip='12.24.36.48')
+            self.assertFalse(obj, 'Authentication was provided a bogus password; this should NOT have returned an account!')
+        
+        self.assertTrue('too many login failures' in errors[-1].lower(), 'Failed logins should have been throttled.')
+        
     def test_username_validation(self):
         "Check username validators deny relevant usernames"
         # Should not accept Unicode by default, lest users pick names like this
@@ -92,7 +127,7 @@ class TestDefaultAccount(TestCase):
     def test_password_validation(self):
         "Check password validators deny bad passwords"
 
-        self.account = create.create_account("TestAccount%s" % randint(0, 9),
+        self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
                 email="test@test.com", password="testpassword", typeclass=DefaultAccount)
         for bad in ('', '123', 'password', 'TestAccount', '#', 'xyzzy'):
             self.assertFalse(self.account.validate_password(bad, account=self.account)[0])
