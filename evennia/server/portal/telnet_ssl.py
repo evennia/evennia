@@ -7,8 +7,6 @@ when starting and will warn if this was not possible. These will appear as files
 ssl.cert in mygame/server/.
 
 """
-from __future__ import print_function
-
 import os
 try:
     from OpenSSL import crypto

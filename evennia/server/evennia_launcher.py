@@ -501,7 +501,7 @@ def _print_info(portal_info_dict, server_info_dict):
 
     def _prepare_dict(dct):
         out = {}
-        for key, value in dct.iteritems():
+        for key, value in dct.items():
             if isinstance(value, list):
                 value = "\n{}".format(ind).join(value)
             out[key] = value
@@ -576,9 +576,9 @@ class MsgStatus(amp.Command):
 
     """
     key = "MsgStatus"
-    arguments = [('status', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
-    response = [('status', amp.String())]
+    arguments = [(b'status', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
+    response = [(b'status', amp.String())]
 
 
 class MsgLauncher2Portal(amp.Command):
@@ -587,9 +587,9 @@ class MsgLauncher2Portal(amp.Command):
 
     """
     key = "MsgLauncher2Portal"
-    arguments = [('operation', amp.String()),
-                 ('arguments', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'operation', amp.String()),
+                 (b'arguments', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 

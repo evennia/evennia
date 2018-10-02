@@ -3,8 +3,6 @@ This is a simple context factory for auto-creating
 SSL keys and certificates.
 
 """
-
-
 import os
 import sys
 try:
