@@ -49,8 +49,8 @@ command). Once the recipe is created, all parts and result
 can be disposed (i.e. destroyed).
 
 At a later time, a Builder or a Script can arm the puzzle
-and spawn all puzzle parts (PuzzlePartObject) in their
-respective locations (See @armpuzzle).
+and spawn all puzzle parts in their respective
+locations (See @armpuzzle).
 
 A regular player can collect the puzzle parts and combine
 them (See use command). If player has specified
@@ -101,7 +101,7 @@ def proto_def(obj, with_tags=True):
     protodef = {
         # FIXME: Don't we need to honor ALL properties? attributes, contents, etc.
         'key': obj.key,
-        'typeclass': 'evennia.contrib.puzzles.PuzzlePartObject',  # FIXME: what if obj is another typeclass
+        'typeclass': obj.typeclass_path,
         'desc': obj.db.desc,
         'location': obj.location,
         'home': obj.home,
@@ -129,20 +129,6 @@ _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = _colorize_message(_PUZZLE_DEFAULT_SUCCESS_
 
 # ------------------------------------------
 
-class PuzzlePartObject(DefaultObject):
-    """
-    Puzzle Part, typically used by @armpuzzle command
-    """
-
-    def mark_as_puzzle_member(self, puzzle_name):
-        """
-        Marks this object as a member of puzzle named
-        'puzzle_name'
-        """
-        self.db.puzzle_name = puzzle_name
-        self.tags.add(puzzle_name, category=_PUZZLES_TAG_CATEGORY)
-
-
 class PuzzleRecipe(DefaultScript):
     """
     Definition of a Puzzle Recipe
@@ -161,12 +147,20 @@ class CmdCreatePuzzleRecipe(MuxCommand):
     """
     Creates a puzzle recipe.
 
-    Each part and result must exist and be placed in their corresponding location.
-    All parts and results are left intact. Caller must explicitly
-    destroy them.
+    Each part and result must exist and be placed in their
+    corresponding location.
+
+    They are all left intact and Caller should explicitly destroy
+    them. If the /arm switch is used, the specified objects become
+    puzzle parts ready to be combined and spawn a new result.
+
+    Switches:
+      arm - the specified objects become puzzle parts as if the puzzle
+            had been armed explicitly. The results are left intact so
+            they must be explicitly destroyed.
 
     Usage:
-        @puzzle name,<part1[,part2,...>] = <result1[,result2,...]>
+        @puzzle[/arm] name,<part1[,part2,...>] = <result1[,result2,...]>
     """
 
     key = '@puzzle'
@@ -487,7 +481,8 @@ class CmdArmPuzzle(MuxCommand):
         for proto_part in puzzle.db.parts:
             part = spawn(proto_part)[0]
             caller.msg("Part %s(%s) spawned and placed at %s(%s)" % (part.name, part.dbref, part.location, part.location.dbref))
-            part.mark_as_puzzle_member(puzzle.db.puzzle_name)
+            part.tags.add(puzzle.db.puzzle_name, category=_PUZZLES_TAG_CATEGORY)
+            part.db.puzzle_name = puzzle.db.puzzle_name
 
         caller.msg("Puzzle armed |gsuccessfully|n.")
 
@@ -536,8 +531,7 @@ class CmdUsePuzzleParts(MuxCommand):
             if not part:
                 return
 
-            if not part.tags.get(_PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY) \
-                or not inherits_from(part, PuzzlePartObject):
+            if not part.tags.get(_PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY):
 
                 # not a puzzle part ... abort
                 caller.msg('You have no idea how %s can be used' % (many))
@@ -629,7 +623,8 @@ class CmdUsePuzzleParts(MuxCommand):
         result_names = []
         for proto_result in puzzle.db.results:
             result = spawn(proto_result)[0]
-            result.mark_as_puzzle_member(puzzle.db.puzzle_name)
+            result.tags.add(puzzle.db.puzzle_name, category=_PUZZLES_TAG_CATEGORY)
+            result.db.puzzle_name = puzzle.db.puzzle_name
             result_names.append(result.name)
             # FIXME: add 'ramdon' messages:
             # Hmmm ... did I search result.location?
