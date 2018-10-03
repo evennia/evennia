@@ -4,7 +4,9 @@ from evennia.contrib.pathfinding.scripts import PathfinderScript
 from evennia.utils import create
 from evennia.utils.test_resources import EvenniaTest
 
-class PathfinderTest(EvenniaTest):
+from mock import MagicMock
+
+class PathfinderTest(object):
     
     def test_script(self):
         "Tests handling of script"
@@ -206,6 +208,84 @@ class PathfinderTest(EvenniaTest):
         stairs = self.stairs = create.create_object(self.room_typeclass, key="Staircase", nohome=True)
         create.create_object(self.exit_typeclass, key='up', location=stairs, destination=stairs)
         create.create_object(self.exit_typeclass, key='down', location=stairs, destination=stairs)
+
+class PathfinderMockTest(PathfinderTest, EvenniaTest):
+    """
+    Stub tests mocking out calls to networkx methods.
+    """
+    def setUp(self):
+        super(PathfinderMockTest, self).setUp()
+        self.pfinder = MagicMock(spec=Pathfinder)
+        self.pfinder_script = MagicMock(spec=PathfinderScript)
         
-        # map is a reserved keyword
-        self.pfinder = Pathfinder().update()
+    def test_get_path(self):
+        "Get path from Kitchen to Lair"
+        path = self.pfinder.get_path(self.kitchen, self.lair)
+        self.pfinder.get_path.assert_called_with(self.kitchen, self.lair)
+        
+        # Test path that doesn't exist
+        path = self.pfinder.get_path(self.lair, self.stairs)
+        self.pfinder.get_path.assert_called_with(self.lair, self.stairs)
+        
+        # Get path from bedroom to treasure room
+        path = self.pfinder.get_path(self.bed1, self.treasure_room)
+        self.pfinder.get_path.assert_called_with(self.bed1, self.treasure_room)
+        
+    def test_get_usable_path(self):
+        "Make sure pathfinding abides by locks"
+        path = self.pfinder.get_usable_path(self.kitchen, self.foyer, self.char2)
+        self.pfinder.get_usable_path.assert_called_with(self.kitchen, self.foyer, self.char2)
+        
+    def test_get_directions(self):
+        "Get list of fewest movements required to go from Kitchen to Lair"
+        self.pfinder.get_directions.return_value = correct = ['down', 'east', 'down', 'north', 'down']
+        path = self.pfinder.get_directions(self.kitchen, self.lair)
+        self.assertEqual(list(path), correct, "Did not return the correct path.")
+        
+    def test_get_line_of_sight(self):
+        "Returns all Room objects in line of sight from source"
+        self.pfinder.get_line_of_sight.return_value = [1,2]
+        objs = self.pfinder.get_line_of_sight(self.kitchen, 'down', None)
+        self.assertTrue(objs)
+        self.assertEqual(2, len(objs))
+        self.pfinder.get_line_of_sight.assert_called_with(self.kitchen, 'down', None)
+        
+        # Test line of sight for invalid direction
+        self.pfinder.get_line_of_sight.return_value = [1]
+        objs = self.pfinder.get_line_of_sight(self.kitchen, 'yonder', None)
+        self.pfinder.get_line_of_sight.assert_called_with(self.kitchen, 'yonder', None)
+        
+        # Make sure distance limiter works.
+        caboose = self.dungeon_train[0]
+        self.pfinder.get_line_of_sight.return_value = [1,2,3]
+        objs = self.pfinder.get_line_of_sight(caboose, 'east', None, 3)
+        self.assertEqual(len(objs), 3, 'Player should only be able to see 3 cars ahead on the Dungeon Train (sees %s).' % objs)
+        self.pfinder.get_line_of_sight.assert_called_with(caboose, 'east', None, 3)
+        
+        # Make sure we break out of circular paths
+        stairs = self.stairs
+        # Set distance to something obscenely high so the counter doesn't get in the way
+        self.pfinder.get_line_of_sight.return_value = [1]
+        objs = self.pfinder.get_line_of_sight(stairs, 'up', 9999999999)
+        self.assertEqual(len(objs), 1, 'Infinite stairs are unacceptable!')
+        self.pfinder.get_line_of_sight.assert_called_with(stairs, 'up', 9999999999)
+        
+    def test_json_export(self):
+        "Should return a JSON serialized graph."
+        self.pfinder.export_json.return_value = "{}"
+        self.assertTrue(self.pfinder.export_json())
+        
+try:
+    # Skip these tests if networkx is not present
+    import networkx
+    class PathfinderLiveTest(PathfinderTest, EvenniaTest):
+        """
+        Runs tests against actual (non-mocked) networkx library if present.
+        """
+        def setUp(self):
+            super(PathfinderLiveTest, self).setUp()
+            self.pfinder = Pathfinder().update()
+            self.pfinder_script = PathfinderScript
+            
+except ImportError:
+    pass
