@@ -181,6 +181,11 @@ class Pathfinder(nx.DiGraph):
         This is primarily an internal function; it is recommended that you use 
         one of the other helper methods to perform any queries.
         
+        As this algorithm does not manually crawl paths (like line-of-sight), no
+        precautions are taken here to avoid recursions-- networkx accounts for
+        infinite paths in other contexts, so it is presumed it does the same
+        here.
+        
         Args:
             source (Room): Origin Room object.
             dest (Room): Destination Room object.
@@ -203,7 +208,18 @@ class Pathfinder(nx.DiGraph):
         
     def get_usable_path(self, source, dest, caller):
         """
-        Returns the shortest possible usable path by the caller.
+        Returns the shortest possible usable path by the caller; this takes
+        into account any locks on exits encountered along the way.
+        
+        Args:
+            source (Room): Source location.
+            dest (Room): Dest location.
+            caller (Object): Object whose permissions should be factored into
+                the path.
+                
+        Returns:
+            path (list): Steps required to route from source to dest.
+        
         """
         # Get keys for source and dest
         src_key = self.get_key(source)
