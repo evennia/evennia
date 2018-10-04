@@ -751,6 +751,7 @@ TEMPLATES = [{
             'django.contrib.auth.context_processors.auth',
             'django.template.context_processors.media',
             'django.template.context_processors.debug',
+            'django.contrib.messages.context_processors.messages',
             'sekizai.context_processors.sekizai',
             'evennia.web.utils.general_context.general_context'],
         # While true, show "pretty" error messages for template syntax errors.
@@ -785,6 +786,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django.contrib.messages',
     'sekizai',
     'evennia.utils.idmapper',
     'evennia.server',
