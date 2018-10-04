@@ -7,14 +7,19 @@ templates on the fly.
 """
 from django.contrib.admin.sites import site
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import View, DetailView, ListView, FormView
 
 from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.utils import logger
+from evennia.web.website.forms import AccountCreationForm
 
 from django.contrib.auth import login
 
@@ -134,3 +139,40 @@ def admin_wrapper(request):
     Wrapper that allows us to properly use the base Django admin site, if needed.
     """
     return staff_member_required(site.index)(request)
+
+class AccountCreationView(FormView):
+    form_class = AccountCreationForm
+    template_name = 'website/registration/register.html'
+    success_url = reverse_lazy('login')
+    
+    def form_valid(self, form):
+        # Check to make sure basics validated
+        valid = super(AccountCreationView, self).form_valid(form)
+        if not valid: return self.form_invalid(form)
+        
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password1']
+        email = form.cleaned_data.get('email', '')
+        
+        # Create a fake session object to intercept calls to the terminal
+        from mock import Mock
+        session = self.request
+        session.address = self.request.META.get('REMOTE_ADDR', '')
+        session.msg = Mock()
+        
+        # Create account
+        from evennia.commands.default.unloggedin import _create_account
+        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
+        account = _create_account(session, username, password, permissions)
+        
+        # If unsuccessful, get messages passed to session.msg
+        if not account:
+            [messages.error(self.request, call) for call in session.msg.call_args_list]
+            return self.form_invalid(form)
+            
+        # Append email address if given
+        account.email = email
+        account.save()
+        
+        messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
+        return HttpResponseRedirect(self.success_url)
