@@ -29,6 +29,8 @@
     <title>{{game_name}} - {% if flatpage %}{{flatpage.title}}{% else %}{% block titleblock %}{{page_title}}{% endblock %}{% endif %}</title>
   </head>
   <body>
+    {% block body %}
+    
     <div id="top"><a href="#main-content" class="sr-only sr-only-focusable">Skip to main content.</a></div>
     {% include "website/_menu.html" %}
     <div class="container main-content mt-4" id="main-copy">
@@ -53,6 +55,8 @@
         </div>
     {% endblock %}
     </footer>
+    
+    {% endblock %}
 
     <!-- jQuery first, then Tether, then Bootstrap JS. -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
