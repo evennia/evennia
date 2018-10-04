@@ -9,7 +9,7 @@ from functools import wraps
 import time
 from twisted.protocols import amp
 from collections import defaultdict, namedtuple
-from io import StringIO
+from io import StringIO, BytesIO
 from itertools import count
 import zlib  # Used in Compressed class
 import pickle
@@ -41,8 +41,8 @@ SSHUTD = chr(17)       # server shutdown
 PSTATUS = chr(18)      # ping server or portal status
 SRESET = chr(19)       # server shutdown in reset mode
 
-NUL = b'\0'
-NULNUL = '\0\0'
+NUL = b'\x00'
+NULNUL = b'\x00\x00'
 
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
@@ -55,7 +55,7 @@ _MSGBUFFER = defaultdict(list)
 DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
 
 
-_HTTP_WARNING = """
+_HTTP_WARNING = bytes("""
 HTTP/1.1 200 OK
 Content-Type: text/html
 
@@ -67,7 +67,7 @@ Content-Type: text/html
         <h3>This port should NOT be publicly visible.</h3>
     </p>
   </body>
-</html>""".strip()
+</html>""".strip(), 'utf-8')
 
 
 # Helper functions for pickling.
@@ -113,7 +113,8 @@ class Compressed(amp.String):
         put it back together here.
 
         """
-        value = StringIO()
+
+        value = BytesIO()
         value.write(self.fromStringProto(strings.get(name), proto))
         for counter in count(2):
             # count from 2 upwards
@@ -121,7 +122,7 @@ class Compressed(amp.String):
             if chunk is None:
                 break
             value.write(self.fromStringProto(chunk, proto))
-        objects[name] = value.getvalue()
+        objects[str(name, 'utf-8')] = value.getvalue()
 
     def toBox(self, name, strings, objects, proto):
         """
@@ -129,8 +130,14 @@ class Compressed(amp.String):
         we break up too-long data snippets into multiple batches here.
 
         """
-        value = StringIO(objects[name])
+
+        # print("toBox: name={}, strings={}, objects={}, proto{}".format(name, strings, objects, proto))
+
+        value = BytesIO(objects[str(name, 'utf-8')])
         strings[name] = self.toStringProto(value.read(AMP_MAXLEN), proto)
+
+        # print("toBox strings[name] = {}".format(strings[name]))
+
         for counter in count(2):
             chunk = value.read(AMP_MAXLEN)
             if not chunk:
@@ -140,12 +147,16 @@ class Compressed(amp.String):
     def toString(self, inObject):
         """
         Convert to send as a string on the wire, with compression.
+
+        Note: In Py3 this is really a byte stream.
+
         """
         return zlib.compress(super(Compressed, self).toString(inObject), 9)
 
     def fromString(self, inString):
         """
         Convert (decompress) from the string-representation on the wire to Python.
+
         """
         return super(Compressed, self).fromString(zlib.decompress(inString))
 
@@ -167,7 +178,7 @@ class MsgPortal2Server(amp.Command):
     Message Portal -> Server
 
     """
-    key = "MsgPortal2Server"
+    key = b"MsgPortal2Server"
     arguments = [(b'packed_data', Compressed())]
     errors = {Exception: b'EXCEPTION'}
     response = []
@@ -271,7 +282,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         """
         Handle non-AMP messages, such as HTTP communication.
         """
-        if data[0] == NUL:
+        if data[:1] == NUL:
             # an AMP communication
             if data[-2:] != NULNUL:
                 # an incomplete AMP box means more batches are forthcoming.
@@ -287,7 +298,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
             # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
             self.transport.loseConnection()
-            print("HTML received: %s" % data)
+            print("HTTP received: %s" % data)
 
     def makeConnection(self, transport):
         """
@@ -348,9 +359,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
         Process incoming packed data.
 
         Args:
-            packed_data (bytes): Zip-packed data.
+            packed_data (bytes): Pickled data.
         Returns:
-            unpaced_data (any): Unpacked package
+            unpaced_data (any): Unpickled package
 
         """
         return loads(packed_data)

@@ -194,7 +194,8 @@ class SharedMemoryModelBase(ModelBase):
         # exclude some models that should not auto-create wrapper fields
         if cls.__name__ in ("ServerConfig", "TypeNick"):
             return
-        # dynamically create the wrapper properties for all fields not already handled (manytomanyfields are always handlers)
+        # dynamically create the wrapper properties for all fields not already handled
+        # (manytomanyfields are always handlers)
         for fieldname, field in ((fname, field) for fname, field in listitems(attrs)
                                  if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
             foreignkey = type(field).__name__ == "ForeignKey"
