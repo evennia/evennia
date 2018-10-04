@@ -42,6 +42,8 @@
         </div>
         {% endif %}
         <div class="{% if sidebar %}col-8{% else %}col{% endif %}">
+          {% include 'website/messages.html' %}
+          
           {% block content %}
           {% endblock %}
         </div>
