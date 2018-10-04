@@ -364,7 +364,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
             unpaced_data (any): Unpickled package
 
         """
-        return loads(packed_data)
+        msg = loads(packed_data)
+        print("amp.data_in: {}".format(msg))
+        return msg
 
     def broadcast(self, command, sessid, **kwargs):
         """

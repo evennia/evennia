@@ -87,7 +87,7 @@ PSTATUS = chr(18)      # ping server or portal status
 SRESET = chr(19)       # shutdown server in reset mode
 
 # requirements
-PYTHON_MIN = '2.7'
+PYTHON_MIN = '3.5'
 TWISTED_MIN = '18.0.0'
 DJANGO_MIN = '1.11'
 DJANGO_REC = '1.11'
@@ -632,6 +632,9 @@ def send_instruction(operation, arguments, callback=None, errback=None):
     """
     global AMP_CONNECTION, REACTOR_RUN
 
+    print("send_instruction: {}, {}, {}, {}, {})".format(operation, arguments, callback, errback, AMP_CONNECTION))
+
+
     if None in (AMP_HOST, AMP_PORT, AMP_INTERFACE):
         print(ERROR_AMP_UNCONFIGURED)
         sys.exit()
@@ -660,8 +663,10 @@ def send_instruction(operation, arguments, callback=None, errback=None):
 
     def _send():
         if operation == PSTATUS:
+            print("send PSTATUS ... {}".format(AMP_CONNECTION))
             return AMP_CONNECTION.callRemote(MsgStatus, status="").addCallbacks(_callback, _errback)
         else:
+            print("send callremote")
             return AMP_CONNECTION.callRemote(
                 MsgLauncher2Portal,
                 operation=operation,

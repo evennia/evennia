@@ -128,6 +128,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             (sessid, kwargs).
 
         """
+        print("server data_to_portal: {}, {}, {}".format(command, sessid, kwargs))
         return self.callRemote(command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
                 self.errback, command.key)
 

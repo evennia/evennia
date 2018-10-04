@@ -136,6 +136,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             (sessid, kwargs).
 
         """
+        print("portal data_to_server: {}, {}, {}".format(command, sessid, kwargs))
         if self.factory.server_connection:
             return self.factory.server_connection.callRemote(
                         command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
@@ -275,6 +276,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 (portal_running, server_running, portal_pid, server_pid).
 
         """
+        print('Received PSTATUS request')
         return {"status": amp.dumps(self.get_status())}
 
     @amp.MsgLauncher2Portal.responder
