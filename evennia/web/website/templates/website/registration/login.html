@@ -35,6 +35,12 @@ Login
               <label for="id_password">Password:</label>
               {{ form.password | addclass:"form-control" }}
             </div>
+            
+            <hr />
+            <div class="row">
+              <div class="col-lg-6 col-sm-12 text-center small"><a href="{% url 'password_reset' %}">Forgot Password?</a></div>
+              <div class="col-lg-6 col-sm-12 text-center small">Sign Up</div>
+            </div>
   
             <hr />
             <div class="form-group">
