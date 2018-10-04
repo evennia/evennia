@@ -189,6 +189,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @lazy_property
     def sessions(self):
         return AccountSessionHandler(self)
+        
+    @lazy_property
+    def characters(self):
+        return self.db._playable_characters
 
     # session-related methods
 
