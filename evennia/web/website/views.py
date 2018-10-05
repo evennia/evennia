@@ -9,6 +9,7 @@ from django.contrib.admin.sites import site
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -19,7 +20,7 @@ from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.utils import logger
-from evennia.web.website.forms import AccountCreationForm
+from evennia.web.website.forms import AccountCreationForm, CharacterCreationForm
 
 from django.contrib.auth import login
 
@@ -176,3 +177,59 @@ class AccountCreationView(FormView):
         
         messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
         return HttpResponseRedirect(self.success_url)
+        
+class CharacterCreationView(LoginRequiredMixin, FormView):
+    form_class = CharacterCreationForm
+    template_name = 'website/chargen_form.html'
+    success_url = '/'#reverse_lazy('character-manage')
+    
+    def form_valid(self, form):
+        # Get account ref
+        account = self.request.user
+        character = None
+        
+        # Get attributes from the form
+        self.attributes = {k: form.cleaned_data[k] for k in form.cleaned_data.keys()}
+        charname = self.attributes.pop('name')
+        description = self.attributes.pop('description')
+        
+        # Create a character
+        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
+        typeclass = settings.BASE_CHARACTER_TYPECLASS
+        default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
+        
+        from evennia.utils import create
+        try:
+            character = create.create_object(typeclass, key=charname, home=default_home, permissions=permissions)
+            # set playable character list
+            account.db._playable_characters.append(character)
+    
+            # allow only the character itself and the account to puppet this character (and Developers).
+            character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
+                                    (character.id, account.id))
+    
+            # If no description is set, set a default description
+            if not description:
+                character.db.desc = "This is a character."
+            else:
+                character.db.desc = description
+                
+            # We need to set this to have @ic auto-connect to this character
+            account.db._last_puppet = character
+            
+            # Assign attributes from form
+            [setattr(character.db, field, self.attributes[field]) for field in self.attributes.keys()]
+            character.creator_id = account.id
+            character.save()
+            
+        except Exception as e:
+            messages.error(self.request, "There was an error creating your character. If this problem persists, contact an admin.")
+            logger.log_trace()
+            return self.form_invalid(form)
+        
+        if character:
+            messages.success(self.request, "Your character '%s' was created!" % character.name)
+            return HttpResponseRedirect(self.success_url)
+        else:
+            messages.error(self.request, "Your character could not be created. Please contact an admin.")
+            return self.form_invalid(form)

@@ -15,6 +15,9 @@ urlpatterns = [
     # User Authentication (makes login/logout url names available)
     url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^auth/register', website_views.AccountCreationView.as_view(), name="register"),
+    
+    # Character management
+    url(r'^characters/create/', website_views.CharacterCreationView.as_view(), name="chargen"),
 
     # Django original admin page. Make this URL is always available, whether
     # we've chosen to use Evennia's custom admin or not.
