@@ -204,6 +204,22 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         try: return reverse_lazy('account-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except: return '#'
         
+    def get_delete_url(self):
+        """
+        Returns the canonical URL to the page that allows deleting an object. 
+        
+        """
+        try: return reverse('account-delete', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except: return '#'
+        
+    def get_update_url(self):
+        """
+        Returns the canonical URL to the page that allows updating an object. 
+        
+        """
+        try: return reverse('account-update', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except: return '#'
+        
     def get_admin_url(self):
         """
         Returns a link to this object's entry within the Django Admin panel.

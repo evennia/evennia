@@ -7,6 +7,7 @@ entities.
 """
 import time
 import inflect
+import re
 from builtins import object
 from future.utils import with_metaclass
 from collections import defaultdict
@@ -328,21 +329,48 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             self.aliases.add(singular, category="plural_key")
         return singular, plural
         
+    def get_url_prefix(self):
+        """
+        Derives the object name from the class name.
+        
+        i.e. 'DefaultAccount' = 'default-account', 'Character' = 'character'
+        """
+        klass = self.__class__.__name__
+        terms = [x.lower() for x in re.split('([A-Z][a-z]+)', klass) if x]
+        return slugify(' '.join(terms))
+        
     def get_absolute_url(self):
         """
-        Returns the canonical URL for an object. 
+        Returns the canonical URL to view an object. 
         
         To callers, this method should appear to return a string that can be 
         used to refer to the object over HTTP.
         
         https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
         """
-        try: return reverse('object-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        try: return reverse('%s-detail' % self.get_url_prefix(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except: return '#'
+        
+    def get_delete_url(self):
+        """
+        Returns the canonical URL to the page that allows deleting an object. 
+        
+        """
+        try: return reverse('%s-delete' % self.get_url_prefix(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except: return '#'
+        
+    def get_update_url(self):
+        """
+        Returns the canonical URL to the page that allows updating an object. 
+        
+        """
+        try: return reverse('%s-update' % self.get_url_prefix(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except: return '#'
         
     def get_admin_url(self):
         """
         Returns a link to this object's entry within the Django Admin panel.
+        
         """
         content_type = ContentType.objects.get_for_model(self.__class__)
         return reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
@@ -1843,18 +1871,6 @@ class DefaultCharacter(DefaultObject):
     a character avatar controlled by an account.
 
     """
-    def get_absolute_url(self):
-        """
-        Returns the canonical URL for a Character. 
-        
-        To callers, this method should appear to return a string that can be 
-        used to refer to the object over HTTP.
-        
-        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
-        """
-        try: return reverse('character-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return super(DefaultCharacter, self).get_absolute_url()
-
     def basetype_setup(self):
         """
         Setup character-specific security.
@@ -1971,18 +1987,6 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
-    def get_absolute_url(self):
-        """
-        Returns the canonical URL for a Room. 
-        
-        To callers, this method should appear to return a string that can be 
-        used to refer to the object over HTTP.
-        
-        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
-        """
-        try: return reverse('location-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return super(DefaultRoom, self).get_absolute_url()
-
     def basetype_setup(self):
         """
         Simple room setup setting locks to make sure the room
