@@ -8,13 +8,19 @@ templates on the fly.
 from django.contrib.admin.sites import site
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models.functions import Lower
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import View, TemplateView, ListView, DetailView, FormView
+from django.views.generic.edit import DeleteView
 
 from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.utils import logger
+from evennia.web.website.forms import AccountForm, CharacterForm
 
 from django.contrib.auth import login
 from django.utils.text import slugify
@@ -185,23 +191,37 @@ class AccountCreationView(FormView):
         
 class CharacterManageView(LoginRequiredMixin, ListView):
     model = ObjectDB
+    paginate_by = 10
+    template_name = 'website/character_manage_list.html'
     
     def get_queryset(self):
         # Get IDs of characters owned by account
         ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters]
         
         # Return a queryset consisting of those characters
-        return self.model.filter(id__in=ids)
+        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
 class CharacterUpdateView(LoginRequiredMixin, FormView):
-    form_class = CharacterUpdateForm
+    form_class = CharacterForm
     template_name = 'website/generic_form.html'
-    success_url = '/'#reverse_lazy('character-manage')
+    success_url = reverse_lazy('manage-characters')
+    fields = ('description',)
+    
+class CharacterDeleteView(LoginRequiredMixin, ObjectDetailView, DeleteView):
+    model = ObjectDB
+    
+    def get_queryset(self):
+        # Restrict characters available for deletion to those owned by 
+        # the authenticated account
+        ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters]
+        
+        # Return a queryset consisting of those characters
+        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
 class CharacterCreateView(LoginRequiredMixin, FormView):
     form_class = CharacterForm
-    template_name = 'website/chargen_form.html'
-    success_url = '/'#reverse_lazy('character-manage')
+    template_name = 'website/character_create_form.html'
+    success_url = reverse_lazy('manage-characters')
     
     def form_valid(self, form):
         # Get account ref
