@@ -82,10 +82,6 @@ class CharacterForm(forms.Form):
             indices = [i for (i, value) in enumerate(buckets) if (value < min_points) or (value < max_points)]
             
         return buckets
-        
-class CharacterUpdateForm(CharacterForm):
-    class Meta:
-        fields = ('description',)
     
 class ExtendedCharacterForm(CharacterForm):
     
