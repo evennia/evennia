@@ -17,8 +17,10 @@ urlpatterns = [
     url(r'^auth/register', website_views.AccountCreationView.as_view(), name="register"),
     
     # Character management
-    url(r'^characters/create/', website_views.CharacterCreationView.as_view(), name="chargen"),
-
+    url(r'^characters/create/$', website_views.CharacterCreateView.as_view(), name="chargen"),
+    url(r'^characters/manage/$', website_views.CharacterManageView.as_view(), name="manage-characters"),
+    url(r'^characters/update/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterUpdateView.as_view(), name="update-character"),
+    
     # Django original admin page. Make this URL is always available, whether
     # we've chosen to use Evennia's custom admin or not.
     url(r'django_admin/', website_views.admin_wrapper, name="django_admin"),
