@@ -17,6 +17,7 @@ from evennia.accounts.models import AccountDB
 from evennia.utils import logger
 
 from django.contrib.auth import login
+from django.utils.text import slugify
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
@@ -134,3 +135,121 @@ def admin_wrapper(request):
     Wrapper that allows us to properly use the base Django admin site, if needed.
     """
     return staff_member_required(site.index)(request)
+    
+class ObjectDetailView(DetailView):
+    model = ObjectDB
+    
+    def get_object(self, queryset=None):
+        obj = super(ObjectDetailView, self).get_object(queryset)
+        if not slugify(obj.name) == self.kwargs.get('slug'):
+            raise Http404(u"No %(verbose_name)s found matching the query" %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
+
+class AccountCreationView(FormView):
+    form_class = AccountForm
+    template_name = 'website/registration/register.html'
+    success_url = reverse_lazy('login')
+    
+    def form_valid(self, form):
+        # Check to make sure basics validated
+        valid = super(AccountCreationView, self).form_valid(form)
+        if not valid: return self.form_invalid(form)
+        
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password1']
+        email = form.cleaned_data.get('email', '')
+        
+        # Create a fake session object to intercept calls to the terminal
+        from mock import Mock
+        session = self.request
+        session.address = self.request.META.get('REMOTE_ADDR', '')
+        session.msg = Mock()
+        
+        # Create account
+        from evennia.commands.default.unloggedin import _create_account
+        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
+        account = _create_account(session, username, password, permissions)
+        
+        # If unsuccessful, get messages passed to session.msg
+        if not account:
+            [messages.error(self.request, call) for call in session.msg.call_args_list]
+            return self.form_invalid(form)
+            
+        # Append email address if given
+        account.email = email
+        account.save()
+        
+        messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
+        return HttpResponseRedirect(self.success_url)
+        
+class CharacterManageView(LoginRequiredMixin, ListView):
+    model = ObjectDB
+    
+    def get_queryset(self):
+        # Get IDs of characters owned by account
+        ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters]
+        
+        # Return a queryset consisting of those characters
+        return self.model.filter(id__in=ids)
+        
+class CharacterUpdateView(LoginRequiredMixin, FormView):
+    form_class = CharacterUpdateForm
+    template_name = 'website/generic_form.html'
+    success_url = '/'#reverse_lazy('character-manage')
+        
+class CharacterCreateView(LoginRequiredMixin, FormView):
+    form_class = CharacterForm
+    template_name = 'website/chargen_form.html'
+    success_url = '/'#reverse_lazy('character-manage')
+    
+    def form_valid(self, form):
+        # Get account ref
+        account = self.request.user
+        character = None
+        
+        # Get attributes from the form
+        self.attributes = {k: form.cleaned_data[k] for k in form.cleaned_data.keys()}
+        charname = self.attributes.pop('name')
+        description = self.attributes.pop('description')
+        
+        # Create a character
+        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
+        typeclass = settings.BASE_CHARACTER_TYPECLASS
+        default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
+        
+        from evennia.utils import create
+        try:
+            character = create.create_object(typeclass, key=charname, home=default_home, permissions=permissions)
+            # set playable character list
+            account.db._playable_characters.append(character)
+    
+            # allow only the character itself and the account to puppet this character (and Developers).
+            character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
+                                    (character.id, account.id))
+    
+            # If no description is set, set a default description
+            if not description:
+                character.db.desc = "This is a character."
+            else:
+                character.db.desc = description
+                
+            # We need to set this to have @ic auto-connect to this character
+            account.db._last_puppet = character
+            
+            # Assign attributes from form
+            [setattr(character.db, field, self.attributes[field]) for field in self.attributes.keys()]
+            character.db.creator_id = account.id
+            character.save()
+            
+        except Exception as e:
+            messages.error(self.request, "There was an error creating your character. If this problem persists, contact an admin.")
+            logger.log_trace()
+            return self.form_invalid(form)
+        
+        if character:
+            messages.success(self.request, "Your character '%s' was created!" % character.name)
+            return HttpResponseRedirect(self.success_url)
+        else:
+            messages.error(self.request, "Your character could not be created. Please contact an admin.")
+            return self.form_invalid(form)
