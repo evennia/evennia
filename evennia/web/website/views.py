@@ -7,22 +7,17 @@ templates on the fly.
 """
 from django.contrib.admin.sites import site
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.admin.views.decorators import staff_member_required
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import View, DetailView, ListView, FormView
 
 from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.utils import logger
-from evennia.web.website.forms import AccountCreationForm, CharacterCreationForm
 
 from django.contrib.auth import login
+from django.utils.text import slugify
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
@@ -140,9 +135,19 @@ def admin_wrapper(request):
     Wrapper that allows us to properly use the base Django admin site, if needed.
     """
     return staff_member_required(site.index)(request)
+    
+class ObjectDetailView(DetailView):
+    model = ObjectDB
+    
+    def get_object(self, queryset=None):
+        obj = super(ObjectDetailView, self).get_object(queryset)
+        if not slugify(obj.name) == self.kwargs.get('slug'):
+            raise Http404(u"No %(verbose_name)s found matching the query" %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
 
 class AccountCreationView(FormView):
-    form_class = AccountCreationForm
+    form_class = AccountForm
     template_name = 'website/registration/register.html'
     success_url = reverse_lazy('login')
     
@@ -178,8 +183,23 @@ class AccountCreationView(FormView):
         messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
         return HttpResponseRedirect(self.success_url)
         
-class CharacterCreationView(LoginRequiredMixin, FormView):
-    form_class = CharacterCreationForm
+class CharacterManageView(LoginRequiredMixin, ListView):
+    model = ObjectDB
+    
+    def get_queryset(self):
+        # Get IDs of characters owned by account
+        ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters]
+        
+        # Return a queryset consisting of those characters
+        return self.model.filter(id__in=ids)
+        
+class CharacterUpdateView(LoginRequiredMixin, FormView):
+    form_class = CharacterUpdateForm
+    template_name = 'website/generic_form.html'
+    success_url = '/'#reverse_lazy('character-manage')
+        
+class CharacterCreateView(LoginRequiredMixin, FormView):
+    form_class = CharacterForm
     template_name = 'website/chargen_form.html'
     success_url = '/'#reverse_lazy('character-manage')
     

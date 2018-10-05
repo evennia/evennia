@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField
 from evennia.utils import class_from_module
 from random import choice, randint
 
-class AccountCreationForm(UserCreationForm):
+class AccountForm(UserCreationForm):
     
     class Meta:
         model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
@@ -13,7 +13,7 @@ class AccountCreationForm(UserCreationForm):
     
     email = forms.EmailField(help_text="A valid email address. Optional; used for password resets.", required=False)
     
-class CharacterCreationForm(forms.Form):
+class CharacterForm(forms.Form):
     name = forms.CharField(help_text="The name of your intended character.")
     age = forms.IntegerField(min_value=3, max_value=99, help_text="How old your character should be once spawned.")
     description = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), max_length=2048, min_length=160, required=False)
@@ -82,8 +82,12 @@ class CharacterCreationForm(forms.Form):
             indices = [i for (i, value) in enumerate(buckets) if (value < min_points) or (value < max_points)]
             
         return buckets
+        
+class CharacterUpdateForm(CharacterForm):
+    class Meta:
+        fields = ('description',)
     
-class ExtendedCharacterCreationForm(forms.Form):
+class ExtendedCharacterForm(CharacterForm):
     
     GENDERS = (
         ('male', 'Male'),
