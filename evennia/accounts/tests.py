@@ -59,6 +59,19 @@ class TestDefaultAccount(TestCase):
         self.s1 = Session()
         self.s1.puppet = None
         self.s1.sessid = 0
+        
+    def test_absolute_url(self):
+        "Get URL for account detail page on website"
+        self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
+                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.assertTrue(self.account.get_absolute_url())
+        
+    def test_admin_url(self):
+        "Get object's URL for access via Admin pane"
+        self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
+                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.assertTrue(self.account.get_admin_url())
+        self.assertTrue(self.account.get_admin_url() != '#')
 
     def test_password_validation(self):
         "Check password validators deny bad passwords"

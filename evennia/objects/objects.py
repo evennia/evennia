@@ -12,6 +12,9 @@ from future.utils import with_metaclass
 from collections import defaultdict
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
+from django.utils.text import slugify
 
 from evennia.typeclasses.models import TypeclassBase
 from evennia.typeclasses.attributes import NickHandler
@@ -324,6 +327,25 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # look at 'an egg'.
             self.aliases.add(singular, category="plural_key")
         return singular, plural
+        
+    def get_absolute_url(self):
+        """
+        Returns the canonical URL for an object. 
+        
+        To callers, this method should appear to return a string that can be 
+        used to refer to the object over HTTP.
+        
+        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
+        """
+        try: return reverse('object-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except: return '#'
+        
+    def get_admin_url(self):
+        """
+        Returns a link to this object's entry within the Django Admin panel.
+        """
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        return reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
 
     def search(self, searchdata,
                global_search=False,
@@ -1821,6 +1843,17 @@ class DefaultCharacter(DefaultObject):
     a character avatar controlled by an account.
 
     """
+    def get_absolute_url(self):
+        """
+        Returns the canonical URL for a Character. 
+        
+        To callers, this method should appear to return a string that can be 
+        used to refer to the object over HTTP.
+        
+        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
+        """
+        try: return reverse('character-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except: return super(DefaultCharacter, self).get_absolute_url()
 
     def basetype_setup(self):
         """
@@ -1938,6 +1971,17 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
+    def get_absolute_url(self):
+        """
+        Returns the canonical URL for a Room. 
+        
+        To callers, this method should appear to return a string that can be 
+        used to refer to the object over HTTP.
+        
+        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
+        """
+        try: return reverse('location-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except: return super(DefaultRoom, self).get_absolute_url()
 
     def basetype_setup(self):
         """
