@@ -219,7 +219,7 @@ class CharacterCreationView(LoginRequiredMixin, FormView):
             
             # Assign attributes from form
             [setattr(character.db, field, self.attributes[field]) for field in self.attributes.keys()]
-            character.creator_id = account.id
+            character.db.creator_id = account.id
             character.save()
             
         except Exception as e:
