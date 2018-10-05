@@ -218,12 +218,18 @@ class CommonMarkParser(parsers.Parser):
         self.current_node.append(q)
         self.current_node = q
 
-    def visit_html_inline(self, mdnode):
+    def visit_html(self, mdnode):
         raw_node = nodes.raw(mdnode.literal,
                              mdnode.literal, format='html')
         if mdnode.sourcepos is not None:
             raw_node.line = mdnode.sourcepos[0][0]
         self.current_node.append(raw_node)
+
+    def visit_html_inline(self, mdnode):
+        self.visit_html(mdnode)
+
+    def visit_html_block(self, mdnode):
+        self.visit_html(mdnode)
 
     def visit_thematic_break(self, _):
         self.current_node.append(nodes.transition())

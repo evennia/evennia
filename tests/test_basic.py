@@ -403,7 +403,7 @@ class TestParsing(unittest.TestCase):
             """
         )
 
-    def test_html(self):
+    def test_html_inline(self):
         self.assertParses(
             """
             Foo
@@ -419,6 +419,26 @@ class TestParsing(unittest.TestCase):
                 Blink
                 <raw format="html" xml:space="preserve">&lt;/blink&gt;</raw>
               </paragraph>
+            </document>
+            """
+        )
+
+    def test_html_block(self):
+        self.assertParses(
+            """
+            Foo
+
+            <div>
+                <blink>Blink</blink>
+            </div>
+            """,
+            """
+            <?xml version="1.0" ?>
+            <document source="&lt;string&gt;">
+              <paragraph>Foo</paragraph>
+              <raw format="html" xml:space="preserve">&lt;div&gt;
+                &lt;blink&gt;Blink&lt;/blink&gt;
+            &lt;/div&gt;</raw>
             </document>
             """
         )
