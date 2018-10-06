@@ -19,6 +19,8 @@ from evennia.utils.create import create_script
 # to real time.
 
 TIMEFACTOR = settings.TIME_FACTOR
+IGNORE_DOWNTIMES = settings.TIME_IGNORE_DOWNTIMES
+
 
 # Only set if gametime_reset was called at some point.
 GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
@@ -133,7 +135,10 @@ def gametime(absolute=False):
 
     """
     epoch = game_epoch() if absolute else 0
-    gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
+    if IGNORE_DOWNTIMES:
+        gtime = epoch + (time.time() - server_epoch()) * TIMEFACTOR
+    else:
+        gtime = epoch + (runtime() - GAME_TIME_OFFSET) * TIMEFACTOR
     return gtime
 
 

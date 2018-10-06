@@ -149,6 +149,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Tag manager methods
 
+
     def get_tag(self, key=None, category=None, obj=None, tagtype=None, global_search=False):
         """
         Return Tag objects by key, by category, by object (it is
@@ -228,25 +229,58 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     def get_by_tag(self, key=None, category=None, tagtype=None):
         """
-        Return objects having tags with a given key or category or
-        combination of the two.
+        Return objects having tags with a given key or category or combination of the two.
+        Also accepts multiple tags/category/tagtype
 
         Args:
-            key (str, optional): Tag key. Not case sensitive.
-            category (str, optional): Tag category. Not case sensitive.
-            tagtype (str or None, optional): 'type' of Tag, by default
+            key (str or list, optional): Tag key or list of keys. Not case sensitive.
+            category (str or list, optional): Tag category. Not case sensitive. If `key` is
+                a list, a single category can either apply to all keys in that list or this
+                must be a list matching the `key` list element by element. If no `key` is given,
+                all objects with tags of this category are returned.
+            tagtype (str, optional): 'type' of Tag, by default
                 this is either `None` (a normal Tag), `alias` or
-                `permission`.
+                `permission`. This always apply to all queried tags.
+
         Returns:
             objects (list): Objects with matching tag.
+
+        Raises:
+            IndexError: If `key` and `category` are both lists and `category` is shorter
+                than `key`.
+
         """
+        if not (key or category):
+            return []
+
+        keys = make_iter(key) if key else []
+        categories = make_iter(category) if category else []
+        n_keys = len(keys)
+        n_categories = len(categories)
+
         dbmodel = self.model.__dbclass__.__name__.lower()
-        query = [("db_tags__db_tagtype", tagtype), ("db_tags__db_model", dbmodel)]
-        if key:
-            query.append(("db_tags__db_key", key.lower()))
-        if category:
-            query.append(("db_tags__db_category", category.lower()))
-        return self.filter(**dict(query))
+        query = self.filter(db_tags__db_tagtype__iexact=tagtype,
+                            db_tags__db_model__iexact=dbmodel).distinct()
+
+        if n_keys > 0:
+            # keys and/or categories given
+            if n_categories == 0:
+                categories = [None for _ in range(n_keys)]
+            elif n_categories == 1 and n_keys > 1:
+                cat = categories[0]
+                categories = [cat for _ in range(n_keys)]
+            elif 1 < n_categories < n_keys:
+                raise IndexError("get_by_tag needs a single category or a list of categories "
+                                 "the same length as the list of tags.")
+            for ikey, key in enumerate(keys):
+                query = query.filter(db_tags__db_key__iexact=key,
+                                     db_tags__db_category__iexact=categories[ikey])
+        else:
+            # only one or more categories given
+            for category in categories:
+                query = query.filter(db_tags__db_category__iexact=category)
+
+        return query
 
     def get_by_permission(self, key=None, category=None):
         """

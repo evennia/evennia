@@ -2,11 +2,15 @@
 
 # windows specific
 pypiwin32
-# general
-django > 1.10, < 2.0
-twisted >= 16.0.0
-mock >= 1.0.1
+
+django > 1.11, < 2.0
+twisted >= 18.0.0, < 19.0.0
 pillow == 2.9.0
 pytz
 future >= 0.15.2
 django-sekizai
+inflect
+
+# testing
+mock >= 1.0.1
+anything
