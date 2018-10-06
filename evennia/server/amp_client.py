@@ -40,7 +40,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
 
     def startedConnecting(self, connector):
         """
-        Called when starting to try to connect to the MUD server.
+        Called when starting to try to connect to the Portal AMP server.
 
         Args:
             connector (Connector): Twisted Connector instance representing
@@ -102,6 +102,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         Called when a new connection is established.
 
         """
+        print("AMPClient new connection {}".format(self))
         info_dict = self.factory.server.get_info_dict()
         super(AMPServerClientProtocol, self).connectionMade()
         # first thing we do is to request the Portal to sync all sessions

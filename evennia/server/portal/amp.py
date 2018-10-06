@@ -9,7 +9,7 @@ from functools import wraps
 import time
 from twisted.protocols import amp
 from collections import defaultdict, namedtuple
-from io import StringIO, BytesIO
+from io import BytesIO
 from itertools import count
 import zlib  # Used in Compressed class
 import pickle
@@ -282,6 +282,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         """
         Handle non-AMP messages, such as HTTP communication.
         """
+        print("dataReceived: {}".format(data))
         if data[:1] == NUL:
             # an AMP communication
             if data[-2:] != NULNUL:
@@ -318,6 +319,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         This is called when an AMP connection is (re-)established. AMP calls it on both sides.
 
         """
+        print("connectionMade: {}".format(self))
         self.factory.broadcasts.append(self)
 
     def connectionLost(self, reason):
@@ -330,6 +332,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         portal will continuously try to reconnect, showing the problem
         that way.
         """
+        print("ConnectionLost: {}: {}".format(self, reason))
         try:
             self.factory.broadcasts.remove(self)
         except ValueError:
@@ -385,6 +388,8 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         deferreds = []
+        print("broadcast: {} {}: {}".format(command, sessid, kwargs))
+
         for protcl in self.factory.broadcasts:
             deferreds.append(protcl.callRemote(command, **kwargs).addErrback(
                 self.errback, command.key))

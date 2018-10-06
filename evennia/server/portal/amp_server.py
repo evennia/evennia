@@ -155,6 +155,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # start the Server
+        print("Portal starting server ... {}".format(server_twistd_cmd))
         process = None
         with open(settings.SERVER_LOG_FILE, 'a') as logfile:
             # we link stdout to a file in order to catch
@@ -226,6 +227,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         Send a status stanza to the launcher.
 
         """
+        print("send status to launcher")
+        print("self.get_status(): {}".format(self.get_status()))
         if self.factory.launcher_connection:
             self.factory.launcher_connection.callRemote(
                     amp.MsgStatus,
@@ -302,7 +305,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         _, server_connected, _, _, _, _ = self.get_status()
 
-        # logger.log_msg("Evennia Launcher->Portal operation %s received" % (ord(operation)))
+        logger.log_msg("Evennia Launcher->Portal operation %s:%s received" % (ord(operation), arguments))
 
         if operation == amp.SSTART:   # portal start  #15
             # first, check if server is already running
@@ -382,6 +385,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         self.factory.server_connection = self
 
         sessid, kwargs = self.data_in(packed_data)
+
+        logger.log_msg("Evennia Server->Portal admin data %s:%s received" % (sessid, kwargs))
+
         operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions
 

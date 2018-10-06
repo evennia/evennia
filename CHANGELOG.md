@@ -7,6 +7,11 @@ Update to Python 3
 - Use `python3 -m venv <myenvname>`
 - Use `python3 -m pdb <script>` for debugging
 
+### Misc
+
+- Swap argument order of `evennia.set_trace` to `set_trace(term_size=(140, 40), debugger='auto')`
+  since the size is more likely to be changed on the command line.
+
 
 ## Evennia 0.8 (2018)
 
@@ -22,7 +27,7 @@ Update to Python 3
   to terminal and can be stopped with Ctrl-C. Using `evennia reload`, or reloading in-game, will
   return Server to normal daemon operation.
 - For validating passwords, use safe Django password-validation backend instead of custom Evennia one.
-- Alias `evennia restart` to mean the same as `evennia reload`. 
+- Alias `evennia restart` to mean the same as `evennia reload`.
 
 ### Prototype changes
 
