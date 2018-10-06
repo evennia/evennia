@@ -434,7 +434,8 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
         # disconnect account
         channel.disconnect(account)
         CHANNELHANDLER.update()
-        logger.log_sec('Channel Boot: %s (Channel: %s, Reason: %s, Caller: %s, IP: %s).' % (account, channel, reason, caller, self.session.address))
+        logger.log_sec('Channel Boot: %s (Channel: %s, Reason: %s, Caller: %s, IP: %s).' % (
+            account, channel, reason, self.caller, self.session.address))
 
 
 class CmdCemit(COMMAND_DEFAULT_CLASS):
