@@ -384,8 +384,9 @@ class TestPrototypeStorage(EvenniaTest):
         prot3 = protlib.create_prototype(**self.prot3)
 
         # partial match
-        self.assertEqual(list(protlib.search_prototype("prot")), [prot1b, prot2, prot3])
-        self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
+        with mock.patch("evennia.prototypes.prototypes._MODULE_PROTOTYPES", {}):
+            self.assertEqual(list(protlib.search_prototype("prot")), [prot1b, prot2, prot3])
+            self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
 
         self.assertTrue(str(unicode(protlib.list_prototypes(self.char1))))
 

@@ -659,6 +659,9 @@ def spawn(*prototypes, **kwargs):
     # get available protparents
     protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
 
+    if not kwargs.get("only_validate"):
+        prototypes = [protlib.homogenize_prototype(prot) for prot in prototypes]
+
     # overload module's protparents with specifically given protparents
     # we allow prototype_key to be the key of the protparent dict, to allow for module-level
     # prototype imports. We need to insert prototype_key in this case
@@ -730,7 +733,7 @@ def spawn(*prototypes, **kwargs):
         val = make_iter(prot.pop("attrs", []))
         attributes = []
         for (attrname, value, category, locks) in val:
-            attributes.append((attrname, init_spawn_value(val), category, locks))
+            attributes.append((attrname, init_spawn_value(value), category, locks))
 
         simple_attributes = []
         for key, value in ((key, value) for key, value in prot.items()
