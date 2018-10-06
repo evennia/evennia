@@ -2889,7 +2889,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                                     "use the 'exec' prototype key.")
                     return None
                 try:
-                    protlib.validate_prototype(prototype)
+                    # we homogenize first, to be more lenient
+                    protlib.validate_prototype(protlib.homogenize_prototype(prototype))
                 except RuntimeError as err:
                     self.caller.msg(str(err))
                     return
