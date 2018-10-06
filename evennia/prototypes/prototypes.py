@@ -6,6 +6,8 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 """
 
 import re
+import hashlib
+import time
 from ast import literal_eval
 from django.conf import settings
 from evennia.scripts.scripts import DefaultScript
@@ -13,7 +15,7 @@ from evennia.objects.models import ObjectDB
 from evennia.utils.create import create_script
 from evennia.utils.utils import (
     all_from_module, make_iter, is_iter, dbid_to_obj, callables_from_module,
-    get_all_typeclasses, to_str, dbref, justify)
+    get_all_typeclasses, to_str, dbref, justify, class_from_module)
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
 from evennia.utils import inlinefuncs, dbserialize
@@ -47,8 +49,8 @@ class ValidationError(RuntimeError):
 
 def homogenize_prototype(prototype, custom_keys=None):
     """
-    Homogenize the more free-form prototype (where undefined keys are non-category attributes)
-    into the stricter form using `attrs` required by the system.
+    Homogenize the more free-form prototype supported pre Evennia 0.7 into the stricter form.
+
 
     Args:
         prototype (dict): Prototype.
@@ -56,18 +58,45 @@ def homogenize_prototype(prototype, custom_keys=None):
             the default reserved keys.
 
     Returns:
-        homogenized (dict): Prototype where all non-identified keys grouped as attributes.
+        homogenized (dict): Prototype where all non-identified keys grouped as attributes and other
+            homogenizations like adding missing prototype_keys and setting a default typeclass.
+
     """
     reserved = _PROTOTYPE_RESERVED_KEYS + (custom_keys or ())
+
     attrs = list(prototype.get('attrs', []))  # break reference
+    tags = make_iter(prototype.get('tags', []))
+    homogenized_tags = []
+
     homogenized = {}
     for key, val in prototype.items():
         if key in reserved:
-            homogenized[key] = val
+            if key == 'tags':
+                for tag in tags:
+                    if not is_iter(tag):
+                        homogenized_tags.append((tag, None, None))
+                    else:
+                        homogenized_tags.append(tag)
+            else:
+                homogenized[key] = val
         else:
+            # unassigned keys -> attrs
             attrs.append((key, val, None, ''))
     if attrs:
         homogenized['attrs'] = attrs
+    if homogenized_tags:
+        homogenized['tags'] = homogenized_tags
+
+    # add required missing parts that had defaults before
+
+    if "prototype_key" not in prototype:
+        # assign a random hash as key
+        homogenized["prototype_key"] = "prototype-{}".format(
+            hashlib.md5(str(time.time())).hexdigest()[:7])
+
+    if "typeclass" not in prototype and "prototype_parent" not in prototype:
+        homogenized["typeclass"] = settings.BASE_OBJECT_TYPECLASS
+
     return homogenized
 
 
@@ -432,11 +461,13 @@ def validate_prototype(prototype, protkey=None, protparents=None,
             _flags['warnings'].append("Prototype {} can only be used as a mixin since it lacks "
                                       "a typeclass or a prototype_parent.".format(protkey))
 
-    if (strict and typeclass and typeclass not
-            in get_all_typeclasses("evennia.objects.models.ObjectDB")):
-        _flags['errors'].append(
-            "Prototype {} is based on typeclass {}, which could not be imported!".format(
-                protkey, typeclass))
+    if strict and typeclass:
+        try:
+            class_from_module(typeclass)
+        except ImportError as err:
+            _flags['errors'].append(
+                "{}: Prototype {} is based on typeclass {}, which could not be imported!".format(
+                    err, protkey, typeclass))
 
     # recursively traverese prototype_parent chain
 
