@@ -316,17 +316,17 @@ def _init():
     del _EvContainer
 
 
-def set_trace(debugger="auto", term_size=(140, 40)):
+def set_trace(term_size=(140, 40), debugger="auto"):
     """
     Helper function for running a debugger inside the Evennia event loop.
 
     Args:
+        term_size (tuple, optional): Only used for Pudb and defines the size of the terminal
+            (width, height) in number of characters.
         debugger (str, optional): One of 'auto', 'pdb' or 'pudb'. Pdb is the standard debugger. Pudb
             is an external package with a different, more 'graphical', ncurses-based UI. With
             'auto', will use pudb if possible, otherwise fall back to pdb. Pudb is available through
             `pip install pudb`.
-        term_size (tuple, optional): Only used for Pudb and defines the size of the terminal
-            (width, height) in number of characters.
 
     Notes:
         To use:
@@ -345,14 +345,12 @@ def set_trace(debugger="auto", term_size=(140, 40)):
     """
     import sys
     dbg = None
-    pudb_mode = False
 
     if debugger in ('auto', 'pudb'):
         try:
             from pudb import debugger
             dbg = debugger.Debugger(stdout=sys.__stdout__,
                                     term_size=term_size)
-            pudb_mode = True
         except ImportError:
             if debugger == 'pudb':
                 raise
@@ -361,12 +359,11 @@ def set_trace(debugger="auto", term_size=(140, 40)):
     if not dbg:
         import pdb
         dbg = pdb.Pdb(stdout=sys.__stdout__)
-        pudb_mode = False
 
-    if pudb_mode:
-        # Stopped at breakpoint. Press 'n' to continue into the code.
-        dbg.set_trace()
-    else:
+    try:
         # Start debugger, forcing it up one stack frame (otherwise `set_trace` will start debugger
         # this point, not the actual code location)
         dbg.set_trace(sys._getframe().f_back)
+    except Exception:
+        # Stopped at breakpoint. Press 'n' to continue into the code.
+        dbg.set_trace()

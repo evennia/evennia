@@ -632,9 +632,6 @@ def send_instruction(operation, arguments, callback=None, errback=None):
     """
     global AMP_CONNECTION, REACTOR_RUN
 
-    print("send_instruction: {}, {}, {}, {}, {})".format(operation, arguments, callback, errback, AMP_CONNECTION))
-
-
     if None in (AMP_HOST, AMP_PORT, AMP_INTERFACE):
         print(ERROR_AMP_UNCONFIGURED)
         sys.exit()
@@ -663,13 +660,11 @@ def send_instruction(operation, arguments, callback=None, errback=None):
 
     def _send():
         if operation == PSTATUS:
-            print("send PSTATUS ... {}".format(AMP_CONNECTION))
-            return AMP_CONNECTION.callRemote(MsgStatus, status="").addCallbacks(_callback, _errback)
+            return AMP_CONNECTION.callRemote(MsgStatus, status=b"").addCallbacks(_callback, _errback)
         else:
-            print("send callremote")
             return AMP_CONNECTION.callRemote(
                 MsgLauncher2Portal,
-                operation=operation,
+                operation=bytes(operation, 'utf-8'),
                 arguments=pickle.dumps(arguments, pickle.HIGHEST_PROTOCOL)).addCallbacks(
                     _callback, _errback)
 
@@ -1095,7 +1090,10 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
 
     def _file_changed(filename, prev_size):
         "Get size of file in bytes, get diff compared with previous size"
-        new_size = os.path.getsize(filename)
+        try:
+            new_size = os.path.getsize(filename)
+        except FileNotFoundError:
+            return False, 0
         return new_size != prev_size, new_size
 
     def _get_new_lines(filehandle, old_linecount):
