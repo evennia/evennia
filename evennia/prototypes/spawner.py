@@ -735,7 +735,6 @@ def spawn(*prototypes, **kwargs):
         for (attrname, value, category, locks) in val:
             attributes.append((attrname, init_spawn_value(value), category, locks))
 
-        print("attributes to spawn: IN: {}, OUT: {}".format(val, attributes))
         simple_attributes = []
         for key, value in ((key, value) for key, value in prot.items()
                            if not (key.startswith("ndb_"))):
