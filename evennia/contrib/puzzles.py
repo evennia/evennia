@@ -79,7 +79,7 @@ from evennia import DefaultExit
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils.utils import inherits_from
 from evennia.utils import search, utils, logger
-from evennia.utils.spawner import spawn
+from evennia.prototypes.spawner import spawn
 
 # Tag used by puzzles
 _PUZZLES_TAG_CATEGORY = 'puzzles'
@@ -100,6 +100,7 @@ def proto_def(obj, with_tags=True):
     """
     protodef = {
         # FIXME: Don't we need to honor ALL properties? attributes, contents, etc.
+        'prototype_key': '%s(%s)' % (obj.key, obj.dbref),
         'key': obj.key,
         'typeclass': obj.typeclass_path,
         'desc': obj.db.desc,
