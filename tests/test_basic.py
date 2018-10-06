@@ -8,7 +8,7 @@ from docutils.utils import new_document
 from docutils.readers import Reader
 from docutils.core import publish_parts
 
-from CommonMark import Parser
+from commonmark import Parser
 from recommonmark.parser import CommonMarkParser
 
 
