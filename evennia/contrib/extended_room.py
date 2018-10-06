@@ -213,37 +213,39 @@ class ExtendedRoom(DefaultRoom):
             return detail
         return None
 
-    def return_appearance(self, looker):
+    def return_appearance(self, looker, **kwargs):
         """
         This is called when e.g. the look command wants to retrieve
         the description of this object.
 
         Args:
             looker (Object): The object looking at us.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
 
         Returns:
             description (str): Our description.
 
         """
-        update = False
+        # ensures that our description is current based on time/season
+        self.update_current_description()
+        # run the normal return_appearance method, now that desc is updated.
+        return super(ExtendedRoom, self).return_appearance(looker, **kwargs)
 
+    def update_current_description(self):
+        """
+        This will update the description of the room if the time or season
+        has changed since last checked.
+        """
+        update = False
         # get current time and season
         curr_season, curr_timeslot = self.get_time_and_season()
-
         # compare with previously stored slots
         last_season = self.ndb.last_season
         last_timeslot = self.ndb.last_timeslot
-
         if curr_season != last_season:
             # season changed. Load new desc, or a fallback.
-            if curr_season == 'spring':
-                new_raw_desc = self.db.spring_desc
-            elif curr_season == 'summer':
-                new_raw_desc = self.db.summer_desc
-            elif curr_season == 'autumn':
-                new_raw_desc = self.db.autumn_desc
-            else:
-                new_raw_desc = self.db.winter_desc
+            new_raw_desc = self.attributes.get("%s_desc" % curr_season)
             if new_raw_desc:
                 raw_desc = new_raw_desc
             else:
@@ -252,19 +254,15 @@ class ExtendedRoom(DefaultRoom):
             self.db.raw_desc = raw_desc
             self.ndb.last_season = curr_season
             update = True
-
         if curr_timeslot != last_timeslot:
             # timeslot changed. Set update flag.
             self.ndb.last_timeslot = curr_timeslot
             update = True
-
         if update:
             # if anything changed we have to re-parse
             # the raw_desc for time markers
             # and re-save the description again.
             self.db.desc = self.replace_timeslots(self.db.raw_desc, curr_timeslot)
-        # run the normal return_appearance method, now that desc is updated.
-        return super(ExtendedRoom, self).return_appearance(looker)
 
 
 # Custom Look command supporting Room details. Add this to
@@ -369,6 +367,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
 
     """
     aliases = ["describe", "detail"]
+    switch_options = ()  # Inherits from default_cmds.CmdDesc, but unused here
 
     def reset_times(self, obj):
         """By deleteting the caches we force a re-load."""

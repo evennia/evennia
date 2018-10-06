@@ -83,9 +83,11 @@ class ScriptDB(TypedObject):
     # optional description.
     db_desc = models.CharField('desc', max_length=255, blank=True)
     # A reference to the database object affected by this Script, if any.
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, verbose_name='scripted object',
+    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, on_delete=models.CASCADE,
+                               verbose_name='scripted object',
                                help_text='the object to store this script on, if not a global script.')
-    db_account = models.ForeignKey("accounts.AccountDB", null=True, blank=True, verbose_name="scripted account",
+    db_account = models.ForeignKey("accounts.AccountDB", null=True, blank=True,
+                                   on_delete=models.CASCADE, verbose_name="scripted account",
                                    help_text='the account to store this script on (should not be set if db_obj is set)')
 
     # how often to run Script (secs). -1 means there is no timer

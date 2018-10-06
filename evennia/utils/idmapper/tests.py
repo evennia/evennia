@@ -17,14 +17,14 @@ class RegularCategory(models.Model):
 
 class Article(SharedMemoryModel):
     name = models.CharField(max_length=32)
-    category = models.ForeignKey(Category)
-    category2 = models.ForeignKey(RegularCategory)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category2 = models.ForeignKey(RegularCategory, on_delete=models.CASCADE)
 
 
 class RegularArticle(models.Model):
     name = models.CharField(max_length=32)
-    category = models.ForeignKey(Category)
-    category2 = models.ForeignKey(RegularCategory)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category2 = models.ForeignKey(RegularCategory, on_delete=models.CASCADE)
 
 
 class SharedMemorysTest(TestCase):

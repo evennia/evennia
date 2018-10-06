@@ -245,7 +245,7 @@ class AttributeHandler(object):
                 found from cache or database.
         Notes:
             When given a category only, a search for all objects
-            of that cateogory is done and a the category *name* is is
+            of that cateogory is done and the category *name* is
             stored. This tells the system on subsequent calls that the
             list of cached attributes of this category is up-to-date
             and that the cache can be queried for category matches
@@ -435,6 +435,7 @@ class AttributeHandler(object):
             def __init__(self):
                 self.key = None
                 self.value = default
+                self.category = None
                 self.strvalue = str(default) if default is not None else None
 
         ret = []
@@ -530,8 +531,8 @@ class AttributeHandler(object):
         repeat-calling add when having many Attributes to add.
 
         Args:
-            indata (tuple): Tuples of varying length representing the
-                Attribute to add to this object.
+            indata (list): List of tuples of varying length representing the
+                Attribute to add to this object. Supported tuples are
                     - `(key, value)`
                     - `(key, value, category)`
                     - `(key, value, category, lockstring)`
@@ -563,7 +564,7 @@ class AttributeHandler(object):
             ntup = len(tup)
             keystr = str(tup[0]).strip().lower()
             new_value = tup[1]
-            category = str(tup[2]).strip().lower() if ntup > 2 else None
+            category = str(tup[2]).strip().lower() if ntup > 2 and tup[2] is not None else None
             lockstring = tup[3] if ntup > 3 else ""
 
             attr_objs = self._getcache(keystr, category)
@@ -572,7 +573,7 @@ class AttributeHandler(object):
                 attr_obj = attr_objs[0]
                 # update an existing attribute object
                 attr_obj.db_category = category
-                attr_obj.db_lock_storage = lockstring
+                attr_obj.db_lock_storage = lockstring or ''
                 attr_obj.save(update_fields=["db_category", "db_lock_storage"])
                 if strattr:
                     # store as a simple string (will not notify OOB handlers)
@@ -589,7 +590,7 @@ class AttributeHandler(object):
                           "db_attrtype": self._attrtype,
                           "db_value": None if strattr else to_pickle(new_value),
                           "db_strvalue": new_value if strattr else None,
-                          "db_lock_storage": lockstring}
+                          "db_lock_storage": lockstring or ''}
                 new_attr = Attribute(**kwargs)
                 new_attr.save()
                 new_attrobjs.append(new_attr)

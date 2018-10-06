@@ -430,7 +430,7 @@ class EventCharacter(DefaultCharacter):
 
             # Browse all the room's other characters
             for obj in location.contents:
-                if obj is self or not inherits_from(obj, "objects.objects.DefaultCharacter"):
+                if obj is self or not inherits_from(obj, "evennia.objects.objects.DefaultCharacter"):
                     continue
 
                 allow = obj.callbacks.call("can_say", self, obj, message, parameters=message)
@@ -491,7 +491,7 @@ class EventCharacter(DefaultCharacter):
                   parameters=message)
 
             # Call the other characters' "say" event
-            presents = [obj for obj in location.contents if obj is not self and inherits_from(obj, "objects.objects.DefaultCharacter")]
+            presents = [obj for obj in location.contents if obj is not self and inherits_from(obj, "evennia.objects.objects.DefaultCharacter")]
             for present in presents:
                 present.callbacks.call("say", self, present, message, parameters=message)
 

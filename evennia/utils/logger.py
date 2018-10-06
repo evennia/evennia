@@ -20,6 +20,7 @@ import time
 from datetime import datetime
 from traceback import format_exc
 from twisted.python import log, logfile
+from twisted.python import util as twisted_util
 from twisted.internet.threads import deferToThread
 
 
@@ -29,10 +30,15 @@ _TIMEZONE = None
 _CHANNEL_LOG_NUM_TAIL_LINES = None
 
 
+# logging overrides
+
+
 def timeformat(when=None):
     """
     This helper function will format the current time in the same
-    way as twisted's logger does, including time zone info.
+    way as the twisted logger does, including time zone info. Only
+    difference from official logger is that we only use two digits
+    for the year and don't show timezone for CET times.
 
     Args:
         when (int, optional): This is a time in POSIX seconds on the form
@@ -49,14 +55,70 @@ def timeformat(when=None):
     tz_offset = tz_offset.days * 86400 + tz_offset.seconds
     # correct given time to utc
     when = datetime.utcfromtimestamp(when - tz_offset)
-    tz_hour = abs(int(tz_offset // 3600))
-    tz_mins = abs(int(tz_offset // 60 % 60))
-    tz_sign = "-" if tz_offset >= 0 else "+"
 
-    return '%d-%02d-%02d %02d:%02d:%02d%s%02d%02d' % (
-        when.year, when.month, when.day,
-        when.hour, when.minute, when.second,
-        tz_sign, tz_hour, tz_mins)
+    if tz_offset == 0:
+        tz = ""
+    else:
+        tz_hour = abs(int(tz_offset // 3600))
+        tz_mins = abs(int(tz_offset // 60 % 60))
+        tz_sign = "-" if tz_offset >= 0 else "+"
+        tz = "%s%02d%s" % (tz_sign, tz_hour,
+                           (":%02d" % tz_mins if tz_mins else ""))
+
+    return '%d-%02d-%02d %02d:%02d:%02d%s' % (
+        when.year - 2000, when.month, when.day,
+        when.hour, when.minute, when.second, tz)
+
+
+class WeeklyLogFile(logfile.DailyLogFile):
+    """
+    Log file that rotates once per week
+
+    """
+    day_rotation = 7
+
+    def shouldRotate(self):
+        """Rotate when the date has changed since last write"""
+        # all dates here are tuples (year, month, day)
+        now = self.toDate()
+        then = self.lastDate
+        return now[0] > then[0] or now[1] > then[1] or now[2] > (then[2] + self.day_rotation)
+
+    def write(self, data):
+        "Write data to log file"
+        logfile.BaseLogFile.write(self, data)
+        self.lastDate = max(self.lastDate, self.toDate())
+
+
+class PortalLogObserver(log.FileLogObserver):
+    """
+    Reformat logging
+    """
+    timeFormat = None
+    prefix = "  |Portal| "
+
+    def emit(self, eventDict):
+        """
+        Copied from Twisted parent, to change logging output
+
+        """
+        text = log.textFromEventDict(eventDict)
+        if text is None:
+            return
+
+        # timeStr = self.formatTime(eventDict["time"])
+        timeStr = timeformat(eventDict["time"])
+        fmtDict = {
+            "text": text.replace("\n", "\n\t")}
+
+        msgStr = log._safeFormat("%(text)s\n", fmtDict)
+
+        twisted_util.untilConcludes(self.write, timeStr + "%s" % self.prefix + msgStr)
+        twisted_util.untilConcludes(self.flush)
+
+
+class ServerLogObserver(PortalLogObserver):
+    prefix = " "
 
 
 def log_msg(msg):
@@ -124,6 +186,20 @@ def log_err(errmsg):
 log_errmsg = log_err
 
 
+def log_server(servermsg):
+    """
+    This is for the Portal to log captured Server stdout messages (it's
+    usually only used during startup, before Server log is open)
+
+    """
+    try:
+        servermsg = str(servermsg)
+    except Exception as e:
+        servermsg = str(e)
+    for line in servermsg.splitlines():
+        log_msg('[Server] %s' % line)
+
+
 def log_warn(warnmsg):
     """
     Prints/logs any warnings that aren't critical but should be noted.
@@ -177,6 +253,23 @@ def log_dep(depmsg):
 
 
 log_depmsg = log_dep
+
+def log_sec(secmsg):
+    """
+    Prints a security-related message.
+
+    Args:
+        secmsg (str): The security message to log.
+    """
+    try:
+        secmsg = str(secmsg)
+    except Exception as e:
+        secmsg = str(e)
+    for line in secmsg.splitlines():
+        log_msg('[SS] %s' % line)
+
+
+log_secmsg = log_sec
 
 
 # Arbitrary file logger

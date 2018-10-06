@@ -35,7 +35,6 @@ class AccountDBManager(TypedObjectManager, UserManager):
     get_account_from_uid
     get_account_from_name
     account_search (equivalent to evennia.search_account)
-    #swap_character
 
     """
 
