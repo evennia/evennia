@@ -134,6 +134,7 @@ class TestUtils(EvenniaTest):
                           'prototype_key': Something,
                           'prototype_locks': 'spawn:all();edit:all()',
                           'prototype_tags': [],
+                          'tags': [(u'footag', u'foocategory', None)],
                           'typeclass': 'evennia.objects.objects.DefaultObject'})
 
         self.assertEqual(old_prot,
@@ -182,6 +183,7 @@ class TestUtils(EvenniaTest):
               'typeclass': ('evennia.objects.objects.DefaultObject',
                             'evennia.objects.objects.DefaultObject', 'KEEP'),
               'aliases': {'foo': ('foo', None, 'REMOVE')},
+              'tags': {u'footag': ((u'footag', u'foocategory', None), None, 'REMOVE')},
               'prototype_desc': ('Built from Obj',
                                  'New version of prototype', 'UPDATE'),
               'permissions': {"Builder": (None, 'Builder', 'ADD')}
@@ -200,6 +202,7 @@ class TestUtils(EvenniaTest):
             'prototype_key': 'UPDATE',
             'prototype_locks': 'KEEP',
             'prototype_tags': 'KEEP',
+            'tags': 'REMOVE',
             'typeclass': 'KEEP'}
             )
 
