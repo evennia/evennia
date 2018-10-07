@@ -258,7 +258,6 @@ def prototype_from_object(obj):
     aliases = obj.aliases.get(return_list=True)
     if aliases:
         prot['aliases'] = aliases
-    from evennia import set_trace;set_trace()
     tags = [(tag.db_key, tag.db_category, tag.db_data)
             for tag in obj.tags.all(return_objs=True)]
     if tags:
