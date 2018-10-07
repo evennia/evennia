@@ -14,8 +14,14 @@ class TestAccountSessionHandler(TestCase):
     "Check AccountSessionHandler class"
 
     def setUp(self):
-        self.account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.account = create.create_account(
+            "TestAccount%s" % randint(0, 999999), email="test@test.com",
+            password="testpassword", typeclass=DefaultAccount)
         self.handler = AccountSessionHandler(self.account)
+
+    def tearDown(self):
+        if hasattr(self, 'account'):
+            self.account.delete()
 
     def test_get(self):
         "Check get method"
@@ -60,6 +66,10 @@ class TestDefaultAccount(TestCase):
         self.s1.puppet = None
         self.s1.sessid = 0
 
+    def tearDown(self):
+        if hasattr(self, "account"):
+            self.account.delete()
+
     def test_password_validation(self):
         "Check password validators deny bad passwords"
 
@@ -71,7 +81,6 @@ class TestDefaultAccount(TestCase):
         "Check validators allow sufficiently complex passwords"
         for better in ('Mxyzptlk', "j0hn, i'M 0n1y d4nc1nG"):
             self.assertTrue(self.account.validate_password(better, account=self.account)[0])
-        self.account.delete()
 
     def test_password_change(self):
         "Check password setting and validation is working as expected"
@@ -109,7 +118,9 @@ class TestDefaultAccount(TestCase):
 
         import evennia.server.sessionhandler
 
-        account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        account = create.create_account(
+            "TestAccount%s" % randint(0, 999999), email="test@test.com",
+            password="testpassword", typeclass=DefaultAccount)
         self.s1.uid = account.uid
         evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
 
@@ -171,6 +182,7 @@ class TestDefaultAccount(TestCase):
         import evennia.server.sessionhandler
 
         account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.account = account
         self.s1.uid = account.uid
         evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
 
