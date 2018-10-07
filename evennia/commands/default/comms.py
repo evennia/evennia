@@ -7,6 +7,8 @@ make sure to homogenize self.caller to always be the account object
 for easy handling.
 
 """
+import hashlib
+import time
 from past.builtins import cmp
 from django.conf import settings
 from evennia.comms.models import ChannelDB, Msg
@@ -921,8 +923,9 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Account '%s' already exists and is not a bot." % botname)
                 return
         else:
+            password = hashlib.md5(str(time.time())).hexdigest()[:11]
             try:
-                bot = create.create_account(botname, None, None, typeclass=botclass)
+                bot = create.create_account(botname, None, password, typeclass=botclass)
             except Exception as err:
                 self.msg("|rError, could not create the bot:|n '%s'." % err)
                 return
