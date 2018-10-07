@@ -99,7 +99,7 @@ def proto_def(obj, with_tags=True):
     and compare recipe with candidate part
     """
     protodef = {
-        # FIXME: Don't we need to honor ALL properties? attributes, contents, etc.
+        # TODO: Don't we need to honor ALL properties? attributes, contents, etc.
         'prototype_key': '%s(%s)' % (obj.key, obj.dbref),
         'key': obj.key,
         'typeclass': obj.typeclass_path,
@@ -615,8 +615,8 @@ class CmdUsePuzzleParts(MuxCommand):
 
         # if there are more than one, ...
         if len(largest_puzzles) > 1:
-            # FIXME: pick a random one or let user choose?
-            # FIXME: do we show the puzzle name or something else?
+            # TODO: pick a random one or let user choose?
+            # TODO: do we show the puzzle name or something else?
             caller.msg(
                 'Your gears start turning and a bunch of ideas come to your mind ...\n%s' % (
                 ' ...\n'.join([puzzles_dict[lp[0]].db.puzzle_name for lp in largest_puzzles]))
@@ -632,7 +632,7 @@ class CmdUsePuzzleParts(MuxCommand):
             result.tags.add(puzzle.db.puzzle_name, category=_PUZZLES_TAG_CATEGORY)
             result.db.puzzle_name = puzzle.db.puzzle_name
             result_names.append(result.name)
-            # FIXME: add 'ramdon' messages:
+            # TODO: add 'ramdon' messages:
             # Hmmm ... did I search result.location?
             # What was that? ... I heard something in result.location?
             # Eureka! you built a result
