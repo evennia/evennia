@@ -105,9 +105,11 @@ def homogenize_prototype(prototype, custom_keys=None):
 for mod in settings.PROTOTYPE_MODULES:
     # to remove a default prototype, override it with an empty dict.
     # internally we store as (key, desc, locks, tags, prototype_dict)
-    prots = [(prototype_key.lower(), homogenize_prototype(prot))
-             for prototype_key, prot in all_from_module(mod).items()
-             if prot and isinstance(prot, dict)]
+    prots = []
+    for variable_name, prot in all_from_module(mod).items():
+        if "prototype_key" not in prot:
+            prot['prototype_key'] = variable_name.lower()
+        prots.append((prot['prototype_key'], homogenize_prototype(prot)))
     # assign module path to each prototype_key for easy reference
     _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
     # make sure the prototype contains all meta info
