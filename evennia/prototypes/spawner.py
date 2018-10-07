@@ -714,8 +714,8 @@ def spawn(*prototypes, **kwargs):
 
         val = prot.pop("tags", [])
         tags = []
-        for (tag, category, data) in tags:
-            tags.append((init_spawn_value(val, str), category, data))
+        for (tag, category, data) in val:
+            tags.append((init_spawn_value(tag, str), category, data))
 
         prototype_key = prototype.get('prototype_key', None)
         if prototype_key:

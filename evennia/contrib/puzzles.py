@@ -79,11 +79,7 @@ from evennia import DefaultExit
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils.utils import inherits_from
 from evennia.utils import search, utils, logger
-from evennia.prototypes.spawner import (
-        spawn,
-        # prototype_from_object,
-        # prototype_diff
-)
+from evennia.prototypes.spawner import spawn
 
 # Tag used by puzzles
 _PUZZLES_TAG_CATEGORY = 'puzzles'
@@ -114,9 +110,6 @@ def proto_def(obj, with_tags=True):
         'permissions': obj.permissions.all()[:],
     }
     if with_tags:
-        # import ipdb
-        # ipdb.set_trace()
-        _tags = obj.tags.get(return_tagobj=True, return_list=True)
         tags = obj.tags.all(return_key_and_category=True)
         tags = [(t[0], t[1], None) for t in tags]
         tags.append((_PUZZLES_TAG_MEMBER, _PUZZLES_TAG_CATEGORY, None))
@@ -555,7 +548,10 @@ class CmdUsePuzzleParts(MuxCommand):
         puzzle_ingredients = dict()
         for part in parts:
             parts_dict[part.dbref] = part
-            puzzle_ingredients[part.dbref] = proto_def(part, with_tags=False)
+            protodef = proto_def(part, with_tags=False)
+            # remove 'prototype_key' as it will prevent equality
+            del(protodef['prototype_key'])
+            puzzle_ingredients[part.dbref] = protodef
             tags_categories = part.tags.all(return_key_and_category=True)
             for tag, category in tags_categories:
                 if category != _PUZZLES_TAG_CATEGORY:
@@ -585,9 +581,10 @@ class CmdUsePuzzleParts(MuxCommand):
         matched_puzzles = dict()
         for puzzle in puzzles:
             puzzle_protoparts = list(puzzle.db.parts[:])
-            # remove tags as they prevent equality
+            # remove tags and prototype_key as they prevent equality
             for puzzle_protopart in puzzle_protoparts:
                 del(puzzle_protopart['tags'])
+                del(puzzle_protopart['prototype_key'])
             matched_dbrefparts = []
             parts_dbrefs = puzzlename_tags_dict[puzzle.db.puzzle_name]
             for part_dbref in parts_dbrefs:
