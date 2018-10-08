@@ -1,3 +1,4 @@
+from django.contrib import messages
 from evennia.contrib.security.geoip import GeoIP
 from netaddr import IPAddress, IPNetwork
 
@@ -204,15 +205,20 @@ class ConnectionWrapper(object):
             
     def get_useragent(self):
         raise Exception("Method not implemented!")
+        
+    def msg(self):
+        raise Exception("Method not implemented!")
 
 class RequestWrapper(ConnectionWrapper):
     """
     Wrapper for Django HttpRequest objects.
     """
-    
     def get_account(self):
         # Get user object from request
-        return self.obj.user
+        if self.obj.user.is_authenticated():
+            return self.obj.user
+        else:
+            return None
     
     def get_ip(self):
         # Get IP from HttpRequest object
@@ -231,18 +237,24 @@ class RequestWrapper(ConnectionWrapper):
     def get_useragent(self):
         # Get useragent string from request
         return self.obj.META.get('HTTP_USER_AGENT', '')
+        
+    def msg(self, msg):
+        # Send message to browser using Messages framework
+        messages.info(self.obj, msg)
             
 class SessionWrapper(ConnectionWrapper):
     """
     Wrapper for Evennia Session objects.
     """
-    
     def get_account(self):
         # Get user/account id from session
         uid = self.obj.uid
         
         # Get account object
-        return AccountDB.objects.get_account_from_uid(uid)
+        if uid:
+            return AccountDB.objects.get_account_from_uid(uid)
+        else:
+            return None
     
     def get_ip(self):
         # Get IP from Session object
@@ -259,3 +271,7 @@ class SessionWrapper(ConnectionWrapper):
     def get_useragent(self):
         # Get client string from session
         return self.obj.protocol_flags.get('CLIENT_NAME', '')
+        
+    def msg(self, msg):
+        # Send message to browser using terminal
+        self.obj.msg(msg)
