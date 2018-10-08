@@ -475,14 +475,14 @@ class CmdShiftRoot(Command):
                     root_pos["blue"] -= 1
                     self.caller.msg("The root with blue flowers gets in the way and is pushed to the left.")
             else:
-                self.caller.msg("You cannot move the root in that direction.")
+                self.caller.msg("The root hangs straight down - you can only move it left or right.")
         elif color == "blue":
             if direction == "left":
                 root_pos[color] = max(-1, root_pos[color] - 1)
                 self.caller.msg("You shift the root with small blue flowers to the left.")
                 if root_pos[color] != 0 and root_pos[color] == root_pos["red"]:
                     root_pos["red"] += 1
-                    self.caller.msg("The reddish root is to big to fit as well, so that one falls away to the left.")
+                    self.caller.msg("The reddish root is too big to fit as well, so that one falls away to the left.")
             elif direction == "right":
                 root_pos[color] = min(1, root_pos[color] + 1)
                 self.caller.msg("You shove the root adorned with small blue flowers to the right.")
@@ -490,7 +490,7 @@ class CmdShiftRoot(Command):
                     root_pos["red"] -= 1
                     self.caller.msg("The thick reddish root gets in the way and is pushed back to the left.")
             else:
-                self.caller.msg("You cannot move the root in that direction.")
+                self.caller.msg("The root hangs straight down - you can only move it left or right.")
 
         # now the horizontal roots (yellow/green). They can be moved up/down
         elif color == "yellow":
@@ -507,7 +507,7 @@ class CmdShiftRoot(Command):
                     root_pos["green"] -= 1
                     self.caller.msg("The weedy green root is shifted upwards to make room.")
             else:
-                self.caller.msg("You cannot move the root in that direction.")
+                self.caller.msg("The root hangs across the wall - you can only move it up or down.")
         elif color == "green":
             if direction == "up":
                 root_pos[color] = max(-1, root_pos[color] - 1)
@@ -522,7 +522,7 @@ class CmdShiftRoot(Command):
                     root_pos["yellow"] -= 1
                     self.caller.msg("The root with yellow flowers gets in the way and is pushed upwards.")
             else:
-                self.caller.msg("You cannot move the root in that direction.")
+                self.caller.msg("The root hangs across the wall - you can only move it up or down.")
 
         # we have moved the root. Store new position
         self.obj.db.root_pos = root_pos
