@@ -25,7 +25,7 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
-from evennia.utils import create, logger
+from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, to_unicode, is_iter,
                                  variable_from_module)
@@ -782,33 +782,20 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 errors.append(string)
                 logger.log_err(string)
             
-            if account:
-                if settings.MULTISESSION_MODE < 2:
-                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-                    
-                    try:
-                        character = create.create_object(character_typeclass, key=account.key, home=default_home, permissions=permissions)
-                        
-                        # set playable character list
-                        account.db._playable_characters.append(character)
+            if account and settings.MULTISESSION_MODE < 2:
+                # Load the appropriate Character class
+                Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
                 
-                        # allow only the character itself and the account to puppet this character (and Developers).
-                        character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
-                                                (character.id, account.id))
+                # Create the character
+                character, errs = Character.create(account.key, account, ip=ip)
+                errors.extend(errs)
                 
-                        # If no description is set, set a default description
-                        if not character.db.desc:
-                            character.db.desc = "This is a character."
-                        # We need to set this to have @ic auto-connect to this character
-                        account.db._last_puppet = character
-                        
-                        # Record creator id and creation IP
-                        if ip: character.db.creator_ip = ip
-                        character.db.creator_id = account.id
-                        
-                    except Exception as e:
-                        errors.append("There was an error creating a Character. If this problem persists, contact an admin.")
-                        logger.log_trace()
+                if character:
+                    # Update playable character list
+                    account.db._playable_characters.append(character)
+            
+                    # We need to set this to have @ic auto-connect to this character
+                    account.db._last_puppet = character
 
         except Exception:
             # We are in the middle between logged in and -not, so we have
