@@ -21,6 +21,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
+from evennia.utils import create
 from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils import ansi
@@ -429,7 +430,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
             exact = True
-        elif candidates is None:
+        else:
+            # TODO: write code...if candidates is None:
             # no custom candidates given - get them automatically
             if location:
                 # location(s) were given
@@ -872,7 +874,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         
         Args:
             key (str): Name of the new object.
-            account (Account): Account to attribute this object to
+            account (Account): Account to attribute this object to.
             
         Kwargs:
             description (str): Brief description for this object.
@@ -887,13 +889,16 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         obj = None
         
         # Get IP address of creator, if available
-        ip = kwargs.pop('ip')
+        ip = kwargs.pop('ip', '')
         
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
         
         # Set the supplied key as the name of the intended object
         kwargs['key'] = key
+        
+        # Get a supplied description, if any
+        description = kwargs.pop('description', '')
         
         # Create a sane lockstring if one wasn't supplied
         lockstring = kwargs.get('locks')
@@ -907,16 +912,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
-            if caller: obj.db.creator_id = account.id
+            if account: obj.db.creator_id = account.id
             
             # Set description if there is none, or update it if provided
-            if kwargs.get('description') or not obj.db.desc:
-                desc = kwargs.get('description', "You see nothing special.")
+            if description or not obj.db.desc:
+                desc = description if description else "You see nothing special."
                 obj.db.desc = desc
                 
         except Exception as e:
-            errors.append("There was an error creating the Object '%s'. If this problem persists, contact an admin." % key)
-            logger.log_trace()
+            errors.append(str(e))
                    
         return obj, errors
 
@@ -1914,7 +1918,7 @@ class DefaultCharacter(DefaultObject):
         obj = None
         
         # Get IP address of creator, if available
-        ip = kwargs.pop('ip')
+        ip = kwargs.pop('ip', '')
         
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
@@ -1928,6 +1932,12 @@ class DefaultCharacter(DefaultObject):
         # Get permissions
         kwargs['permissions'] = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
         
+        # Get description if provided
+        description = kwargs.pop('description', '')
+        
+        # Get locks if provided
+        locks = kwargs.pop('locks', '')
+        
         try:
             # Create the Character
             obj = create.create_object(**kwargs)
@@ -1937,7 +1947,6 @@ class DefaultCharacter(DefaultObject):
             if account: obj.db.creator_id = account.id
             
             # Add locks
-            locks = kwargs.pop('locks')
             if not locks and account:
                 # Allow only the character itself and the creator account to puppet this character (and Developers).
                 locks = cls.lockstring.format(**{'character_id': obj.id, 'account_id': account.id})
@@ -1947,12 +1956,11 @@ class DefaultCharacter(DefaultObject):
             obj.locks.add(locks)
 
             # If no description is set, set a default description
-            if kwargs.get('description') or not obj.db.desc:
-                obj.db.desc = kwargs.get('description', "This is a character.")
+            if description or not obj.db.desc:
+                obj.db.desc = description if description else "This is a character."
                 
         except Exception as e:
-            errors.append("There was an error creating a Character. If this problem persists, contact an admin.")
-            logger.log_trace()
+            errors.append(str(e))
             
         return obj, errors
         
@@ -2103,7 +2111,7 @@ class DefaultRoom(DefaultObject):
         obj = None
         
         # Get IP address of creator, if available
-        ip = kwargs.pop('ip')
+        ip = kwargs.pop('ip', '')
         
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
@@ -2113,6 +2121,9 @@ class DefaultRoom(DefaultObject):
         
         # Get who to send errors to
         kwargs['report_to'] = kwargs.pop('report_to', account)
+        
+        # Get description, if provided
+        description = kwargs.pop('description', '')
         
         try:
             # Create the Room
@@ -2127,12 +2138,11 @@ class DefaultRoom(DefaultObject):
             if account: obj.db.creator_id = account.id
             
             # If no description is set, set a default description
-            if kwargs.get('description') or not obj.db.desc:
-                obj.db.desc = kwargs.get('description', "This is a room.")
+            if description or not obj.db.desc:
+                obj.db.desc = description if description else "This is a room."
                 
         except Exception as e:
-            errors.append("There was an error creating a Room. If this problem persists, contact an admin.")
-            logger.log_trace()
+            errors.append(str(e))
             
         return obj, errors
 
@@ -2259,7 +2269,7 @@ class DefaultExit(DefaultObject):
     # Command hooks
     
     @classmethod
-    def create(cls, key, source, dest, account, **kwargs):
+    def create(cls, key, account, source, dest, **kwargs):
         """
         Creates a basic Exit with default parameters, unless otherwise
         specified or extended.
@@ -2269,9 +2279,9 @@ class DefaultExit(DefaultObject):
         Args:
             key (str): Name of the new Exit, as it should appear from the
                 source room.
+            account (obj): Account to associate this Exit with.
             source (Room): The room to create this exit in.
             dest (Room): The room to which this exit should go.
-            account (obj): Account to associate this Exit with.
             
         Kwargs:
             description (str): Brief description for this object.
@@ -2286,7 +2296,7 @@ class DefaultExit(DefaultObject):
         obj = None
         
         # Get IP address of creator, if available
-        ip = kwargs.pop('ip')
+        ip = kwargs.pop('ip', '')
         
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
@@ -2301,6 +2311,8 @@ class DefaultExit(DefaultObject):
         kwargs['location'] = source
         kwargs['destination'] = dest
         
+        description = kwargs.pop('description', '')
+        
         try:
             # Create the Exit
             obj = create.create_object(**kwargs)
@@ -2314,12 +2326,11 @@ class DefaultExit(DefaultObject):
             if account: obj.db.creator_id = account.id
             
             # If no description is set, set a default description
-            if kwargs.get('description') or not obj.db.desc:
-                obj.db.desc = kwargs.get('description', "This is an exit.")
+            if description or not obj.db.desc:
+                obj.db.desc = description if description else "This is an exit."
                 
         except Exception as e:
-            errors.append("There was an error creating an Exit. If this problem persists, contact an admin.")
-            logger.log_trace()
+            errors.append(str(e))
             
         return obj, errors
 
