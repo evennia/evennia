@@ -857,6 +857,75 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                     string = "This place should not exist ... contact an admin."
                     obj.msg(_(string))
             obj.move_to(home)
+            
+    @classmethod
+    def create(cls, key, **kwargs):
+        """
+        Creates a basic object with default parameters, unless otherwise
+        specified or extended.
+        
+        Provides a friendlier interface to the utils.create_object() function.
+        
+        Args:
+            key (str): Name of the new object.
+            
+        Kwargs:
+            caller (Object): Intended owner (read: 'caller') of object.
+            description (str): Brief description of this object.
+            home (Object or str): Obj or #dbref to use as the object's
+                home location.
+            permissions (list): A list of permission strings or tuples (permstring, category).
+            locks (str): one or more lockstrings, separated by semicolons.
+            aliases (list): A list of alternative keys or tuples (aliasstring, category).
+            tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).
+            destination (Object or str): Obj or #dbref to use as an Exit's
+                target.
+            report_to (Object): The object to return error messages to.
+            nohome (bool): This allows the creation of objects without a
+                default home location; only used when creating the default
+                location itself or during unittests.
+            attributes (list): Tuples on the form (key, value) or (key, value, category),
+               (key, value, lockstring) or (key, value, lockstring, default_access).
+                to set as Attributes on the new object.
+            nattributes (list): Non-persistent tuples on the form (key, value). Note that
+                adding this rarely makes sense since this data will not survive a reload.
+            typeclass (class or str): Class or python path to a typeclass.
+        
+        Returns:
+            object (Object): A newly created object of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+        
+        """
+        errors = []
+        caller = kwargs.get('caller')
+        
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+        
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+        
+        # Create a sane lockstring if one wasn't supplied
+        lockstring = kwargs.get('locks')
+        if caller and not lockstring:
+            lock_template = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
+            lockstring = lock_template.format(id=caller.id)
+            kwargs['locks'] = lockstring
+            
+        # Create object
+        try:
+            obj = create.create_object(**kwargs)
+        except Exception as e:
+            errors.append("Object '%s' could not be created." % key)
+            logger.log_trace()
+            return None, errors
+                       
+        # Set description if there is none, or update it if provided
+        if kwargs.get('description') or not obj.db.desc:
+            desc = kwargs.get('description', "You see nothing special.")
+            obj.db.desc = desc
+            
+        return obj, errors
 
     def copy(self, new_key=None):
         """
