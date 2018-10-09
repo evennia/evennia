@@ -191,6 +191,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     without `obj.save()` having to be called explicitly.
 
     """
+    # lockstring of newly created objects, for easy overloading.
+    # Will be formatted with the appropriate attributes.
+    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
+    
     objects = ObjectManager()
 
     # on-object properties
@@ -859,7 +863,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             obj.move_to(home)
             
     @classmethod
-    def create(cls, key, **kwargs):
+    def create(cls, key, account=None, **kwargs):
         """
         Creates a basic object with default parameters, unless otherwise
         specified or extended.
@@ -868,28 +872,11 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         
         Args:
             key (str): Name of the new object.
+            account (Account): Account to attribute this object to
             
         Kwargs:
-            caller (Object): Intended owner (read: 'caller') of object.
-            description (str): Brief description of this object.
-            home (Object or str): Obj or #dbref to use as the object's
-                home location.
-            permissions (list): A list of permission strings or tuples (permstring, category).
-            locks (str): one or more lockstrings, separated by semicolons.
-            aliases (list): A list of alternative keys or tuples (aliasstring, category).
-            tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).
-            destination (Object or str): Obj or #dbref to use as an Exit's
-                target.
-            report_to (Object): The object to return error messages to.
-            nohome (bool): This allows the creation of objects without a
-                default home location; only used when creating the default
-                location itself or during unittests.
-            attributes (list): Tuples on the form (key, value) or (key, value, category),
-               (key, value, lockstring) or (key, value, lockstring, default_access).
-                to set as Attributes on the new object.
-            nattributes (list): Non-persistent tuples on the form (key, value). Note that
-                adding this rarely makes sense since this data will not survive a reload.
-            typeclass (class or str): Class or python path to a typeclass.
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
         
         Returns:
             object (Object): A newly created object of the given typeclass.
@@ -897,7 +884,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         
         """
         errors = []
-        caller = kwargs.get('caller')
+        obj = None
+        
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip')
         
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
@@ -907,24 +897,27 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         
         # Create a sane lockstring if one wasn't supplied
         lockstring = kwargs.get('locks')
-        if caller and not lockstring:
-            lock_template = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
-            lockstring = lock_template.format(id=caller.id)
+        if account and not lockstring:
+            lockstring = cls.lockstring.format(account_id=account.id)
             kwargs['locks'] = lockstring
             
         # Create object
         try:
             obj = create.create_object(**kwargs)
-        except Exception as e:
-            errors.append("Object '%s' could not be created." % key)
-            logger.log_trace()
-            return None, errors
-                       
-        # Set description if there is none, or update it if provided
-        if kwargs.get('description') or not obj.db.desc:
-            desc = kwargs.get('description', "You see nothing special.")
-            obj.db.desc = desc
             
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if caller: obj.db.creator_id = account.id
+            
+            # Set description if there is none, or update it if provided
+            if kwargs.get('description') or not obj.db.desc:
+                desc = kwargs.get('description', "You see nothing special.")
+                obj.db.desc = desc
+                
+        except Exception as e:
+            errors.append("There was an error creating the Object '%s'. If this problem persists, contact an admin." % key)
+            logger.log_trace()
+                   
         return obj, errors
 
     def copy(self, new_key=None):
@@ -1890,7 +1883,79 @@ class DefaultCharacter(DefaultObject):
     a character avatar controlled by an account.
 
     """
+    # lockstring of newly created rooms, for easy overloading.
+    # Will be formatted with the appropriate attributes.
+    lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer)"
+    
+    @classmethod
+    def create(cls, key, account, **kwargs):
+        """
+        Creates a basic Character with default parameters, unless otherwise
+        specified or extended.
+        
+        Provides a friendlier interface to the utils.create_character() function.
+        
+        Args:
+            key (str): Name of the new Character.
+            account (obj): Account to associate this Character with. Required as
+                an argument, but one can fake it out by supplying None-- it will
+                change the default lockset and skip creator attribution.
+                
+        Kwargs:
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
+        
+        Returns:
+            character (Object): A newly created Character of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+        
+        """
+        errors = []
+        obj = None
+        
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip')
+        
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+        
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+        
+        # Get home for character
+        kwargs['home'] = ObjectDB.objects.get_id(kwargs.get('home', settings.DEFAULT_HOME))
+        
+        # Get permissions
+        kwargs['permissions'] = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
+        
+        try:
+            # Create the Character
+            obj = create.create_object(**kwargs)
+            
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+            
+            # Add locks
+            locks = kwargs.pop('locks')
+            if not locks and account:
+                # Allow only the character itself and the creator account to puppet this character (and Developers).
+                locks = cls.lockstring.format(**{'character_id': obj.id, 'account_id': account.id})
+            elif not locks and not account:
+                locks = cls.lockstring.format(**{'character_id': obj.id, 'account_id': -1})
+                    
+            obj.locks.add(locks)
 
+            # If no description is set, set a default description
+            if kwargs.get('description') or not obj.db.desc:
+                obj.db.desc = kwargs.get('description', "This is a character.")
+                
+        except Exception as e:
+            errors.append("There was an error creating a Character. If this problem persists, contact an admin.")
+            logger.log_trace()
+            
+        return obj, errors
+        
     def basetype_setup(self):
         """
         Setup character-specific security.
@@ -2007,6 +2072,69 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
+    # lockstring of newly created rooms, for easy overloading.
+    # Will be formatted with the {id} of the creating object.
+    lockstring = "control:id({id}) or perm(Admin); " \
+                 "delete:id({id}) or perm(Admin); " \
+                 "edit:id({id}) or perm(Admin)"
+
+    @classmethod
+    def create(cls, key, account, **kwargs):
+        """
+        Creates a basic Room with default parameters, unless otherwise
+        specified or extended.
+        
+        Provides a friendlier interface to the utils.create_object() function.
+        
+        Args:
+            key (str): Name of the new Room.
+            account (obj): Account to associate this Room with.
+            
+        Kwargs:
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
+        
+        Returns:
+            room (Object): A newly created Room of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+        
+        """
+        errors = []
+        obj = None
+        
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip')
+        
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+        
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+        
+        # Get who to send errors to
+        kwargs['report_to'] = kwargs.pop('report_to', account)
+        
+        try:
+            # Create the Room
+            obj = create.create_object(**kwargs)
+            
+            # Set appropriate locks
+            lockstring = kwargs.get('locks', cls.lockstring.format(id=account.id))
+            obj.locks.add(lockstring)
+            
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+            
+            # If no description is set, set a default description
+            if kwargs.get('description') or not obj.db.desc:
+                obj.db.desc = kwargs.get('description', "This is a room.")
+                
+        except Exception as e:
+            errors.append("There was an error creating a Room. If this problem persists, contact an admin.")
+            logger.log_trace()
+            
+        return obj, errors
 
     def basetype_setup(self):
         """
@@ -2085,6 +2213,13 @@ class DefaultExit(DefaultObject):
 
     exit_command = ExitCommand
     priority = 101
+    
+    # lockstring of newly created exits, for easy overloading.
+    # Will be formatted with the {id} of the creating object.
+    lockstring = "control:id({id}) or perm(Admin); " \
+                 "delete:id({id}) or perm(Admin); " \
+                 "edit:id({id}) or perm(Admin)"
+    
     # Helper classes and methods to implement the Exit. These need not
     # be overloaded unless one want to change the foundation for how
     # Exits work. See the end of the class for hook methods to overload.
@@ -2122,6 +2257,71 @@ class DefaultExit(DefaultObject):
         return exit_cmdset
 
     # Command hooks
+    
+    @classmethod
+    def create(cls, key, source, dest, account, **kwargs):
+        """
+        Creates a basic Exit with default parameters, unless otherwise
+        specified or extended.
+        
+        Provides a friendlier interface to the utils.create_object() function.
+        
+        Args:
+            key (str): Name of the new Exit, as it should appear from the
+                source room.
+            source (Room): The room to create this exit in.
+            dest (Room): The room to which this exit should go.
+            account (obj): Account to associate this Exit with.
+            
+        Kwargs:
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
+        
+        Returns:
+            exit (Object): A newly created Room of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+        
+        """
+        errors = []
+        obj = None
+        
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip')
+        
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+        
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+        
+        # Get who to send errors to
+        kwargs['report_to'] = kwargs.pop('report_to', account)
+        
+        # Set to/from rooms
+        kwargs['location'] = source
+        kwargs['destination'] = dest
+        
+        try:
+            # Create the Exit
+            obj = create.create_object(**kwargs)
+            
+            # Set appropriate locks
+            lockstring = kwargs.get('locks', cls.lockstring.format(id=account.id))
+            obj.locks.add(lockstring)
+            
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+            
+            # If no description is set, set a default description
+            if kwargs.get('description') or not obj.db.desc:
+                obj.db.desc = kwargs.get('description', "This is an exit.")
+                
+        except Exception as e:
+            errors.append("There was an error creating an Exit. If this problem persists, contact an admin.")
+            logger.log_trace()
+            
+        return obj, errors
 
     def basetype_setup(self):
         """
