@@ -688,9 +688,9 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @classmethod
     def create(cls, *args, **kwargs):
         """
-        Creates an Account (or Account/Character pair for MM<2) with default
-        (or overridden) permissions and having joined them to the appropriate
-        default channels.
+        Creates an Account (or Account/Character pair for MULTISESSION_MODE<2) 
+        with default (or overridden) permissions and having joined them to the 
+        appropriate default channels.
         
         Kwargs:
             username (str): Username of Account owner
