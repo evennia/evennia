@@ -23,7 +23,7 @@ from builtins import range
 import time
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
-from evennia.utils import utils, create, search, evtable
+from evennia.utils import utils, create, logger, search, evtable
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -171,6 +171,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             new_character.db.desc = "This is a character."
         self.msg("Created new character %s. Use |w@ic %s|n to enter the game as this character."
                  % (new_character.key, new_character.key))
+        logger.log_sec('Character Created: %s (Caller: %s, IP: %s).' % (new_character, account, self.session.address))
 
 
 class CmdCharDelete(COMMAND_DEFAULT_CLASS):
@@ -214,6 +215,7 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                     caller.db._playable_characters = [pc for pc in caller.db._playable_characters if pc != delobj]
                     delobj.delete()
                     self.msg("Character '%s' was permanently deleted." % key)
+                    logger.log_sec('Character Deleted: %s (Caller: %s, IP: %s).' % (key, account, self.session.address))
                 else:
                     self.msg("Deletion was aborted.")
                 del caller.ndb._char_to_delete
@@ -279,8 +281,10 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
         try:
             account.puppet_object(session, new_character)
             account.db._last_puppet = new_character
+            logger.log_sec('Puppet Success: (Caller: %s, Target: %s, IP: %s).' % (account, new_character, self.session.address))
         except RuntimeError as exc:
             self.msg("|rYou cannot become |C%s|n: %s" % (new_character.name, exc))
+            logger.log_sec('Puppet Failed: %s (Caller: %s, Target: %s, IP: %s).' % (exc, account, new_character, self.session.address))
 
 
 # note that this is inheriting from MuxAccountLookCommand,
@@ -641,6 +645,7 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
             account.set_password(newpass)
             account.save()
             self.msg("Password changed.")
+            logger.log_sec('Password Changed: %s (Caller: %s, IP: %s).' % (account, account, self.session.address))
 
 
 class CmdQuit(COMMAND_DEFAULT_CLASS):
