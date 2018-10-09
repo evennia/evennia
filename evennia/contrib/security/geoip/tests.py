@@ -1,7 +1,7 @@
 from evennia.contrib.security.geoip import GeoIP
 from evennia.utils.test_resources import EvenniaTest
 
-class TestGeoIP(EvenniaTest):
+class GeoIPTest(EvenniaTest):
     
     ip = '162.251.81.235'
     
@@ -10,10 +10,10 @@ class TestGeoIP(EvenniaTest):
         g = GeoIP()
         
         country = g.country(self.ip)
-        self.assertTrue(country, 'Country lookup for %s returned %s.' % (self.ip, country))
+        self.assertTrue(country, 'Country lookup for %s returned "%s".' % (self.ip, country))
         
         city = g.city(self.ip)
-        self.assertTrue(city, 'City lookup for %s returned %s.' % (self.ip, city))
+        self.assertTrue(city, 'City lookup for %s returned "%s".' % (self.ip, city))
         
         isp = g.isp(self.ip)
-        self.assertTrue(isp, 'ISP lookup for %s returned %s.' % (self.ip, isp))
+        self.assertTrue(isp, 'ISP lookup for %s returned "%s".' % (self.ip, isp))

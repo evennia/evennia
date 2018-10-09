@@ -1,6 +1,7 @@
 from django.conf import settings
-from django.contrib.gis.geoip2 import GeoIP2 as DjangoGeoIP2
+from django.contrib.gis.geoip2 import GeoIP2 as DjangoGeoIP2, GeoIP2Exception
 from django.core.validators import validate_ipv46_address
+from evennia.utils import logger
 
 from pathlib import Path
 
@@ -100,6 +101,38 @@ class GeoIP(DjangoGeoIP2):
         
     def asn(self, query):
         return self.isp(query)
+        
+    def cidr(self, query):
+        """
+        Return a dictionary with a single key:value pair indicating the IP's
+        CIDR block.
+        """
+        try:
+            validate_ipv46_address(query)
+        except ValidationError:
+            query = socket.gethostbyname(query)
+        
+        try:
+            response = {'cidr': self._cidr.lookup(str(query))[1]}
+        except AttributeError:
+            logger.log_err('GeoIP: CIDR data requested, but no database was configured.')
+            return {}
+        
+        return response
+        
+    def country(self, query):
+        try:
+            return super(GeoIP, self).country(query)
+        except GeoIP2Exception as e:
+            logger.log_err('GeoIP: %s' % e)
+            return {}
+            
+    def city(self, query):
+        try:
+            return super(GeoIP, self).city(query)
+        except GeoIP2Exception as e:
+            logger.log_err('GeoIP: %s' % e)
+            return {}
             
     def isp(self, query):
         """
@@ -112,9 +145,13 @@ class GeoIP(DjangoGeoIP2):
         except ValidationError:
             query = socket.gethostbyname(query)
         
-        response = self._asn.asn(query)
+        try:
+            response = self._asn.asn(query)
+        except AttributeError:
+            logger.log_err('GeoIP: ASN/ISP data requested, but no database was configured.')
+            return {}
         
         # Re-add CIDR data to MaxMind's output
-        response.network = self._cidr.lookup(str(query))[1]
+        response.network = self.cidr(query).get('cidr', '')
         
         return ISP(response)
