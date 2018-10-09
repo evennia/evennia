@@ -1,14 +1,27 @@
+from django.conf import settings
 from django.contrib import messages
-from evennia.contrib.security.geoip import GeoIP
+from evennia.utils import class_from_module, logger
 from netaddr import IPAddress, IPNetwork
 
-GEO_DB = GeoIP()
+GEOIP_CLASS = class_from_module(getattr(settings, 'GEOIP_CLASS', 'django.contrib.gis.geoip2.GeoIP2'))
+GEOIP_PATH = getattr(settings, 'GEOIP_PATH', settings.GAME_DIR)
+try:
+    GEO_DB = GEOIP_CLASS(path=GEOIP_PATH)
+except:
+    GEO_DB = None
 
 class ConnectionWrapper(object):
     """
     Wraps an object representing some sort of network connection and maps its
     properties to a set of well-known artifacts.
     """
+    @property
+    def account(self):
+        """
+        Returns the account associated with the connection, if authenticated.
+        """
+        return self.get_account()
+    
     @property
     def asn(self):
         """
@@ -19,7 +32,7 @@ class ConnectionWrapper(object):
                 inconsistencies.
                 
         """
-        return str(self.geoip.get('asn'))
+        return str(self._geoip.get('asn', ''))
         
     @property
     def asn_org(self):
@@ -31,7 +44,7 @@ class ConnectionWrapper(object):
             org (str): Organization name.
             
         """
-        return str(self.geoip.get('autonomous_system_organization'))
+        return str(self._geoip.get('autonomous_system_organization', ''))
         
     @property
     def cidr(self):
@@ -43,7 +56,7 @@ class ConnectionWrapper(object):
         they're using in CIDR notation.
         
         The advantage to this is that you can more accurately target bans; no
-        more assuming every subnet is a /24 or banning an entire country by
+        more assuming every subnet is a /24 or trying to ban a country by
         targeting an entire class A.
         
         Returns:
@@ -52,7 +65,7 @@ class ConnectionWrapper(object):
         """
         # If no CIDR was found, return the smallest 
         # possible subnet (ipv4 = */32)
-        return self.geoip.get('cidr', str(IPNetwork(self.ip).cidr))
+        return self._geoip.get('cidr', str(IPNetwork(self.ip).cidr))
         
     @property
     def client(self):
@@ -89,7 +102,7 @@ class ConnectionWrapper(object):
             customer (str): Name of organization.
         
         """
-        return self.geoip.get('organization')
+        return self._geoip.get('organization', '')
     
     @property
     def ip(self):
@@ -100,7 +113,7 @@ class ConnectionWrapper(object):
             ip (str): IP address.
         
         """
-        return self.geoip.get('ip')
+        return self.get_ip()
     
     @property
     def iso(self):
@@ -111,7 +124,7 @@ class ConnectionWrapper(object):
             iso (str): 2-letter country ISO code.
         
         """
-        return self.geoip.get('country_code', '??')
+        return self._geoip.get('country_code', '')
     
     @property
     def isp(self):
@@ -124,8 +137,8 @@ class ConnectionWrapper(object):
                 the autonomous system organization.
                 
         """
-        values = (self.geoip.get(x) for x in ('isp', 'organization', 'autonomous_system_organization'))
-        return next((x for x in values if x), None)
+        values = (self._geoip.get(x) for x in ('isp', 'organization', 'autonomous_system_organization'))
+        return next((x for x in values if x), '')
     
     @property
     def protocol(self):
@@ -171,13 +184,15 @@ class ConnectionWrapper(object):
         
         template = {}
         template['ip'] = ip = self.get_ip()
+        ip_obj = IPAddress(ip)
         
         # Look up as much geodata as available, cache it locally
-        for artifact in ('country', 'city', 'isp'):
-            try: template.update(getattr(GEO_DB, artifact)(ip))
-            except: pass
+        if GEO_DB and not ip_obj.is_private() and not ip_obj.is_loopback():
+            for artifact in ('country', 'city', 'isp'):
+                try: template.update(getattr(GEO_DB, artifact)(ip))
+                except: pass
         
-        self.geoip = template
+        self._geoip = template
         
     def __str__(self):
         return str(self.obj)
