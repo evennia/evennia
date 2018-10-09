@@ -9,7 +9,7 @@ import re
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
 from evennia.server.models import ServerConfig
-from evennia.utils import evtable, search, class_from_module
+from evennia.utils import evtable, logger, search, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -95,6 +95,9 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
         for session in boot_list:
             session.msg(feedback)
             session.account.disconnect_session_from_account(session)
+
+        if pobj and boot_list:
+            logger.log_sec('Booted: %s (Reason: %s, Caller: %s, IP: %s).' % (pobj, reason, caller, self.session.address))
 
 
 # regex matching IP addresses with wildcards, eg. 233.122.4.*
@@ -203,6 +206,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
         banlist.append(bantup)
         ServerConfig.objects.conf('server_bans', banlist)
         self.caller.msg("%s-Ban |w%s|n was added." % (typ, ban))
+        logger.log_sec('Banned %s: %s (Caller: %s, IP: %s).' % (typ, ban.strip(), self.caller, self.session.address))
 
 
 class CmdUnban(COMMAND_DEFAULT_CLASS):
@@ -246,8 +250,10 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
             ban = banlist[num - 1]
             del banlist[num - 1]
             ServerConfig.objects.conf('server_bans', banlist)
+            value = " ".join([s for s in ban[:2]])
             self.caller.msg("Cleared ban %s: %s" %
-                            (num, " ".join([s for s in ban[:2]])))
+                            (num, value))
+            logger.log_sec('Unbanned: %s (Caller: %s, IP: %s).' % (value.strip(), self.caller, self.session.address))
 
 
 class CmdDelAccount(COMMAND_DEFAULT_CLASS):
@@ -317,6 +323,7 @@ class CmdDelAccount(COMMAND_DEFAULT_CLASS):
         if reason:
             string += " Reason given:\n  '%s'" % reason
         account.msg(string)
+        logger.log_sec('Account Deleted: %s (Reason: %s, Caller: %s, IP: %s).' % (account, reason, caller, self.session.address))
         account.delete()
         self.msg("Account %s was successfully deleted." % uname)
 
@@ -428,9 +435,9 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
         account = caller.search_account(self.lhs)
         if not account:
             return
-        
+
         newpass = self.rhs
-        
+
         # Validate password
         validated, error = account.validate_password(newpass)
         if not validated:
@@ -438,13 +445,14 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
             string = "\n".join(errors)
             caller.msg(string)
             return
-        
+
         account.set_password(newpass)
         account.save()
         self.msg("%s - new password set to '%s'." % (account.name, newpass))
         if account.character != caller:
             account.msg("%s has changed your password to '%s'." % (caller.name,
                                                                    newpass))
+        logger.log_sec('Password Changed: %s (Caller: %s, IP: %s).' % (account, caller, self.session.address))
 
 
 class CmdPerm(COMMAND_DEFAULT_CLASS):
@@ -526,6 +534,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 else:
                     caller_result.append("\nPermission %s removed from %s (if they existed)." % (perm, obj.name))
                     target_result.append("\n%s revokes the permission(s) %s from you." % (caller.name, perm))
+                    logger.log_sec('Permissions Deleted: %s, %s (Caller: %s, IP: %s).' % (perm, obj, caller, self.session.address))
         else:
             # add a new permission
             permissions = obj.permissions.all()
@@ -547,6 +556,8 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                     caller_result.append("\nPermission '%s' given to %s (%s)." % (perm, obj.name, plystring))
                     target_result.append("\n%s gives you (%s, %s) the permission '%s'."
                                          % (caller.name, obj.name, plystring, perm))
+                    logger.log_sec('Permissions Added: %s, %s (Caller: %s, IP: %s).' % (obj, perm, caller, self.session.address))
+
         caller.msg("".join(caller_result).strip())
         if target_result:
             obj.msg("".join(target_result).strip())

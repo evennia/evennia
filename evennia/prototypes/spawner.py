@@ -259,11 +259,11 @@ def prototype_from_object(obj):
     if aliases:
         prot['aliases'] = aliases
     tags = [(tag.db_key, tag.db_category, tag.db_data)
-            for tag in obj.tags.get(return_tagobj=True, return_list=True) if tag]
+            for tag in obj.tags.all(return_objs=True)]
     if tags:
         prot['tags'] = tags
     attrs = [(attr.key, attr.value, attr.category, ';'.join(attr.locks.all()))
-             for attr in obj.attributes.get(return_obj=True, return_list=True) if attr]
+             for attr in obj.attributes.all()]
     if attrs:
         prot['attrs'] = attrs
 
@@ -659,6 +659,10 @@ def spawn(*prototypes, **kwargs):
     # get available protparents
     protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
 
+    if not kwargs.get("only_validate"):
+        # homogenization to be more lenient about prototype format when entering the prototype manually
+        prototypes = [protlib.homogenize_prototype(prot) for prot in prototypes]
+
     # overload module's protparents with specifically given protparents
     # we allow prototype_key to be the key of the protparent dict, to allow for module-level
     # prototype imports. We need to insert prototype_key in this case
@@ -711,7 +715,7 @@ def spawn(*prototypes, **kwargs):
 
         val = prot.pop("tags", [])
         tags = []
-        for (tag, category, data) in tags:
+        for (tag, category, data) in val:
             tags.append((init_spawn_value(val, str), category, data))
 
         prototype_key = prototype.get('prototype_key', None)
@@ -730,7 +734,7 @@ def spawn(*prototypes, **kwargs):
         val = make_iter(prot.pop("attrs", []))
         attributes = []
         for (attrname, value, category, locks) in val:
-            attributes.append((attrname, init_spawn_value(val), category, locks))
+            attributes.append((attrname, init_spawn_value(value), category, locks))
 
         simple_attributes = []
         for key, value in ((key, value) for key, value in prot.items()
