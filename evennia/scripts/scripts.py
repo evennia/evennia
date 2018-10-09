@@ -12,7 +12,7 @@ from django.utils.translation import ugettext as _
 from evennia.typeclasses.models import TypeclassBase
 from evennia.scripts.models import ScriptDB
 from evennia.scripts.manager import ScriptManager
-from evennia.utils import logger
+from evennia.utils import create, logger
 from future.utils import with_metaclass
 
 __all__ = ["DefaultScript", "DoNothing", "Store"]
@@ -323,6 +323,32 @@ class DefaultScript(ScriptBase):
     or describe a state that changes under certain conditions.
 
     """
+    
+    @classmethod
+    def create(cls, key, **kwargs):
+        """
+        Provides a passthrough interface to the utils.create_script() function.
+        
+        Args:
+            key (str): Name of the new object.
+        
+        Returns:
+            object (Object): A newly created object of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+        
+        """
+        errors = []
+        obj = None
+        
+        kwargs['key'] = key
+        
+        try:
+            obj = create.create_script(**kwargs)
+        except Exception as e:
+            errors.append("The script '%s' encountered errors and could not be created." % key)
+            logger.log_err(e)
+            
+        return obj, errors
 
     def at_script_creation(self):
         """
