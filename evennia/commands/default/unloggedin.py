@@ -109,9 +109,6 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         session = self.caller
         address = session.address
         
-        # Get account class
-        Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
-
         args = self.args
         # extract double quote parts
         parts = [part.strip() for part in re.split(r"\"", args) if part.strip()]
@@ -121,7 +118,10 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
             
             # Guest login
             if len(parts) == 1 and parts[0].lower() == "guest":
-                account, errors = Account.authenticate_guest(ip=address)
+                # Get Guest typeclass
+                Guest = class_from_module(settings.BASE_GUEST_TYPECLASS)
+                
+                account, errors = Guest.authenticate(ip=address)
                 if account:
                     session.sessionhandler.login(session, account)
                     return
@@ -133,6 +133,9 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
             session.msg("\n\r Usage (without <>): connect <name> <password>")
             return
 
+        # Get account class
+        Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+        
         name, password = parts
         account, errors = Account.authenticate(username=name, password=password, ip=address, session=session)
         if account:
