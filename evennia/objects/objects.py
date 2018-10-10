@@ -920,7 +920,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 obj.db.desc = desc
                 
         except Exception as e:
-            errors.append(str(e))
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
                    
         return obj, errors
 
@@ -1960,7 +1961,8 @@ class DefaultCharacter(DefaultObject):
                 obj.db.desc = description if description else "This is a character."
                 
         except Exception as e:
-            errors.append(str(e))
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
             
         return obj, errors
         
@@ -2142,7 +2144,8 @@ class DefaultRoom(DefaultObject):
                 obj.db.desc = description if description else "This is a room."
                 
         except Exception as e:
-            errors.append(str(e))
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
             
         return obj, errors
 
@@ -2330,7 +2333,8 @@ class DefaultExit(DefaultObject):
                 obj.db.desc = description if description else "This is an exit."
                 
         except Exception as e:
-            errors.append(str(e))
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
             
         return obj, errors
 
