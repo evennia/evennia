@@ -6,8 +6,9 @@ from unittest import TestCase
 
 from django.test import override_settings
 from evennia.accounts.accounts import AccountSessionHandler
-from evennia.accounts.accounts import DefaultAccount
+from evennia.accounts.accounts import DefaultAccount, DefaultGuest
 from evennia.server.session import Session
+from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import create
 
 from django.conf import settings
@@ -59,9 +60,31 @@ class TestAccountSessionHandler(TestCase):
     def test_count(self):
         "Check count method"
         self.assertEqual(self.handler.count(), len(self.handler.get()))
+        
+class TestDefaultGuest(EvenniaTest):
+    "Check DefaultGuest class"
+    
+    ip = '212.216.134.22'
+    
+    def test_authenticate(self):
+        # Guest account should not be permitted
+        account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertFalse(account, 'Guest account was created despite being disabled.')
+        
+        settings.GUEST_ENABLED = True
+        settings.GUEST_LIST = ['bruce_wayne']
+        
+        # Create a guest account
+        account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertTrue(account, 'Guest account should have been created.')
+        
+        # Create a second guest account
+        account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertFalse(account, 'Two guest accounts were created with a single entry on the guest list!')
+        
+        settings.GUEST_ENABLED = False
 
-
-class TestDefaultAccount(TestCase):
+class TestDefaultAccount(EvenniaTest):
     "Check DefaultAccount class"
 
     def setUp(self):
@@ -91,23 +114,6 @@ class TestDefaultAccount(TestCase):
         # Try creating a duplicate account
         account, errors = DefaultAccount.create(username='Ziggy', password='starman11')
         self.assertFalse(account, 'Duplicate account name should not have been allowed.')
-        
-        # Guest account should not be permitted
-        account, errors = DefaultAccount.authenticate_guest()
-        self.assertFalse(account, 'Guest account was created despite being disabled.')
-        
-        settings.GUEST_ENABLED = True
-        settings.GUEST_LIST = ['bruce_wayne']
-        
-        # Create a guest account
-        account, errors = DefaultAccount.authenticate_guest()
-        self.assertTrue(account, 'Guest account should have been created.')
-        
-        # Create a second guest account
-        account, errors = DefaultAccount.authenticate_guest()
-        self.assertFalse(account, 'Two guest accounts were created despite a single entry on the guest list!')
-        
-        settings.GUEST_ENABLED = False
         
     def test_throttle(self):
         "Confirm throttle activates on too many failures."
