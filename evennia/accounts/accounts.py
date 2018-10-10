@@ -413,82 +413,6 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 raise ImproperlyConfigured(msg % validator['NAME'])
             objs.append(klass(**validator.get('OPTIONS', {})))
         return objs
-        
-    @classmethod
-    def authenticate_guest(cls, **kwargs):
-        """
-        Gets or creates a Guest account object.
-        
-        Kwargs:
-            ip (str, optional): IP address of requestor; used for ban checking,
-                throttling and logging
-        
-        """
-        errors = []
-        account = None
-        username = None
-        ip = kwargs.get('ip', '').strip()
-        
-        # check if guests are enabled.
-        if not settings.GUEST_ENABLED:
-            errors.append('Guest accounts are not enabled on this server.')
-            return None, errors
-        
-        # See if authentication is currently being throttled
-        if ip and LOGIN_THROTTLE.check(ip):
-            errors.append('Too many login failures; please try again in a few minutes.')
-            
-            # With throttle active, do not log continued hits-- it is a
-            # waste of storage and can be abused to make your logs harder to
-            # read and/or fill up your disk.
-            return None, errors
-        
-        # check if IP banned
-        if ip and cls.is_banned(ip=ip):
-            errors.append("|rYou have been banned and cannot continue from here." \
-                     "\nIf you feel this ban is in error, please email an admin.|x")
-            logger.log_sec('Authentication Denied (Banned): %s (IP: %s).' % ('guest', ip))
-            LOGIN_THROTTLE.update(ip, 'Too many sightings of banned IP.')
-            return None, errors
-        
-        try:
-            # Find an available guest name.
-            for name in settings.GUEST_LIST:
-                if not AccountDB.objects.filter(username__iexact=name).count():
-                    username = name
-                    break
-            if not username:
-                errors.append("All guest accounts are in use. Please try again later.")
-                if ip: LOGIN_THROTTLE.update(ip, 'Too many requests for Guest access.')
-                return None, errors
-            else:
-                # build a new account with the found guest username
-                password = "%016x" % getrandbits(64)
-                home = ObjectDB.objects.get_id(settings.GUEST_HOME)
-                permissions = settings.PERMISSION_GUEST_DEFAULT
-                character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-                account_typeclass = settings.BASE_GUEST_TYPECLASS
-                account, errs = cls.create(
-                    guest=True,
-                    username=username, 
-                    password=password, 
-                    permissions=permissions, 
-                    account_typeclass=account_typeclass, 
-                    character_typeclass=character_typeclass,
-                    ip=ip,
-                )
-                errors.extend(errs)
-                return account, errors
-    
-        except Exception:
-            # We are in the middle between logged in and -not, so we have
-            # to handle tracebacks ourselves at this point. If we don't,
-            # we won't see any errors at all.
-            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
-            logger.log_trace()
-            return None, errors
-            
-        return account, errors
     
     @classmethod
     def authenticate(cls, username, password, ip='', **kwargs):
@@ -700,7 +624,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             guest (bool, optional): Whether or not this is to be a Guest account
             
             permissions (str, optional): Default permissions for the Account
-            account_typeclass (str, optional): Typeclass to use for new Account
+            typeclass (str, optional): Typeclass to use for new Account
             character_typeclass (str, optional): Typeclass to use for new char
                 when applicable.
                 
@@ -719,8 +643,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         guest = kwargs.get('guest', False)
         
         permissions = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
-        account_typeclass = kwargs.get('account_typeclass', settings.BASE_ACCOUNT_TYPECLASS)
-        character_typeclass = kwargs.get('character_typeclass', settings.BASE_CHARACTER_TYPECLASS)
+        typeclass = kwargs.get('typeclass', settings.BASE_ACCOUNT_TYPECLASS)
         
         ip = kwargs.get('ip', '')
         if ip and CREATION_THROTTLE.check(ip):
@@ -759,7 +682,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         # everything's ok. Create the new account account.
         try:
             try:
-                account = create.create_account(username, email, password, permissions=permissions, typeclass=account_typeclass)
+                account = create.create_account(username, email, password, permissions=permissions, typeclass=typeclass)
                 logger.log_sec('Account Created: %s (IP: %s).' % (account, ip))
         
             except Exception as e:
@@ -784,10 +707,15 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             
             if account and settings.MULTISESSION_MODE < 2:
                 # Load the appropriate Character class
-                Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+                character_typeclass = kwargs.get('character_typeclass', settings.BASE_CHARACTER_TYPECLASS)
+                character_home = kwargs.get('home')
+                Character = class_from_module(character_typeclass)
                 
                 # Create the character
-                character, errs = Character.create(account.key, account, ip=ip)
+                character, errs = Character.create(
+                    account.key, account, ip=ip, typeclass=character_typeclass, 
+                    permissions=permissions, home=character_home
+                )
                 errors.extend(errs)
                 
                 if character:
@@ -1453,6 +1381,78 @@ class DefaultGuest(DefaultAccount):
     This class is used for guest logins. Unlike Accounts, Guests and
     their characters are deleted after disconnection.
     """
+    
+    @classmethod
+    def create(cls, **kwargs):
+        """
+        Forwards request to cls.authenticate(); returns a DefaultGuest object
+        if one is available for use.
+        """
+        return cls.authenticate(**kwargs)
+    
+    @classmethod
+    def authenticate(cls, **kwargs):
+        """
+        Gets or creates a Guest account object.
+        
+        Kwargs:
+            ip (str, optional): IP address of requestor; used for ban checking,
+                throttling and logging
+                
+        Returns:
+            account (Object): Guest account object, if available
+            errors (list): List of error messages accrued during this request.
+        
+        """
+        errors = []
+        account = None
+        username = None
+        ip = kwargs.get('ip', '').strip()
+        
+        # check if guests are enabled.
+        if not settings.GUEST_ENABLED:
+            errors.append('Guest accounts are not enabled on this server.')
+            return None, errors
+        
+        try:
+            # Find an available guest name.
+            for name in settings.GUEST_LIST:
+                if not AccountDB.objects.filter(username__iexact=name).count():
+                    username = name
+                    break
+            if not username:
+                errors.append("All guest accounts are in use. Please try again later.")
+                if ip: LOGIN_THROTTLE.update(ip, 'Too many requests for Guest access.')
+                return None, errors
+            else:
+                # build a new account with the found guest username
+                password = "%016x" % getrandbits(64)
+                home = settings.GUEST_HOME
+                permissions = settings.PERMISSION_GUEST_DEFAULT
+                typeclass = settings.BASE_GUEST_TYPECLASS
+                
+                # Call parent class creator
+                account, errs = super(DefaultGuest, cls).create(
+                    guest=True,
+                    username=username, 
+                    password=password, 
+                    permissions=permissions, 
+                    typeclass=typeclass, 
+                    home=home,
+                    ip=ip,
+                )
+                errors.extend(errs)
+                return account, errors
+    
+        except Exception as e:
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't,
+            # we won't see any errors at all.
+            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            logger.log_trace()
+            return None, errors
+            
+        return account, errors
 
     def at_post_login(self, session=None, **kwargs):
         """
