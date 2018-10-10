@@ -42,11 +42,11 @@ def create_guest_account(session):
     address = session.address
     
     # Get account class
-    Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+    Guest = class_from_module(settings.BASE_GUEST_TYPECLASS)
         
     # Get an available guest account
-    # authenticate_guest() handles its own throttling
-    account, errors = Account.authenticate_guest(ip=address)
+    # authenticate() handles its own throttling
+    account, errors = Guest.authenticate(ip=address)
     if account:
         return enabled, account
     else:
