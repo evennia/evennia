@@ -1,7 +1,6 @@
 language: python
 python:
   - 2.7
-  - 3.4
   - 3.5
   - 3.6
 sudo: false
@@ -15,3 +14,6 @@ notifications:
       - readthedocs:y3hjODOi7EIz1JAbD1Zb41sz#random
     on_success: change
     on_failure: always
+branches:
+  only:
+  - master
