@@ -18,7 +18,7 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
-from evennia.utils import logger, utils, gametime, create
+from evennia.utils import logger, utils, gametime, create, search
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
 from evennia.utils.utils import crop, class_from_module
@@ -460,17 +460,22 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
 
 class CmdAccounts(COMMAND_DEFAULT_CLASS):
     """
-    list all registered accounts
+    Manage registered accounts
 
     Usage:
       @accounts [nr]
+      @accounts/delete <name or #id> [: reason]
 
-    Lists statistics about the Accounts registered with the game.
+    Switches:
+      delete    - delete an account from the server
+
+    By default, lists statistics about the Accounts registered with the game.
     It will list the <nr> amount of latest registered accounts
     If not given, <nr> defaults to 10.
     """
     key = "@accounts"
     aliases = ["@listaccounts"]
+    switch_options = ("delete",)
     locks = "cmd:perm(listaccounts) or perm(Admin)"
     help_category = "System"
 
@@ -478,6 +483,47 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
         """List the accounts"""
 
         caller = self.caller
+        args = self.args
+
+        if "delete" in self.switches:
+            account = getattr(caller, "account")
+            if not account or not account.check_permstring("Developer"):
+                caller.msg("You are not allowed to delete accounts.")
+                return
+            if not args:
+                caller.msg("Usage: @accounts/delete <name or #id> [: reason]")
+                return
+            reason = ""
+            if ":" in args:
+                args, reason = [arg.strip() for arg in args.split(":", 1)]
+            # We use account_search since we want to be sure to find also accounts
+            # that lack characters.
+            accounts = search.account_search(args)
+            if not accounts:
+                self.msg("Could not find an account by that name.")
+                return
+            if len(accounts) > 1:
+                string = "There were multiple matches:\n"
+                string += "\n".join(" %s %s" % (account.id, account.key) for account in accounts)
+                self.msg(string)
+                return
+            account = accounts.first()
+            if not account.access(caller, "delete"):
+                self.msg("You don't have the permissions to delete that account.")
+                return
+            username = account.username
+            # Boot the account then delete it.
+            self.msg("Informing and disconnecting account ...")
+            string = "\nYour account '%s' is being *permanently* deleted.\n" % username
+            if reason:
+                string += " Reason given:\n  '%s'" % reason
+            account.msg(string)
+            logger.log_sec("Account Deleted: %s (Reason: %s, Caller: %s, IP: %s)." % (account, reason, caller, self.session.address))
+            account.delete()
+            self.msg("Account %s was successfully deleted." % username)
+            return
+
+        # No switches, default to displaying a list of accounts.
         if self.args and self.args.isdigit():
             nlim = int(self.args)
         else:
