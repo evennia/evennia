@@ -668,7 +668,7 @@ class AttributeHandler(object):
 
     def all(self, accessing_obj=None, default_access=True):
         """
-        Return all Attribute objects on this object.
+        Return all Attribute objects on this object, regardless of category.
 
         Args:
             accessing_obj (object, optional): Check the `attrread`
