@@ -56,7 +56,7 @@ def is_iter(obj):
         what we want to do with a string.
 
     """
-    if isinstance(obj, (str, bytes, )):
+    if isinstance(obj, (str, bytes )):
         return False
 
     try:
@@ -800,7 +800,7 @@ def to_str(obj, encoding='utf-8', force_string=False):
         conversion of objects to strings.
 
     """
-    if isinstance(obj, (str, bytes, )):
+    if isinstance(obj, (str, bytes )):
         return obj
 
     if force_string:
