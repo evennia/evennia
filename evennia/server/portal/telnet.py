@@ -243,11 +243,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             line (str): Line to send.
 
         """
+        line = bytes(line, 'utf-8')
         # escape IAC in line mode, and correctly add \r\n (the TELNET end-of-line)
         line = line.replace(IAC, IAC + IAC)
-        line = line.replace('\n', '\r\n')
-        if not line.endswith("\r\n") and self.protocol_flags.get("FORCEDENDLINE", True):
-            line += "\r\n"
+        line = line.replace(b'\n', b'\r\n')
+        if not line.endswith(b"\r\n") and self.protocol_flags.get("FORCEDENDLINE", True):
+            line += b"\r\n"
         if not self.protocol_flags.get("NOGOAHEAD", True):
             line += IAC + GA
         return self.transport.write(mccp_compress(self, line))
