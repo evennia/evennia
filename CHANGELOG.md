@@ -1,13 +1,18 @@
 # Changelog
 
-## Evennia 0.9 (2019)
+## Evennia 0.9 (2018-2019)
 
 Update to Python 3
 
 - Use `python3 -m venv <myenvname>`
 - Use `python3 -m pdb <script>` for debugging
 
-### Misc
+### Commands
+
+- Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
+  question.
+
+### Utils
 
 - Swap argument order of `evennia.set_trace` to `set_trace(term_size=(140, 40), debugger='auto')`
   since the size is more likely to be changed on the command line.

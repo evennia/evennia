@@ -348,13 +348,14 @@ class TagHandler(object):
         self._catcache = {}
         self._cache_complete = False
 
-    def all(self, return_key_and_category=False):
+    def all(self, return_key_and_category=False, return_objs=False):
         """
         Get all tags in this handler, regardless of category.
 
         Args:
             return_key_and_category (bool, optional): Return a list of
                 tuples `[(key, category), ...]`.
+            return_objs (bool, optional): Return tag objects.
 
         Returns:
             tags (list): A list of tag keys `[tagkey, tagkey, ...]` or
@@ -368,6 +369,8 @@ class TagHandler(object):
         if return_key_and_category:
                 # return tuple (key, category)
             return [(to_str(tag.db_key), to_str(tag.db_category)) for tag in tags]
+        elif return_objs:
+            return tags
         else:
             return [to_str(tag.db_key) for tag in tags]
 

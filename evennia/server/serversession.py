@@ -407,7 +407,7 @@ class ServerSession(Session):
         else:
             self.data_out(**kwargs)
 
-    def execute_cmd(self, raw_string, **kwargs):
+    def execute_cmd(self, raw_string, session=None, **kwargs):
         """
         Do something as this object. This method is normally never
         called directly, instead incoming command instructions are
@@ -417,6 +417,9 @@ class ServerSession(Session):
 
         Args:
             raw_string (string): Raw command input
+            session (Session): This is here to make API consistent with
+                Account/Object.execute_cmd. If given, data is passed to
+                that Session, otherwise use self.
         Kwargs:
             Other keyword arguments will be added to the found command
             object instace as variables before it executes.  This is
@@ -426,7 +429,7 @@ class ServerSession(Session):
         """
         # inject instruction into input stream
         kwargs["text"] = ((raw_string,), {})
-        self.sessionhandler.data_in(self, **kwargs)
+        self.sessionhandler.data_in(session or self, **kwargs)
 
     def __eq__(self, other):
         """Handle session comparisons"""
