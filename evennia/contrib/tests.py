@@ -1922,7 +1922,7 @@ class TestPuzzles(CommandTest):
         self._use('stone flint', 'There is no stone flint around.')
         self._use('stone, flint', 'You have no idea how these can be used')
 
-        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
+        recipe_dbref = self._good_recipe(unicode('makefire'), ['stone', 'flint'], ['fire'] , and_destroy_it=False)
         recipe2_dbref = self._good_recipe('makefire2', ['stone', 'flint'], ['fire'] , and_destroy_it=False,
                 expected_count=2)
 

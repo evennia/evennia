@@ -137,7 +137,7 @@ class PuzzleRecipe(DefaultScript):
     """
 
     def save_recipe(self, puzzle_name, parts, results):
-        self.db.puzzle_name = puzzle_name
+        self.db.puzzle_name = str(puzzle_name)
         self.db.parts = tuple(parts)
         self.db.results = tuple(results)
         self.tags.add(_PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
