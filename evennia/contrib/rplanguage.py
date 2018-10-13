@@ -333,7 +333,7 @@ class LanguageHandler(DefaultScript):
                         new_word = ''
                     else:
                         # use random word length
-                        wlen = choice(grammar.keys())
+                        wlen = choice(list(grammar.keys()))
 
                 if wlen:
                     structure = choice(grammar[wlen])
