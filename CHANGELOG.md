@@ -1,5 +1,13 @@
 # Changelog
 
+## Evennia 0.9 (2018-2019)
+
+### Commands
+
+- Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
+  question.
+
+
 ## Evennia 0.8 (2018)
 
 ### Server/Portal
