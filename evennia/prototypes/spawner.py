@@ -128,7 +128,7 @@ prototype, override its name with an empty dict.
 
 
 """
-from __future__ import print_function
+
 
 import copy
 import hashlib
@@ -447,7 +447,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
     """
     prototype = protlib.homogenize_prototype(prototype)
 
-    if isinstance(prototype, basestring):
+    if isinstance(prototype, str):
         new_prototype = protlib.search_prototype(prototype)
     else:
         new_prototype = prototype

@@ -567,7 +567,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             eventual object #dbrefs in the output from the protfunc.
 
     """
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         try:
             value = value.dbref
         except AttributeError:

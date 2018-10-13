@@ -155,10 +155,10 @@ class TestGeneral(CommandTest):
                 "Account-nick 'testalias' mapped to 'testaliasedstring2'.")
         self.call(general.CmdNick(), "/object testalias = testaliasedstring3",
                 "Object-nick 'testalias' mapped to 'testaliasedstring3'.")
-        self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
-        self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
+        self.assertEqual("testaliasedstring1", self.char1.nicks.get("testalias"))
+        self.assertEqual("testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
         self.assertEqual(None, self.char1.account.nicks.get("testalias", category="account"))
-        self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
+        self.assertEqual("testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
 
     def test_get_and_drop(self):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")

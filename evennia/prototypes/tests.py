@@ -88,7 +88,7 @@ class TestUtils(EvenniaTest):
              'prototype_key': Something,
              'prototype_locks': 'spawn:all();edit:all()',
              'prototype_tags': [],
-             'tags': [(u'foo', None, None)],
+             'tags': [('foo', None, None)],
              'typeclass': 'evennia.objects.objects.DefaultObject'}, new_prot)
 
     def test_update_objects_from_prototypes(self):
@@ -134,7 +134,7 @@ class TestUtils(EvenniaTest):
                           'prototype_key': Something,
                           'prototype_locks': 'spawn:all();edit:all()',
                           'prototype_tags': [],
-                          'tags': [(u'footag', u'foocategory', None)],
+                          'tags': [('footag', 'foocategory', None)],
                           'typeclass': 'evennia.objects.objects.DefaultObject'})
 
         self.assertEqual(old_prot,
@@ -183,7 +183,7 @@ class TestUtils(EvenniaTest):
               'typeclass': ('evennia.objects.objects.DefaultObject',
                             'evennia.objects.objects.DefaultObject', 'KEEP'),
               'aliases': {'foo': ('foo', None, 'REMOVE')},
-              'tags': {u'footag': ((u'footag', u'foocategory', None), None, 'REMOVE')},
+              'tags': {'footag': (('footag', 'foocategory', None), None, 'REMOVE')},
               'prototype_desc': ('Built from Obj',
                                  'New version of prototype', 'UPDATE'),
               'permissions': {"Builder": (None, 'Builder', 'ADD')}
@@ -391,7 +391,7 @@ class TestPrototypeStorage(EvenniaTest):
             self.assertEqual(list(protlib.search_prototype("prot")), [prot1b, prot2, prot3])
             self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
 
-        self.assertTrue(str(unicode(protlib.list_prototypes(self.char1))))
+        self.assertTrue(str(str(protlib.list_prototypes(self.char1))))
 
 
 class _MockMenu(object):
@@ -574,17 +574,17 @@ class TestMenuModule(EvenniaTest):
         # diff helpers
         obj_diff = {
             'attrs': {
-                u'desc': ((u'desc', u'This is User #1.', None, ''),
-                          (u'desc', u'This is User #1.', None, ''),
+                'desc': (('desc', 'This is User #1.', None, ''),
+                          ('desc', 'This is User #1.', None, ''),
                           'KEEP'),
-                u'foo': (None,
-                         (u'foo', u'bar', None, ''),
+                'foo': (None,
+                         ('foo', 'bar', None, ''),
                          'ADD'),
-                u'prelogout_location': ((u'prelogout_location', "#2", None, ''),
-                                        (u'prelogout_location', "#2", None, ''),
+                'prelogout_location': (('prelogout_location', "#2", None, ''),
+                                        ('prelogout_location', "#2", None, ''),
                                         'KEEP')},
                 'home': ('#2', '#2', 'KEEP'),
-                'key': (u'TestChar', u'TestChar', 'KEEP'),
+                'key': ('TestChar', 'TestChar', 'KEEP'),
                 'locks': ('boot:false();call:false();control:perm(Developer);delete:false();'
                           'edit:false();examine:perm(Developer);get:false();msg:all();'
                           'puppet:false();tell:perm(Admin);view:all()',
@@ -598,8 +598,8 @@ class TestMenuModule(EvenniaTest):
                 'prototype_locks': ('spawn:all();edit:all()', 'spawn:all();edit:all()', 'KEEP'),
                 'prototype_tags': {},
                 'tags': {'foo': (None, ('foo', None, ''), 'ADD')},
-                'typeclass': (u'typeclasses.characters.Character',
-                              u'typeclasses.characters.Character', 'KEEP')}
+                'typeclass': ('typeclasses.characters.Character',
+                              'typeclasses.characters.Character', 'KEEP')}
 
         texts, options = olc_menus._format_diff_text_and_options(obj_diff)
         self.assertEqual(

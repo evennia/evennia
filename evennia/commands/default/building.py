@@ -2930,7 +2930,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 if ';' in self.args:
                     key, tags = (part.strip().lower() for part in self.args.split(";", 1))
                     tags = [tag.strip() for tag in tags.split(",")] if tags else None
-                EvMore(caller, unicode(protlib.list_prototypes(caller, key=key, tags=tags)),
+                EvMore(caller, str(protlib.list_prototypes(caller, key=key, tags=tags)),
                        exit_on_lastpage=True)
                 return
 
@@ -3063,13 +3063,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         # A direct creation of an object from a given prototype
 
         prototype = _parse_prototype(
-                self.args, expect=dict if self.args.strip().startswith("{") else basestring)
+                self.args, expect=dict if self.args.strip().startswith("{") else str)
         if not prototype:
             # this will only let through dicts or strings
             return
 
         key = '<unnamed>'
-        if isinstance(prototype, basestring):
+        if isinstance(prototype, str):
             # A prototype key we are looking to apply
             key = prototype
             prototypes = protlib.search_prototype(prototype)
