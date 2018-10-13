@@ -107,12 +107,22 @@ class TestRPSystem(EvenniaTest):
     def test_ordered_permutation_regex(self):
         self.assertEqual(
             rpsystem.ordered_permutation_regex(sdesc0),
-            '/[0-9]*-*A\\ nice\\ sender\\ of\\ emotes(?=\\W|$)+|/[0-9]*-*nice\\ sender\\ '
-            'of\\ emotes(?=\\W|$)+|/[0-9]*-*A\\ nice\\ sender\\ of(?=\\W|$)+|/[0-9]*-*sender\\ '
-            'of\\ emotes(?=\\W|$)+|/[0-9]*-*nice\\ sender\\ of(?=\\W|$)+|/[0-9]*-*A\\ nice\\ '
-            'sender(?=\\W|$)+|/[0-9]*-*nice\\ sender(?=\\W|$)+|/[0-9]*-*of\\ emotes(?=\\W|$)+'
-            '|/[0-9]*-*sender\\ of(?=\\W|$)+|/[0-9]*-*A\\ nice(?=\\W|$)+|/[0-9]*-*sender(?=\\W|$)+'
-            '|/[0-9]*-*emotes(?=\\W|$)+|/[0-9]*-*nice(?=\\W|$)+|/[0-9]*-*of(?=\\W|$)+|/[0-9]*-*A(?=\\W|$)+')
+            '/[0-9]*-*A\\ nice\\ sender\\ of\\ emotes(?=\\W|$)+|'
+            '/[0-9]*-*nice\\ sender\\ of\\ emotes(?=\\W|$)+|'
+            '/[0-9]*-*A\\ nice\\ sender\\ of(?=\\W|$)+|'
+            '/[0-9]*-*sender\\ of\\ emotes(?=\\W|$)+|'
+            '/[0-9]*-*nice\\ sender\\ of(?=\\W|$)+|'
+            '/[0-9]*-*A\\ nice\\ sender(?=\\W|$)+|'
+            '/[0-9]*-*nice\\ sender(?=\\W|$)+|'
+            '/[0-9]*-*of\\ emotes(?=\\W|$)+|'
+            '/[0-9]*-*sender\\ of(?=\\W|$)+|'
+            '/[0-9]*-*A\\ nice(?=\\W|$)+|'
+            '/[0-9]*-*emotes(?=\\W|$)+|'
+            '/[0-9]*-*sender(?=\\W|$)+|'
+            '/[0-9]*-*nice(?=\\W|$)+|'
+            '/[0-9]*-*of(?=\\W|$)+|'
+            '/[0-9]*-*A(?=\\W|$)+'
+            )
 
     def test_sdesc_handler(self):
         self.speaker.sdesc.add(sdesc0)
@@ -122,9 +132,13 @@ class TestRPSystem(EvenniaTest):
         self.speaker.sdesc.add("Testing three words")
         self.assertEqual(
             self.speaker.sdesc.get_regex_tuple()[0].pattern,
-            '/[0-9]*-*Testing\\ three\\ words(?=\\W|$)+|/[0-9]*-*Testing\\ '
-            'three(?=\\W|$)+|/[0-9]*-*three\\ words(?=\\W|$)+|/[0-9]*-*Testing'
-            '(?=\\W|$)+|/[0-9]*-*three(?=\\W|$)+|/[0-9]*-*words(?=\\W|$)+')
+            '/[0-9]*-*Testing\ three\ words(?=\W|$)+|'
+            '/[0-9]*-*Testing\ three(?=\W|$)+|'
+            '/[0-9]*-*three\ words(?=\W|$)+|'
+            '/[0-9]*-*Testing(?=\W|$)+|'
+            '/[0-9]*-*three(?=\W|$)+|'
+            '/[0-9]*-*words(?=\W|$)+'
+            )
 
     def test_recog_handler(self):
         self.speaker.sdesc.add(sdesc0)

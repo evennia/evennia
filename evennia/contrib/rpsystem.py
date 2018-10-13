@@ -238,7 +238,7 @@ def ordered_permutation_regex(sentence):
             solution.append(_PREFIX + r"[0-9]*%s*%s(?=\W|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\")))
 
     # combine into a match regex, first matching the longest down to the shortest components
-    regex = r"|".join(sorted(set(solution), key=len, reverse=True))
+    regex = r"|".join(sorted(set(solution), key=lambda item: (-len(item), item)))
     return regex
 
 
