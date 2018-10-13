@@ -123,7 +123,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                              UTF-8 encoded text.
 
         """
-        cmdarray = json.loads(payload)
+        cmdarray = json.loads(str(payload, 'utf-8'))
         if cmdarray:
             self.data_in(**{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
 
