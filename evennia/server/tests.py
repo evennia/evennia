@@ -144,4 +144,3 @@ class ThrottleTest(EvenniaTest):
 
         # There should only be (cache_size * num_ips) total in the Throttle cache
         self.assertEqual(sum([len(cache[x]) for x in cache.keys()]), throttle.cache_size * len(ips))
->>>>>>> develop
