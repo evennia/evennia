@@ -69,9 +69,8 @@ class TestLanguage(EvenniaTest):
             vowels="oea",
             word_length_variance=4)
 
-
     def test_available_languages(self):
-        self.assertEqual(rplanguage.available_languages(), ["testlang", "binary"])
+        self.assertEqual(rplanguage.available_languages(), ["binary", "testlang"])
 
     def test_obfuscate_whisper(self):
         self.assertEqual(rplanguage.obfuscate_whisper(text, level=0.0), text)
@@ -97,6 +96,7 @@ emote = "With a flair, /me looks at /first and /colliding sdesc-guy. She says \"
 
 
 class TestRPSystem(EvenniaTest):
+    maxDiff = None
     def setUp(self):
         super().setUp()
         self.room = create_object(rpsystem.ContribRPRoom, key="Location")
