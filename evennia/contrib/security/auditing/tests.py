@@ -80,7 +80,7 @@ class AuditingTest(EvenniaTest):
         parsed from the Session object.
         """
         log = self.session.audit(src='client', text=[['hello']])
-        obj = {k:v for k,v in log.iteritems() if k in ('direction', 'protocol', 'application', 'text')}
+        obj = {k:v for k,v in log.items() if k in ('direction', 'protocol', 'application', 'text')}
         self.assertEqual(obj, {
             'direction': 'RCV',
             'protocol': 'telnet',

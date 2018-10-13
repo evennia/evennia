@@ -1505,7 +1505,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if users or things:
             # handle pluralization of things (never pluralize users)
             thing_strings = []
-            for key, itemlist in sorted(things.iteritems()):
+            for key, itemlist in sorted(things.items()):
                 nitem = len(itemlist)
                 if nitem == 1:
                     key, _ = itemlist[0].get_numbered_name(nitem, looker, key=key)
