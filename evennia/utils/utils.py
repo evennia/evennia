@@ -34,6 +34,12 @@ _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
 
 
+# ModuleNotFoundError only in py3.6, handle both
+try:
+    from builtins import ModuleNotFoundError
+except ImportError:
+    ModuleNotFoundError = ImportError
+
 ENCODINGS = settings.ENCODINGS
 _GA = object.__getattribute__
 _SA = object.__setattr__
