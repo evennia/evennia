@@ -214,7 +214,7 @@ class SessionHandler(dict):
                 return newdict
             elif is_iter(data):
                 return [_validate(part) for part in data]
-            elif isinstance(data, (str, bytes, )):
+            elif isinstance(data, (str, bytes )):
                 data = _utf8(data)
 
                 if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
