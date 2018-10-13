@@ -92,7 +92,7 @@ def homogenize_prototype(prototype, custom_keys=None):
     if "prototype_key" not in prototype:
         # assign a random hash as key
         homogenized["prototype_key"] = "prototype-{}".format(
-            hashlib.md5(str(time.time())).hexdigest()[:7])
+            hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:7])
 
     if "typeclass" not in prototype and "prototype_parent" not in prototype:
         homogenized["typeclass"] = settings.BASE_OBJECT_TYPECLASS

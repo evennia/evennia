@@ -922,7 +922,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Account '%s' already exists and is not a bot." % botname)
                 return
         else:
-            password = hashlib.md5(str(time.time())).hexdigest()[:11]
+            password = hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:11]
             try:
                 bot = create.create_account(botname, None, password, typeclass=botclass)
             except Exception as err:
