@@ -211,8 +211,8 @@ def _process_input(caller, prompt, result, cmd, generator):
 
     Args:
         caller (Character, Account or Session): the caller.
-        prompt (basestring): The sent prompt.
-        result (basestring): The unprocessed answer.
+        prompt (str): The sent prompt.
+        result (str): The unprocessed answer.
         cmd (Command): The command itself.
         generator (GeneratorType): The generator.
 

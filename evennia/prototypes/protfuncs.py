@@ -256,7 +256,7 @@ def eval(*args, **kwargs):
     string = ",".join(args)
     struct = literal_eval(string)
 
-    if isinstance(struct, basestring):
+    if isinstance(struct, str):
         # we must shield the string, otherwise it will be merged as a string and future
         # literal_evas will pick up e.g. '2' as something that should be converted to a number
         struct = '"{}"'.format(struct)

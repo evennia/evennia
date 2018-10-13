@@ -483,7 +483,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         kwargs["options"] = options
 
         if text is not None:
-            if not (isinstance(text, basestring) or isinstance(text, tuple)):
+            if not (isinstance(text, str) or isinstance(text, tuple)):
                 # sanitize text before sending across the wire
                 try:
                     text = to_str(text, force_string=True)
