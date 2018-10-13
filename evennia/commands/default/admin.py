@@ -16,7 +16,7 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
 # limit members for API inclusion
-__all__ = ("CmdBoot", "CmdBan", "CmdUnban", "CmdDelAccount",
+__all__ = ("CmdBoot", "CmdBan", "CmdUnban",
            "CmdEmit", "CmdNewPassword", "CmdPerm", "CmdWall")
 
 
@@ -133,7 +133,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
     reason to be able to later remember why the ban was put in place.
 
     It is often preferable to ban an account from the server than to
-    delete an account with @delaccount. If banned by name, that account
+    delete an account with @accounts/delete. If banned by name, that account
     account can no longer be logged into.
 
     IP (Internet Protocol) address banning allows blocking all access
@@ -254,78 +254,6 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
             self.caller.msg("Cleared ban %s: %s" %
                             (num, value))
             logger.log_sec('Unbanned: %s (Caller: %s, IP: %s).' % (value.strip(), self.caller, self.session.address))
-
-
-class CmdDelAccount(COMMAND_DEFAULT_CLASS):
-    """
-    delete an account from the server
-
-    Usage:
-      @delaccount[/switch] <name> [: reason]
-
-    Switch:
-      delobj - also delete the account's currently
-               assigned in-game object.
-
-    Completely deletes a user from the server database,
-    making their nick and e-mail again available.
-    """
-
-    key = "@delaccount"
-    switch_options = ("delobj",)
-    locks = "cmd:perm(delaccount) or perm(Developer)"
-    help_category = "Admin"
-
-    def func(self):
-        """Implements the command."""
-
-        caller = self.caller
-        args = self.args
-
-        if hasattr(caller, 'account'):
-            caller = caller.account
-
-        if not args:
-            self.msg("Usage: @delaccount <account/user name or #id> [: reason]")
-            return
-
-        reason = ""
-        if ':' in args:
-            args, reason = [arg.strip() for arg in args.split(':', 1)]
-
-        # We use account_search since we want to be sure to find also accounts
-        # that lack characters.
-        accounts = search.account_search(args)
-
-        if not accounts:
-            self.msg('Could not find an account by that name.')
-            return
-
-        if len(accounts) > 1:
-            string = "There were multiple matches:\n"
-            string += "\n".join(" %s %s" % (account.id, account.key) for account in accounts)
-            self.msg(string)
-            return
-
-        # one single match
-
-        account = accounts.first()
-
-        if not account.access(caller, 'delete'):
-            string = "You don't have the permissions to delete that account."
-            self.msg(string)
-            return
-
-        uname = account.username
-        # boot the account then delete
-        self.msg("Informing and disconnecting account ...")
-        string = "\nYour account '%s' is being *permanently* deleted.\n" % uname
-        if reason:
-            string += " Reason given:\n  '%s'" % reason
-        account.msg(string)
-        logger.log_sec('Account Deleted: %s (Reason: %s, Caller: %s, IP: %s).' % (account, reason, caller, self.session.address))
-        account.delete()
-        self.msg("Account %s was successfully deleted." % uname)
 
 
 class CmdEmit(COMMAND_DEFAULT_CLASS):
