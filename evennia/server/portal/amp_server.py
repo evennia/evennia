@@ -301,11 +301,14 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             launcher. It can obviously only accessed when the Portal is already up and running.
 
         """
+        # Since the launcher command uses amp.String() we need to convert from byte here.
+        operation = str(operation, 'utf-8')
         self.factory.launcher_connection = self
-
         _, server_connected, _, _, _, _ = self.get_status()
 
         logger.log_msg("Evennia Launcher->Portal operation %s:%s received" % (ord(operation), arguments))
+
+        logger.log_msg("operation == amp.SSTART: {}: {}".format(operation == amp.SSTART, amp.loads(arguments)))
 
         if operation == amp.SSTART:   # portal start  #15
             # first, check if server is already running
@@ -346,6 +349,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 self.factory.portal.shutdown()
 
         else:
+            logger.log_msg("Operation {} not recognized".format(operation))
             raise Exception("operation %(op)s not recognized." % {'op': operation})
 
         return {}

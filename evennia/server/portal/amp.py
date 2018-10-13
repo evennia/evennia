@@ -146,7 +146,7 @@ class Compressed(amp.String):
 
     def toString(self, inObject):
         """
-        Convert to send as a string on the wire, with compression.
+        Convert to send as a bytestring on the wire, with compression.
 
         Note: In Py3 this is really a byte stream.
 
@@ -368,7 +368,6 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         msg = loads(packed_data)
-        print("amp.data_in: {}".format(msg))
         return msg
 
     def broadcast(self, command, sessid, **kwargs):

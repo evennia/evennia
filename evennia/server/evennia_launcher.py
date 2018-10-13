@@ -950,6 +950,15 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
+def start_only_server():
+    """
+    Tell portal to start server (debug)
+    """
+    portal_cmd, server_cmd = _get_twistd_cmdline(False, False)
+    print("launcher: Sending to portal: SSTART + {}".format(server_cmd))
+    send_instruction(SSTART, server_cmd)
+
+
 def start_server_interactive():
     """
     Start the Server under control of the launcher process (foreground)
@@ -2012,7 +2021,7 @@ def main():
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
     elif option in ('status', 'info', 'start', 'istart', 'ipstart', 'reload', 'restart', 'reboot',
-                    'reset', 'stop', 'sstop', 'kill', 'skill'):
+                    'reset', 'stop', 'sstop', 'kill', 'skill', 'sstart'):
         # operate the server directly
         if not SERVER_LOGFILE:
             init_game_directory(CURRENT_DIR, check_db=True)
@@ -2036,6 +2045,8 @@ def main():
             stop_evennia()
         elif option == 'sstop':
             stop_server_only()
+        elif option == 'sstart':
+            start_only_server()
         elif option == 'kill':
             if _is_windows():
                 print("This option is not supported on Windows.")
