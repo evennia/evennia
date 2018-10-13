@@ -474,8 +474,8 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
     If not given, <nr> defaults to 10.
     """
     key = "@accounts"
-    aliases = ["@listaccounts"]
-    switch_options = ("delete",)
+    aliases = ["@account", "@listaccounts"]
+    switch_options = ("delete", )
     locks = "cmd:perm(listaccounts) or perm(Admin)"
     help_category = "System"
 
@@ -512,6 +512,15 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
                 self.msg("You don't have the permissions to delete that account.")
                 return
             username = account.username
+            # ask for confirmation
+            confirm = ("It is often better to block access to an account rather than to delete it. "
+                       "|yAre you sure you want to permanently delete "
+                       "account '|n{}|y'|n yes/[no]?".format(username))
+            answer = yield(confirm)
+            if answer.lower() not in ('y', 'yes'):
+                caller.msg("Canceled deletion.")
+                return
+
             # Boot the account then delete it.
             self.msg("Informing and disconnecting account ...")
             string = "\nYour account '%s' is being *permanently* deleted.\n" % username

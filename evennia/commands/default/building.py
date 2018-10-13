@@ -737,12 +737,11 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 confirm += ", ".join(["#{}".format(obj.id) for obj in objs])
             confirm += " [yes]/no?" if self.default_confirm == 'yes' else " yes/[no]"
             answer = ""
-            while answer.strip().lower() not in ("y", "yes", "n", "no"):
-                answer = yield(confirm)
-                answer = self.default_confirm if answer == '' else answer
+            answer = yield(confirm)
+            answer = self.default_confirm if answer == '' else answer
 
             if answer.strip().lower() in ("n", "no"):
-                caller.msg("Cancelled: no object was destroyed.")
+                caller.msg("Canceled: no object was destroyed.")
                 delete = False
 
         if delete:
