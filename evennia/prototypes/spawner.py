@@ -230,14 +230,14 @@ def prototype_from_object(obj):
         # no unambiguous prototype found - build new prototype
         prot = {}
         prot['prototype_key'] = "From-Object-{}-{}".format(
-                obj.key, hashlib.md5(str(time.time())).hexdigest()[:7])
+                obj.key, hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:7])
         prot['prototype_desc'] = "Built from {}".format(str(obj))
         prot['prototype_locks'] = "spawn:all();edit:all()"
         prot['prototype_tags'] = []
     else:
         prot = prot[0]
 
-    prot['key'] = obj.db_key or hashlib.md5(str(time.time())).hexdigest()[:6]
+    prot['key'] = obj.db_key or hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:6]
     prot['typeclass'] = obj.db_typeclass_path
 
     location = obj.db_location
@@ -690,7 +690,7 @@ def spawn(*prototypes, **kwargs):
         # we must always add a key, so if not given we use a shortened md5 hash. There is a (small)
         # chance this is not unique but it should usually not be a problem.
         val = prot.pop("key", "Spawned-{}".format(
-            hashlib.md5(str(time.time())).hexdigest()[:6]))
+            hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:6]))
         create_kwargs["db_key"] = init_spawn_value(val, str)
 
         val = prot.pop("location", None)
