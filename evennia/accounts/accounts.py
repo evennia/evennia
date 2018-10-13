@@ -1001,7 +1001,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         if target and not is_iter(target):
             # single target - just show it
-            return target.return_appearance(self)
+            if hasattr(target, "return_appearance"):
+                return target.return_appearance(self)
+            else:
+                return "{} has no in-game appearance.".format(target)
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
