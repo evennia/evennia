@@ -315,13 +315,13 @@ def prototype_diff(prototype1, prototype2, maxdepth=2):
                 # this condition should not occur in a standard diff
                 return (old, new, "UPDATE")
         elif depth < maxdepth and new_type == dict:
-            all_keys = set(old.keys() + new.keys())
+            all_keys = set(list(old.keys()) + list(new.keys()))
             return {key: _recursive_diff(old.get(key), new.get(key), depth=depth + 1)
                     for key in all_keys}
         elif depth < maxdepth and is_iter(new):
             old_map = {part[0] if is_iter(part) else part: part for part in old}
             new_map = {part[0] if is_iter(part) else part: part for part in new}
-            all_keys = set(old_map.keys() + new_map.keys())
+            all_keys = set(list(old_map.keys()) + list(new_map.keys()))
             return {key: _recursive_diff(old_map.get(key), new_map.get(key), depth=depth + 1)
                     for key in all_keys}
         elif old != new:
