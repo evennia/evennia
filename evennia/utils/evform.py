@@ -12,11 +12,6 @@ has markers in it to denounce fields to fill. The markers map the
 absolute size of the field and will be filled with an `evtable.EvCell`
 object when displaying the form.
 
-Note, when printing examples with ANSI color, you need to wrap
-the output in `unicode()`, such as `print unicode(form)`. This is
-due to a bug in the Python parser and the `print` statement.
-
-
 Example of input file `testform.py`:
 
 ```python
@@ -439,10 +434,6 @@ class EvForm(object):
         "Prints the form"
         return str(ANSIString("\n").join([line for line in self.form]))
 
-    def __unicode__(self):
-        "prints the form"
-        return str(ANSIString("\n").join([line for line in self.form]))
-
 
 def _test():
     "test evform. This is used by the unittest system."
@@ -470,5 +461,4 @@ def _test():
     # add the tables to the proper ids in the form
     form.map(tables={"A": tableA,
                      "B": tableB})
-    # unicode is required since the example contains non-ascii characters
     return str(form)
