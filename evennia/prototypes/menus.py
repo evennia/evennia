@@ -227,19 +227,19 @@ def _validate_prototype(prototype):
 
     txt = protlib.prototype_to_str(prototype)
     errors = "\n\n|g No validation errors found.|n (but errors could still happen at spawn-time)"
-    err = False
+    has_err = False
     try:
         # validate, don't spawn
         spawner.spawn(prototype, only_validate=True)
     except RuntimeError as err:
         errors = "\n\n|r{}|n".format(err)
-        err = True
+        has_err = True
     except RuntimeWarning as err:
         errors = "\n\n|y{}|n".format(err)
-        err = True
+        has_err = True
 
     text = (txt + errors)
-    return err, text
+    return has_err, text
 
 
 def _format_protfuncs():
