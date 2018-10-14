@@ -9,7 +9,8 @@ from evennia.utils import evform
 class TestEvForm(TestCase):
     def test_form(self):
         self.maxDiff = None
-        self.assertEqual(evform._test(),
+        form = evform._test()
+        self.assertEqual(form,
                          '.------------------------------------------------.\n'
                          '|                                                |\n'
                          '|  Name: \x1b[0m\x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b'
