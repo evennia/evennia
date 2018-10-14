@@ -2004,7 +2004,8 @@ def _format_diff_text_and_options(diff, **kwargs):
                                                            ("diff", diff)), **kwargs))})
                 optnum += 1
         else:
-            for key, subdiffpart in diffpart.items():
+            for key in sorted(list(diffpart.keys())):
+                subdiffpart = diffpart[key]
                 text, option, optnum = _parse_diffpart(
                         subdiffpart, optnum, *(args + (key, )))
                 texts.extend(text)
