@@ -1045,6 +1045,7 @@ class EvMenu(object):
             node (str): The formatted node to display.
 
         """
+
         if self._session:
             screen_width = self._session.protocol_flags.get(
                     "SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
