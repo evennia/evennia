@@ -66,3 +66,38 @@ class EvenniaTest(TestCase):
         self.account.delete()
         self.account2.delete()
         super(EvenniaTest, self).tearDown()
+
+
+import unittest
+
+class TestScript(DefaultScript):
+
+    # script test params
+    call_super = None
+    interval = 1
+
+    def at_script_creation(self):
+        if self.call_super:
+            super(TestScript, self).at_script_creation()
+        self.key = 'testing_script'
+        # self.interval = 10
+        # self.repeats = 1
+        self.persistent = False
+
+class TestCreateScript(EvenniaTest):
+
+    def setUp(self):
+        super(EvenniaTest, self).setUp()
+
+    def tearDown(self):
+        super(EvenniaTest, self).tearDown()
+
+    @unittest.expectedFailure
+    def test_create_script(self):
+        TestScript.call_super = True
+
+        script = create.create_script(TestScript, key="TestScript")
+        assert script is not None
+        assert script.interval == 1
+        assert script.repeats == 0
+        assert script.key == 'testing_script'
