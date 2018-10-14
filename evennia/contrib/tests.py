@@ -70,7 +70,7 @@ class TestLanguage(EvenniaTest):
             word_length_variance=4)
 
     def test_available_languages(self):
-        self.assertEqual(rplanguage.available_languages(), ["binary", "testlang"])
+        self.assertEqual(list(sorted(rplanguage.available_languages())), ["binary", "testlang"])
 
     def test_obfuscate_whisper(self):
         self.assertEqual(rplanguage.obfuscate_whisper(text, level=0.0), text)

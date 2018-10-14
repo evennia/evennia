@@ -542,8 +542,11 @@ class TestInterruptCommand(CommandTest):
 
 class TestUnconnectedCommand(CommandTest):
     def test_info_command(self):
+        # instead of using SERVER_START_TIME (0), we use 86400 because Windows won't let us use anything lower
+        gametime.SERVER_START_TIME = 86400
         expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
                         settings.SERVERNAME,
                         datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
                         SESSIONS.account_count(), utils.get_evennia_version())
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
+        del gametime.SERVER_START_TIME
