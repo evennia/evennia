@@ -588,8 +588,8 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
         result = literal_eval(result)
     except ValueError:
         pass
-    except Exception as err:
-        err = str(err)
+    except Exception as exc:
+        err = str(exc)
     if testing:
         return err, result
     return result
