@@ -169,7 +169,11 @@ class TestEvMenu(TestCase):
             self.caller.msg = MagicMock()
             self.caller2.msg = MagicMock()
             self.session = MagicMock()
+            self.session.protocol_flags = {}
             self.session2 = MagicMock()
+            self.session2.protocol_flags = {}
+            self.caller.session = self.session
+            self.caller2.session = self.session2
 
             self.menu = evmenu.EvMenu(self.caller, self.menutree, startnode=self.startnode,
                                       cmdset_mergetype=self.cmdset_mergetype,
