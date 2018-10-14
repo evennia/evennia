@@ -400,6 +400,8 @@ class _MockMenu(object):
 
 class TestMenuModule(EvenniaTest):
 
+    maxDiff = None
+
     def setUp(self):
         super(TestMenuModule, self).setUp()
 
@@ -583,31 +585,31 @@ class TestMenuModule(EvenniaTest):
                 'prelogout_location': (('prelogout_location', "#2", None, ''),
                                         ('prelogout_location', "#2", None, ''),
                                         'KEEP')},
-                'home': ('#2', '#2', 'KEEP'),
-                'key': ('TestChar', 'TestChar', 'KEEP'),
-                'locks': ('boot:false();call:false();control:perm(Developer);delete:false();'
-                          'edit:false();examine:perm(Developer);get:false();msg:all();'
-                          'puppet:false();tell:perm(Admin);view:all()',
-                          'boot:false();call:false();control:perm(Developer);delete:false();'
-                          'edit:false();examine:perm(Developer);get:false();msg:all();'
-                          'puppet:false();tell:perm(Admin);view:all()',
-                          'KEEP'),
-                'permissions': {'developer': ('developer', 'developer', 'KEEP')},
-                'prototype_desc': ('Testobject build', None, 'REMOVE'),
-                'prototype_key': ('TestDiffKey', 'TestDiffKey', 'KEEP'),
-                'prototype_locks': ('spawn:all();edit:all()', 'spawn:all();edit:all()', 'KEEP'),
-                'prototype_tags': {},
-                'tags': {'foo': (None, ('foo', None, ''), 'ADD')},
-                'typeclass': ('typeclasses.characters.Character',
-                              'typeclasses.characters.Character', 'KEEP')}
+            'home': ('#2', '#2', 'KEEP'),
+            'key': ('TestChar', 'TestChar', 'KEEP'),
+            'locks': ('boot:false();call:false();control:perm(Developer);delete:false();'
+                      'edit:false();examine:perm(Developer);get:false();msg:all();'
+                      'puppet:false();tell:perm(Admin);view:all()',
+                      'boot:false();call:false();control:perm(Developer);delete:false();'
+                      'edit:false();examine:perm(Developer);get:false();msg:all();'
+                      'puppet:false();tell:perm(Admin);view:all()',
+                      'KEEP'),
+            'permissions': {'developer': ('developer', 'developer', 'KEEP')},
+            'prototype_desc': ('Testobject build', None, 'REMOVE'),
+            'prototype_key': ('TestDiffKey', 'TestDiffKey', 'KEEP'),
+            'prototype_locks': ('spawn:all();edit:all()', 'spawn:all();edit:all()', 'KEEP'),
+            'prototype_tags': {},
+            'tags': {'foo': (None, ('foo', None, ''), 'ADD')},
+            'typeclass': ('typeclasses.characters.Character',
+                          'typeclasses.characters.Character', 'KEEP')}
 
         texts, options = olc_menus._format_diff_text_and_options(obj_diff)
         self.assertEqual(
             "\n".join(texts),
             '- |wattrs:|n \n'
+            '   |gKEEP|W:|n desc |W=|n This is User #1. |W(category:|n None|W, locks:|n |W)|n\n'
             '   |c[1] |yADD|n|W:|n None |W->|n foo |W=|n bar |W(category:|n None|W, locks:|n |W)|n\n'
             '   |gKEEP|W:|n prelogout_location |W=|n #2 |W(category:|n None|W, locks:|n |W)|n\n'
-            '   |gKEEP|W:|n desc |W=|n This is User #1. |W(category:|n None|W, locks:|n |W)|n\n'
             '- |whome:|n    |gKEEP|W:|n #2\n'
             '- |wkey:|n    |gKEEP|W:|n TestChar\n'
             '- |wlocks:|n    |gKEEP|W:|n boot:false();call:false();control:perm(Developer);delete:false();edit:false();examine:perm(Developer);get:false();msg:all();puppet:false();tell:perm(Admin);view:all()\n'
