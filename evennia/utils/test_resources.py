@@ -69,6 +69,7 @@ class EvenniaTest(TestCase):
 
 
 import unittest
+import inspect
 
 class TestCreateScript(EvenniaTest):
 
@@ -79,29 +80,29 @@ class TestCreateScript(EvenniaTest):
         super(EvenniaTest, self).tearDown()
 
     def test_create_script(self):
-        class TestScript(DefaultScript):
+        class TestScriptA(DefaultScript):
             def at_script_creation(self):
-                self.key = 'testing_script'
+                self.key = 'test_script'
                 self.interval = 10
                 self.persistent = False
 
-        script = create.create_script(TestScript)
+        script = create.create_script(TestScriptA, key='test_script')
         assert script is not None
         assert script.interval == 10
-        assert script.key == 'testing_script'
+        assert script.key == 'test_script'
 
     # @unittest.expectedFailure
     def test_create_script_w_one_repeat(self):
-        class TestScript(DefaultScript):
+        class TestScriptB(DefaultScript):
             def at_script_creation(self):
-                self.key = 'testing_script'
+                self.key = 'test_script'
                 self.interval = 10
                 self.repeats = 1
                 self.persistent = False
 
         with self.assertRaises(TypeError):
-            script = create.create_script(TestScript)
+            script = create.create_script(TestScriptB, key='test_script')
         # assert script is not None
         # assert script.interval == 10
         # assert script.repeats == 1
-        # assert script.key == 'testing_script'
+        # assert script.key == 'test_script'
