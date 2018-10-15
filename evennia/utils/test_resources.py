@@ -91,7 +91,7 @@ class TestCreateScript(EvenniaTest):
         assert script.interval == 10
         assert script.key == 'test_script'
 
-    # @unittest.expectedFailure
+    @unittest.expectedFailure
     def test_create_script_w_one_repeat(self):
         class TestScriptB(DefaultScript):
             def at_script_creation(self):
@@ -100,9 +100,8 @@ class TestCreateScript(EvenniaTest):
                 self.repeats = 1
                 self.persistent = False
 
-        with self.assertRaises(TypeError):
-            script = create.create_script(TestScriptB, key='test_script')
-        # assert script is not None
-        # assert script.interval == 10
-        # assert script.repeats == 1
-        # assert script.key == 'test_script'
+        script = create.create_script(TestScriptB, key='test_script')
+        assert script is not None
+        assert script.interval == 10
+        assert script.repeats == 1
+        assert script.key == 'test_script'
