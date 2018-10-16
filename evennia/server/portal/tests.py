@@ -11,6 +11,11 @@ except ImportError:
 import string
 from evennia.server.portal import irc
 
+from twisted.test import proto_helpers
+from twisted.trial.unittest import TestCase as TwistedTestCase
+
+from .telnet import TelnetServerFactory
+
 
 class TestIRC(TestCase):
 
@@ -73,3 +78,15 @@ class TestIRC(TestCase):
         s = r'|wthis|Xis|gis|Ma|C|complex|*string'
 
         self.assertEqual(irc.parse_irc_to_ansi(irc.parse_ansi_to_irc(s)), s)
+
+
+class TestTelnet(TwistedTestCase):
+    def setUp(self):
+        super(TestTelnet, self).setUp()
+        factory = TelnetServerFactory()
+        self.proto = factory.buildProtocol(("localhost", 0))
+        self.transport = proto_helpers.StringTransport()
+
+    def test_connect(self):
+        self.proto.makeConnection(self.transport)
+        # TODO: Add rest of stuff for testing connection
