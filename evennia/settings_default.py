@@ -813,25 +813,12 @@ AUTH_PASSWORD_VALIDATORS = [
     
 # Username validation plugins
 AUTH_USERNAME_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.validators.ASCIIUsernameValidator',
-    },
-    {
-        'NAME': 'django.core.validators.MinLengthValidator',
-        'OPTIONS': {
-            'limit_value': 3,
-        }
-    },
-    {
-        'NAME': 'django.core.validators.MaxLengthValidator',
-        'OPTIONS': {
-            'limit_value': 30,
-        }
-    },
-    {
-        'NAME': 'evennia.server.validators.EvenniaUsernameAvailabilityValidator',
-    },
-]
+    {'NAME': 'django.contrib.auth.validators.ASCIIUsernameValidator'},
+    {'NAME': 'django.core.validators.MinLengthValidator',
+        'OPTIONS': {'limit_value': 3}},
+    {'NAME': 'django.core.validators.MaxLengthValidator',
+        'OPTIONS': {'limit_value': 30}},
+    {'NAME': 'evennia.server.validators.EvenniaUsernameAvailabilityValidator'}]
 
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
