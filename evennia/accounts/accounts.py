@@ -14,9 +14,7 @@ instead for most things).
 import time
 from django.conf import settings
 from django.contrib.auth import password_validation
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
@@ -191,41 +189,6 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @lazy_property
     def sessions(self):
         return AccountSessionHandler(self)
-        
-    def get_absolute_url(self):
-        """
-        Returns the canonical URL for an Account. 
-        
-        To callers, this method should appear to return a string that can be 
-        used to refer to the object over HTTP.
-        
-        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
-        """
-        try: return reverse('account-detail', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return '#'
-        
-    def get_delete_url(self):
-        """
-        Returns the canonical URL to the page that allows deleting an object. 
-        
-        """
-        try: return reverse('account-delete', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return '#'
-        
-    def get_update_url(self):
-        """
-        Returns the canonical URL to the page that allows updating an object. 
-        
-        """
-        try: return reverse('account-update', kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return '#'
-        
-    def get_admin_url(self):
-        """
-        Returns a link to this object's entry within the Django Admin panel.
-        """
-        content_type = ContentType.objects.get_for_model(self.__class__)
-        return reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
 
     # session-related methods
 

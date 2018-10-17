@@ -64,14 +64,14 @@ class TestDefaultAccount(TestCase):
         "Get URL for account detail page on website"
         self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
                 email="test@test.com", password="testpassword", typeclass=DefaultAccount)
-        self.assertTrue(self.account.get_absolute_url())
+        self.assertTrue(self.account.web_detail_url())
         
     def test_admin_url(self):
         "Get object's URL for access via Admin pane"
         self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
                 email="test@test.com", password="testpassword", typeclass=DefaultAccount)
-        self.assertTrue(self.account.get_admin_url())
-        self.assertTrue(self.account.get_admin_url() != '#')
+        self.assertTrue(self.account.web_admin_url())
+        self.assertTrue(self.account.web_admin_url() != '#')
 
     def test_password_validation(self):
         "Check password validators deny bad passwords"

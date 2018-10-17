@@ -329,52 +329,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             self.aliases.add(singular, category="plural_key")
         return singular, plural
         
-    def get_url_prefix(self):
-        """
-        Derives the object name from the class name.
-        
-        i.e. 'DefaultAccount' = 'default-account', 'Character' = 'character'
-        """
-        klass = self.__class__.__name__
-        terms = [x.lower() for x in re.split('([A-Z][a-z]+)', klass) if x]
-        return slugify(' '.join(terms))
-        
-    def get_absolute_url(self):
-        """
-        Returns the canonical URL to view an object. 
-        
-        To callers, this method should appear to return a string that can be 
-        used to refer to the object over HTTP.
-        
-        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
-        """
-        try: return reverse('%s-detail' % self.get_url_prefix(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return '#'
-        
-    def get_delete_url(self):
-        """
-        Returns the canonical URL to the page that allows deleting an object. 
-        
-        """
-        try: return reverse('%s-delete' % self.get_url_prefix(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return '#'
-        
-    def get_update_url(self):
-        """
-        Returns the canonical URL to the page that allows updating an object. 
-        
-        """
-        try: return reverse('%s-update' % self.get_url_prefix(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
-        except: return '#'
-        
-    def get_admin_url(self):
-        """
-        Returns a link to this object's entry within the Django Admin panel.
-        
-        """
-        content_type = ContentType.objects.get_for_model(self.__class__)
-        return reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
-
     def search(self, searchdata,
                global_search=False,
                use_nicks=True,
