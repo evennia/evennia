@@ -8,13 +8,15 @@ try:
 except ImportError:
     import unittest
 
+from mock import Mock
 import string
 from evennia.server.portal import irc
 
 from twisted.test import proto_helpers
 from twisted.trial.unittest import TestCase as TwistedTestCase
 
-from .telnet import TelnetServerFactory
+from .telnet import TelnetServerFactory, TelnetProtocol
+from .portal import PORTAL_SESSIONS
 
 
 class TestIRC(TestCase):
@@ -84,9 +86,19 @@ class TestTelnet(TwistedTestCase):
     def setUp(self):
         super(TestTelnet, self).setUp()
         factory = TelnetServerFactory()
+        factory.protocol = TelnetProtocol
+        factory.sessionhandler = PORTAL_SESSIONS
+        factory.sessionhandler.portal = Mock()
         self.proto = factory.buildProtocol(("localhost", 0))
         self.transport = proto_helpers.StringTransport()
+        self.addCleanup(factory.sessionhandler.disconnect_all)
 
     def test_connect(self):
-        self.proto.makeConnection(self.transport)
+        self.transport.client = ["localhost"]
+        self.transport.setTcpKeepAlive = Mock()
+        d = self.proto.makeConnection(self.transport)
         # TODO: Add rest of stuff for testing connection
+        # clean up to prevent Unclean reactor
+        self.proto.nop_keep_alive.stop()
+        self.proto._handshake_delay.cancel()
+        return d
