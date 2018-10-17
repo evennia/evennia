@@ -5,7 +5,7 @@ Base typeclass for in-game Channels.
 from evennia.typeclasses.models import TypeclassBase
 from evennia.comms.models import TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
-from evennia.utils import logger
+from evennia.utils import create, logger
 from evennia.utils.utils import make_iter
 from future.utils import with_metaclass
 _CHANNEL_HANDLER = None
@@ -220,6 +220,42 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         return self.locks.check(accessing_obj, access_type=access_type,
                                 default=default, no_superuser_bypass=no_superuser_bypass)
 
+    @classmethod
+    def create(cls, key, *args, **kwargs):
+        """
+        Creates a basic Channel with default parameters, unless otherwise
+        specified or extended.
+        
+        Provides a friendlier interface to the utils.create_channel() function.
+        
+        Args:
+            key (str): This must be unique.
+    
+        Kwargs:
+            aliases (list of str): List of alternative (likely shorter) keynames.
+            description (str): A description of the channel, for use in listings.
+            locks (str): Lockstring.
+            keep_log (bool): Log channel throughput.
+            typeclass (str or class): The typeclass of the Channel (not
+                often used).
+
+        Returns:
+            channel (Channel): A newly created Channel.
+            errors (list): A list of errors in string form, if any.
+            
+        """
+        errors = []
+        obj = None
+        
+        try:
+            kwargs['desc'] = kwargs.pop('description', '')
+            obj = create.create_channel(key, *args, **kwargs)
+        except Exception as exc:
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(exc)
+            
+        return obj, errors
+    
     def delete(self):
         """
         Deletes channel while also cleaning up channelhandler.
