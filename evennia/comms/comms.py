@@ -221,7 +221,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
                                 default=default, no_superuser_bypass=no_superuser_bypass)
 
     @classmethod
-    def create(cls, key, *args, **kwargs):
+    def create(cls, key, account=None, *args, **kwargs):
         """
         Creates a basic Channel with default parameters, unless otherwise
         specified or extended.
@@ -230,6 +230,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         
         Args:
             key (str): This must be unique.
+            account (Account): Account to attribute this object to.
     
         Kwargs:
             aliases (list of str): List of alternative (likely shorter) keynames.
@@ -238,6 +239,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
             keep_log (bool): Log channel throughput.
             typeclass (str or class): The typeclass of the Channel (not
                 often used).
+            ip (str): IP address of creator (for object auditing).
 
         Returns:
             channel (Channel): A newly created Channel.
@@ -246,10 +248,16 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         errors = []
         obj = None
+        ip = kwargs.pop('ip', '')
         
         try:
             kwargs['desc'] = kwargs.pop('description', '')
             obj = create.create_channel(key, *args, **kwargs)
+            
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+            
         except Exception as exc:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(exc)
