@@ -100,7 +100,7 @@ class Pathfinder(nx.DiGraph):
     # Arbitrary delimiter used to create unique keys to use as nodes.
     # Should not be set it to anything that could conceivably be part of a room
     # name since it will interfere with parsing.
-    delimiter = '[(:@_@:)]'
+    delimiter = '->'
     
     def __init__(self, *args, **kwargs):
         """
@@ -243,6 +243,7 @@ class Pathfinder(nx.DiGraph):
         except nx.NetworkXNoPath: path = []
         except nx.NodeNotFound: path = []
         
+        del(user_graph)
         return path
         
     def get_directions(self, source, dest, caller=None):
@@ -330,7 +331,7 @@ class Pathfinder(nx.DiGraph):
             bucket.append(src_key)
             counter -= 1
             
-            # This should realistically only ever find a single out_edge since 
+            # This should only ever find a single out_edge since 
             # you can't have multiple exits with the same name
             edges = ((src, dst, self[src][dst]['locks_str']) for src, dst in self.out_edges(src_key) if self[src][dst]['direction'] == direction)
             for src, dst, locks_str in edges:
