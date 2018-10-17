@@ -12,11 +12,13 @@ from mock import Mock
 import string
 from evennia.server.portal import irc
 
+from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL, DONT
 from twisted.test import proto_helpers
 from twisted.trial.unittest import TestCase as TwistedTestCase
 
 from .telnet import TelnetServerFactory, TelnetProtocol
 from .portal import PORTAL_SESSIONS
+from .suppress_ga import SUPPRESS_GA
 
 
 class TestIRC(TestCase):
@@ -98,6 +100,10 @@ class TestTelnet(TwistedTestCase):
         self.transport.setTcpKeepAlive = Mock()
         d = self.proto.makeConnection(self.transport)
         # TODO: Add rest of stuff for testing connection
+        self.assertTrue(self.proto.protocol_flags["NOGOAHEAD"])
+        self.proto.dataReceived(IAC + DONT+ SUPPRESS_GA)
+        self.assertFalse(self.proto.protocol_flags["NOGOAHEAD"])
+        self.assertEqual(self.proto.handshakes, 7)
         # clean up to prevent Unclean reactor
         self.proto.nop_keep_alive.stop()
         self.proto._handshake_delay.cancel()
