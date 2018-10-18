@@ -428,7 +428,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             self.send_AdminPortal2Server(amp.DUMMYSESSION,
                                          amp.PSYNC,
                                          server_restart_mode=server_restart_mode,
-                                         sessiondata=sessdata)
+                                         sessiondata=sessdata,
+                                         portal_start_time=self.factory.portal.start_time)
             self.factory.portal.sessions.at_server_connection()
 
             if self.factory.server_connection:
