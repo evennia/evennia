@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^', include('evennia.web.website.urls')),  # , namespace='website', app_name='website')),
 
     # webclient
-    url(r'^webclient/', include('evennia.web.webclient.urls', namespace='webclient', app_name='webclient')),
+    url(r'^webclient/', include('evennia.web.webclient.urls', namespace='webclient')),
 
     # favicon
     url(r'^favicon\.ico$', RedirectView.as_view(url='/media/images/favicon.ico', permanent=False))

@@ -29,7 +29,7 @@ except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from evennia.utils.utils import to_str, uses_database
+from evennia.utils.utils import to_str, uses_database, is_iter
 from evennia.utils import logger
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
@@ -363,6 +363,31 @@ class _SaverDeque(_SaverMutable):
     @_save
     def rotate(self, *args):
         self._data.rotate(*args)
+
+
+_DESERIALIZE_MAPPING = {_SaverList.__name__: list, _SaverDict.__name__: dict,
+                        _SaverSet.__name__: set, _SaverOrderedDict.__name__: OrderedDict,
+                        _SaverDeque.__name__: deque}
+
+
+def deserialize(obj):
+    """
+    Make sure to *fully* decouple a structure from the database, by turning all _Saver*-mutables
+    inside it back into their normal Python forms.
+
+    """
+    def _iter(obj):
+        typ = type(obj)
+        tname = typ.__name__
+        if tname in ('_SaverDict', 'dict'):
+            return {_iter(key): _iter(val) for key, val in obj.items()}
+        elif tname in _DESERIALIZE_MAPPING:
+            return _DESERIALIZE_MAPPING[tname](_iter(val) for val in obj)
+        elif is_iter(obj):
+            return typ(_iter(val) for val in obj)
+        return obj
+    return _iter(obj)
+
 
 #
 # serialization helpers

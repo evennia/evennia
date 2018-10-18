@@ -749,9 +749,9 @@ hole
  to the ground together with the stone archway that once help it up.
 #
 # We lock the bridge exit for the mob, so it don't wander out on the bridge. Only
-# traversing objects controlled by a player (i.e. Characters) may cross the bridge.
+# traversing objects controlled by an account (i.e. Characters) may cross the bridge.
 #
-@lock bridge = traverse:has_player()
+@lock bridge = traverse:has_account()
 
 #------------------------------------------------------------
 #
@@ -997,7 +997,7 @@ mobon ghost
  The stairs are worn by the age-old passage of feet.
 #
 # Lock the antechamber so the ghost cannot get in there.
-@lock stairs down = traverse:has_player()
+@lock stairs down = traverse:has_account()
 #
 # Go down
 #

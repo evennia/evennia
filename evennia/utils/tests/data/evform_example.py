@@ -6,6 +6,7 @@ Test form
 FORMCHAR = "x"
 TABLECHAR = "c"
 
+
 FORM = """
 .------------------------------------------------.
 |                                                |
@@ -27,4 +28,6 @@ FORM = """
 | ccccccccc | ccccccccccccccccBccccccccccccccccc |
 |           |                                    |
  -----------`-------------------------------------
+ Footer: xxxFxxx
+ info
 """
