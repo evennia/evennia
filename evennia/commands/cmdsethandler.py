@@ -586,11 +586,9 @@ class CmdSetHandler(object):
         """
         if callable(cmdset) and hasattr(cmdset, 'path'):
             # try it as a callable
-            print "Try callable", cmdset
             if must_be_default:
                 return self.cmdset_stack and (self.cmdset_stack[0].path == cmdset.path)
             else:
-                print [cset.path for cset in self.cmdset_stack], cmdset.path
                 return any([cset for cset in self.cmdset_stack
                             if cset.path == cmdset.path])
         else:

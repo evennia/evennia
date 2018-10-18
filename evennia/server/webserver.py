@@ -212,6 +212,12 @@ class Website(server.Site):
     """
     noisy = False
 
+    def logPrefix(self):
+        "How to be named in logs"
+        if hasattr(self, "is_portal") and self.is_portal:
+            return "Webserver-proxy"
+        return "Webserver"
+
     def log(self, request):
         """Conditional logging"""
         if _DEBUG:
