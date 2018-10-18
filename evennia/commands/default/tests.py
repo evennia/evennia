@@ -372,6 +372,17 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), \
                   "'NO_EXIST'", "No prototype named 'NO_EXIST'")
 
+        # @span/edit
+        self.call(
+            building.CmdSpawn(),
+            '/edit',
+            'spawn: Extra switch "/edit" ignored')
+
+        # @span/examine
+        self.call(
+            '/examine',
+            building.CmdSpawn(), 'spawn: Extra switch "/examine" ignored')
+
 
 class TestComms(CommandTest):
 
