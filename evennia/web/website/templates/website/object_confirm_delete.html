@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block titleblock %}
-Confirm Delete
+{{ view.page_title }}
 {% endblock %}
 
 {% block body %}
@@ -12,7 +12,7 @@ Confirm Delete
     <div class="col-lg-5 offset-lg-3 col-sm-12">
       <div class="card mt-3 border border-danger">
         <div class="card-body">
-          <h1 class="card-title">Confirm Delete</h1>
+          <h1 class="card-title">{{ view.page_title }}</h1>
           <hr />
           <form method="post" action="?">
             {% csrf_token %}
