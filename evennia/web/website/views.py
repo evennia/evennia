@@ -7,20 +7,23 @@ templates on the fly.
 """
 from django.contrib.admin.sites import site
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Lower
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import View, TemplateView, ListView, DetailView, FormView
-from django.views.generic.edit import DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from evennia import SESSION_HANDLER
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
-from evennia.utils import logger
-from evennia.web.website.forms import AccountForm, CharacterForm
+from evennia.utils import class_from_module, logger
+from evennia.web.website.forms import *
 
 from django.contrib.auth import login
 from django.utils.text import slugify
@@ -142,25 +145,132 @@ def admin_wrapper(request):
     """
     return staff_member_required(site.index)(request)
     
+#
+# Class-based views
+#
+
+class EvenniaCreateView(CreateView):
+    
+    @property
+    def page_title(self):
+        return 'Create %s' % self.model._meta.verbose_name.title()
+
+class EvenniaUpdateView(UpdateView):
+    
+    @property
+    def page_title(self):
+        return 'Update %s' % self.model._meta.verbose_name.title()
+
+class EvenniaDeleteView(DeleteView):
+    
+    @property
+    def page_title(self):
+        return 'Delete %s' % self.model._meta.verbose_name.title()
+        
+#
+# Object views
+#
+    
 class ObjectDetailView(DetailView):
+    
     model = ObjectDB
     
     def get_object(self, queryset=None):
+        """
+        Override of Django hook.
+        
+        Evennia does not natively store slugs, so where a slug is provided, 
+        calculate the same for the object and make sure it matches.
+        
+        """
         obj = super(ObjectDetailView, self).get_object(queryset)
-        if not slugify(obj.name) == self.kwargs.get('slug'):
+        if slugify(obj.name) != self.kwargs.get(self.slug_url_kwarg):
             raise Http404(u"No %(verbose_name)s found matching the query" %
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
+        
+class ObjectCreateView(LoginRequiredMixin, EvenniaCreateView):
+    
+    model = ObjectDB
+        
+class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
+    
+    model = ObjectDB
+    template_name = 'website/object_confirm_delete.html'
+    
+    def delete(self, request, *args, **kwargs):
+        """
+        Calls the delete() method on the fetched object and then
+        redirects to the success URL.
+        
+        We extend this so we can capture the name for the sake of confirmation.
+        """
+        obj = str(self.get_object())
+        response = super(ObjectDeleteView, self).delete(request, *args, **kwargs)
+        messages.success(request, "Successfully deleted '%s'." % obj)
+        return response
+    
+class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
+    
+    model = ObjectDB
+    
+    def get_initial(self):
+        """
+        Override of Django hook.
+        
+        Prepopulates form field values based on object db attributes as well as 
+        model field values.
+        
+        """
+        # Get the object we want to update
+        obj = self.get_object()
+        
+        # Get attributes
+        data = {k:getattr(obj.db, k, '') for k in self.form_class.base_fields}
+        
+        # Get model fields
+        data.update({k:getattr(obj, k, '') for k in self.form_class.Meta.fields})
+        
+        return data
+        
+    def form_valid(self, form):
+        """
+        Override of Django hook.
+        
+        Updates object attributes based on values submitted.
+        
+        This method is only called if all values for the fields submitted
+        passed form validation, so at this point we can assume the data is 
+        validated and sanitized.
+        
+        """
+        # Get the values submitted after they've been cleaned and validated
+        data = {k:v for k,v in form.cleaned_data.items() if k not in self.form_class.Meta.fields}
+        
+        # Update the object attributes
+        for key, value in data.items():
+            setattr(self.object.db, key, value)
+            messages.success(self.request, "Successfully updated '%s' for %s." % (key, self.object))
+            
+        # Do not return super().form_valid; we don't want to update the model
+        # instance, just its attributes.
+        return HttpResponseRedirect(self.success_url)
+        
+#
+# Account views
+#
 
-class AccountCreationView(FormView):
+class AccountMixin(object):
+    
+    model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
     form_class = AccountForm
+
+class AccountCreateView(AccountMixin, ObjectCreateView):
+    
     template_name = 'website/registration/register.html'
     success_url = reverse_lazy('login')
     
     def form_valid(self, form):
-        # Check to make sure basics validated
-        valid = super(AccountCreationView, self).form_valid(form)
-        if not valid: return self.form_invalid(form)
         
         username = form.cleaned_data['username']
         password = form.cleaned_data['password1']
@@ -189,39 +299,39 @@ class AccountCreationView(FormView):
         messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
         return HttpResponseRedirect(self.success_url)
         
-class CharacterManageView(LoginRequiredMixin, ListView):
-    model = ObjectDB
-    paginate_by = 10
-    template_name = 'website/character_manage_list.html'
+#
+# Character views
+#
+        
+class CharacterMixin(object):
+    
+    model = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+    form_class = CharacterForm
     
     def get_queryset(self):
         # Get IDs of characters owned by account
-        ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters]
+        ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters if x]
         
         # Return a queryset consisting of those characters
         return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
-class CharacterUpdateView(LoginRequiredMixin, FormView):
-    form_class = CharacterForm
-    template_name = 'website/generic_form.html'
-    success_url = reverse_lazy('manage-characters')
-    fields = ('description',)
-    
-class CharacterDeleteView(LoginRequiredMixin, ObjectDetailView, DeleteView):
-    model = ObjectDB
-    
-    def get_queryset(self):
-        # Restrict characters available for deletion to those owned by 
-        # the authenticated account
-        ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters]
+class CharacterManageView(LoginRequiredMixin, CharacterMixin, ListView):
+
+    paginate_by = 10
+    template_name = 'website/character_manage_list.html'
+    page_title = 'Manage: Characters'
         
-        # Return a queryset consisting of those characters
-        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
+class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
+    
+    form_class = CharacterUpdateForm
+    template_name = 'website/character_form.html'
+    
+class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
+    pass
         
-class CharacterCreateView(LoginRequiredMixin, FormView):
-    form_class = CharacterForm
-    template_name = 'website/character_create_form.html'
-    success_url = reverse_lazy('manage-characters')
+class CharacterCreateView(CharacterMixin, ObjectCreateView):
+    
+    template_name = 'website/character_form.html'
     
     def form_valid(self, form):
         # Get account ref
@@ -230,12 +340,12 @@ class CharacterCreateView(LoginRequiredMixin, FormView):
         
         # Get attributes from the form
         self.attributes = {k: form.cleaned_data[k] for k in form.cleaned_data.keys()}
-        charname = self.attributes.pop('name')
-        description = self.attributes.pop('description')
+        charname = self.attributes.pop('db_key')
+        description = self.attributes.pop('desc')
         
         # Create a character
         permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-        typeclass = settings.BASE_CHARACTER_TYPECLASS
+        typeclass = self.model
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
         
         from evennia.utils import create
@@ -258,7 +368,7 @@ class CharacterCreateView(LoginRequiredMixin, FormView):
             account.db._last_puppet = character
             
             # Assign attributes from form
-            [setattr(character.db, field, self.attributes[field]) for field in self.attributes.keys()]
+            [setattr(character.db, key, value) for key,value in self.attributes.items()]
             character.db.creator_id = account.id
             character.save()
             
