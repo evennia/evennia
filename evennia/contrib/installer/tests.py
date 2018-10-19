@@ -8,21 +8,23 @@ class GenericInstallerTest(EvenniaTest):
     home_path = tempfile.gettempdir()
     
     def setUp(self):
-        from evennia.contrib import installer
-        self.installer = installer.GenericInstaller(home_path=self.home_path)
+        from evennia.contrib.installer import install
+        self.installer = install.GenericInstaller(home_path=self.home_path)
         
         # Don't let actual commands be executed on filesystem
         self.installer.execute = MagicMock()
         self.installer.mkdir = MagicMock()
+        self.installer.chdir = MagicMock()
         
-        self.workspace_name = installer.WORKSPACE_NAME
-        self.repo_url = installer.REPO_URL
+        self.workspace_name = install.WORKSPACE_NAME
+        self.repo_url = install.REPO_URL
         
         self.commands = [
             ['virtualenv', '-p', 'python', self.workspace_name],
             ['git', 'clone', self.repo_url, 'evennia'],
             ['pip', 'install', '-e', 'evennia'],
-            ['evennia', '--init', self.workspace_name]
+            ['evennia', '--init', self.workspace_name],
+            ['evennia', 'migrate']
         ]
         
     def tearDown(self):
