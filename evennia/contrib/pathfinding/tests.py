@@ -117,6 +117,13 @@ class PathfinderTest(EvenniaTest):
         "Should return a JSON serialized graph."
         self.assertTrue(self.pfinder.export_json())
         
+    def test_mmp_export(self):
+        "Should return a MMP (XML) graph."
+        import xml.etree.ElementTree as ET
+        xml = self.pfinder.export_mmp()
+        root = ET.fromstring(xml)
+        self.assertTrue(root)
+        
     def setUp(self):
         super(PathfinderTest, self).setUp()
         

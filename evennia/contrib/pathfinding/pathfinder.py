@@ -400,6 +400,8 @@ class Pathfinder(nx.DiGraph):
         https://github.com/jsongraph/json-graph-specification
         
         Kwargs:
+            pretty (bool): If false, returns a flat JSON string instead of one
+                with indentations.
             any (any): Passed directly to node_link_data function. Can be used
                 to modify key names of output.
         
@@ -407,5 +409,55 @@ class Pathfinder(nx.DiGraph):
             data (str): Serialized JSON string comprising the graph data.
             
         """
+        pretty = kwargs.pop('pretty', True)
+        if pretty: indent = 4
+        else: indent = 0
+        
         data = json_graph.node_link_data(self, **kwargs)
-        return json.dumps(data, indent=4)
+        return json.dumps(data, indent=indent)
+        
+    def export_mmp(self, **kwargs):
+        """
+        Exports graph data in MMP format.
+        
+        http://www.mudstandards.org/MMP_Specification/
+        
+        Kwargs:
+            pretty (bool): If false, returns a raw XML string instead of one
+                with indentations.
+        
+        Returns:
+            data (str): Serialized XML string comprising the graph data.
+        
+        """
+        from xml.etree.ElementTree import Element, SubElement, tostring
+        from xml.dom import minidom
+        
+        map = Element('map')
+        rooms = SubElement(map, "rooms")
+        
+        # Add rooms to xml tree
+        for node in self.nodes:
+            room = SubElement(rooms, 'room')
+            room.attrib['id'] = str(self.nodes[node]['id'])
+            room.attrib['title'] = self.nodes[node]['key']
+            
+            # Add exits
+            for edge in self.edges(node):
+                exit = SubElement(room, 'exit')
+                exit.attrib['id'] = str(self.edges[edge]['id'])
+                exit.attrib['direction'] = self.edges[edge]['direction']
+                exit.attrib['target'] = edge[-1].split(self.delimiter)[-1]
+            
+        def prettify(elem):
+            """
+            Return a pretty-printed XML string for the Element.
+            """
+            rough_string = tostring(elem, 'utf-8')
+            reparsed = minidom.parseString(rough_string)
+            return reparsed.toprettyxml(indent="  ")
+            
+        if kwargs.get('pretty', True):
+            return prettify(map)
+        else:
+            return tostring(map)
