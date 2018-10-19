@@ -460,16 +460,44 @@ class TestBuilding(CommandTest):
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
 
-        # @span/edit
+        # @span/edit (missing prototype)
         self.call(
             building.CmdSpawn(),
             '/edit',
-            'spawn: Extra switch "/edit" ignored')
+            '@spawn: Extra switch "/edit" ignored.|Usage: @spawn <prototype-key> or {key: value, ...}\n (2 existing prototypes. Use /list to inspect)')
+        # assert 'Prototype wizard' in msg
 
-        # @span/examine
+        # @spawn/edit with valid prototype
+        # with self.assertRaises(AttributeError):
         self.call(
+            building.CmdSpawn(),
+            '/edit BALL',
+            '@spawn: Extra switch "/edit" ignored.|Spawned Ball(#13).')
+
+        # @spawn/edit with invalid prototype
+        #`with self.assertRaises(AttributeError):
+        self.call(
+            building.CmdSpawn(),
+            '/edit NO_EXISTS',
+            '@spawn: Extra switch "/edit" ignored.|No prototype named \'NO_EXISTS\'.')
+
+        # @spawn/examine (missing prototype)
+        self.call(
+            building.CmdSpawn(),
             '/examine',
-            building.CmdSpawn(), 'spawn: Extra switch "/examine" ignored')
+            '@spawn: Extra switch "/examine" ignored.|Usage: @spawn <prototype-key> or {key: value, ...}\n (2 existing prototypes. Use /list to inspect)')
+
+        # @spawn/examine with valid prototype
+        self.call(
+            building.CmdSpawn(),
+            '/examine BALL',
+            '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#14).')
+
+        # @spawn/examine with invalid prototype
+        self.call(
+            building.CmdSpawn(),
+            '/examine NO_EXISTS',
+            '@spawn: Extra switch "/examine" ignored.|No prototype named \'NO_EXISTS\'.')
 
 
 class TestComms(CommandTest):
