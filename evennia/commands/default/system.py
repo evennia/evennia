@@ -710,6 +710,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
         """Show server time data in a table."""
         table1 = EvTable("|wServer time", "", align="l", width=78)
         table1.add_row("Current uptime", utils.time_format(gametime.uptime(), 3))
+        table1.add_row("Portal uptime", utils.time_format(gametime.portal_uptime(), 3))
         table1.add_row("Total runtime", utils.time_format(gametime.runtime(), 2))
         table1.add_row("First start", datetime.datetime.fromtimestamp(gametime.server_epoch()))
         table1.add_row("Current time", datetime.datetime.now())
