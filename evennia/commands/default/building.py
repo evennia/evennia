@@ -10,7 +10,7 @@ from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
-from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
+from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses, variable_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
@@ -1022,10 +1022,17 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
 
         object_name = self.lhs
 
-        # get object
-        obj = caller.search(object_name, global_search=True)
-        if not obj:
-            return
+        # try to search locally first
+        results = caller.search(object_name, quiet=True)
+        if len(results) > 1:  # local results was a multimatch. Inform them to be more specific
+            _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+            return _AT_SEARCH_RESULT(results, caller, query=object_name)
+        elif len(results) == 1:  # A unique local match
+            obj = results[0]
+        else:  # No matches. Search globally
+            obj = caller.search(object_name, global_search=True)
+            if not obj:
+                return
 
         if self.rhs:
             # this means a target name was given

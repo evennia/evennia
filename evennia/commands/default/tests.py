@@ -334,6 +334,14 @@ class TestBuilding(CommandTest):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
         self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
+        self.char1.location = self.room2
+        self.call(building.CmdOpen(), "TestExit2=Room", "Created new Exit 'TestExit2' from Room2 to Room.")
+        # ensure it matches locally first
+        self.call(building.CmdLink(), "TestExit=Room2", "Link created TestExit2 -> Room2 (one way).")
+        # ensure can still match globally when not a local name
+        self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1(#8) did not have a destination set before. "
+                                                         "Make sure you linked the right thing.\n"
+                                                         "Link created TestExit1 -> Room2 (one way).")
 
     def test_set_home(self):
         self.call(building.CmdSetHome(), "Obj = Room2", "Obj's home location was changed from Room")
