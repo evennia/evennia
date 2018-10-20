@@ -5,8 +5,6 @@
 ### Requirements
 
 - Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
-- Add `autobahn` dependency for Websocket support, removing very old embedded txWS library (from a 
-  time before websocket specification was still not fixed). 
 - Add `inflect` dependency for automatic pluralization of object names.
 
 ### Server/Portal

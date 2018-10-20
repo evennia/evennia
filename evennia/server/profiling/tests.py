@@ -1,7 +1,8 @@
 from django.test import TestCase
-from mock import Mock
+from mock import Mock, patch, mock_open
 from .dummyrunner_settings import (c_creates_button, c_creates_obj, c_digs, c_examines, c_help, c_idles, c_login,
                                    c_login_nodig, c_logout, c_looks, c_moves, c_moves_n, c_moves_s, c_socialize)
+import memplot
 
 
 class TestDummyrunnerSettings(TestCase):
@@ -91,3 +92,21 @@ class TestDummyrunnerSettings(TestCase):
 
     def test_c_move_s(self):
         self.assertEqual(c_moves_s(self.client), "south")
+
+
+class TestMemPlot(TestCase):
+    @patch.object(memplot, "_idmapper")
+    @patch.object(memplot, "os")
+    @patch.object(memplot, "open", new_callable=mock_open, create=True)
+    @patch.object(memplot, "time")
+    def test_memplot(self, mock_time, mocked_open, mocked_os, mocked_idmapper):
+        from evennia.utils.create import create_script
+        mocked_idmapper.cache_size.return_value = (9, 5000)
+        mock_time.time = Mock(return_value=6000.0)
+        script = create_script(memplot.Memplot)
+        script.db.starttime = 0.0
+        mocked_os.popen.read.return_value = 5000.0
+        script.at_repeat()
+        handle = mocked_open()
+        handle.write.assert_called_with('100.0, 0.001, 0.001, 9\n')
+        script.stop()
