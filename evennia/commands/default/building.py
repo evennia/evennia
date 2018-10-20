@@ -612,12 +612,12 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             self.edit_handler()
             return
 
-        if self.rhs:
+        if '=' in self.args:
             # We have an =
             obj = caller.search(self.lhs)
             if not obj:
                 return
-            desc = self.rhs
+            desc = self.rhs or ''
         else:
             obj = caller.location or self.msg("|rYou can't describe oblivion.|n")
             if not obj:

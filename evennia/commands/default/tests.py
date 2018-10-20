@@ -318,6 +318,24 @@ class TestBuilding(CommandTest):
     def test_desc(self):
         self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
 
+    def test_empty_desc(self):
+        """
+        empty desc sets desc as ''
+        """
+        o2d = self.obj2.db.desc
+        r1d = self.room1.db.desc
+        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#5).")
+        assert self.obj2.db.desc == '' and self.obj2.db.desc != o2d
+        assert self.room1.db.desc == r1d
+
+    def test_desc_default_to_room(self):
+        """no rhs changes room's desc"""
+        o2d = self.obj2.db.desc
+        r1d = self.room1.db.desc
+        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#1).")
+        assert self.obj2.db.desc == o2d
+        assert self.room1.db.desc == 'Obj2' and self.room1.db.desc != r1d
+
     def test_wipe(self):
         confirm = building.CmdDestroy.confirm
         building.CmdDestroy.confirm = False
