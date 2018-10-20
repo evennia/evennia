@@ -2856,7 +2856,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     key = "@spawn"
     aliases = ["olc"]
-    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc", "update")
+    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc", "update", "edit")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
@@ -2907,7 +2907,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
 
-        if self.cmdstring == "olc" or 'menu' in self.switches or 'olc' in self.switches:
+        if self.cmdstring == "olc" or 'menu' in self.switches \
+                or 'olc' in self.switches or 'edit' in self.switches:
             # OLC menu mode
             prototype = None
             if self.lhs:
