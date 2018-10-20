@@ -461,25 +461,25 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), "/list", "Key ")
 
         # @span/edit (missing prototype)
-        self.call(
+        msg = self.call(
             building.CmdSpawn(),
-            '/edit',
-            '@spawn: Extra switch "/edit" ignored.|Usage: @spawn <prototype-key> or {key: value, ...}\n (2 existing prototypes. Use /list to inspect)')
-        # assert 'Prototype wizard' in msg
+            '/edit')
+            # '@spawn: Extra switch "/edit" ignored.|Usage: @spawn <prototype-key> or {key: value, ...}\n (2 existing prototypes. Use /list to inspect)')
+        assert 'Prototype wizard' in msg
 
         # @spawn/edit with valid prototype
-        # with self.assertRaises(AttributeError):
-        self.call(
-            building.CmdSpawn(),
-            '/edit BALL',
-            '@spawn: Extra switch "/edit" ignored.|Spawned Ball(#13).')
+        with self.assertRaises(AttributeError):
+            self.call(
+                building.CmdSpawn(),
+                '/edit BALL',
+                '@spawn: Extra switch "/edit" ignored.|Spawned Ball(#13).')
 
         # @spawn/edit with invalid prototype
-        #`with self.assertRaises(AttributeError):
-        self.call(
-            building.CmdSpawn(),
-            '/edit NO_EXISTS',
-            '@spawn: Extra switch "/edit" ignored.|No prototype named \'NO_EXISTS\'.')
+        with self.assertRaises(AttributeError):
+            self.call(
+                building.CmdSpawn(),
+                '/edit NO_EXISTS',
+                '@spawn: Extra switch "/edit" ignored.|No prototype named \'NO_EXISTS\'.')
 
         # @spawn/examine (missing prototype)
         self.call(
@@ -491,7 +491,8 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSpawn(),
             '/examine BALL',
-            '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#14).')
+            # '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#14).')
+            '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#13).')
 
         # @spawn/examine with invalid prototype
         self.call(
