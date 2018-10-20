@@ -84,7 +84,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         from evennia.utils.utils import delay
         # timeout the handshakes in case the client doesn't reply at all
-        delay(2, callback=self.handshake_done, timeout=True)
+        self._handshake_delay = delay(2, callback=self.handshake_done, timeout=True)
 
         # TCP/IP keepalive watches for dead links
         self.transport.setTcpKeepAlive(1)
