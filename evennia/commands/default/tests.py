@@ -243,6 +243,9 @@ class TestAdmin(CommandTest):
     def test_ban(self):
         self.call(admin.CmdBan(), "Char", "Name-Ban char was added.")
 
+    def test_force(self):
+        self.call(admin.CmdForce(), "Char2=say test", 'Char2(#7) says, "test"|You have forced Char2 to: say test')
+
 
 class TestAccount(CommandTest):
 
