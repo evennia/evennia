@@ -7,6 +7,7 @@ from evennia.accounts.accounts import AccountSessionHandler
 from evennia.accounts.accounts import DefaultAccount
 from evennia.server.session import Session
 from evennia.utils import create
+from evennia.utils.test_resources import EvenniaTest
 
 from django.conf import settings
 
@@ -199,3 +200,20 @@ class TestDefaultAccount(TestCase):
         account.puppet_object(self.s1, obj)
         self.assertTrue(self.s1.data_out.call_args[1]['text'].endswith("is already puppeted by another Account."))
         self.assertIsNone(obj.at_post_puppet.call_args)
+
+
+class TestAccountPuppetDeletion(EvenniaTest):
+    
+    @override_settings(MULTISESSION_MODE=2)
+    def test_puppet_deletion(self):
+        # Check for existing chars
+        self.assertFalse(self.account.db._playable_characters, 'Account should not have any chars by default.')
+        
+        # Add char1 to account's playable characters
+        self.account.db._playable_characters.append(self.char1)
+        self.assertTrue(self.account.db._playable_characters, 'Char was not added to account.')
+        
+        # See what happens when we delete char1.
+        self.char1.delete()
+        # Playable char list should be empty.
+        self.assertFalse(self.account.db._playable_characters, 'Playable character list is not empty! %s' % self.account.db._playable_characters)
