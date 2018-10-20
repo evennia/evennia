@@ -325,7 +325,7 @@ MENU = \
     |  7) Kill Server only            (send kill signal to process) |
     |  8) Kill Portal + Server                                      |
     +--- Information -----------------------------------------------+
-    |  9) Tail log files                       (quickly see errors) |
+    |  9) Tail log files      (quickly see errors - Ctrl-C to exit) |
     | 10) Status                                                    |
     | 11) Port info                                                 |
     +--- Testing ---------------------------------------------------+
