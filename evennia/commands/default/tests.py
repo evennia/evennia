@@ -512,7 +512,6 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSpawn(),
             '/examine BALL',
-            # '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#14).')
             '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#13).')
 
         # @spawn/examine with invalid prototype
