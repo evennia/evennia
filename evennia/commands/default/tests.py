@@ -478,29 +478,33 @@ class TestBuilding(CommandTest):
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
 
-        # @span/edit (missing prototype)
+        # @spawn/edit (missing prototype)
         # brings up olc menu
         msg = self.call(
             building.CmdSpawn(),
             '/edit')
-        assert msg.startswith('______________________________________________________________________________\n\n --- Prototype wizard --- \n\n')
+        assert 'Prototype wizard' in msg
 
         # @spawn/edit with valid prototype
+        # brings up olc menu loaded with prototype
         msg = self.call(
             building.CmdSpawn(),
             '/edit testball')
-        # TODO: OLC menu comes up but it gives no
-        # indication of testball prototype being
-        # edited ... Is this correct?
-        # On top of OCL being shown, msg is preceded
-        # by Room(#1)...
         assert 'Prototype wizard' in msg
+        assert hasattr(self.char1.ndb._menutree, "olc_prototype")
+        assert dict == type(self.char1.ndb._menutree.olc_prototype) \
+                and 'prototype_key' in self.char1.ndb._menutree.olc_prototype \
+                and 'key' in self.char1.ndb._menutree.olc_prototype \
+                and 'testball' == self.char1.ndb._menutree.olc_prototype['prototype_key'] \
+                and 'Ball' == self.char1.ndb._menutree.olc_prototype['key']
+        assert 'Ball' in msg and 'testball' in msg
 
         # @spawn/edit with valid prototype (synomym)
         msg = self.call(
             building.CmdSpawn(),
             '/edit BALL')
         assert 'Prototype wizard' in msg
+        assert 'Ball' in msg and 'testball' in msg
 
         # @spawn/edit with invalid prototype
         msg = self.call(
@@ -518,6 +522,8 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSpawn(),
             '/examine BALL',
+            # FIXME: should this print the existing prototype
+            # instead of spawning it?
             '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#13).')
 
         # @spawn/examine with invalid prototype
