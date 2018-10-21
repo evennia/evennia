@@ -2913,7 +2913,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             prototype = None
             if self.lhs:
                 key = self.lhs
-                prototype = spawner.search_prototype(key=key, return_meta=True)
+                prototype = protlib.search_prototype(key=key)
                 if len(prototype) > 1:
                     caller.msg("More than one match for {}:\n{}".format(
                         key, "\n".join(proto.get('prototype_key', '') for proto in prototype)))
@@ -2921,6 +2921,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 elif prototype:
                     # one match
                     prototype = prototype[0]
+                else:
+                    # no match
+                    caller.msg("No prototype '{}' was found.".format(key))
+                    return
             olc_menus.start_olc(caller, session=self.session, prototype=prototype)
             return
 
