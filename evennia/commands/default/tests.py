@@ -479,25 +479,28 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSpawn(), "/list", "Key ")
 
         # @span/edit (missing prototype)
+        # brings up olc menu
         msg = self.call(
             building.CmdSpawn(),
             '/edit')
-            # '@spawn: Extra switch "/edit" ignored.|Usage: @spawn <prototype-key> or {key: value, ...}\n (2 existing prototypes. Use /list to inspect)')
-        assert 'Prototype wizard' in msg
+        assert msg.startswith('______________________________________________________________________________\n\n --- Prototype wizard --- \n\n')
 
         # @spawn/edit with valid prototype
-        with self.assertRaises(AttributeError):
-            self.call(
-                building.CmdSpawn(),
-                '/edit BALL',
-                '@spawn: Extra switch "/edit" ignored.|Spawned Ball(#13).')
+        self.call(
+            building.CmdSpawn(),
+            '/edit testball')
+        # TODO: OLC menu comes up but it gives no
+        # indication of testball prototype being
+        # edited ... Is this correct?
+        # On top of OCL being shown, msg is preceded
+        # by Room(#1)...
+        assert 'Prototype wizard' in msg
 
         # @spawn/edit with invalid prototype
-        with self.assertRaises(AttributeError):
-            self.call(
-                building.CmdSpawn(),
-                '/edit NO_EXISTS',
-                '@spawn: Extra switch "/edit" ignored.|No prototype named \'NO_EXISTS\'.')
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit NO_EXISTS',
+            "No prototype 'NO_EXISTS' was found.")
 
         # @spawn/examine (missing prototype)
         self.call(
