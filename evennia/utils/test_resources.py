@@ -73,12 +73,6 @@ import inspect
 
 class TestCreateScript(EvenniaTest):
 
-    def setUp(self):
-        super(EvenniaTest, self).setUp()
-
-    def tearDown(self):
-        super(EvenniaTest, self).tearDown()
-
     def test_create_script(self):
         class TestScriptA(DefaultScript):
             def at_script_creation(self):
@@ -92,7 +86,7 @@ class TestCreateScript(EvenniaTest):
         assert script.key == 'test_script'
 
     @unittest.expectedFailure
-    def test_create_script_w_one_repeat(self):
+    def test_create_script_w_repeats_equal_1(self):
         class TestScriptB(DefaultScript):
             def at_script_creation(self):
                 self.key = 'test_script'
@@ -100,8 +94,28 @@ class TestCreateScript(EvenniaTest):
                 self.repeats = 1
                 self.persistent = False
 
+        # import ipdb
+        # ipdb.set_trace()
+
         script = create.create_script(TestScriptB, key='test_script')
         assert script is not None
         assert script.interval == 10
         assert script.repeats == 1
+        assert script.key == 'test_script'
+
+    def test_create_script_w_repeats_equal_2(self):
+        class TestScriptC(DefaultScript):
+            def at_script_creation(self):
+                self.key = 'test_script'
+                self.interval = 10
+                self.repeats = 2
+                self.persistent = False
+
+        # import ipdb
+        # ipdb.set_trace()
+
+        script = create.create_script(TestScriptC, key='test_script')
+        assert script is not None
+        assert script.interval == 10
+        assert script.repeats == 2
         assert script.key == 'test_script'
