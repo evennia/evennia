@@ -486,7 +486,7 @@ class TestBuilding(CommandTest):
         assert msg.startswith('______________________________________________________________________________\n\n --- Prototype wizard --- \n\n')
 
         # @spawn/edit with valid prototype
-        self.call(
+        msg = self.call(
             building.CmdSpawn(),
             '/edit testball')
         # TODO: OLC menu comes up but it gives no
@@ -494,6 +494,12 @@ class TestBuilding(CommandTest):
         # edited ... Is this correct?
         # On top of OCL being shown, msg is preceded
         # by Room(#1)...
+        assert 'Prototype wizard' in msg
+
+        # @spawn/edit with valid prototype (synomym)
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit BALL')
         assert 'Prototype wizard' in msg
 
         # @spawn/edit with invalid prototype
