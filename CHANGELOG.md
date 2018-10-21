@@ -6,6 +6,13 @@
 
 - Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
   question.
+- Add new `@force` command to have another object perform a command.
+- Add the Portal uptime to the `@time` command.
+- Make the `@link` command first make a local search before a global search.
+
+### Utils
+
+- Added more unit tests.
 
 
 ## Evennia 0.8 (2018)
