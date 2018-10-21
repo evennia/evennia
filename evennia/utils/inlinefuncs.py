@@ -61,8 +61,10 @@ Error handling:
 """
 
 import re
+import fnmatch
 from django.conf import settings
-from evennia.utils import utils
+
+from evennia.utils import utils, logger
 
 
 # example/testing inline functions
@@ -157,12 +159,32 @@ def clr(*args, **kwargs):
     return text
 
 
+def null(*args, **kwargs):
+    return args[0] if args else ''
+
+
+def nomatch(name, *args, **kwargs):
+    """
+    Default implementation of nomatch returns the function as-is as a string.
+
+    """
+    kwargs.pop("inlinefunc_stack_depth", None)
+    kwargs.pop("session")
+
+    return "${name}({args}{kwargs})".format(
+        name=name,
+        args=",".join(args),
+        kwargs=",".join("{}={}".format(key, val) for key, val in kwargs.items()))
+
+_INLINE_FUNCS = {}
+
 # we specify a default nomatch function to use if no matching func was
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
-_INLINE_FUNCS = {"nomatch": lambda *args, **kwargs: "<UKNOWN>",
-                 "stackfull": lambda *args, **kwargs: "\n (not parsed: inlinefunc stack size exceeded.)"}
+_DEFAULT_FUNCS = {"nomatch": lambda *args, **kwargs: "<UNKNOWN>",
+                  "stackfull": lambda *args, **kwargs: "\n (not parsed: "}
 
+_INLINE_FUNCS.update(_DEFAULT_FUNCS)
 
 # load custom inline func modules.
 for module in utils.make_iter(settings.INLINEFUNC_MODULES):
@@ -172,13 +194,10 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
         if module == "server.conf.inlinefuncs":
             # a temporary warning since the default module changed name
             raise ImportError("Error: %s\nPossible reason: mygame/server/conf/inlinefunc.py should "
-                              "be renamed to mygame/server/conf/inlinefuncs.py (note the S at the end)." % err)
+                              "be renamed to mygame/server/conf/inlinefuncs.py (note "
+                              "the S at the end)." % err)
         else:
             raise
-
-
-# remove the core function if we include examples in this module itself
-#_INLINE_FUNCS.pop("inline_func_parse", None)
 
 
 # The stack size is a security measure. Set to <=0 to disable.
@@ -189,21 +208,21 @@ except AttributeError:
 
 # regex definitions
 
-_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname{ (start of function call)
+_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname( (start of function call)
 
-# note: this regex can be experimented with at https://regex101.com/r/kGR3vE/1
+# note: this regex can be experimented with at https://regex101.com/r/kGR3vE/2
 _RE_TOKEN = re.compile(r"""
       (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'|  # single-triplets escape all inside
       (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"|  # double-triplets escape all inside
       (?P<comma>(?<!\\)\,)|                            # , (argument sep)
-      (?P<end>(?<!\\)\))|                              # ) (end of func call)
+      (?P<end>(?<!\\)\))|                              # ) (possible end of func call)
+      (?P<leftparens>(?<!\\)\()|                       # ( (lone left-parens)
       (?P<start>(?<!\\)\$\w+\()|                       # $funcname (start of func call)
       (?P<escaped>                                     # escaped tokens to re-insert sans backslash
-            \\\'|\\\"|\\\)|\\\$\w+\()|
+            \\\'|\\\"|\\\)|\\\$\w+\(|\\\()|
       (?P<rest>                                        # everything else to re-insert verbatim
-            \$(?!\w+\()|\'{1}|\"{1}|\\{1}|[^),$\'\"\\]+)""",
+            \$(?!\w+\()|\'|\"|\\|[^),$\'\"\\\(]+)""",
                        re.UNICODE | re.IGNORECASE | re.VERBOSE | re.DOTALL)
-
 
 # Cache for function lookups.
 _PARSING_CACHE = utils.LimitedSizeOrderedDict(size_limit=1000)
@@ -260,7 +279,7 @@ class InlinefuncError(RuntimeError):
     pass
 
 
-def parse_inlinefunc(string, strip=False, **kwargs):
+def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False, **kwargs):
     """
     Parse the incoming string.
 
@@ -268,6 +287,9 @@ def parse_inlinefunc(string, strip=False, **kwargs):
         string (str): The incoming string to parse.
         strip (bool, optional): Whether to strip function calls rather than
             execute them.
+        available_funcs (dict, optional): Define an alternative source of functions to parse for.
+            If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
+        stacktrace (bool, optional): If set, print the stacktrace to log.
     Kwargs:
         session (Session): This is sent to this function by Evennia when triggering
             it. It is passed to the inlinefunc.
@@ -276,7 +298,17 @@ def parse_inlinefunc(string, strip=False, **kwargs):
 
     """
     global _PARSING_CACHE
-    if string in _PARSING_CACHE:
+    usecache = False
+    if not available_funcs:
+        available_funcs = _INLINE_FUNCS
+        usecache = True
+    else:
+        # make sure the default keys are available, but also allow overriding
+        tmp = _DEFAULT_FUNCS.copy()
+        tmp.update(available_funcs)
+        available_funcs = tmp
+
+    if usecache and string in _PARSING_CACHE:
         # stack is already cached
         stack = _PARSING_CACHE[string]
     elif not _RE_STARTTOKEN.search(string):
@@ -288,13 +320,36 @@ def parse_inlinefunc(string, strip=False, **kwargs):
 
         # process string on stack
         ncallable = 0
+        nlparens = 0
+        nvalid = 0
+
+        if stacktrace:
+            out = "STRING: {} =>".format(string)
+            print(out)
+            logger.log_info(out)
+
         for match in _RE_TOKEN.finditer(string):
             gdict = match.groupdict()
+
+            if stacktrace:
+                out = " MATCH: {}".format({key: val for key, val in gdict.items() if val})
+                print(out)
+                logger.log_info(out)
+
             if gdict["singlequote"]:
                 stack.append(gdict["singlequote"])
             elif gdict["doublequote"]:
                 stack.append(gdict["doublequote"])
+            elif gdict["leftparens"]:
+                # we have a left-parens inside a callable
+                if ncallable:
+                    nlparens += 1
+                stack.append("(")
             elif gdict["end"]:
+                if nlparens > 0:
+                    nlparens -= 1
+                    stack.append(")")
+                    continue
                 if ncallable <= 0:
                     stack.append(")")
                     continue
@@ -312,10 +367,12 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                 funcname = _RE_STARTTOKEN.match(gdict["start"]).group(1)
                 try:
                     # try to fetch the matching inlinefunc from storage
-                    stack.append(_INLINE_FUNCS[funcname])
+                    stack.append(available_funcs[funcname])
+                    nvalid += 1
                 except KeyError:
-                    stack.append(_INLINE_FUNCS["nomatch"])
+                    stack.append(available_funcs["nomatch"])
                     stack.append(funcname)
+                    stack.append(None)
                 ncallable += 1
             elif gdict["escaped"]:
                 # escaped tokens
@@ -338,11 +395,11 @@ def parse_inlinefunc(string, strip=False, **kwargs):
             # this means not all inlinefuncs were complete
             return string
 
-        if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < len(stack):
+        if _STACK_MAXSIZE > 0 and _STACK_MAXSIZE < nvalid:
             # if stack is larger than limit, throw away parsing
-            return string + gdict["stackfull"](*args, **kwargs)
-        else:
-            # cache the stack
+            return string + available_funcs["stackfull"](*args, **kwargs)
+        elif usecache:
+            # cache the stack - we do this also if we don't check the cache above
             _PARSING_CACHE[string] = stack
 
     # run the stack recursively
@@ -365,9 +422,14 @@ def parse_inlinefunc(string, strip=False, **kwargs):
                 kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval, force_string=True)
+    retval = "".join(_run_stack(item) for item in stack)
+    if stacktrace:
+        out = "STACK: \n{} => {}\n".format(stack, retval)
+        print(out)
+        logger.log_info(out)
 
-    # execute the stack from the cache
-    return "".join(_run_stack(item) for item in _PARSING_CACHE[string])
+    # execute the stack
+    return retval
 
 #
 # Nick templating
@@ -401,7 +463,7 @@ Custom arg markers
    $N      argument position (1-99)
 
 """
-import fnmatch
+
 _RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
 _RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
 _RE_NICK_SPACE = re.compile(r"\\ ")
@@ -442,7 +504,6 @@ def initialize_nick_templates(in_template, out_template):
     # validate the tempaltes - they should at least have the same number of args
     n_outargs = len(_RE_NICK_TEMPLATE_ARG.findall(out_template))
     if n_inargs != n_outargs:
-        print n_inargs, n_outargs
         raise NickTemplateInvalid
 
     return re.compile(regex_string), template_string

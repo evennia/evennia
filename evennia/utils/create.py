@@ -54,7 +54,8 @@ _GA = object.__getattribute__
 
 def create_object(typeclass=None, key=None, location=None, home=None,
                   permissions=None, locks=None, aliases=None, tags=None,
-                  destination=None, report_to=None, nohome=False):
+                  destination=None, report_to=None, nohome=False, attributes=None,
+                  nattributes=None):
     """
 
     Create a new in-game object.
@@ -68,13 +69,18 @@ def create_object(typeclass=None, key=None, location=None, home=None,
         permissions (list): A list of permission strings or tuples (permstring, category).
         locks (str): one or more lockstrings, separated by semicolons.
         aliases (list): A list of alternative keys or tuples (aliasstring, category).
-        tags (list): List of tag keys or tuples (tagkey, category).
+        tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).
         destination (Object or str): Obj or #dbref to use as an Exit's
             target.
         report_to (Object): The object to return error messages to.
         nohome (bool): This allows the creation of objects without a
             default home location; only used when creating the default
             location itself or during unittests.
+        attributes (list): Tuples on the form (key, value) or (key, value, category),
+           (key, value, lockstring) or (key, value, lockstring, default_access).
+            to set as Attributes on the new object.
+        nattributes (list): Non-persistent tuples on the form (key, value). Note that
+            adding this rarely makes sense since this data will not survive a reload.
 
     Returns:
         object (Object): A newly created object of the given typeclass.
@@ -95,6 +101,7 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     locks = make_iter(locks) if locks is not None else None
     aliases = make_iter(aliases) if aliases is not None else None
     tags = make_iter(tags) if tags is not None else None
+    attributes = make_iter(attributes) if attributes is not None else None
 
 
     if isinstance(typeclass, basestring):
@@ -122,7 +129,8 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     # store the call signature for the signal
     new_object._createdict = dict(key=key, location=location, destination=destination, home=home,
                                   typeclass=typeclass.path, permissions=permissions, locks=locks,
-                                  aliases=aliases, tags=tags, report_to=report_to, nohome=nohome)
+                                  aliases=aliases, tags=tags, report_to=report_to, nohome=nohome,
+                                  attributes=attributes, nattributes=nattributes)
     # this will trigger the save signal which in turn calls the
     # at_first_save hook on the typeclass, where the _createdict can be
     # used.
@@ -139,7 +147,8 @@ object = create_object
 
 def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
                   interval=None, start_delay=None, repeats=None,
-                  persistent=None, autostart=True, report_to=None, desc=None):
+                  persistent=None, autostart=True, report_to=None, desc=None,
+                  tags=None, attributes=None):
     """
     Create a new script. All scripts are a combination of a database
     object that communicates with the database, and an typeclass that
@@ -169,7 +178,9 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
             created or if the `start` method must be called explicitly.
         report_to (Object): The object to return error messages to.
         desc (str): Optional description of script
-
+        tags (list): List of tags or tuples (tag, category).
+        attributes (list): List if tuples (key, value) or (key, value, category)
+           (key, value, lockstring) or (key, value, lockstring, default_access).
 
     See evennia.scripts.manager for methods to manipulate existing
     scripts in the database.
@@ -190,9 +201,9 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
     if key:
         kwarg["db_key"] = key
     if account:
-        kwarg["db_account"] = dbid_to_obj(account, _ScriptDB)
+        kwarg["db_account"] = dbid_to_obj(account, _AccountDB)
     if obj:
-        kwarg["db_obj"] = dbid_to_obj(obj, _ScriptDB)
+        kwarg["db_obj"] = dbid_to_obj(obj, _ObjectDB)
     if interval:
         kwarg["db_interval"] = interval
     if start_delay:
@@ -203,6 +214,8 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
         kwarg["db_persistent"] = persistent
     if desc:
         kwarg["db_desc"] = desc
+    tags = make_iter(tags) if tags is not None else None
+    attributes = make_iter(attributes) if attributes is not None else None
 
     # create new instance
     new_script = typeclass(**kwarg)
@@ -210,7 +223,8 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
     # store the call signature for the signal
     new_script._createdict = dict(key=key, obj=obj, account=account, locks=locks, interval=interval,
                                   start_delay=start_delay, repeats=repeats, persistent=persistent,
-                                  autostart=autostart, report_to=report_to)
+                                  autostart=autostart, report_to=report_to, desc=desc,
+                                  tags=tags, attributes=attributes)
     # this will trigger the save signal which in turn calls the
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.
