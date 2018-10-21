@@ -513,24 +513,25 @@ class TestBuilding(CommandTest):
             "No prototype 'NO_EXISTS' was found.")
 
         # @spawn/examine (missing prototype)
-        self.call(
+        # lists all prototypes that exist
+        msg = self.call(
             building.CmdSpawn(),
-            '/examine',
-            '@spawn: Extra switch "/examine" ignored.|Usage: @spawn <prototype-key> or {key: value, ...}\n (2 existing prototypes. Use /list to inspect)')
+            '/examine')
+        assert 'testball' in msg and 'testprot' in msg
 
         # @spawn/examine with valid prototype
-        self.call(
+        # prints the prototype
+        msg = self.call(
             building.CmdSpawn(),
-            '/examine BALL',
-            # FIXME: should this print the existing prototype
-            # instead of spawning it?
-            '@spawn: Extra switch "/examine" ignored.|Spawned Ball(#13).')
+            '/examine BALL')
+        assert 'Ball' in msg and 'testball' in msg
 
         # @spawn/examine with invalid prototype
+        # shows error
         self.call(
             building.CmdSpawn(),
             '/examine NO_EXISTS',
-            '@spawn: Extra switch "/examine" ignored.|No prototype named \'NO_EXISTS\'.')
+            "No prototype 'NO_EXISTS' was found.")
 
 
 class TestComms(CommandTest):

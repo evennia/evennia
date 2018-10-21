@@ -2856,7 +2856,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     key = "@spawn"
     aliases = ["olc"]
-    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc", "update", "edit")
+    switch_options = ("noloc", "search", "list", "show", "examine", "save", "delete", "menu", "olc", "update", "edit")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
