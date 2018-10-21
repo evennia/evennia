@@ -8,6 +8,7 @@ sessions etc.
 """
 
 import re
+from twisted.internet import protocol
 from twisted.internet.task import LoopingCall
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol
 from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
@@ -24,6 +25,14 @@ _RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
 _RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
+
+
+class TelnetServerFactory(protocol.ServerFactory):
+    "This is only to name this better in logs"
+    noisy = False
+
+    def logPrefix(self):
+        return "Telnet"
 
 
 class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
@@ -49,10 +58,13 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
         self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
+
         self.init_session(self.protocol_key, client_address, self.factory.sessionhandler)
+        self.protocol_flags["ENCODING"] = settings.ENCODINGS[0] if settings.ENCODINGS else 'utf-8'
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
+        # change encoding to ENCODINGS[0] which reflects Telnet default encoding
 
         # suppress go-ahead
         self.sga = suppress_ga.SuppressGA(self)
@@ -72,7 +84,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         from evennia.utils.utils import delay
         # timeout the handshakes in case the client doesn't reply at all
-        delay(2, callback=self.handshake_done, timeout=True)
+        self._handshake_delay = delay(2, callback=self.handshake_done, timeout=True)
 
         # TCP/IP keepalive watches for dead links
         self.transport.setTcpKeepAlive(1)

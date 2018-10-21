@@ -747,9 +747,16 @@ class CmdLookDark(Command):
         """
         caller = self.caller
 
-        if random.random() < 0.8:
+        # count how many searches we've done
+        nr_searches = caller.ndb.dark_searches
+        if nr_searches is None:
+            nr_searches = 0
+            caller.ndb.dark_searches = nr_searches
+
+        if nr_searches < 4 and random.random() < 0.90:
             # we don't find anything
             caller.msg(random.choice(DARK_MESSAGES))
+            caller.ndb.dark_searches += 1
         else:
             # we could have found something!
             if any(obj for obj in caller.contents if utils.inherits_from(obj, LightSource)):
@@ -791,7 +798,8 @@ class CmdDarkNoMatch(Command):
 
     def func(self):
         """Implements the command."""
-        self.caller.msg("Until you find some light, there's not much you can do. Try feeling around.")
+        self.caller.msg("Until you find some light, there's not much you can do. "
+                        "Try feeling around, maybe you'll find something helpful!")
 
 
 class DarkCmdSet(CmdSet):
@@ -814,7 +822,9 @@ class DarkCmdSet(CmdSet):
         self.add(CmdLookDark())
         self.add(CmdDarkHelp())
         self.add(CmdDarkNoMatch())
-        self.add(default_cmds.CmdSay)
+        self.add(default_cmds.CmdSay())
+        self.add(default_cmds.CmdQuit())
+        self.add(default_cmds.CmdHome())
 
 
 class DarkRoom(TutorialRoom):

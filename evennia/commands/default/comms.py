@@ -7,6 +7,8 @@ make sure to homogenize self.caller to always be the account object
 for easy handling.
 
 """
+import hashlib
+import time
 from past.builtins import cmp
 from django.conf import settings
 from evennia.comms.models import ChannelDB, Msg
@@ -377,7 +379,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
     Usage:
        @cboot[/quiet] <channel> = <account> [:reason]
 
-    Switches:
+    Switch:
        quiet - don't notify the channel
 
     Kicks an account or object from a channel you control.
@@ -385,6 +387,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@cboot"
+    switch_options = ("quiet",)
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
 
@@ -453,6 +456,7 @@ class CmdCemit(COMMAND_DEFAULT_CLASS):
 
     key = "@cemit"
     aliases = ["@cmsg"]
+    switch_options = ("sendername", "quiet")
     locks = "cmd: not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
 
@@ -683,6 +687,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
     key = "page"
     aliases = ['tell']
+    switch_options = ("last", "list")
     locks = "cmd:not pperm(page_banned)"
     help_category = "Comms"
 
@@ -850,6 +855,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@irc2chan"
+    switch_options = ("delete", "remove", "disconnect", "list", "ssl")
     locks = "cmd:serversetting(IRC_ENABLED) and pperm(Developer)"
     help_category = "Comms"
 
@@ -914,8 +920,9 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Account '%s' already exists and is not a bot." % botname)
                 return
         else:
+            password = hashlib.md5(str(time.time())).hexdigest()[:11]
             try:
-                bot = create.create_account(botname, None, None, typeclass=botclass)
+                bot = create.create_account(botname, None, password, typeclass=botclass)
             except Exception as err:
                 self.msg("|rError, could not create the bot:|n '%s'." % err)
                 return
@@ -1016,6 +1023,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
     """
 
     key = "@rss2chan"
+    switch_options = ("disconnect", "remove", "list")
     locks = "cmd:serversetting(RSS_ENABLED) and pperm(Developer)"
     help_category = "Comms"
 
