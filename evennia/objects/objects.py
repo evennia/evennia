@@ -219,7 +219,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     @property
     def is_connected(self):
         # we get an error for objects subscribed to channels without this
-        if self.account: # seems sane to pass on the account
+        if self.account:  # seems sane to pass on the account
             return self.account.is_connected
         else:
             return False
@@ -985,7 +985,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.account.db._playable_characters = [x for x in self.account.db._playable_characters if x != self]
             for session in self.sessions.all():
                 self.account.unpuppet_object(session)
-            
+
         self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
