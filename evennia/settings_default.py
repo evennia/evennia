@@ -13,6 +13,7 @@ always be sure of what you have changed and what is default behaviour.
 
 """
 from builtins import range
+from django.urls import reverse_lazy
 
 import os
 import sys
@@ -697,9 +698,9 @@ ROOT_URLCONF = 'web.urls'
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
 # Where to redirect users when using the @login_required decorator.
-LOGIN_URL = '/accounts/login'
+LOGIN_URL = reverse_lazy('login')
 # Where to redirect users who wish to logout.
-LOGOUT_URL = '/accounts/login'
+LOGOUT_URL = reverse_lazy('logout')
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
 MEDIA_URL = '/media/'

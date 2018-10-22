@@ -55,7 +55,6 @@ class AccountCmdSet(CmdSet):
         self.add(system.CmdPy())
 
         # Admin commands
-        self.add(admin.CmdDelAccount())
         self.add(admin.CmdNewPassword())
 
         # Comm commands
