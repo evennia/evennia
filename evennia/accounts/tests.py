@@ -7,10 +7,8 @@ from unittest import TestCase
 from django.test import override_settings
 from evennia.accounts.accounts import AccountSessionHandler
 from evennia.accounts.accounts import DefaultAccount, DefaultGuest
-from evennia.server.session import Session
 from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import create
-from evennia.utils.test_resources import EvenniaTest
 
 from django.conf import settings
 
@@ -61,78 +59,78 @@ class TestAccountSessionHandler(TestCase):
     def test_count(self):
         "Check count method"
         self.assertEqual(self.handler.count(), len(self.handler.get()))
-        
+
 class TestDefaultGuest(EvenniaTest):
     "Check DefaultGuest class"
-    
+
     ip = '212.216.134.22'
-    
+
     def test_authenticate(self):
         # Guest account should not be permitted
         account, errors = DefaultGuest.authenticate(ip=self.ip)
         self.assertFalse(account, 'Guest account was created despite being disabled.')
-        
+
         settings.GUEST_ENABLED = True
         settings.GUEST_LIST = ['bruce_wayne']
-        
+
         # Create a guest account
         account, errors = DefaultGuest.authenticate(ip=self.ip)
         self.assertTrue(account, 'Guest account should have been created.')
-        
+
         # Create a second guest account
         account, errors = DefaultGuest.authenticate(ip=self.ip)
         self.assertFalse(account, 'Two guest accounts were created with a single entry on the guest list!')
-        
+
         settings.GUEST_ENABLED = False
-        
+
 class TestDefaultAccountAuth(EvenniaTest):
-    
+
     def setUp(self):
         super(TestDefaultAccountAuth, self).setUp()
-        
+
         self.password = "testpassword"
         self.account.delete()
         self.account = create.create_account("TestAccount%s" % randint(100000, 999999), email="test@test.com", password=self.password, typeclass=DefaultAccount)
-        
+
     def test_authentication(self):
         "Confirm Account authentication method is authenticating/denying users."
         # Valid credentials
         obj, errors = DefaultAccount.authenticate(self.account.name, self.password)
         self.assertTrue(obj, 'Account did not authenticate given valid credentials.')
-        
+
         # Invalid credentials
         obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy')
         self.assertFalse(obj, 'Account authenticated using invalid credentials.')
-        
+
     def test_create(self):
         "Confirm Account creation is working as expected."
         # Create a normal account
         account, errors = DefaultAccount.create(username='ziggy', password='stardust11')
         self.assertTrue(account, 'New account should have been created.')
-        
+
         # Try creating a duplicate account
         account2, errors = DefaultAccount.create(username='Ziggy', password='starman11')
         self.assertFalse(account2, 'Duplicate account name should not have been allowed.')
         account.delete()
-        
+
     def test_throttle(self):
         "Confirm throttle activates on too many failures."
         for x in xrange(20):
             obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy', ip='12.24.36.48')
             self.assertFalse(obj, 'Authentication was provided a bogus password; this should NOT have returned an account!')
-        
+
         self.assertTrue('too many login failures' in errors[-1].lower(), 'Failed logins should have been throttled.')
-        
+
     def test_username_validation(self):
         "Check username validators deny relevant usernames"
         # Should not accept Unicode by default, lest users pick names like this
         result, error = DefaultAccount.validate_username('¯\_(ツ)_/¯')
         self.assertFalse(result, "Validator allowed kanji in username.")
-        
+
         # Should not allow duplicate username
         result, error = DefaultAccount.validate_username(self.account.name)
         self.assertFalse(result, "Duplicate username should not have passed validation.")
-        
+
         # Should not allow username too short
         result, error = DefaultAccount.validate_username('xx')
         self.assertFalse(result, "2-character username passed validation.")
@@ -277,16 +275,16 @@ class TestDefaultAccount(TestCase):
 
 
 class TestAccountPuppetDeletion(EvenniaTest):
-    
+
     @override_settings(MULTISESSION_MODE=2)
     def test_puppet_deletion(self):
         # Check for existing chars
         self.assertFalse(self.account.db._playable_characters, 'Account should not have any chars by default.')
-        
+
         # Add char1 to account's playable characters
         self.account.db._playable_characters.append(self.char1)
         self.assertTrue(self.account.db._playable_characters, 'Char was not added to account.')
-        
+
         # See what happens when we delete char1.
         self.char1.delete()
         # Playable char list should be empty.
