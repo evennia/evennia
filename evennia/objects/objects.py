@@ -7,15 +7,11 @@ entities.
 """
 import time
 import inflect
-import re
 from builtins import object
 from future.utils import with_metaclass
 from collections import defaultdict
 
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.urls import reverse
-from django.utils.text import slugify
 
 from evennia.typeclasses.models import TypeclassBase
 from evennia.typeclasses.attributes import NickHandler
@@ -218,7 +214,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     @property
     def is_connected(self):
         # we get an error for objects subscribed to channels without this
-        if self.account: # seems sane to pass on the account
+        if self.account:  # seems sane to pass on the account
             return self.account.is_connected
         else:
             return False
@@ -328,7 +324,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # look at 'an egg'.
             self.aliases.add(singular, category="plural_key")
         return singular, plural
-        
+
     def search(self, searchdata,
                global_search=False,
                use_nicks=True,
@@ -922,7 +918,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 self.account.db._playable_characters = [x for x in self.account.db._playable_characters if x != self]
             for session in self.sessions.all():
                 self.account.unpuppet_object(session)
-            
+
         self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
