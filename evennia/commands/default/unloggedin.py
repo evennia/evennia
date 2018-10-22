@@ -2,17 +2,11 @@
 Commands that are available from the connect screen.
 """
 import re
-import time
 import datetime
 
 from django.conf import settings
-from django.contrib.auth import authenticate
-from evennia.accounts.models import AccountDB
-from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
-from evennia.server.models import ServerConfig
 from evennia.server.sessionhandler import SESSIONS
-from evennia.server.throttle import Throttle
 
 from evennia.utils import class_from_module, create, logger, utils, gametime
 from evennia.commands.cmdhandler import CMD_LOGINSTART
@@ -25,6 +19,7 @@ __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
+
 
 def create_guest_account(session):
     """
@@ -40,10 +35,10 @@ def create_guest_account(session):
     """
     enabled = settings.GUEST_ENABLED
     address = session.address
-    
+
     # Get account class
     Guest = class_from_module(settings.BASE_GUEST_TYPECLASS)
-        
+
     # Get an available guest account
     # authenticate() handles its own throttling
     account, errors = Guest.authenticate(ip=address)
@@ -52,6 +47,7 @@ def create_guest_account(session):
     else:
         session.msg("|R%s|n" % '\n'.join(errors))
         return enabled, None
+
 
 def create_normal_account(session, name, password):
     """
@@ -67,9 +63,9 @@ def create_normal_account(session, name, password):
     """
     # Get account class
     Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
-    
+
     address = session.address
-    
+
     # Match account name and check password
     # authenticate() handles all its own throttling
     account, errors = Account.authenticate(username=name, password=password, ip=address, session=session)
@@ -108,19 +104,19 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         """
         session = self.caller
         address = session.address
-        
+
         args = self.args
         # extract double quote parts
         parts = [part.strip() for part in re.split(r"\"", args) if part.strip()]
         if len(parts) == 1:
             # this was (hopefully) due to no double quotes being found, or a guest login
             parts = parts[0].split(None, 1)
-            
+
             # Guest login
             if len(parts) == 1 and parts[0].lower() == "guest":
                 # Get Guest typeclass
                 Guest = class_from_module(settings.BASE_GUEST_TYPECLASS)
-                
+
                 account, errors = Guest.authenticate(ip=address)
                 if account:
                     session.sessionhandler.login(session, account)
@@ -128,14 +124,14 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
                 else:
                     session.msg("|R%s|n" % '\n'.join(errors))
                     return
-                
+
         if len(parts) != 2:
             session.msg("\n\r Usage (without <>): connect <name> <password>")
             return
 
         # Get account class
         Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
-        
+
         name, password = parts
         account, errors = Account.authenticate(username=name, password=password, ip=address, session=session)
         if account:
@@ -168,7 +164,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
         args = self.args.strip()
 
         address = session.address
-            
+
         # Get account class
         Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 
@@ -182,7 +178,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
                      "\nIf <name> or <password> contains spaces, enclose it in double quotes."
             session.msg(string)
             return
-        
+
         username, password = parts
 
         # everything's ok. Create the new account account.

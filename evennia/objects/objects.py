@@ -195,7 +195,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
     lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
-    
+
     objects = ObjectManager()
 
     # on-object properties
@@ -863,66 +863,66 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                     string = "This place should not exist ... contact an admin."
                     obj.msg(_(string))
             obj.move_to(home)
-            
+
     @classmethod
     def create(cls, key, account=None, **kwargs):
         """
         Creates a basic object with default parameters, unless otherwise
         specified or extended.
-        
+
         Provides a friendlier interface to the utils.create_object() function.
-        
+
         Args:
             key (str): Name of the new object.
             account (Account): Account to attribute this object to.
-            
+
         Kwargs:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
-        
+
         Returns:
             object (Object): A newly created object of the given typeclass.
             errors (list): A list of errors in string form, if any.
-        
+
         """
         errors = []
         obj = None
-        
+
         # Get IP address of creator, if available
         ip = kwargs.pop('ip', '')
-        
+
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
-        
+
         # Set the supplied key as the name of the intended object
         kwargs['key'] = key
-        
+
         # Get a supplied description, if any
         description = kwargs.pop('description', '')
-        
+
         # Create a sane lockstring if one wasn't supplied
         lockstring = kwargs.get('locks')
         if account and not lockstring:
             lockstring = cls.lockstring.format(account_id=account.id)
             kwargs['locks'] = lockstring
-            
+
         # Create object
         try:
             obj = create.create_object(**kwargs)
-            
+
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
             if account: obj.db.creator_id = account.id
-            
+
             # Set description if there is none, or update it if provided
             if description or not obj.db.desc:
                 desc = description if description else "You see nothing special."
                 obj.db.desc = desc
-                
+
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
-                   
+
         return obj, errors
 
     def copy(self, new_key=None):
@@ -1895,81 +1895,81 @@ class DefaultCharacter(DefaultObject):
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the appropriate attributes.
     lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer)"
-    
+
     @classmethod
     def create(cls, key, account, **kwargs):
         """
         Creates a basic Character with default parameters, unless otherwise
         specified or extended.
-        
+
         Provides a friendlier interface to the utils.create_character() function.
-        
+
         Args:
             key (str): Name of the new Character.
             account (obj): Account to associate this Character with. Required as
                 an argument, but one can fake it out by supplying None-- it will
                 change the default lockset and skip creator attribution.
-                
+
         Kwargs:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
-        
+
         Returns:
             character (Object): A newly created Character of the given typeclass.
             errors (list): A list of errors in string form, if any.
-        
+
         """
         errors = []
         obj = None
-        
+
         # Get IP address of creator, if available
         ip = kwargs.pop('ip', '')
-        
+
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
-        
+
         # Set the supplied key as the name of the intended object
         kwargs['key'] = key
-        
+
         # Get home for character
         kwargs['home'] = ObjectDB.objects.get_id(kwargs.get('home', settings.DEFAULT_HOME))
-        
+
         # Get permissions
         kwargs['permissions'] = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
-        
+
         # Get description if provided
         description = kwargs.pop('description', '')
-        
+
         # Get locks if provided
         locks = kwargs.pop('locks', '')
-        
+
         try:
             # Create the Character
             obj = create.create_object(**kwargs)
-            
+
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
             if account: obj.db.creator_id = account.id
-            
+
             # Add locks
             if not locks and account:
                 # Allow only the character itself and the creator account to puppet this character (and Developers).
                 locks = cls.lockstring.format(**{'character_id': obj.id, 'account_id': account.id})
             elif not locks and not account:
                 locks = cls.lockstring.format(**{'character_id': obj.id, 'account_id': -1})
-                    
+
             obj.locks.add(locks)
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
                 obj.db.desc = description if description else "This is a character."
-                
+
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
-            
+
         return obj, errors
-        
+
     def basetype_setup(self):
         """
         Setup character-specific security.
@@ -2097,60 +2097,60 @@ class DefaultRoom(DefaultObject):
         """
         Creates a basic Room with default parameters, unless otherwise
         specified or extended.
-        
+
         Provides a friendlier interface to the utils.create_object() function.
-        
+
         Args:
             key (str): Name of the new Room.
             account (obj): Account to associate this Room with.
-            
+
         Kwargs:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
-        
+
         Returns:
             room (Object): A newly created Room of the given typeclass.
             errors (list): A list of errors in string form, if any.
-        
+
         """
         errors = []
         obj = None
-        
+
         # Get IP address of creator, if available
         ip = kwargs.pop('ip', '')
-        
+
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
-        
+
         # Set the supplied key as the name of the intended object
         kwargs['key'] = key
-        
+
         # Get who to send errors to
         kwargs['report_to'] = kwargs.pop('report_to', account)
-        
+
         # Get description, if provided
         description = kwargs.pop('description', '')
-        
+
         try:
             # Create the Room
             obj = create.create_object(**kwargs)
-            
+
             # Set appropriate locks
             lockstring = kwargs.get('locks', cls.lockstring.format(id=account.id))
             obj.locks.add(lockstring)
-            
+
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
             if account: obj.db.creator_id = account.id
-            
+
             # If no description is set, set a default description
             if description or not obj.db.desc:
                 obj.db.desc = description if description else "This is a room."
-                
+
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
-            
+
         return obj, errors
 
     def basetype_setup(self):
@@ -2230,13 +2230,13 @@ class DefaultExit(DefaultObject):
 
     exit_command = ExitCommand
     priority = 101
-    
+
     # lockstring of newly created exits, for easy overloading.
     # Will be formatted with the {id} of the creating object.
     lockstring = "control:id({id}) or perm(Admin); " \
                  "delete:id({id}) or perm(Admin); " \
                  "edit:id({id}) or perm(Admin)"
-    
+
     # Helper classes and methods to implement the Exit. These need not
     # be overloaded unless one want to change the foundation for how
     # Exits work. See the end of the class for hook methods to overload.
@@ -2274,72 +2274,72 @@ class DefaultExit(DefaultObject):
         return exit_cmdset
 
     # Command hooks
-    
+
     @classmethod
     def create(cls, key, account, source, dest, **kwargs):
         """
         Creates a basic Exit with default parameters, unless otherwise
         specified or extended.
-        
+
         Provides a friendlier interface to the utils.create_object() function.
-        
+
         Args:
             key (str): Name of the new Exit, as it should appear from the
                 source room.
             account (obj): Account to associate this Exit with.
             source (Room): The room to create this exit in.
             dest (Room): The room to which this exit should go.
-            
+
         Kwargs:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
-        
+
         Returns:
             exit (Object): A newly created Room of the given typeclass.
             errors (list): A list of errors in string form, if any.
-        
+
         """
         errors = []
         obj = None
-        
+
         # Get IP address of creator, if available
         ip = kwargs.pop('ip', '')
-        
+
         # If no typeclass supplied, use this class
         kwargs['typeclass'] = kwargs.pop('typeclass', cls)
-        
+
         # Set the supplied key as the name of the intended object
         kwargs['key'] = key
-        
+
         # Get who to send errors to
         kwargs['report_to'] = kwargs.pop('report_to', account)
-        
+
         # Set to/from rooms
         kwargs['location'] = source
         kwargs['destination'] = dest
-        
+
         description = kwargs.pop('description', '')
-        
+
         try:
             # Create the Exit
             obj = create.create_object(**kwargs)
-            
+
             # Set appropriate locks
             lockstring = kwargs.get('locks', cls.lockstring.format(id=account.id))
             obj.locks.add(lockstring)
-            
+
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
             if account: obj.db.creator_id = account.id
-            
+
             # If no description is set, set a default description
             if description or not obj.db.desc:
                 obj.db.desc = description if description else "This is an exit."
-                
+
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
-            
+
         return obj, errors
 
     def basetype_setup(self):
