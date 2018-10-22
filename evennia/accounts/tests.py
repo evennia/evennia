@@ -6,13 +6,11 @@ from unittest import TestCase
 
 from django.test import override_settings
 from evennia.accounts.accounts import AccountSessionHandler
+
 from evennia.accounts.accounts import DefaultAccount, DefaultGuest
 from evennia.server.session import Session
-from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import create
 from evennia.utils.test_resources import EvenniaTest
-
-from django.conf import settings
 
 
 class TestAccountSessionHandler(TestCase):
@@ -135,6 +133,19 @@ class TestDefaultAccountAuth(EvenniaTest):
         # Should not allow username too short
         result, error = DefaultAccount.validate_username('xx')
         self.assertFalse(result, "2-character username passed validation.")
+
+    def test_absolute_url(self):
+        "Get URL for account detail page on website"
+        self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
+                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.assertTrue(self.account.web_get_detail_url())
+
+    def test_admin_url(self):
+        "Get object's URL for access via Admin pane"
+        self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
+                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        self.assertTrue(self.account.web_get_admin_url())
+        self.assertTrue(self.account.web_get_admin_url() != '#')
 
     def test_password_validation(self):
         "Check password validators deny bad passwords"
@@ -274,17 +285,18 @@ class TestDefaultAccount(TestCase):
 
 
 class TestAccountPuppetDeletion(EvenniaTest):
-    
+
     @override_settings(MULTISESSION_MODE=2)
     def test_puppet_deletion(self):
         # Check for existing chars
         self.assertFalse(self.account.db._playable_characters, 'Account should not have any chars by default.')
-        
+
         # Add char1 to account's playable characters
         self.account.db._playable_characters.append(self.char1)
         self.assertTrue(self.account.db._playable_characters, 'Char was not added to account.')
-        
+
         # See what happens when we delete char1.
         self.char1.delete()
         # Playable char list should be empty.
-        self.assertFalse(self.account.db._playable_characters, 'Playable character list is not empty! %s' % self.account.db._playable_characters)
+        self.assertFalse(self.account.db._playable_characters,
+                         'Playable character list is not empty! %s' % self.account.db._playable_characters)
