@@ -222,7 +222,8 @@ COMMAND_RATE_WARNING = "You entered commands too fast. Wait a moment and try aga
 # 0 or less.
 MAX_CHAR_LIMIT = 6000
 # The warning to echo back to users if they enter a very large string
-MAX_CHAR_LIMIT_WARNING = "You entered a string that was too long. Please break it up into multiple parts."
+MAX_CHAR_LIMIT_WARNING = ("You entered a string that was too long. "
+                          "Please break it up into multiple parts.")
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
 # debugging. OBS: Showing full tracebacks to regular users could be a
@@ -410,12 +411,14 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "contribs"]
-# Fallbacks for cmdset paths that fail to load. Note that if you change the path for your default cmdsets,
-# you will also need to copy CMDSET_FALLBACKS after your change in your settings file for it to detect the change.
-CMDSET_FALLBACKS = {CMDSET_CHARACTER: 'evennia.commands.default.cmdset_character.CharacterCmdSet',
-                    CMDSET_ACCOUNT: 'evennia.commands.default.cmdset_account.AccountCmdSet',
-                    CMDSET_SESSION: 'evennia.commands.default.cmdset_session.SessionCmdSet',
-                    CMDSET_UNLOGGEDIN: 'evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet'}
+# Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
+# default cmdsets, you will also need to copy CMDSET_FALLBACKS after your change in your
+# settings file for it to detect the change.
+CMDSET_FALLBACKS = {
+    CMDSET_CHARACTER: 'evennia.commands.default.cmdset_character.CharacterCmdSet',
+    CMDSET_ACCOUNT: 'evennia.commands.default.cmdset_account.AccountCmdSet',
+    CMDSET_SESSION: 'evennia.commands.default.cmdset_session.SessionCmdSet',
+    CMDSET_UNLOGGEDIN: 'evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet'}
 # Parent class for all default commands. Changing this class will
 # modify all default commands, so do so carefully.
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
@@ -811,6 +814,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
     {'NAME': 'evennia.server.validators.EvenniaPasswordValidator'}]
 
+# Username validation plugins
+AUTH_USERNAME_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.validators.ASCIIUsernameValidator'},
+    {'NAME': 'django.core.validators.MinLengthValidator',
+        'OPTIONS': {'limit_value': 3}},
+    {'NAME': 'django.core.validators.MaxLengthValidator',
+        'OPTIONS': {'limit_value': 30}},
+    {'NAME': 'evennia.server.validators.EvenniaUsernameAvailabilityValidator'}]
+
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
 
@@ -821,7 +833,7 @@ TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
 # Django extesions are useful third-party tools that are not
 # always included in the default django distro.
 try:
-    import django_extensions
+    import django_extensions   # noqa
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
     # Django extensions are not installed in all distros.
