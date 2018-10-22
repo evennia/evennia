@@ -478,6 +478,61 @@ class TestBuilding(CommandTest):
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
 
+        # @spawn/edit (missing prototype)
+        # brings up olc menu
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit')
+        assert 'Prototype wizard' in msg
+
+        # @spawn/edit with valid prototype
+        # brings up olc menu loaded with prototype
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit testball')
+        assert 'Prototype wizard' in msg
+        assert hasattr(self.char1.ndb._menutree, "olc_prototype")
+        assert dict == type(self.char1.ndb._menutree.olc_prototype) \
+                and 'prototype_key' in self.char1.ndb._menutree.olc_prototype \
+                and 'key' in self.char1.ndb._menutree.olc_prototype \
+                and 'testball' == self.char1.ndb._menutree.olc_prototype['prototype_key'] \
+                and 'Ball' == self.char1.ndb._menutree.olc_prototype['key']
+        assert 'Ball' in msg and 'testball' in msg
+
+        # @spawn/edit with valid prototype (synomym)
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit BALL')
+        assert 'Prototype wizard' in msg
+        assert 'Ball' in msg and 'testball' in msg
+
+        # @spawn/edit with invalid prototype
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit NO_EXISTS',
+            "No prototype 'NO_EXISTS' was found.")
+
+        # @spawn/examine (missing prototype)
+        # lists all prototypes that exist
+        msg = self.call(
+            building.CmdSpawn(),
+            '/examine')
+        assert 'testball' in msg and 'testprot' in msg
+
+        # @spawn/examine with valid prototype
+        # prints the prototype
+        msg = self.call(
+            building.CmdSpawn(),
+            '/examine BALL')
+        assert 'Ball' in msg and 'testball' in msg
+
+        # @spawn/examine with invalid prototype
+        # shows error
+        self.call(
+            building.CmdSpawn(),
+            '/examine NO_EXISTS',
+            "No prototype 'NO_EXISTS' was found.")
+
 
 class TestComms(CommandTest):
 
