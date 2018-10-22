@@ -111,8 +111,9 @@ class TestDefaultAccountAuth(EvenniaTest):
         self.assertTrue(account, 'New account should have been created.')
         
         # Try creating a duplicate account
-        account, errors = DefaultAccount.create(username='Ziggy', password='starman11')
-        self.assertFalse(account, 'Duplicate account name should not have been allowed.')
+        account2, errors = DefaultAccount.create(username='Ziggy', password='starman11')
+        self.assertFalse(account2, 'Duplicate account name should not have been allowed.')
+        account.delete()
         
     def test_throttle(self):
         "Confirm throttle activates on too many failures."
@@ -147,10 +148,11 @@ class TestDefaultAccountAuth(EvenniaTest):
         "Check validators allow sufficiently complex passwords"
         for better in ('Mxyzptlk', "j0hn, i'M 0n1y d4nc1nG"):
             self.assertTrue(account.validate_password(better, account=self.account)[0])
+        account.delete()
 
     def test_password_change(self):
         "Check password setting and validation is working as expected"
-        account = create.create_account("TestAccount%s" % randint(0, 9),
+        account = create.create_account("TestAccount%s" % randint(100000, 999999),
                 email="test@test.com", password="testpassword", typeclass=DefaultAccount)
 
         from django.core.exceptions import ValidationError
@@ -160,6 +162,7 @@ class TestDefaultAccountAuth(EvenniaTest):
 
         # Try setting a better password (test for False; returns None on success)
         self.assertFalse(account.set_password('Mxyzptlk'))
+        account.delete()
 
 class TestDefaultAccount(TestCase):
     "Check DefaultAccount class"
