@@ -243,6 +243,9 @@ class TestAdmin(CommandTest):
     def test_ban(self):
         self.call(admin.CmdBan(), "Char", "Name-Ban char was added.")
 
+    def test_force(self):
+        self.call(admin.CmdForce(), "Char2=say test", 'Char2(#7) says, "test"|You have forced Char2 to: say test')
+
 
 class TestAccount(CommandTest):
 
@@ -315,6 +318,24 @@ class TestBuilding(CommandTest):
     def test_desc(self):
         self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
 
+    def test_empty_desc(self):
+        """
+        empty desc sets desc as ''
+        """
+        o2d = self.obj2.db.desc
+        r1d = self.room1.db.desc
+        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#5).")
+        assert self.obj2.db.desc == '' and self.obj2.db.desc != o2d
+        assert self.room1.db.desc == r1d
+
+    def test_desc_default_to_room(self):
+        """no rhs changes room's desc"""
+        o2d = self.obj2.db.desc
+        r1d = self.room1.db.desc
+        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#1).")
+        assert self.obj2.db.desc == o2d
+        assert self.room1.db.desc == 'Obj2' and self.room1.db.desc != r1d
+
     def test_wipe(self):
         confirm = building.CmdDestroy.confirm
         building.CmdDestroy.confirm = False
@@ -334,6 +355,14 @@ class TestBuilding(CommandTest):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
         self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
+        self.char1.location = self.room2
+        self.call(building.CmdOpen(), "TestExit2=Room", "Created new Exit 'TestExit2' from Room2 to Room.")
+        # ensure it matches locally first
+        self.call(building.CmdLink(), "TestExit=Room2", "Link created TestExit2 -> Room2 (one way).")
+        # ensure can still match globally when not a local name
+        self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1(#8) did not have a destination set before. "
+                                                         "Make sure you linked the right thing.\n"
+                                                         "Link created TestExit1 -> Room2 (one way).")
 
     def test_set_home(self):
         self.call(building.CmdSetHome(), "Obj = Room2", "Obj's home location was changed from Room")

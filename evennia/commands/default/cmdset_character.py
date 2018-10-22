@@ -57,6 +57,7 @@ class CharacterCmdSet(CmdSet):
         self.add(admin.CmdEmit())
         self.add(admin.CmdPerm())
         self.add(admin.CmdWall())
+        self.add(admin.CmdForce())
 
         # Building and world manipulation
         self.add(building.CmdTeleport())
