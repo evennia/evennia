@@ -71,6 +71,13 @@ class PathfinderTest(EvenniaTest):
         path = self.pfinder.get_usable_path(halls[0], halls[-1], self.char3)
         self.assertTrue(len(path) > 6, 'Character was routed through a locked door.')
         
+    def test_get_path_to_obj(self):
+        "Make sure a character can be routed to an object."
+        # Start at bedroom, find path to treasure
+        path = self.pfinder.get_path_to_obj(self.foyer, self.treasure)
+        print(path)
+        self.assertTrue(path, 'No path found from Foyer to Treasure!')
+        
     def test_get_queryset(self):
         "Make sure get_queryset functionality works as intended"
         # Create a dummy pathfinder with a specific queryset
@@ -148,6 +155,7 @@ class PathfinderTest(EvenniaTest):
         
         self.cavern = create.create_object(self.room_typeclass, key="Strange Cavern", nohome=True)
         self.treasure_room = create.create_object(self.room_typeclass, key="Treasure Room", nohome=True)
+        self.treasure = create.create_object(self.object_typeclass, key="Treasure", location=self.treasure_room, home=self.treasure_room)
         
         self.lair = create.create_object(self.room_typeclass, key="Cthulhu's Lair", nohome=True)
         

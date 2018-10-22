@@ -206,6 +206,36 @@ class Pathfinder(nx.DiGraph):
         
         return path
         
+    def get_path_to_obj(self, source, dest, caller=None):
+        """
+        Computes the shortest path to a given object.
+        
+        Useful for guiding resurrected NPCs back to dropped loot, or helping NPCs
+        in a 'following' mode find their way back to the group after getting lost.
+        
+        Args:
+            source (Room): Origin Room object.
+            dest (Object): Destination Object.
+            caller (Character, optional): The object needing directions. If
+                provided, the path will account for locks that impede
+                progress.
+                
+        Returns:
+            path (list): List of node tokens comprising the path from the source
+                to the destination object.
+                
+        """
+        # Get destination object location
+        dest_loc = dest.location
+        
+        # If caller provided, find the shortest path they can actually use
+        if caller:
+            return self.get_usable_path(source, dest_loc, caller)
+            
+        # If no caller, just get the basic shortest path
+        else:
+            return self.get_directions(source, dest_loc)
+        
     def get_usable_path(self, source, dest, caller):
         """
         Returns the shortest possible usable path by the caller; this takes
