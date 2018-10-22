@@ -107,6 +107,17 @@ def uptime():
     return time.time() - SERVER_START_TIME
 
 
+def portal_uptime():
+    """
+    Get the current uptime of the portal.
+
+    Returns:
+        time (float): The uptime of the portal.
+    """
+    from evennia.server.sessionhandler import SESSIONS
+    return time.time() - SESSIONS.portal_start_time
+
+
 def game_epoch():
     """
     Get the game epoch.
