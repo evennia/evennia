@@ -84,16 +84,14 @@ class TestDefaultGuest(EvenniaTest):
         self.assertFalse(account, 'Two guest accounts were created with a single entry on the guest list!')
         
         settings.GUEST_ENABLED = False
-
-class TestDefaultAccount(EvenniaTest):
-    "Check DefaultAccount class"
-
+        
+class TestDefaultAccountAuth(EvenniaTest):
+    
     def setUp(self):
-        self.s1 = MagicMock()
-        self.s1.puppet = None
-        self.s1.sessid = 0
+        super(TestDefaultAccountAuth, self).setUp()
         
         self.password = "testpassword"
+        self.account.delete()
         self.account = create.create_account("TestAccount%s" % randint(100000, 999999), email="test@test.com", password=self.password, typeclass=DefaultAccount)
         
     def test_authentication(self):
@@ -138,10 +136,6 @@ class TestDefaultAccount(EvenniaTest):
         result, error = DefaultAccount.validate_username('xx')
         self.assertFalse(result, "2-character username passed validation.")
 
-    def tearDown(self):
-        if hasattr(self, "account"):
-            self.account.delete()
-
     def test_password_validation(self):
         "Check password validators deny bad passwords"
 
@@ -166,6 +160,14 @@ class TestDefaultAccount(EvenniaTest):
 
         # Try setting a better password (test for False; returns None on success)
         self.assertFalse(self.account.set_password('Mxyzptlk'))
+
+class TestDefaultAccount(TestCase):
+    "Check DefaultAccount class"
+
+    def setUp(self):
+        self.s1 = MagicMock()
+        self.s1.puppet = None
+        self.s1.sessid = 0
 
     def test_puppet_object_no_object(self):
         "Check puppet_object method called with no object param"
