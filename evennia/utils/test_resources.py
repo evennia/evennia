@@ -102,6 +102,22 @@ class TestCreateScript(EvenniaTest):
         assert script.key == 'test_script'
         script.stop()
 
+    def test_create_script_w_repeats_equal_1_persisted(self):
+        class TestScriptB1(DefaultScript):
+            def at_script_creation(self):
+                self.key = 'test_script'
+                self.interval = 10
+                self.repeats = 1
+                self.persistent = True
+
+        script = create.create_script(TestScriptB1, key='test_script')
+        assert script is not None
+        assert script.interval == 10
+        assert script.repeats == 1
+        assert script.key == 'test_script'
+        assert self.persistent == True
+        script.stop()
+
     def test_create_script_w_repeats_equal_2(self):
         class TestScriptC(DefaultScript):
             def at_script_creation(self):
