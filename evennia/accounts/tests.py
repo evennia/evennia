@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
+
 from mock import Mock, MagicMock
 from random import randint
 from unittest import TestCase
 
 from django.test import override_settings
 from evennia.accounts.accounts import AccountSessionHandler
-from evennia.accounts.accounts import DefaultAccount
-from evennia.utils import create
+from evennia.accounts.accounts import DefaultAccount, DefaultGuest
 from evennia.utils.test_resources import EvenniaTest
+from evennia.utils import create
+
+from django.conf import settings
 
 
 class TestAccountSessionHandler(TestCase):
@@ -56,6 +60,107 @@ class TestAccountSessionHandler(TestCase):
         "Check count method"
         self.assertEqual(self.handler.count(), len(self.handler.get()))
 
+class TestDefaultGuest(EvenniaTest):
+    "Check DefaultGuest class"
+
+    ip = '212.216.134.22'
+
+    def test_authenticate(self):
+        # Guest account should not be permitted
+        account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertFalse(account, 'Guest account was created despite being disabled.')
+
+        settings.GUEST_ENABLED = True
+        settings.GUEST_LIST = ['bruce_wayne']
+
+        # Create a guest account
+        account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertTrue(account, 'Guest account should have been created.')
+
+        # Create a second guest account
+        account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertFalse(account, 'Two guest accounts were created with a single entry on the guest list!')
+
+        settings.GUEST_ENABLED = False
+
+class TestDefaultAccountAuth(EvenniaTest):
+
+    def setUp(self):
+        super(TestDefaultAccountAuth, self).setUp()
+
+        self.password = "testpassword"
+        self.account.delete()
+        self.account = create.create_account("TestAccount%s" % randint(100000, 999999), email="test@test.com", password=self.password, typeclass=DefaultAccount)
+
+    def test_authentication(self):
+        "Confirm Account authentication method is authenticating/denying users."
+        # Valid credentials
+        obj, errors = DefaultAccount.authenticate(self.account.name, self.password)
+        self.assertTrue(obj, 'Account did not authenticate given valid credentials.')
+
+        # Invalid credentials
+        obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy')
+        self.assertFalse(obj, 'Account authenticated using invalid credentials.')
+
+    def test_create(self):
+        "Confirm Account creation is working as expected."
+        # Create a normal account
+        account, errors = DefaultAccount.create(username='ziggy', password='stardust11')
+        self.assertTrue(account, 'New account should have been created.')
+
+        # Try creating a duplicate account
+        account2, errors = DefaultAccount.create(username='Ziggy', password='starman11')
+        self.assertFalse(account2, 'Duplicate account name should not have been allowed.')
+        account.delete()
+
+    def test_throttle(self):
+        "Confirm throttle activates on too many failures."
+        for x in xrange(20):
+            obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy', ip='12.24.36.48')
+            self.assertFalse(obj, 'Authentication was provided a bogus password; this should NOT have returned an account!')
+
+        self.assertTrue('too many login failures' in errors[-1].lower(), 'Failed logins should have been throttled.')
+
+    def test_username_validation(self):
+        "Check username validators deny relevant usernames"
+        # Should not accept Unicode by default, lest users pick names like this
+        result, error = DefaultAccount.validate_username('¯\_(ツ)_/¯')
+        self.assertFalse(result, "Validator allowed kanji in username.")
+
+        # Should not allow duplicate username
+        result, error = DefaultAccount.validate_username(self.account.name)
+        self.assertFalse(result, "Duplicate username should not have passed validation.")
+
+        # Should not allow username too short
+        result, error = DefaultAccount.validate_username('xx')
+        self.assertFalse(result, "2-character username passed validation.")
+
+    def test_password_validation(self):
+        "Check password validators deny bad passwords"
+
+        account = create.create_account("TestAccount%s" % randint(100000, 999999),
+                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        for bad in ('', '123', 'password', 'TestAccount', '#', 'xyzzy'):
+            self.assertFalse(account.validate_password(bad, account=self.account)[0])
+
+        "Check validators allow sufficiently complex passwords"
+        for better in ('Mxyzptlk', "j0hn, i'M 0n1y d4nc1nG"):
+            self.assertTrue(account.validate_password(better, account=self.account)[0])
+        account.delete()
+
+    def test_password_change(self):
+        "Check password setting and validation is working as expected"
+        account = create.create_account("TestAccount%s" % randint(100000, 999999),
+                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+
+        from django.core.exceptions import ValidationError
+        # Try setting some bad passwords
+        for bad in ('', '#', 'TestAccount', 'password'):
+            self.assertRaises(ValidationError, account.set_password, bad)
+
+        # Try setting a better password (test for False; returns None on success)
+        self.assertFalse(account.set_password('Mxyzptlk'))
+        account.delete()
 
 class TestDefaultAccount(TestCase):
     "Check DefaultAccount class"
@@ -64,44 +169,6 @@ class TestDefaultAccount(TestCase):
         self.s1 = MagicMock()
         self.s1.puppet = None
         self.s1.sessid = 0
-
-    def test_absolute_url(self):
-        "Get URL for account detail page on website"
-        self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
-                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
-        self.assertTrue(self.account.web_get_detail_url())
-
-    def test_admin_url(self):
-        "Get object's URL for access via Admin pane"
-        self.account = create.create_account("TestAccount%s" % randint(100000, 999999),
-                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
-        self.assertTrue(self.account.web_get_admin_url())
-        self.assertTrue(self.account.web_get_admin_url() != '#')
-
-    def test_password_validation(self):
-        "Check password validators deny bad passwords"
-
-        self.account = create.create_account("TestAccount%s" % randint(0, 9),
-                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
-        for bad in ('', '123', 'password', 'TestAccount', '#', 'xyzzy'):
-            self.assertFalse(self.account.validate_password(bad, account=self.account)[0])
-
-        "Check validators allow sufficiently complex passwords"
-        for better in ('Mxyzptlk', "j0hn, i'M 0n1y d4nc1nG"):
-            self.assertTrue(self.account.validate_password(better, account=self.account)[0])
-
-    def test_password_change(self):
-        "Check password setting and validation is working as expected"
-        self.account = create.create_account("TestAccount%s" % randint(0, 9),
-                email="test@test.com", password="testpassword", typeclass=DefaultAccount)
-
-        from django.core.exceptions import ValidationError
-        # Try setting some bad passwords
-        for bad in ('', '#', 'TestAccount', 'password'):
-            self.assertRaises(ValidationError, self.account.set_password, bad)
-
-        # Try setting a better password (test for False; returns None on success)
-        self.assertFalse(self.account.set_password('Mxyzptlk'))
 
     def test_puppet_object_no_object(self):
         "Check puppet_object method called with no object param"
@@ -221,5 +288,4 @@ class TestAccountPuppetDeletion(EvenniaTest):
         # See what happens when we delete char1.
         self.char1.delete()
         # Playable char list should be empty.
-        self.assertFalse(self.account.db._playable_characters,
-                         'Playable character list is not empty! %s' % self.account.db._playable_characters)
+        self.assertFalse(self.account.db._playable_characters, 'Playable character list is not empty! %s' % self.account.db._playable_characters)
