@@ -741,7 +741,7 @@ class TypedObject(SharedMemoryModel):
     # Web/Django methods
     #
     
-    def web_admin_url(self):
+    def web_get_admin_url(self):
         """
         Returns the URI path for the Django Admin page for this object.
         
@@ -755,7 +755,7 @@ class TypedObject(SharedMemoryModel):
         return reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
         
     @classmethod
-    def web_create_url(cls):
+    def web_get_create_url(cls):
         """
         Returns the URI path for a View that allows users to create new
         instances of this object.
@@ -783,7 +783,7 @@ class TypedObject(SharedMemoryModel):
         try: return reverse('%s-create' % cls._meta.verbose_name.lower())
         except: return '#'
         
-    def web_detail_url(self):
+    def web_get_detail_url(self):
         """
         Returns the URI path for a View that allows users to view details for 
         this object.
@@ -811,7 +811,7 @@ class TypedObject(SharedMemoryModel):
         try: return reverse('%s-detail' % self._meta.verbose_name.lower(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except: return '#'
         
-    def web_update_url(self):
+    def web_get_update_url(self):
         """
         Returns the URI path for a View that allows users to update this
         object.
@@ -839,7 +839,7 @@ class TypedObject(SharedMemoryModel):
         try: return reverse('%s-update' % self._meta.verbose_name.lower(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except: return '#'
         
-    def web_delete_url(self):
+    def web_get_delete_url(self):
         """
         Returns the URI path for a View that allows users to delete this object.
         
@@ -866,15 +866,5 @@ class TypedObject(SharedMemoryModel):
         try: return reverse('%s-delete' % self._meta.verbose_name.lower(), kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except: return '#'
         
-    def get_absolute_url(self):
-        """
-        Django construct; used by Django Sites framework and within the Admin
-        panel for reverse linking to the object detail page. 
-        
-        https://docs.djangoproject.com/en/2.1/ref/models/instances/#get-absolute-url
-        
-        Returns:
-            path (str): URI path to object detail page, if defined.
-            
-        """
-        return self.web_detail_url()
+    # Used by Django Sites/Admin
+    get_absolute_url = web_get_detail_url
