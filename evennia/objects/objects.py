@@ -980,8 +980,12 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
         if self.account:
+            # Remove the object from playable characters list
+            if self in self.account.db._playable_characters:
+                self.account.db._playable_characters = [x for x in self.account.db._playable_characters if x != self]
             for session in self.sessions.all():
                 self.account.unpuppet_object(session)
+            
         self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):

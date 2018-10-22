@@ -1,6 +1,26 @@
 # Changelog
 
+## Evennia 0.9 (2018-2019)
+
+### Commands
+
+- Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
+  question.
+- Add new `@force` command to have another object perform a command.
+- Add the Portal uptime to the `@time` command.
+- Make the `@link` command first make a local search before a global search.
+
+### Utils
+
+- Added more unit tests.
+
+
 ## Evennia 0.8 (2018)
+
+### Requirements
+
+- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
+- Add `inflect` dependency for automatic pluralization of object names.
 
 ### Server/Portal
 
@@ -85,7 +105,6 @@
 
 ### General
 
-- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
 - Start structuring the `CHANGELOG` to list features in more detail.
 - Docker image `evennia/evennia:develop` is now auto-built, tracking the develop branch.
 - Inflection and grouping of multiple objects in default room (an box, three boxes)
