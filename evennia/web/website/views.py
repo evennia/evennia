@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Lower
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import View, TemplateView, ListView, DetailView, FormView
@@ -173,7 +173,8 @@ class EvenniaDeleteView(DeleteView):
     
 class ObjectDetailView(DetailView):
     
-    model = ObjectDB
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    access_type = 'view'
     
     def get_object(self, queryset=None):
         """
@@ -183,19 +184,35 @@ class ObjectDetailView(DetailView):
         calculate the same for the object and make sure it matches.
         
         """
-        obj = super(ObjectDetailView, self).get_object(queryset)
+        if not queryset:
+            queryset = self.get_queryset()
+        
+        # Get the object, ignoring all checks and filters
+        obj = self.model.objects.get(pk=self.kwargs.get('pk'))
+        
+        # Check if this object was requested in a valid manner
         if slugify(obj.name) != self.kwargs.get(self.slug_url_kwarg):
-            raise Http404(u"No %(verbose_name)s found matching the query" %
-                          {'verbose_name': queryset.model._meta.verbose_name})
+            raise HttpResponseBadRequest(u"No %(verbose_name)s found matching the query" %
+              {'verbose_name': queryset.model._meta.verbose_name})
+        
+        # Check if account has permissions to access object
+        account = self.request.user
+        if not obj.access(account, self.access_type):
+            raise PermissionDenied(u"You are not authorized to %s this object." % self.access_type)
+            
+        # Get the object, based on the specified queryset
+        obj = super(ObjectDetailView, self).get_object(queryset)
+        
         return obj
         
 class ObjectCreateView(LoginRequiredMixin, EvenniaCreateView):
     
-    model = ObjectDB
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
         
 class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
     
-    model = ObjectDB
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    access_type = 'delete'
     template_name = 'website/object_confirm_delete.html'
     
     def delete(self, request, *args, **kwargs):
@@ -212,7 +229,8 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
     
 class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     
-    model = ObjectDB
+    model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    access_type = 'edit'
     
     def get_initial(self):
         """
