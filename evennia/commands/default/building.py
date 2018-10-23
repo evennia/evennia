@@ -2862,7 +2862,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     key = "@spawn"
     aliases = ["olc"]
-    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc", "update")
+    switch_options = ("noloc", "search", "list", "show", "examine", "save", "delete", "menu", "olc", "update", "edit")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
@@ -2913,12 +2913,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
 
-        if self.cmdstring == "olc" or 'menu' in self.switches or 'olc' in self.switches:
+        if self.cmdstring == "olc" or 'menu' in self.switches \
+                or 'olc' in self.switches or 'edit' in self.switches:
             # OLC menu mode
             prototype = None
             if self.lhs:
                 key = self.lhs
-                prototype = spawner.search_prototype(key=key, return_meta=True)
+                prototype = protlib.search_prototype(key=key)
                 if len(prototype) > 1:
                     caller.msg("More than one match for {}:\n{}".format(
                         key, "\n".join(proto.get('prototype_key', '') for proto in prototype)))
@@ -2926,6 +2927,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 elif prototype:
                     # one match
                     prototype = prototype[0]
+                else:
+                    # no match
+                    caller.msg("No prototype '{}' was found.".format(key))
+                    return
             olc_menus.start_olc(caller, session=self.session, prototype=prototype)
             return
 
