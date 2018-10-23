@@ -69,8 +69,12 @@ let history_plugin = (function () {
         }
 
         if (history_entry !== null) {
-            // Doing a history navigation; replace the text in the input.
-            inputfield.val(history_entry);
+            // Performing a history navigation
+            // replace the text in the input and move the cursor to the end of the new value
+            inputfield.val('');
+            inputfield.blur().focus().val(history_entry);
+            event.preventDefault();
+            return true;
         }
 
         return false;
