@@ -190,9 +190,18 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     def sessions(self):
         return AccountSessionHandler(self)
         
-    @lazy_property
+    # Do not make this a lazy property; the web UI will not refresh it!
+    @property
     def characters(self):
-        return self.db._playable_characters
+        # Get playable characters list
+        objs = self.db._playable_characters
+        
+        # Rebuild the list if legacy code left null values after deletion
+        if None in objs:
+            objs = [x for x in self.db._playable_characters if x]
+            self.db._playable_characters = objs
+            
+        return objs
 
     # session-related methods
 
