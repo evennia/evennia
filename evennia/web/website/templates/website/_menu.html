@@ -39,14 +39,14 @@ folder and edit it to add/remove links to the menu.
             {% block navbar_right %}
             {% endblock %}
             {% block navbar_user %}
-            {% if user.is_authenticated %}
+            {% if account %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user_options" aria-expanded="false">Logged in as {{user.username}} <span class="caret"></span></a>
               <div class="dropdown-menu" aria-labelledby="user_options">
                 <a class="dropdown-item" href="{% url 'character-create' %}">Create Character</a>
                 <a class="dropdown-item" href="{% url 'character-manage' %}">Manage Characters</a>
                 <div class="dropdown-divider"></div>
-                {% for character in user.characters|slice:"10" %}
+                {% for character in account.characters|slice:"10" %}
                   <a class="dropdown-item" href="#">{{ character }}</a>
                 {% empty %} 
                   <a class="dropdown-item" href="#">No characters found!</a>

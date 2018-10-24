@@ -328,7 +328,7 @@ class CharacterMixin(object):
     
     def get_queryset(self):
         # Get IDs of characters owned by account
-        ids = [getattr(x, 'id') for x in self.request.user.db._playable_characters if x]
+        ids = [getattr(x, 'id') for x in self.request.user.characters if x]
         
         # Return a queryset consisting of those characters
         return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
@@ -337,7 +337,7 @@ class CharacterManageView(LoginRequiredMixin, CharacterMixin, ListView):
 
     paginate_by = 10
     template_name = 'website/character_manage_list.html'
-    page_title = 'Manage: Characters'
+    page_title = 'Manage Characters'
         
 class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
     
@@ -390,6 +390,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
             [setattr(character.db, key, value) for key,value in self.attributes.items()]
             character.db.creator_id = account.id
             character.save()
+            account.save()
             
         except Exception as e:
             messages.error(self.request, "There was an error creating your character. If this problem persists, contact an admin.")
