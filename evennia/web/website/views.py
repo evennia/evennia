@@ -363,28 +363,8 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
         description = self.attributes.pop('desc')
         
         # Create a character
-        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-        typeclass = self.model
-        default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-        
-        from evennia.utils import create
         try:
-            character = create.create_object(typeclass, key=charname, home=default_home, permissions=permissions)
-            # set playable character list
-            account.db._playable_characters.append(character)
-    
-            # allow only the character itself and the account to puppet this character (and Developers).
-            character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
-                                    (character.id, account.id))
-    
-            # If no description is set, set a default description
-            if not description:
-                character.db.desc = "This is a character."
-            else:
-                character.db.desc = description
-                
-            # We need to set this to have @ic auto-connect to this character
-            account.db._last_puppet = character
+            character, errors = self.model.create(charname, account, description=description)
             
             # Assign attributes from form
             [setattr(character.db, key, value) for key,value in self.attributes.items()]

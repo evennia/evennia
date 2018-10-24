@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.utils.text import slugify
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
 from evennia.utils.test_resources import EvenniaTest
 
@@ -97,7 +97,29 @@ class CharacterCreateView(EvenniaWebTest):
     url_name = 'character-create'
     unauthenticated_response = 302
     
-    def test_valid_access(self):
+    @override_settings(MULTISESSION_MODE=0)
+    def test_valid_access_multisession_0(self):
+        "Account1 with no characters should be able to create a new one"
+        self.account.db._playable_characters = []
+        
+        # Login account
+        self.login()
+        
+        # Post data for a new character
+        data = {
+            'db_key': 'gannon',
+            'desc': 'Some dude.'
+        }
+
+        response = self.client.post(reverse(self.url_name), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        
+        # Make sure the character was actually created
+        self.assertTrue(len(self.account.db._playable_characters) == 1, 'Account only has the following characters attributed to it: %s' % self.account.db._playable_characters)
+    
+    @override_settings(MULTISESSION_MODE=2)
+    @override_settings(MAX_NR_CHARACTERS=10)
+    def test_valid_access_multisession_2(self):
         "Account1 should be able to create a new character"
         # Login account
         self.login()
