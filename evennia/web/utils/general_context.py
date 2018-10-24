@@ -71,7 +71,9 @@ def general_context(request):
     if request.user.is_authenticated(): account = request.user
 
     puppet = None
-    if request.session.get('puppet'): puppet = request.session['puppet']
+    if account and request.session.get('puppet'):
+        pk = int(request.session.get('puppet'))
+        puppet = next((x for x in account.characters if x.pk == pk), None)
     
     return {
         'account': account,
