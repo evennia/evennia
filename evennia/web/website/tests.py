@@ -136,6 +136,29 @@ class CharacterCreateView(EvenniaWebTest):
         # Make sure the character was actually created
         self.assertTrue(len(self.account.db._playable_characters) > 1, 'Account only has the following characters attributed to it: %s' % self.account.db._playable_characters)
         
+class CharacterPuppetView(EvenniaWebTest):
+    url_name = 'character-puppet'
+    unauthenticated_response = 302
+    
+    def get_kwargs(self):
+        return {
+            'pk': self.char1.pk,
+            'slug': slugify(self.char1.name)
+        }
+        
+    def test_invalid_access(self):
+        "Account1 should not be able to puppet Account2:Char2"
+        # Login account
+        self.login()
+        
+        # Try to access puppet page for char2
+        kwargs = {
+            'pk': self.char2.pk,
+            'slug': slugify(self.char2.name)
+        }
+        response = self.client.get(reverse(self.url_name, kwargs=kwargs), follow=True)
+        self.assertTrue(response.status_code >= 400, "Invalid access should return a 4xx code-- either obj not found or permission denied! (Returned %s)" % response.status_code)
+        
 class CharacterManageView(EvenniaWebTest):
     url_name = 'character-manage'
     unauthenticated_response = 302
