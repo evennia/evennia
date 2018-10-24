@@ -1,9 +1,7 @@
-from mock import Mock, patch
-
-from django.test import TestCase
-
+from django.contrib.auth.models import AnonymousUser
+from django.test import RequestFactory, TestCase
+from mock import MagicMock, patch
 from . import general_context
-
 
 class TestGeneralContext(TestCase):
     maxDiff = None
@@ -15,8 +13,18 @@ class TestGeneralContext(TestCase):
     @patch('evennia.web.utils.general_context.WEBSOCKET_PORT', "websocket_client_port_testvalue")
     @patch('evennia.web.utils.general_context.WEBSOCKET_URL', "websocket_client_url_testvalue")
     def test_general_context(self):
-        request = Mock()
-        self.assertEqual(general_context.general_context(request), {
+        request = RequestFactory().get('/')
+        request.user = AnonymousUser()
+        request.session = {
+            'account': None,
+            'puppet': None,
+        }
+        
+        response = general_context.general_context(request)
+        
+        self.assertEqual(response, {
+            'account': None,
+            'puppet': None,
             'game_name': "test_name",
             'game_slogan': "test_game_slogan",
             'evennia_userapps': ['Accounts'],

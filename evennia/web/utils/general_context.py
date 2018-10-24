@@ -69,7 +69,7 @@ def general_context(request):
     """
     account = None
     if request.user.is_authenticated(): account = request.user
-    
+
     puppet = None
     if request.session.get('puppet'): puppet = request.session['puppet']
     
