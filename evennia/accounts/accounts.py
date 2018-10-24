@@ -733,7 +733,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
                 if character:
                     # Update playable character list
-                    account.db._playable_characters.append(character)
+                    if character not in account.characters:
+                        account.db._playable_characters.append(character)
 
                     # We need to set this to have @ic auto-connect to this character
                     account.db._last_puppet = character
