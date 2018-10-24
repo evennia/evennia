@@ -20,17 +20,19 @@ import textwrap
 import random
 from os.path import join as osjoin
 from importlib import import_module
-from inspect import ismodule, trace, getmembers, getmodule
+from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
 from twisted.internet import threads, reactor, task
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from django.apps import apps
 from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
+
 
 try:
     import cPickle as pickle
@@ -41,8 +43,6 @@ ENCODINGS = settings.ENCODINGS
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
-
-_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 
 def is_iter(iterable):
@@ -79,7 +79,7 @@ def make_iter(obj):
     return not hasattr(obj, '__iter__') and [obj] or obj
 
 
-def wrap(text, width=_DEFAULT_WIDTH, indent=0):
+def wrap(text, width=None, indent=0):
     """
     Safely wrap text to a certain number of characters.
 
@@ -92,6 +92,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
         text (str): Properly wrapped text.
 
     """
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
     if not text:
         return ""
     text = to_unicode(text)
@@ -103,7 +104,7 @@ def wrap(text, width=_DEFAULT_WIDTH, indent=0):
 fill = wrap
 
 
-def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
+def pad(text, width=None, align="c", fillchar=" "):
     """
     Pads to a given width.
 
@@ -118,6 +119,7 @@ def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
         text (str): The padded text.
 
     """
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
     align = align if align in ('c', 'l', 'r') else 'c'
     fillchar = fillchar[0] if fillchar else " "
     if align == 'l':
@@ -128,7 +130,7 @@ def pad(text, width=_DEFAULT_WIDTH, align="c", fillchar=" "):
         return text.center(width, fillchar)
 
 
-def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
+def crop(text, width=None, suffix="[...]"):
     """
     Crop text to a certain width, throwing away text from too-long
     lines.
@@ -146,7 +148,7 @@ def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
         text (str): The cropped text.
 
     """
-
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
     utext = to_unicode(text)
     ltext = len(utext)
     if ltext <= width:
@@ -157,12 +159,16 @@ def crop(text, width=_DEFAULT_WIDTH, suffix="[...]"):
         return to_str(utext)
 
 
-def dedent(text):
+def dedent(text, baseline_index=None):
     """
     Safely clean all whitespace at the left of a paragraph.
 
     Args:
         text (str): The text to dedent.
+        baseline_index (int or None, optional): Which row to use as a 'base'
+            for the indentation. Lines will be dedented to this level but
+            no further. If None, indent so as to completely deindent the
+            least indented text.
 
     Returns:
         text (str): Dedented string.
@@ -175,10 +181,17 @@ def dedent(text):
     """
     if not text:
         return ""
-    return textwrap.dedent(text)
+    if baseline_index is None:
+        return textwrap.dedent(text)
+    else:
+        lines = text.split('\n')
+        baseline = lines[baseline_index]
+        spaceremove = len(baseline) - len(baseline.lstrip(' '))
+        return "\n".join(line[min(spaceremove, len(line) - len(line.lstrip(' '))):]
+                         for line in lines)
 
 
-def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
+def justify(text, width=None, align="f", indent=0):
     """
     Fully justify a text so that it fits inside `width`. When using
     full justification (default) this will be done by padding between
@@ -197,6 +210,7 @@ def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
         justified (str): The justified and indented block of text.
 
     """
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
 
     def _process_line(line):
         """
@@ -208,18 +222,27 @@ def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
         gap = " "  # minimum gap between words
         if line_rest > 0:
             if align == 'l':
-                line[-1] += " " * line_rest
+                if line[-1] == "\n\n":
+                    line[-1] = " " * (line_rest-1) + "\n" + " " * width + "\n" + " " * width
+                else:
+                    line[-1] += " " * line_rest
             elif align == 'r':
                 line[0] = " " * line_rest + line[0]
             elif align == 'c':
                 pad = " " * (line_rest // 2)
                 line[0] = pad + line[0]
-                line[-1] = line[-1] + pad + " " * (line_rest % 2)
+                if line[-1] == "\n\n":
+                    line[-1] += pad + " " * (line_rest % 2 - 1) + \
+                            "\n" + " " * width + "\n" + " " * width
+                else:
+                    line[-1] = line[-1] + pad + " " * (line_rest % 2)
             else:  # align 'f'
                 gap += " " * (line_rest // max(1, ngaps))
                 rest_gap = line_rest % max(1, ngaps)
                 for i in range(rest_gap):
                     line[i] += " "
+        elif not any(line):
+            return [" " * width]
         return gap.join(line)
 
     # split into paragraphs and words
@@ -258,6 +281,62 @@ def justify(text, width=_DEFAULT_WIDTH, align="f", indent=0):
         lines.append(_process_line(line))
     indentstring = " " * indent
     return "\n".join([indentstring + line for line in lines])
+
+
+def columnize(string, columns=2, spacing=4, align='l', width=None):
+    """
+    Break a string into a number of columns, using as little
+    vertical space as possible.
+
+    Args:
+        string (str): The string to columnize.
+        columns (int, optional): The number of columns to use.
+        spacing (int, optional): How much space to have between columns.
+        width (int, optional): The max width of the columns.
+            Defaults to client's default width.
+
+    Returns:
+        columns (str): Text divided into columns.
+
+    Raises:
+        RuntimeError: If given invalid values.
+
+    """
+    columns = max(1, columns)
+    spacing = max(1, spacing)
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
+
+    w_spaces = (columns - 1) * spacing
+    w_txt = max(1, width - w_spaces)
+
+    if w_spaces + columns > width:  # require at least 1 char per column
+        raise RuntimeError("Width too small to fit columns")
+
+    colwidth = int(w_txt / (1.0 * columns))
+
+    # first make a single column which we then split
+    onecol = justify(string, width=colwidth, align=align)
+    onecol = onecol.split("\n")
+
+    nrows, dangling = divmod(len(onecol), columns)
+    nrows = [nrows + 1 if i < dangling else nrows for i in range(columns)]
+
+    height = max(nrows)
+    cols = []
+    istart = 0
+    for irows in nrows:
+        cols.append(onecol[istart:istart+irows])
+        istart = istart + irows
+    for col in cols:
+        if len(col) < height:
+            col.append(" " * colwidth)
+
+    sep = " " * spacing
+    rows = []
+    for irow in range(height):
+        rows.append(sep.join(col[irow] for col in cols))
+
+    return "\n".join(rows)
 
 
 def list_to_string(inlist, endsep="and", addquote=False):
@@ -931,17 +1010,17 @@ def delay(timedelay, callback, *args, **kwargs):
     Delay the return of a value.
 
     Args:
-      timedelay (int or float): The delay in seconds
-      callback (callable): Will be called with optional
-        arguments after `timedelay` seconds.
-      args (any, optional): Will be used as arguments to callback
+        timedelay (int or float): The delay in seconds
+        callback (callable): Will be called as `callback(*args, **kwargs)`
+            after `timedelay` seconds.
+        args (any, optional): Will be used as arguments to callback
     Kwargs:
-       persistent (bool, optional): should make the delay persistent
-           over a reboot or reload
-       any (any): Will be used to call the callback.
+        persistent (bool, optional): should make the delay persistent
+            over a reboot or reload
+        any (any): Will be used as keyword arguments to callback.
 
     Returns:
-        deferred (deferred): Will fire fire with callback after
+        deferred (deferred): Will fire with callback after
             `timedelay` seconds. Note that if `timedelay()` is used in the
             commandhandler callback chain, the callback chain can be
             defined directly in the command body and don't need to be
@@ -1546,6 +1625,7 @@ def format_table(table, extra_space=1):
     Examples:
 
         ```python
+        ftable = format_table([[...], [...], ...])
         for ir, row in enumarate(ftable):
             if ir == 0:
                 # make first row white
@@ -1786,8 +1866,12 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         error = kwargs.get("nofound_string") or _("Could not find '%s'." % query)
         matches = None
     elif len(matches) > 1:
-        error = kwargs.get("multimatch_string") or \
-            _("More than one match for '%s' (please narrow target):\n" % query)
+        multimatch_string = kwargs.get("multimatch_string")
+        if multimatch_string:
+            error = "%s\n" % multimatch_string
+        else:
+            error = _("More than one match for '%s' (please narrow target):\n" % query)
+
         for num, result in enumerate(matches):
             # we need to consider Commands, where .aliases is a list
             aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
@@ -1875,3 +1959,29 @@ def get_game_dir_path():
         else:
             os.chdir(os.pardir)
     raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
+
+
+def get_all_typeclasses(parent=None):
+    """
+    List available typeclasses from all available modules.
+
+    Args:
+        parent (str, optional): If given, only return typeclasses inheriting (at any distance)
+            from this parent.
+
+    Returns:
+        typeclasses (dict): On the form {"typeclass.path": typeclass, ...}
+
+    Notes:
+        This will dynamicall retrieve all abstract django models inheriting at any distance
+        from the TypedObject base (aka a Typeclass) so it will work fine with any custom
+        classes being added.
+
+    """
+    from evennia.typeclasses.models import TypedObject
+    typeclasses = {"{}.{}".format(model.__module__, model.__name__): model
+                   for model in apps.get_models() if TypedObject in getmro(model)}
+    if parent:
+        typeclasses = {name: typeclass for name, typeclass in typeclasses.items()
+                       if inherits_from(typeclass, parent)}
+    return typeclasses
