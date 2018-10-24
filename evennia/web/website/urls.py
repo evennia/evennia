@@ -9,7 +9,7 @@ from django import views as django_views
 from evennia.web.website import views as website_views
 
 urlpatterns = [
-    url(r'^$', website_views.page_index, name="index"),
+    url(r'^$', website_views.EvenniaIndexView.as_view(), name="index"),
     url(r'^tbi/', website_views.to_be_implemented, name='to_be_implemented'),
 
     # User Authentication (makes login/logout url names available)
@@ -19,6 +19,7 @@ urlpatterns = [
     # Character management
     url(r'^characters/create/$', website_views.CharacterCreateView.as_view(), name="character-create"),
     url(r'^characters/manage/$', website_views.CharacterManageView.as_view(), name="character-manage"),
+    url(r'^characters/puppet/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterPuppetView.as_view(), name="character-puppet"),
     url(r'^characters/update/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterUpdateView.as_view(), name="character-update"),
     url(r'^characters/delete/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterDeleteView.as_view(), name="character-delete"),
     

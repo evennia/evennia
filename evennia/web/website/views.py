@@ -15,8 +15,9 @@ from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Lower
 from django.http import HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import View, TemplateView, ListView, DetailView, FormView
+from django.views.generic.base import RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from evennia import SESSION_HANDLER
@@ -102,20 +103,6 @@ def _gamestats():
     return pagevars
 
 
-def page_index(request):
-    """
-    Main root page.
-    """
-
-    # handle webclient-website shared login
-    _shared_login(request)
-
-    # get game db stats
-    pagevars = _gamestats()
-
-    return render(request, 'index.html', pagevars)
-
-
 def to_be_implemented(request):
     """
     A notice letting the user know that this particular feature hasn't been
@@ -148,6 +135,20 @@ def admin_wrapper(request):
 #
 # Class-based views
 #
+
+class EvenniaIndexView(TemplateView):
+    # Display this HTML page
+    template_name = 'website/index.html'
+    
+    # Display these variables on it
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context object
+        context = super(EvenniaIndexView, self).get_context_data(**kwargs)
+        
+        # Add game statistics and other pagevars
+        context.update(_gamestats())
+        
+        return context
 
 class EvenniaCreateView(CreateView):
     
@@ -323,6 +324,22 @@ class CharacterMixin(object):
         
         # Return a queryset consisting of those characters
         return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        
+class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
+    
+    def get_redirect_url(self, *args, **kwargs):
+        # Get the requested character, if it belongs to the authenticated user
+        char = self.get_object()
+        next = self.kwargs.get('next', reverse('character-manage'))
+        
+        if char:
+            self.request.session['puppet'] = int(char.pk)
+            messages.success(self.request, "You become '%s'!" % char)
+        else:
+            self.request.session['puppet'] = None
+            messages.error(self.request, "You cannot become '%s'." % char)
+            
+        return next
         
 class CharacterManageView(LoginRequiredMixin, CharacterMixin, ListView):
 

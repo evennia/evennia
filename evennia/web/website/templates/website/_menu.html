@@ -41,13 +41,19 @@ folder and edit it to add/remove links to the menu.
             {% block navbar_user %}
             {% if account %}
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user_options" aria-expanded="false">Logged in as {{user.username}} <span class="caret"></span></a>
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user_options" aria-expanded="false">
+                {% if puppet %}
+                  Welcome, {{ puppet }}! <span class="text-muted">({{ account.username }})</span> <span class="caret"></span>
+                {% else %}
+                  Logged in as {{ account.username }} <span class="caret"></span>
+                {% endif %}
+              </a>
               <div class="dropdown-menu" aria-labelledby="user_options">
                 <a class="dropdown-item" href="{% url 'character-create' %}">Create Character</a>
                 <a class="dropdown-item" href="{% url 'character-manage' %}">Manage Characters</a>
                 <div class="dropdown-divider"></div>
                 {% for character in account.characters|slice:"10" %}
-                  <a class="dropdown-item" href="#">{{ character }}</a>
+                  <a class="dropdown-item" href="{{ character.web_get_puppet_url }}?next={{ request.path }}">{{ character }}</a>
                 {% empty %} 
                   <a class="dropdown-item" href="#">No characters found!</a>
                 {% endfor %}
