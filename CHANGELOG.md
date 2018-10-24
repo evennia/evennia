@@ -2,6 +2,11 @@
 
 ## Evennia 0.8 (2018)
 
+### Requirements
+
+- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
+- Add `inflect` dependency for automatic pluralization of object names.
+
 ### Server/Portal
 
 - Removed `evennia_runner`, completely refactor `evennia_launcher.py` (the 'evennia' program)
@@ -85,7 +90,6 @@
 
 ### General
 
-- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
 - Start structuring the `CHANGELOG` to list features in more detail.
 - Docker image `evennia/evennia:develop` is now auto-built, tracking the develop branch.
 - Inflection and grouping of multiple objects in default room (an box, three boxes)
