@@ -11,6 +11,7 @@ from builtins import object
 
 import sys
 import os
+import time
 
 from os.path import dirname, abspath
 from twisted.application import internet, service
@@ -113,6 +114,8 @@ class Portal(object):
         self.server_process_id = None
         self.server_restart_mode = "shutdown"
         self.server_info_dict = {}
+
+        self.start_time = time.time()
 
         # in non-interactive portal mode, this gets overwritten by
         # cmdline sent by the evennia launcher

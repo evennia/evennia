@@ -8,6 +8,7 @@ let defaultin_plugin = (function () {
     //
     // handle the default <enter> key triggering onSend()
     var onKeydown = function (event) {
+	$("#inputfield").focus();
         if ( (event.which === 13) && (!event.shiftKey) ) {  // Enter Key without shift
             var inputfield = $("#inputfield");
             var outtext = inputfield.val();

@@ -221,6 +221,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
             self.factory.server.run_init_hooks(server_restart_mode)
             server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
+            server_sessionhandler.portal_start_time = kwargs.get("portal_start_time")
 
         elif operation == amp.SRELOAD:  # server reload
             # shut down in reload mode
