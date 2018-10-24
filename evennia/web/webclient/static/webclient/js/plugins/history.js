@@ -44,14 +44,6 @@ let history_plugin = (function () {
     }
 
     //
-    // Go to the last history line
-    var end = function () {
-        // move to the end of the history stack
-        history_pos = 0;
-        return history[history.length -1];
-    }
-
-    //
     // Add input to the scratch line
     var scratch = function (input) {
         // Put the input into the last history entry (which is normally empty)
@@ -69,27 +61,20 @@ let history_plugin = (function () {
         var history_entry = null;
         var inputfield = $("#inputfield");
 
-        if (inputfield[0].selectionStart == inputfield.val().length) {
-            // Only process up/down arrow if cursor is at the end of the line.
-            if (code === 38) { // Arrow up
-                history_entry = back();
-            }
-            else if (code === 40) { // Arrow down
-                history_entry = fwd();
-            }
+        if (code === 38) { // Arrow up
+            history_entry = back();
+        }
+        else if (code === 40) { // Arrow down
+            history_entry = fwd();
         }
 
         if (history_entry !== null) {
-            // Doing a history navigation; replace the text in the input.
-            inputfield.val(history_entry);
-        }
-        else {
-            // Save the current contents of the input to the history scratch area.
-            setTimeout(function () {
-                // Need to wait until after the key-up to capture the value.
-                scratch(inputfield.val());
-                end();
-            }, 0);
+            // Performing a history navigation
+            // replace the text in the input and move the cursor to the end of the new value
+            inputfield.val('');
+            inputfield.blur().focus().val(history_entry);
+            event.preventDefault();
+            return true;
         }
 
         return false;
@@ -99,6 +84,7 @@ let history_plugin = (function () {
     // Listen for onSend lines to add to history
     var onSend = function (line) {
         add(line);
+        return null; // we are not returning an altered input line
     }
 
     //

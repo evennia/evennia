@@ -1,6 +1,50 @@
 # Changelog
 
+## Evennia 0.9 (2018-2019)
+
+### Commands
+
+- Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
+  question.
+- Add new `@force` command to have another object perform a command.
+- Add the Portal uptime to the `@time` command.
+- Make the `@link` command first make a local search before a global search.
+
+### Typeclasses
+
+- Add new methods on all typeclasses, useful specifically for viewing the object in the web/admin:
+  + `web_get_admin_url()`: Returns a path that, if followed, will display the object in the Admin backend.
+  + `web_get_create_url()`: Returns a path for a view allowing the creation of new instances of this object.
+  + `web_get_absolute_url()`: Django construct; returns a path that should display the object in a DetailView.
+  + `web_get_update_url()`: Returns a path that should display the object in an UpdateView.
+  + `web_get_delete_url()`: Returns a path that should display the object in a DeleteView.
+- All typeclasses has new helper class method `create`, which encompasses useful functionality
+  that used to be embedded for example in the respective `@create` or `@connect` commands.
+- DefaultAccount now has new class methods implementing many things that used to be in unloggedin
+  commands (these can now be customized on the class instead):
+  + `is_banned()`: Checks if a given username or IP is banned.
+  + `get_username_validators`: Return list of validators for username validation (see
+    `settings.AUTH_USERNAME_VALIDATORS`)
+  + `authenticate`: Method to check given username/password.
+  + `normalize_username`: Normalizes names so you can't fake names with similar-looking Unicode
+    chars.
+  + `validate_username`: Mechanism for validating a username.
+  + `validate_password`: Mechanism for validating a password.
+  + `set_password`: Apply password to account, using validation checks.
+
+
+
+### Utils
+
+- Added more unit tests.
+
+
 ## Evennia 0.8 (2018)
+
+### Requirements
+
+- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
+- Add `inflect` dependency for automatic pluralization of object names.
 
 ### Server/Portal
 
@@ -14,7 +58,7 @@
   to terminal and can be stopped with Ctrl-C. Using `evennia reload`, or reloading in-game, will
   return Server to normal daemon operation.
 - For validating passwords, use safe Django password-validation backend instead of custom Evennia one.
-- Alias `evennia restart` to mean the same as `evennia reload`. 
+- Alias `evennia restart` to mean the same as `evennia reload`.
 
 ### Prototype changes
 
@@ -85,7 +129,6 @@
 
 ### General
 
-- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
 - Start structuring the `CHANGELOG` to list features in more detail.
 - Docker image `evennia/evennia:develop` is now auto-built, tracking the develop branch.
 - Inflection and grouping of multiple objects in default room (an box, three boxes)

@@ -10,7 +10,7 @@ from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
-from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
+from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses, variable_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
@@ -612,12 +612,12 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             self.edit_handler()
             return
 
-        if self.rhs:
+        if '=' in self.args:
             # We have an =
             obj = caller.search(self.lhs)
             if not obj:
                 return
-            desc = self.rhs
+            desc = self.rhs or ''
         else:
             obj = caller.location or self.msg("|rYou can't describe oblivion.|n")
             if not obj:
@@ -737,12 +737,11 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 confirm += ", ".join(["#{}".format(obj.id) for obj in objs])
             confirm += " [yes]/no?" if self.default_confirm == 'yes' else " yes/[no]"
             answer = ""
-            while answer.strip().lower() not in ("y", "yes", "n", "no"):
-                answer = yield(confirm)
-                answer = self.default_confirm if answer == '' else answer
+            answer = yield(confirm)
+            answer = self.default_confirm if answer == '' else answer
 
             if answer.strip().lower() in ("n", "no"):
-                caller.msg("Cancelled: no object was destroyed.")
+                caller.msg("Canceled: no object was destroyed.")
                 delete = False
 
         if delete:
@@ -1023,10 +1022,17 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
 
         object_name = self.lhs
 
-        # get object
-        obj = caller.search(object_name, global_search=True)
-        if not obj:
-            return
+        # try to search locally first
+        results = caller.search(object_name, quiet=True)
+        if len(results) > 1:  # local results was a multimatch. Inform them to be more specific
+            _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+            return _AT_SEARCH_RESULT(results, caller, query=object_name)
+        elif len(results) == 1:  # A unique local match
+            obj = results[0]
+        else:  # No matches. Search globally
+            obj = caller.search(object_name, global_search=True)
+            if not obj:
+                return
 
         if self.rhs:
             # this means a target name was given
@@ -2856,7 +2862,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     key = "@spawn"
     aliases = ["olc"]
-    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc", "update")
+    switch_options = ("noloc", "search", "list", "show", "examine", "save", "delete", "menu", "olc", "update", "edit")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
@@ -2889,7 +2895,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                                     "use the 'exec' prototype key.")
                     return None
                 try:
-                    protlib.validate_prototype(prototype)
+                    # we homogenize first, to be more lenient
+                    protlib.validate_prototype(protlib.homogenize_prototype(prototype))
                 except RuntimeError as err:
                     self.caller.msg(str(err))
                     return
@@ -2906,12 +2913,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
 
-        if self.cmdstring == "olc" or 'menu' in self.switches or 'olc' in self.switches:
+        if self.cmdstring == "olc" or 'menu' in self.switches \
+                or 'olc' in self.switches or 'edit' in self.switches:
             # OLC menu mode
             prototype = None
             if self.lhs:
                 key = self.lhs
-                prototype = spawner.search_prototype(key=key, return_meta=True)
+                prototype = protlib.search_prototype(key=key)
                 if len(prototype) > 1:
                     caller.msg("More than one match for {}:\n{}".format(
                         key, "\n".join(proto.get('prototype_key', '') for proto in prototype)))
@@ -2919,6 +2927,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 elif prototype:
                     # one match
                     prototype = prototype[0]
+                else:
+                    # no match
+                    caller.msg("No prototype '{}' was found.".format(key))
+                    return
             olc_menus.start_olc(caller, session=self.session, prototype=prototype)
             return
 
