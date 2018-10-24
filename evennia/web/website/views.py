@@ -20,43 +20,6 @@ from django.contrib.auth import login
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 
-
-def _shared_login(request):
-    """
-    Handle the shared login between website and webclient.
-
-    """
-    csession = request.session
-    account = request.user
-    website_uid = csession.get("website_authenticated_uid", None)
-    webclient_uid = csession.get("webclient_authenticated_uid", None)
-
-    if not csession.session_key:
-        # this is necessary to build the sessid key
-        csession.save()
-
-    if account.is_authenticated():
-        # Logged into website
-        if not website_uid:
-            # fresh website login (just from login page)
-            csession["website_authenticated_uid"] = account.id
-            if webclient_uid is None:
-                # auto-login web client
-                csession["webclient_authenticated_uid"] = account.id
-
-    elif webclient_uid:
-        # Not logged into website, but logged into webclient
-        if not website_uid:
-            csession["website_authenticated_uid"] = account.id
-            account = AccountDB.objects.get(id=webclient_uid)
-            try:
-                # calls our custom authenticate, in web/utils/backend.py
-                authenticate(autologin=account)
-                login(request, account)
-            except AttributeError:
-                logger.log_trace()
-
-
 def _gamestats():
     # Some misc. configurable stuff.
     # TODO: Move this to either SQL or settings.py based configuration.
@@ -96,10 +59,6 @@ def page_index(request):
     """
     Main root page.
     """
-
-    # handle webclient-website shared login
-    _shared_login(request)
-
     # get game db stats
     pagevars = _gamestats()
 
