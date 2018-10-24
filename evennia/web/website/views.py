@@ -233,6 +233,10 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
     access_type = 'edit'
     
+    def get_success_url(self):
+        if self.success_url: return self.success_url
+        return self.object.web_get_detail_url()
+    
     def get_initial(self):
         """
         Override of Django hook.
@@ -273,7 +277,7 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
             
         # Do not return super().form_valid; we don't want to update the model
         # instance, just its attributes.
-        return HttpResponseRedirect(self.success_url)
+        return HttpResponseRedirect(self.get_success_url())
         
 #
 # Account views
@@ -317,6 +321,7 @@ class CharacterMixin(object):
     
     model = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
     form_class = CharacterForm
+    success_url = reverse_lazy('character-manage')
     
     def get_queryset(self):
         # Get IDs of characters owned by account
@@ -330,7 +335,7 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
     def get_redirect_url(self, *args, **kwargs):
         # Get the requested character, if it belongs to the authenticated user
         char = self.get_object()
-        next = self.kwargs.get('next', reverse('character-manage'))
+        next = self.kwargs.get('next', self.success_url)
         
         if char:
             self.request.session['puppet'] = int(char.pk)
@@ -353,12 +358,11 @@ class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
     template_name = 'website/character_form.html'
     
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
-    success_url = reverse_lazy('character-manage')
+    pass
         
 class CharacterCreateView(CharacterMixin, ObjectCreateView):
-    
+
     template_name = 'website/character_form.html'
-    success_url = reverse_lazy('character-manage')
     
     def form_valid(self, form):
         # Get account ref
