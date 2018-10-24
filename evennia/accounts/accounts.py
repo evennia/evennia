@@ -13,6 +13,8 @@ instead for most things).
 
 import time
 from django.conf import settings
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
@@ -357,6 +359,65 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     puppet = property(__get_single_puppet)
 
     # utility methods
+    @classmethod
+    def validate_password(cls, password, account=None):
+        """
+        Checks the given password against the list of Django validators enabled
+        in the server.conf file.
+
+        Args:
+            password (str): Password to validate
+
+        Kwargs:
+            account (DefaultAccount, optional): Account object to validate the
+                password for. Optional, but Django includes some validators to
+                do things like making sure users aren't setting passwords to the
+                same value as their username. If left blank, these user-specific
+                checks are skipped.
+
+        Returns:
+            valid (bool): Whether or not the password passed validation
+            error (ValidationError, None): Any validation error(s) raised. Multiple
+                errors can be nested within a single object.
+
+        """
+        valid = False
+        error = None
+
+        # Validation returns None on success; invert it and return a more sensible bool
+        try:
+            valid = not password_validation.validate_password(password, user=account)
+        except ValidationError as e:
+            error = e
+
+        return valid, error
+
+    def set_password(self, password, force=False):
+        """
+        Applies the given password to the account if it passes validation checks.
+        Can be overridden by using the 'force' flag.
+
+        Args:
+            password (str): Password to set
+
+        Kwargs:
+            force (bool): Sets password without running validation checks.
+
+        Raises:
+            ValidationError
+
+        Returns:
+            None (None): Does not return a value.
+
+        """
+        if not force:
+            # Run validation checks
+            valid, error = self.validate_password(password, account=self)
+            if error: raise error
+
+        super(DefaultAccount, self).set_password(password)
+        logger.log_info("Password succesfully changed for %s." % self)
+        self.at_password_change()
 
     def delete(self, *args, **kwargs):
         """
@@ -633,10 +694,31 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             # this will only be set if the utils.create_account
             # function was used to create the object.
             cdict = self._createdict
+            updates = []
+            if not cdict.get("key"):
+                if not self.db_key:
+                    self.db_key = "#%i" % self.dbid
+                    updates.append("db_key")
+            elif self.key != cdict.get("key"):
+                updates.append("db_key")
+                self.db_key = cdict["key"]
+            if updates:
+                self.save(update_fields=updates)
+
             if cdict.get("locks"):
                 self.locks.add(cdict["locks"])
             if cdict.get("permissions"):
                 permissions = cdict["permissions"]
+            if cdict.get("tags"):
+                # this should be a list of tags, tuples (key, category) or (key, category, data)
+                self.tags.batch_add(*cdict["tags"])
+            if cdict.get("attributes"):
+                # this should be tuples (key, val, ...)
+                self.attributes.batch_add(*cdict["attributes"])
+            if cdict.get("nattributes"):
+                # this should be a dict of nattrname:value
+                for key, value in cdict["nattributes"]:
+                    self.nattributes.add(key, value)
             del self._createdict
 
         self.permissions.batch_add(*permissions)
@@ -686,6 +768,17 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         is established and usually no character is yet assigned at
         this point. This hook is intended for account-specific setup
         like configurations.
+
+        Args:
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        """
+        pass
+
+    def at_password_change(self, **kwargs):
+        """
+        Called after a successful password set/modify.
 
         Args:
             **kwargs (dict): Arbitrary, optional arguments for users
@@ -773,11 +866,11 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the account.
-            # we make sure to clean up the _playable_characers list in case
+            # we make sure to clean up the _playable_characters list in case
             # any was deleted in the interim.
             self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(self.at_look(target=self.db._playable_characters,
-                                  session=session))
+                                  session=session), session=session)
 
     def at_failed_login(self, session, **kwargs):
         """
@@ -908,7 +1001,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         if target and not is_iter(target):
             # single target - just show it
-            return target.return_appearance(self)
+            if hasattr(target, "return_appearance"):
+                return target.return_appearance(self)
+            else:
+                return "{} has no in-game appearance.".format(target)
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
@@ -929,7 +1025,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             result.append("\n\n |whelp|n - more commands")
             result.append("\n |wooc <Text>|n - talk on public channel")
 
-            charmax = _MAX_NR_CHARACTERS if _MULTISESSION_MODE > 1 else 1
+            charmax = _MAX_NR_CHARACTERS
 
             if is_su or len(characters) < charmax:
                 if not characters:

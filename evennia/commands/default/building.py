@@ -10,9 +10,10 @@ from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
-from evennia.utils.utils import inherits_from, class_from_module
+from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.spawner import spawn
+from evennia.utils.evmore import EvMore
+from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -26,12 +27,8 @@ __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
            "CmdScript", "CmdTag", "CmdSpawn")
 
-try:
-    # used by @set
-    from ast import literal_eval as _LITERAL_EVAL
-except ImportError:
-    # literal_eval is not available before Python 2.6
-    _LITERAL_EVAL = None
+# used by @set
+from ast import literal_eval as _LITERAL_EVAL
 
 # used by @find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
@@ -106,9 +103,15 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     Usage:
       @alias <obj> [= [alias[,alias,alias,...]]]
       @alias <obj> =
+      @alias/category <obj> = [alias[,alias,...]:<category>
+
+    Switches:
+      category - requires ending input with :category, to store the
+        given aliases with the given category.
 
     Assigns aliases to an object so it can be referenced by more
-    than one name. Assign empty to remove all aliases from object.
+    than one name. Assign empty to remove all aliases from object. If
+    assigning a category, all aliases given will be using this category.
 
     Observe that this is not the same thing as personal aliases
     created with the 'nick' command! Aliases set with @alias are
@@ -118,6 +121,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
 
     key = "@alias"
     aliases = "@setobjalias"
+    switch_options = ("category",)
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
 
@@ -138,9 +142,12 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
             return
         if self.rhs is None:
             # no =, so we just list aliases on object.
-            aliases = obj.aliases.all()
+            aliases = obj.aliases.all(return_key_and_category=True)
             if aliases:
-                caller.msg("Aliases for '%s': %s" % (obj.get_display_name(caller), ", ".join(aliases)))
+                caller.msg("Aliases for %s: %s" % (
+                    obj.get_display_name(caller),
+                    ", ".join("'%s'%s" % (alias, "" if category is None else "[category:'%s']" % category)
+                              for (alias, category) in aliases)))
             else:
                 caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
             return
@@ -159,17 +166,27 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                 caller.msg("No aliases to clear.")
             return
 
+        category = None
+        if "category" in self.switches:
+            if ":" in self.rhs:
+                rhs, category = self.rhs.rsplit(':', 1)
+                category = category.strip()
+            else:
+                caller.msg("If specifying the /category switch, the category must be given "
+                           "as :category at the end.")
+        else:
+            rhs = self.rhs
+
         # merge the old and new aliases (if any)
-        old_aliases = obj.aliases.all()
-        new_aliases = [alias.strip().lower() for alias in self.rhs.split(',')
-                       if alias.strip()]
+        old_aliases = obj.aliases.get(category=category, return_list=True)
+        new_aliases = [alias.strip().lower() for alias in rhs.split(',') if alias.strip()]
 
         # make the aliases only appear once
         old_aliases.extend(new_aliases)
         aliases = list(set(old_aliases))
 
         # save back to object.
-        obj.aliases.add(aliases)
+        obj.aliases.add(aliases, category=category)
 
         # we need to trigger this here, since this will force
         # (default) Exits to rebuild their Exit commands with the new
@@ -177,7 +194,8 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
         obj.at_cmdset_get(force_init=True)
 
         # report all aliases on the object
-        caller.msg("Alias(es) for '%s' set to %s." % (obj.get_display_name(caller), str(obj.aliases)))
+        caller.msg("Alias(es) for '%s' set to '%s'%s." % (obj.get_display_name(caller),
+                   str(obj.aliases), " (category: '%s')" % category if category else ""))
 
 
 class CmdCopy(ObjManipCommand):
@@ -198,6 +216,7 @@ class CmdCopy(ObjManipCommand):
     """
 
     key = "@copy"
+    switch_options = ("reset",)
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
@@ -279,6 +298,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
+    switch_options = ("move",)
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
 
@@ -420,6 +440,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
+    switch_options = ("copy",)
     locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
 
@@ -468,6 +489,7 @@ class CmdCreate(ObjManipCommand):
     """
 
     key = "@create"
+    switch_options = ("drop",)
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
 
@@ -553,6 +575,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     """
     key = "@desc"
     aliases = "@describe"
+    switch_options = ("edit",)
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
 
@@ -589,12 +612,12 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             self.edit_handler()
             return
 
-        if self.rhs:
+        if '=' in self.args:
             # We have an =
             obj = caller.search(self.lhs)
             if not obj:
                 return
-            desc = self.rhs
+            desc = self.rhs or ''
         else:
             obj = caller.location or self.msg("|rYou can't describe oblivion.|n")
             if not obj:
@@ -614,11 +637,11 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     Usage:
        @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
 
-    switches:
+    Switches:
        override - The @destroy command will usually avoid accidentally
                   destroying account objects. This switch overrides this safety.
        force - destroy without confirmation.
-    examples:
+    Examples:
        @destroy house, roof, door, 44-78
        @destroy 5-10, flower, 45
        @destroy/force north
@@ -631,6 +654,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
     key = "@destroy"
     aliases = ["@delete", "@del"]
+    switch_options = ("override", "force")
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
 
@@ -754,6 +778,7 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
     key = "@dig"
+    switch_options = ("teleport",)
     locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
 
@@ -863,7 +888,7 @@ class CmdDig(ObjManipCommand):
                                                        new_back_exit.dbref,
                                                        alias_string)
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
-        if new_room and ('teleport' in self.switches or "tel" in self.switches):
+        if new_room and 'teleport' in self.switches:
             caller.move_to(new_room)
 
 
@@ -896,6 +921,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
 
     key = "@tunnel"
     aliases = ["@tun"]
+    switch_options = ("oneway", "tel")
     locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
 
@@ -1429,17 +1455,16 @@ def _convert_from_string(cmd, strobj):
         # if nothing matches, return as-is
         return obj
 
-    if _LITERAL_EVAL:
-        # Use literal_eval to parse python structure exactly.
-        try:
-            return _LITERAL_EVAL(strobj)
-        except (SyntaxError, ValueError):
-            # treat as string
-            strobj = utils.to_str(strobj)
-            string = "|RNote: name \"|r%s|R\" was converted to a string. " \
-                     "Make sure this is acceptable." % strobj
-            cmd.caller.msg(string)
-            return strobj
+    # Use literal_eval to parse python structure exactly.
+    try:
+        return _LITERAL_EVAL(strobj)
+    except (SyntaxError, ValueError):
+        # treat as string
+        strobj = utils.to_str(strobj)
+        string = "|RNote: name \"|r%s|R\" was converted to a string. " \
+                 "Make sure this is acceptable." % strobj
+        cmd.caller.msg(string)
+        return strobj
     else:
         # fall back to old recursive solution (does not support
         # nested lists/dicts)
@@ -1458,6 +1483,13 @@ class CmdSetAttribute(ObjManipCommand):
 
     Switch:
         edit: Open the line editor (string values only)
+        script: If we're trying to set an attribute on a script
+        channel: If we're trying to set an attribute on a channel
+        account: If we're trying to set an attribute on an account
+        room: Setting an attribute on a room (global search)
+        exit: Setting an attribute on an exit (global search)
+        char: Setting an attribute on a character (global search)
+        character: Alias for char, as above.
 
     Sets attributes on objects. The second form clears
     a previously set attribute while the last form
@@ -1558,6 +1590,38 @@ class CmdSetAttribute(ObjManipCommand):
         # start the editor
         EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
 
+    def search_for_obj(self, objname):
+        """
+        Searches for an object matching objname. The object may be of different typeclasses.
+        Args:
+            objname: Name of the object we're looking for
+
+        Returns:
+            A typeclassed object, or None if nothing is found.
+        """
+        from evennia.utils.utils import variable_from_module
+        _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+        caller = self.caller
+        if objname.startswith('*') or "account" in self.switches:
+            found_obj = caller.search_account(objname.lstrip('*'))
+        elif "script" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_script(objname), caller)
+        elif "channel" in self.switches:
+            found_obj = _AT_SEARCH_RESULT(search.search_channel(objname), caller)
+        else:
+            global_search = True
+            if "char" in self.switches or "character" in self.switches:
+                typeclass = settings.BASE_CHARACTER_TYPECLASS
+            elif "room" in self.switches:
+                typeclass = settings.BASE_ROOM_TYPECLASS
+            elif "exit" in self.switches:
+                typeclass = settings.BASE_EXIT_TYPECLASS
+            else:
+                global_search = False
+                typeclass = None
+            found_obj = caller.search(objname, global_search=global_search, typeclass=typeclass)
+        return found_obj
+
     def func(self):
         """Implement the set attribute - a limited form of @py."""
 
@@ -1571,10 +1635,7 @@ class CmdSetAttribute(ObjManipCommand):
         objname = self.lhs_objattr[0]['name']
         attrs = self.lhs_objattr[0]['attrs']
 
-        if objname.startswith('*'):
-            obj = caller.search_account(objname.lstrip('*'))
-        else:
-            obj = caller.search(objname)
+        obj = self.search_for_obj(objname)
         if not obj:
             return
 
@@ -1637,17 +1698,22 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       @typeclass[/switch] <object> [= typeclass.path]
       @type                     ''
       @parent                   ''
+      @typeclass/list/show [typeclass.path]
       @swap - this is a shorthand for using /force/reset flags.
       @update - this is a shorthand for using the /force/reload flag.
 
     Switch:
-      show - display the current typeclass of object (default)
+      show, examine - display the current typeclass of object (default) or, if
+            given a typeclass path, show the docstring of that typeclass.
       update - *only* re-run at_object_creation on this object
               meaning locks or other properties set later may remain.
       reset - clean out *all* the attributes and properties on the
               object - basically making this a new clean object.
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
+      list - show available typeclasses.
+
+
     Example:
       @type button = examples.red_button.RedButton
 
@@ -1671,6 +1737,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     key = "@typeclass"
     aliases = ["@type", "@parent", "@swap", "@update"]
+    switch_options = ("show", "examine", "update", "reset", "force", "list")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
 
@@ -1679,8 +1746,54 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
 
+        if 'list' in self.switches:
+            tclasses = get_all_typeclasses()
+            contribs = [key for key in sorted(tclasses)
+                        if key.startswith("evennia.contrib")] or ["<None loaded>"]
+            core = [key for key in sorted(tclasses)
+                    if key.startswith("evennia") and key not in contribs] or ["<None loaded>"]
+            game = [key for key in sorted(tclasses)
+                    if not key.startswith("evennia")] or ["<None loaded>"]
+            string = ("|wCore typeclasses|n\n"
+                      "    {core}\n"
+                      "|wLoaded Contrib typeclasses|n\n"
+                      "    {contrib}\n"
+                      "|wGame-dir typeclasses|n\n"
+                      "    {game}").format(core="\n    ".join(core),
+                                           contrib="\n    ".join(contribs),
+                                           game="\n    ".join(game))
+            EvMore(caller, string, exit_on_lastpage=True)
+            return
+
         if not self.args:
             caller.msg("Usage: %s <object> [= typeclass]" % self.cmdstring)
+            return
+
+        if "show" in self.switches or "examine" in self.switches:
+            oquery = self.lhs
+            obj = caller.search(oquery, quiet=True)
+            if not obj:
+                # no object found to examine, see if it's a typeclass-path instead
+                tclasses = get_all_typeclasses()
+                matches = [(key, tclass)
+                           for key, tclass in tclasses.items() if key.endswith(oquery)]
+                nmatches = len(matches)
+                if nmatches > 1:
+                    caller.msg("Multiple typeclasses found matching {}:\n  {}".format(
+                        oquery, "\n  ".join(tup[0] for tup in matches)))
+                elif not matches:
+                    caller.msg("No object or typeclass path found to match '{}'".format(oquery))
+                else:
+                    # one match found
+                    caller.msg("Docstring for typeclass '{}':\n{}".format(
+                        oquery, matches[0][1].__doc__))
+            else:
+                # do the search again to get the error handling in case of multi-match
+                obj = caller.search(oquery)
+                if not obj:
+                    return
+                caller.msg("{}'s current typeclass is '{}.{}'".format(
+                    obj.name, obj.__class__.__module__, obj.__class__.__name__))
             return
 
         # get object to swap on
@@ -1695,7 +1808,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         new_typeclass = self.rhs or obj.path
 
-        if "show" in self.switches:
+        if "show" in self.switches or "examine" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
             caller.msg(string)
             return
@@ -2114,12 +2227,15 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n|wExits|n: %s" % ", ".join(["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
+                string += "\n|wExits|n: %s" % ", ".join(
+                    ["%s(%s)" % (exit.name, exit.dbref) for exit in exits])
             if pobjs:
-                string += "\n|wCharacters|n: %s" % ", ".join(["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
+                string += "\n|wCharacters|n: %s" % ", ".join(
+                    ["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs])
             if things:
-                string += "\n|wContents|n: %s" % ", ".join(["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
-                                                            if cont not in exits and cont not in pobjs])
+                string += "\n|wContents|n: %s" % ", ".join(
+                    ["%s(%s)" % (cont.name, cont.dbref) for cont in obj.contents
+                     if cont not in exits and cont not in pobjs])
         separator = "-" * _DEFAULT_WIDTH
         # output info
         return '%s\n%s\n%s' % (separator, string.strip(), separator)
@@ -2202,12 +2318,15 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     Usage:
       @find[/switches] <name or dbref or *account> [= dbrefmin[-dbrefmax]]
+      @locate - this is a shorthand for using the /loc switch.
 
     Switches:
-      room - only look for rooms (location=None)
-      exit - only look for exits (destination!=None)
-      char - only look for characters (BASE_CHARACTER_TYPECLASS)
-      exact- only exact matches are returned.
+      room       - only look for rooms (location=None)
+      exit       - only look for exits (destination!=None)
+      char       - only look for characters (BASE_CHARACTER_TYPECLASS)
+      exact      - only exact matches are returned.
+      loc        - display object location if exists and match has one result
+      startswith - search for names starting with the string, rather than containing
 
     Searches the database for an object of a particular name or exact #dbref.
     Use *accountname to search for an account. The switches allows for
@@ -2218,6 +2337,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
     key = "@find"
     aliases = "@search, @locate"
+    switch_options = ("room", "exit", "char", "exact", "loc", "startswith")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
 
@@ -2229,6 +2349,9 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         if not self.args:
             caller.msg("Usage: @find <string> [= low [-high]]")
             return
+
+        if "locate" in self.cmdstring:  # Use option /loc as a default for @locate command alias
+            switches.append('loc')
 
         searchstring = self.lhs
         low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
@@ -2251,7 +2374,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
         restrictions = ""
         if self.switches:
-            restrictions = ", %s" % (",".join(self.switches))
+            restrictions = ", %s" % (", ".join(self.switches))
 
         if is_dbref or is_account:
 
@@ -2279,6 +2402,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             else:
                 result = result[0]
                 string += "\n|g   %s - %s|n" % (result.get_display_name(caller), result.path)
+                if "loc" in self.switches and not is_account and result.location:
+                    string += " (|wlocation|n: |g{}|n)".format(result.location.get_display_name(caller))
         else:
             # Not an account/dbref search but a wider search; build a queryset.
             # Searchs for key and aliases
@@ -2286,9 +2411,13 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 keyquery = Q(db_key__iexact=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(db_tags__db_key__iexact=searchstring,
                                db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
-            else:
+            elif "startswith" in switches:
                 keyquery = Q(db_key__istartswith=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(db_tags__db_key__istartswith=searchstring,
+                               db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
+            else:
+                keyquery = Q(db_key__icontains=searchstring, id__gte=low, id__lte=high)
+                aliasquery = Q(db_tags__db_key__icontains=searchstring,
                                db_tags__db_tagtype__iexact="alias", id__gte=low, id__lte=high)
 
             results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
@@ -2314,6 +2443,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 else:
                     string = "|wOne Match|n(#%i-#%i%s):" % (low, high, restrictions)
                     string += "\n   |g%s - %s|n" % (results[0].get_display_name(caller), results[0].path)
+                    if "loc" in self.switches and nresults == 1 and results[0].location:
+                        string += " (|wlocation|n: |g{}|n)".format(results[0].location.get_display_name(caller))
             else:
                 string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
                 string += "\n   |RNo matches found for '%s'|n" % searchstring
@@ -2327,7 +2458,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     teleport object to another location
 
     Usage:
-      @tel/switch [<object> =] <target location>
+      @tel/switch [<object> to||=] <target location>
 
     Examples:
       @tel Limbo
@@ -2351,6 +2482,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     """
     key = "@tel"
     aliases = "@teleport"
+    switch_options = ("quiet", "intoexit", "tonone", "loc")
+    rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
@@ -2458,6 +2591,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
 
     key = "@script"
     aliases = "@addscript"
+    switch_options = ("start", "stop")
     locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"
 
@@ -2557,6 +2691,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 
     key = "@tag"
     aliases = ["@tags"]
+    options = ("search", "del")
     locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
@@ -2654,100 +2789,318 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
 
-#
-# To use the prototypes with the @spawn function set
-#   PROTOTYPE_MODULES = ["commands.prototypes"]
-# Reload the server and the prototypes should be available.
-#
-
 
 class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
     spawn objects from prototype
 
     Usage:
-      @spawn
-      @spawn[/switch] <prototype_name>
-      @spawn[/switch] {prototype dictionary}
+      @spawn[/noloc] <prototype_key>
+      @spawn[/noloc] <prototype_dict>
 
-    Switch:
+      @spawn/search [prototype_keykey][;tag[,tag]]
+      @spawn/list [tag, tag, ...]
+      @spawn/show [<prototype_key>]
+      @spawn/update <prototype_key>
+
+      @spawn/save <prototype_dict>
+      @spawn/edit [<prototype_key>]
+      @olc     - equivalent to @spawn/edit
+
+    Switches:
       noloc - allow location to be None if not specified explicitly. Otherwise,
               location will default to caller's current location.
+      search - search prototype by name or tags.
+      list - list available prototypes, optionally limit by tags.
+      show, examine - inspect prototype by key. If not given, acts like list.
+      save - save a prototype to the database. It will be listable by /list.
+      delete - remove a prototype from database, if allowed to.
+      update - find existing objects with the same prototype_key and update
+               them with latest version of given prototype. If given with /save,
+               will auto-update all objects with the old version of the prototype
+               without asking first.
+      edit, olc - create/manipulate prototype in a menu interface.
 
     Example:
       @spawn GOBLIN
       @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
+      @spawn/save {"key": "grunt", prototype: "goblin"};;mobs;edit:all()
 
     Dictionary keys:
-      |wprototype  |n - name of parent prototype to use. Can be a list for
-                        multiple inheritance (inherits left to right)
+      |wprototype_parent  |n - name of parent prototype to use. Required if typeclass is
+                        not set. Can be a path or a list for multiple inheritance (inherits
+                        left to right). If set one of the parents must have a typeclass.
+      |wtypeclass  |n - string. Required if prototype_parent is not set.
       |wkey        |n - string, the main object identifier
-      |wtypeclass  |n - string, if not set, will use settings.BASE_OBJECT_TYPECLASS
       |wlocation   |n - this should be a valid object or #dbref
       |whome       |n - valid object or #dbref
       |wdestination|n - only valid for exits (object or dbref)
       |wpermissions|n - string or list of permission strings
       |wlocks      |n - a lock-string
-      |waliases    |n - string or list of strings
+      |waliases    |n - string or list of strings.
       |wndb_|n<name>  - value of a nattribute (ndb_ is stripped)
+
+      |wprototype_key|n   - name of this prototype. Unique. Used to store/retrieve from db
+                            and update existing prototyped objects if desired.
+      |wprototype_desc|n  - desc of this prototype. Used in listings
+      |wprototype_locks|n - locks of this prototype. Limits who may use prototype
+      |wprototype_tags|n  - tags of this prototype. Used to find prototype
+
       any other keywords are interpreted as Attributes and their values.
 
     The available prototypes are defined globally in modules set in
     settings.PROTOTYPE_MODULES. If @spawn is used without arguments it
     displays a list of available prototypes.
+
     """
 
     key = "@spawn"
+    aliases = ["olc"]
+    switch_options = ("noloc", "search", "list", "show", "examine", "save", "delete", "menu", "olc", "update", "edit")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
         """Implements the spawner"""
 
-        def _show_prototypes(prototypes):
-            """Helper to show a list of available prototypes"""
-            prots = ", ".join(sorted(prototypes.keys()))
-            return "\nAvailable prototypes (case sensitive): %s" % (
-                    "\n" + utils.fill(prots) if prots else "None")
+        def _parse_prototype(inp, expect=dict):
+            err = None
+            try:
+                prototype = _LITERAL_EVAL(inp)
+            except (SyntaxError, ValueError) as err:
+                # treat as string
+                prototype = utils.to_str(inp)
+            finally:
+                if not isinstance(prototype, expect):
+                    if err:
+                        string = ("{}\n|RCritical Python syntax error in argument. Only primitive "
+                                  "Python structures are allowed. \nYou also need to use correct "
+                                  "Python syntax. Remember especially to put quotes around all "
+                                  "strings inside lists and dicts.|n For more advanced uses, embed "
+                                  "inline functions in the strings.".format(err))
+                    else:
+                        string = "Expected {}, got {}.".format(expect, type(prototype))
+                    self.caller.msg(string)
+                    return None
+            if expect == dict:
+                # an actual prototype. We need to make sure it's safe. Don't allow exec
+                if "exec" in prototype and not self.caller.check_permstring("Developer"):
+                    self.caller.msg("Spawn aborted: You are not allowed to "
+                                    "use the 'exec' prototype key.")
+                    return None
+                try:
+                    # we homogenize first, to be more lenient
+                    protlib.validate_prototype(protlib.homogenize_prototype(prototype))
+                except RuntimeError as err:
+                    self.caller.msg(str(err))
+                    return
+            return prototype
 
-        prototypes = spawn(return_prototypes=True)
-        if not self.args:
-            string = "Usage: @spawn {key:value, key, value, ... }"
-            self.caller.msg(string + _show_prototypes(prototypes))
-            return
-        try:
-            # make use of _convert_from_string from the SetAttribute command
-            prototype = _convert_from_string(self, self.args)
-        except SyntaxError:
-            # this means literal_eval tried to parse a faulty string
-            string = "|RCritical Python syntax error in argument. "
-            string += "Only primitive Python structures are allowed. "
-            string += "\nYou also need to use correct Python syntax. "
-            string += "Remember especially to put quotes around all "
-            string += "strings inside lists and dicts.|n"
-            self.caller.msg(string)
+        def _search_show_prototype(query, prototypes=None):
+            # prototype detail
+            if not prototypes:
+                prototypes = protlib.search_prototype(key=query)
+            if prototypes:
+                return "\n".join(protlib.prototype_to_str(prot) for prot in prototypes)
+            else:
+                return False
+
+        caller = self.caller
+
+        if self.cmdstring == "olc" or 'menu' in self.switches \
+                or 'olc' in self.switches or 'edit' in self.switches:
+            # OLC menu mode
+            prototype = None
+            if self.lhs:
+                key = self.lhs
+                prototype = protlib.search_prototype(key=key)
+                if len(prototype) > 1:
+                    caller.msg("More than one match for {}:\n{}".format(
+                        key, "\n".join(proto.get('prototype_key', '') for proto in prototype)))
+                    return
+                elif prototype:
+                    # one match
+                    prototype = prototype[0]
+                else:
+                    # no match
+                    caller.msg("No prototype '{}' was found.".format(key))
+                    return
+            olc_menus.start_olc(caller, session=self.session, prototype=prototype)
             return
 
-        if isinstance(prototype, basestring):
-            # A prototype key
-            keystr = prototype
-            prototype = prototypes.get(prototype, None)
+        if 'search' in self.switches:
+            # query for a key match
+            if not self.args:
+                self.switches.append("list")
+            else:
+                key, tags = self.args.strip(), None
+                if ';' in self.args:
+                    key, tags = (part.strip().lower() for part in self.args.split(";", 1))
+                    tags = [tag.strip() for tag in tags.split(",")] if tags else None
+                EvMore(caller, unicode(protlib.list_prototypes(caller, key=key, tags=tags)),
+                       exit_on_lastpage=True)
+                return
+
+        if 'show' in self.switches or 'examine' in self.switches:
+            # the argument is a key in this case (may be a partial key)
+            if not self.args:
+                self.switches.append('list')
+            else:
+                matchstring = _search_show_prototype(self.args)
+                if matchstring:
+                    caller.msg(matchstring)
+                else:
+                    caller.msg("No prototype '{}' was found.".format(self.args))
+                return
+
+        if 'list' in self.switches:
+            # for list, all optional arguments are tags
+            # import pudb; pudb.set_trace()
+
+            EvMore(caller, unicode(protlib.list_prototypes(caller,
+                   tags=self.lhslist)), exit_on_lastpage=True)
+            return
+
+        if 'save' in self.switches:
+            # store a prototype to the database store
+            if not self.args:
+                caller.msg(
+                  "Usage: @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
+                return
+
+            # handle rhs:
+            prototype = _parse_prototype(self.lhs.strip())
             if not prototype:
-                string = "No prototype named '%s'." % keystr
-                self.caller.msg(string + _show_prototypes(prototypes))
                 return
-        elif isinstance(prototype, dict):
-            # we got the prototype on the command line. We must make sure to not allow
-            # the 'exec' key unless we are developers or higher.
-            if "exec" in prototype and not self.caller.check_permstring("Developer"):
-                self.caller.msg("Spawn aborted: You don't have access to use the 'exec' prototype key.")
+
+            # present prototype to save
+            new_matchstring = _search_show_prototype("", prototypes=[prototype])
+            string = "|yCreating new prototype:|n\n{}".format(new_matchstring)
+            question = "\nDo you want to continue saving? [Y]/N"
+
+            prototype_key = prototype.get("prototype_key")
+            if not prototype_key:
+                caller.msg("\n|yTo save a prototype it must have the 'prototype_key' set.")
                 return
-        else:
-            self.caller.msg("The prototype must be a prototype key or a Python dictionary.")
+
+            # check for existing prototype,
+            old_matchstring = _search_show_prototype(prototype_key)
+
+            if old_matchstring:
+                string += "\n|yExisting saved prototype found:|n\n{}".format(old_matchstring)
+                question = "\n|yDo you want to replace the existing prototype?|n [Y]/N"
+
+            answer = yield(string + question)
+            if answer.lower() in ["n", "no"]:
+                caller.msg("|rSave cancelled.|n")
+                return
+
+            # all seems ok. Try to save.
+            try:
+                prot = protlib.save_prototype(**prototype)
+                if not prot:
+                    caller.msg("|rError saving:|R {}.|n".format(prototype_key))
+                    return
+            except protlib.PermissionError as err:
+                caller.msg("|rError saving:|R {}|n".format(err))
+                return
+            caller.msg("|gSaved prototype:|n {}".format(prototype_key))
+
+            # check if we want to update existing objects
+            existing_objects = protlib.search_objects_with_prototype(prototype_key)
+            if existing_objects:
+                if 'update' not in self.switches:
+                    n_existing = len(existing_objects)
+                    slow = " (note that this may be slow)" if n_existing > 10 else ""
+                    string = ("There are {} objects already created with an older version "
+                              "of prototype {}. Should it be re-applied to them{}? [Y]/N".format(
+                                  n_existing, prototype_key, slow))
+                    answer = yield(string)
+                    if answer.lower() in ["n", "no"]:
+                        caller.msg("|rNo update was done of existing objects. "
+                                   "Use @spawn/update <key> to apply later as needed.|n")
+                        return
+                n_updated = spawner.batch_update_objects_with_prototype(existing_objects, key)
+                caller.msg("{} objects were updated.".format(n_updated))
             return
+
+        if not self.args:
+            ncount = len(protlib.search_prototype())
+            caller.msg("Usage: @spawn <prototype-key> or {{key: value, ...}}"
+                       "\n ({} existing prototypes. Use /list to inspect)".format(ncount))
+            return
+
+        if 'delete' in self.switches:
+            # remove db-based prototype
+            matchstring = _search_show_prototype(self.args)
+            if matchstring:
+                string = "|rDeleting prototype:|n\n{}".format(matchstring)
+                question = "\nDo you want to continue deleting? [Y]/N"
+                answer = yield(string + question)
+                if answer.lower() in ["n", "no"]:
+                    caller.msg("|rDeletion cancelled.|n")
+                    return
+                try:
+                    success = protlib.delete_db_prototype(caller, self.args)
+                except protlib.PermissionError as err:
+                    caller.msg("|rError deleting:|R {}|n".format(err))
+                caller.msg("Deletion {}.".format(
+                    'successful' if success else 'failed (does the prototype exist?)'))
+                return
+            else:
+                caller.msg("Could not find prototype '{}'".format(key))
+
+        if 'update' in self.switches:
+            # update existing prototypes
+            key = self.args.strip().lower()
+            existing_objects = protlib.search_objects_with_prototype(key)
+            if existing_objects:
+                n_existing = len(existing_objects)
+                slow = " (note that this may be slow)" if n_existing > 10 else ""
+                string = ("There are {} objects already created with an older version "
+                          "of prototype {}. Should it be re-applied to them{}? [Y]/N".format(
+                              n_existing, key, slow))
+                answer = yield(string)
+                if answer.lower() in ["n", "no"]:
+                    caller.msg("|rUpdate cancelled.")
+                    return
+                n_updated = spawner.batch_update_objects_with_prototype(existing_objects, key)
+                caller.msg("{} objects were updated.".format(n_updated))
+
+        # A direct creation of an object from a given prototype
+
+        prototype = _parse_prototype(
+                self.args, expect=dict if self.args.strip().startswith("{") else basestring)
+        if not prototype:
+            # this will only let through dicts or strings
+            return
+
+        key = '<unnamed>'
+        if isinstance(prototype, basestring):
+            # A prototype key we are looking to apply
+            key = prototype
+            prototypes = protlib.search_prototype(prototype)
+            nprots = len(prototypes)
+            if not prototypes:
+                caller.msg("No prototype named '%s'." % prototype)
+                return
+            elif nprots > 1:
+                caller.msg("Found {} prototypes matching '{}':\n  {}".format(
+                    nprots, prototype, ", ".join(prot.get('prototype_key', '')
+                                                 for proto in prototypes)))
+                return
+            # we have a prototype, check access
+            prototype = prototypes[0]
+            if not caller.locks.check_lockstring(caller, prototype.get('prototype_locks', ''), access_type='spawn'):
+                caller.msg("You don't have access to use this prototype.")
+                return
 
         if "noloc" not in self.switches and "location" not in prototype:
             prototype["location"] = self.caller.location
 
-        for obj in spawn(prototype):
-            self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
+        # proceed to spawning
+        try:
+            for obj in spawner.spawn(prototype):
+                self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
+        except RuntimeError as err:
+            caller.msg(err)

@@ -65,7 +65,7 @@ ALLOWED_HOSTS = ["*"]
 # the Portal proxy presents to the world. The serverports are
 # the internal ports the proxy uses to forward data to the Server-side
 # webserver (these should not be publicly open)
-WEBSERVER_PORTS = [(4001, 4002)]
+WEBSERVER_PORTS = [(4001, 4005)]
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSERVER_INTERFACES = ['0.0.0.0']
 # IP addresses that may talk to the server in a reverse proxy configuration,
@@ -83,15 +83,20 @@ WEBCLIENT_ENABLED = True
 # default webclient will use this and only use the ajax version if the browser
 # is too old to support websockets. Requires WEBCLIENT_ENABLED.
 WEBSOCKET_CLIENT_ENABLED = True
-# Server-side websocket port to open for the webclient.
-WEBSOCKET_CLIENT_PORT = 4005
+# Server-side websocket port to open for the webclient. Note that this value will
+# be dynamically encoded in the webclient html page to allow the webclient to call
+# home. If the external encoded value needs to be different than this, due to
+# working through a proxy or docker port-remapping, the environment variable
+# WEBCLIENT_CLIENT_PROXY_PORT can be used to override this port only for the
+# front-facing client's sake.
+WEBSOCKET_CLIENT_PORT = 4002
 # Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.
 WEBSOCKET_CLIENT_INTERFACE = '0.0.0.0'
 # Actual URL for webclient component to reach the websocket. You only need
 # to set this if you know you need it, like using some sort of proxy setup.
-# If given it must be on the form "ws://hostname" (WEBSOCKET_CLIENT_PORT will
-# be automatically appended). If left at None, the client will itself
-# figure out this url based on the server's hostname.
+# If given it must be on the form "ws[s]://hostname[:port]". If left at None,
+# the client will itself figure out this url based on the server's hostname.
+# e.g. ws://external.example.com or wss://external.example.com:443
 WEBSOCKET_CLIENT_URL = None
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
@@ -137,7 +142,7 @@ LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
-# Max size of channel log files before they rotate
+# Max size (in bytes) of channel log files before they rotate
 CHANNEL_LOG_ROTATE_SIZE = 1000000
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -166,6 +171,7 @@ IDLE_COMMAND = "idle"
 # given, this list is tried, in order, aborting on the first match.
 # Add sets for languages/regions your accounts are likely to use.
 # (see http://en.wikipedia.org/wiki/Character_encoding)
+# Telnet default encoding, unless specified by the client, will be ENCODINGS[0].
 ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # Regular expression applied to all output to a given session in order
 # to strip away characters (usually various forms of decorations) for the benefit
@@ -348,6 +354,9 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs",)
 INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
 # Modules that contain prototypes for use with the spawner mechanism.
 PROTOTYPE_MODULES = ["world.prototypes"]
+# Modules containining Prototype functions able to be embedded in prototype
+# definitions from in-game.
+PROT_FUNC_MODULES = ["evennia.prototypes.protfuncs"]
 # Module holding settings/actions for the dummyrunner program (see the
 # dummyrunner for more information)
 DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
@@ -464,7 +473,7 @@ BASE_SCRIPT_TYPECLASS = "typeclasses.scripts.Script"
 DEFAULT_HOME = "#2"
 # The start position for new characters. Default is Limbo (#2).
 #  MULTISESSION_MODE = 0, 1 - used by default unloggedin create command
-#  MULTISESSION_MODE = 2,3 - used by default character_create command
+#  MULTISESSION_MODE = 2, 3 - used by default character_create command
 START_LOCATION = "#2"
 # Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
 # cached to avoid repeated database hits. This often gives noticeable
@@ -498,11 +507,16 @@ TIME_FACTOR = 2.0
 # The starting point of your game time (the epoch), in seconds.
 # In Python a value of 0 means Jan 1 1970 (use negatives for earlier
 # start date). This will affect the returns from the utils.gametime
-# module.
+# module. If None, the server's first start-time is used as the epoch.
 TIME_GAME_EPOCH = None
+# Normally, game time will only increase when the server runs. If this is True,
+# game time will not pause when the server reloads or goes offline. This setting
+# together with a time factor of 1 should keep the game in sync with
+# the real time (add a different epoch to shift time)
+TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc
+# Inlinefunc & PrototypeFuncs
 ######################################################################
 # Evennia supports inline function preprocessing. This allows users
 # to supply inline calls on the form $func(arg, arg, ...) to do
@@ -514,6 +528,10 @@ INLINEFUNC_ENABLED = False
 # is loaded from left-to-right, same-named functions will overload
 INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
                       "server.conf.inlinefuncs"]
+# Module holding handlers for OLCFuncs. These allow for embedding
+# functional code in prototypes
+PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
+                         "server.conf.prototypefuncs"]
 
 ######################################################################
 # Default Account setup and access
@@ -534,9 +552,7 @@ INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
 #  3 - like mode 2, except multiple sessions can puppet one character, each
 #      session getting the same data.
 MULTISESSION_MODE = 0
-# The maximum number of characters allowed for MULTISESSION_MODE 2,3. This is
-# checked by the default ooc char-creation command. Forced to 1 for
-# MULTISESSION_MODE 0 and 1.
+# The maximum number of characters allowed by the default ooc char-creation command
 MAX_NR_CHARACTERS = 1
 # The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()
@@ -783,6 +799,16 @@ INSTALLED_APPS = (
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
 AUTH_USER_MODEL = "accounts.AccountDB"
+
+# Password validation plugins
+# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8}},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {'NAME': 'evennia.server.validators.EvenniaPasswordValidator'}]
 
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'

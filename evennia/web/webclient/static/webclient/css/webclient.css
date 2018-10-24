@@ -8,16 +8,23 @@
 --- */
 
 /* Overall element look */
-html, body, #clientwrapper { height: 100% }
+html, body {
+    height: 100%;
+    width: 100%;
+}
 body {
-    margin: 0;
-    padding: 0;
     background: #000;
     color: #ccc;
     font-size: .9em;
     font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
     line-height: 1.6em;
     overflow: hidden;
+}
+@media screen and (max-width: 480px) {
+  body {
+    font-size: .5rem;
+    line-height: .7rem;
+  }
 }
 
 
@@ -74,93 +81,116 @@ div {margin:0px;}
 }
 
 /* Style specific classes corresponding to formatted, narative text. */
-
+.wrapper {
+  height: 100%;
+}
 
 /* Container surrounding entire client */
-#wrapper {
-    position: relative;
-    height: 100%
+#clientwrapper {
+  height: 100%;
 }
 
 /* Main scrolling message area */
+
 #messagewindow {
-    position: absolute;
-    overflow: auto;
-    padding: 1em;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 70px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
 }
 
-/* Input area containing input field and button */
-#inputform {
-    position: absolute;
-    width: 100%;
-    padding: 0;
-    bottom: 0;
-    margin: 0;
-    padding-bottom: 10px;
-    border-top: 1px solid #555;
-}
-
-#inputcontrol {
-    width: 100%;
-    padding: 0;
+#messagewindow {
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
 }
 
 /* Input field */
-#inputfield, #inputsend, #inputsizer {
-    display: block;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: 50px;
-    background: #000;
-    color: #fff;
-    padding: 0 .45em;
-    font-size: 1.1em;
-    font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
+#input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
 }
 
 #inputfield, #inputsizer {
-    float: left;
-    width: 95%;
-    border: 0;
+    height: 100%;
+    background: #000;
+    color: #fff;
+    padding: 0 .45rem;
+    font-size: 1.1rem;
+    font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
     resize: none;
-    line-height: normal;
+}
+#inputsend {
+  height: 100%;
+}
+#inputcontrol {
+  height: 100%;
 }
 
 #inputfield:focus {
-    outline: 0;
-}
-
-#inputsizer {
-    margin-left: -9999px;
-}
-
-/* Input 'send' button */
-#inputsend {
-    float: right;
-    width: 3%;
-    max-width: 25px;
-    margin-right: 10px;
-    border: 0;
-    background: #555;
 }
 
 /* prompt area above input field */
-#prompt {
-    margin-top: 10px;
-    padding: 0 .45em;
+.prompt {
+  max-height: 3rem;
+}
+
+#splitbutton {
+    width: 2rem;
+    font-size: 2rem;
+    color: #a6a6a6;
+    background-color: transparent;
+    border: 0px;
+}
+
+#splitbutton:hover {
+    color: white;
+    cursor: pointer;
+}
+
+#panebutton {
+    width: 2rem;
+    font-size: 2rem;
+    color: #a6a6a6;
+    background-color: transparent;
+    border: 0px;
+}
+
+#panebutton:hover {
+    color: white;
+    cursor: pointer;
+}
+
+#undobutton {
+    width: 2rem;
+    font-size: 2rem;
+    color: #a6a6a6;
+    background-color: transparent;
+    border: 0px;
+}
+
+#undobutton:hover {
+    color: white;
+    cursor: pointer;
+}
+
+.button {
+    width: fit-content;
+    padding: 1em;
+    color: black;
+    border: 1px solid black;
+    background-color: darkgray;
+    margin: 0 auto;
+}
+
+.splitbutton:hover {
+    cursor: pointer;
 }
 
 #optionsbutton {
-    width: 40px;
-    font-size: 20px;
+    width: 2rem;
+    font-size: 2rem;
     color: #a6a6a6;
     background-color: transparent;
     border: 0px;
@@ -173,8 +203,8 @@ div {margin:0px;}
 
 #toolbar {
     position: fixed;
-    top: 0;
-    right: 5px;
+    top: .5rem;
+    right: .5rem;
     z-index: 1;
 }
 
@@ -195,7 +225,8 @@ div {margin:0px;}
     z-index: 10;
     background-color: #fefefe;
     border: 1px solid #888;
-    color: black;
+    color: lightgray;
+    background-color: #2c2c2c;
 
 }
 
@@ -233,11 +264,12 @@ div {margin:0px;}
     cursor: move;
     font-weight: bold;
     font-size: 16px;
-    background-color: #d9d9d9;
+    color: white;
+    background-color: #595959;
 }
 
 .dialogclose {
-    color: #aaa;
+    color: #d5d5d5;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -247,6 +279,52 @@ div {margin:0px;}
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+.gutter.gutter-vertical {
+    cursor: row-resize;
+    background-image:  url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=')
+}
+
+.gutter.gutter-horizontal {
+    cursor: col-resize;
+    background-image:  url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==')
+}
+
+.split {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.split-sub {
+    padding: .5rem;
+}
+
+.content {
+    border: 1px solid #C0C0C0;
+    box-shadow: inset 0 1px 2px #e4e4e4;
+    background-color: black;
+    padding: 1rem;
+}
+@media screen and (max-width: 480px) {
+  .content {
+    padding: .5rem;
+  }
+}
+
+.gutter {
+    background-color: grey;
+
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.split.split-horizontal, .gutter.gutter-horizontal {
+    height: 100%;
+    float: left;
 }
 
 /* XTERM256 colors */
