@@ -345,11 +345,12 @@ class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
     template_name = 'website/character_form.html'
     
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
-    pass
+    success_url = reverse_lazy('character-manage')
         
 class CharacterCreateView(CharacterMixin, ObjectCreateView):
     
     template_name = 'website/character_form.html'
+    success_url = reverse_lazy('character-manage')
     
     def form_valid(self, form):
         # Get account ref

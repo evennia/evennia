@@ -97,6 +97,23 @@ class CharacterCreateView(EvenniaWebTest):
     url_name = 'character-create'
     unauthenticated_response = 302
     
+    def test_valid_access(self):
+        "Account1 should be able to create a new character"
+        # Login account
+        self.login()
+        
+        # Post data for a new character
+        data = {
+            'db_key': 'gannon',
+            'desc': 'Some dude.'
+        }
+
+        response = self.client.post(reverse(self.url_name), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        
+        # Make sure the character was actually created
+        self.assertTrue(len(self.account.db._playable_characters) > 1, 'Account only has the following characters attributed to it: %s' % self.account.db._playable_characters)
+        
 class CharacterManageView(EvenniaWebTest):
     url_name = 'character-manage'
     unauthenticated_response = 302
@@ -151,6 +168,14 @@ class CharacterDeleteView(EvenniaWebTest):
         # Try to access delete page for char1
         response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
         self.assertEqual(response.status_code, 200)
+        
+        # Proceed with deleting it
+        data = {'value': 'yes'}
+        response = self.client.post(reverse(self.url_name, kwargs=self.get_kwargs()), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        
+        # Make sure it deleted
+        self.assertFalse(self.char1 in self.account.db._playable_characters, 'Char1 is still in Account playable characters list.')
         
     def test_invalid_access(self):
         "Account1 should not be able to delete Account2:Char2"
