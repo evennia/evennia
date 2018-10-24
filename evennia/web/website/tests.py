@@ -182,6 +182,14 @@ class CharacterUpdateView(EvenniaWebTest):
         response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
         self.assertEqual(response.status_code, 200)
         
+        # Try to update char1 desc
+        data = {'db_key': self.char1.db_key, 'desc': "Just a regular type of dude."}
+        response = self.client.post(reverse(self.url_name, kwargs=self.get_kwargs()), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        
+        # Make sure the change was made successfully
+        self.assertEqual(self.char1.db.desc, data['desc'])
+        
     def test_invalid_access(self):
         "Account1 should not be able to update Account2:Char2"
         # Login account
