@@ -294,26 +294,17 @@ class AccountCreateView(AccountMixin, ObjectCreateView):
         password = form.cleaned_data['password1']
         email = form.cleaned_data.get('email', '')
         
-        # Create a fake session object to intercept calls to the terminal
-        from mock import Mock
-        session = self.request
-        session.address = self.request.META.get('REMOTE_ADDR', '')
-        session.msg = Mock()
-        
         # Create account
-        from evennia.commands.default.unloggedin import _create_account
-        permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-        account = _create_account(session, username, password, permissions)
+        account, errs = self.model.create(
+            username=username, 
+            password=password,
+            email=email,)
         
         # If unsuccessful, get messages passed to session.msg
         if not account:
-            [messages.error(self.request, call) for call in session.msg.call_args_list]
+            [messages.error(self.request, err) for err in errs]
             return self.form_invalid(form)
             
-        # Append email address if given
-        account.email = email
-        account.save()
-        
         messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
         return HttpResponseRedirect(self.success_url)
         
