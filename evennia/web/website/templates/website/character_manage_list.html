@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+{{ view.page_title }}
+{% endblock %}
+
+{% block content %}
+
+{% load addclass %}
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title">{{ view.page_title }}</h1>
+        <hr />
+
+          {% for object in object_list %}
+          <div class="media mb-4">
+            <a href="{{ object.web_get_detail_url }}"><img class="d-flex mr-3" src="http://placehold.jp/50x50.png" alt="" /></a>
+            <div class="media-body">
+              <p class="float-right ml-2">{{ object.db_date_created }}
+              <br /><a href="{{ object.web_get_delete_url }}">Delete</a>
+              <br /><a href="{{ object.web_get_update_url }}">Edit</a></p>
+              <h5 class="mt-0"><a href="{{ object.web_get_detail_url }}">{{ object }}</a> {% if object.subtitle %}<small class="text-muted" style="white-space:nowrap;">{{ object.subtitle }}</small>{% endif %}</h5>
+              <p>{{ object.db.desc }}</p>
+            </div>
+          </div>
+          {% endfor %}
+          
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

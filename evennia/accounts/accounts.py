@@ -196,6 +196,19 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @lazy_property
     def sessions(self):
         return AccountSessionHandler(self)
+        
+    # Do not make this a lazy property; the web UI will not refresh it!
+    @property
+    def characters(self):
+        # Get playable characters list
+        objs = self.db._playable_characters
+        
+        # Rebuild the list if legacy code left null values after deletion
+        if None in objs:
+            objs = [x for x in self.db._playable_characters if x]
+            self.db._playable_characters = objs
+            
+        return objs
 
     # session-related methods
 
@@ -720,7 +733,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
                 if character:
                     # Update playable character list
-                    account.db._playable_characters.append(character)
+                    if character not in account.characters:
+                        account.db._playable_characters.append(character)
 
                     # We need to set this to have @ic auto-connect to this character
                     account.db._last_puppet = character

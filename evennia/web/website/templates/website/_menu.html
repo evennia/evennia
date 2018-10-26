@@ -39,9 +39,28 @@ folder and edit it to add/remove links to the menu.
             {% block navbar_right %}
             {% endblock %}
             {% block navbar_user %}
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link">Logged in as {{user.username}}</a>
+            {% if account %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user_options" aria-expanded="false">
+                {% if puppet %}
+                  Welcome, {{ puppet }}! <span class="text-muted">({{ account.username }})</span> <span class="caret"></span>
+                {% else %}
+                  Logged in as {{ account.username }} <span class="caret"></span>
+                {% endif %}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="user_options">
+                <a class="dropdown-item" href="{% url 'character-create' %}">Create Character</a>
+                <a class="dropdown-item" href="{% url 'character-manage' %}">Manage Characters</a>
+                <div class="dropdown-divider"></div>
+                {% for character in account.characters|slice:"10" %}
+                  <a class="dropdown-item" href="{{ character.web_get_puppet_url }}?next={{ request.path }}">{{ character }}</a>
+                {% empty %} 
+                  <a class="dropdown-item" href="#">No characters found!</a>
+                {% endfor %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
+              </div>
             </li>
             <li>
                 <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
@@ -51,7 +70,7 @@ folder and edit it to add/remove links to the menu.
                 <a class="nav-link" href="{% url 'login' %}">Log In</a>
             </li>
             <li>
-                <a class="nav-link" href="{% url 'to_be_implemented' %}">Register</a>
+                <a class="nav-link" href="{% url 'register' %}">Register</a>
             </li>
             {% endif %}
             {% endblock %}
