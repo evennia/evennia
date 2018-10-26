@@ -139,8 +139,10 @@ class CharacterForm(ObjectForm):
             'db_key': 'Name',
         }
         
-    # Fields pertaining to user-configurable attributes on the Character object.
-    desc = forms.CharField(label='Description', widget=forms.Textarea(attrs={'rows': 3}), max_length=2048, required=False)
+    # Fields pertaining to configurable attributes on the Character object.
+    desc = forms.CharField(label='Description', max_length=2048, required=False,
+        widget=forms.Textarea(attrs={'rows': 3}),
+        help_text="A brief description of your character.")
     
 class CharacterUpdateForm(CharacterForm):
     """
