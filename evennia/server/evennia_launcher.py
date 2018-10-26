@@ -222,6 +222,19 @@ RECREATED_SETTINGS = \
     their accounts with their old passwords.
     """
 
+ERROR_INITMISSING = \
+    """
+    ERROR: 'evennia --initmissing' must be called from the root of
+    your game directory, since it tries to create any missing files
+    in the server/ subfolder.
+    """
+
+RECREATED_MISSING = \
+    """
+    (Re)created any missing directories or files.  Evennia should
+    be ready to run now!
+    """
+
 ERROR_DATABASE = \
     """
     ERROR: Your database does not seem to be set up correctly.
@@ -1331,7 +1344,10 @@ def create_settings_file(init=True, secret_settings=False):
             else:
                 print("Reset the settings file.")
 
-        default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "settings.py")
+        if secret_settings:
+            default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "secret_settings.py")
+        else:
+            default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "settings.py")
         shutil.copy(default_settings_path, settings_path)
 
     with open(settings_path, 'r') as f:
@@ -1915,6 +1931,10 @@ def main():
         default=False,
         help="create a new, empty settings file as\n gamedir/server/conf/settings.py")
     parser.add_argument(
+        '--initmissing', action='store_true', dest="initmissing",
+        default=False,
+        help="checks for missing secret_settings or server logs\n directory, and adds them if needed")
+    parser.add_argument(
         '--profiler', action='store_true', dest='profiler', default=False,
         help="start given server component under the Python profiler")
     parser.add_argument(
@@ -1985,6 +2005,21 @@ def main():
             print(RECREATED_SETTINGS)
         except IOError:
             print(ERROR_INITSETTINGS)
+        sys.exit()
+
+    if args.initmissing:
+        try:
+            log_path = os.path.join(SERVERDIR, "logs")
+            if not os.path.exists(log_path):
+                os.makedirs(log_path)
+
+            settings_path = os.path.join(CONFDIR, "secret_settings.py")
+            if not os.path.exists(settings_path):
+                create_settings_file(init=False, secret_settings=True)
+
+            print(RECREATED_MISSING)
+        except IOError:
+            print(ERROR_INITMISSING)
         sys.exit()
 
     if args.tail_log:
