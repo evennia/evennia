@@ -369,7 +369,7 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
     def get_redirect_url(self, *args, **kwargs):
         # Get the requested character, if it belongs to the authenticated user
         char = self.get_object()
-        next = self.kwargs.get('next', self.success_url)
+        next = self.request.GET.get('next', self.success_url)
         
         if char:
             self.request.session['puppet'] = int(char.pk)
