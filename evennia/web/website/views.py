@@ -5,6 +5,8 @@ the other applications. Views are django's way of processing e.g. html
 templates on the fly.
 
 """
+from collections import OrderedDict
+
 from django.contrib.admin.sites import site
 from django.conf import settings
 from django.contrib import messages
@@ -155,6 +157,12 @@ class EvenniaCreateView(CreateView):
     @property
     def page_title(self):
         return 'Create %s' % self.model._meta.verbose_name.title()
+        
+class EvenniaDetailView(DetailView):
+    
+    @property
+    def page_title(self):
+        return '%s Detail' % self.model._meta.verbose_name.title()
 
 class EvenniaUpdateView(UpdateView):
     
@@ -172,10 +180,36 @@ class EvenniaDeleteView(DeleteView):
 # Object views
 #
     
-class ObjectDetailView(DetailView):
+class ObjectDetailView(EvenniaDetailView):
     
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
     access_type = 'view'
+    template_name = 'website/object_detail.html'
+    attributes = ['name', 'desc']
+    
+    def get_context_data(self, **kwargs):
+        """
+        Adds an 'attributes' list to the context consisting of the attributes
+        specified at the class level, in the order provided.
+        
+        Django views do not provide a way to reference dynamic attributes, so
+        we have to grab them all before we render the template.
+        
+        """
+        context = super(ObjectDetailView, self).get_context_data(**kwargs)
+        
+        obj = self.get_object()
+        attribute_list = OrderedDict()
+        
+        for attribute in self.attributes:
+            if attribute in self.model._meta._property_names:
+                attribute_list[attribute.title()] = getattr(obj, attribute, '')
+            else:
+                attribute_list[attribute.title()] = getattr(obj.db, attribute, '')
+                
+        context['attribute_list'] = attribute_list
+            
+        return context
     
     def get_object(self, queryset=None):
         """
@@ -357,6 +391,9 @@ class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
     form_class = CharacterUpdateForm
     template_name = 'website/character_form.html'
     
+class CharacterDetailView(CharacterMixin, ObjectDetailView):
+    pass
+
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
     pass
         

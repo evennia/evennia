@@ -19,6 +19,7 @@ urlpatterns = [
     # Character management
     url(r'^characters/create/$', website_views.CharacterCreateView.as_view(), name="character-create"),
     url(r'^characters/manage/$', website_views.CharacterManageView.as_view(), name="character-manage"),
+    url(r'^characters/detail/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterDetailView.as_view(), name="character-detail"),
     url(r'^characters/puppet/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterPuppetView.as_view(), name="character-puppet"),
     url(r'^characters/update/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterUpdateView.as_view(), name="character-update"),
     url(r'^characters/delete/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterDeleteView.as_view(), name="character-delete"),
