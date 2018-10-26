@@ -139,12 +139,54 @@ def admin_wrapper(request):
 #
 
 class EvenniaIndexView(TemplateView):
-    # Display this HTML page
+    """
+    This is a basic example of a Django class-based view, which are functionally
+    very similar to Evennia Commands but differ in structure. Commands are used
+    to interface with users using a terminal client. Views are used to interface
+    with users using a web browser.
+    
+    To use a class-based view, you need to have written a template in HTML, and
+    then you write a view like this to tell Django what values to display on it.
+    
+    While there are simpler ways of writing views using plain functions (and 
+    Evennia currently contains a few examples of them), just like Commands, 
+    writing views as classes provides you with more flexibility-- you can extend
+    classes and change things to suit your needs rather than having to copy and
+    paste entire code blocks over and over. Django also comes with many default
+    views for displaying things, all of them implemented as classes.
+    
+    This particular example displays the index page.
+    
+    """
+    # Tell the view what HTML template to use for the page
     template_name = 'website/index.html'
     
-    # Display these variables on it
+    # This method tells the view what data should be displayed on the template.
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context object
+        """
+        This is a common Django method. Think of this as the website
+        equivalent of the Evennia Command.func() method.
+        
+        If you just want to display a static page with no customization, you
+        don't need to define this method-- just create a view, define
+        template_name and you're done.
+        
+        The only catch here is that if you extend or overwrite this method,
+        you'll always want to make sure you call the parent method to get a 
+        context object. It's just a dict, but it comes prepopulated with all 
+        sorts of background data intended for display on the page. 
+        
+        You can do whatever you want to it, but it must be returned at the end 
+        of this method.
+        
+        Kwargs:
+            any (any): Passed through.
+            
+        Returns:
+            context (dict): Dictionary of data you want to display on the page.
+        
+        """
+        # Always call the base implementation first to get a context object
         context = super(EvenniaIndexView, self).get_context_data(**kwargs)
         
         # Add game statistics and other pagevars
@@ -152,28 +194,60 @@ class EvenniaIndexView(TemplateView):
         
         return context
 
+
 class EvenniaCreateView(CreateView):
+    """
+    This view extends Django's default CreateView.
     
+    CreateView is used for creating new objects, be they Accounts, Characters or
+    otherwise.
+    
+    """
     @property
     def page_title(self):
+        # Makes sure the page has a sensible title.
         return 'Create %s' % self.model._meta.verbose_name.title()
         
+        
 class EvenniaDetailView(DetailView):
+    """
+    This view extends Django's default DetailView.
     
+    DetailView is used for displaying objects, be they Accounts, Characters or
+    otherwise.
+    
+    """
     @property
     def page_title(self):
+        # Makes sure the page has a sensible title.
         return '%s Detail' % self.model._meta.verbose_name.title()
 
+
 class EvenniaUpdateView(UpdateView):
+    """
+    This view extends Django's default UpdateView.
     
+    UpdateView is used for updating objects, be they Accounts, Characters or
+    otherwise.
+    
+    """
     @property
     def page_title(self):
+        # Makes sure the page has a sensible title.
         return 'Update %s' % self.model._meta.verbose_name.title()
 
+
 class EvenniaDeleteView(DeleteView):
+    """
+    This view extends Django's default DeleteView.
     
+    DeleteView is used for deleting objects, be they Accounts, Characters or
+    otherwise.
+    
+    """
     @property
     def page_title(self):
+        # Makes sure the page has a sensible title.
         return 'Delete %s' % self.model._meta.verbose_name.title()
         
 #
@@ -181,48 +255,96 @@ class EvenniaDeleteView(DeleteView):
 #
     
 class ObjectDetailView(EvenniaDetailView):
+    """
+    This is an important view. 
     
+    Any view you write that deals with displaying, updating or deleting a 
+    specific object will want to inherit from this. It provides the mechanisms 
+    by which to retrieve the object and make sure the user requesting it has 
+    permissions to actually *do* things to it.
+    
+    """
+    # -- Django constructs --
+    #
+    # Choose what class of object this view will display. Note that this should
+    # be an actual Python class (i.e. do `from typeclasses.characters import 
+    # Character`, then put `Character`), not an Evennia typeclass path 
+    # (i.e. `typeclasses.characters.Character`).
+    #
+    # So when you extend it, this line should look simple, like:
+    # model = Object
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
-    access_type = 'view'
+    
+    # What HTML template you wish to use to display this page.
     template_name = 'website/object_detail.html'
+    
+    # -- Evennia constructs --
+    #
+    # What lock type to check for the requesting user, authenticated or not.
+    # https://github.com/evennia/evennia/wiki/Locks#valid-access_types
+    access_type = 'view'
+    
+    # What attributes of the object you wish to display on the page. Model-level
+    # attributes will take precedence over identically-named db.attributes!
+    # The order you specify here will be followed.
     attributes = ['name', 'desc']
     
     def get_context_data(self, **kwargs):
         """
-        Adds an 'attributes' list to the context consisting of the attributes
-        specified at the class level, in the order provided.
+        Adds an 'attributes' list to the request context consisting of the 
+        attributes specified at the class level, and in the order provided.
         
         Django views do not provide a way to reference dynamic attributes, so
         we have to grab them all before we render the template.
         
+        Returns:
+            context (dict): Django context object
+        
         """
+        # Get the base Django context object
         context = super(ObjectDetailView, self).get_context_data(**kwargs)
         
+        # Get the object in question
         obj = self.get_object()
+        
+        # Create an ordered dictionary to contain the attribute map
         attribute_list = OrderedDict()
         
         for attribute in self.attributes:
+            # Check if the attribute is a core fieldname (name, desc)
             if attribute in self.model._meta._property_names:
                 attribute_list[attribute.title()] = getattr(obj, attribute, '')
+            
+            # Check if the attribute is a db attribute (char1.db.favorite_color)
             else:
                 attribute_list[attribute.title()] = getattr(obj.db, attribute, '')
                 
+        # Add our attribute map to the Django request context, so it gets
+        # displayed on the template
         context['attribute_list'] = attribute_list
             
+        # Return the comprehensive context object
         return context
     
     def get_object(self, queryset=None):
         """
-        Override of Django hook.
+        Override of Django hook that provides some important Evennia-specific
+        functionality.
         
         Evennia does not natively store slugs, so where a slug is provided, 
         calculate the same for the object and make sure it matches.
         
+        This also checks to make sure the user has access to view/edit/delete 
+        this object!
+        
         """
+        # A queryset can be provided to pre-emptively limit what objects can
+        # possibly be returned. For example, you can supply a queryset that
+        # only returns objects whose name begins with "a".
         if not queryset:
             queryset = self.get_queryset()
         
-        # Get the object, ignoring all checks and filters
+        # Get the object, ignoring all checks and filters for now
         obj = self.model.objects.get(pk=self.kwargs.get('pk'))
         
         # Check if this object was requested in a valid manner
@@ -230,25 +352,46 @@ class ObjectDetailView(EvenniaDetailView):
             raise HttpResponseBadRequest(u"No %(verbose_name)s found matching the query" %
               {'verbose_name': queryset.model._meta.verbose_name})
         
-        # Check if account has permissions to access object
+        # Check if the requestor account has permissions to access object
         account = self.request.user
         if not obj.access(account, self.access_type):
             raise PermissionDenied(u"You are not authorized to %s this object." % self.access_type)
             
-        # Get the object, based on the specified queryset
+        # Get the object, if it is in the specified queryset
         obj = super(ObjectDetailView, self).get_object(queryset)
         
         return obj
         
+        
 class ObjectCreateView(LoginRequiredMixin, EvenniaCreateView):
+    """
+    This is an important view. 
     
+    Any view you write that deals with creating a specific object will want to 
+    inherit from this. It provides the mechanisms by which to make sure the user 
+    requesting creation of an object is authenticated, and provides a sane
+    default title for the page.
+    
+    """
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
         
+        
 class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
+    """
+    This is an important view for obvious reasons!
     
+    Any view you write that deals with deleting a specific object will want to 
+    inherit from this. It provides the mechanisms by which to make sure the user 
+    requesting deletion of an object is authenticated, and that they have 
+    permissions to delete the requested object.
+    
+    """
+    # -- Django constructs --
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
-    access_type = 'delete'
     template_name = 'website/object_confirm_delete.html'
+    
+    # -- Evennia constructs --
+    access_type = 'delete'
     
     def delete(self, request, *args, **kwargs):
         """
@@ -257,27 +400,61 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
         
         We extend this so we can capture the name for the sake of confirmation.
         """
+        # Get the object in question. ObjectDetailView.get_object() will also 
+        # check to make sure the current user (authenticated or not) has 
+        # permission to delete it!
         obj = str(self.get_object())
+        
+        # Perform the actual deletion (the parent class handles this, which will
+        # in turn call the delete() method on the object)
         response = super(ObjectDeleteView, self).delete(request, *args, **kwargs)
+        
+        # Notify the user of the deletion
         messages.success(request, "Successfully deleted '%s'." % obj)
         return response
     
-class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     
+class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
+    """
+    This is an important view.
+    
+    Any view you write that deals with updating a specific object will want to 
+    inherit from this. It provides the mechanisms by which to make sure the user 
+    requesting editing of an object is authenticated, and that they have 
+    permissions to edit the requested object.
+    
+    This functions slightly different from default Django UpdateViews in that
+    it does not update core model fields, *only* object attributes!
+    
+    """
+    # -- Django constructs --
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    
+    # -- Evennia constructs --
     access_type = 'edit'
     
     def get_success_url(self):
+        """
+        Django hook.
+        
+        Can be overridden to return any URL you want to redirect the user to 
+        after the object is successfully updated, but by default it goes to the 
+        object detail page so the user can see their changes reflected.
+        
+        """
         if self.success_url: return self.success_url
         return self.object.web_get_detail_url()
     
     def get_initial(self):
         """
-        Override of Django hook.
+        Django hook, modified for Evennia.
         
-        Prepopulates form field values based on object db attributes as well as 
-        model field values.
+        Prepopulates the update form field values based on object db attributes.
         
+        Returns:
+            data (dict): Dictionary of key:value pairs containing initial form
+                data.
+                
         """
         # Get the object we want to update
         obj = self.get_object()
@@ -296,12 +473,16 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
         
         Updates object attributes based on values submitted.
         
+        This is run when the form is submitted and the data on it is deemed
+        valid-- all values are within expected ranges, all strings contain
+        valid characters and lengths, etc.
+        
         This method is only called if all values for the fields submitted
         passed form validation, so at this point we can assume the data is 
         validated and sanitized.
         
         """
-        # Get the values submitted after they've been cleaned and validated
+        # Get the attributes after they've been cleaned and validated
         data = {k:v for k,v in form.cleaned_data.items() if k not in self.form_class.Meta.fields}
         
         # Update the object attributes
@@ -318,33 +499,59 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
 #
 
 class AccountMixin(object):
+    """
+    This is a "mixin", a modifier of sorts.
     
+    Any view class with this in its inheritance list will be modified to work
+    with Account objects instead of generic Objects or otherwise.
+
+    """
+    # -- Django constructs --
     model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
     form_class = AccountForm
 
+
 class AccountCreateView(AccountMixin, ObjectCreateView):
+    """
+    Account creation view.
     
+    """
+    # -- Django constructs --
     template_name = 'website/registration/register.html'
     success_url = reverse_lazy('login')
     
     def form_valid(self, form):
+        """
+        Django hook, modified for Evennia.
         
+        This hook is called after a valid form is submitted.
+        
+        When an account creation form is submitted and the data is deemed valid,
+        proceeds with creating the Account object.
+        
+        """
+        # Get values provided
         username = form.cleaned_data['username']
         password = form.cleaned_data['password1']
         email = form.cleaned_data.get('email', '')
         
         # Create account
         account, errs = self.model.create(
-            username=username, 
+            username=username,
             password=password,
             email=email,)
         
-        # If unsuccessful, get messages passed to session.msg
+        # If unsuccessful, display error messages to user
         if not account:
             [messages.error(self.request, err) for err in errs]
+            
+            # Call the Django "form failure" hook
             return self.form_invalid(form)
             
+        # Inform user of success
         messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
+        
+        # Redirect the user to the login page
         return HttpResponseRedirect(self.success_url)
         
 #
@@ -352,57 +559,140 @@ class AccountCreateView(AccountMixin, ObjectCreateView):
 #
         
 class CharacterMixin(object):
+    """
+    This is a "mixin", a modifier of sorts.
     
+    Any view class with this in its inheritance list will be modified to work
+    with Character objects instead of generic Objects or otherwise.
+
+    """
+    # -- Django constructs --
     model = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
     form_class = CharacterForm
     success_url = reverse_lazy('character-manage')
     
     def get_queryset(self):
+        """
+        This method will override the Django get_queryset method to only 
+        return a list of characters associated with the current authenticated 
+        user.
+        
+        Returns:
+            queryset (QuerySet): Django queryset for use in the given view.
+        
+        """
         # Get IDs of characters owned by account
         ids = [getattr(x, 'id') for x in self.request.user.characters if x]
         
         # Return a queryset consisting of those characters
         return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
+        
 class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
+    """
+    This view provides a mechanism by which a logged-in player can "puppet" one
+    of their characters within the context of the website. 
     
+    It also ensures that any user attempting to puppet something is logged in,
+    and that their intended puppet is one that they own.
+
+    """
     def get_redirect_url(self, *args, **kwargs):
+        """
+        Django hook.
+        
+        This view returns the URL to which the user should be redirected after
+        a passed or failed puppet attempt.
+        
+        Returns:
+            url (str): Path to post-puppet destination.
+        
+        """
         # Get the requested character, if it belongs to the authenticated user
         char = self.get_object()
+        
+        # Get the page the user came from
         next = self.request.GET.get('next', self.success_url)
         
         if char:
+            # If the account owns the char, store the ID of the char in the
+            # Django request's session (different from Evennia session!).
+            # We do this because characters don't serialize well.
             self.request.session['puppet'] = int(char.pk)
             messages.success(self.request, "You become '%s'!" % char)
         else:
+            # If the puppeting failed, clear out the cached puppet value
             self.request.session['puppet'] = None
             messages.error(self.request, "You cannot become '%s'." % char)
             
         return next
         
+        
 class CharacterManageView(LoginRequiredMixin, CharacterMixin, ListView):
-
+    """
+    This view provides a mechanism by which a logged-in player can browse,
+    edit, or delete their own characters.
+    
+    """
+    # -- Django constructs --
     paginate_by = 10
     template_name = 'website/character_manage_list.html'
+    
+    # -- Evennia constructs --
     page_title = 'Manage Characters'
         
+        
 class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
+    """
+    This view provides a mechanism by which a logged-in player (enforced by 
+    ObjectUpdateView) can edit the attributes of a character they own.
     
+    """
+    # -- Django constructs --
     form_class = CharacterUpdateForm
     template_name = 'website/character_form.html'
     
+    
 class CharacterDetailView(CharacterMixin, ObjectDetailView):
-    pass
+    """
+    This view provides a mechanism by which a user can view the attributes of 
+    a character, owned by them or not.
+    
+    """
+    # -- Evennia constructs --
+    # What attributes to display for this object
+    attributes = ['name', 'desc']
+
 
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
+    """
+    This view provides a mechanism by which a logged-in player (enforced by 
+    ObjectDeleteView) can delete a character they own.
+    
+    """
     pass
         
+        
 class CharacterCreateView(CharacterMixin, ObjectCreateView):
-
+    """
+    This view provides a mechanism by which a logged-in player (enforced by 
+    ObjectCreateView) can create a new character.
+    
+    """
+    # -- Django constructs --
     template_name = 'website/character_form.html'
     
     def form_valid(self, form):
-        # Get account ref
+        """
+        Django hook, modified for Evennia.
+        
+        This hook is called after a valid form is submitted.
+        
+        When an character creation form is submitted and the data is deemed valid,
+        proceeds with creating the Character object.
+        
+        """
+        # Get account object creating the character
         account = self.request.user
         character = None
         
@@ -412,23 +702,22 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
         description = self.attributes.pop('desc')
         
         # Create a character
-        try:
-            character, errors = self.model.create(charname, account, description=description)
-            
-            # Assign attributes from form
-            [setattr(character.db, key, value) for key,value in self.attributes.items()]
-            character.db.creator_id = account.id
-            character.save()
-            account.save()
-            
-        except Exception as e:
-            messages.error(self.request, "There was an error creating your character. If this problem persists, contact an admin.")
-            logger.log_trace()
-            return self.form_invalid(form)
+        character, errors = self.model.create(charname, account, description=description)
         
+        if errors:
+            # Echo error messages to the user
+            [messages.error(self.request, x) for x in errors]
+            
         if character:
+            # Assign attributes from form
+            for key,value in self.attributes.items():
+                setattr(character.db, key, value)
+            
+            # Return the user to the character management page, unless overridden
             messages.success(self.request, "Your character '%s' was created!" % character.name)
             return HttpResponseRedirect(self.success_url)
+            
         else:
-            messages.error(self.request, "Your character could not be created. Please contact an admin.")
+            # Call the Django "form failed" hook
+            messages.error(self.request, "Your character could not be created.")
             return self.form_invalid(form)
