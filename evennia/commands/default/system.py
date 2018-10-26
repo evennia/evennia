@@ -47,6 +47,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
     @reset to purge) and at_reload() hooks will be called.
     """
     key = "@reload"
+    aliases = ['@restart']
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 

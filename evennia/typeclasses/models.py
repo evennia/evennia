@@ -817,6 +817,38 @@ class TypedObject(SharedMemoryModel):
                            kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except:
             return '#'
+            
+    def web_get_puppet_url(self):
+        """
+        Returns the URI path for a View that allows users to puppet a specific
+        object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/puppet/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-puppet' would be referenced by this method.
+
+        ex.
+        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/puppet/$',
+            CharPuppetView.as_view(), name='character-puppet')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can view this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object puppet page, if defined.
+
+        """
+        try:
+            return reverse('%s-puppet' % self._meta.verbose_name.lower(),
+                           kwargs={'pk': self.pk, 'slug': slugify(self.name)})
+        except:
+            return '#'
 
     def web_get_update_url(self):
         """

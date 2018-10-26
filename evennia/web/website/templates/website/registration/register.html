@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+Register
+{% endblock %}
+
+{% block body %}
+
+{% load addclass %}
+<div class="container main-content mt-4" id="main-copy">
+  <div class="row">
+    <div class="col-lg-5 offset-lg-3 col-sm-12">
+      <div class="card mt-3">
+        <div class="card-body">
+          <h1 class="card-title">Register</h1>
+          <hr />
+          {% if user.is_authenticated %}
+          <div class="alert alert-info" role="alert">You are already registered!</div>
+          {% else %}
+            {% if form.errors %}
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <div class="alert alert-danger" role="alert">{{ error }}</div>
+                {% endfor %}
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+  
+          {% if not user.is_authenticated %}
+          <form method="post" action="?">
+            {% csrf_token %}
+  
+            {% for field in form %}
+            <div class="form-field my-3">
+                {{ field.label_tag }}
+                {{ field | addclass:"form-control" }}
+                {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <hr />
+            <div class="form-group">
+              <input class="form-control btn btn-outline-secondary" type="submit" value="Register" />
+              <input type="hidden" name="next" value="{{ next }}" />
+            </div>
+          </form>
+          
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
