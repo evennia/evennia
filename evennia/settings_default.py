@@ -766,14 +766,15 @@ TEMPLATES = [{
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',  # 1.4?
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',)
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'evennia.web.utils.middleware.SharedLoginMiddleware',)
 
 ######################################################################
 # Evennia components
