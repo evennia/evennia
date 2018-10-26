@@ -1944,12 +1944,20 @@ class DefaultCharacter(DefaultObject):
         locks = kwargs.pop('locks', '')
 
         try:
+            # Check to make sure account does not have too many chars
+            if len(account.characters) >= settings.MAX_NR_CHARACTERS:
+                errors.append("There are too many characters associated with this account.")
+                return obj, errors
+            
             # Create the Character
             obj = create.create_object(**kwargs)
 
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
-            if account: obj.db.creator_id = account.id
+            if account: 
+                obj.db.creator_id = account.id
+                if obj not in account.characters:
+                    account.db._playable_characters.append(obj)
 
             # Add locks
             if not locks and account:
@@ -1963,7 +1971,7 @@ class DefaultCharacter(DefaultObject):
             # If no description is set, set a default description
             if description or not obj.db.desc:
                 obj.db.desc = description if description else "This is a character."
-
+            
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
