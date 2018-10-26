@@ -258,7 +258,7 @@ def delete_prototype(prototype_key, caller=None):
     stored_prototype = stored_prototype[0]
     if caller:
         if not stored_prototype.access(caller, 'edit'):
-            raise PermissionError("{} does not have permission to "
+            raise PermissionError("{} needs explicit 'edit' permissions to "
                                   "delete prototype {}.".format(caller, prototype_key))
     stored_prototype.delete()
     return True
@@ -374,14 +374,14 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     display_tuples = []
     for prototype in sorted(prototypes, key=lambda d: d.get('prototype_key', '')):
         lock_use = caller.locks.check_lockstring(
-            caller, prototype.get('prototype_locks', ''), access_type='spawn')
+            caller, prototype.get('prototype_locks', ''), access_type='spawn', default=True)
         if not show_non_use and not lock_use:
             continue
         if prototype.get('prototype_key', '') in _MODULE_PROTOTYPES:
             lock_edit = False
         else:
             lock_edit = caller.locks.check_lockstring(
-                caller, prototype.get('prototype_locks', ''), access_type='edit')
+                caller, prototype.get('prototype_locks', ''), access_type='edit', default=True)
         if not show_non_edit and not lock_edit:
             continue
         ptags = []
@@ -713,7 +713,8 @@ def check_permission(prototype_key, action, default=True):
     lockstring = prototype.get("prototype_locks")
 
     if lockstring:
-        return check_lockstring(None, lockstring, default=default, access_type=action)
+        return check_lockstring(None, lockstring,
+                                default=default, access_type=action)
     return default
 
 
