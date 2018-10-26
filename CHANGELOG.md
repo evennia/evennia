@@ -10,6 +10,22 @@
 - Add the Portal uptime to the `@time` command.
 - Make the `@link` command first make a local search before a global search.
 
+### Web
+
+Web/Django standard initiative (stricako)
+- Updates Bootstrap to v4 stable (the beta in use had some irritating bugs that have since been resolved)
+- Enables the use of Django Messages framework
+- Adds a web-based account registration form
+- Adds links to reset password / create new account on login pane (resets require SMTP configuration to actually work, but the functionality was already enabled by account of django.contrib.auth.urls-- I just made it prettier). Uses Django's password reset workflow.
+- Modifies the series of password reset forms to use Evennia's CSS instead of Django admin's.
+- Adds a dropdown for authenticated users allowing them to change their password.
+- Prettifies the "change password" form to use Evennia's CSS instead of Django admin's.
+- Adds placeholders to dropdown menu for players to quickpuppet/manage characters on the website.
+- Fixes a bug on the login pane where error messages weren't being displayed (was calling form.has_errors instead of just checking form.errors)
+- Web-based chargen based on predefined form
+- Character puppeting within the context of the website
+
+
 ### Typeclasses
 
 - Add new methods on all typeclasses, useful specifically for viewing the object in the web/admin:
