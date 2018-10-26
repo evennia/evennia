@@ -659,6 +659,9 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
     a character, owned by them or not.
     
     """
+    # -- Django constructs --
+    template_name = 'website/object_detail.html'
+    
     # -- Evennia constructs --
     # What attributes to display for this object
     attributes = ['name', 'desc']
