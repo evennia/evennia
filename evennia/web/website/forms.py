@@ -100,16 +100,17 @@ class CharacterForm(ObjectForm):
     text and numbers respectively. IntegerFields have some neat validation tricks 
     they can do, like mandating values fall within a certain range. 
     
-    For example, a complete "age" field might look like:
+    For example, a complete "age" field (which stores its value to
+    `character.db.age` might look like:
     
     age = forms.IntegerField(
         label="Your Age",
         min_value=18, max_value=9000, 
         help_text="Years since your birth.")
         
-    Default input fields are generic text boxes. You can control what sort of 
-    input field users will see by specifying a "widget." An example of this is
-    used for the 'desc' field to show a Textarea box instead of a Textbox.
+    Default input fields are generic single-line text boxes. You can control what 
+    sort of input field users will see by specifying a "widget." An example of 
+    this is used for the 'desc' field to show a Textarea box instead of a Textbox.
     
     For help in building out your form, please see:
     https://docs.djangoproject.com/en/1.11/topics/forms/#building-a-form-in-django
