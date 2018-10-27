@@ -313,6 +313,7 @@ class TestProtFuncs(EvenniaTest):
             "$eval({'test': '1', 2:3, 3: $toint(3.5)})"), {'test': '1', 2: 3, 3: 3})
 
         self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
+        self.assertEqual(protlib.protfunc_parser("stone(#12345)", session=self.session), 'stone(#12345)')
         self.assertEqual(protlib.protfunc_parser("#1", session=self.session), '#1')
         self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
         self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
