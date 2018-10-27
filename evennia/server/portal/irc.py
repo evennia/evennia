@@ -421,7 +421,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
 
     def clientConnectionLost(self, connector, reason):
         """
-        Called when Client looses connection.
+        Called when Client loses connection.
 
         Args:
             connector (Connection): Represents the connection.
