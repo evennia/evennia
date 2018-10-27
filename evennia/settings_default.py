@@ -138,7 +138,7 @@ HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 # Rotate log files when server and/or portal stops. This will keep log
 # file sizes down. Turn off to get ever growing log files and never
-# loose log info.
+# lose log info.
 CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
