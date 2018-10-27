@@ -32,7 +32,7 @@ class EvenniaForm(forms.Form):
         cleaned = {k:escape(v) for k,v in cleaned.items()}
         return cleaned
 
-class AccountForm(EvenniaForm, UserCreationForm):
+class AccountForm(UserCreationForm):
     """
     This is a generic Django form tailored to the Account model.
     
