@@ -782,7 +782,7 @@ class TypedObject(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-create' % cls._meta.verbose_name.lower())
+            return reverse('%s-create' % slugify(cls._meta.verbose_name))
         except:
             return '#'
 
@@ -813,7 +813,7 @@ class TypedObject(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-detail' % self._meta.verbose_name.lower(),
+            return reverse('%s-detail' % slugify(self._meta.verbose_name),
                            kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except:
             return '#'
@@ -845,7 +845,7 @@ class TypedObject(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-puppet' % self._meta.verbose_name.lower(),
+            return reverse('%s-puppet' % slugify(self._meta.verbose_name),
                            kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except:
             return '#'
@@ -877,7 +877,7 @@ class TypedObject(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-update' % self._meta.verbose_name.lower(),
+            return reverse('%s-update' % slugify(self._meta.verbose_name),
                            kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except:
             return '#'
@@ -908,7 +908,7 @@ class TypedObject(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-delete' % self._meta.verbose_name.lower(),
+            return reverse('%s-delete' % slugify(self._meta.verbose_name),
                            kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except:
             return '#'
