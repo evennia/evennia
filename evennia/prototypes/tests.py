@@ -262,6 +262,25 @@ class TestProtFuncs(EvenniaTest):
                      "prototype_desc": "testing prot",
                      "key": "ExampleObj"}
 
+    def test_RE_DBREF(self):
+        def check_RE_DBREF(value, expected_value):
+            try:
+                result = (
+                    protlib._RE_DBREF.match(value),
+                    protlib._RE_DBREF.search(value),
+                    protlib._RE_DBREF.sub("$obj(\\1)", value)
+                )
+                assert expected_value == result[2]
+            except Exception:
+                self.fail()
+                pass
+
+        check_RE_DBREF('#1234', '#1234')
+        check_RE_DBREF('(#1234)', '(#1234)')
+        check_RE_DBREF('obj(#1234)', 'obj(#1234)')
+        check_RE_DBREF('$obj(#1234)', '$obj(#1234)')
+        check_RE_DBREF('obj($obj(#1234))', 'obj($obj(#1234))')
+
     @mock.patch("evennia.prototypes.protfuncs.base_random", new=mock.MagicMock(return_value=0.5))
     @mock.patch("evennia.prototypes.protfuncs.base_randint", new=mock.MagicMock(return_value=5))
     def test_protfuncs(self):
@@ -315,9 +334,14 @@ class TestProtFuncs(EvenniaTest):
         self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
         self.assertEqual(protlib.protfunc_parser("stone(#12345)", session=self.session), 'stone(#12345)')
         self.assertEqual(protlib.protfunc_parser("#1", session=self.session), '#1')
+        self.assertEqual(protlib.protfunc_parser("#12345", session=self.session), '#12345')
+        self.assertEqual(protlib.protfunc_parser("nothing(#1)", session=self.session), 'nothing(#1)')
+        self.assertEqual(protlib.protfunc_parser("(#12345)", session=self.session), '(#12345)')
         self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
         self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
         self.assertEqual(protlib.protfunc_parser("$objlist(#1)", session=self.session), ['#1'])
+
+
 
         self.assertEqual(protlib.value_to_obj(
             protlib.protfunc_parser("#6", session=self.session)), self.char1)
