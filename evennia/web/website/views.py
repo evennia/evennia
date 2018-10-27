@@ -23,6 +23,7 @@ from django.views.generic.base import RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from evennia import SESSION_HANDLER
+from evennia.help.models import HelpEntry
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.utils import class_from_module, logger
@@ -724,3 +725,50 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
             # Call the Django "form failed" hook
             messages.error(self.request, "Your character could not be created.")
             return self.form_invalid(form)
+            
+#
+# Help views
+#
+#from evennia.help.models import HelpEntry
+class HelpMixin(object):
+    """
+    This is a "mixin", a modifier of sorts.
+    
+    Any view class with this in its inheritance list will be modified to work
+    with HelpEntry objects instead of generic Objects or otherwise.
+
+    """
+    # -- Django constructs --
+    model = HelpEntry
+    
+    def get_queryset(self):
+        """
+        Django hook; here we want to return a list of only those HelpEntries
+        that the current user is allowed to see.
+        
+        Returns:
+            queryset (QuerySet): List of Help entries available to the user.
+            
+        """
+        # Get list of all HelpEntries
+        entries = HelpEntry.objects.all()
+        
+        # Now figure out which ones the current user is allowed to see
+        bucket = []
+        for entry in entries:
+            if entry.access(self.request.user, 'view'):
+                bucket.append(entry.id)
+                
+        # Re-query to just get those
+        entries = HelpEntry.objects.filter(id__in=bucket)
+        return entries
+        
+class HelpListView(HelpMixin, ListView):
+    """
+    Returns a list of help entries that can be viewed by a user, authenticated
+    or not.
+    
+    """
+    # -- Django constructs --
+    paginate_by = 10
+    template_name = 'website/object_list.html'
