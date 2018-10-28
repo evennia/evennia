@@ -33,7 +33,7 @@ _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 PROT_FUNCS = {}
 
-_RE_DBREF = re.compile(r"(?<!\$obj\()(#[0-9]+)")
+_RE_DBREF = re.compile(r"\$dbref\((\#[0-9]+)\)")
 
 
 class PermissionError(RuntimeError):
@@ -576,7 +576,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
 
     available_functions = PROT_FUNCS if available_functions is None else available_functions
 
-    # insert $obj(#dbref) for #dbref
+    # $dbref(#Number) becomes $obj(#Number)
     value = _RE_DBREF.sub("$obj(\\1)", value)
 
     result = inlinefuncs.parse_inlinefunc(

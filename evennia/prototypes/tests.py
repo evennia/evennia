@@ -263,23 +263,36 @@ class TestProtFuncs(EvenniaTest):
                      "key": "ExampleObj"}
 
     def test_RE_DBREF(self):
-        def check_RE_DBREF(value, expected_value):
+        def check_RE_DBREF(value, expected_value,
+                exp_is_match, exp_is_search):
             try:
-                result = (
-                    protlib._RE_DBREF.match(value),
-                    protlib._RE_DBREF.search(value),
-                    protlib._RE_DBREF.sub("$obj(\\1)", value)
-                )
-                assert expected_value == result[2]
-            except Exception:
-                self.fail()
-                pass
+                mm = protlib._RE_DBREF.match(value)
+                ms = protlib._RE_DBREF.search(value)
+                sub1 = protlib._RE_DBREF.sub("$obj(\\1)", value)
+                assert expected_value == sub1
+                assert (exp_is_match and mm) or (not exp_is_match and mm is None)
+                assert (exp_is_search and ms) or (not exp_is_search and ms is None)
+            except Exception as e:
+                self.fail("%r" % ((value, mm, ms, expected_value, exp_is_match, exp_is_search, e),))
 
-        check_RE_DBREF('#1234', '#1234')
-        check_RE_DBREF('(#1234)', '(#1234)')
-        check_RE_DBREF('obj(#1234)', 'obj(#1234)')
-        check_RE_DBREF('$obj(#1234)', '$obj(#1234)')
-        check_RE_DBREF('obj($obj(#1234))', 'obj($obj(#1234))')
+        check_RE_DBREF('1234', '1234', False, False)
+        check_RE_DBREF('#1234', '#1234', False, False)
+        check_RE_DBREF('(#1234)', '(#1234)', False, False)
+        check_RE_DBREF('obj(#1234)', 'obj(#1234)', False, False)
+        check_RE_DBREF('dbref(#1234)', 'dbref(#1234)', False, False)
+        check_RE_DBREF('$obj(#1234)', '$obj(#1234)', False, False)
+        check_RE_DBREF('$dbref(#1234)', '$obj(#1234)', True, True)
+        check_RE_DBREF('obj($obj(#1234))', 'obj($obj(#1234))', False, False)
+        check_RE_DBREF('obj($dbref(#1234))', 'obj($obj(#1234))', False, True)
+        check_RE_DBREF('some #1234 value', 'some #1234 value', False, False)
+        check_RE_DBREF('some (#1234) value', 'some (#1234) value', False, False)
+        check_RE_DBREF('some obj(#1234) value', 'some obj(#1234) value', False, False)
+        check_RE_DBREF('some dbref(#1234) value', 'some dbref(#1234) value', False, False)
+        check_RE_DBREF('some $dbref(#1234) value', 'some $obj(#1234) value', False, True)
+        check_RE_DBREF('some obj($obj(#1234) value)', 'some obj($obj(#1234) value)', False, False)
+        check_RE_DBREF('some obj($dbref(#1234) value)', 'some obj($obj(#1234) value)', False, True)
+        check_RE_DBREF('some dbref($obj(#1234) value)', 'some dbref($obj(#1234) value)', False, False)
+        check_RE_DBREF('some dbref($dbref(#1234) value)', 'some dbref($obj(#1234) value)', False, True)
 
     @mock.patch("evennia.prototypes.protfuncs.base_random", new=mock.MagicMock(return_value=0.5))
     @mock.patch("evennia.prototypes.protfuncs.base_randint", new=mock.MagicMock(return_value=5))
@@ -331,15 +344,22 @@ class TestProtFuncs(EvenniaTest):
         self.assertEqual(protlib.protfunc_parser(
             "$eval({'test': '1', 2:3, 3: $toint(3.5)})"), {'test': '1', 2: 3, 3: 3})
 
+        self.assertEqual(protlib.protfunc_parser("obj(#1)", session=self.session), 'obj(#1)')
         self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
+        self.assertEqual(protlib.protfunc_parser("dbref(#1)", session=self.session), 'dbref(#1)')
+        self.assertEqual(protlib.protfunc_parser("$dbref(#1)", session=self.session), '#1')
+        self.assertEqual(protlib.protfunc_parser("$badfunc(#1)", session=self.session), '<UNKNOWN>')
         self.assertEqual(protlib.protfunc_parser("stone(#12345)", session=self.session), 'stone(#12345)')
         self.assertEqual(protlib.protfunc_parser("#1", session=self.session), '#1')
         self.assertEqual(protlib.protfunc_parser("#12345", session=self.session), '#12345')
         self.assertEqual(protlib.protfunc_parser("nothing(#1)", session=self.session), 'nothing(#1)')
         self.assertEqual(protlib.protfunc_parser("(#12345)", session=self.session), '(#12345)')
         self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
-        self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
+        self.assertEqual(protlib.protfunc_parser("obj(Char)", session=self.session), 'obj(Char)')
         self.assertEqual(protlib.protfunc_parser("$objlist(#1)", session=self.session), ['#1'])
+        self.assertEqual(protlib.protfunc_parser("objlist(#1)", session=self.session), 'objlist(#1)')
+        self.assertEqual(protlib.protfunc_parser("dbref(Char)", session=self.session), 'dbref(Char)')
+        self.assertEqual(protlib.protfunc_parser("$dbref(Char)", session=self.session), '<UNKNOWN>')
 
 
 
