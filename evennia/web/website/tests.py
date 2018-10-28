@@ -158,6 +158,10 @@ class CharacterPuppetView(EvenniaWebTest):
         response = self.client.get(reverse(self.url_name, kwargs=kwargs), follow=True)
         self.assertTrue(response.status_code >= 400, "Invalid access should return a 4xx code-- either obj not found or permission denied! (Returned %s)" % response.status_code)
         
+class CharacterListView(EvenniaWebTest):
+    url_name = 'characters'
+    unauthenticated_response = 302
+
 class CharacterManageView(EvenniaWebTest):
     url_name = 'character-manage'
     unauthenticated_response = 302
