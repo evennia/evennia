@@ -20,6 +20,10 @@ urlpatterns = [
     url(r'^help/$', website_views.HelpListView.as_view(), name="help"),
     url(r'^help/(?P<category>[\w\d\-]+)/(?P<topic>[\w\d\-]+)/$', website_views.HelpDetailView.as_view(), name="help-entry-detail"),
     
+    # Channels
+    url(r'^channels/$', website_views.ChannelListView.as_view(), name="channels"),
+    url(r'^channels/(?P<slug>[\w\d\-]+)/$', website_views.ChannelDetailView.as_view(), name="channel-detail"),
+    
     # Character management
     url(r'^characters/$', website_views.CharacterListView.as_view(), name="characters"),
     url(r'^characters/create/$', website_views.CharacterCreateView.as_view(), name="character-create"),
