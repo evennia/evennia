@@ -25,6 +25,9 @@ Web/Django standard initiative (stricako)
 - Web-based chargen based on predefined form
 - Character puppeting within the context of the website
 
+- Web views for common object types, like accounts, characters etc.
+- Web views for help entries.
+
 
 ### Typeclasses
 
