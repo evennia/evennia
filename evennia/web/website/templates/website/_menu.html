@@ -23,24 +23,26 @@ folder and edit it to add/remove links to the menu.
         <ul class="navbar-nav">
             {% block nabvar_left %}
             <li>
-                <a class="nav-link" href="/">Home</a>
+              <a class="nav-link" href="{% url 'index' %}">Home</a>
             </li>
             <li>
               <a class="nav-link" href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a>
             </li>
             <li><a class="nav-link" href="https://github.com/evennia/evennia/wiki">Documentation</a></li>
-            {% if user.is_staff %}
-            <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
-            {% endif %}
+            <li><a class="nav-link" href="{% url 'channels' %}">Channels</a></li>
             <li><a class="nav-link" href="{% url 'help' %}">Help</a></li>
             {% if webclient_enabled %}
             <li><a class="nav-link" href="{% url 'webclient:index' %}">Play Online</a></li>
+            {% endif %}
+            {% if user.is_staff %}
+            <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
             {% endif %}
             {% endblock %}
         </ul>
         <ul class="nav navbar-nav ml-auto w-120 justify-content-end">
             {% block navbar_right %}
             {% endblock %}
+            
             {% block navbar_user %}
             {% if account %}
             <li class="nav-item dropdown">

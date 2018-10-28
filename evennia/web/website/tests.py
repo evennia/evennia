@@ -2,6 +2,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.test import Client, override_settings
 from django.urls import reverse
+from evennia.utils import class_from_module
 from evennia.utils.test_resources import EvenniaTest
 
 class EvenniaWebTest(EvenniaTest):
@@ -13,6 +14,7 @@ class EvenniaWebTest(EvenniaTest):
     exit_typeclass = settings.BASE_EXIT_TYPECLASS
     room_typeclass = settings.BASE_ROOM_TYPECLASS
     script_typeclass = settings.BASE_SCRIPT_TYPECLASS
+    channel_typeclass = settings.BASE_CHANNEL_TYPECLASS
     
     # Default named url
     url_name = 'index'
@@ -91,6 +93,25 @@ class PasswordResetTest(EvenniaWebTest):
     
 class WebclientTest(EvenniaWebTest):
     url_name = 'webclient:index'
+    
+class ChannelListTest(EvenniaWebTest):
+    url_name = 'channels'
+    
+class ChannelDetailTest(EvenniaWebTest):
+    url_name = 'channel-detail'
+    
+    def setUp(self):
+        super(ChannelDetailTest, self).setUp()
+        
+        klass = class_from_module(self.channel_typeclass)
+        
+        # Create a channel
+        klass.create('demo')
+    
+    def get_kwargs(self):
+        return {
+            'slug': slugify('demo')
+        }
     
 class CharacterCreateView(EvenniaWebTest):
     url_name = 'character-create'
