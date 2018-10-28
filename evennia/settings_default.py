@@ -13,6 +13,7 @@ always be sure of what you have changed and what is default behaviour.
 
 """
 from builtins import range
+from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
 
 import os
@@ -828,6 +829,12 @@ AUTH_USERNAME_VALIDATORS = [
 
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
+
+# Messages and Bootstrap don't classify events the same way; this setting maps 
+# messages.error() to Bootstrap 'danger' classes.
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
 
 ######################################################################
 # Django extensions

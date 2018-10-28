@@ -13,12 +13,17 @@ urlpatterns = [
     url(r'^tbi/', website_views.to_be_implemented, name='to_be_implemented'),
 
     # User Authentication (makes login/logout url names available)
-    url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^auth/register', website_views.AccountCreateView.as_view(), name="register"),
+    url(r'^auth/', include('django.contrib.auth.urls')),
+    
+    # Help Topics
+    url(r'^help/$', website_views.HelpListView.as_view(), name="help"),
+    url(r'^help/(?P<category>[\w\d\-]+)/(?P<topic>[\w\d\-]+)/$', website_views.HelpDetailView.as_view(), name="help-entry-detail"),
     
     # Character management
     url(r'^characters/create/$', website_views.CharacterCreateView.as_view(), name="character-create"),
     url(r'^characters/manage/$', website_views.CharacterManageView.as_view(), name="character-manage"),
+    url(r'^characters/detail/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterDetailView.as_view(), name="character-detail"),
     url(r'^characters/puppet/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterPuppetView.as_view(), name="character-puppet"),
     url(r'^characters/update/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterUpdateView.as_view(), name="character-update"),
     url(r'^characters/delete/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterDeleteView.as_view(), name="character-delete"),

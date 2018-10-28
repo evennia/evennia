@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+{{ view.page_title }} ({{ object }})
+{% endblock %}
+
+{% block content %}
+
+{% load addclass %}
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title">{{ view.page_title }}</h1>
+        <hr />
+
+        <div class="row">
+          
+          <!-- left/avatar column -->
+          <div class="col-lg-3 col-sm-12">
+            <img class="d-flex mr-3" src="http://placehold.jp/250x250.png" alt="Image of {{ object }}">
+          </div>
+          <!-- end left/avatar column -->
+          
+          <!-- right/content column -->
+          <div class="col-lg-9 col-sm-12">
+            <dl>
+            {% for attribute, value in attribute_list.items %}
+              <dt>{{ attribute }}</dt>
+              <dd>{{ value }}</dd>
+            {% endfor %}
+            </dl>
+          </div>
+          <!-- end right/content column -->
+          
+        </div>
+          
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
