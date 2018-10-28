@@ -159,7 +159,29 @@ class EvenniaIndexView(TemplateView):
         return context
 
 
-class EvenniaCreateView(CreateView):
+class TypeclassMixin(object):
+    """
+    This is a "mixin", a modifier of sorts.
+    
+    Django views typically work with classes called "models." Evennia objects
+    are an enhancement upon these Django models and are called "typeclasses."
+    But Django itself has no idea what a "typeclass" is.
+    
+    For the sake of mitigating confusion, any view class with this in its 
+    inheritance list will be modified to work with Evennia Typeclass objects or 
+    Django models interchangeably.
+
+    """
+    @property
+    def typeclass(self):
+        return self.model
+    
+    @typeclass.setter
+    def typeclass(self, value):
+        self.model = value
+        
+
+class EvenniaCreateView(CreateView, TypeclassMixin):
     """
     This view extends Django's default CreateView.
     
@@ -170,10 +192,10 @@ class EvenniaCreateView(CreateView):
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return 'Create %s' % self.model._meta.verbose_name.title()
+        return 'Create %s' % self.typeclass._meta.verbose_name.title()
         
         
-class EvenniaDetailView(DetailView):
+class EvenniaDetailView(DetailView, TypeclassMixin):
     """
     This view extends Django's default DetailView.
     
@@ -184,10 +206,10 @@ class EvenniaDetailView(DetailView):
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return '%s Detail' % self.model._meta.verbose_name.title()
+        return '%s Detail' % self.typeclass._meta.verbose_name.title()
 
 
-class EvenniaUpdateView(UpdateView):
+class EvenniaUpdateView(UpdateView, TypeclassMixin):
     """
     This view extends Django's default UpdateView.
     
@@ -198,10 +220,10 @@ class EvenniaUpdateView(UpdateView):
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return 'Update %s' % self.model._meta.verbose_name.title()
+        return 'Update %s' % self.typeclass._meta.verbose_name.title()
 
 
-class EvenniaDeleteView(DeleteView):
+class EvenniaDeleteView(DeleteView, TypeclassMixin):
     """
     This view extends Django's default DeleteView.
     
@@ -212,7 +234,7 @@ class EvenniaDeleteView(DeleteView):
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return 'Delete %s' % self.model._meta.verbose_name.title()
+        return 'Delete %s' % self.typeclass._meta.verbose_name.title()
         
 #
 # Object views
@@ -276,7 +298,7 @@ class ObjectDetailView(EvenniaDetailView):
         
         for attribute in self.attributes:
             # Check if the attribute is a core fieldname (name, desc)
-            if attribute in self.model._meta._property_names:
+            if attribute in self.typeclass._meta._property_names:
                 attribute_list[attribute.title()] = getattr(obj, attribute, '')
             
             # Check if the attribute is a db attribute (char1.db.favorite_color)
@@ -309,7 +331,7 @@ class ObjectDetailView(EvenniaDetailView):
             queryset = self.get_queryset()
         
         # Get the object, ignoring all checks and filters for now
-        obj = self.model.objects.get(pk=self.kwargs.get('pk'))
+        obj = self.typeclass.objects.get(pk=self.kwargs.get('pk'))
         
         # Check if this object was requested in a valid manner
         if slugify(obj.name) != self.kwargs.get(self.slug_url_kwarg):
@@ -363,6 +385,7 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
         redirects to the success URL.
         
         We extend this so we can capture the name for the sake of confirmation.
+        
         """
         # Get the object in question. ObjectDetailView.get_object() will also 
         # check to make sure the current user (authenticated or not) has 
@@ -462,7 +485,7 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
 # Account views
 #
 
-class AccountMixin(object):
+class AccountMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
     
@@ -500,7 +523,7 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
         email = form.cleaned_data.get('email', '')
         
         # Create account
-        account, errs = self.model.create(
+        account, errs = self.typeclass.create(
             username=username,
             password=password,
             email=email,)
@@ -522,7 +545,7 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
 # Character views
 #
         
-class CharacterMixin(object):
+class CharacterMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
     
@@ -546,10 +569,11 @@ class CharacterMixin(object):
         
         """
         # Get IDs of characters owned by account
-        ids = [getattr(x, 'id') for x in self.request.user.characters if x]
+        account = self.request.user
+        ids = [getattr(x, 'id') for x in account.characters if x]
         
         # Return a queryset consisting of those characters
-        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
         
 class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
@@ -669,7 +693,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
         description = self.attributes.pop('desc')
         
         # Create a character
-        character, errors = self.model.create(charname, account, description=description)
+        character, errors = self.typeclass.create(charname, account, description=description)
         
         if errors:
             # Echo error messages to the user
