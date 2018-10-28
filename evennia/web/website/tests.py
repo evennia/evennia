@@ -78,7 +78,6 @@ class IndexTest(EvenniaWebTest):
 
 class RegisterTest(EvenniaWebTest):
     url_name = 'register'
-    unauthenticated_response = 302
 
 class LoginTest(EvenniaWebTest):
     url_name = 'login'
