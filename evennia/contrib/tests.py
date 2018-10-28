@@ -2274,6 +2274,33 @@ class TestPuzzles(CommandTest):
             expected.update({'dirt': nresolutions})
             self._check_room_contents(expected)
 
+        # parts don't survive resolution
+        # and no result is produced
+        balloon = create_object(
+                self.object_typeclass,
+                key='Balloon', location=self.char1.location)
+        parts = ['Balloon']
+        results = ['Balloon']  # FIXME: we don't want results
+        recipe_dbref = self._good_recipe(
+            'boom!!!',
+            parts, results,
+            and_destroy_it=False,
+            expected_count=3
+        )
+
+        _destroy_objs_in_room(set(parts + results))
+
+        sps = sorted(parts)
+        expected = {key: len(list(grp)) for key, grp in itertools.groupby(sps)}
+
+        self._arm(recipe_dbref, 'boom!!!', parts)
+        self._check_room_contents(expected)
+
+        self._use(','.join(parts), 'You are a Genius')
+        srs = sorted(set(results))
+        expected = {(key, len(list(grp))) for key, grp in itertools.groupby(srs)}
+        self._check_room_contents(expected)
+
         # TODO: results has Exit
 
         # TODO: results has NPC
