@@ -39,6 +39,10 @@
                       <td>{{ object.db.desc }}</td>
                       <td>{{ object.subscriptions.all|length }}</td>
                     </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="3">No channels were found!</td>
+                    </tr>
                     {% endfor %}
                   </tbody>
                 </table>
@@ -56,6 +60,7 @@
             <hr />
             {% endif %}
           
+            {% if most_popular %}
             <div class="card mb-3">
               <div class="card-header">Most Popular</div>
               
@@ -66,13 +71,14 @@
               </ul>
               
             </div>
+            {% endif %}
           
           </div>
           <!-- end right column -->
             
         </div>
         
-
+      <hr />
       </div>
     </div>
   </div>
