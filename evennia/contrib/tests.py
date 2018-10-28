@@ -2282,7 +2282,7 @@ class TestPuzzles(CommandTest):
         parts = ['Balloon']
         results = ['Balloon']  # FIXME: we don't want results
         recipe_dbref = self._good_recipe(
-            'boom!!!',
+            'Boom!!!',
             parts, results,
             and_destroy_it=False,
             expected_count=3
@@ -2293,7 +2293,7 @@ class TestPuzzles(CommandTest):
         sps = sorted(parts)
         expected = {key: len(list(grp)) for key, grp in itertools.groupby(sps)}
 
-        self._arm(recipe_dbref, 'boom!!!', parts)
+        self._arm(recipe_dbref, 'Boom!!!', parts)
         self._check_room_contents(expected)
 
         self._use(','.join(parts), 'You are a Genius')
