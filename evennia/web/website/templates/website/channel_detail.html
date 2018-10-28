@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+{{ view.page_title }} ({{ object }})
+{% endblock %}
+
+{% block content %}
+
+{% load addclass %}
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title">{{ view.page_title }} ({{ object }})</h1>
+        <hr />
+        
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'channels' %}">Channels</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ object.db_key|title }}</li>
+        </ol>
+        <hr />
+
+        <div class="row">
+          
+          <!-- left column -->
+          <div class="col-lg-9 col-sm-12">
+              
+            <!-- heading -->
+            <div class="card border-light">
+              <div class="card-body">
+                {% if object.db.desc and object.db.desc != None %}{{ object.db.desc }}{% else %}No description provided.{% endif %}
+              </div>
+            </div>
+            <hr />
+            <!-- end heading -->
+            
+            {% if object_list %}
+<pre>{% for log in object_list %}
+<a id="{{ log.key }}"></a>{{ log.timestamp }}: {{ log.message }}{% endfor %}</pre>
+            {% else %}
+            <pre>No recent log entries have been recorded for this channel.</pre>
+            {% endif %}
+          </div>
+          <!-- end left column -->
+          
+          <!-- right column -->
+          <div class="col-lg-3 col-sm-12">
+            
+            {% if request.user.is_staff %}
+            <!-- admin button -->
+            <a class="btn btn-info btn-block mb-3" href="{{ object.web_get_admin_url }}">Admin</a>
+            <!-- end admin button -->
+            <hr />
+            {% endif %}
+              
+            <div class="card mb-3">
+              <div class="card-body">
+                <dl>
+                {% for attribute, value in attribute_list.items %}
+                  <dt>{{ attribute }}</dt>
+                  <dd>{{ value }}</dd>
+                {% endfor %}
+                </dl>
+                <dl>
+                  <dt>Subscriptions</dt>
+                  <dd>{{ object.subscriptions.all|length }}</dd>
+                </dl>
+              </div>
+            </div>
+            
+            {% if object_filters %}
+            <div class="card mb-3">
+              <div class="card-header">Date Index</div>
+              
+              <ul class="list-group list-group-flush">
+                {% for filter in object_filters %}
+                <a href="#{{ filter }}" class="list-group-item">{{ filter }}</a>
+                {% endfor %}
+              </ul>
+              
+            </div>
+            {% endif %}
+            
+          </div>
+          <!-- end right column -->
+          
+        </div>
+          
+      <hr />
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
