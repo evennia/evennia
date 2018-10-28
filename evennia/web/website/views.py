@@ -576,6 +576,42 @@ class CharacterMixin(TypeclassMixin):
         return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
         
+class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
+    """
+    This view provides a mechanism by which a logged-in player can view a list
+    of all other characters.
+    
+    This view requires authentication by default as a nominal effort to prevent 
+    human stalkers and automated bots/scrapers from harvesting data on your users.
+    
+    """
+    # -- Django constructs --
+    template_name = 'website/character_list.html'
+    paginate_by = 100
+    
+    # -- Evennia constructs --
+    page_title = 'Character List'
+    access_type = 'view'
+    
+    def get_queryset(self):
+        """
+        This method will override the Django get_queryset method to return a
+        list of all characters (filtered/sorted) instead of just those limited 
+        to the account.
+        
+        Returns:
+            queryset (QuerySet): Django queryset for use in the given view.
+        
+        """
+        account = self.request.user
+        
+        # Return a queryset consisting of characters the user is allowed to
+        # see.
+        ids = [obj.id for obj in self.model.objects.all() if obj.access(account, self.access_type)]
+        
+        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        
+        
 class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
     """
     This view provides a mechanism by which a logged-in player can "puppet" one
@@ -653,6 +689,24 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
     # -- Evennia constructs --
     # What attributes to display for this object
     attributes = ['name', 'desc']
+    access_type = 'view'
+    
+    def get_queryset(self):
+        """
+        This method will override the Django get_queryset method to return a
+        list of all characters the user may access.
+        
+        Returns:
+            queryset (QuerySet): Django queryset for use in the given view.
+        
+        """
+        account = self.request.user
+        
+        # Return a queryset consisting of characters the user is allowed to
+        # see.
+        ids = [obj.id for obj in self.model.objects.all() if obj.access(account, self.access_type)]
+        
+        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
 
 
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):

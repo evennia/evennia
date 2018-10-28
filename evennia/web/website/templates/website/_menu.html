@@ -29,6 +29,7 @@ folder and edit it to add/remove links to the menu.
               <a class="nav-link" href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a>
             </li>
             <li><a class="nav-link" href="https://github.com/evennia/evennia/wiki">Documentation</a></li>
+            <li><a class="nav-link" href="{% url 'characters' %}">Characters</a></li>
             {% if user.is_staff %}
             <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
             {% endif %}
