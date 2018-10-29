@@ -12,22 +12,45 @@
 
 ### Web
 
-Web/Django standard initiative (stricako)
-- Updates Bootstrap to v4 stable (the beta in use had some irritating bugs that have since been resolved)
-- Enables the use of Django Messages framework
-- Adds a web-based account registration form
-- Adds links to reset password / create new account on login pane (resets require SMTP configuration to actually work, but the functionality was already enabled by account of django.contrib.auth.urls-- I just made it prettier). Uses Django's password reset workflow.
-- Modifies the series of password reset forms to use Evennia's CSS instead of Django admin's.
-- Adds a dropdown for authenticated users allowing them to change their password.
-- Prettifies the "change password" form to use Evennia's CSS instead of Django admin's.
-- Adds placeholders to dropdown menu for players to quickpuppet/manage characters on the website.
-- Fixes a bug on the login pane where error messages weren't being displayed (was calling form.has_errors instead of just checking form.errors)
-- Web-based chargen based on predefined form
-- Character puppeting within the context of the website
-
-- Web views for common object types, like accounts, characters etc.
-- Web views for help entries.
-
+Web/Django standard initiative (@strikaco)
+- Features
+  - Adds a series of web-based forms and generic views
+    - Accounts
+      - Register - Enhances registration; allows optional collection of email address
+      - Form - Adds a generic Django form for creating Accounts from the web
+    - Characters
+      - Create - Authenticated users can create new characters from the website (requires associated form)
+      - Detail - Authenticated and authorized users can view select details about characters
+      - List - Authenticated and authorized users can browse a list of all characters
+      - Manage - Authenticated users can edit or delete owned characters from the web
+      - Form - Adds a generic Django form for creating characters from the web
+    - Channels
+      - Detail - Authorized users can view channel logs from the web
+      - List - Authorized users can browse a list of all channels
+    - Help Entries
+      - Detail - Authorized users can view help entries from the web
+      - List - Authorized users can browse a list of all help entries from the web
+  - Navbar changes
+    - Characters - Link to character list
+    - Channels - Link to channel list
+    - Help - Link to help entry list
+    - Puppeting
+      - Users can puppet their own characters within the context of the website
+    - Dropdown
+      - Link to create characters
+      - Link to manage characters
+      - Link to quick-select puppets
+      - Link to password change workflow
+- Functions
+  - Updates Bootstrap to v4 stable
+  - Enables use of Django Messages framework to communicate with users in browser
+  - Implements webclient/website `_shared_login` functionality as Django middleware
+  - 'account' and 'puppet' are added to all request contexts for authenticated users
+- Cosmetic
+  - Prettifies Django 'forgot password' workflow (requires SMTP to actually function)
+  - Prettifies Django 'change password' workflow
+- Bugfixes
+  - Fixes bug on login page where error messages were not being displayed
 
 ### Typeclasses
 
@@ -50,8 +73,6 @@ Web/Django standard initiative (stricako)
   + `validate_username`: Mechanism for validating a username.
   + `validate_password`: Mechanism for validating a password.
   + `set_password`: Apply password to account, using validation checks.
-
-
 
 ### Utils
 
