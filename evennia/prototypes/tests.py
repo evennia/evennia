@@ -394,23 +394,29 @@ class TestProtFuncs(EvenniaTest):
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
             self.assertEqual(protlib.protfunc_parser("$objlist(#1)", session=self.session), ['#1'])
             mocked__obj_search.assert_called_once()
+            assert ('#1',) == mocked__obj_search.call_args[0]
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
             self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
             mocked__obj_search.assert_called_once()
+            assert ('#1',) == mocked__obj_search.call_args[0]
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
             self.assertEqual(protlib.protfunc_parser("$dbref(#1)", session=self.session), '#1')
             mocked__obj_search.assert_called_once()
+            assert ('#1',) == mocked__obj_search.call_args[0]
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
             self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
             mocked__obj_search.assert_called_once()
+            assert ('Char',) == mocked__obj_search.call_args[0]
 
 
         # bad invocation
 
-        self.assertEqual(protlib.protfunc_parser("$badfunc(#1)", session=self.session), '<UNKNOWN>')
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("$badfunc(#1)", session=self.session), '<UNKNOWN>')
+            mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
             self.assertEqual(protlib.protfunc_parser("$dbref(Char)", session=self.session), '<UNKNOWN>')
