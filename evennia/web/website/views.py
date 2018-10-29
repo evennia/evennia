@@ -597,6 +597,8 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
             url (str): Path to post-puppet destination.
         
         """
+        account = self.request.user
+        
         # Get the requested character, if it belongs to the authenticated user
         char = self.get_object()
         
@@ -608,6 +610,11 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
             # Django request's session (different from Evennia session!).
             # We do this because characters don't serialize well.
             self.request.session['puppet'] = int(char.pk)
+            
+            # We need to set this to have the webclient or terminal auto-connect 
+            # to this character
+            account.db._last_puppet = char
+            
             messages.success(self.request, "You become '%s'!" % char)
         else:
             # If the puppeting failed, clear out the cached puppet value
