@@ -15,14 +15,15 @@ class SharedLoginMiddleware(object):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
         
+        # Synchronize credentials between webclient and website
+        # Must be performed *before* rendering the view (issue #1723)
+        self.make_shared_login(request)
+        
         # Process view
         response = self.get_response(request)
 
         # Code to be executed for each request/response after
         # the view is called.
-        
-        # Synchronize credentials
-        self.make_shared_login(request)
         
         # Return processed view
         return response
