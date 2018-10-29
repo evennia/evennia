@@ -181,7 +181,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
         username, password = parts
 
-        # everything's ok. Create the new account account.
+        # everything's ok. Create the new account.
         account, errors = Account.create(username=username, password=password, ip=address, session=session)
         if account:
             # tell the caller everything went well.
