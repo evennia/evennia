@@ -25,15 +25,23 @@ folder and edit it to add/remove links to the menu.
             <li>
               <a class="nav-link" href="{% url 'index' %}">Home</a>
             </li>
+            <!-- evennia documentation -->
             <li>
               <a class="nav-link" href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a>
             </li>
             <li><a class="nav-link" href="https://github.com/evennia/evennia/wiki">Documentation</a></li>
+            <!-- end evennia documentation -->
+            
+            <!-- game views -->
+            <li><a class="nav-link" href="{% url 'characters' %}">Characters</a></li>
             <li><a class="nav-link" href="{% url 'channels' %}">Channels</a></li>
             <li><a class="nav-link" href="{% url 'help' %}">Help</a></li>
+            <!-- end game views -->
+            
             {% if webclient_enabled %}
             <li><a class="nav-link" href="{% url 'webclient:index' %}">Play Online</a></li>
             {% endif %}
+            
             {% if user.is_staff %}
             <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
             {% endif %}

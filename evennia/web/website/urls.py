@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^channels/(?P<slug>[\w\d\-]+)/$', website_views.ChannelDetailView.as_view(), name="channel-detail"),
     
     # Character management
+    url(r'^characters/$', website_views.CharacterListView.as_view(), name="characters"),
     url(r'^characters/create/$', website_views.CharacterCreateView.as_view(), name="character-create"),
     url(r'^characters/manage/$', website_views.CharacterManageView.as_view(), name="character-manage"),
     url(r'^characters/detail/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$', website_views.CharacterDetailView.as_view(), name="character-detail"),

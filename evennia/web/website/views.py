@@ -577,6 +577,42 @@ class CharacterMixin(TypeclassMixin):
         return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
         
+class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
+    """
+    This view provides a mechanism by which a logged-in player can view a list
+    of all other characters.
+    
+    This view requires authentication by default as a nominal effort to prevent 
+    human stalkers and automated bots/scrapers from harvesting data on your users.
+    
+    """
+    # -- Django constructs --
+    template_name = 'website/character_list.html'
+    paginate_by = 100
+    
+    # -- Evennia constructs --
+    page_title = 'Character List'
+    access_type = 'view'
+    
+    def get_queryset(self):
+        """
+        This method will override the Django get_queryset method to return a
+        list of all characters (filtered/sorted) instead of just those limited 
+        to the account.
+        
+        Returns:
+            queryset (QuerySet): Django queryset for use in the given view.
+        
+        """
+        account = self.request.user
+        
+        # Return a queryset consisting of characters the user is allowed to
+        # see.
+        ids = [obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)]
+        
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        
+        
 class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
     """
     This view provides a mechanism by which a logged-in player can "puppet" one
@@ -654,6 +690,24 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
     # -- Evennia constructs --
     # What attributes to display for this object
     attributes = ['name', 'desc']
+    access_type = 'view'
+    
+    def get_queryset(self):
+        """
+        This method will override the Django get_queryset method to return a
+        list of all characters the user may access.
+        
+        Returns:
+            queryset (QuerySet): Django queryset for use in the given view.
+        
+        """
+        account = self.request.user
+        
+        # Return a queryset consisting of characters the user is allowed to
+        # see.
+        ids = [obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)]
+        
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
 
 
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
@@ -718,7 +772,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
 # Channel views
 #
 
-class ChannelMixin(object):
+class ChannelMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
     
@@ -748,13 +802,13 @@ class ChannelMixin(object):
         account = self.request.user
         
         # Get list of all Channels
-        channels = self.model.objects.all().iterator()
+        channels = self.typeclass.objects.all().iterator()
         
         # Now figure out which ones the current user is allowed to see
         bucket = [channel.id for channel in channels if channel.access(account, 'listen')]
         
         # Re-query and set a sorted list
-        filtered = self.model.objects.filter(
+        filtered = self.typeclass.objects.filter(
             id__in=bucket
         ).order_by(
             Lower('db_key')
@@ -880,7 +934,7 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
 # Help views
 #
 
-class HelpMixin(object):
+class HelpMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
     
@@ -906,13 +960,13 @@ class HelpMixin(object):
         account = self.request.user
         
         # Get list of all HelpEntries
-        entries = self.model.objects.all().iterator()
+        entries = self.typeclass.objects.all().iterator()
         
         # Now figure out which ones the current user is allowed to see
         bucket = [entry.id for entry in entries if entry.access(account, 'view')]
         
         # Re-query and set a sorted list
-        filtered = self.model.objects.filter(
+        filtered = self.typeclass.objects.filter(
             id__in=bucket
         ).order_by(
             Lower('db_key')
