@@ -94,6 +94,18 @@ class PasswordResetTest(EvenniaWebTest):
 class WebclientTest(EvenniaWebTest):
     url_name = 'webclient:index'
     
+    @override_settings(WEBCLIENT_ENABLED=True)
+    def test_get(self):
+        self.authenticated_response = 200
+        self.unauthenticated_response = 200
+        super(WebclientTest, self).test_get()
+    
+    @override_settings(WEBCLIENT_ENABLED=False)
+    def test_get_disabled(self):
+        self.authenticated_response = 404
+        self.unauthenticated_response = 404
+        super(WebclientTest, self).test_get()
+    
 class ChannelListTest(EvenniaWebTest):
     url_name = 'channels'
     
