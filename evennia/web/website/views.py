@@ -608,9 +608,9 @@ class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
         
         # Return a queryset consisting of characters the user is allowed to
         # see.
-        ids = [obj.id for obj in self.model.objects.all() if obj.access(account, self.access_type)]
+        ids = [obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)]
         
-        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
         
         
 class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
@@ -705,9 +705,9 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
         
         # Return a queryset consisting of characters the user is allowed to
         # see.
-        ids = [obj.id for obj in self.model.objects.all() if obj.access(account, self.access_type)]
+        ids = [obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)]
         
-        return self.model.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
 
 
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
@@ -772,7 +772,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
 # Channel views
 #
 
-class ChannelMixin(object):
+class ChannelMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
     
@@ -802,13 +802,13 @@ class ChannelMixin(object):
         account = self.request.user
         
         # Get list of all Channels
-        channels = self.model.objects.all().iterator()
+        channels = self.typeclass.objects.all().iterator()
         
         # Now figure out which ones the current user is allowed to see
         bucket = [channel.id for channel in channels if channel.access(account, 'listen')]
         
         # Re-query and set a sorted list
-        filtered = self.model.objects.filter(
+        filtered = self.typeclass.objects.filter(
             id__in=bucket
         ).order_by(
             Lower('db_key')
@@ -934,7 +934,7 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
 # Help views
 #
 
-class HelpMixin(object):
+class HelpMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
     
@@ -960,13 +960,13 @@ class HelpMixin(object):
         account = self.request.user
         
         # Get list of all HelpEntries
-        entries = self.model.objects.all().iterator()
+        entries = self.typeclass.objects.all().iterator()
         
         # Now figure out which ones the current user is allowed to see
         bucket = [entry.id for entry in entries if entry.access(account, 'view')]
         
         # Re-query and set a sorted list
-        filtered = self.model.objects.filter(
+        filtered = self.typeclass.objects.filter(
             id__in=bucket
         ).order_by(
             Lower('db_key')
