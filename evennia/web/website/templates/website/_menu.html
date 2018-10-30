@@ -60,7 +60,7 @@ folder and edit it to add/remove links to the menu.
                 {% for character in account.characters|slice:"10" %}
                   <a class="dropdown-item" href="{{ character.web_get_puppet_url }}?next={{ request.path }}">{{ character }}</a>
                 {% empty %} 
-                  <a class="dropdown-item" href="#">No characters found!</a>
+                  <a class="dropdown-item" href="{% url 'character-create' %}">No characters found!</a>
                 {% endfor %}
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
