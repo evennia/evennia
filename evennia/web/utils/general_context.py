@@ -71,8 +71,19 @@ def general_context(request):
     if request.user.is_authenticated(): account = request.user
 
     puppet = None
-    if account and request.session.get('puppet'):
-        pk = int(request.session.get('puppet'))
+    if account:
+        # Get puppet previously selected from the website
+        if request.session.get('puppet'):
+            pk = int(request.session.get('puppet'))
+            
+        # Get last puppet set from terminal
+        elif account.db._last_puppet:
+            pk = int(account.db._last_puppet.id)
+            
+        # Just get the first character
+        elif account.characters:
+            pk = account.characters[0].id
+            
         puppet = next((x for x in account.characters if x.pk == pk), None)
     
     return {
