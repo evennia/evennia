@@ -102,7 +102,7 @@ An "emitter" object must have a function
                 return;
             }
             this.connection.connect();
-            log('Evenna reconnecting.')
+            log('Evennia reconnecting.')
         },
 
         // Returns true if the connection is open.

@@ -12,32 +12,56 @@
 
 ### Web
 
-Web/Django standard initiative (stricako)
-- Updates Bootstrap to v4 stable (the beta in use had some irritating bugs that have since been resolved)
-- Enables the use of Django Messages framework
-- Adds a web-based account registration form
-- Adds links to reset password / create new account on login pane (resets require SMTP configuration to actually work, but the functionality was already enabled by account of django.contrib.auth.urls-- I just made it prettier). Uses Django's password reset workflow.
-- Modifies the series of password reset forms to use Evennia's CSS instead of Django admin's.
-- Adds a dropdown for authenticated users allowing them to change their password.
-- Prettifies the "change password" form to use Evennia's CSS instead of Django admin's.
-- Adds placeholders to dropdown menu for players to quickpuppet/manage characters on the website.
-- Fixes a bug on the login pane where error messages weren't being displayed (was calling form.has_errors instead of just checking form.errors)
-- Web-based chargen based on predefined form
-- Character puppeting within the context of the website
-
-- Web views for common object types, like accounts, characters etc.
-- Web views for help entries.
-
+Web/Django standard initiative (@strikaco)
+- Features
+  - Adds a series of web-based forms and generic class-based views
+    - Accounts
+      - Register - Enhances registration; allows optional collection of email address
+      - Form - Adds a generic Django form for creating Accounts from the web
+    - Characters
+      - Create - Authenticated users can create new characters from the website (requires associated form)
+      - Detail - Authenticated and authorized users can view select details about characters
+      - List - Authenticated and authorized users can browse a list of all characters
+      - Manage - Authenticated users can edit or delete owned characters from the web
+      - Form - Adds a generic Django form for creating characters from the web
+    - Channels
+      - Detail - Authorized users can view channel logs from the web
+      - List - Authorized users can browse a list of all channels
+    - Help Entries
+      - Detail - Authorized users can view help entries from the web
+      - List - Authorized users can browse a list of all help entries from the web
+  - Navbar changes
+    - Characters - Link to character list
+    - Channels - Link to channel list
+    - Help - Link to help entry list
+    - Puppeting
+      - Users can puppet their own characters within the context of the website
+    - Dropdown
+      - Link to create characters
+      - Link to manage characters
+      - Link to quick-select puppets
+      - Link to password change workflow
+- Functions
+  - Updates Bootstrap to v4 stable
+  - Enables use of Django Messages framework to communicate with users in browser
+  - Implements webclient/website `_shared_login` functionality as Django middleware
+  - 'account' and 'puppet' are added to all request contexts for authenticated users
+  - Adds unit tests for all web views
+- Cosmetic
+  - Prettifies Django 'forgot password' workflow (requires SMTP to actually function)
+  - Prettifies Django 'change password' workflow
+- Bugfixes
+  - Fixes bug on login page where error messages were not being displayed
 
 ### Typeclasses
 
-- Add new methods on all typeclasses, useful specifically for viewing the object in the web/admin:
-  + `web_get_admin_url()`: Returns a path that, if followed, will display the object in the Admin backend.
-  + `web_get_create_url()`: Returns a path for a view allowing the creation of new instances of this object.
-  + `web_get_absolute_url()`: Django construct; returns a path that should display the object in a DetailView.
-  + `web_get_update_url()`: Returns a path that should display the object in an UpdateView.
-  + `web_get_delete_url()`: Returns a path that should display the object in a DeleteView.
-- All typeclasses has new helper class method `create`, which encompasses useful functionality
+- Add new methods on all typeclasses, useful specifically for object handling from the website/admin:
+  + `web_get_admin_url()`: Returns the path to the object detail page in the Admin backend.
+  + `web_get_create_url()`: Returns the path to the typeclass' creation page on the website, if implemented.
+  + `web_get_absolute_url()`: Returns the path to the object's detail page on the website, if implemented.
+  + `web_get_update_url()`: Returns the path to the object's update page on the website, if implemented.
+  + `web_get_delete_url()`: Returns the path to the object's delete page on the website, if implemented.
+- All typeclasses have new helper class method `create`, which encompasses useful functionality
   that used to be embedded for example in the respective `@create` or `@connect` commands.
 - DefaultAccount now has new class methods implementing many things that used to be in unloggedin
   commands (these can now be customized on the class instead):
@@ -45,13 +69,10 @@ Web/Django standard initiative (stricako)
   + `get_username_validators`: Return list of validators for username validation (see
     `settings.AUTH_USERNAME_VALIDATORS`)
   + `authenticate`: Method to check given username/password.
-  + `normalize_username`: Normalizes names so you can't fake names with similar-looking Unicode
-    chars.
-  + `validate_username`: Mechanism for validating a username.
-  + `validate_password`: Mechanism for validating a password.
+  + `normalize_username`: Normalizes names so (for Unicode environments) users cannot mimic existing usernames by replacing select characters with visually-similar Unicode chars.
+  + `validate_username`: Mechanism for validating a username based on predefined Django validators.
+  + `validate_password`: Mechanism for validating a password based on predefined Django validators.
   + `set_password`: Apply password to account, using validation checks.
-
-
 
 ### Utils
 
