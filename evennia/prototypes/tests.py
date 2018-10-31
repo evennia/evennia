@@ -387,7 +387,7 @@ class TestProtFuncs(EvenniaTest):
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            # self.assertEqual(protlib.protfunc_parser("$dbref(Char)", session=self.session), '<UNKNOWN>')
+            self.assertRaises(ValueError, protlib.protfunc_parser, "$dbref(Char)")
             mocked__obj_search.assert_not_called()
 
 
