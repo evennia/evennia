@@ -263,38 +263,6 @@ class TestProtFuncs(EvenniaTest):
                      "prototype_desc": "testing prot",
                      "key": "ExampleObj"}
 
-    def test_RE_DBREF(self):
-        def check_RE_DBREF(value, expected_value,
-                exp_is_match, exp_is_search):
-            try:
-                mm = protlib._RE_DBREF.match(value)
-                ms = protlib._RE_DBREF.search(value)
-                sub1 = protlib._RE_DBREF.sub("$obj(\\1)", value)
-                assert expected_value == sub1
-                assert (exp_is_match and mm) or (not exp_is_match and mm is None)
-                assert (exp_is_search and ms) or (not exp_is_search and ms is None)
-            except Exception as e:
-                self.fail("%r" % ((value, mm, ms, expected_value, exp_is_match, exp_is_search, e),))
-
-        check_RE_DBREF('1234', '1234', False, False)
-        check_RE_DBREF('#1234', '#1234', False, False)
-        check_RE_DBREF('(#1234)', '(#1234)', False, False)
-        check_RE_DBREF('obj(#1234)', 'obj(#1234)', False, False)
-        check_RE_DBREF('dbref(#1234)', 'dbref(#1234)', False, False)
-        check_RE_DBREF('$obj(#1234)', '$obj(#1234)', False, False)
-        check_RE_DBREF('$dbref(#1234)', '$obj(#1234)', True, True)
-        check_RE_DBREF('obj($obj(#1234))', 'obj($obj(#1234))', False, False)
-        check_RE_DBREF('obj($dbref(#1234))', 'obj($obj(#1234))', False, True)
-        check_RE_DBREF('some #1234 value', 'some #1234 value', False, False)
-        check_RE_DBREF('some (#1234) value', 'some (#1234) value', False, False)
-        check_RE_DBREF('some obj(#1234) value', 'some obj(#1234) value', False, False)
-        check_RE_DBREF('some dbref(#1234) value', 'some dbref(#1234) value', False, False)
-        check_RE_DBREF('some $dbref(#1234) value', 'some $obj(#1234) value', False, True)
-        check_RE_DBREF('some obj($obj(#1234) value)', 'some obj($obj(#1234) value)', False, False)
-        check_RE_DBREF('some obj($dbref(#1234) value)', 'some obj($obj(#1234) value)', False, True)
-        check_RE_DBREF('some dbref($obj(#1234) value)', 'some dbref($obj(#1234) value)', False, False)
-        check_RE_DBREF('some dbref($dbref(#1234) value)', 'some dbref($obj(#1234) value)', False, True)
-
     @mock.patch("evennia.prototypes.protfuncs.base_random", new=mock.MagicMock(return_value=0.5))
     @mock.patch("evennia.prototypes.protfuncs.base_randint", new=mock.MagicMock(return_value=5))
     def test_protfuncs(self):
@@ -419,7 +387,7 @@ class TestProtFuncs(EvenniaTest):
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$dbref(Char)", session=self.session), '<UNKNOWN>')
+            # self.assertEqual(protlib.protfunc_parser("$dbref(Char)", session=self.session), '<UNKNOWN>')
             mocked__obj_search.assert_not_called()
 
 
