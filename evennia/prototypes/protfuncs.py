@@ -44,6 +44,8 @@ from evennia.utils.utils import justify as base_justify, is_iter, to_str
 
 _PROTLIB = None
 
+_RE_DBREF = re.compile(r"\#[0-9]+")
+
 
 # default protfuncs
 
@@ -333,7 +335,6 @@ def dbref(*args, **kwargs):
     Usage $dbref(<#dbref>)
     Returns one Object searched globally by #dbref. Error if #dbref is invalid.
     """
-    _RE_DBREF = re.compile(r"\#[0-9]+")
     if not args or len(args) < 1 or _RE_DBREF.match(args[0]) is None:
         raise ValueError('$dbref requires a valid #dbref argument.')
 
