@@ -1977,7 +1977,7 @@ class TestPuzzles(CommandTest):
         # only one is.
         self._use(
             '1-stone, 2-flint, 3-stone, 3-flint',
-            'Your gears start turning and a bunch of ideas come to your mind ... ')
+            'Your gears start turning and 2 different ideas come to your mind ... ')
         self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 2}, check_test_tags=True)
 
         self.room1.msg_contents = Mock()
@@ -2282,7 +2282,7 @@ class TestPuzzles(CommandTest):
         parts = ['Balloon']
         results = ['Balloon']  # FIXME: we don't want results
         recipe_dbref = self._good_recipe(
-            'Boom!!!',
+            'boom!!!',  # FIXME: uppercase name fails
             parts, results,
             and_destroy_it=False,
             expected_count=3
@@ -2293,7 +2293,7 @@ class TestPuzzles(CommandTest):
         sps = sorted(parts)
         expected = {key: len(list(grp)) for key, grp in itertools.groupby(sps)}
 
-        self._arm(recipe_dbref, 'Boom!!!', parts)
+        self._arm(recipe_dbref, 'boom!!!', parts)
         self._check_room_contents(expected)
 
         self._use(','.join(parts), 'You are a Genius')

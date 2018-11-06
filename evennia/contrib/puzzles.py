@@ -501,11 +501,6 @@ class CmdUsePuzzleParts(MuxCommand):
         use <part1[,part2,...>]
     """
 
-    # TODO: consider allowing builder to provide
-    # messages and "hooks" that can be displayed
-    # and/or fired whenever the resolver of the puzzle
-    # enters the location where a result was spawned
-
     key = 'use'
     aliases = 'combine'
     locks = 'cmd:pperm(use) or pperm(Player)'
@@ -597,7 +592,7 @@ class CmdUsePuzzleParts(MuxCommand):
                     matched_puzzles[puzzle.dbref] = matched_dbrefparts
 
         if len(matched_puzzles) == 0:
-            # TODO: we could use part.fail_message instead, if any
+            # TODO: we could use part.fail_message instead, if there was one
             #    random part falls and lands on your feet
             #    random part hits you square on the face
             caller.msg(_PUZZLE_DEFAULT_FAIL_USE_MESSAGE % (many))
@@ -613,13 +608,15 @@ class CmdUsePuzzleParts(MuxCommand):
         puzzle = puzzles_dict[puzzledbref]
         largest_puzzles = list(itertools.takewhile(lambda t: len(t[1]) == nparts, puzzletuples))
 
-        # if there are more than one, ...
+        # if there are more than one, choose one at random.
+        # we could show the names of all those that can be resolved
+        # but that would give away that there are other puzzles that
+        # can be resolved with the same parts.
+        # just hint how many.
         if len(largest_puzzles) > 1:
-            # TODO: pick a random one or let user choose?
-            # TODO: do we show the puzzle name or something else?
             caller.msg(
-                'Your gears start turning and a bunch of ideas come to your mind ...\n%s' % (
-                ' ...\n'.join([puzzles_dict[lp[0]].db.puzzle_name for lp in largest_puzzles]))
+                'Your gears start turning and %d different ideas come to your mind ...\n'
+                % (len(largest_puzzles))
             )
             puzzletuple = choice(largest_puzzles)
             puzzle = puzzles_dict[puzzletuple[0]]
@@ -632,10 +629,6 @@ class CmdUsePuzzleParts(MuxCommand):
             result.tags.add(puzzle.db.puzzle_name, category=_PUZZLES_TAG_CATEGORY)
             result.db.puzzle_name = puzzle.db.puzzle_name
             result_names.append(result.name)
-            # TODO: add 'ramdon' messages:
-            # Hmmm ... did I search result.location?
-            # What was that? ... I heard something in result.location?
-            # Eureka! you built a result
 
         # Destroy all parts used
         for dbref in matched_dbrefparts:
