@@ -670,6 +670,9 @@ DEBUG = False
 ADMINS = ()  # 'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
+# This is a public point of contact for players or the public to contact
+# a staff member or administrator of the site. It is publicly posted.
+STAFF_CONTACT_EMAIL = None
 # Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
