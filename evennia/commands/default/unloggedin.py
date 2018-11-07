@@ -276,6 +276,9 @@ Next you can connect to the game: |wconnect Anna c67jHL8p|n
 You can use the |wlook|n command if you want to see the connect screen again.
 
 """
+
+        if settings.STAFF_CONTACT_EMAIL:
+            string += 'For support, please contact: %s' % settings.STAFF_CONTACT_EMAIL
         self.caller.msg(string)
 
 
