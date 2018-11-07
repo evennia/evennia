@@ -1894,7 +1894,7 @@ class DefaultCharacter(DefaultObject):
     """
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer)"
+    lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);delete:id({account_id}) or perm(Admin)"
 
     @classmethod
     def create(cls, key, account, **kwargs):

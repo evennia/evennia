@@ -162,8 +162,8 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
                                              home=default_home,
                                              permissions=permissions)
         # only allow creator (and developers) to puppet this char
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
-                                (new_character.id, account.id))
+        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or perm(Admin)" %
+                                (new_character.id, account.id, account.id))
         account.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
@@ -222,6 +222,12 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
 
             match = match[0]
             account.ndb._char_to_delete = match
+            
+            # Return if caller has no permission to delete this
+            if not match.access(account, 'delete'):
+                self.msg("You do not have permission to delete this character.")
+                return
+            
             prompt = "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
             get_input(account, prompt % match.key, _callback)
 
