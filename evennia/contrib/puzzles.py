@@ -116,6 +116,18 @@ def proto_def(obj, with_tags=True):
         protodef['tags'] = tags
     return protodef
 
+
+def maskout_protodef(protodef, mask):
+    """
+    Returns a new protodef after removing protodef values based on mask
+    """
+    protodef = dict(protodef)
+    for m in mask:
+        if m in protodef:
+            protodef.pop(m)
+    return protodef
+
+
 # Colorize the default success message
 def _colorize_message(msg):
     _i = 0
@@ -140,6 +152,7 @@ class PuzzleRecipe(DefaultScript):
         self.db.puzzle_name = str(puzzle_name)
         self.db.parts = tuple(parts)
         self.db.results = tuple(results)
+        self.db.mask = tuple()
         self.tags.add(_PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
         self.db.use_success_message = _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE
         self.db.use_success_location_message = _PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE
@@ -275,6 +288,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
 
         puzzle = create_script(PuzzleRecipe, key=puzzle_name)
         puzzle.save_recipe(puzzle_name, proto_parts, proto_results)
+        puzzle.locks.add('control:id(%s) or perm(Builder)' % caller.dbref[1:])
 
         caller.msg(
             "Puzzle |y'%s' |w%s(%s)|n has been created |gsuccessfully|n."
@@ -297,6 +311,7 @@ class CmdEditPuzzle(MuxCommand):
         @puzzleedit[/delete] <#dbref>
         @puzzleedit <#dbref>/use_success_message = <Your custom message>
         @puzzleedit <#dbref>/use_success_location_message = <Your custom message from {caller} producing {result_names}>
+        @puzzleedit <#dbref>/mask = attr1[,attr2,...]>
         @puzzleedit[/addpart] <#dbref> = <obj[,obj2,...]>
         @puzzleedit[/delpart] <#dbref> = <obj[,obj2,...]>
         @puzzleedit[/addresult] <#dbref> = <obj[,obj2,...]>
@@ -309,6 +324,7 @@ class CmdEditPuzzle(MuxCommand):
       delresult - removes results from the puzzle
       delete - deletes the recipe. Existing parts and results aren't modified
 
+      mask - attributes to exclude during matching (e.g. location, desc, etc.)
       use_success_location_message containing {result_names} and {caller} will automatically be replaced with correct values. Both are optional.
 
       When removing parts/results, it's possible to remove all.
@@ -398,6 +414,12 @@ class CmdEditPuzzle(MuxCommand):
                 puzzle.db.use_success_location_message = self.rhs
                 caller.msg(
                     "%s use_success_location_message = %s\n" % (puzzle_name_id, puzzle.db.use_success_location_message)
+                )
+                return
+            elif attr == 'mask':
+                puzzle.db.mask = tuple(self.rhslist)
+                caller.msg(
+                    "%s mask = %r\n" % (puzzle_name_id, puzzle.db.mask)
                 )
                 return
 
@@ -576,14 +598,19 @@ class CmdUsePuzzleParts(MuxCommand):
         matched_puzzles = dict()
         for puzzle in puzzles:
             puzzle_protoparts = list(puzzle.db.parts[:])
+            puzzle_mask = puzzle.db.mask[:]
             # remove tags and prototype_key as they prevent equality
-            for puzzle_protopart in puzzle_protoparts:
+            for i, puzzle_protopart in enumerate(puzzle_protoparts[:]):
                 del(puzzle_protopart['tags'])
                 del(puzzle_protopart['prototype_key'])
+                puzzle_protopart = maskout_protodef(puzzle_protopart, puzzle_mask)
+                puzzle_protoparts[i] = puzzle_protopart
+
             matched_dbrefparts = []
             parts_dbrefs = puzzlename_tags_dict[puzzle.db.puzzle_name]
             for part_dbref in parts_dbrefs:
                 protopart = puzzle_ingredients[part_dbref]
+                protopart = maskout_protodef(protopart, puzzle_mask)
                 if protopart in puzzle_protoparts:
                     puzzle_protoparts.remove(protopart)
                     matched_dbrefparts.append(part_dbref)
@@ -669,6 +696,7 @@ class CmdListPuzzleRecipes(MuxCommand):
             text.append(msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref))
             text.append('Success Caller message:\n' + recipe.db.use_success_message + '\n')
             text.append('Success Location message:\n' + recipe.db.use_success_location_message + '\n')
+            text.append('Mask:\n' + str(recipe.db.mask) + '\n')
             text.append('Parts')
             for protopart in recipe.db.parts[:]:
                 mark = '-'

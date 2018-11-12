@@ -2015,20 +2015,26 @@ class TestPuzzles(CommandTest):
         _puzzleedit('', recipe_dbref, 'dummy', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', self.script.dbref, '', 'Script(#1) is not a puzzle')
 
-        # no permissions
-        _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', "You don't have permission")
-        _puzzleedit('/delete', recipe_dbref, '', "You don't have permission")
-
-        # grant perm to char1
-        puzzle = search.search_script(recipe_dbref)[0]
-        puzzle.locks.add('control:id(%s)' % self.char1.dbref[1:])
-
         # edit use_success_message and use_success_location_message
         _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', 'makefire(%s) use_success_message = Yes!' % recipe_dbref)
         _puzzleedit('', recipe_dbref, '/use_success_location_message = {result_names} Yeah baby! {caller}', 'makefire(%s) use_success_location_message = {result_names} Yeah baby! {caller}' % recipe_dbref)
 
         self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
         self.room1.msg_contents = Mock()
+        self._use('stone, flint', 'Yes!')
+        self.room1.msg_contents.assert_called_once_with('fire Yeah baby! Char', exclude=(self.char1,))
+        self.room1.msg_contents.reset_mock()
+
+        # edit mask: exclude location and desc during matching
+        _puzzleedit('', recipe_dbref, '/mask = location,desc',
+                "makefire(%s) mask = ('location', 'desc')" % recipe_dbref)
+
+        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        # change location and desc
+        self.char1.search('stone').db.desc = 'A solid slab of granite'
+        self.char1.search('stone').location = self.char1
+        self.char1.search('flint').db.desc = 'A flint stone'
+        self.char1.search('flint').location = self.char1
         self._use('stone, flint', 'Yes!')
         self.room1.msg_contents.assert_called_once_with('fire Yeah baby! Char', exclude=(self.char1,))
 
@@ -2135,6 +2141,7 @@ class TestPuzzles(CommandTest):
                     r"^Puzzle 'makefire'.*$",
                     r"^Success Caller message:$",
                     r"^Success Location message:$",
+                    r"^Mask:$",
                     r"^Parts$",
                     r"^.*key: stone$",
                     r"^.*key: flint$",
@@ -2300,14 +2307,6 @@ class TestPuzzles(CommandTest):
         srs = sorted(set(results))
         expected = {(key, len(list(grp))) for key, grp in itertools.groupby(srs)}
         self._check_room_contents(expected)
-
-        # TODO: results has Exit
-
-        # TODO: results has NPC
-
-        # TODO: results has Room
-
-        # TODO: parts' location can be different from Character's location
 
     def test_e2e_interchangeable_parts_and_results(self):
         # Parts and Results can be used in multiple puzzles
