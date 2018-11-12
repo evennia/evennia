@@ -2281,13 +2281,12 @@ class TestPuzzles(CommandTest):
             expected.update({'dirt': nresolutions})
             self._check_room_contents(expected)
 
-        # parts don't survive resolution
-        # and no result is produced
+        # Uppercase puzzle name
         balloon = create_object(
                 self.object_typeclass,
                 key='Balloon', location=self.char1.location)
         parts = ['Balloon']
-        results = ['Balloon']  # FIXME: we don't want results
+        results = ['Balloon']
         recipe_dbref = self._good_recipe(
             'boom!!!',  # FIXME: uppercase name fails
             parts, results,
