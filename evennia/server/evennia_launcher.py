@@ -98,7 +98,10 @@ TWISTED_MIN = '18.0.0'
 DJANGO_MIN = '1.11'
 DJANGO_REC = '1.11'
 
-sys.path[1] = EVENNIA_ROOT
+try:
+    sys.path[1] = EVENNIA_ROOT
+except IndexError:
+    sys.path.append(EVENNIA_ROOT)
 
 # ------------------------------------------------------------
 #
@@ -1214,7 +1217,7 @@ def evennia_version():
             "git rev-parse --short HEAD",
             shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
         version = "%s (rev %s)" % (version, rev)
-    except (IOError, CalledProcessError):
+    except (IOError, CalledProcessError, WindowsError):
         # move on if git is not answering
         pass
     return version
