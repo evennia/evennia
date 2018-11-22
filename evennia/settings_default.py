@@ -115,7 +115,7 @@ AMP_INTERFACE = '127.0.0.1'
 EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the server/conf/settings.py file)
 # This is dynamically created- there is generally no need to change this!
-if sys.argv[1] == 'test' if len(sys.argv) > 1 else False:
+if EVENNIA_DIR.lower() == os.getcwd().lower() or (sys.argv[1] == 'test' if len(sys.argv) > 1 else False):
     # unittesting mode
     GAME_DIR = os.getcwd()
 else:

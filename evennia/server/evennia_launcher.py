@@ -1641,7 +1641,7 @@ def error_check_python_modules():
 #
 # ------------------------------------------------------------
 
-def init_game_directory(path, check_db=True):
+def init_game_directory(path, check_db=True, need_gamedir=True):
     """
     Try to analyze the given path to find settings.py - this defines
     the game directory and also sets PYTHONPATH as well as the django
@@ -1650,15 +1650,17 @@ def init_game_directory(path, check_db=True):
     Args:
         path (str): Path to new game directory, including its name.
         check_db (bool, optional): Check if the databae exists.
+        need_gamedir (bool, optional): set to False if Evennia doesn't require to be run in a valid game directory.
 
     """
     # set the GAMEDIR path
-    set_gamedir(path)
+    if need_gamedir:
+        set_gamedir(path)
 
     # Add gamedir to python path
     sys.path.insert(0, GAMEDIR)
 
-    if TEST_MODE:
+    if TEST_MODE or not need_gamedir:
         if ENFORCED_SETTING:
             print(NOTE_TEST_CUSTOM.format(settings_dotpath=SETTINGS_DOTPATH))
             os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
@@ -1684,6 +1686,10 @@ def init_game_directory(path, check_db=True):
     # this will both check the database and initialize the evennia dir.
     if check_db:
         check_database()
+
+    # if we don't have to check the game directory, return right away
+    if not need_gamedir:
+        return
 
     # set up the Evennia executables and log file locations
     global AMP_PORT, AMP_HOST, AMP_INTERFACE
@@ -2088,6 +2094,10 @@ def main():
     elif option != "noop":
         # pass-through to django manager
         check_db = False
+        need_gamedir = True
+        # some commands don't require the presence of a game directory to work
+        if option in ('makemessages', 'compilemessages'):
+            need_gamedir = False
 
         # handle special django commands
         if option in ('runserver', 'testserver'):
@@ -2100,7 +2110,7 @@ def main():
             global TEST_MODE
             TEST_MODE = True
 
-        init_game_directory(CURRENT_DIR, check_db=check_db)
+        init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
         # pass on to the manager
         args = [option]
@@ -2116,6 +2126,11 @@ def main():
                     kwargs[arg.lstrip("--")] = value
                 else:
                     args.append(arg)
+
+        # makemessages needs a special syntax to not conflict with the -l option
+        if len(args) > 1 and args[0] == "makemessages":
+            args.insert(1, "-l")
+
         try:
             django.core.management.call_command(*args, **kwargs)
         except django.core.management.base.CommandError as exc:
