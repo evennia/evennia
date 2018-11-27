@@ -366,6 +366,30 @@ let splithandler_plugin = (function () {
     }
 
     //
+    // onKeydown check for 'ESC' key.
+    var onKeydown = function (event) {
+        var code = event.which;
+
+        if (code === 27) { // Escape key
+            if ($('#splitdialogcontent').is(':visible')) {
+                plugins['popups'].closePopup("#splitdialogcontent");
+                return true;
+            }
+            if ($('#panedialogcontent').is(':visible')) {
+                plugins['popups'].closePopup("#panedialogcontent");
+                return true;
+            }
+        }
+
+        // capture all keys while one of our "modal" dialogs is open
+        if ($('#splitdialogcontent').is(':visible') || $('#panedialogcontent').is(':visible')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //
     // Required plugin "init" function
     var init = function(settings) {
         known_types.push('help');
@@ -408,6 +432,7 @@ let splithandler_plugin = (function () {
         dynamic_split: dynamic_split,
         undo_split: undo_split,
         set_pane_types: set_pane_types,
+        onKeydown: onKeydown,
     }
 })()
 plugin_handler.add('splithandler', splithandler_plugin);
