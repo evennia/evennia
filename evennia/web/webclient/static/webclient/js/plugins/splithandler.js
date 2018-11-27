@@ -183,12 +183,12 @@ let splithandler_plugin = (function () {
         var dialog = $("#splitdialogcontent");
         dialog.empty();
 
-	var selection = '<select name="pane">';
+        var selection = '<select name="pane">';
         for ( var pane in split_panes ) {
-	    selection = selection + '<option value="' + pane + '">' + pane + '</option>';
+            selection = selection + '<option value="' + pane + '">' + pane + '</option>';
         }
-	selection = "Pane to split: " + selection + "</select> ";
-	dialog.append(selection);
+        selection = "Pane to split: " + selection + "</select> ";
+        dialog.append(selection);
 
         dialog.append('<input type="radio" name="direction" value="vertical" checked>top/bottom </>');
         dialog.append('<input type="radio" name="direction" value="horizontal">side-by-side <hr />');
@@ -203,7 +203,7 @@ let splithandler_plugin = (function () {
         dialog.append('<input type="radio" name="flow2" value="replace">replace </>');
         dialog.append('<input type="radio" name="flow2" value="append">append <hr />');
 
-	dialog.append('<div id="splitclose" class="btn btn-large btn-outline-primary float-right">Split</div>');
+        dialog.append('<div id="splitclose" class="btn btn-large btn-outline-primary float-right">Split</div>');
 
         $("#splitclose").bind("click", onSplitDialogClose);
 
@@ -251,21 +251,21 @@ let splithandler_plugin = (function () {
         var dialog = $("#panedialogcontent");
         dialog.empty();
 
-	var selection = '<select name="assign-pane">';
+        var selection = '<select name="assign-pane">';
         for ( var pane in split_panes ) {
-	    selection = selection + '<option value="' + pane + '">' + pane + '</option>';
+            selection = selection + '<option value="' + pane + '">' + pane + '</option>';
         }
-	selection = "Assign to pane: " + selection + "</select> <hr />";
-	dialog.append(selection);
+        selection = "Assign to pane: " + selection + "</select> <hr />";
+        dialog.append(selection);
 
-	var multiple = '<select multiple name="assign-type">';
+        var multiple = '<select multiple name="assign-type">';
         for ( var type in known_types ) {
-	    multiple = multiple + '<option value="' + known_types[type] + '">' + known_types[type] + '</option>';
+            multiple = multiple + '<option value="' + known_types[type] + '">' + known_types[type] + '</option>';
         }
-	multiple = "Content types: " + multiple + "</select> <hr />";
-	dialog.append(multiple);
+        multiple = "Content types: " + multiple + "</select> <hr />";
+        dialog.append(multiple);
 
-	dialog.append('<div id="paneclose" class="btn btn-large btn-outline-primary float-right">Assign</div>');
+        dialog.append('<div id="paneclose" class="btn btn-large btn-outline-primary float-right">Assign</div>');
 
         $("#paneclose").bind("click", onPaneControlDialogClose);
 
@@ -276,9 +276,9 @@ let splithandler_plugin = (function () {
     // Close "Pane Controls" dialog
     var onPaneControlDialogClose = function () {
         var pane = $("select[name=assign-pane]").val();
-	var types = $("select[name=assign-type]").val();
+        var types = $("select[name=assign-type]").val();
 
-	// var types = new Array; 
+        // var types = new Array; 
         // $('#splitdialogcontent input[type=checkbox]:checked').each(function() {
         //     types.push( $(this).attr('value') );
         // });
@@ -287,24 +287,24 @@ let splithandler_plugin = (function () {
 
         plugins['popups'].closePopup("#panedialog");
     }
+
     //
     // helper function sending text to a pane
     var txtToPane = function (panekey, txt) {
-	var pane = split_panes[panekey];
-	var text_div = $('#' + panekey + '-sub');
+        var pane = split_panes[panekey];
+        var text_div = $('#' + panekey + '-sub');
 
-	if ( pane['update_method'] == 'replace' ) {
-	    text_div.html(txt)
-	} else if ( pane['update_method'] == 'append' ) {
-	    text_div.append(txt);
-	    var scrollHeight = text_div.parent().prop("scrollHeight");
-	    text_div.parent().animate({ scrollTop: scrollHeight }, 0);
-	} else {  // line feed
-	    text_div.append("<div class='out'>" + txt + "</div>");
-	    var scrollHeight = text_div.parent().prop("scrollHeight");
-	    text_div.parent().animate({ scrollTop: scrollHeight }, 0);
-	}
-	
+        if ( pane['update_method'] == 'replace' ) {
+            text_div.html(txt)
+        } else if ( pane['update_method'] == 'append' ) {
+            text_div.append(txt);
+            var scrollHeight = text_div.parent().prop("scrollHeight");
+            text_div.parent().animate({ scrollTop: scrollHeight }, 0);
+        } else {  // line feed
+            text_div.append("<div class='out'>" + txt + "</div>");
+            var scrollHeight = text_div.parent().prop("scrollHeight");
+            text_div.parent().animate({ scrollTop: scrollHeight }, 0);
+        }
     }
 
 
@@ -316,53 +316,52 @@ let splithandler_plugin = (function () {
     //
     // Accept plugin onText events
     var onText = function (args, kwargs) {
-
-	// If the message is not itself tagged, we'll assume it
-	// should go into any panes with 'all' or 'rest' set
+        // If the message is not itself tagged, we'll assume it
+        // should go into any panes with 'all' or 'rest' set
         var msgtype = "rest";
 
         if ( kwargs && 'type' in kwargs ) {
-	    msgtype = kwargs['type'];
+            msgtype = kwargs['type'];
             if ( ! known_types.includes(msgtype) ) {
                 // this is a new output type that can be mapped to panes
                 console.log('detected new output type: ' + msgtype)
                 known_types.push(msgtype);
             }
-	}
-	var target_panes = [];
-	var rest_panes = [];
-	    
-	for (var key in split_panes) {
-	    var pane = split_panes[key];
-	    // is this message type mapped to this pane (or does the pane has an 'all' type)?
-	    if (pane['types'].length > 0) {	
-		if (pane['types'].includes(msgtype) || pane['types'].includes('all')) {
-		    target_panes.push(key);
-		} else if (pane['types'].includes('rest')) {
-		    // store rest-panes in case we have no explicit to send to
-		    rest_panes.push(key);
-		}
-	    } else {
-		// unassigned panes are assumed to be rest-panes too
-		rest_panes.push(key);
-	    }
-	}
-	var ntargets = target_panes.length;
-	var nrests = rest_panes.length;
-	if (ntargets > 0) {
-	    // we have explicit target panes to send to
-	    for (var i=0; i<ntargets; i++) {
-		txtToPane(target_panes[i], args[0]);
-	    }
-	    return true;
-	} else if (nrests > 0) {
-	    // no targets, send remainder to rest-panes/unassigned
-	    for (var i=0; i<nrests; i++) {
-		txtToPane(rest_panes[i], args[0]);
-	    }
-	    return true;
-	}
-	// unhandled message
+        }
+        var target_panes = [];
+        var rest_panes = [];
+
+        for (var key in split_panes) {
+            var pane = split_panes[key];
+            // is this message type mapped to this pane (or does the pane has an 'all' type)?
+            if (pane['types'].length > 0) {
+                if (pane['types'].includes(msgtype) || pane['types'].includes('all')) {
+                    target_panes.push(key);
+                } else if (pane['types'].includes('rest')) {
+                    // store rest-panes in case we have no explicit to send to
+                    rest_panes.push(key);
+                }
+            } else {
+                // unassigned panes are assumed to be rest-panes too
+                rest_panes.push(key);
+            }
+        }
+        var ntargets = target_panes.length;
+        var nrests = rest_panes.length;
+        if (ntargets > 0) {
+            // we have explicit target panes to send to
+            for (var i=0; i<ntargets; i++) {
+                txtToPane(target_panes[i], args[0]);
+            }
+            return true;
+        } else if (nrests > 0) {
+            // no targets, send remainder to rest-panes/unassigned
+            for (var i=0; i<nrests; i++) {
+                txtToPane(rest_panes[i], args[0]);
+            }
+            return true;
+        }
+        // unhandled message
         return false;
     }
 
