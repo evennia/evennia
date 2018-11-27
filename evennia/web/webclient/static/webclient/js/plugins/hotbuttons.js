@@ -30,32 +30,31 @@ plugin_handler.add('hotbuttons', (function () {
     // Add Buttons
     var addButtonsUI = function () {
         var buttons = $( [
-                          '<div id="buttons" class="split split-vertical">',
-                          ' <div id="buttonsform" class="wrapper">',
-                          '  <div id="buttonscontrol" class="input-group">',
-                          '   <button class="btn" id="assign_button0" type="button" value="button0">unassigned</button>',
-                          '   <button class="btn" id="assign_button1" type="button" value="button1">unassigned</button>',
-                          '   <button class="btn" id="assign_button2" type="button" value="button2">unassigned</button>',
-                          '   <button class="btn" id="assign_button3" type="button" value="button3">unassigned</button>',
-                          '   <button class="btn" id="assign_button4" type="button" value="button4">unassigned</button>',
-                          '   <button class="btn" id="assign_button5" type="button" value="button5">unassigned</button>',
-                          '   <button class="btn" id="assign_button6" type="button" value="button6">unassigned</button>',
-                          '   <button class="btn" id="assign_button7" type="button" value="button7">unassigned</button>',
-                          '   <button class="btn" id="assign_button8" type="button" value="button8">unassigned</button>',
-                          '  </div>',
-                          ' </div>',
-                          '</div>',
-                         ].join("\n") );
+              '<div id="buttons" class="split split-vertical">',
+              ' <div id="buttonsform">',
+              '  <div id="buttonscontrol" class="input-group">',
+              '   <button class="btn" id="assign_button0" type="button" value="button0">unassigned</button>',
+              '   <button class="btn" id="assign_button1" type="button" value="button1">unassigned</button>',
+              '   <button class="btn" id="assign_button2" type="button" value="button2">unassigned</button>',
+              '   <button class="btn" id="assign_button3" type="button" value="button3">unassigned</button>',
+              '   <button class="btn" id="assign_button4" type="button" value="button4">unassigned</button>',
+              '   <button class="btn" id="assign_button5" type="button" value="button5">unassigned</button>',
+              '   <button class="btn" id="assign_button6" type="button" value="button6">unassigned</button>',
+              '   <button class="btn" id="assign_button7" type="button" value="button7">unassigned</button>',
+              '   <button class="btn" id="assign_button8" type="button" value="button8">unassigned</button>',
+              '  </div>',
+              ' </div>',
+              '</div>',
+            ].join("\n") );
 
         // Add buttons in front of the existing #inputform
-        buttons.insertBefore('#inputform');
-        $('#inputform').addClass('split split-vertical');
+        $('#input').prev().replaceWith(buttons);
 
-        Split(['#buttons','#inputform'], {
+        Split(['#main','#buttons','#input'], {
+            sizes: [85,5,10],
             direction: 'vertical',
-            sizes: [50,50],
             gutterSize: 4,
-            minSize: 150,
+            minSize: [150,20,50],
         });
     }
 
