@@ -371,12 +371,12 @@ let splithandler_plugin = (function () {
         var code = event.which;
 
         if (code === 27) { // Escape key
-            if ($('#splitdialogcontent').is(':visible')) {
-                plugins['popups'].closePopup("#splitdialogcontent");
+            if ($('#splitdialog').is(':visible')) {
+                plugins['popups'].closePopup("#splitdialog");
                 return true;
             }
-            if ($('#panedialogcontent').is(':visible')) {
-                plugins['popups'].closePopup("#panedialogcontent");
+            if ($('#panedialog').is(':visible')) {
+                plugins['popups'].closePopup("#panedialog");
                 return true;
             }
         }
