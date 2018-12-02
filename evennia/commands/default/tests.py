@@ -283,6 +283,32 @@ class TestAccount(CommandTest):
     def test_char_create(self):
         self.call(account.CmdCharCreate(), "Test1=Test char",
                   "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
+                  
+    def test_char_delete(self):
+        # Chardelete requires user input; this test is mainly to confirm 
+        # whether permissions are being checked
+        
+        # Add char to account playable characters
+        self.account.db._playable_characters.append(self.char1)
+        
+        # Try deleting as Developer
+        self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
+        
+        # Downgrade permissions on account
+        self.account.permissions.add('Player')
+        self.account.permissions.remove('Developer')
+        
+        # Set lock on character object to prevent deletion
+        self.char1.locks.add('delete:none()')
+        
+        # Try deleting as Player
+        self.call(account.CmdCharDelete(), "Char", "You do not have permission to delete this character.", caller=self.account)
+        
+        # Set lock on character object to allow self-delete
+        self.char1.locks.add('delete:pid(%i)' % self.account.id)
+        
+        # Try deleting as Player again
+        self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
 
     def test_quell(self):
         self.call(account.CmdQuell(), "", "Quelling to current puppet's permissions (developer).", caller=self.account)
