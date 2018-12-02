@@ -1728,17 +1728,17 @@ class TestPuzzles(CommandTest):
 
     def setUp(self):
         super(TestPuzzles, self).setUp()
-        self.stone = create_object(
+        self.steel = create_object(
                 self.object_typeclass,
-                key='stone', location=self.char1.location)
+                key='steel', location=self.char1.location)
         self.flint = create_object(
                 self.object_typeclass,
                 key='flint', location=self.char1.location)
         self.fire = create_object(
                 self.object_typeclass,
                 key='fire', location=self.char1.location)
-        self.stone.tags.add('tag-stone')
-        self.stone.tags.add('tag-stone', category='tagcat')
+        self.steel.tags.add('tag-steel')
+        self.steel.tags.add('tag-steel', category='tagcat')
         self.flint.tags.add('tag-flint')
         self.flint.tags.add('tag-flint', category='tagcat')
         self.fire.tags.add('tag-fire')
@@ -1852,9 +1852,9 @@ class TestPuzzles(CommandTest):
 
         self._assert_no_recipes()
 
-        self._good_recipe('makefire', ['stone', 'flint'], ['fire', 'stone', 'flint'])
-        self._good_recipe('hot stones', ['stone', 'fire'], ['stone', 'fire'])
-        self._good_recipe('furnace', ['stone', 'stone', 'fire'], ['stone', 'stone', 'fire', 'fire', 'fire', 'fire'])
+        self._good_recipe('makefire', ['steel', 'flint'], ['fire', 'steel', 'flint'])
+        self._good_recipe('hot steels', ['steel', 'fire'], ['steel', 'fire'])
+        self._good_recipe('furnace', ['steel', 'steel', 'fire'], ['steel', 'steel', 'fire', 'fire', 'fire', 'fire'])
 
         # bad recipes
         def _bad_recipe(name, parts, results, fail_regex):
@@ -1869,11 +1869,11 @@ class TestPuzzles(CommandTest):
             self.assertIsNotNone(re.match(fail_regex, msg), msg)
 
         _bad_recipe('name', ['nothing'], ['neither'], r"Could not find 'nothing'.")
-        _bad_recipe('name', ['stone'], ['nothing'], r"Could not find 'nothing'.")
-        _bad_recipe('', ['stone', 'fire'], ['stone', 'fire'], r"^Invalid puzzle name ''.")
-        self.stone.location = self.char1
-        _bad_recipe('name', ['stone'], ['fire'], r"^Invalid location for stone$")
-        _bad_recipe('name', ['flint'], ['stone'], r"^Invalid location for stone$")
+        _bad_recipe('name', ['steel'], ['nothing'], r"Could not find 'nothing'.")
+        _bad_recipe('', ['steel', 'fire'], ['steel', 'fire'], r"^Invalid puzzle name ''.")
+        self.steel.location = self.char1
+        _bad_recipe('name', ['steel'], ['fire'], r"^Invalid location for steel$")
+        _bad_recipe('name', ['flint'], ['steel'], r"^Invalid location for steel$")
         _bad_recipe('name', ['self'], ['fire'], r"^Invalid typeclass for Char$")
         _bad_recipe('name', ['here'], ['fire'], r"^Invalid typeclass for Room$")
 
@@ -1894,16 +1894,16 @@ class TestPuzzles(CommandTest):
             caller=self.char1
         )
 
-        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire', 'stone', 'flint'], and_destroy_it=False)
+        recipe_dbref = self._good_recipe('makefire', ['steel', 'flint'], ['fire', 'steel', 'flint'], and_destroy_it=False)
 
         # delete proto parts and proto result
-        self.stone.delete()
+        self.steel.delete()
         self.flint.delete()
         self.fire.delete()
 
         # good arm
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
-        self._check_room_contents({'stone': 1, 'flint': 1}, check_test_tags=True)
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint'])
+        self._check_room_contents({'steel': 1, 'flint': 1}, check_test_tags=True)
 
     def _use(self, cmdstr, expmsg):
         msg = self.call(
@@ -1918,33 +1918,33 @@ class TestPuzzles(CommandTest):
 
         self._use('', 'Use what?')
         self._use('something', 'There is no something around.')
-        self._use('stone', 'You have no idea how this can be used')
-        self._use('stone flint', 'There is no stone flint around.')
-        self._use('stone, flint', 'You have no idea how these can be used')
+        self._use('steel', 'You have no idea how this can be used')
+        self._use('steel flint', 'There is no steel flint around.')
+        self._use('steel, flint', 'You have no idea how these can be used')
 
-        recipe_dbref = self._good_recipe(unicode('makefire'), ['stone', 'flint'], ['fire'] , and_destroy_it=False)
-        recipe2_dbref = self._good_recipe('makefire2', ['stone', 'flint'], ['fire'] , and_destroy_it=False,
+        recipe_dbref = self._good_recipe(unicode('makefire'), ['steel', 'flint'], ['fire'] , and_destroy_it=False)
+        recipe2_dbref = self._good_recipe('makefire2', ['steel', 'flint'], ['fire'] , and_destroy_it=False,
                 expected_count=2)
 
-        # although there is stone and flint
+        # although there is steel and flint
         # those aren't valid puzzle parts because
         # the puzzle hasn't been armed
-        self._use('stone', 'You have no idea how this can be used')
-        self._use('stone, flint', 'You have no idea how these can be used')
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
-        self._check_room_contents({'stone': 2, 'flint': 2}, check_test_tags=True)
+        self._use('steel', 'You have no idea how this can be used')
+        self._use('steel, flint', 'You have no idea how these can be used')
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint'])
+        self._check_room_contents({'steel': 2, 'flint': 2}, check_test_tags=True)
 
         # there are duplicated objects now
-        self._use('stone', 'Which stone. There are many')
+        self._use('steel', 'Which steel. There are many')
         self._use('flint', 'Which flint. There are many')
 
         # delete proto parts and proto results
-        self.stone.delete()
+        self.steel.delete()
         self.flint.delete()
         self.fire.delete()
 
         # solve puzzle
-        self._use('stone, flint', 'You are a Genius')
+        self._use('steel, flint', 'You are a Genius')
         self.assertEqual(1,
             len(list(filter(
                 lambda o: o.key == 'fire' \
@@ -1953,43 +1953,43 @@ class TestPuzzles(CommandTest):
                     and (puzzles._PUZZLES_TAG_MEMBER, puzzles._PUZZLES_TAG_CATEGORY) \
                     in o.tags.all(return_key_and_category=True),
                 self.room1.contents))))
-        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 1}, check_test_tags=True)
+        self._check_room_contents({'steel': 0, 'flint': 0, 'fire': 1}, check_test_tags=True)
 
         # trying again will fail as it was resolved already
         # and the parts were destroyed
-        self._use('stone, flint', 'There is no stone around')
-        self._use('flint, stone', 'There is no flint around')
+        self._use('steel, flint', 'There is no steel around')
+        self._use('flint, steel', 'There is no flint around')
 
         # arm same puzzle twice so there are duplicated parts
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
-        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 1}, check_test_tags=True)
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint'])
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint'])
+        self._check_room_contents({'steel': 2, 'flint': 2, 'fire': 1}, check_test_tags=True)
 
         # try solving with multiple parts but incomplete set
-        self._use('1-stone, 2-stone', 'You try to utilize these but nothing happens ... something amiss?')
+        self._use('1-steel, 2-steel', 'You try to utilize these but nothing happens ... something amiss?')
 
         # arm the other puzzle. Their parts are identical
-        self._arm(recipe2_dbref, 'makefire2', ['stone', 'flint'])
-        self._check_room_contents({'stone': 3, 'flint': 3, 'fire': 1}, check_test_tags=True)
+        self._arm(recipe2_dbref, 'makefire2', ['steel', 'flint'])
+        self._check_room_contents({'steel': 3, 'flint': 3, 'fire': 1}, check_test_tags=True)
 
         # solve with multiple parts for
         # multiple puzzles. Both can be solved but
         # only one is.
         self._use(
-            '1-stone, 2-flint, 3-stone, 3-flint',
+            '1-steel, 2-flint, 3-steel, 3-flint',
             'Your gears start turning and 2 different ideas come to your mind ... ')
-        self._check_room_contents({'stone': 2, 'flint': 2, 'fire': 2}, check_test_tags=True)
+        self._check_room_contents({'steel': 2, 'flint': 2, 'fire': 2}, check_test_tags=True)
 
         self.room1.msg_contents = Mock()
 
         # solve all
-        self._use('1-stone, 1-flint', 'You are a Genius')
+        self._use('1-steel, 1-flint', 'You are a Genius')
         self.room1.msg_contents.assert_called_once_with('|cChar|n performs some kind of tribal dance and |yfire|n seems to appear from thin air', exclude=(self.char1,))
-        self._use('stone, flint', 'You are a Genius')
-        self._check_room_contents({'stone': 0, 'flint': 0, 'fire': 4}, check_test_tags=True)
+        self._use('steel, flint', 'You are a Genius')
+        self._check_room_contents({'steel': 0, 'flint': 0, 'fire': 4}, check_test_tags=True)
 
     def test_puzzleedit(self):
-        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
+        recipe_dbref = self._good_recipe('makefire', ['steel', 'flint'], ['fire'] , and_destroy_it=False)
 
         def _puzzleedit(swt, dbref, args, expmsg):
             if (swt is None) and (dbref is None) and (args is None):
@@ -2004,7 +2004,7 @@ class TestPuzzles(CommandTest):
             )
 
         # delete proto parts and proto results
-        self.stone.delete()
+        self.steel.delete()
         self.flint.delete()
         self.fire.delete()
 
@@ -2019,9 +2019,9 @@ class TestPuzzles(CommandTest):
         _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', 'makefire(%s) use_success_message = Yes!' % recipe_dbref)
         _puzzleedit('', recipe_dbref, '/use_success_location_message = {result_names} Yeah baby! {caller}', 'makefire(%s) use_success_location_message = {result_names} Yeah baby! {caller}' % recipe_dbref)
 
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint'])
         self.room1.msg_contents = Mock()
-        self._use('stone, flint', 'Yes!')
+        self._use('steel, flint', 'Yes!')
         self.room1.msg_contents.assert_called_once_with('fire Yeah baby! Char', exclude=(self.char1,))
         self.room1.msg_contents.reset_mock()
 
@@ -2029,13 +2029,13 @@ class TestPuzzles(CommandTest):
         _puzzleedit('', recipe_dbref, '/mask = location,desc',
                 "makefire(%s) mask = ('location', 'desc')" % recipe_dbref)
 
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint'])
         # change location and desc
-        self.char1.search('stone').db.desc = 'A solid slab of granite'
-        self.char1.search('stone').location = self.char1
-        self.char1.search('flint').db.desc = 'A flint stone'
+        self.char1.search('steel').db.desc = 'A solid bar of steel'
+        self.char1.search('steel').location = self.char1
+        self.char1.search('flint').db.desc = 'A flint steel'
         self.char1.search('flint').location = self.char1
-        self._use('stone, flint', 'Yes!')
+        self._use('steel, flint', 'Yes!')
         self.room1.msg_contents.assert_called_once_with('fire Yeah baby! Char', exclude=(self.char1,))
 
         # delete
@@ -2043,7 +2043,7 @@ class TestPuzzles(CommandTest):
         self._assert_no_recipes()
 
     def test_puzzleedit_add_remove_parts_results(self):
-        recipe_dbref = self._good_recipe('makefire', ['stone', 'flint'], ['fire'] , and_destroy_it=False)
+        recipe_dbref = self._good_recipe('makefire', ['steel', 'flint'], ['fire'] , and_destroy_it=False)
 
         def _puzzleedit(swt, dbref, rhslist, expmsg):
             cmdstr = '%s %s = %s' % (swt, dbref, ', '.join(rhslist))
@@ -2054,15 +2054,15 @@ class TestPuzzles(CommandTest):
                 caller=self.char1
             )
 
-        red_stone = create_object(
+        red_steel = create_object(
                 self.object_typeclass,
-                key='red stone', location=self.char1.location)
+                key='red steel', location=self.char1.location)
         smoke = create_object(
                 self.object_typeclass,
                 key='smoke', location=self.char1.location)
 
         _puzzleedit('/addresult', recipe_dbref, ['smoke'], 'smoke were added to results')
-        _puzzleedit('/addpart', recipe_dbref, ['red stone', 'stone'], 'red stone, stone were added to parts')
+        _puzzleedit('/addpart', recipe_dbref, ['red steel', 'steel'], 'red steel, steel were added to parts')
 
         # create a box so we can put all objects in
         # so that they can't be found during puzzle resolution
@@ -2076,14 +2076,14 @@ class TestPuzzles(CommandTest):
                     o.location = self.box
         _box_all()
 
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint', 'red stone', 'stone'])
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint', 'red steel', 'steel'])
         self._check_room_contents({
-            'stone': 2,
-            'red stone': 1,
+            'steel': 2,
+            'red steel': 1,
             'flint': 1,
         })
-        self._use('1-stone, flint', 'You try to utilize these but nothing happens ... something amiss?')
-        self._use('1-stone, flint, red stone, 3-stone', 'You are a Genius')
+        self._use('1-steel, flint', 'You try to utilize these but nothing happens ... something amiss?')
+        self._use('1-steel, flint, red steel, 3-steel', 'You are a Genius')
         self._check_room_contents({
             'smoke': 1,
             'fire': 1
@@ -2091,19 +2091,19 @@ class TestPuzzles(CommandTest):
         _box_all()
 
         self.fire.location = self.room1
-        self.stone.location = self.room1
+        self.steel.location = self.room1
 
         _puzzleedit('/delresult', recipe_dbref, ['fire'], 'fire were removed from results')
-        _puzzleedit('/delpart', recipe_dbref, ['stone', 'stone'], 'stone, stone were removed from parts')
+        _puzzleedit('/delpart', recipe_dbref, ['steel', 'steel'], 'steel, steel were removed from parts')
 
         _box_all()
 
-        self._arm(recipe_dbref, 'makefire', ['flint', 'red stone'])
+        self._arm(recipe_dbref, 'makefire', ['flint', 'red steel'])
         self._check_room_contents({
-            'red stone': 1,
+            'red steel': 1,
             'flint': 1,
         })
-        self._use('red stone, flint', 'You are a Genius')
+        self._use('red steel, flint', 'You are a Genius')
         self._check_room_contents({
             'smoke': 1,
             'fire': 0
@@ -2126,7 +2126,7 @@ class TestPuzzles(CommandTest):
         )
 
         recipe_dbref = self._good_recipe(
-                'makefire', ['stone', 'flint'], ['fire'],
+                'makefire', ['steel', 'flint'], ['fire'],
                 and_destroy_it=False)
 
         msg = self.call(
@@ -2143,11 +2143,11 @@ class TestPuzzles(CommandTest):
                     r"^Success Location message:$",
                     r"^Mask:$",
                     r"^Parts$",
-                    r"^.*key: stone$",
+                    r"^.*key: steel$",
                     r"^.*key: flint$",
                     r"^Results$",
                     r"^.*key: fire$",
-                    r"^.*key: stone$",
+                    r"^.*key: steel$",
                     r"^.*key: flint$",
                     r"^-+$",
                     r"^Found 1 puzzle\(s\)\.$",
@@ -2172,7 +2172,7 @@ class TestPuzzles(CommandTest):
                 re.MULTILINE | re.DOTALL
         )
 
-        self._arm(recipe_dbref, 'makefire', ['stone', 'flint'])
+        self._arm(recipe_dbref, 'makefire', ['steel', 'flint'])
 
         msg = self.call(
             puzzles.CmdListArmedPuzzles(),
@@ -2184,7 +2184,7 @@ class TestPuzzles(CommandTest):
                 [
                     r"^-+$",
                     r"^Puzzle name: makefire$",
-                    r"^.*stone.* at \s+ Room.*$",
+                    r"^.*steel.* at \s+ Room.*$",
                     r"^.*flint.* at \s+ Room.*$",
                     r"^Found 1 armed puzzle\(s\)\.$",
                     r"^-+$",
