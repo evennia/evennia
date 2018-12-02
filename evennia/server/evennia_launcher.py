@@ -277,7 +277,7 @@ INFO_WINDOWS_BATFILE = \
     twistd.bat to point to the actual location of the Twisted
     executable (usually called twistd.py) on your machine.
 
-    This procedure is only done once. Run evennia.py again when you
+    This procedure is only done once. Run `evennia` again when you
     are ready to start the server.
     """
 
