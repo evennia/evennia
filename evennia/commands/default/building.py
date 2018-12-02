@@ -3091,7 +3091,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             # we have a prototype, check access
             prototype = prototypes[0]
-            if not caller.locks.check_lockstring(caller, prototype.get('prototype_locks', ''), access_type='spawn'):
+            if not caller.locks.check_lockstring(
+                    caller, prototype.get('prototype_locks', ''), access_type='spawn', default=True):
                 caller.msg("You don't have access to use this prototype.")
                 return
 

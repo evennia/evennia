@@ -115,7 +115,7 @@ AMP_INTERFACE = '127.0.0.1'
 EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the server/conf/settings.py file)
 # This is dynamically created- there is generally no need to change this!
-if sys.argv[1] == 'test' if len(sys.argv) > 1 else False:
+if EVENNIA_DIR.lower() == os.getcwd().lower() or (sys.argv[1] == 'test' if len(sys.argv) > 1 else False):
     # unittesting mode
     GAME_DIR = os.getcwd()
 else:
@@ -138,7 +138,7 @@ HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 # Rotate log files when server and/or portal stops. This will keep log
 # file sizes down. Turn off to get ever growing log files and never
-# loose log info.
+# lose log info.
 CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20

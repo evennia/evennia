@@ -98,7 +98,10 @@ TWISTED_MIN = '18.0.0'
 DJANGO_MIN = '1.11'
 DJANGO_REC = '1.11'
 
-sys.path[1] = EVENNIA_ROOT
+try:
+    sys.path[1] = EVENNIA_ROOT
+except IndexError:
+    sys.path.append(EVENNIA_ROOT)
 
 # ------------------------------------------------------------
 #
@@ -222,6 +225,19 @@ RECREATED_SETTINGS = \
     their accounts with their old passwords.
     """
 
+ERROR_INITMISSING = \
+    """
+    ERROR: 'evennia --initmissing' must be called from the root of
+    your game directory, since it tries to create any missing files
+    in the server/ subfolder.
+    """
+
+RECREATED_MISSING = \
+    """
+    (Re)created any missing directories or files.  Evennia should
+    be ready to run now!
+    """
+
 ERROR_DATABASE = \
     """
     ERROR: Your database does not seem to be set up correctly.
@@ -261,7 +277,7 @@ INFO_WINDOWS_BATFILE = \
     twistd.bat to point to the actual location of the Twisted
     executable (usually called twistd.py) on your machine.
 
-    This procedure is only done once. Run evennia.py again when you
+    This procedure is only done once. Run `evennia` again when you
     are ready to start the server.
     """
 
@@ -1201,7 +1217,7 @@ def evennia_version():
             "git rev-parse --short HEAD",
             shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
         version = "%s (rev %s)" % (version, rev)
-    except (IOError, CalledProcessError):
+    except (IOError, CalledProcessError, WindowsError):
         # move on if git is not answering
         pass
     return version
@@ -1331,7 +1347,10 @@ def create_settings_file(init=True, secret_settings=False):
             else:
                 print("Reset the settings file.")
 
-        default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "settings.py")
+        if secret_settings:
+            default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "secret_settings.py")
+        else:
+            default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "settings.py")
         shutil.copy(default_settings_path, settings_path)
 
     with open(settings_path, 'r') as f:
@@ -1625,7 +1644,7 @@ def error_check_python_modules():
 #
 # ------------------------------------------------------------
 
-def init_game_directory(path, check_db=True):
+def init_game_directory(path, check_db=True, need_gamedir=True):
     """
     Try to analyze the given path to find settings.py - this defines
     the game directory and also sets PYTHONPATH as well as the django
@@ -1634,15 +1653,17 @@ def init_game_directory(path, check_db=True):
     Args:
         path (str): Path to new game directory, including its name.
         check_db (bool, optional): Check if the databae exists.
+        need_gamedir (bool, optional): set to False if Evennia doesn't require to be run in a valid game directory.
 
     """
     # set the GAMEDIR path
-    set_gamedir(path)
+    if need_gamedir:
+        set_gamedir(path)
 
     # Add gamedir to python path
     sys.path.insert(0, GAMEDIR)
 
-    if TEST_MODE:
+    if TEST_MODE or not need_gamedir:
         if ENFORCED_SETTING:
             print(NOTE_TEST_CUSTOM.format(settings_dotpath=SETTINGS_DOTPATH))
             os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_DOTPATH
@@ -1668,6 +1689,10 @@ def init_game_directory(path, check_db=True):
     # this will both check the database and initialize the evennia dir.
     if check_db:
         check_database()
+
+    # if we don't have to check the game directory, return right away
+    if not need_gamedir:
+        return
 
     # set up the Evennia executables and log file locations
     global AMP_PORT, AMP_HOST, AMP_INTERFACE
@@ -1915,6 +1940,10 @@ def main():
         default=False,
         help="create a new, empty settings file as\n gamedir/server/conf/settings.py")
     parser.add_argument(
+        '--initmissing', action='store_true', dest="initmissing",
+        default=False,
+        help="checks for missing secret_settings or server logs\n directory, and adds them if needed")
+    parser.add_argument(
         '--profiler', action='store_true', dest='profiler', default=False,
         help="start given server component under the Python profiler")
     parser.add_argument(
@@ -1987,6 +2016,21 @@ def main():
             print(ERROR_INITSETTINGS)
         sys.exit()
 
+    if args.initmissing:
+        try:
+            log_path = os.path.join(SERVERDIR, "logs")
+            if not os.path.exists(log_path):
+                os.makedirs(log_path)
+
+            settings_path = os.path.join(CONFDIR, "secret_settings.py")
+            if not os.path.exists(settings_path):
+                create_settings_file(init=False, secret_settings=True)
+
+            print(RECREATED_MISSING)
+        except IOError:
+            print(ERROR_INITMISSING)
+        sys.exit()
+
     if args.tail_log:
         # set up for tailing the log files
         global NO_REACTOR_STOP
@@ -2053,6 +2097,10 @@ def main():
     elif option != "noop":
         # pass-through to django manager
         check_db = False
+        need_gamedir = True
+        # some commands don't require the presence of a game directory to work
+        if option in ('makemessages', 'compilemessages'):
+            need_gamedir = False
 
         # handle special django commands
         if option in ('runserver', 'testserver'):
@@ -2065,7 +2113,7 @@ def main():
             global TEST_MODE
             TEST_MODE = True
 
-        init_game_directory(CURRENT_DIR, check_db=check_db)
+        init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
         # pass on to the manager
         args = [option]
@@ -2081,6 +2129,11 @@ def main():
                     kwargs[arg.lstrip("--")] = value
                 else:
                     args.append(arg)
+
+        # makemessages needs a special syntax to not conflict with the -l option
+        if len(args) > 1 and args[0] == "makemessages":
+            args.insert(1, "-l")
+
         try:
             django.core.management.call_command(*args, **kwargs)
         except django.core.management.base.CommandError as exc:
