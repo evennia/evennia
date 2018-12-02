@@ -5,7 +5,6 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 
 """
 
-import re
 import hashlib
 import time
 from ast import literal_eval
@@ -32,8 +31,6 @@ _PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
 _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 PROT_FUNCS = {}
-
-_RE_DBREF = re.compile(r"(?<!\$obj\()(#[0-9]+)")
 
 
 class PermissionError(RuntimeError):
@@ -575,9 +572,6 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
         value = to_str(value, force_string=True)
 
     available_functions = PROT_FUNCS if available_functions is None else available_functions
-
-    # insert $obj(#dbref) for #dbref
-    value = _RE_DBREF.sub("$obj(\\1)", value)
 
     result = inlinefuncs.parse_inlinefunc(
         value, available_funcs=available_functions,
