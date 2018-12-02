@@ -222,8 +222,8 @@ class CmdCreatePuzzleRecipe(MuxCommand):
 
         def is_valid_obj_location(obj):
             valid = True
-            # Valid locations are: room, ...
-            # TODO: other valid locations must be added here
+            # Rooms are the only valid locations.
+            # TODO: other valid locations could be added here.
             # Certain locations can be handled accordingly: e.g,
             # a part is located in a character's inventory,
             # perhaps will translate into the player character
@@ -231,7 +231,6 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             # located in the same room where the builder was
             # located.
             # Parts and results may have different valid locations
-            # TODO: handle contents of a given part
             if not inherits_from(obj.location, DefaultRoom):
                 caller.msg('Invalid location for %s' % (obj.key))
                 valid = False
