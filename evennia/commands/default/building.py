@@ -3041,7 +3041,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     caller.msg("|rDeletion cancelled.|n")
                     return
                 try:
-                    success = protlib.delete_db_prototype(caller, self.args)
+                    success = protlib.delete_prototype(self.args)
                 except protlib.PermissionError as err:
                     caller.msg("|rError deleting:|R {}|n".format(err))
                 caller.msg("Deletion {}.".format(
