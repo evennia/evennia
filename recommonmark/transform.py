@@ -243,7 +243,7 @@ class AutoStructify(transforms.Transform):
                 node = nodes.section()
                 self.state_machine.state.nested_parse(
                     StringList(content, source=original_node.source),
-                    0, node=node, match_titles=False)
+                    0, node=node, match_titles=True)
                 return node.children[:]
         else:
             match = re.search('[ ]?[\w_-]+::.*', language)
