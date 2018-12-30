@@ -1217,7 +1217,7 @@ def evennia_version():
             "git rev-parse --short HEAD",
             shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
         version = "%s (rev %s)" % (version, rev)
-    except (IOError, CalledProcessError, WindowsError):
+    except (IOError, CalledProcessError, OSError):
         # move on if git is not answering
         pass
     return version

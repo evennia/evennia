@@ -1,116 +1,132 @@
-# SOME DESCRIPTIVE TITLE.
+# The French translation for the Evennia server.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Evennia package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Maintained by: vincent-lg <vincent.legoff.srs@gmail.com>, 2018-
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-02 16:22-0500\n"
+"POT-Creation-Date: 2018-11-22 08:45+0100\n"
 "PO-Revision-Date: 2016-03-04 11:51-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Last-Translator: \n"
-"Language-Team: \n"
 "X-Generator: Poedit 1.7.6\n"
 
-#: commands/cmdhandler.py:485
-msgid "There were multiple matches."
-msgstr "Il y a eu plusieurs correspondances."
+#: .\accounts\accounts.py:440
+#, fuzzy
+msgid "Account being deleted."
+msgstr "Suppression du compte."
 
-#: commands/cmdhandler.py:513
+#: .\commands\cmdhandler.py:681
+msgid "There were multiple matches."
+msgstr "Il y a plusieurs correspondances possibles."
+
+#: .\commands\cmdhandler.py:704
 #, python-format
 msgid "Command '%s' is not available."
-msgstr "Commande '%s' n'est pas disponible."
+msgstr "La commande '%s' n'est pas disponible."
 
-#: commands/cmdhandler.py:518
+#: .\commands\cmdhandler.py:709
 #, python-format
 msgid " Maybe you meant %s?"
-msgstr "Voulez-vous dire %s?"
+msgstr " Vouliez-vous dire %s ?"
 
-#: commands/cmdhandler.py:518
+#: .\commands\cmdhandler.py:709
 msgid "or"
 msgstr "ou"
 
-#: commands/cmdhandler.py:520
+#: .\commands\cmdhandler.py:711
 msgid " Type \"help\" for help."
-msgstr "Tapez \"help\" pour de l'aide."
+msgstr " Tapez \"help\" pour obtenir de l'aide."
 
-#: commands/cmdparser.py:183
-#, python-format
-msgid "Could not find '%s'."
-msgstr "Peut pas trouver '%s'."
+#: .\commands\cmdsethandler.py:89
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Une erreur s'est produite lors du chargement du cmdset '{path}'\n"
+"(Référence de l'erreur : {timestamp})"
 
-#: commands/cmdsethandler.py:130
-#, python-format
+#: .\commands\cmdsethandler.py:94
+#, fuzzy, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"\n"
+"Une erreur s'est produite lors du chargement de cmdset : la classe cmdset '{classname}' est introuvable dans "
+"{path}.\n"
+"(Référence de l'erreur : {timestamp})"
+
+#: .\commands\cmdsethandler.py:98
+#, fuzzy, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"\n"
+"Erreur de syntaxe lors du chargement de cmdset '{path}' : \"{error}\".\n"
+"(Référence de l'erreur : {timestamp})"
+
+#: .\commands\cmdsethandler.py:103
+#, fuzzy, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"\n"
+"Erreur de compilation/exécution lors du chargement de cmdset '{path}' : "
+"\"{error}\".\n"
+"(Référence de l'erreur : {timestamp})"
+
+#: .\commands\cmdsethandler.py:108
+#, python-brace-format
 msgid ""
 "\n"
-"(Unsuccessfully tried '%s.' + '%s.%s')."
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+"\n"
+"Une erreur a été rencontrée lors du chargement du cmdset '{path}'.\n"
+"Le cmdset '{fallback_path}' est utilisé en remplacement.\n"
+
+#: .\commands\cmdsethandler.py:114
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "Impossible de générer le cmdset de remplacement : '{fallback_path}'."
+
+#: .\commands\cmdsethandler.py:182 .\commands\cmdsethandler.py:192
+#, fuzzy, python-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '%s')."
 msgstr ""
 "\n"
 "(Essayé sans succès '%s.' + '%s.%s')."
 
-#: commands/cmdsethandler.py:151
-#, python-brace-format
-msgid ""
-"\n"
-"Error loading cmdset {path}: \"{error}\""
-msgstr ""
-"\n"
-"Erreur de chargement de cmdset {path}: \"{error}\""
-
-#: commands/cmdsethandler.py:155
-#, python-brace-format
-msgid ""
-"\n"
-"Error in loading cmdset: No cmdset class '{classname}' in {path}."
-msgstr ""
-"\n"
-"Erreur lors du chargement de cmdset: Pas de classe cmdset '{classname}' in "
-"{path}."
-
-#: commands/cmdsethandler.py:159
-#, python-brace-format
-msgid ""
-"\n"
-"SyntaxError encountered when loading cmdset '{path}': \"{error}\"."
-msgstr ""
-"\n"
-"Erreur de syntaxe lors du chargement de cmdset '{path}': \"{error}\"."
-
-#: commands/cmdsethandler.py:163
-#, python-brace-format
-msgid ""
-"\n"
-"Compile/Run error when loading cmdset '{path}': \"{error}\"."
-msgstr ""
-"\n"
-"Erreur de compilation/exécution lors du chargement de cmdset '{path}': "
-"\"{error}\"."
-
-#: commands/cmdsethandler.py:174
-msgid ""
-"\n"
-" (See log for details.)"
-msgstr ""
-"\n"
-"(Voir registre pour plus de détails.)"
-
-#: commands/cmdsethandler.py:247
+#: .\commands\cmdsethandler.py:311
 #, python-brace-format
 msgid "custom {mergetype} on cmdset '{cmdset}'"
 msgstr "custom {mergetype} sur cmdset '{cmdset}'"
 
-#: commands/cmdsethandler.py:250
+#: .\commands\cmdsethandler.py:314
 #, python-brace-format
 msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
 msgstr " <Fusionné {mergelist} {mergetype}, prio {prio}>: {current}"
 
-#: commands/cmdsethandler.py:258
+#: .\commands\cmdsethandler.py:322
 #, python-brace-format
 msgid ""
 " <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
@@ -119,135 +135,212 @@ msgstr ""
 " <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
 " {keylist}"
 
-#: commands/cmdsethandler.py:347
+#: .\commands\cmdsethandler.py:426
 msgid "Only CmdSets can be added to the cmdsethandler!"
-msgstr "Seulement CmdSets peuvent être ajoutés au cmdsethandler!"
+msgstr "Seuls des CmdSets peuvent être ajoutés au cmdsethandler !"
 
-#: comms/channelhandler.py:94
+#: .\comms\channelhandler.py:100
+msgid "Say what?"
+msgstr "Que voulez-vous dire ?"
+
+#: .\comms\channelhandler.py:105
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "Le canal '%s' ne semble pas exister."
+
+#: .\comms\channelhandler.py:108
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "Vous n'êtes pas connecté au canal '%s'."
+
+#: .\comms\channelhandler.py:112
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "Vous n'avez pas le droit de parler sur le canal '%s'."
+
+#: .\comms\channelhandler.py:155
 msgid " (channel)"
-msgstr " (channel)"
+msgstr " (canal)"
 
-#: locks/lockhandler.py:230
+#: .\locks\lockhandler.py:236
 #, python-format
 msgid "Lock: lock-function '%s' is not available."
-msgstr "Vérou: lock-function '%s' n'est pas disponible."
+msgstr "Verrou : lock-function '%s' n'est pas disponible."
 
-#: locks/lockhandler.py:243
+#: .\locks\lockhandler.py:249
 #, python-format
 msgid "Lock: definition '%s' has syntax errors."
-msgstr "Vérou: définition '%s' a des erreurs de syntaxe."
+msgstr "Verrou : la définition '%s' a des erreurs de syntaxe."
 
-#: locks/lockhandler.py:247
+#: .\locks\lockhandler.py:253
 #, python-format
 msgid ""
 "LockHandler on %(obj)s: access type '%(access_type)s' changed from "
 "'%(source)s' to '%(goal)s' "
 msgstr ""
-"Gestionnaire de vérrou sur %(obj)s: type d'accès '%(access_type)s' a changé "
+"Gestionnaire de verrous sur %(obj)s: type d'accès '%(access_type)s' a changé "
 "de '%(source)s' à '%(goal)s'"
 
-#: locks/lockhandler.py:304
-#, python-format
-msgid "Lock: '%s' contains no colon (:)."
-msgstr "Verrou: '%s' contient pas de deux points (:)."
+#: .\locks\lockhandler.py:320
+#, fuzzy, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "Verrou : '%s' ne contient pas de deux points (:)."
 
-#: locks/lockhandler.py:308
-#, python-format
-msgid "Lock: '%s' has no access_type (left-side of colon is empty)."
+#: .\locks\lockhandler.py:328
+#, fuzzy, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
 msgstr ""
-"Verrou: '%s' n'a pas de access_type (côté gauche du deux point est vide)."
+"Verrou : '%s' n'a pas de 'access_type' (il n'y a rien avant les deux points)."
 
-#: locks/lockhandler.py:311
-#, python-format
-msgid "Lock: '%s' has mismatched parentheses."
-msgstr "Verrou: '%s' a des parenthèses dépareillées."
+#: .\locks\lockhandler.py:336
+#, fuzzy, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "Verrou : '%s' a des parenthèses déséquilibrées."
 
-#: locks/lockhandler.py:314
-#, python-format
-msgid "Lock: '%s' has no valid lock functions."
-msgstr "Verrou: '%s' n'a pas de fonctions verrou valides."
+#: .\locks\lockhandler.py:343
+#, fuzzy, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "Verrou : '%s' n'a pas de lock-function valide."
 
-#: objects/objects.py:528
+#: .\objects\objects.py:729
 #, python-format
 msgid "Couldn't perform move ('%s'). Contact an admin."
-msgstr "Ne pouvait effectuer le coup ('%s'). Contactez un administrateur."
+msgstr "Impossible de se déplacer vers ('%s'). Veuillez contacter un administrateur."
 
-#: objects/objects.py:538
+#: .\objects\objects.py:739
 msgid "The destination doesn't exist."
-msgstr "La destination n'existe pas."
+msgstr "La destination est inconnue."
 
-#: objects/objects.py:651
+#: .\objects\objects.py:830
 #, python-format
 msgid "Could not find default home '(#%d)'."
-msgstr "Ne peut trouver la maison '(#%d)' par défaut."
+msgstr "Impossible de trouver la salle de départ (default home) par défaut : '#%d'."
 
-#: objects/objects.py:667
+#: .\objects\objects.py:846
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
 msgstr ""
-"Quelque chose a mal tourné! Vous êtes nulle part. Contactez un "
-"administrateur."
+"Quelque chose a mal tourné ! Vous vous trouvez au milieu de nulle part. "
+"Veuillez contacter un administrateur."
 
-#: objects/objects.py:747
+#: .\objects\objects.py:912
 #, python-format
 msgid "Your character %s has been destroyed."
 msgstr "Votre personnage %s a été détruit."
 
-#: players/players.py:356
-msgid "Player being deleted."
-msgstr "Suppression de joueur."
-
-#: scripts/scripthandler.py:50
+#: .\scripts\scripthandler.py:53
 #, python-format
 msgid ""
 "\n"
 " '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
 msgstr ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s répète): %(desc)s"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s répète) : %(desc)s"
 
-#: scripts/scripts.py:202
+#: .\scripts\scripts.py:205
 #, python-format
 msgid ""
 "Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
 msgstr ""
-"Scripte %(key)s(#%(dbid)s) de type '%(cname)s': at_repeat() erreur "
-"'%(err)s'."
+"Le script %(key)s(#%(dbid)s) de type '%(cname)s' a rencontré une erreur "
+"durant at_repeat() : '%(err)s'."
 
-#: server/initial_setup.py:29
+#: .\server\initial_setup.py:28
+#, fuzzy
 msgid ""
 "\n"
 "Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
 "you need\n"
 "help, want to contribute, report issues or just join the community.\n"
-"As Player #1 you can create a demo/tutorial area with |w@batchcommand "
+"As Account #1 you can create a demo/tutorial area with |w@batchcommand "
 "tutorial_world.build|n.\n"
 "    "
 msgstr ""
 "\n"
-"Bienvenue dans ton nouveau jeu basé sur |wEvennia|n ! Visitez http://www."
-"evennia.com si vous avez besoin\n"
-"d'aide, si vous voulez contribuer, rapporter des problèmes ou faire partie "
-"de la communauté.\n"
-"En tant que Joueur #1 vous pouvez créer une zone de démo/tutoriel avec "
-"|w@batchcommand tutorial_world.build|n.\n"
+"Bienvenue dans votre nouveau jeu basé sur |wEvennia|n ! Visitez le site Web\n"
+"http://www.evennia.com si vous avez besoin d'aide, pour contribuer au projet,\n"
+"afin de rapporter des bugs ou faire partie de la communauté.\n"
+"En tant que premier personnage (#1), vous pouvez créer une zone de\n"
+"démo/tutoriel en entrant la commande |w@batchcommand tutorial_world.build|n.\n"
 "   "
 
-#: server/initial_setup.py:102
+#: .\server\initial_setup.py:92
 msgid "This is User #1."
-msgstr "Utilisateur #1."
+msgstr "C'est l'utilisateur #1."
 
-#: server/initial_setup.py:111
+#: .\server\initial_setup.py:105
 msgid "Limbo"
-msgstr "Limbes."
+msgstr "Limbes"
 
-#: server/sessionhandler.py:258
+#: .\server\server.py:139
+#, fuzzy
+msgid "idle timeout exceeded"
+msgstr "Délai d'inactivité dépassé, déconnexion."
+
+#: .\server\sessionhandler.py:386
 msgid " ... Server restarted."
 msgstr " ... Serveur redémarré."
 
-#: server/sessionhandler.py:408
+#: .\server\sessionhandler.py:606
 msgid "Logged in from elsewhere. Disconnecting."
-msgstr "Connecté d'ailleurs. Déconnexion."
+msgstr "Connexion d'une autre session. Déconnexion de celle-ci."
 
-#: server/sessionhandler.py:432
+#: .\server\sessionhandler.py:634
 msgid "Idle timeout exceeded, disconnecting."
 msgstr "Délai d'inactivité dépassé, déconnexion."
+
+#: .\server\validators.py:50
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"%s Depuis votre client, vous pouvez également préciser une phrase contenant "
+"plusieurs mots séparés par un espace, dès lors que cette phrase est entourée de guillemets."
+
+#: .\utils\evmenu.py:192
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice."
+msgstr ""
+"Ce choix '{nodename}' n'est pas implémenté, ou bien a créé une erreur. "
+"Faies un autre choix."
+
+#: .\utils\evmenu.py:194
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "Une erreur s'est produite dans le choix '{nodename}'."
+
+#: .\utils\evmenu.py:195
+msgid "No description."
+msgstr "Description non renseignée."
+
+#: .\utils\evmenu.py:196
+msgid "Commands: <menu option>, help, quit"
+msgstr "Utilisez une des commandes : <menu option>, help, quit"
+
+#: .\utils\evmenu.py:197
+msgid "Commands: <menu option>, help"
+msgstr "Utilisez une des commandes : <menu option>, help"
+
+#: .\utils\evmenu.py:198
+msgid "Commands: help, quit"
+msgstr "Utilisez une des commandes : help, quit"
+
+#: .\utils\evmenu.py:199
+msgid "Commands: help"
+msgstr "Utilisez la commande : help"
+
+#: .\utils\evmenu.py:200
+msgid "Choose an option or try 'help'."
+msgstr "Choisissez une option ou entrez la commande 'help'."
+
+#: .\utils\utils.py:1866
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Impossible de trouver '%s'."
+
+#: .\utils\utils.py:1873
+#, python-format
+msgid "More than one match for '%s' (please narrow target):\n"
+msgstr "Plus d'une possibilité pour '%s' (veuillez préciser) :\n"
