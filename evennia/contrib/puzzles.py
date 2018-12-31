@@ -757,8 +757,6 @@ class CmdListArmedPuzzles(MuxCommand):
 class PuzzleSystemCmdSet(CmdSet):
     """
     CmdSet to create, arm and resolve Puzzles
-
-    Add with @py self.cmdset.add("evennia.contrib.puzzles.PuzzlesCmdSet")
     """
 
     def at_cmdset_creation(self):
