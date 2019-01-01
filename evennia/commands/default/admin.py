@@ -17,7 +17,7 @@ PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
 # limit members for API inclusion
 __all__ = ("CmdBoot", "CmdBan", "CmdUnban",
-           "CmdEmit", "CmdNewPassword", "CmdPerm", "CmdWall")
+           "CmdEmit", "CmdNewPassword", "CmdPerm", "CmdWall", "CmdForce")
 
 
 class CmdBoot(COMMAND_DEFAULT_CLASS):
@@ -513,3 +513,33 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
         message = "%s shouts \"%s\"" % (self.caller.name, self.args)
         self.msg("Announcing to all connected sessions ...")
         SESSIONS.announce_all(message)
+
+
+class CmdForce(COMMAND_DEFAULT_CLASS):
+    """
+    forces an object to execute a command
+
+    Usage:
+        @force <object>=<command string>
+
+    Example:
+        @force bob=get stick
+    """
+    key = "@force"
+    locks = "cmd:perm(spawn) or perm(Builder)"
+    help_category = "Building"
+    perm_used = "edit"
+
+    def func(self):
+        """Implements the force command"""
+        if not self.lhs or not self.rhs:
+            self.caller.msg("You must provide a target and a command string to execute.")
+            return
+        targ = self.caller.search(self.lhs)
+        if not targ:
+            return
+        if not targ.access(self.caller, self.perm_used):
+            self.caller.msg("You don't have permission to force them to execute commands.")
+            return
+        targ.execute_cmd(self.rhs)
+        self.caller.msg("You have forced %s to: %s" % (targ, self.rhs))

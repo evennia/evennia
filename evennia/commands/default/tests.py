@@ -243,6 +243,9 @@ class TestAdmin(CommandTest):
     def test_ban(self):
         self.call(admin.CmdBan(), "Char", "Name-Ban char was added.")
 
+    def test_force(self):
+        self.call(admin.CmdForce(), "Char2=say test", 'Char2(#7) says, "test"|You have forced Char2 to: say test')
+
 
 class TestAccount(CommandTest):
 
@@ -280,6 +283,32 @@ class TestAccount(CommandTest):
     def test_char_create(self):
         self.call(account.CmdCharCreate(), "Test1=Test char",
                   "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
+                  
+    def test_char_delete(self):
+        # Chardelete requires user input; this test is mainly to confirm 
+        # whether permissions are being checked
+        
+        # Add char to account playable characters
+        self.account.db._playable_characters.append(self.char1)
+        
+        # Try deleting as Developer
+        self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
+        
+        # Downgrade permissions on account
+        self.account.permissions.add('Player')
+        self.account.permissions.remove('Developer')
+        
+        # Set lock on character object to prevent deletion
+        self.char1.locks.add('delete:none()')
+        
+        # Try deleting as Player
+        self.call(account.CmdCharDelete(), "Char", "You do not have permission to delete this character.", caller=self.account)
+        
+        # Set lock on character object to allow self-delete
+        self.char1.locks.add('delete:pid(%i)' % self.account.id)
+        
+        # Try deleting as Player again
+        self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
 
     def test_quell(self):
         self.call(account.CmdQuell(), "", "Quelling to current puppet's permissions (developer).", caller=self.account)
@@ -315,6 +344,24 @@ class TestBuilding(CommandTest):
     def test_desc(self):
         self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
 
+    def test_empty_desc(self):
+        """
+        empty desc sets desc as ''
+        """
+        o2d = self.obj2.db.desc
+        r1d = self.room1.db.desc
+        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#5).")
+        assert self.obj2.db.desc == '' and self.obj2.db.desc != o2d
+        assert self.room1.db.desc == r1d
+
+    def test_desc_default_to_room(self):
+        """no rhs changes room's desc"""
+        o2d = self.obj2.db.desc
+        r1d = self.room1.db.desc
+        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#1).")
+        assert self.obj2.db.desc == o2d
+        assert self.room1.db.desc == 'Obj2' and self.room1.db.desc != r1d
+
     def test_wipe(self):
         confirm = building.CmdDestroy.confirm
         building.CmdDestroy.confirm = False
@@ -334,6 +381,14 @@ class TestBuilding(CommandTest):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
         self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
+        self.char1.location = self.room2
+        self.call(building.CmdOpen(), "TestExit2=Room", "Created new Exit 'TestExit2' from Room2 to Room.")
+        # ensure it matches locally first
+        self.call(building.CmdLink(), "TestExit=Room2", "Link created TestExit2 -> Room2 (one way).")
+        # ensure can still match globally when not a local name
+        self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1(#8) did not have a destination set before. "
+                                                         "Make sure you linked the right thing.\n"
+                                                         "Link created TestExit1 -> Room2 (one way).")
 
     def test_set_home(self):
         self.call(building.CmdSetHome(), "Obj = Room2", "Obj's home location was changed from Room")
@@ -459,6 +514,61 @@ class TestBuilding(CommandTest):
 
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
+
+        # @spawn/edit (missing prototype)
+        # brings up olc menu
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit')
+        assert 'Prototype wizard' in msg
+
+        # @spawn/edit with valid prototype
+        # brings up olc menu loaded with prototype
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit testball')
+        assert 'Prototype wizard' in msg
+        assert hasattr(self.char1.ndb._menutree, "olc_prototype")
+        assert dict == type(self.char1.ndb._menutree.olc_prototype) \
+                and 'prototype_key' in self.char1.ndb._menutree.olc_prototype \
+                and 'key' in self.char1.ndb._menutree.olc_prototype \
+                and 'testball' == self.char1.ndb._menutree.olc_prototype['prototype_key'] \
+                and 'Ball' == self.char1.ndb._menutree.olc_prototype['key']
+        assert 'Ball' in msg and 'testball' in msg
+
+        # @spawn/edit with valid prototype (synomym)
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit BALL')
+        assert 'Prototype wizard' in msg
+        assert 'Ball' in msg and 'testball' in msg
+
+        # @spawn/edit with invalid prototype
+        msg = self.call(
+            building.CmdSpawn(),
+            '/edit NO_EXISTS',
+            "No prototype 'NO_EXISTS' was found.")
+
+        # @spawn/examine (missing prototype)
+        # lists all prototypes that exist
+        msg = self.call(
+            building.CmdSpawn(),
+            '/examine')
+        assert 'testball' in msg and 'testprot' in msg
+
+        # @spawn/examine with valid prototype
+        # prints the prototype
+        msg = self.call(
+            building.CmdSpawn(),
+            '/examine BALL')
+        assert 'Ball' in msg and 'testball' in msg
+
+        # @spawn/examine with invalid prototype
+        # shows error
+        self.call(
+            building.CmdSpawn(),
+            '/examine NO_EXISTS',
+            "No prototype 'NO_EXISTS' was found.")
 
 
 class TestComms(CommandTest):

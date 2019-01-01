@@ -66,7 +66,7 @@ class CmdHelp(Command):
         if type(self).help_more:
             usemore = True
 
-            if self.session.protocol_key in ("websocket", "ajax/comet"):
+            if self.session and self.session.protocol_key in ("websocket", "ajax/comet"):
                 try:
                     options = self.account.db._saved_webclient_options
                     if options and options["helppopup"]:

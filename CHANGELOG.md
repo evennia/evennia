@@ -11,6 +11,77 @@ Update to Python 3
 
 - Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
   question.
+- Add new `@force` command to have another object perform a command.
+- Add the Portal uptime to the `@time` command.
+- Make the `@link` command first make a local search before a global search.
+
+### Web
+
+Web/Django standard initiative (@strikaco)
+- Features
+  - Adds a series of web-based forms and generic class-based views
+    - Accounts
+      - Register - Enhances registration; allows optional collection of email address
+      - Form - Adds a generic Django form for creating Accounts from the web
+    - Characters
+      - Create - Authenticated users can create new characters from the website (requires associated form)
+      - Detail - Authenticated and authorized users can view select details about characters
+      - List - Authenticated and authorized users can browse a list of all characters
+      - Manage - Authenticated users can edit or delete owned characters from the web
+      - Form - Adds a generic Django form for creating characters from the web
+    - Channels
+      - Detail - Authorized users can view channel logs from the web
+      - List - Authorized users can browse a list of all channels
+    - Help Entries
+      - Detail - Authorized users can view help entries from the web
+      - List - Authorized users can browse a list of all help entries from the web
+  - Navbar changes
+    - Characters - Link to character list
+    - Channels - Link to channel list
+    - Help - Link to help entry list
+    - Puppeting
+      - Users can puppet their own characters within the context of the website
+    - Dropdown
+      - Link to create characters
+      - Link to manage characters
+      - Link to quick-select puppets
+      - Link to password change workflow
+- Functions
+  - Updates Bootstrap to v4 stable
+  - Enables use of Django Messages framework to communicate with users in browser
+  - Implements webclient/website `_shared_login` functionality as Django middleware
+  - 'account' and 'puppet' are added to all request contexts for authenticated users
+  - Adds unit tests for all web views
+- Cosmetic
+  - Prettifies Django 'forgot password' workflow (requires SMTP to actually function)
+  - Prettifies Django 'change password' workflow
+- Bugfixes
+  - Fixes bug on login page where error messages were not being displayed
+
+### Typeclasses
+
+- Add new methods on all typeclasses, useful specifically for object handling from the website/admin:
+  + `web_get_admin_url()`: Returns the path to the object detail page in the Admin backend.
+  + `web_get_create_url()`: Returns the path to the typeclass' creation page on the website, if implemented.
+  + `web_get_absolute_url()`: Returns the path to the object's detail page on the website, if implemented.
+  + `web_get_update_url()`: Returns the path to the object's update page on the website, if implemented.
+  + `web_get_delete_url()`: Returns the path to the object's delete page on the website, if implemented.
+- All typeclasses have new helper class method `create`, which encompasses useful functionality
+  that used to be embedded for example in the respective `@create` or `@connect` commands.
+- DefaultAccount now has new class methods implementing many things that used to be in unloggedin
+  commands (these can now be customized on the class instead):
+  + `is_banned()`: Checks if a given username or IP is banned.
+  + `get_username_validators`: Return list of validators for username validation (see
+    `settings.AUTH_USERNAME_VALIDATORS`)
+  + `authenticate`: Method to check given username/password.
+  + `normalize_username`: Normalizes names so (for Unicode environments) users cannot mimic existing usernames by replacing select characters with visually-similar Unicode chars.
+  + `validate_username`: Mechanism for validating a username based on predefined Django validators.
+  + `validate_password`: Mechanism for validating a password based on predefined Django validators.
+  + `set_password`: Apply password to account, using validation checks.
+
+### Utils
+
+- Added more unit tests.
 
 ### Utils
 
@@ -19,6 +90,11 @@ Update to Python 3
 
 
 ## Evennia 0.8 (2018)
+
+### Requirements
+
+- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
+- Add `inflect` dependency for automatic pluralization of object names.
 
 ### Server/Portal
 
@@ -103,7 +179,6 @@ Update to Python 3
 
 ### General
 
-- Up requirements to Django 1.11.x, Twisted 18 and pillow 5.2.0
 - Start structuring the `CHANGELOG` to list features in more detail.
 - Docker image `evennia/evennia:develop` is now auto-built, tracking the develop branch.
 - Inflection and grouping of multiple objects in default room (an box, three boxes)

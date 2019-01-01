@@ -398,6 +398,11 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
                 super().save(*args, **kwargs)
             callFromThread(_save_callback, self, *args, **kwargs)
 
+        if not self.pk:
+            # this can happen if some of the startup methods immediately
+            # delete the object (an example are Scripts that start and die immediately)
+            return
+
         # update field-update hooks and eventual OOB watchers
         new = False
         if "update_fields" in kwargs and kwargs["update_fields"]:
@@ -422,6 +427,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
 #            fieldtracker = "_oob_at_%s_postsave" % fieldname
 #            if hasattr(self, fieldtracker):
 #                _GA(self, fieldtracker)(fieldname)
+        pass
 
 
 class WeakSharedMemoryModelBase(SharedMemoryModelBase):
