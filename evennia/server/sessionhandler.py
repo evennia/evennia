@@ -284,6 +284,8 @@ class ServerSessionHandler(SessionHandler):
         super().__init__(*args, **kwargs)
         self.server = None  # set at server initialization
         self.server_data = {"servername": _SERVERNAME}
+        # will be set on psync
+        self.portal_start_time = 0.0
 
     def _run_cmd_login(self, session):
         """

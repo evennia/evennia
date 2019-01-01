@@ -37,11 +37,14 @@ prototype key (this value must be possible to serialize in an Attribute).
 
 from ast import literal_eval
 from random import randint as base_randint, random as base_random, choice as base_choice
+import re
 
 from evennia.utils import search
 from evennia.utils.utils import justify as base_justify, is_iter, to_str
 
 _PROTLIB = None
+
+_RE_DBREF = re.compile(r"\#[0-9]+")
 
 
 # default protfuncs
@@ -325,3 +328,14 @@ def objlist(*args, **kwargs):
 
     """
     return ["#{}".format(obj.id) for obj in _obj_search(return_list=True, *args, **kwargs)]
+
+
+def dbref(*args, **kwargs):
+    """
+    Usage $dbref(<#dbref>)
+    Returns one Object searched globally by #dbref. Error if #dbref is invalid.
+    """
+    if not args or len(args) < 1 or _RE_DBREF.match(args[0]) is None:
+        raise ValueError('$dbref requires a valid #dbref argument.')
+
+    return obj(args[0])

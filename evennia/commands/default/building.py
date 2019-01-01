@@ -10,7 +10,7 @@ from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
-from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
+from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses, variable_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
@@ -612,12 +612,12 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             self.edit_handler()
             return
 
-        if self.rhs:
+        if '=' in self.args:
             # We have an =
             obj = caller.search(self.lhs)
             if not obj:
                 return
-            desc = self.rhs
+            desc = self.rhs or ''
         else:
             obj = caller.location or self.msg("|rYou can't describe oblivion.|n")
             if not obj:
@@ -1022,10 +1022,17 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
 
         object_name = self.lhs
 
-        # get object
-        obj = caller.search(object_name, global_search=True)
-        if not obj:
-            return
+        # try to search locally first
+        results = caller.search(object_name, quiet=True)
+        if len(results) > 1:  # local results was a multimatch. Inform them to be more specific
+            _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+            return _AT_SEARCH_RESULT(results, caller, query=object_name)
+        elif len(results) == 1:  # A unique local match
+            obj = results[0]
+        else:  # No matches. Search globally
+            obj = caller.search(object_name, global_search=True)
+            if not obj:
+                return
 
         if self.rhs:
             # this means a target name was given
@@ -2854,7 +2861,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     key = "@spawn"
     aliases = ["olc"]
-    switch_options = ("noloc", "search", "list", "show", "save", "delete", "menu", "olc", "update")
+    switch_options = ("noloc", "search", "list", "show", "examine", "save", "delete", "menu", "olc", "update", "edit")
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"
 
@@ -2905,12 +2912,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
 
-        if self.cmdstring == "olc" or 'menu' in self.switches or 'olc' in self.switches:
+        if self.cmdstring == "olc" or 'menu' in self.switches \
+                or 'olc' in self.switches or 'edit' in self.switches:
             # OLC menu mode
             prototype = None
             if self.lhs:
                 key = self.lhs
-                prototype = spawner.search_prototype(key=key, return_meta=True)
+                prototype = protlib.search_prototype(key=key)
                 if len(prototype) > 1:
                     caller.msg("More than one match for {}:\n{}".format(
                         key, "\n".join(proto.get('prototype_key', '') for proto in prototype)))
@@ -2918,6 +2926,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 elif prototype:
                     # one match
                     prototype = prototype[0]
+                else:
+                    # no match
+                    caller.msg("No prototype '{}' was found.".format(key))
+                    return
             olc_menus.start_olc(caller, session=self.session, prototype=prototype)
             return
 
@@ -3034,7 +3046,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     caller.msg("|rDeletion cancelled.|n")
                     return
                 try:
-                    success = protlib.delete_db_prototype(caller, self.args)
+                    success = protlib.delete_prototype(self.args)
                 except protlib.PermissionError as err:
                     caller.msg("|rError deleting:|R {}|n".format(err))
                 caller.msg("Deletion {}.".format(
@@ -3084,7 +3096,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             # we have a prototype, check access
             prototype = prototypes[0]
-            if not caller.locks.check_lockstring(caller, prototype.get('prototype_locks', ''), access_type='spawn'):
+            if not caller.locks.check_lockstring(
+                    caller, prototype.get('prototype_locks', ''), access_type='spawn', default=True):
                 caller.msg("You don't have access to use this prototype.")
                 return
 

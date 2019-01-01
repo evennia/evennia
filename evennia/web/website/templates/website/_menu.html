@@ -23,35 +23,67 @@ folder and edit it to add/remove links to the menu.
         <ul class="navbar-nav">
             {% block nabvar_left %}
             <li>
-                <a class="nav-link" href="/">Home</a>
+              <a class="nav-link" href="{% url 'index' %}">Home</a>
             </li>
+            <!-- evennia documentation -->
             <li>
               <a class="nav-link" href="https://github.com/evennia/evennia/wiki/Evennia-Introduction/">About</a>
             </li>
             <li><a class="nav-link" href="https://github.com/evennia/evennia/wiki">Documentation</a></li>
-            <li><a class="nav-link" href="{% url 'admin:index' %}">Admin Interface</a></li>
+            <!-- end evennia documentation -->
+            
+            <!-- game views -->
+            <li><a class="nav-link" href="{% url 'characters' %}">Characters</a></li>
+            <li><a class="nav-link" href="{% url 'channels' %}">Channels</a></li>
+            <li><a class="nav-link" href="{% url 'help' %}">Help</a></li>
+            <!-- end game views -->
+            
             {% if webclient_enabled %}
             <li><a class="nav-link" href="{% url 'webclient:index' %}">Play Online</a></li>
+            {% endif %}
+            
+            {% if user.is_staff %}
+            <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
             {% endif %}
             {% endblock %}
         </ul>
         <ul class="nav navbar-nav ml-auto w-120 justify-content-end">
             {% block navbar_right %}
             {% endblock %}
+            
             {% block navbar_user %}
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link">Logged in as {{user.username}}</a>
+            {% if account %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user_options" aria-expanded="false">
+                {% if puppet %}
+                  Welcome, {{ puppet }}! <span class="text-muted">({{ account.username }})</span> <span class="caret"></span>
+                {% else %}
+                  Logged in as {{ account.username }} <span class="caret"></span>
+                {% endif %}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="user_options">
+                <a class="dropdown-item" href="{% url 'character-create' %}">Create Character</a>
+                <a class="dropdown-item" href="{% url 'character-manage' %}">Manage Characters</a>
+                <div class="dropdown-divider"></div>
+                {% for character in account.characters|slice:"10" %}
+                  <a class="dropdown-item" href="{{ character.web_get_puppet_url }}?next={{ request.path }}">{{ character }}</a>
+                {% empty %} 
+                  <a class="dropdown-item" href="#">No characters found!</a>
+                {% endfor %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
+              </div>
             </li>
             <li>
                 <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
             </li>
             {% else %}
             <li>
-                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Log In</a>
             </li>
             <li>
-                <a class="nav-link" href="{% url 'to_be_implemented' %}">Register</a>
+                <a class="nav-link" href="{% url 'register' %}">Register</a>
             </li>
             {% endif %}
             {% endblock %}

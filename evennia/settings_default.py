@@ -13,6 +13,7 @@ always be sure of what you have changed and what is default behaviour.
 
 """
 from builtins import range
+from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
 
 import os
@@ -116,7 +117,7 @@ AMP_INTERFACE = '127.0.0.1'
 EVENNIA_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the game directory (containing the server/conf/settings.py file)
 # This is dynamically created- there is generally no need to change this!
-if sys.argv[1] == 'test' if len(sys.argv) > 1 else False:
+if EVENNIA_DIR.lower() == os.getcwd().lower() or (sys.argv[1] == 'test' if len(sys.argv) > 1 else False):
     # unittesting mode
     GAME_DIR = os.getcwd()
 else:
@@ -139,7 +140,7 @@ HTTP_LOG_FILE = os.path.join(LOG_DIR, 'http_requests.log')
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, 'lockwarnings.log')
 # Rotate log files when server and/or portal stops. This will keep log
 # file sizes down. Turn off to get ever growing log files and never
-# loose log info.
+# lose log info.
 CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
@@ -222,7 +223,8 @@ COMMAND_RATE_WARNING = "You entered commands too fast. Wait a moment and try aga
 # 0 or less.
 MAX_CHAR_LIMIT = 6000
 # The warning to echo back to users if they enter a very large string
-MAX_CHAR_LIMIT_WARNING = "You entered a string that was too long. Please break it up into multiple parts."
+MAX_CHAR_LIMIT_WARNING = ("You entered a string that was too long. "
+                          "Please break it up into multiple parts.")
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
 # debugging. OBS: Showing full tracebacks to regular users could be a
@@ -410,12 +412,14 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "contribs"]
-# Fallbacks for cmdset paths that fail to load. Note that if you change the path for your default cmdsets,
-# you will also need to copy CMDSET_FALLBACKS after your change in your settings file for it to detect the change.
-CMDSET_FALLBACKS = {CMDSET_CHARACTER: 'evennia.commands.default.cmdset_character.CharacterCmdSet',
-                    CMDSET_ACCOUNT: 'evennia.commands.default.cmdset_account.AccountCmdSet',
-                    CMDSET_SESSION: 'evennia.commands.default.cmdset_session.SessionCmdSet',
-                    CMDSET_UNLOGGEDIN: 'evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet'}
+# Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
+# default cmdsets, you will also need to copy CMDSET_FALLBACKS after your change in your
+# settings file for it to detect the change.
+CMDSET_FALLBACKS = {
+    CMDSET_CHARACTER: 'evennia.commands.default.cmdset_character.CharacterCmdSet',
+    CMDSET_ACCOUNT: 'evennia.commands.default.cmdset_account.AccountCmdSet',
+    CMDSET_SESSION: 'evennia.commands.default.cmdset_session.SessionCmdSet',
+    CMDSET_UNLOGGEDIN: 'evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet'}
 # Parent class for all default commands. Changing this class will
 # modify all default commands, so do so carefully.
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
@@ -666,6 +670,9 @@ DEBUG = False
 ADMINS = ()  # 'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
+# This is a public point of contact for players or the public to contact
+# a staff member or administrator of the site. It is publicly posted.
+STAFF_CONTACT_EMAIL = None
 # Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
@@ -752,6 +759,7 @@ TEMPLATES = [{
             'django.contrib.auth.context_processors.auth',
             'django.template.context_processors.media',
             'django.template.context_processors.debug',
+            'django.contrib.messages.context_processors.messages',
             'sekizai.context_processors.sekizai',
             'evennia.web.utils.general_context.general_context'],
         # While true, show "pretty" error messages for template syntax errors.
@@ -762,14 +770,15 @@ TEMPLATES = [{
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',  # 1.4?
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',)
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'evennia.web.utils.middleware.SharedLoginMiddleware',)
 
 ######################################################################
 # Evennia components
@@ -786,6 +795,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django.contrib.messages',
     'sekizai',
     'evennia.utils.idmapper',
     'evennia.server',
@@ -811,8 +821,23 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
     {'NAME': 'evennia.server.validators.EvenniaPasswordValidator'}]
 
+# Username validation plugins
+AUTH_USERNAME_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.validators.ASCIIUsernameValidator'},
+    {'NAME': 'django.core.validators.MinLengthValidator',
+        'OPTIONS': {'limit_value': 3}},
+    {'NAME': 'django.core.validators.MaxLengthValidator',
+        'OPTIONS': {'limit_value': 30}},
+    {'NAME': 'evennia.server.validators.EvenniaUsernameAvailabilityValidator'}]
+
 # Use a custom test runner that just tests Evennia-specific apps.
 TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
+
+# Messages and Bootstrap don't classify events the same way; this setting maps 
+# messages.error() to Bootstrap 'danger' classes.
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
 
 ######################################################################
 # Django extensions
@@ -821,7 +846,7 @@ TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
 # Django extesions are useful third-party tools that are not
 # always included in the default django distro.
 try:
-    import django_extensions
+    import django_extensions   # noqa
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
     # Django extensions are not installed in all distros.

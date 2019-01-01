@@ -229,6 +229,12 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.
     new_script.save()
+
+    if not new_script.id:
+        # this happens in the case of having a repeating script with `repeats=1` and
+        # `start_delay=False` - the script will run once and immediately stop before save is over.
+        return None
+
     return new_script
 
 

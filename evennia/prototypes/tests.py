@@ -11,6 +11,7 @@ from evennia.utils.test_resources import EvenniaTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
 from evennia.prototypes import spawner, prototypes as protlib
 from evennia.prototypes import menus as olc_menus
+from evennia.prototypes import protfuncs as protofuncs
 
 from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
@@ -312,11 +313,83 @@ class TestProtFuncs(EvenniaTest):
         self.assertEqual(protlib.protfunc_parser(
             "$eval({'test': '1', 2:3, 3: $toint(3.5)})"), {'test': '1', 2: 3, 3: 3})
 
-        self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
-        self.assertEqual(protlib.protfunc_parser("#1", session=self.session), '#1')
-        self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
-        self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
-        self.assertEqual(protlib.protfunc_parser("$objlist(#1)", session=self.session), ['#1'])
+
+        # no object search
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("obj(#1)", session=self.session), 'obj(#1)')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("dbref(#1)", session=self.session), 'dbref(#1)')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("stone(#12345)", session=self.session), 'stone(#12345)')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("#1", session=self.session), '#1')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("#12345", session=self.session), '#12345')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("nothing(#1)", session=self.session), 'nothing(#1)')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("(#12345)", session=self.session), '(#12345)')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("obj(Char)", session=self.session), 'obj(Char)')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("objlist(#1)", session=self.session), 'objlist(#1)')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("dbref(Char)", session=self.session), 'dbref(Char)')
+            mocked__obj_search.assert_not_called()
+
+
+        # obj search happens
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("$objlist(#1)", session=self.session), ['#1'])
+            mocked__obj_search.assert_called_once()
+            assert ('#1',) == mocked__obj_search.call_args[0]
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
+            mocked__obj_search.assert_called_once()
+            assert ('#1',) == mocked__obj_search.call_args[0]
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("$dbref(#1)", session=self.session), '#1')
+            mocked__obj_search.assert_called_once()
+            assert ('#1',) == mocked__obj_search.call_args[0]
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
+            mocked__obj_search.assert_called_once()
+            assert ('Char',) == mocked__obj_search.call_args[0]
+
+
+        # bad invocation
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertEqual(protlib.protfunc_parser("$badfunc(#1)", session=self.session), '<UNKNOWN>')
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
+            self.assertRaises(ValueError, protlib.protfunc_parser, "$dbref(Char)")
+            mocked__obj_search.assert_not_called()
+
 
         self.assertEqual(protlib.value_to_obj(
             protlib.protfunc_parser("#6", session=self.session)), self.char1)

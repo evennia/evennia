@@ -11,7 +11,11 @@ game world, policy info, rules and similar.
 """
 from builtins import object
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.urls import reverse
+from django.utils.text import slugify
+
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.help.manager import HelpEntryManager
 from evennia.typeclasses.models import Tag, TagHandler, AliasHandler
@@ -107,3 +111,158 @@ class HelpEntry(SharedMemoryModel):
         default - what to return if no lock of access_type was found
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
+        
+    #
+    # Web/Django methods
+    #
+
+    def web_get_admin_url(self):
+        """
+        Returns the URI path for the Django Admin page for this object.
+
+        ex. Account#1 = '/admin/accounts/accountdb/1/change/'
+
+        Returns:
+            path (str): URI path to Django Admin page for object.
+
+        """
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        return reverse("admin:%s_%s_change" % (content_type.app_label,
+                                               content_type.model), args=(self.id,))
+
+    @classmethod
+    def web_get_create_url(cls):
+        """
+        Returns the URI path for a View that allows users to create new
+        instances of this object.
+
+        ex. Chargen = '/characters/create/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-create' would be referenced by this method.
+
+        ex.
+        url(r'characters/create/', ChargenView.as_view(), name='character-create')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can create new objects is the
+        developer's responsibility.
+
+        Returns:
+            path (str): URI path to object creation page, if defined.
+
+        """
+        try:
+            return reverse('%s-create' % slugify(cls._meta.verbose_name))
+        except:
+            return '#'
+
+    def web_get_detail_url(self):
+        """
+        Returns the URI path for a View that allows users to view details for
+        this object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-detail' would be referenced by this method.
+
+        ex.
+        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+            CharDetailView.as_view(), name='character-detail')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can view this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object detail page, if defined.
+
+        """
+        try:
+            return reverse('%s-detail' % slugify(self._meta.verbose_name),
+               kwargs={
+                   'category': slugify(self.db_help_category), 
+                   'topic': slugify(self.db_key)})
+        except Exception as e:
+            print(e)
+            return '#'
+
+
+    def web_get_update_url(self):
+        """
+        Returns the URI path for a View that allows users to update this
+        object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/change/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-update' would be referenced by this method.
+
+        ex.
+        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
+            CharUpdateView.as_view(), name='character-update')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can modify objects is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object update page, if defined.
+
+        """
+        try:
+            return reverse('%s-update' % slugify(self._meta.verbose_name),
+               kwargs={
+                   'category': slugify(self.db_help_category), 
+                   'topic': slugify(self.db_key)})
+        except:
+            return '#'
+
+    def web_get_delete_url(self):
+        """
+        Returns the URI path for a View that allows users to delete this object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/delete/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-detail' would be referenced by this method.
+
+        ex.
+        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/delete/$',
+            CharDeleteView.as_view(), name='character-delete')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can delete this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object deletion page, if defined.
+
+        """
+        try:
+            return reverse('%s-delete' % slugify(self._meta.verbose_name),
+               kwargs={
+                   'category': slugify(self.db_help_category), 
+                   'topic': slugify(self.db_key)})
+        except:
+            return '#'
+
+    # Used by Django Sites/Admin
+    get_absolute_url = web_get_detail_url

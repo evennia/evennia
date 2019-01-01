@@ -10,19 +10,22 @@ character object, so you should customize that
 instead for most things).
 
 """
-
+import re
 import time
 from django.conf import settings
-from django.contrib.auth import password_validation
-from django.core.exceptions import ValidationError
+from django.contrib.auth import authenticate, password_validation
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
+from django.utils.module_loading import import_string
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
-from evennia.utils import logger
+from evennia.server.models import ServerConfig
+from evennia.server.throttle import Throttle
+from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, is_iter,
                                  variable_from_module)
@@ -32,6 +35,7 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 
 from django.utils.translation import ugettext as _
 from future.utils import with_metaclass
+from random import getrandbits
 
 __all__ = ("DefaultAccount",)
 
@@ -43,6 +47,9 @@ _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _CONNECT_CHANNEL = None
 
+# Create throttles for too many account-creations and login attempts
+CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
+LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
 
 class AccountSessionHandler(object):
     """
@@ -189,6 +196,19 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @lazy_property
     def sessions(self):
         return AccountSessionHandler(self)
+        
+    # Do not make this a lazy property; the web UI will not refresh it!
+    @property
+    def characters(self):
+        # Get playable characters list
+        objs = self.db._playable_characters
+        
+        # Rebuild the list if legacy code left null values after deletion
+        if None in objs:
+            objs = [x for x in self.db._playable_characters if x]
+            self.db._playable_characters = objs
+            
+        return objs
 
     # session-related methods
 
@@ -360,6 +380,189 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
     # utility methods
     @classmethod
+    def is_banned(cls, **kwargs):
+        """
+        Checks if a given username or IP is banned.
+
+        Kwargs:
+            ip (str, optional): IP address.
+            username (str, optional): Username.
+
+        Returns:
+            is_banned (bool): Whether either is banned or not.
+
+        """
+
+        ip = kwargs.get('ip', '').strip()
+        username = kwargs.get('username', '').lower().strip()
+
+        # Check IP and/or name bans
+        bans = ServerConfig.objects.conf("server_bans")
+        if bans and (any(tup[0] == username for tup in bans if username) or
+                     any(tup[2].match(ip) for tup in bans if ip and tup[2])):
+            return True
+
+        return False
+
+    @classmethod
+    def get_username_validators(cls, validator_config=getattr(settings, 'AUTH_USERNAME_VALIDATORS', [])):
+        """
+        Retrieves and instantiates validators for usernames.
+
+        Args:
+            validator_config (list): List of dicts comprising the battery of
+                validators to apply to a username.
+
+        Returns:
+            validators (list): List of instantiated Validator objects.
+        """
+
+        objs = []
+        for validator in validator_config:
+            try:
+                klass = import_string(validator['NAME'])
+            except ImportError:
+                msg = "The module in NAME could not be imported: %s. Check your AUTH_USERNAME_VALIDATORS setting."
+                raise ImproperlyConfigured(msg % validator['NAME'])
+            objs.append(klass(**validator.get('OPTIONS', {})))
+        return objs
+
+    @classmethod
+    def authenticate(cls, username, password, ip='', **kwargs):
+        """
+        Checks the given username/password against the database to see if the
+        credentials are valid.
+
+        Note that this simply checks credentials and returns a valid reference
+        to the user-- it does not log them in!
+
+        To finish the job:
+        After calling this from a Command, associate the account with a Session:
+        - session.sessionhandler.login(session, account)
+
+        ...or after calling this from a View, associate it with an HttpRequest:
+        - django.contrib.auth.login(account, request)
+
+        Args:
+            username (str): Username of account
+            password (str): Password of account
+            ip (str, optional): IP address of client
+
+        Kwargs:
+            session (Session, optional): Session requesting authentication
+
+        Returns:
+            account (DefaultAccount, None): Account whose credentials were
+                provided if not banned.
+            errors (list): Error messages of any failures.
+
+        """
+        errors = []
+        if ip: ip = str(ip)
+
+        # See if authentication is currently being throttled
+        if ip and LOGIN_THROTTLE.check(ip):
+            errors.append('Too many login failures; please try again in a few minutes.')
+
+            # With throttle active, do not log continued hits-- it is a
+            # waste of storage and can be abused to make your logs harder to
+            # read and/or fill up your disk.
+            return None, errors
+
+        # Check IP and/or name bans
+        banned = cls.is_banned(username=username, ip=ip)
+        if banned:
+            # this is a banned IP or name!
+            errors.append("|rYou have been banned and cannot continue from here." \
+                     "\nIf you feel this ban is in error, please email an admin.|x")
+            logger.log_sec('Authentication Denied (Banned): %s (IP: %s).' % (username, ip))
+            LOGIN_THROTTLE.update(ip, 'Too many sightings of banned artifact.')
+            return None, errors
+
+        # Authenticate and get Account object
+        account = authenticate(username=username, password=password)
+        if not account:
+            # User-facing message
+            errors.append('Username and/or password is incorrect.')
+
+            # Log auth failures while throttle is inactive
+            logger.log_sec('Authentication Failure: %s (IP: %s).' % (username, ip))
+
+            # Update throttle
+            if ip: LOGIN_THROTTLE.update(ip, 'Too many authentication failures.')
+
+            # Try to call post-failure hook
+            session = kwargs.get('session', None)
+            if session:
+                account = AccountDB.objects.get_account_from_name(username)
+                if account:
+                    account.at_failed_login(session)
+
+            return None, errors
+
+        # Account successfully authenticated
+        logger.log_sec('Authentication Success: %s (IP: %s).' % (account, ip))
+        return account, errors
+
+    @classmethod
+    def normalize_username(cls, username):
+        """
+        Django: Applies NFKC Unicode normalization to usernames so that visually
+        identical characters with different Unicode code points are considered
+        identical.
+
+        (This deals with the Turkish "i" problem and similar
+        annoyances. Only relevant if you go out of your way to allow Unicode
+        usernames though-- Evennia accepts ASCII by default.)
+
+        In this case we're simply piggybacking on this feature to apply
+        additional normalization per Evennia's standards.
+        """
+        username = super(DefaultAccount, cls).normalize_username(username)
+
+        # strip excessive spaces in accountname
+        username = re.sub(r"\s+", " ", username).strip()
+
+        return username
+
+    @classmethod
+    def validate_username(cls, username):
+        """
+        Checks the given username against the username validator associated with
+        Account objects, and also checks the database to make sure it is unique.
+
+        Args:
+            username (str): Username to validate
+
+        Returns:
+            valid (bool): Whether or not the password passed validation
+            errors (list): Error messages of any failures
+
+        """
+        valid = []
+        errors = []
+
+        # Make sure we're at least using the default validator
+        validators = cls.get_username_validators()
+        if not validators:
+            validators = [cls.username_validator]
+
+        # Try username against all enabled validators
+        for validator in validators:
+            try:
+                valid.append(not validator(username))
+            except ValidationError as e:
+                valid.append(False)
+                errors.extend(e.messages)
+
+        # Disqualify if any check failed
+        if False in valid:
+            valid = False
+        else: valid = True
+
+        return valid, errors
+
+    @classmethod
     def validate_password(cls, password, account=None):
         """
         Checks the given password against the list of Django validators enabled
@@ -416,8 +619,136 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             if error: raise error
 
         super(DefaultAccount, self).set_password(password)
-        logger.log_info("Password succesfully changed for %s." % self)
+        logger.log_sec("Password successfully changed for %s." % self)
         self.at_password_change()
+
+    @classmethod
+    def create(cls, *args, **kwargs):
+        """
+        Creates an Account (or Account/Character pair for MULTISESSION_MODE<2)
+        with default (or overridden) permissions and having joined them to the
+        appropriate default channels.
+
+        Kwargs:
+            username (str): Username of Account owner
+            password (str): Password of Account owner
+            email (str, optional): Email address of Account owner
+            ip (str, optional): IP address of requesting connection
+            guest (bool, optional): Whether or not this is to be a Guest account
+
+            permissions (str, optional): Default permissions for the Account
+            typeclass (str, optional): Typeclass to use for new Account
+            character_typeclass (str, optional): Typeclass to use for new char
+                when applicable.
+
+        Returns:
+            account (Account): Account if successfully created; None if not
+            errors (list): List of error messages in string form
+
+        """
+
+        account = None
+        errors = []
+
+        username = kwargs.get('username')
+        password = kwargs.get('password')
+        email = kwargs.get('email', '').strip()
+        guest = kwargs.get('guest', False)
+
+        permissions = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
+        typeclass = kwargs.get('typeclass', settings.BASE_ACCOUNT_TYPECLASS)
+
+        ip = kwargs.get('ip', '')
+        if ip and CREATION_THROTTLE.check(ip):
+            errors.append("You are creating too many accounts. Please log into an existing account.")
+            return None, errors
+
+        # Normalize username
+        username = cls.normalize_username(username)
+
+        # Validate username
+        if not guest:
+            valid, errs = cls.validate_username(username)
+            if not valid:
+                # this echoes the restrictions made by django's auth
+                # module (except not allowing spaces, for convenience of
+                # logging in).
+                errors.extend(errs)
+                return None, errors
+
+        # Validate password
+        # Have to create a dummy Account object to check username similarity
+        valid, errs = cls.validate_password(password, account=cls(username=username))
+        if not valid:
+            errors.extend(errs)
+            return None, errors
+
+        # Check IP and/or name bans
+        banned = cls.is_banned(username=username, ip=ip)
+        if banned:
+            # this is a banned IP or name!
+            string = "|rYou have been banned and cannot continue from here." \
+                     "\nIf you feel this ban is in error, please email an admin.|x"
+            errors.append(string)
+            return None, errors
+
+        # everything's ok. Create the new account account.
+        try:
+            try:
+                account = create.create_account(username, email, password, permissions=permissions, typeclass=typeclass)
+                logger.log_sec('Account Created: %s (IP: %s).' % (account, ip))
+
+            except Exception as e:
+                errors.append("There was an error creating the Account. If this problem persists, contact an admin.")
+                logger.log_trace()
+                return None, errors
+
+            # This needs to be set so the engine knows this account is
+            # logging in for the first time. (so it knows to call the right
+            # hooks during login later)
+            account.db.FIRST_LOGIN = True
+
+            # Record IP address of creation, if available
+            if ip: account.db.creator_ip = ip
+
+            # join the new account to the public channel
+            pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
+            if not pchannel or not pchannel.connect(account):
+                string = "New account '%s' could not connect to public channel!" % account.key
+                errors.append(string)
+                logger.log_err(string)
+
+            if account and settings.MULTISESSION_MODE < 2:
+                # Load the appropriate Character class
+                character_typeclass = kwargs.get('character_typeclass', settings.BASE_CHARACTER_TYPECLASS)
+                character_home = kwargs.get('home')
+                Character = class_from_module(character_typeclass)
+
+                # Create the character
+                character, errs = Character.create(
+                    account.key, account, ip=ip, typeclass=character_typeclass,
+                    permissions=permissions, home=character_home
+                )
+                errors.extend(errs)
+
+                if character:
+                    # Update playable character list
+                    if character not in account.characters:
+                        account.db._playable_characters.append(character)
+
+                    # We need to set this to have @ic auto-connect to this character
+                    account.db._last_puppet = character
+
+        except Exception:
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't,
+            # we won't see any errors at all.
+            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            logger.log_trace()
+
+        # Update the throttle to indicate a new account was created from this IP
+        if ip and not guest: CREATION_THROTTLE.update(ip, 'Too many accounts being created.')
+        return account, errors
 
     def delete(self, *args, **kwargs):
         """
@@ -1066,6 +1397,78 @@ class DefaultGuest(DefaultAccount):
     This class is used for guest logins. Unlike Accounts, Guests and
     their characters are deleted after disconnection.
     """
+
+    @classmethod
+    def create(cls, **kwargs):
+        """
+        Forwards request to cls.authenticate(); returns a DefaultGuest object
+        if one is available for use.
+        """
+        return cls.authenticate(**kwargs)
+
+    @classmethod
+    def authenticate(cls, **kwargs):
+        """
+        Gets or creates a Guest account object.
+
+        Kwargs:
+            ip (str, optional): IP address of requestor; used for ban checking,
+                throttling and logging
+
+        Returns:
+            account (Object): Guest account object, if available
+            errors (list): List of error messages accrued during this request.
+
+        """
+        errors = []
+        account = None
+        username = None
+        ip = kwargs.get('ip', '').strip()
+
+        # check if guests are enabled.
+        if not settings.GUEST_ENABLED:
+            errors.append('Guest accounts are not enabled on this server.')
+            return None, errors
+
+        try:
+            # Find an available guest name.
+            for name in settings.GUEST_LIST:
+                if not AccountDB.objects.filter(username__iexact=name).count():
+                    username = name
+                    break
+            if not username:
+                errors.append("All guest accounts are in use. Please try again later.")
+                if ip: LOGIN_THROTTLE.update(ip, 'Too many requests for Guest access.')
+                return None, errors
+            else:
+                # build a new account with the found guest username
+                password = "%016x" % getrandbits(64)
+                home = settings.GUEST_HOME
+                permissions = settings.PERMISSION_GUEST_DEFAULT
+                typeclass = settings.BASE_GUEST_TYPECLASS
+
+                # Call parent class creator
+                account, errs = super(DefaultGuest, cls).create(
+                    guest=True,
+                    username=username,
+                    password=password,
+                    permissions=permissions,
+                    typeclass=typeclass,
+                    home=home,
+                    ip=ip,
+                )
+                errors.extend(errs)
+                return account, errors
+
+        except Exception as e:
+            # We are in the middle between logged in and -not, so we have
+            # to handle tracebacks ourselves at this point. If we don't,
+            # we won't see any errors at all.
+            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            logger.log_trace()
+            return None, errors
+
+        return account, errors
 
     def at_post_login(self, session=None, **kwargs):
         """

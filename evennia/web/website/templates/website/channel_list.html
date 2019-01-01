@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+{{ view.page_title }}
+{% endblock %}
+
+{% block content %}
+
+{% load addclass %}
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title">{{ view.page_title }}</h1>
+        <hr />
+        
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'channels' %}">Channels</a></li>
+        </ol>
+        <hr />
+        
+        <div class="row">
+            
+          <!-- left column -->
+          <div class="col-lg-9 col-sm-12">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">Channel</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Subscriptions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                      <td><a href="{{ object.web_get_detail_url }}">{{ object.name }}</a></td>
+                      <td>{{ object.db.desc }}</td>
+                      <td>{{ object.subscriptions.all|length }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="3">No channels were found!</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>      
+          </div>
+          <!-- end left column -->
+          
+          <!-- right column -->
+          <div class="col-lg-3 col-sm-12">
+              
+            {% if request.user.is_staff %}
+            <!-- admin button -->
+            <a class="btn btn-info btn-block mb-3" href="/admin/comms/channeldb/">Admin</a>
+            <!-- end admin button -->
+            <hr />
+            {% endif %}
+          
+            {% if most_popular %}
+            <div class="card mb-3">
+              <div class="card-header">Most Popular</div>
+              
+              <ul class="list-group list-group-flush">
+                {% for top in most_popular %}
+                <a href="{{ top.web_get_detail_url }}" class="list-group-item">{{ top }} <span class="badge badge-light float-right">{{ top.subscriptions.all|length }}</span></a>
+                {% endfor %}
+              </ul>
+              
+            </div>
+            {% endif %}
+          
+          </div>
+          <!-- end right column -->
+            
+        </div>
+        
+      <hr />
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

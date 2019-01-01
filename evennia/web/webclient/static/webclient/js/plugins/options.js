@@ -77,10 +77,12 @@ let options_plugin = (function () {
         if (code === 27) { // Escape key
             if ($('#helpdialog').is(':visible')) {
                 plugins['popups'].closePopup("#helpdialog");
-            } else {
-                plugins['popups'].closePopup("#optionsdialog");
+                return true;
             }
-            return true;
+            if ($('#optionsdialog').is(':visible')) {
+                plugins['popups'].closePopup("#optionsdialog");
+                return true;
+            }
         }
         return false;
     }
@@ -130,6 +132,21 @@ let options_plugin = (function () {
     }
 
     //
+    // Make sure to close any dialogs on connection lost
+    var onText = function (args, kwargs) {
+        // is helppopup set? and if so, does this Text have type 'help'?
+        if ('helppopup' in options && options['helppopup'] ) {
+            if (kwargs && ('type' in kwargs) && (kwargs['type'] == 'help') ) {
+                $('#helpdialogcontent').append('<div>'+ args + '</div>');
+                plugins['popups'].togglePopup("#helpdialog");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //
     // Register and init plugin
     var init = function () {
         // Add GUI components
@@ -155,6 +172,7 @@ let options_plugin = (function () {
         onGotOptions: onGotOptions,
         onPrompt: onPrompt,
         onConnectionClose: onConnectionClose,
+        onText: onText,
     }
 })()
 plugin_handler.add('options', options_plugin);

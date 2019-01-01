@@ -562,6 +562,7 @@ def node_index(caller):
 
     text = """
        |c --- Prototype wizard --- |n
+       %s
 
        A |cprototype|n is a 'template' for |wspawning|n an in-game entity. A field of the prototype
        can either be hard-coded, left empty or scripted using |w$protfuncs|n - for example to
@@ -598,6 +599,17 @@ def node_index(caller):
 
        {pfuncs}
        """.format(pfuncs=_format_protfuncs())
+
+    # If a prototype is being edited, show its key and
+    # prototype_key under the title
+    loaded_prototype = ''
+    if 'prototype_key' in prototype \
+            or 'key' in prototype:
+        loaded_prototype = ' --- Editing: |y{}({})|n --- '.format(
+            prototype.get('key', ''),
+            prototype.get('prototype_key', '')
+        )
+    text = text % (loaded_prototype)
 
     text = (text, helptxt)
 
