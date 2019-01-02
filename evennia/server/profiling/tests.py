@@ -2,7 +2,11 @@ from django.test import TestCase
 from mock import Mock, patch, mock_open
 from .dummyrunner_settings import (c_creates_button, c_creates_obj, c_digs, c_examines, c_help, c_idles, c_login,
                                    c_login_nodig, c_logout, c_looks, c_moves, c_moves_n, c_moves_s, c_socialize)
-import memplot
+
+try:
+    import memplot
+except ImportError:
+    memplot = Mock()
 
 
 class TestDummyrunnerSettings(TestCase):
@@ -100,6 +104,8 @@ class TestMemPlot(TestCase):
     @patch.object(memplot, "open", new_callable=mock_open, create=True)
     @patch.object(memplot, "time")
     def test_memplot(self, mock_time, mocked_open, mocked_os, mocked_idmapper):
+        if isinstance(memplot, Mock):
+            return
         from evennia.utils.create import create_script
         mocked_idmapper.cache_size.return_value = (9, 5000)
         mock_time.time = Mock(return_value=6000.0)
