@@ -115,7 +115,7 @@ class TestDefaultAccountAuth(EvenniaTest):
 
     def test_throttle(self):
         "Confirm throttle activates on too many failures."
-        for x in xrange(20):
+        for x in range(20):
             obj, errors = DefaultAccount.authenticate(self.account.name, 'xyzzy', ip='12.24.36.48')
             self.assertFalse(obj, 'Authentication was provided a bogus password; this should NOT have returned an account!')
 
