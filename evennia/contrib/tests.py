@@ -2307,6 +2307,257 @@ class TestPuzzles(CommandTest):
         expected = {(key, len(list(grp))) for key, grp in itertools.groupby(srs)}
         self._check_room_contents(expected)
 
+    def test_e2e_accumulative(self):
+        flashlight = create_object(
+                self.object_typeclass,
+                key='flashlight', location=self.char1.location)
+        flashlight_w_1 = create_object(
+                self.object_typeclass,
+                key='flashlight-w-1', location=self.char1.location)
+        flashlight_w_2 = create_object(
+                self.object_typeclass,
+                key='flashlight-w-2', location=self.char1.location)
+        flashlight_w_3 = create_object(
+                self.object_typeclass,
+                key='flashlight-w-3',
+                location=self.char1.location)
+        battery = create_object(
+                self.object_typeclass,
+                key='battery', location=self.char1.location)
+
+        battery.tags.add('flashlight-1', category=puzzles._PUZZLES_TAG_CATEGORY)
+        battery.tags.add('flashlight-2', category=puzzles._PUZZLES_TAG_CATEGORY)
+        battery.tags.add('flashlight-3', category=puzzles._PUZZLES_TAG_CATEGORY)
+
+        # TODO: instead of tagging each flashlight,
+        # arm and resolve each puzzle in order so they all
+        # are tagged correctly
+        # it will be necessary to add/remove parts/results because
+        # each battery is supposed to be consumed during resolution
+        # as the new flashlight has one more battery than before
+        flashlight_w_1.tags.add('flashlight-2', category=puzzles._PUZZLES_TAG_CATEGORY)
+        flashlight_w_2.tags.add('flashlight-3', category=puzzles._PUZZLES_TAG_CATEGORY)
+
+        recipe_fl1_dbref = self._good_recipe('flashlight-1', ['flashlight', 'battery'], ['flashlight-w-1'] , and_destroy_it=False,
+                expected_count=1)
+        recipe_fl2_dbref = self._good_recipe('flashlight-2', ['flashlight-w-1', 'battery'], ['flashlight-w-2'] , and_destroy_it=False,
+                expected_count=2)
+        recipe_fl3_dbref = self._good_recipe('flashlight-3', ['flashlight-w-2', 'battery'], ['flashlight-w-3'] , and_destroy_it=False,
+                expected_count=3)
+
+        # delete protoparts
+        for obj in [battery, flashlight, flashlight_w_1,
+                flashlight_w_2, flashlight_w_3]:
+            obj.delete()
+
+        def _group_parts(parts, excluding=set()):
+            group = dict()
+            dbrefs = dict()
+            for o in self.room1.contents:
+                if o.key in parts and o.dbref not in excluding:
+                    if o.key not in group:
+                        group[o.key] = []
+                    group[o.key].append(o.dbref)
+                    dbrefs[o.dbref] = o
+            return group, dbrefs
+
+        # arm each puzzle and group its parts
+        self._arm(recipe_fl1_dbref, 'flashlight-1', ['battery', 'flashlight'])
+        fl1_parts, fl1_dbrefs = _group_parts(['battery', 'flashlight'])
+        self._arm(recipe_fl2_dbref, 'flashlight-2', ['battery', 'flashlight-w-1'])
+        fl2_parts, fl2_dbrefs = _group_parts(['battery', 'flashlight-w-1'], excluding=fl1_dbrefs.keys())
+        self._arm(recipe_fl3_dbref, 'flashlight-3', ['battery', 'flashlight-w-2'])
+        fl3_parts, fl3_dbrefs = _group_parts(['battery', 'flashlight-w-2'], excluding=set(fl1_dbrefs.keys() + fl2_dbrefs.keys()))
+
+        self._check_room_contents({
+            'battery': 3,
+            'flashlight': 1,
+            'flashlight-w-1': 1,
+            'flashlight-w-2': 1,
+            'flashlight-w-3': 0
+        })
+
+        # all batteries have identical protodefs
+        battery_1 = fl1_dbrefs[fl1_parts['battery'][0]]
+        battery_2 = fl2_dbrefs[fl2_parts['battery'][0]]
+        battery_3 = fl3_dbrefs[fl3_parts['battery'][0]]
+        protodef_battery_1 = puzzles.proto_def(battery_1, with_tags=False)
+        del(protodef_battery_1['prototype_key'])
+        protodef_battery_2 = puzzles.proto_def(battery_2, with_tags=False)
+        del(protodef_battery_2['prototype_key'])
+        protodef_battery_3 = puzzles.proto_def(battery_3, with_tags=False)
+        del(protodef_battery_3['prototype_key'])
+        assert protodef_battery_1 == protodef_battery_2 == protodef_battery_3
+
+        # each battery can be used in every other puzzle
+
+        b1_parts_dict, b1_puzzlenames, b1_protodefs = puzzles._lookups_parts_puzzlenames_protodefs([battery_1])
+        _puzzles = puzzles._puzzles_by_names(b1_puzzlenames.keys())
+        assert set(['flashlight-1', 'flashlight-2', 'flashlight-3']) \
+                == set([p.db.puzzle_name for p in _puzzles])
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, b1_puzzlenames, b1_protodefs)
+        assert 0 == len(matched_puzzles)
+
+        b2_parts_dict, b2_puzzlenames, b2_protodefs = puzzles._lookups_parts_puzzlenames_protodefs([battery_2])
+        _puzzles = puzzles._puzzles_by_names(b2_puzzlenames.keys())
+        assert set(['flashlight-1', 'flashlight-2', 'flashlight-3']) \
+                == set([p.db.puzzle_name for p in _puzzles])
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, b2_puzzlenames, b2_protodefs)
+        assert 0 == len(matched_puzzles)
+        b3_parts_dict, b3_puzzlenames, b3_protodefs = puzzles._lookups_parts_puzzlenames_protodefs([battery_3])
+        _puzzles = puzzles._puzzles_by_names(b3_puzzlenames.keys())
+        assert set(['flashlight-1', 'flashlight-2', 'flashlight-3']) \
+                == set([p.db.puzzle_name for p in _puzzles])
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, b3_puzzlenames, b3_protodefs)
+        assert 0 == len(matched_puzzles)
+
+        assert battery_1 == b1_parts_dict.values()[0]
+        assert battery_2 == b2_parts_dict.values()[0]
+        assert battery_3 == b3_parts_dict.values()[0]
+        assert b1_puzzlenames.keys() == b2_puzzlenames.keys() == b3_puzzlenames.keys()
+        for puzzle_name in ['flashlight-1', 'flashlight-2', 'flashlight-3']:
+            assert puzzle_name in b1_puzzlenames
+            assert puzzle_name in b2_puzzlenames
+            assert puzzle_name in b3_puzzlenames
+        assert b1_protodefs.values()[0] == b2_protodefs.values()[0] == b3_protodefs.values()[0] \
+                == protodef_battery_1 == protodef_battery_2 == protodef_battery_3
+
+        # all flashlights have similar protodefs except their key
+        flashlight_1 = fl1_dbrefs[fl1_parts['flashlight'][0]]
+        flashlight_2 = fl2_dbrefs[fl2_parts['flashlight-w-1'][0]]
+        flashlight_3 = fl3_dbrefs[fl3_parts['flashlight-w-2'][0]]
+        protodef_flashlight_1 = puzzles.proto_def(flashlight_1, with_tags=False)
+        del(protodef_flashlight_1['prototype_key'])
+        assert protodef_flashlight_1['key'] == 'flashlight'
+        del(protodef_flashlight_1['key'])
+        protodef_flashlight_2 = puzzles.proto_def(flashlight_2, with_tags=False)
+        del(protodef_flashlight_2['prototype_key'])
+        assert protodef_flashlight_2['key'] == 'flashlight-w-1'
+        del(protodef_flashlight_2['key'])
+        protodef_flashlight_3 = puzzles.proto_def(flashlight_3, with_tags=False)
+        del(protodef_flashlight_3['prototype_key'])
+        assert protodef_flashlight_3['key'] == 'flashlight-w-2'
+        del(protodef_flashlight_3['key'])
+        assert protodef_flashlight_1 == protodef_flashlight_2 == protodef_flashlight_3
+
+        # each flashlight can only be used in its own puzzle
+
+        f1_parts_dict, f1_puzzlenames, f1_protodefs = puzzles._lookups_parts_puzzlenames_protodefs([flashlight_1])
+        _puzzles = puzzles._puzzles_by_names(f1_puzzlenames.keys())
+        assert set(['flashlight-1']) \
+                == set([p.db.puzzle_name for p in _puzzles])
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, f1_puzzlenames, f1_protodefs)
+        assert 0 == len(matched_puzzles)
+        f2_parts_dict, f2_puzzlenames, f2_protodefs = puzzles._lookups_parts_puzzlenames_protodefs([flashlight_2])
+        _puzzles = puzzles._puzzles_by_names(f2_puzzlenames.keys())
+        assert set(['flashlight-2']) \
+                == set([p.db.puzzle_name for p in _puzzles])
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, f2_puzzlenames, f2_protodefs)
+        assert 0 == len(matched_puzzles)
+        f3_parts_dict, f3_puzzlenames, f3_protodefs = puzzles._lookups_parts_puzzlenames_protodefs([flashlight_3])
+        _puzzles = puzzles._puzzles_by_names(f3_puzzlenames.keys())
+        assert set(['flashlight-3']) \
+                == set([p.db.puzzle_name for p in _puzzles])
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, f3_puzzlenames, f3_protodefs)
+        assert 0 == len(matched_puzzles)
+
+        assert flashlight_1 == f1_parts_dict.values()[0]
+        assert flashlight_2 == f2_parts_dict.values()[0]
+        assert flashlight_3 == f3_parts_dict.values()[0]
+        for puzzle_name in set(f1_puzzlenames.keys() + f2_puzzlenames.keys() + f3_puzzlenames.keys()):
+            assert puzzle_name in ['flashlight-1', 'flashlight-2', 'flashlight-3', 'puzzle_member']
+        protodef_flashlight_1['key'] = 'flashlight'
+        assert f1_protodefs.values()[0] == protodef_flashlight_1
+        protodef_flashlight_2['key'] = 'flashlight-w-1'
+        assert f2_protodefs.values()[0] == protodef_flashlight_2
+        protodef_flashlight_3['key'] = 'flashlight-w-2'
+        assert f3_protodefs.values()[0] == protodef_flashlight_3
+
+        # each battery can be matched with every other flashlight
+        # to potentially resolve each puzzle
+        for batt in [battery_1, battery_2, battery_3]:
+            parts_dict, puzzlenames, protodefs = puzzles._lookups_parts_puzzlenames_protodefs([batt, flashlight_1])
+            assert set([batt.dbref, flashlight_1.dbref]) == set(puzzlenames['flashlight-1'])
+            assert set([batt.dbref]) == set(puzzlenames['flashlight-2'])
+            assert set([batt.dbref]) == set(puzzlenames['flashlight-3'])
+            _puzzles = puzzles._puzzles_by_names(puzzlenames.keys())
+            assert set(['flashlight-1', 'flashlight-2', 'flashlight-3']) == set([p.db.puzzle_name for p in _puzzles])
+            matched_puzzles = puzzles._matching_puzzles(_puzzles, puzzlenames, protodefs)
+            assert 1 == len(matched_puzzles)
+            parts_dict, puzzlenames, protodefs = puzzles._lookups_parts_puzzlenames_protodefs([batt, flashlight_2])
+            assert set([batt.dbref]) == set(puzzlenames['flashlight-1'])
+            assert set([batt.dbref, flashlight_2.dbref]) == set(puzzlenames['flashlight-2'])
+            assert set([batt.dbref]) == set(puzzlenames['flashlight-3'])
+            _puzzles = puzzles._puzzles_by_names(puzzlenames.keys())
+            assert set(['flashlight-1','flashlight-2', 'flashlight-3']) == set([p.db.puzzle_name for p in _puzzles])
+            matched_puzzles = puzzles._matching_puzzles(_puzzles, puzzlenames, protodefs)
+            assert 1 == len(matched_puzzles)
+            parts_dict, puzzlenames, protodefs = puzzles._lookups_parts_puzzlenames_protodefs([batt, flashlight_3])
+            assert set([batt.dbref]) == set(puzzlenames['flashlight-1'])
+            assert set([batt.dbref]) == set(puzzlenames['flashlight-2'])
+            assert set([batt.dbref, flashlight_3.dbref]) == set(puzzlenames['flashlight-3'])
+            _puzzles = puzzles._puzzles_by_names(puzzlenames.keys())
+            assert set(['flashlight-1','flashlight-2', 'flashlight-3']) == set([p.db.puzzle_name for p in _puzzles])
+            matched_puzzles = puzzles._matching_puzzles(_puzzles, puzzlenames, protodefs)
+            assert 1 == len(matched_puzzles)
+
+        # delete all parts
+        for part in fl1_dbrefs.values() + fl2_dbrefs.values() + fl3_dbrefs.values():
+            part.delete()
+
+        self._check_room_contents({
+            'battery': 0,
+            'flashlight': 0,
+            'flashlight-w-1': 0,
+            'flashlight-w-2': 0,
+            'flashlight-w-3': 0
+        })
+
+        # arm first puzzle 3 times and group its parts so we can solve
+        # all puzzles with the parts from the 1st armed
+        for i in range(3):
+            self._arm(recipe_fl1_dbref, 'flashlight-1', ['battery', 'flashlight'])
+        fl1_parts, fl1_dbrefs = _group_parts(['battery', 'flashlight'])
+
+        # delete the 2 extra flashlights so we can start solving
+        for flashlight_dbref in fl1_parts['flashlight'][1:]:
+            fl1_dbrefs[flashlight_dbref].delete()
+
+        self._check_room_contents({
+            'battery': 3,
+            'flashlight': 1,
+            'flashlight-w-1': 0,
+            'flashlight-w-2': 0,
+            'flashlight-w-3': 0
+        })
+
+        self._use('1-battery, flashlight', 'You are a Genius')
+        self._check_room_contents({
+            'battery': 2,
+            'flashlight': 0,
+            'flashlight-w-1': 1,
+            'flashlight-w-2': 0,
+            'flashlight-w-3': 0
+        })
+
+        self._use('1-battery, flashlight-w-1', 'You are a Genius')
+        self._check_room_contents({
+            'battery': 1,
+            'flashlight': 0,
+            'flashlight-w-1': 0,
+            'flashlight-w-2': 1,
+            'flashlight-w-3': 0
+        })
+
+        self._use('battery, flashlight-w-2', 'You are a Genius')
+        self._check_room_contents({
+            'battery': 0,
+            'flashlight': 0,
+            'flashlight-w-1': 0,
+            'flashlight-w-2': 0,
+            'flashlight-w-3': 1
+        })
+
     def test_e2e_interchangeable_parts_and_results(self):
         # Parts and Results can be used in multiple puzzles
         egg = create_object(
