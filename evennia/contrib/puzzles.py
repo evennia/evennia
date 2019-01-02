@@ -510,6 +510,69 @@ class CmdArmPuzzle(MuxCommand):
         caller.msg("Puzzle armed |gsuccessfully|n.")
 
 
+def _lookups_parts_puzzlenames_protodefs(parts):
+    # Create lookup dicts by part's dbref and by puzzle_name(tags)
+    parts_dict = dict()
+    puzzlename_tags_dict = dict()
+    puzzle_ingredients = dict()
+    for part in parts:
+        parts_dict[part.dbref] = part
+        protodef = proto_def(part, with_tags=False)
+        # remove 'prototype_key' as it will prevent equality
+        del(protodef['prototype_key'])
+        puzzle_ingredients[part.dbref] = protodef
+        tags_categories = part.tags.all(return_key_and_category=True)
+        for tag, category in tags_categories:
+            if category != _PUZZLES_TAG_CATEGORY:
+                continue
+            if tag not in puzzlename_tags_dict:
+                puzzlename_tags_dict[tag] = []
+            puzzlename_tags_dict[tag].append(part.dbref)
+    return parts_dict, puzzlename_tags_dict, puzzle_ingredients
+
+
+def _puzzles_by_names(names):
+    # Find all puzzles by puzzle name (i.e. tag name)
+    puzzles = []
+    for puzzle_name in names:
+        _puzzles = search.search_script_attribute(
+                key='puzzle_name',
+                value=puzzle_name
+        )
+        _puzzles = list(filter(lambda p: isinstance(p, PuzzleRecipe), _puzzles))
+        if not _puzzles:
+            continue
+        else:
+            puzzles.extend(_puzzles)
+    return puzzles
+
+def _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients):
+    # Check if parts can be combined to solve a puzzle
+    matched_puzzles = dict()
+    for puzzle in puzzles:
+        puzzle_protoparts = list(puzzle.db.parts[:])
+        puzzle_mask = puzzle.db.mask[:]
+        # remove tags and prototype_key as they prevent equality
+        for i, puzzle_protopart in enumerate(puzzle_protoparts[:]):
+            del(puzzle_protopart['tags'])
+            del(puzzle_protopart['prototype_key'])
+            puzzle_protopart = maskout_protodef(puzzle_protopart, puzzle_mask)
+            puzzle_protoparts[i] = puzzle_protopart
+
+        matched_dbrefparts = []
+        parts_dbrefs = puzzlename_tags_dict[puzzle.db.puzzle_name]
+        for part_dbref in parts_dbrefs:
+            protopart = puzzle_ingredients[part_dbref]
+            protopart = maskout_protodef(protopart, puzzle_mask)
+            if protopart in puzzle_protoparts:
+                puzzle_protoparts.remove(protopart)
+                matched_dbrefparts.append(part_dbref)
+        else:
+            if len(puzzle_protoparts) == 0:
+                matched_puzzles[puzzle.dbref] = matched_dbrefparts
+    return matched_puzzles
+
+
 class CmdUsePuzzleParts(MuxCommand):
     """
     Searches for all puzzles whose parts
@@ -559,63 +622,19 @@ class CmdUsePuzzleParts(MuxCommand):
             parts.append(part)
 
         # Create lookup dicts by part's dbref and by puzzle_name(tags)
-        parts_dict = dict()
-        puzzlename_tags_dict = dict()
-        puzzle_ingredients = dict()
-        for part in parts:
-            parts_dict[part.dbref] = part
-            protodef = proto_def(part, with_tags=False)
-            # remove 'prototype_key' as it will prevent equality
-            del(protodef['prototype_key'])
-            puzzle_ingredients[part.dbref] = protodef
-            tags_categories = part.tags.all(return_key_and_category=True)
-            for tag, category in tags_categories:
-                if category != _PUZZLES_TAG_CATEGORY:
-                    continue
-                if tag not in puzzlename_tags_dict:
-                    puzzlename_tags_dict[tag] = []
-                puzzlename_tags_dict[tag].append(part.dbref)
+        parts_dict, puzzlename_tags_dict, puzzle_ingredients = \
+                _lookups_parts_puzzlenames_protodefs(parts)
 
         # Find all puzzles by puzzle name (i.e. tag name)
-        puzzles = []
-        for puzzle_name, parts in puzzlename_tags_dict.items():
-            _puzzles = search.search_script_attribute(
-                    key='puzzle_name',
-                    value=puzzle_name
-            )
-            _puzzles = list(filter(lambda p: isinstance(p, PuzzleRecipe), _puzzles))
-            if not _puzzles:
-                continue
-            else:
-                puzzles.extend(_puzzles)
+        puzzles = _puzzles_by_names(puzzlename_tags_dict.keys())
 
         logger.log_info("PUZZLES %r" % ([(p.dbref, p.db.puzzle_name) for p in puzzles]))
 
         # Create lookup dict of puzzles by dbref
         puzzles_dict = dict((puzzle.dbref, puzzle) for puzzle in puzzles)
         # Check if parts can be combined to solve a puzzle
-        matched_puzzles = dict()
-        for puzzle in puzzles:
-            puzzle_protoparts = list(puzzle.db.parts[:])
-            puzzle_mask = puzzle.db.mask[:]
-            # remove tags and prototype_key as they prevent equality
-            for i, puzzle_protopart in enumerate(puzzle_protoparts[:]):
-                del(puzzle_protopart['tags'])
-                del(puzzle_protopart['prototype_key'])
-                puzzle_protopart = maskout_protodef(puzzle_protopart, puzzle_mask)
-                puzzle_protoparts[i] = puzzle_protopart
-
-            matched_dbrefparts = []
-            parts_dbrefs = puzzlename_tags_dict[puzzle.db.puzzle_name]
-            for part_dbref in parts_dbrefs:
-                protopart = puzzle_ingredients[part_dbref]
-                protopart = maskout_protodef(protopart, puzzle_mask)
-                if protopart in puzzle_protoparts:
-                    puzzle_protoparts.remove(protopart)
-                    matched_dbrefparts.append(part_dbref)
-            else:
-                if len(puzzle_protoparts) == 0:
-                    matched_puzzles[puzzle.dbref] = matched_dbrefparts
+        matched_puzzles = _matching_puzzles(
+                puzzles, puzzlename_tags_dict, puzzle_ingredients)
 
         if len(matched_puzzles) == 0:
             # TODO: we could use part.fail_message instead, if there was one
