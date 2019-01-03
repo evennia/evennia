@@ -13,3 +13,10 @@ A paragraph
 
 Another paragraph
 
+
+```eval_rst
+.. contents:: Contents
+```
+
+Header 2
+----------
