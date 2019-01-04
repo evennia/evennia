@@ -374,7 +374,7 @@ ERROR_LOGDIR_MISSING = \
 ERROR_PYTHON_VERSION = \
     """
     ERROR: Python {pversion} used. Evennia requires version
-    {python_min} or higher (but not 3.x).
+    {python_min} or higher.
     """
 
 ERROR_TWISTED_VERSION = \
