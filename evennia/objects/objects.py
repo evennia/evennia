@@ -432,8 +432,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
             exact = True
-        else:
-            # TODO: write code...if candidates is None:
+
+        elif candidates is None:
             # no custom candidates given - get them automatically
             if location:
                 # location(s) were given
@@ -1950,13 +1950,13 @@ class DefaultCharacter(DefaultObject):
             if len(account.characters) >= settings.MAX_NR_CHARACTERS:
                 errors.append("There are too many characters associated with this account.")
                 return obj, errors
-            
+
             # Create the Character
             obj = create.create_object(**kwargs)
 
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
-            if account: 
+            if account:
                 obj.db.creator_id = account.id
                 if obj not in account.characters:
                     account.db._playable_characters.append(obj)
@@ -1973,7 +1973,7 @@ class DefaultCharacter(DefaultObject):
             # If no description is set, set a default description
             if description or not obj.db.desc:
                 obj.db.desc = description if description else "This is a character."
-            
+
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(e)
