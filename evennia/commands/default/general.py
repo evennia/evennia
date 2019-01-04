@@ -211,7 +211,9 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             if not specified_nicktype:
                 nicktypes = ("object", "account", "inputline")
             for nicktype in nicktypes:
-                nicks = utils.make_iter(caller.nicks.get(category=nicktype, return_obj=True))
+                nicks = [nick for nick in
+                         utils.make_iter(caller.nicks.get(category=nicktype, return_obj=True))
+                         if nick]
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
