@@ -2288,7 +2288,7 @@ class TestPuzzles(CommandTest):
         parts = ['Balloon']
         results = ['Balloon']
         recipe_dbref = self._good_recipe(
-            'boom!!!',  # FIXME: uppercase name fails
+            'boom!!!',
             parts, results,
             and_destroy_it=False,
             expected_count=3
