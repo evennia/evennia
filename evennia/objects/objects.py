@@ -388,8 +388,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             nofound_string (str):  optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
             use_dbref (bool or None, optional): if True/False, active/deactivate the use of
-                #dbref as valid global search arguments. If None, check against a permission
-                ('Builder' by default).
+                #dbref as valid global search arguments. If None (default), activate this ability
+                only if `self` has the permission 'Builder'.
 
         Returns:
             match (Object, None or list): will return an Object/None if `quiet=False`,
