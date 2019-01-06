@@ -67,7 +67,7 @@ def start(caller):
     text = random_string_from_module(CONNECTION_SCREEN_MODULE)
     text += "\n\nEnter your username or |yNEW|n to create a new account."
     options = (
-        {"key": "",
+        {"key": "s",
          "goto": "start"},
         {"key": "new",
          "goto": "create_account"},
@@ -95,7 +95,7 @@ def username(caller, string_input):
             Try another name or leave empty to go back.
         """.strip("\n")).format(string_input)
         options = (
-            {"key": "",
+            {"key": "s",
              "goto": "start"},
             {"key": "_default",
              "goto": "username"})
@@ -105,7 +105,7 @@ def username(caller, string_input):
         # Disables echo for the password
         caller.msg("", options={"echo": False})
         options = (
-            {"key": "",
+            {"key": "s",
              "exec": lambda caller: caller.msg("", options={"echo": True}),
              "goto": "start"},
             {"key": "_default",
@@ -153,7 +153,7 @@ def ask_password(caller, string_input):
             """.strip("\n"))
             # Loops on the same node
             options = (
-                {"key": "",
+                {"key": "s",
                  "exec": lambda caller: caller.msg("", options={"echo": True}),
                  "goto": "start"},
                 {"key": "_default",
@@ -211,7 +211,7 @@ def create_username(caller, string_input):
         """.strip("\n")).format(string_input)
         # Loops on the same node
         options = (
-            {"key": "",
+            {"key": "s",
              "goto": "start"},
             {"key": "_default",
              "goto": "create_username"})
@@ -223,7 +223,7 @@ def create_username(caller, string_input):
             Enter another username or leave blank to go back.
         """.strip("\n"))
         options = (
-            {"key": "",
+            {"key": "s",
              "goto": "start"},
             {"key": "_default",
              "goto": "create_username"})
@@ -252,7 +252,7 @@ def create_password(caller, string_input):
     menutree = caller.ndb._menutree
     text = ""
     options = (
-        {"key": "",
+        {"key": "s",
          "exec": lambda caller: caller.msg("", options={"echo": True}),
          "goto": "start"},
         {"key": "_default",
