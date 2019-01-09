@@ -122,9 +122,9 @@ class TestUtils(EvenniaTest):
 
         self.assertEqual(obj_prototype,
                          {'aliases': ['foo'],
-                          'attrs': [('oldtest', 'to_keep', None, ''),
-                                    ('test', 'testval', None, ''),
-                                    ('desc', 'changed desc', None, '')],
+                          'attrs': [('desc', 'changed desc', None, ''),
+                                    ('oldtest', 'to_keep', None, ''),
+                                    ('test', 'testval', None, '')],
                           'key': 'Obj',
                           'home': '#1',
                           'location': '#1',
@@ -213,9 +213,9 @@ class TestUtils(EvenniaTest):
         self.assertEqual(count, 1)
 
         new_prot = spawner.prototype_from_object(self.obj1)
-        self.assertEqual({'attrs': [('oldtest', 'to_keep', None, ''),
-                                    ('fooattr', 'fooattrval', None, ''),
+        self.assertEqual({'attrs': [('fooattr', 'fooattrval', None, ''),
                                     ('new', 'new_val', None, ''),
+                                    ('oldtest', 'to_keep', None, ''),
                                     ('test', 'testval_changed', None, '')],
                           'home': Something,
                           'key': 'Obj',

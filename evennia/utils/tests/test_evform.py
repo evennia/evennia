@@ -10,13 +10,10 @@ class TestEvForm(TestCase):
     def test_form(self):
         self.maxDiff = None
         form1 = evform._test()
-        print("len(form1): {}".format(len(form1)))
         form2 = evform._test()
-        print("len(form2): {}".format(len(form2)))
-
         self.assertEqual(form1, form2)
 
-        # self.assertEqual(form, "")
+        # self.assertEqual(form1, "")
                          # '.------------------------------------------------.\n'
                          # '|                                                |\n'
                          # '|  Name: \x1b[0m\x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b'

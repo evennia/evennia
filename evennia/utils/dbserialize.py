@@ -29,6 +29,7 @@ except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
+from django.utils.safestring import SafeString, SafeBytes
 from evennia.utils.utils import to_str, uses_database, is_iter
 from evennia.utils import logger
 
@@ -521,7 +522,7 @@ def to_pickle(data):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool):
+        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
@@ -573,7 +574,7 @@ def from_pickle(data, db_obj=None):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool):
+        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -602,7 +603,7 @@ def from_pickle(data, db_obj=None):
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool):
+        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
