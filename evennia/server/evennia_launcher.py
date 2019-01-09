@@ -1401,7 +1401,7 @@ def create_superuser():
     """
     print(
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
-        "account of the server.\n")
+        "account of the server. Email is optional and can be empty.\n")
     django.core.management.call_command("createsuperuser", interactive=True)
 
 

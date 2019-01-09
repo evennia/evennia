@@ -1,24 +1,22 @@
+"""
+This file contains the generic, assorted views that don't fall under one of the other applications.
+Views are django's way of processing e.g. html templates on the fly.
 
 """
-This file contains the generic, assorted views that don't fall under one of
-the other applications. Views are django's way of processing e.g. html
-templates on the fly.
 
-"""
 from collections import OrderedDict
 
 from django.contrib.admin.sites import site
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Lower
-from django.http import HttpResponseBadRequest, HttpResponseRedirect, Http404
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import View, TemplateView, ListView, DetailView, FormView
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
@@ -26,14 +24,14 @@ from evennia import SESSION_HANDLER
 from evennia.help.models import HelpEntry
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
-from evennia.utils import class_from_module, logger
+from evennia.utils import class_from_module
 from evennia.utils.logger import tail_log_file
-from evennia.web.website.forms import *
+from evennia.web.website import forms as website_forms
 
-from django.contrib.auth import login
 from django.utils.text import slugify
 
 _BASE_CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
+
 
 def _gamestats():
     # Some misc. configurable stuff.
@@ -49,8 +47,10 @@ def _gamestats():
     # nsess = len(AccountDB.objects.get_connected_accounts()) or "no one"
 
     nobjs = ObjectDB.objects.all().count()
-    nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(db_typeclass_path=_BASE_CHAR_TYPECLASS).count()
-    nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
+    nrooms = ObjectDB.objects.filter(
+        db_location__isnull=True).exclude(db_typeclass_path=_BASE_CHAR_TYPECLASS).count()
+    nexits = ObjectDB.objects.filter(
+        db_location__isnull=False, db_destination__isnull=False).count()
     nchars = ObjectDB.objects.filter(db_typeclass_path=_BASE_CHAR_TYPECLASS).count()
     nothers = nobjs - nrooms - nchars - nexits
 
@@ -98,6 +98,7 @@ def admin_wrapper(request):
     Wrapper that allows us to properly use the base Django admin site, if needed.
     """
     return staff_member_required(site.index)(request)
+
 
 #
 # Class-based views
@@ -237,6 +238,7 @@ class EvenniaDeleteView(DeleteView, TypeclassMixin):
         # Makes sure the page has a sensible title.
         return 'Delete %s' % self.typeclass._meta.verbose_name.title()
 
+
 #
 # Object views
 #
@@ -336,8 +338,9 @@ class ObjectDetailView(EvenniaDetailView):
 
         # Check if this object was requested in a valid manner
         if slugify(obj.name) != self.kwargs.get(self.slug_url_kwarg):
-            raise HttpResponseBadRequest(u"No %(verbose_name)s found matching the query" %
-              {'verbose_name': queryset.model._meta.verbose_name})
+            raise HttpResponseBadRequest(
+                u"No %(verbose_name)s found matching the query" %
+                {'verbose_name': queryset.model._meta.verbose_name})
 
         # Check if the requestor account has permissions to access object
         account = self.request.user
@@ -430,7 +433,8 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
         object detail page so the user can see their changes reflected.
 
         """
-        if self.success_url: return self.success_url
+        if self.success_url:
+            return self.success_url
         return self.object.web_get_detail_url()
 
     def get_initial(self):
@@ -448,10 +452,10 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
         obj = self.get_object()
 
         # Get attributes
-        data = {k:getattr(obj.db, k, '') for k in self.form_class.base_fields}
+        data = {k: getattr(obj.db, k, '') for k in self.form_class.base_fields}
 
         # Get model fields
-        data.update({k:getattr(obj, k, '') for k in self.form_class.Meta.fields})
+        data.update({k: getattr(obj, k, '') for k in self.form_class.Meta.fields})
 
         return data
 
@@ -471,16 +475,17 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
 
         """
         # Get the attributes after they've been cleaned and validated
-        data = {k:v for k,v in form.cleaned_data.items() if k not in self.form_class.Meta.fields}
+        data = {k: v for k, v in form.cleaned_data.items() if k not in self.form_class.Meta.fields}
 
         # Update the object attributes
         for key, value in data.items():
-            setattr(self.object.db, key, value)
+            self.object.attributes.add(key, value)
             messages.success(self.request, "Successfully updated '%s' for %s." % (key, self.object))
 
         # Do not return super().form_valid; we don't want to update the model
         # instance, just its attributes.
         return HttpResponseRedirect(self.get_success_url())
+
 
 #
 # Account views
@@ -496,7 +501,7 @@ class AccountMixin(TypeclassMixin):
     """
     # -- Django constructs --
     model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
-    form_class = AccountForm
+    form_class = website_forms.AccountForm
 
 
 class AccountCreateView(AccountMixin, EvenniaCreateView):
@@ -537,10 +542,12 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
             return self.form_invalid(form)
 
         # Inform user of success
-        messages.success(self.request, "Your account '%s' was successfully created! You may log in using it now." % account.name)
+        messages.success(self.request, "Your account '%s' was successfully created! "
+                                       "You may log in using it now." % account.name)
 
         # Redirect the user to the login page
         return HttpResponseRedirect(self.success_url)
+
 
 #
 # Character views
@@ -556,7 +563,7 @@ class CharacterMixin(TypeclassMixin):
     """
     # -- Django constructs --
     model = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
-    form_class = CharacterForm
+    form_class = website_forms.CharacterForm
     success_url = reverse_lazy('character-manage')
 
     def get_queryset(self):
@@ -608,7 +615,8 @@ class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
 
         # Return a queryset consisting of characters the user is allowed to
         # see.
-        ids = [obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)]
+        ids = [obj.id for obj in self.typeclass.objects.all()
+               if obj.access(account, self.access_type)]
 
         return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
 
@@ -637,7 +645,7 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
         char = self.get_object()
 
         # Get the page the user came from
-        next = self.request.GET.get('next', self.success_url)
+        next_page = self.request.GET.get('next', self.success_url)
 
         if char:
             # If the account owns the char, store the ID of the char in the
@@ -650,7 +658,7 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
             self.request.session['puppet'] = None
             messages.error(self.request, "You cannot become '%s'." % char)
 
-        return next
+        return next_page
 
 
 class CharacterManageView(LoginRequiredMixin, CharacterMixin, ListView):
@@ -674,7 +682,7 @@ class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
 
     """
     # -- Django constructs --
-    form_class = CharacterUpdateForm
+    form_class = website_forms.CharacterUpdateForm
     template_name = 'website/character_form.html'
 
 
@@ -705,7 +713,8 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
 
         # Return a queryset consisting of characters the user is allowed to
         # see.
-        ids = [obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)]
+        ids = [obj.id for obj in self.typeclass.objects.all()
+               if obj.access(account, self.access_type)]
 
         return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
 
@@ -746,7 +755,6 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
         self.attributes = {k: form.cleaned_data[k] for k in form.cleaned_data.keys()}
         charname = self.attributes.pop('db_key')
         description = self.attributes.pop('desc')
-
         # Create a character
         character, errors = self.typeclass.create(charname, account, description=description)
 
@@ -756,7 +764,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
 
         if character:
             # Assign attributes from form
-            for key,value in self.attributes.items():
+            for key, value in self.attributes.items():
                 setattr(character.db, key, value)
 
             # Return the user to the character management page, unless overridden
@@ -767,6 +775,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
             # Call the Django "form failed" hook
             messages.error(self.request, "Your character could not be created.")
             return self.form_invalid(form)
+
 
 #
 # Channel views
@@ -881,12 +890,14 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
         context = super(ChannelDetailView, self).get_context_data(**kwargs)
 
         # Get the filename this Channel is recording to
-        filename = self.object.attributes.get("log_file", default="channel_%s.log" % self.object.key)
+        filename = self.object.attributes.get(
+            "log_file", default="channel_%s.log" % self.object.key)
 
         # Split log entries so we can filter by time
         bucket = []
         for log in (x.strip() for x in tail_log_file(filename, 0, self.max_num_lines)):
-            if not log: continue
+            if not log:
+                continue
             time, msg = log.split(' [-] ')
             time_key = time.split(':')[0]
 
@@ -903,7 +914,6 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
         context['object_filters'] = sorted(set([x['key'] for x in bucket]))
 
         return context
-
 
     def get_object(self, queryset=None):
         """
@@ -924,8 +934,9 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
 
         # Check if this object was requested in a valid manner
         if not obj:
-            raise HttpResponseBadRequest(u"No %(verbose_name)s found matching the query" %
-              {'verbose_name': queryset.model._meta.verbose_name})
+            raise HttpResponseBadRequest(
+                u"No %(verbose_name)s found matching the query" %
+                {'verbose_name': queryset.model._meta.verbose_name})
 
         return obj
 
@@ -976,6 +987,7 @@ class HelpMixin(TypeclassMixin):
 
         return filtered
 
+
 class HelpListView(HelpMixin, ListView):
     """
     Returns a list of help entries that can be viewed by a user, authenticated
@@ -988,6 +1000,7 @@ class HelpListView(HelpMixin, ListView):
 
     # -- Evennia constructs --
     page_title = "Help Index"
+
 
 class HelpDetailView(HelpMixin, EvenniaDetailView):
     """
@@ -1012,7 +1025,8 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
         obj = self.get_object()
 
         # Get queryset and filter out non-related categories
-        queryset = self.get_queryset().filter(db_help_category=obj.db_help_category).order_by(Lower('db_key'))
+        queryset = self.get_queryset().filter(
+            db_help_category=obj.db_help_category).order_by(Lower('db_key'))
         context['topic_list'] = queryset
 
         # Find the index position of the given obj in the queryset
@@ -1025,12 +1039,14 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
         try:
             assert i+1 <= len(objs) and objs[i+1] is not obj
             context['topic_next'] = objs[i+1]
-        except: context['topic_next'] = None
+        except:
+            context['topic_next'] = None
 
         try:
             assert i-1 >= 0 and objs[i-1] is not obj
             context['topic_previous'] = objs[i-1]
-        except: context['topic_previous'] = None
+        except:
+            context['topic_previous'] = None
 
         # Format the help entry using HTML instead of newlines
         text = obj.db_entrytext
@@ -1057,11 +1073,14 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
         # Find the object in the queryset
         category = slugify(self.kwargs.get('category', ''))
         topic = slugify(self.kwargs.get('topic', ''))
-        obj = next((x for x in queryset if slugify(x.db_help_category)==category and slugify(x.db_key)==topic), None)
+        obj = next((x for x in queryset
+                    if slugify(x.db_help_category) == category and
+                    slugify(x.db_key) == topic), None)
 
         # Check if this object was requested in a valid manner
         if not obj:
-            raise HttpResponseBadRequest(u"No %(verbose_name)s found matching the query" %
-              {'verbose_name': queryset.model._meta.verbose_name})
+            raise HttpResponseBadRequest(
+                u"No %(verbose_name)s found matching the query" %
+                {'verbose_name': queryset.model._meta.verbose_name})
 
         return obj

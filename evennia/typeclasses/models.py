@@ -817,7 +817,7 @@ class TypedObject(SharedMemoryModel):
                            kwargs={'pk': self.pk, 'slug': slugify(self.name)})
         except:
             return '#'
-            
+
     def web_get_puppet_url(self):
         """
         Returns the URI path for a View that allows users to puppet a specific

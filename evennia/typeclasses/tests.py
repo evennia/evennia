@@ -10,6 +10,25 @@ from evennia.utils.test_resources import EvenniaTest
 # ------------------------------------------------------------
 
 
+class TestAttributes(EvenniaTest):
+    def test_attrhandler(self):
+        key = 'testattr'
+        value = 'test attr value '
+        self.obj1.attributes.add(key, value)
+        self.assertEqual(self.obj1.attributes.get(key), value)
+        self.obj1.db.testattr = value
+        self.assertEqual(self.obj1.db.testattr, value)
+
+    def test_weird_text_save(self):
+        "test 'weird' text type (different in py2 vs py3)"
+        from django.utils.safestring import SafeText
+        key = 'test attr 2'
+        value = SafeText('test attr value 2')
+        self.obj1.attributes.add(key, value)
+        self.assertEqual(self.obj1.attributes.get(key), value)
+
+
+
 class TestTypedObjectManager(EvenniaTest):
     def _manager(self, methodname, *args, **kwargs):
         return list(getattr(self.obj1.__class__.objects, methodname)(*args, **kwargs))
