@@ -73,11 +73,11 @@ Content-Type: text/html
 # Helper functions for pickling.
 
 def dumps(data):
-    return to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
+    return pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
 
 
 def loads(data):
-    return pickle.loads(to_str(data))
+    return pickle.loads(data)
 
 
 @wraps
