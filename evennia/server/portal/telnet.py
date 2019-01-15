@@ -243,7 +243,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             line (str): Line to send.
 
         """
-        line = self.try_encode(line)
+        line = self.encode_output(line)
         # escape IAC in line mode, and correctly add \r\n (the TELNET end-of-line)
         line = line.replace(IAC, IAC + IAC)
         line = line.replace(b'\n', b'\r\n')
@@ -343,7 +343,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                                          strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
-            prompt = self.try_encode(prompt)
+            prompt = self.encode_output(prompt)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b'\n', b'\r\n')
             prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
