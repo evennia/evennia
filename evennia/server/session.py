@@ -137,9 +137,9 @@ class Session(object):
 
     # helpers
 
-    def try_encode(self, text):
+    def encode_output(self, text):
         """
-        Try to encode the given text, following the session's protocol flag.
+        Encode the given text for output, following the session's protocol flag.
 
         Args:
             text (str or bytes): the text to encode to bytes.
