@@ -638,7 +638,7 @@ class AMPLauncherProtocol(amp.AMP):
         else:
             status = pickle.loads(status)
             callback(status)
-        return {b"status": b""}
+        return {"status": pickle.dumps(b"")}
 
 
 def send_instruction(operation, arguments, callback=None, errback=None):
