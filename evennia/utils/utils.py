@@ -784,6 +784,53 @@ def latinify(unicode_string, default='?', pure_ascii=False):
     return ''.join(converted)
 
 
+def to_bytes(self, text, session=None):
+    """
+    Try to encode the given text to bytes, using encodings from settings or from Session.
+
+    Args:
+        text (str or bytes): The text to encode to bytes.
+        session (Session, optional): A Session to receive the bytes. If given,
+            the Session.protocol_flags['ENCODING'] will be used to encode first.
+
+    Returns:
+        encoded_text (bytes): the encoded text following the session's
+                protocol flag.  If the converting fails, log the error
+                and send the text with "?" in place of problematic
+                characters.  If the specified encoding cannot be found,
+                the protocol flag is reset to utf-8.
+                In any case, returns bytes.
+
+    Note:
+        If the argument is bytes, return it as is.
+
+    """
+    if isinstance(text, bytes):
+        return text
+
+    encoding = self.protocol_flags.get("ENCODING", 'utf-8')
+    try:
+        encoded = text.encode(encoding)
+    except LookupError:
+        for encoding in settings.ENCODINGS:
+            try:
+                encoded = text.encode('utf-8')
+                break
+            except LookupError:
+                pass
+
+            self.protocol_flags["ENCODING"] = 'utf-8'
+
+        encoded = text.encode('utf-8')
+    except UnicodeEncodeError:
+        print("An error occurred during string encoding to {encoding}. "
+              "Will remove errors and try again.".format(
+                  encoding=self.protocol_flags["ENCODING"]))
+        encoded = text.encode(self.protocol_flags["ENCODING"], errors="replace")
+
+    return encoded
+
+
 def to_str(obj, encoding='utf-8', force_string=False):
     """
     This function is deprecated in the Python 3 version of Evennia and is
