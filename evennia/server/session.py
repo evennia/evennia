@@ -4,12 +4,14 @@ This module defines a generic session class. All connection instances
 
 """
 from builtins import object
+from django.conf import settings
 
 import time
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Server Session
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
 
 class Session(object):
     """
@@ -134,41 +136,6 @@ class Session(object):
         """
         if self.account:
             self.protocol_flags.update(self.account.attributes.get("_saved_protocol_flags", {}))
-
-    # helpers
-
-    def try_encode(self, text):
-        """
-        Try to encode the given text, following the session's protocol flag.
-
-        Args:
-            text (str or bytes): the text to encode to bytes.
-
-        Returns:
-            encoded_text (bytes): the encoded text following the session's
-                    protocol flag.  If the converting fails, log the error
-                    and send the text with "?" in place of problematic
-                    characters.  If the specified encoding cannot be found,
-                    the protocol flag is reset to utf-8.
-                    In any case, returns bytes.
-
-        Note:
-            If the argument is bytes, return it as is.
-
-        """
-        if isinstance(text, bytes):
-            return text
-
-        try:
-            encoded = text.encode(self.protocol_flags["ENCODING"])
-        except LookupError:
-            self.protocol_flags["ENCODING"] = 'utf-8'
-            encoded = text.encode('utf-8')
-        except UnicodeEncodeError:
-            print("An error occurred during string encoding to {encoding}.  Will remove errors and try again.".format(encoding=self.protocol_flags["ENCODING"]))
-            encoded = text.encode(self.protocol_flags["ENCODING"], errors="replace")
-
-        return encoded
 
     # access hooks
 
