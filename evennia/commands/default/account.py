@@ -223,12 +223,12 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
 
             match = match[0]
             account.ndb._char_to_delete = match
-            
+
             # Return if caller has no permission to delete this
             if not match.access(account, 'delete'):
                 self.msg("You do not have permission to delete this character.")
                 return
-            
+
             prompt = "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
             get_input(account, prompt % match.key, _callback)
 

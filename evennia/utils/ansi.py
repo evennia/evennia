@@ -675,7 +675,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
         """
         string = args[0]
         if not isinstance(string, str):
-            string = to_str(string, force_string=True)
+            string = to_str(string)
         parser = kwargs.get('parser', ANSI_PARSER)
         decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
         code_indexes = kwargs.pop('code_indexes', None)

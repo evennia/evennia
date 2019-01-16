@@ -107,7 +107,7 @@ class CommandTest(EvenniaTest):
             pass
 
         # clean out evtable sugar. We only operate on text-type
-        stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+        stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                       for name, args, kwargs in receiver.msg.mock_calls]
         # Get the first element of a tuple if msg received a tuple instead of a string
         stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
@@ -283,30 +283,30 @@ class TestAccount(CommandTest):
     def test_char_create(self):
         self.call(account.CmdCharCreate(), "Test1=Test char",
                   "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
-                  
+
     def test_char_delete(self):
-        # Chardelete requires user input; this test is mainly to confirm 
+        # Chardelete requires user input; this test is mainly to confirm
         # whether permissions are being checked
-        
+
         # Add char to account playable characters
         self.account.db._playable_characters.append(self.char1)
-        
+
         # Try deleting as Developer
         self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
-        
+
         # Downgrade permissions on account
         self.account.permissions.add('Player')
         self.account.permissions.remove('Developer')
-        
+
         # Set lock on character object to prevent deletion
         self.char1.locks.add('delete:none()')
-        
+
         # Try deleting as Player
         self.call(account.CmdCharDelete(), "Char", "You do not have permission to delete this character.", caller=self.account)
-        
+
         # Set lock on character object to allow self-delete
         self.char1.locks.add('delete:pid(%i)' % self.account.id)
-        
+
         # Try deleting as Player again
         self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
 

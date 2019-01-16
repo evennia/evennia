@@ -582,7 +582,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             if not (isinstance(text, str) or isinstance(text, tuple)):
                 # sanitize text before sending across the wire
                 try:
-                    text = to_str(text, force_string=True)
+                    text = to_str(text)
                 except Exception:
                     text = repr(text)
             kwargs['text'] = text

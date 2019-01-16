@@ -486,7 +486,7 @@ class TestDefaultCallbacks(CommandTest):
         try:
             self.char2.msg = Mock()
             self.call(ExitCommand(), "", obj=self.exit)
-            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                           for name, args, kwargs in self.char2.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
@@ -507,7 +507,7 @@ class TestDefaultCallbacks(CommandTest):
         try:
             self.char2.msg = Mock()
             self.call(ExitCommand(), "", obj=back)
-            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                           for name, args, kwargs in self.char2.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]

@@ -569,7 +569,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             value = value.dbref
         except AttributeError:
             pass
-        value = to_str(value, force_string=True)
+        value = to_str(value)
 
     available_functions = PROT_FUNCS if available_functions is None else available_functions
 

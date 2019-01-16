@@ -2077,7 +2077,7 @@ class CmdExamine(ObjManipCommand):
         """
         if crop:
             if not isinstance(value, str):
-                value = utils.to_str(value, force_string=True)
+                value = utils.to_str(value)
             value = utils.crop(value)
 
         string = "\n %s = %s" % (attr, value)

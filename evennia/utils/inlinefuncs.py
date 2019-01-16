@@ -421,7 +421,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
                 # execute the inlinefunc at this point or strip it.
                 kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
-        return utils.to_str(retval, force_string=True)
+        return utils.to_str(retval)
     retval = "".join(_run_stack(item) for item in stack)
     if stacktrace:
         out = "STACK: \n{} => {}\n".format(stack, retval)

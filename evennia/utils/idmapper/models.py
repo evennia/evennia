@@ -142,7 +142,7 @@ class SharedMemoryModelBase(ModelBase):
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
                 if isinstance(value, (str, int)):
-                    value = to_str(value, force_string=True)
+                    value = to_str(value)
                     if (value.isdigit() or value.startswith("#")):
                         # we also allow setting using dbrefs, if so we try to load the matching object.
                         # (we assume the object is of the same type as the class holding the field, if

@@ -196,18 +196,18 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @lazy_property
     def sessions(self):
         return AccountSessionHandler(self)
-        
+
     # Do not make this a lazy property; the web UI will not refresh it!
     @property
     def characters(self):
         # Get playable characters list
         objs = self.db._playable_characters
-        
+
         # Rebuild the list if legacy code left null values after deletion
         if None in objs:
             objs = [x for x in self.db._playable_characters if x]
             self.db._playable_characters = objs
-            
+
         return objs
 
     # session-related methods
@@ -814,13 +814,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         kwargs["options"] = options
 
         if text is not None:
-            if not (isinstance(text, str) or isinstance(text, tuple)):
-                # sanitize text before sending across the wire
-                try:
-                    text = to_str(text, force_string=True)
-                except Exception:
-                    text = repr(text)
-            kwargs['text'] = text
+            kwargs['text'] = to_str(text)
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
