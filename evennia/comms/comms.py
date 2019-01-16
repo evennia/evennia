@@ -229,13 +229,13 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         Creates a basic Channel with default parameters, unless otherwise
         specified or extended.
-        
+
         Provides a friendlier interface to the utils.create_channel() function.
-        
+
         Args:
             key (str): This must be unique.
             account (Account): Account to attribute this object to.
-    
+
         Kwargs:
             aliases (list of str): List of alternative (likely shorter) keynames.
             description (str): A description of the channel, for use in listings.
@@ -248,26 +248,26 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         Returns:
             channel (Channel): A newly created Channel.
             errors (list): A list of errors in string form, if any.
-            
+
         """
         errors = []
         obj = None
         ip = kwargs.pop('ip', '')
-        
+
         try:
             kwargs['desc'] = kwargs.pop('description', '')
             obj = create.create_channel(key, *args, **kwargs)
-            
+
             # Record creator id and creation IP
             if ip: obj.db.creator_ip = ip
             if account: obj.db.creator_id = account.id
-            
+
         except Exception as exc:
             errors.append("An error occurred while creating this '%s' object." % key)
             logger.log_err(exc)
-            
+
         return obj, errors
-    
+
     def delete(self):
         """
         Deletes channel while also cleaning up channelhandler.

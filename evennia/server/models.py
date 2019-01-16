@@ -78,7 +78,7 @@ class ServerConfig(WeakSharedMemoryModel):
     #@property
     def __value_get(self):
         "Getter. Allows for value = self.value"
-        return pickle.loads(self.db_value)
+        return pickle.loads(utils.to_bytes(self.db_value))
 
     #@value.setter
     def __value_set(self, value):

@@ -369,7 +369,7 @@ class AjaxWebClientSession(session.Session):
             return
 
         flags = self.protocol_flags
-        text = utils.to_str(text, force_string=True)
+        text = utils.to_str(text)
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))

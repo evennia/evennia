@@ -87,6 +87,12 @@ Web/Django standard initiative (@strikaco)
 
 - Swap argument order of `evennia.set_trace` to `set_trace(term_size=(140, 40), debugger='auto')`
   since the size is more likely to be changed on the command line.
+- `utils.to_str(text, session=None)` now acts as the old `utils.to_unicode` (which was removed).
+  This converts to the str() type (not to a byte-string as in Evennia 0.8), trying different
+  encodings. This function will also force-convert any object passed to it into a string (so
+  `force_string` flag was removed and assumed always set).
+- `utils.to_bytes(text, session=None)` replaces the old `utils.to_str()` functionality and converts
+  str to bytes.
 
 
 ## Evennia 0.8 (2018)

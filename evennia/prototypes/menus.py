@@ -1039,7 +1039,7 @@ def node_aliases(caller):
 
 def _caller_attrs(caller):
     prototype = _get_menu_prototype(caller)
-    attrs = ["{}={}".format(tup[0], utils.crop(utils.to_str(tup[1], force_string=True), width=10))
+    attrs = ["{}={}".format(tup[0], utils.crop(utils.to_str(tup[1]), width=10))
              for tup in prototype.get("attrs", [])]
     return attrs
 

@@ -145,7 +145,7 @@ class ScriptDB(TypedObject):
             pass
         if isinstance(value, (str, int)):
             from evennia.objects.models import ObjectDB
-            value = to_str(value, force_string=True)
+            value = to_str(value)
             if (value.isdigit() or value.startswith("#")):
                 dbid = dbref(value, reqhash=False)
                 if dbid:

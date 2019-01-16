@@ -784,37 +784,86 @@ def latinify(unicode_string, default='?', pure_ascii=False):
     return ''.join(converted)
 
 
-def to_str(obj, encoding='utf-8', force_string=False):
+def to_bytes(text, session=None):
     """
-    This function is deprecated in the Python 3 version of Evennia and is
-    likely to be phased out in future releases.
-
-    ---
-    This encodes a unicode string back to byte-representation,
-    for printing, writing to disk etc.
+    Try to encode the given text to bytes, using encodings from settings or from Session. Will
+    always return a bytes, even if given something that is not str or bytes.
 
     Args:
-        obj (any): Object to encode to bytecode.
-        encoding (str, optional): The encoding type to use for the
-            encoding.
-        force_string (bool, optional): Always convert to string, no
-            matter what type `obj` is initially.
+        text (any): The text to encode to bytes. If bytes, return unchanged. If not a str, convert
+            to str before converting.
+        session (Session, optional): A Session to get encoding info from. Will try this before
+            falling back to settings.ENCODINGS.
 
-    Notes:
-        Non-string objects are let through without modification - this
-        is required e.g. for Attributes. Use `force_string` to force
-        conversion of objects to strings.
+    Returns:
+        encoded_text (bytes): the encoded text following the session's protocol flag followed by the
+            encodings specified in settings.ENCODINGS.  If all attempt fail, log the error and send
+            the text with "?" in place of problematic characters.  If the specified encoding cannot
+            be found, the protocol flag is reset to utf-8.  In any case, returns bytes.
+
+    Note:
+        If `text` is already bytes, return it as is.
 
     """
-    if isinstance(obj, (str, bytes )):
-        return obj
+    if isinstance(text, bytes):
+        return text
+    if not isinstance(text, str):
+        # convert to a str representation before encoding
+        try:
+            text = str(text)
+        except Exception:
+            text = repr(text)
 
-    if force_string:
-        # some sort of other object. Try to
-        # convert it to a string representation.
-        obj = str(obj)
+    default_encoding = session.protocol_flags.get("ENCODING", 'utf-8') if session else 'utf-8'
+    try:
+        return text.encode(default_encoding)
+    except (LookupError, UnicodeEncodeError):
+        for encoding in settings.ENCODINGS:
+            try:
+                return text.encode(encoding)
+            except (LookupError, UnicodeEncodeError):
+                pass
+        # no valid encoding found. Replace unconvertable parts with ?
+        return text.encode(default_encoding, errors="replace")
 
-    return obj
+
+def to_str(text, session=None):
+    """
+    Try to decode a bytestream to a python str, using encoding schemas from settings
+    or from Session. Will always return a str(), also if not given a str/bytes.
+
+    Args:
+        text (any): The text to encode to bytes. If a str, return it. If also not bytes, convert
+            to str using str() or repr() as a fallback.
+        session (Session, optional): A Session to get encoding info from. Will try this before
+            falling back to settings.ENCODINGS.
+
+    Returns:
+        decoded_text (str): The decoded text.
+
+    Note:
+        If `text` is already str, return it as is.
+    """
+    if isinstance(text, str):
+        return text
+    if not isinstance(text, bytes):
+        # not a byte, convert directly to str
+        try:
+            return str(text)
+        except Exception:
+            return repr(text)
+
+    default_encoding = session.protocol_flags.get("ENCODING", 'utf-8') if session else 'utf-8'
+    try:
+        return text.decode(default_encoding)
+    except (LookupError, UnicodeDecodeError):
+        for encoding in settings.ENCODINGS:
+            try:
+                return text.decode(encoding)
+            except (LookupError, UnicodeDecodeError):
+                pass
+        # no valid encoding found. Replace unconvertable parts with ?
+        return text.decode(default_encoding, errors="replace")
 
 
 def validate_email_address(emailaddress):

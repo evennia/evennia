@@ -28,7 +28,7 @@ header where applicable.
 from builtins import object
 import re
 import json
-from evennia.utils.utils import to_str, is_iter
+from evennia.utils.utils import is_iter
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = b'\x45'
@@ -44,11 +44,6 @@ GMCP = b'\xc9'
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
-
-
-def force_str(inp):
-    """Helper to shorten code"""
-    return to_str(inp, force_string=True)
 
 
 # pre-compiled regexes

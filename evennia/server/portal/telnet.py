@@ -18,7 +18,7 @@ from evennia.server.portal import ttype, mssp, telnet_oob, naws, suppress_ga
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
-from evennia.utils.utils import to_str
+from evennia.utils.utils import to_bytes
 
 _RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(br"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
@@ -243,7 +243,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             line (str): Line to send.
 
         """
-        line = self.encode_output(line)
+        line = to_bytes(line, self)
         # escape IAC in line mode, and correctly add \r\n (the TELNET end-of-line)
         line = line.replace(IAC, IAC + IAC)
         line = line.replace(b'\n', b'\r\n')
@@ -316,7 +316,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         text = args[0] if args else ""
         if text is None:
             return
-        text = to_str(text, force_string=True)
 
         # handle arguments
         options = kwargs.get("options", {})
@@ -343,7 +342,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                                          strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
-            prompt = self.encode_output(prompt)
+            prompt = to_bytes(prompt, self)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b'\n', b'\r\n')
             prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))

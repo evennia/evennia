@@ -207,8 +207,8 @@ class EvForm(object):
         self.filename = filename
         self.input_form_dict = form
 
-        self.cells_mapping = dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells else {}
-        self.tables_mapping = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
+        self.cells_mapping = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
+        self.tables_mapping = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
 
         self.cellchar = "x"
         self.tablechar = "c"
@@ -378,8 +378,8 @@ class EvForm(object):
         kwargs.pop("width", None)
         kwargs.pop("height", None)
 
-        new_cells = dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells else {}
-        new_tables = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
+        new_cells = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
+        new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
 
         self.cells_mapping.update(new_cells)
         self.tables_mapping.update(new_tables)

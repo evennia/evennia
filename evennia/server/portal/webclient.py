@@ -195,7 +195,6 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             return
 
         flags = self.protocol_flags
-        text = to_str(text, force_string=True)
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))
