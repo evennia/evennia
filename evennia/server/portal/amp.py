@@ -354,8 +354,8 @@ class AMPMultiConnectionProtocol(amp.AMP):
         if not _LOGGER:
             from evennia.utils import logger as _LOGGER
         e.trap(Exception)
-        _LOGGER.log_err("AMP Error for %(info)s: %(e)s" % {'info': info,
-                                                           'e': e.getErrorMessage()})
+        _LOGGER.log_err("AMP Error for {info}: {trcbck} {err}".format(
+            info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()))
 
     def data_in(self, packed_data):
         """
