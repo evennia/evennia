@@ -293,6 +293,7 @@ def search_prototype(key=None, tags=None):
                        if tagset.intersection(prototype.get("prototype_tags", []))}
     else:
         mod_matches = _MODULE_PROTOTYPES
+
     if key:
         if key in mod_matches:
             # exact match
@@ -565,11 +566,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
 
     """
     if not isinstance(value, basestring):
-        try:
-            value = value.dbref
-        except AttributeError:
-            pass
-        value = to_str(value, force_string=True)
+        return value
 
     available_functions = PROT_FUNCS if available_functions is None else available_functions
 
@@ -728,16 +725,16 @@ def init_spawn_value(value, validator=None):
         any (any): The (potentially pre-processed value to use for this prototype key)
 
     """
-    value = protfunc_parser(value)
     validator = validator if validator else lambda o: o
     if callable(value):
-        return validator(value())
+        value = validator(value())
     elif value and is_iter(value) and callable(value[0]):
         # a structure (callable, (args, ))
         args = value[1:]
-        return validator(value[0](*make_iter(args)))
+        value = validator(value[0](*make_iter(args)))
     else:
-        return validator(value)
+        value = validator(value)
+    return protfunc_parser(value)
 
 
 def value_to_obj_or_any(value):
