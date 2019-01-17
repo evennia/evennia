@@ -679,7 +679,7 @@ def do_pickle(data):
 
 def do_unpickle(data):
     """Retrieve pickle from pickled string"""
-    return loads(to_str(data))
+    return loads(data)
 
 
 def dbserialize(data):
