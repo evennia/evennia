@@ -69,9 +69,8 @@ Alternatively:
 
 import itertools
 from random import choice
-from evennia import create_object, create_script
+from evennia import create_script
 from evennia import CmdSet
-from evennia import DefaultObject
 from evennia import DefaultScript
 from evennia import DefaultCharacter
 from evennia import DefaultRoom
@@ -143,6 +142,7 @@ _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = _colorize_message(_PUZZLE_DEFAULT_SUCCESS_
 
 # ------------------------------------------
 
+
 class PuzzleRecipe(DefaultScript):
     """
     Definition of a Puzzle Recipe
@@ -160,22 +160,26 @@ class PuzzleRecipe(DefaultScript):
 
 class CmdCreatePuzzleRecipe(MuxCommand):
     """
-    Creates a puzzle recipe.
-
-    Each part and result must exist and be placed in their
-    corresponding location.
-
-    They are all left intact and Caller should explicitly destroy
-    them. If the /arm switch is used, the specified objects become
-    puzzle parts ready to be combined and spawn a new result.
-
-    Switches:
-      arm - the specified objects become puzzle parts as if the puzzle
-            had been armed explicitly. The results are left intact so
-            they must be explicitly destroyed.
+    Creates a puzzle recipe. A puzzle consists of puzzle-parts that
+    the player can 'use' together to create a specified result.
 
     Usage:
-        @puzzle[/arm] name,<part1[,part2,...>] = <result1[,result2,...]>
+        @puzzle name,<part1[,part2,...>] = <result1[,result2,...]>
+
+    Example:
+        create/drop balloon
+        create/drop glass of water
+        create/drop water balloon
+        @puzzle waterballon,balloon,glass of water = water balloon
+        @del ballon, glass of water, water balloon
+        @armpuzzle #1
+
+    Notes:
+    Each part and result are objects that must (temporarily) exist and be placed in their
+    corresponding location in order to create the puzzle. After the creation of the puzzle,
+    these objects are not needed anymore and can be deleted. Components of the puzzle
+    will be re-created by use of the `@armpuzzle` command later.
+
     """
 
     key = '@puzzle'
@@ -189,8 +193,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
     def func(self):
         caller = self.caller
 
-        if len(self.lhslist) < 2 \
-            or not self.rhs:
+        if len(self.lhslist) < 2 or not self.rhs:
             string = "Usage: @puzzle name,<part1[,...]> = <result1[,...]>"
             caller.msg(string)
             return
@@ -292,14 +295,11 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         caller.msg(
             "Puzzle |y'%s' |w%s(%s)|n has been created |gsuccessfully|n."
             % (puzzle.db.puzzle_name, puzzle.name, puzzle.dbref))
+
         caller.msg(
-            'You may now dispose all parts and results. '
-            'Typically, results and parts are useless afterwards.\n'
-            'Remember to add a "success message" via:\n'
-            '    @puzzleedit #dbref/use_success_message = <Your custom success message>\n'
-            'You are now able to arm this puzzle using Builder command:\n'
-            '    @armpuzzle <puzzle #dbref>\n'
-        )
+            'You may now dispose of all parts and results. \n'
+            'Use @puzzleedit #{dbref} to customize this puzzle further. \n'
+            'Use @armpuzzle #{dbref} to arm a new puzzle instance.'.format(dbref=puzzle.dbref))
 
 
 class CmdEditPuzzle(MuxCommand):
@@ -308,8 +308,8 @@ class CmdEditPuzzle(MuxCommand):
 
     Usage:
         @puzzleedit[/delete] <#dbref>
-        @puzzleedit <#dbref>/use_success_message = <Your custom message>
-        @puzzleedit <#dbref>/use_success_location_message = <Your custom message from {caller} producing {result_names}>
+        @puzzleedit <#dbref>/use_success_message = <Custom message>
+        @puzzleedit <#dbref>/use_success_location_message = <Custom message from {caller} producing {result_names}>
         @puzzleedit <#dbref>/mask = attr1[,attr2,...]>
         @puzzleedit[/addpart] <#dbref> = <obj[,obj2,...]>
         @puzzleedit[/delpart] <#dbref> = <obj[,obj2,...]>
@@ -324,7 +324,8 @@ class CmdEditPuzzle(MuxCommand):
       delete - deletes the recipe. Existing parts and results aren't modified
 
       mask - attributes to exclude during matching (e.g. location, desc, etc.)
-      use_success_location_message containing {result_names} and {caller} will automatically be replaced with correct values. Both are optional.
+      use_success_location_message containing {result_names} and {caller} will
+        automatically be replaced with correct values. Both are optional.
 
       When removing parts/results, it's possible to remove all.
 
@@ -353,7 +354,7 @@ class CmdEditPuzzle(MuxCommand):
 
         puzzle = search.search_script(recipe_dbref)
         if not puzzle or not inherits_from(puzzle[0], PuzzleRecipe):
-            caller.msg('%s(%s) is not a puzzle'  % (puzzle[0].name, recipe_dbref))
+            caller.msg('%s(%s) is not a puzzle' % (puzzle[0].name, recipe_dbref))
             return
 
         puzzle = puzzle[0]
@@ -406,13 +407,15 @@ class CmdEditPuzzle(MuxCommand):
             if attr == 'use_success_message':
                 puzzle.db.use_success_message = self.rhs
                 caller.msg(
-                    "%s use_success_message = %s\n" % (puzzle_name_id, puzzle.db.use_success_message)
+                    "%s use_success_message = %s\n" % (
+                        puzzle_name_id, puzzle.db.use_success_message)
                 )
                 return
             elif attr == 'use_success_location_message':
                 puzzle.db.use_success_location_message = self.rhs
                 caller.msg(
-                    "%s use_success_location_message = %s\n" % (puzzle_name_id, puzzle.db.use_success_location_message)
+                    "%s use_success_location_message = %s\n" % (
+                        puzzle_name_id, puzzle.db.use_success_location_message)
                 )
                 return
             elif attr == 'mask':
@@ -477,7 +480,15 @@ class CmdEditPuzzle(MuxCommand):
 
 class CmdArmPuzzle(MuxCommand):
     """
-    Arms a puzzle by spawning all its parts
+    Arms a puzzle by spawning all its parts.
+
+    Usage:
+      @armpuzzle <puzzle #dbref>
+
+    Notes:
+        Create puzzles with `@puzzle`; get list of
+        defined puzzles using `@lspuzlerecipies`.
+
     """
 
     key = '@armpuzzle'
@@ -493,17 +504,18 @@ class CmdArmPuzzle(MuxCommand):
 
         puzzle = search.search_script(self.args)
         if not puzzle or not inherits_from(puzzle[0], PuzzleRecipe):
-            caller.msg('Invalid puzzle %r'  % (self.args))
+            caller.msg('Invalid puzzle %r' % (self.args))
             return
 
         puzzle = puzzle[0]
         caller.msg(
             "Puzzle Recipe %s(%s) '%s' found.\nSpawning %d parts ..." % (
-            puzzle.name, puzzle.dbref, puzzle.db.puzzle_name, len(puzzle.db.parts)))
+                puzzle.name, puzzle.dbref, puzzle.db.puzzle_name, len(puzzle.db.parts)))
 
         for proto_part in puzzle.db.parts:
             part = spawn(proto_part)[0]
-            caller.msg("Part %s(%s) spawned and placed at %s(%s)" % (part.name, part.dbref, part.location, part.location.dbref))
+            caller.msg("Part %s(%s) spawned and placed at %s(%s)" % (
+                part.name, part.dbref, part.location, part.location.dbref))
             part.tags.add(puzzle.db.puzzle_name, category=_PUZZLES_TAG_CATEGORY)
             part.db.puzzle_name = puzzle.db.puzzle_name
 
@@ -546,6 +558,7 @@ def _puzzles_by_names(names):
             puzzles.extend(_puzzles)
     return puzzles
 
+
 def _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients):
     # Check if parts can be combined to solve a puzzle
     matched_puzzles = dict()
@@ -575,11 +588,9 @@ def _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients):
 
 class CmdUsePuzzleParts(MuxCommand):
     """
-    Searches for all puzzles whose parts
-    match the given set of objects. If
-    there are matching puzzles, the result
-    objects are spawned in their corresponding
-    location if all parts have been passed in.
+    Searches for all puzzles whose parts match the given set of objects. If there are matching
+    puzzles, the result objects are spawned in their corresponding location if all parts have been
+    passed in.
 
     Usage:
         use <part1[,part2,...>]
