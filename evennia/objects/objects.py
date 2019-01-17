@@ -432,6 +432,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
             exact = True
+            candidates = None
 
         elif candidates is None:
             # no custom candidates given - get them automatically
