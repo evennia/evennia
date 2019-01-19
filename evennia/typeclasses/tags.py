@@ -368,7 +368,7 @@ class TagHandler(object):
         tags = sorted(self._cache.values())
         if return_key_and_category:
                 # return tuple (key, category)
-            return [(to_str(tag.db_key), to_str(tag.db_category)) for tag in tags]
+            return [(to_str(tag.db_key), tag.db_category) for tag in tags]
         elif return_objs:
             return tags
         else:

@@ -1807,7 +1807,7 @@ class TestPuzzles(CommandTest):
             caller=self.char1
         )
         recipe_dbref = self._assert_recipe(name, parts, results, and_destroy_it, expected_count)
-        matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
+        self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
         return recipe_dbref
 
     def _check_room_contents(self, expected, check_test_tags=False):
@@ -1936,7 +1936,7 @@ class TestPuzzles(CommandTest):
         self._use('steel flint', 'There is no steel flint around.')
         self._use('steel, flint', 'You have no idea how these can be used')
 
-        recipe_dbref = self._good_recipe(unicode('makefire'), ['steel', 'flint'], ['fire'] , and_destroy_it=False)
+        recipe_dbref = self._good_recipe('makefire', ['steel', 'flint'], ['fire'] , and_destroy_it=False)
         recipe2_dbref = self._good_recipe('makefire2', ['steel', 'flint'], ['fire'] , and_destroy_it=False,
                 expected_count=2)
 
@@ -2379,9 +2379,12 @@ class TestPuzzles(CommandTest):
         self._arm(recipe_fl1_dbref, 'flashlight-1', ['battery', 'flashlight'])
         fl1_parts, fl1_dbrefs = _group_parts(['battery', 'flashlight'])
         self._arm(recipe_fl2_dbref, 'flashlight-2', ['battery', 'flashlight-w-1'])
-        fl2_parts, fl2_dbrefs = _group_parts(['battery', 'flashlight-w-1'], excluding=fl1_dbrefs.keys())
+        fl2_parts, fl2_dbrefs = _group_parts(
+            ['battery', 'flashlight-w-1'], excluding=list(fl1_dbrefs.keys()))
         self._arm(recipe_fl3_dbref, 'flashlight-3', ['battery', 'flashlight-w-2'])
-        fl3_parts, fl3_dbrefs = _group_parts(['battery', 'flashlight-w-2'], excluding=set(fl1_dbrefs.keys() + fl2_dbrefs.keys()))
+        fl3_parts, fl3_dbrefs = _group_parts(
+            ['battery', 'flashlight-w-2'],
+            excluding=set(list(fl1_dbrefs.keys()) + list(fl2_dbrefs.keys())))
 
         self._check_room_contents({
             'battery': 3,
@@ -2425,15 +2428,15 @@ class TestPuzzles(CommandTest):
         matched_puzzles = puzzles._matching_puzzles(_puzzles, b3_puzzlenames, b3_protodefs)
         assert 0 == len(matched_puzzles)
 
-        assert battery_1 == b1_parts_dict.values()[0]
-        assert battery_2 == b2_parts_dict.values()[0]
-        assert battery_3 == b3_parts_dict.values()[0]
+        assert battery_1 == list(b1_parts_dict.values())[0]
+        assert battery_2 == list(b2_parts_dict.values())[0]
+        assert battery_3 == list(b3_parts_dict.values())[0]
         assert b1_puzzlenames.keys() == b2_puzzlenames.keys() == b3_puzzlenames.keys()
         for puzzle_name in ['flashlight-1', 'flashlight-2', 'flashlight-3']:
             assert puzzle_name in b1_puzzlenames
             assert puzzle_name in b2_puzzlenames
             assert puzzle_name in b3_puzzlenames
-        assert b1_protodefs.values()[0] == b2_protodefs.values()[0] == b3_protodefs.values()[0] \
+        assert list(b1_protodefs.values())[0] == list(b2_protodefs.values())[0] == list(b3_protodefs.values())[0] \
                 == protodef_battery_1 == protodef_battery_2 == protodef_battery_3
 
         # all flashlights have similar protodefs except their key
@@ -2475,17 +2478,17 @@ class TestPuzzles(CommandTest):
         matched_puzzles = puzzles._matching_puzzles(_puzzles, f3_puzzlenames, f3_protodefs)
         assert 0 == len(matched_puzzles)
 
-        assert flashlight_1 == f1_parts_dict.values()[0]
-        assert flashlight_2 == f2_parts_dict.values()[0]
-        assert flashlight_3 == f3_parts_dict.values()[0]
-        for puzzle_name in set(f1_puzzlenames.keys() + f2_puzzlenames.keys() + f3_puzzlenames.keys()):
+        assert flashlight_1 == list(f1_parts_dict.values())[0]
+        assert flashlight_2 == list(f2_parts_dict.values())[0]
+        assert flashlight_3 == list(f3_parts_dict.values())[0]
+        for puzzle_name in set(list(f1_puzzlenames.keys()) + list(f2_puzzlenames.keys()) + list(f3_puzzlenames.keys())):
             assert puzzle_name in ['flashlight-1', 'flashlight-2', 'flashlight-3', 'puzzle_member']
         protodef_flashlight_1['key'] = 'flashlight'
-        assert f1_protodefs.values()[0] == protodef_flashlight_1
+        assert list(f1_protodefs.values())[0] == protodef_flashlight_1
         protodef_flashlight_2['key'] = 'flashlight-w-1'
-        assert f2_protodefs.values()[0] == protodef_flashlight_2
+        assert list(f2_protodefs.values())[0] == protodef_flashlight_2
         protodef_flashlight_3['key'] = 'flashlight-w-2'
-        assert f3_protodefs.values()[0] == protodef_flashlight_3
+        assert list(f3_protodefs.values())[0] == protodef_flashlight_3
 
         # each battery can be matched with every other flashlight
         # to potentially resolve each puzzle
@@ -2516,7 +2519,7 @@ class TestPuzzles(CommandTest):
             assert 1 == len(matched_puzzles)
 
         # delete all parts
-        for part in fl1_dbrefs.values() + fl2_dbrefs.values() + fl3_dbrefs.values():
+        for part in list(fl1_dbrefs.values()) + list(fl2_dbrefs.values()) + list(fl3_dbrefs.values()):
             part.delete()
 
         self._check_room_contents({
@@ -2629,9 +2632,12 @@ class TestPuzzles(CommandTest):
         self._arm(recipe1_dbref, 'breakfast', ['egg', 'boiling water'])
         breakfast_parts, breakfast_dbrefs = _group_parts(['egg', 'boiling water'])
         self._arm(recipe2_dbref, 'dough', ['egg', 'flour'])
-        dough_parts, dough_dbrefs = _group_parts(['egg', 'flour'], excluding=breakfast_dbrefs.keys())
+        dough_parts, dough_dbrefs = _group_parts(
+            ['egg', 'flour'], excluding=list(breakfast_dbrefs.keys()))
         self._arm(recipe3_dbref, 'entree', ['dough', 'boiling water'])
-        entree_parts, entree_dbrefs = _group_parts(['dough', 'boiling water'], excluding=set(breakfast_dbrefs.keys() + dough_dbrefs.keys()))
+        entree_parts, entree_dbrefs = _group_parts(
+            ['dough', 'boiling water'],
+            excluding=set(list(breakfast_dbrefs.keys()) + list(dough_dbrefs.keys())))
 
         # create a box so we can put all objects in
         # so that they can't be found during puzzle resolution
