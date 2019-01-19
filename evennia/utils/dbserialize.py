@@ -30,7 +30,7 @@ except ImportError:
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import SafeString, SafeBytes
-from evennia.utils.utils import to_str, uses_database, is_iter
+from evennia.utils.utils import uses_database, is_iter
 from evennia.utils import logger
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
@@ -674,7 +674,7 @@ def from_pickle(data, db_obj=None):
 
 def do_pickle(data):
     """Perform pickle to string"""
-    return to_str(dumps(data, protocol=PICKLE_PROTOCOL))
+    return dumps(data, protocol=PICKLE_PROTOCOL)
 
 
 def do_unpickle(data):
