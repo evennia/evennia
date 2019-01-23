@@ -58,7 +58,7 @@ try:
 except ImportError:
     from pickle import loads, dumps  # cpython 3.x, other interpreters
 
-DEFAULT_PROTOCOL = 2
+DEFAULT_PROTOCOL = 4
 
 
 class PickledObject(str):
