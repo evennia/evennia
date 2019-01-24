@@ -127,6 +127,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         Args:
             command (AMP Command): A protocol send command.
             sessid (int): A unique Session id.
+            kwargs (any): Data to send. This will be pickled.
 
         Returns:
             deferred (deferred or None): A deferred with an errback.
@@ -136,7 +137,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             (sessid, kwargs).
 
         """
-        print("portal data_to_server: {}, {}, {}".format(command, sessid, kwargs))
+        # print("portal data_to_server: {}, {}, {}".format(command, sessid, kwargs))
         if self.factory.server_connection:
             return self.factory.server_connection.callRemote(
                         command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
@@ -228,7 +229,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         print("send status to launcher")
-        print("self.get_status(): {}".format(self.get_status()))
+        # print("self.get_status(): {}".format(self.get_status()))
         if self.factory.launcher_connection:
             self.factory.launcher_connection.callRemote(
                     amp.MsgStatus,
@@ -279,7 +280,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 (portal_running, server_running, portal_pid, server_pid).
 
         """
-        print('Received PSTATUS request')
+        # print('Received PSTATUS request')
         return {"status": amp.dumps(self.get_status())}
 
     @amp.MsgLauncher2Portal.responder

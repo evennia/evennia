@@ -118,7 +118,7 @@ class Compressed(amp.String):
         value.write(self.fromStringProto(strings.get(name), proto))
         for counter in count(2):
             # count from 2 upwards
-            chunk = strings.get("%s.%d" % (name, counter))
+            chunk = strings.get(b"%s.%d" % (name, counter))
             if chunk is None:
                 break
             value.write(self.fromStringProto(chunk, proto))
@@ -142,7 +142,7 @@ class Compressed(amp.String):
             chunk = value.read(AMP_MAXLEN)
             if not chunk:
                 break
-            strings["%s.%d" % (name, counter)] = self.toStringProto(chunk, proto)
+            strings[b"%s.%d" % (name, counter)] = self.toStringProto(chunk, proto)
 
     def toString(self, inObject):
         """
@@ -393,7 +393,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         deferreds = []
-        print("broadcast: {} {}: {}".format(command, sessid, kwargs))
+        # print("broadcast: {} {}: {}".format(command, sessid, kwargs))
 
         for protcl in self.factory.broadcasts:
             deferreds.append(protcl.callRemote(command, **kwargs).addErrback(
