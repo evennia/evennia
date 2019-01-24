@@ -8,8 +8,9 @@ try:
 except ImportError:
     import unittest
 
-from mock import Mock
 import string
+import mock
+from mock import Mock, MagicMock
 from evennia.server.portal import irc
 
 from twisted.conch.telnet import IAC, WILL, DONT, SB, SE, NAWS, DO
@@ -25,6 +26,74 @@ from .mccp import MCCP
 from .mssp import MSSP
 from .mxp import MXP
 from .telnet_oob import MSDP, MSDP_VAL, MSDP_VAR
+
+from .amp import AMPMultiConnectionProtocol, MsgServer2Portal, MsgPortal2Server, AMP_MAXLEN
+from .amp_server import AMPServerFactory
+
+
+class TestAMPServer(TwistedTestCase):
+    """
+    Test AMP communication
+    """
+    def setUp(self):
+        super(TestAMPServer, self).setUp()
+        portal = Mock()
+        factory = AMPServerFactory(portal)
+        self.proto = factory.buildProtocol(("localhost", 0))
+        self.transport = MagicMock()  # proto_helpers.StringTransport()
+        self.transport.client = ["localhost"]
+        self.transport.write = MagicMock()
+
+    def test_amp_out(self):
+        self.proto.makeConnection(self.transport)
+
+        self.proto.data_to_server(MsgServer2Portal, 1, test=2)
+        byte_out = (b'\x00\x04_ask\x00\x011\x00\x08_command\x00\x10MsgServer2Portal\x00\x0b'
+                    b'packed_data\x00 x\xdak`\x99*\xc8\x00\x01\xde\x8c\xb5SzXJR'
+                    b'\x8bK\xa6x3\x15\xb7M\xd1\x03\x00V:\x07t\x00\x00')
+        self.transport.write.assert_called_with(byte_out)
+        with mock.patch("evennia.server.portal.amp.amp.AMP.dataReceived") as mocked_amprecv:
+            self.proto.dataReceived(byte_out)
+            mocked_amprecv.assert_called_with(byte_out)
+
+    def test_amp_in(self):
+        self.proto.makeConnection(self.transport)
+
+        self.proto.data_to_server(MsgPortal2Server, 1, test=2)
+        byte_out = (b'\x00\x04_ask\x00\x011\x00\x08_command\x00\x10MsgPortal2Server\x00\x0b'
+                    b'packed_data\x00 x\xdak`\x99*\xc8\x00\x01\xde\x8c\xb5SzXJR'
+                    b'\x8bK\xa6x3\x15\xb7M\xd1\x03\x00V:\x07t\x00\x00')
+        self.transport.write.assert_called_with(byte_out)
+        with mock.patch("evennia.server.portal.amp.amp.AMP.dataReceived") as mocked_amprecv:
+            self.proto.dataReceived(byte_out)
+            mocked_amprecv.assert_called_with(byte_out)
+
+    def test_large_msg(self):
+        """
+        Send message larger than AMP_MAXLEN - should be split into several
+        """
+        self.proto.makeConnection(self.transport)
+        outstr = 'test' * AMP_MAXLEN
+        self.proto.data_to_server(MsgServer2Portal, 1, test=outstr)
+        self.transport.write.assert_called_with(
+            b'\x00\x04_ask\x00\x011\x00\x08_command\x00\x10MsgServer2Portal\x00\x0bpacked_data'
+            b'\x00xx\xda\xed\xc6\xc1\t\x800\x10\x00\xc1\x13\xaf\x01\xeb\xb2\x01\x1bH'
+            b'\x05\xe6+X\x80\xcf\xd8m@I\x1d\x99\x85\x81\xbd\xf3\xdd"c\xb4/W{'
+            b'\xb2\x96\xb3\xb6\xa3\x7fk\x8c\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00`\x0e?Pv\x02\x16\x00\r'
+            b'packed_data.2\x00Zx\xda\xed\xc3\x01\r\x00\x00\x08\xc0\xa0\xb4&\xf0\xfdg\x10a'
+            b'\xa3\xd9RUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU\xf5\xfb\x03'
+            b'm\xe0\x06\x1d\x00\rpacked_data.3\x00Zx\xda\xed\xc3\x01\r\x00\x00\x08\xc0\xa0'
+            b'\xb4&\xf0\xfdg\x10a\xa3fSUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU'
+            b'UUUUU\xf5\xfb\x03n\x1c\x06\x1e\x00\rpacked_data.4\x00Zx\xda\xed\xc3\x01\t\x00'
+            b'\x00\x0c\x03\xa0\xb4O\xb0\xf5gA\xae`\xda\x8b\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa'
+            b'\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa'
+            b'\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa'
+            b'\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\xdf\x0fnI'
+            b'\x06,\x00\rpacked_data.5\x00\x14x\xdaK-.)I\xc5\x8e\xa7\x14\xb7M\xd1\x03\x00'
+            b'\xe7s\x0e\x1c\x00\x00')
 
 
 class TestIRC(TestCase):
