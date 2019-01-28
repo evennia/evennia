@@ -25,7 +25,7 @@
 """
 Pickle field implementation for Django.
 
-Modified for Evennia by Griatch.
+Modified for Evennia by Griatch and the Evennia community.
 
 """
 from builtins import object
