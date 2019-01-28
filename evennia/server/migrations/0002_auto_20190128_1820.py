@@ -4,7 +4,7 @@
 import pickle
 from django.db import migrations, models
 import evennia.utils.picklefield
-from evennia.utils.utils import to_bytes
+from evennia.utils.utils import to_bytes, to_str
 
 def migrate_serverconf(apps, schema_editor):
     """
@@ -13,8 +13,8 @@ def migrate_serverconf(apps, schema_editor):
     ServerConfig = apps.get_model("server", "ServerConfig")
     for conf in ServerConfig.objects.all():
         value = pickle.loads(to_bytes(conf.db_value))
-        conf.db_value2 = value
-        conf.save()
+        conf.db_value2 = to_str(value)
+        conf.save(update_fields=["db_value2"])
 
 
 class Migration(migrations.Migration):
