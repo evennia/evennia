@@ -12,7 +12,7 @@ def migrate_serverconf(apps, schema_editor):
     """
     ServerConfig = apps.get_model("server", "ServerConfig")
     for conf in ServerConfig.objects.all():
-        value = pickle.loads(utils.to_bytes(conf.db_value))
+        value = pickle.loads(to_bytes(conf.db_value))
         conf.db_value2 = value
         conf.save()
 
@@ -28,11 +28,6 @@ class Migration(migrations.Migration):
             model_name='serverconfig',
             name='db_value2',
             field=evennia.utils.picklefield.PickledObjectField(help_text='The data returned when the config value is accessed. Must be written as a Python literal if editing through the admin interface. Attribute values which are not Python literals cannot be edited through the admin interface.', null=True, verbose_name='value'),
-        ),
-        migrations.AlterField(
-            model_name='serverconfig',
-            name='db_value',
-            field=models.BinaryField(blank=True),
         ),
         # migrate data
         migrations.RunPython(migrate_serverconf, migrations.RunPython.noop),
