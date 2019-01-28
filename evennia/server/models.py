@@ -14,6 +14,7 @@ from django.db import models
 from evennia.utils.idmapper.models import WeakSharedMemoryModel
 from evennia.utils import logger, utils
 from evennia.server.manager import ServerConfigManager
+from evennia.utils import picklefield
 
 
 #------------------------------------------------------------
@@ -43,7 +44,14 @@ class ServerConfig(WeakSharedMemoryModel):
     # main name of the database entry
     db_key = models.CharField(max_length=64, unique=True)
     # config value
-    db_value = models.BinaryField(blank=True)
+    # db_value = models.BinaryField(blank=True)
+
+    db_value = picklefield.PickledObjectField(
+        'value', null=True,
+        help_text="The data returned when the config value is accessed. Must be "
+                  "written as a Python literal if editing through the admin "
+                  "interface. Attribute values which are not Python literals "
+                  "cannot be edited through the admin interface.")
 
     objects = ServerConfigManager()
     _is_deleted = False
