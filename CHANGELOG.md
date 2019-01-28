@@ -83,6 +83,10 @@ Web/Django standard initiative (@strikaco)
 
 - Added more unit tests.
 
+### Server
+
+- Convert ServerConf model to store its values as a Picklefield (same as Attributes) instead of using a custom solution.
+
 ### Utils
 
 - Swap argument order of `evennia.set_trace` to `set_trace(term_size=(140, 40), debugger='auto')`
@@ -93,6 +97,7 @@ Web/Django standard initiative (@strikaco)
   `force_string` flag was removed and assumed always set).
 - `utils.to_bytes(text, session=None)` replaces the old `utils.to_str()` functionality and converts
   str to bytes.
+
 
 
 ## Evennia 0.8 (2018)
