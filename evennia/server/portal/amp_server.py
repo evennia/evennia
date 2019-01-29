@@ -228,7 +228,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         Send a status stanza to the launcher.
 
         """
-        print("send status to launcher")
+        # print("send status to launcher")
         # print("self.get_status(): {}".format(self.get_status()))
         if self.factory.launcher_connection:
             self.factory.launcher_connection.callRemote(
@@ -307,9 +307,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         self.factory.launcher_connection = self
         _, server_connected, _, _, _, _ = self.get_status()
 
-        logger.log_msg("Evennia Launcher->Portal operation %s:%s received" % (ord(operation), arguments))
+        # logger.log_msg("Evennia Launcher->Portal operation %s:%s received" % (ord(operation), arguments))
 
-        logger.log_msg("operation == amp.SSTART: {}: {}".format(operation == amp.SSTART, amp.loads(arguments)))
+        # logger.log_msg("operation == amp.SSTART: {}: {}".format(operation == amp.SSTART, amp.loads(arguments)))
 
         if operation == amp.SSTART:   # portal start  #15
             # first, check if server is already running
@@ -350,7 +350,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 self.factory.portal.shutdown()
 
         else:
-            logger.log_msg("Operation {} not recognized".format(operation))
+            logger.log_err("Operation {} not recognized".format(operation))
             raise Exception("operation %(op)s not recognized." % {'op': operation})
 
         return {}
@@ -391,7 +391,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         sessid, kwargs = self.data_in(packed_data)
 
-        logger.log_msg("Evennia Server->Portal admin data %s:%s received" % (sessid, kwargs))
+        # logger.log_msg("Evennia Server->Portal admin data %s:%s received" % (sessid, kwargs))
 
         operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions

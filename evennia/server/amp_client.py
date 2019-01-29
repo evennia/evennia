@@ -102,7 +102,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         Called when a new connection is established.
 
         """
-        print("AMPClient new connection {}".format(self))
+        # print("AMPClient new connection {}".format(self))
         info_dict = self.factory.server.get_info_dict()
         super(AMPServerClientProtocol, self).connectionMade()
         # first thing we do is to request the Portal to sync all sessions
@@ -129,7 +129,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             (sessid, kwargs).
 
         """
-        print("server data_to_portal: {}, {}, {}".format(command, sessid, kwargs))
+        # print("server data_to_portal: {}, {}, {}".format(command, sessid, kwargs))
         return self.callRemote(command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
                 self.errback, command.key)
 
