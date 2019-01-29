@@ -287,7 +287,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         """
         Handle non-AMP messages, such as HTTP communication.
         """
-        print("dataReceived: {}".format(data))
+        # print("dataReceived: {}".format(data))
         if data[:1] == NUL:
             # an AMP communication
             if data[-2:] != NULNUL:
@@ -310,7 +310,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
             # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
             self.transport.loseConnection()
-            print("HTTP received: %s" % data)
+            print("HTTP received (the AMP port should not receive http, only AMP!) %s" % data)
 
     def makeConnection(self, transport):
         """
@@ -330,7 +330,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         This is called when an AMP connection is (re-)established. AMP calls it on both sides.
 
         """
-        print("connectionMade: {}".format(self))
+        # print("connectionMade: {}".format(self))
         self.factory.broadcasts.append(self)
 
     def connectionLost(self, reason):
@@ -343,7 +343,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         portal will continuously try to reconnect, showing the problem
         that way.
         """
-        print("ConnectionLost: {}: {}".format(self, reason))
+        # print("ConnectionLost: {}: {}".format(self, reason))
         try:
             self.factory.broadcasts.remove(self)
         except ValueError:
@@ -362,7 +362,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         e.trap(Exception)
-        _LOGGER.log_err("AMP Error for {info}: {trcbck} {err}".format(
+        _get_logger().log_err("AMP Error for {info}: {trcbck} {err}".format(
             info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()))
 
     def data_in(self, packed_data):
