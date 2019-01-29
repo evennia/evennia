@@ -80,6 +80,14 @@ def loads(data):
     return pickle.loads(data)
 
 
+def _get_logger():
+    "Delay import of logger until absolutely necessary"
+    global _LOGGER
+    if not _LOGGER:
+        from evennia.utils import logger as _LOGGER
+    return _LOGGER
+
+
 @wraps
 def catch_traceback(func):
     "Helper decorator"
@@ -87,10 +95,7 @@ def catch_traceback(func):
         try:
             func(*args, **kwargs)
         except Exception as err:
-            global _LOGGER
-            if not _LOGGER:
-                from evennia.utils import logger as _LOGGER
-            _LOGGER.log_trace()
+            _get_logger().log_trace()
             raise  # make sure the error is visible on the other side of the connection too
             print(err)
     return decorator
@@ -291,7 +296,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _LOGGER.trace("Discarded incoming partial data: {}".format(to_str(data)))
+                _get_logger().log_trace("Discarded incoming partial data: {}".format(to_str(data)))
         elif self.multibatches:
             # invalid AMP, but we have a pending multi-batch that is not yet complete
             if data[-2:] == NULNUL:
@@ -300,7 +305,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _LOGGER.trace("Discarded incoming multi-batch data:".format(to_str(data)))
+                _get_logger().log_trace("Discarded incoming multi-batch data:".format(to_str(data)))
         else:
             # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
@@ -356,9 +361,6 @@ class AMPMultiConnectionProtocol(amp.AMP):
             info (str): Error string.
 
         """
-        global _LOGGER
-        if not _LOGGER:
-            from evennia.utils import logger as _LOGGER
         e.trap(Exception)
         _LOGGER.log_err("AMP Error for {info}: {trcbck} {err}".format(
             info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()))

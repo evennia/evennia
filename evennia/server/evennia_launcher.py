@@ -1279,6 +1279,19 @@ def check_main_evennia_dependencies():
         error = True
     if error:
         sys.exit()
+
+    # fix a common zope issue with a missing __init__ file
+    zope_interface = importlib.import_module("zope.interface")
+    expected_init_path = os.path.join(
+        os.path.dirname(os.path.dirname(zope_interface.__file__)), "__init__.py")
+    if not os.path.exists(expected_init_path):
+        # add an empty missing __init__.py file to fix the problem
+        with open(expected_init_path, 'w') as zope_init_file:
+            zope_init_file.write("")
+        print("Note: zope_interface.__init__.py not found. This is a known issue with that package."
+              "\nEvennia auto-created it at {}.".format(
+                    expected_init_path))
+
     # return True/False if error was reported or not
     return not error
 
