@@ -167,7 +167,7 @@ class Attribute(SharedMemoryModel):
     def __str__(self):
         return smart_str("%s(%s)" % (self.db_key, self.id))
 
-    def __unicode__(self):
+    def __repr__(self):
         return "%s(%s)" % (self.db_key, self.id)
 
     def access(self, accessing_obj, access_type='read', default=False, **kwargs):

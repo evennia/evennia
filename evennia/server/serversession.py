@@ -471,8 +471,7 @@ class ServerSession(Session):
             address = self.address
         return "%s%s@%s" % (self.uname, symbol, address)
 
-    def __unicode__(self):
-        """Unicode representation"""
+    def __repr__(self):
         return "%s" % str(self)
 
     # Dummy API hooks for use during non-loggedin operation

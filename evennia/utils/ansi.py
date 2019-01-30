@@ -718,16 +718,6 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
     def __str__(self):
         return self._raw_string
 
-    def __unicode__(self):
-        """
-        Unfortunately, this is not called during print() statements
-        due to a bug in the Python interpreter. You can always do
-        unicode() or str() around the resulting ANSIString and print
-        that.
-
-        """
-        return self._raw_string
-
     def __repr__(self):
         """
         Let's make the repr the command that would actually be used to
