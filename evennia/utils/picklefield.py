@@ -46,17 +46,13 @@ from django.utils.html import format_html
 
 from evennia.utils.dbserialize import from_pickle, to_pickle
 from future.utils import with_metaclass
+from pickle import loads, dumps
 
 try:
     from django.utils.encoding import force_text
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
 
-# python 3.x does not have cPickle module
-try:
-    from pickle import loads, dumps  # cpython 2.x
-except ImportError:
-    from pickle import loads, dumps  # cpython 3.x, other interpreters
 
 DEFAULT_PROTOCOL = 4
 

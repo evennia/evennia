@@ -13,6 +13,7 @@ import pickle
 from django.db import models
 from evennia.utils.idmapper.models import WeakSharedMemoryModel
 from evennia.utils import logger, utils
+from evennia.utils.dbserialize import to_pickle, from_pickle
 from evennia.server.manager import ServerConfigManager
 from evennia.utils import picklefield
 
@@ -86,7 +87,7 @@ class ServerConfig(WeakSharedMemoryModel):
     #@property
     def __value_get(self):
         "Getter. Allows for value = self.value"
-        return pickle.loads(utils.to_bytes(self.db_value))
+        return from_pickle(self.db_value, db_obj=self)
 
     #@value.setter
     def __value_set(self, value):
@@ -95,7 +96,7 @@ class ServerConfig(WeakSharedMemoryModel):
             # we have to protect against storing db objects.
             logger.log_err("ServerConfig cannot store db objects! (%s)" % value)
             return
-        self.db_value = pickle.dumps(value)
+        self.db_value = to_pickle(value)
         self.save()
 
     #@value.deleter
@@ -113,8 +114,8 @@ class ServerConfig(WeakSharedMemoryModel):
     # ServerConfig other methods
     #
 
-    def __unicode__(self):
-        return "%s : %s" % (self.key, self.value)
+    def __repr__(self):
+        return "<{} {}>".format(self.__class__.__name__, self.key, self.value)
 
     def store(self, key, value):
         """
