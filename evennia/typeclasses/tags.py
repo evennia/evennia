@@ -69,7 +69,7 @@ class Tag(models.Model):
     def __lt__(self, other):
         return str(self) < str(other)
 
-    def __unicode__(self):
+    def __repr__(self):
         return "<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
 
     def __str__(self):

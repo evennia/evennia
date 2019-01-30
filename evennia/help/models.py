@@ -100,7 +100,7 @@ class HelpEntry(SharedMemoryModel):
     def __str__(self):
         return self.key
 
-    def __unicode__(self):
+    def __repr__(self):
         return '%s' % self.key
 
     def access(self, accessing_obj, access_type='read', default=False):
@@ -111,7 +111,7 @@ class HelpEntry(SharedMemoryModel):
         default - what to return if no lock of access_type was found
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
-        
+
     #
     # Web/Django methods
     #
@@ -190,7 +190,7 @@ class HelpEntry(SharedMemoryModel):
         try:
             return reverse('%s-detail' % slugify(self._meta.verbose_name),
                kwargs={
-                   'category': slugify(self.db_help_category), 
+                   'category': slugify(self.db_help_category),
                    'topic': slugify(self.db_key)})
         except Exception as e:
             print(e)
@@ -226,7 +226,7 @@ class HelpEntry(SharedMemoryModel):
         try:
             return reverse('%s-update' % slugify(self._meta.verbose_name),
                kwargs={
-                   'category': slugify(self.db_help_category), 
+                   'category': slugify(self.db_help_category),
                    'topic': slugify(self.db_key)})
         except:
             return '#'
@@ -259,7 +259,7 @@ class HelpEntry(SharedMemoryModel):
         try:
             return reverse('%s-delete' % slugify(self._meta.verbose_name),
                kwargs={
-                   'category': slugify(self.db_help_category), 
+                   'category': slugify(self.db_help_category),
                    'topic': slugify(self.db_key)})
         except:
             return '#'

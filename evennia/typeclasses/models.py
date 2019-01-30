@@ -342,7 +342,7 @@ class TypedObject(SharedMemoryModel):
     def __str__(self):
         return smart_str("%s" % self.db_key)
 
-    def __unicode__(self):
+    def __repr__(self):
         return "%s" % self.db_key
 
     #@property

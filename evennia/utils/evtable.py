@@ -852,11 +852,6 @@ class EvCell(object):
     def __str__(self):
         "returns cell contents on string form"
         self.formatted = self._reformat()
-        return str(str(ANSIString("\n").join(self.formatted)))
-
-    def __unicode__(self):
-        "returns cell contents"
-        self.formatted = self._reformat()
         return str(ANSIString("\n").join(self.formatted))
 
 
@@ -1634,9 +1629,6 @@ class EvTable(object):
         """print table (this also balances it)"""
         # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
         return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
-
-    def __unicode__(self):
-        return str(ANSIString("\n").join([line for line in self._generate_lines()]))
 
 
 def _test():
