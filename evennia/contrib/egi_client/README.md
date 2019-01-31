@@ -135,7 +135,7 @@ on the main game index page.
 
 Required: No
 
-A longer, full-length description or overview of the game. 
+A longer, full-length description or overview of the game.
 [Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 and some of the very basic HTML tags are accepted here.
 
@@ -175,7 +175,7 @@ the wild.
 
 ### My game doesn't appear on the listing!
 
-If you don't see your game appear on the listing after reloading your server, 
+If you don't see your game appear on the listing after reloading your server,
 check the server logs. You should see some error messages describing what
 went wrong.
 
