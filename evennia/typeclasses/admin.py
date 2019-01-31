@@ -213,7 +213,7 @@ class AttributeForm(forms.ModelForm):
         self.instance.attr_key = attr_key
         self.instance.attr_category = attr_category
         self.instance.attr_value = attr_value
-        # prevent set from being transformed to unicode
+        # prevent set from being transformed to str
         if isinstance(attr_value, set) or isinstance(attr_value, _SaverSet):
             self.fields['attr_value'].disabled = True
         self.instance.deserialized_value = from_pickle(attr_value)
@@ -242,8 +242,8 @@ class AttributeForm(forms.ModelForm):
 
     def clean_attr_value(self):
         """
-        Prevent Sets from being cleaned due to literal_eval failing on them. Otherwise they will be turned into
-        unicode.
+        Prevent Sets from being cleaned due to literal_eval failing on them. Otherwise they will be turned into str.
+
         """
         data = self.cleaned_data['attr_value']
         initial = self.instance.attr_value

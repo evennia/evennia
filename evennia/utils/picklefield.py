@@ -35,23 +35,15 @@ from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
 # import six # this is actually a pypy component, not in default syslib
-import django
 from django.core.exceptions import ValidationError
 from django.db import models
 
-# django 1.5 introduces force_text instead of force_unicode
 from django.forms import CharField, Textarea
 from django.forms.utils import flatatt
 from django.utils.html import format_html
 
-from evennia.utils.dbserialize import from_pickle, to_pickle
-from future.utils import with_metaclass
 from pickle import loads, dumps
-
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
+from django.utils.encoding import force_text
 
 
 DEFAULT_PROTOCOL = 4
@@ -188,10 +180,10 @@ class PickledObjectField(models.Field):
         """
         Returns the default value for this field.
 
-        The default implementation on models.Field calls force_unicode
+        The default implementation on models.Field calls force_text
         on the default, which means you can't set arbitrary Python
         objects as the default. To fix this, we just return the value
-        without calling force_unicode on it. Note that if you set a
+        without calling force_text on it. Note that if you set a
         callable as a default, the field will still call it. It will
         *not* try to pickle and encode it.
 

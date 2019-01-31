@@ -220,7 +220,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
     decoderr = []
     for abspath in abspaths:
         # try different paths, until we get a match
-        # we read the file directly into unicode.
+        # we read the file directly into string.
         for file_encoding in _ENCODINGS:
             # try different encodings, in order
             try:

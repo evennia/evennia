@@ -86,8 +86,7 @@ Use as follows:
     form.map(tables={"A": tableA,
                      "B": tableB})
 
-    # unicode is required since the example contains non-ascii characters
-    print unicode(form)
+    print(form)
 ```
 
 This produces the following result:

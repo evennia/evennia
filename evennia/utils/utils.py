@@ -738,16 +738,21 @@ _UNICODE_MAP = {"EM DASH": "-", "FIGURE DASH": "-", "EN DASH": "-", "HORIZONTAL 
                 "HORIZONTAL ELLIPSIS": "...", "RIGHT SINGLE QUOTATION MARK": "'"}
 
 
-def latinify(unicode_string, default='?', pure_ascii=False):
+def latinify(string, default='?', pure_ascii=False):
     """
     Convert a unicode string to "safe" ascii/latin-1 characters.
-    This is used as a last resort when normal decoding does not work.
+    This is used as a last resort when normal encoding does not work.
 
     Arguments:
-        unicode_string (unicode): A string to convert to an ascii
-            or latin-1 string.
+        string (str): A string to convert to 'safe characters' convertable
+            to an latin-1 bytestring later.
         default (str, optional): Characters resisting mapping will be replaced
-            with this character or string.
+            with this character or string. The intent is to apply an encode operation
+            on the string soon after.
+
+    Returns:
+        string (str): A 'latinified' string where each unicode character has been
+            replaced with a 'safe' equivalent available in the ascii/latin-1 charset.
     Notes:
         This is inspired by the gist by Ricardo Murri:
             https://gist.github.com/riccardomurri/3c3ccec30f037be174d3
@@ -757,7 +762,7 @@ def latinify(unicode_string, default='?', pure_ascii=False):
     from unicodedata import name
 
     converted = []
-    for unich in iter(unicode_string):
+    for unich in iter(string):
         try:
             ch = unich.decode('ascii')
         except UnicodeDecodeError:
