@@ -613,7 +613,7 @@ def _transform(func_name):
 
 class ANSIMeta(type):
     """
-    Many functions on ANSIString are just light wrappers around the unicode
+    Many functions on ANSIString are just light wrappers around the string
     base class. We apply them here, as part of the classes construction.
 
     """
@@ -637,10 +637,9 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
     """
     Unicode-like object that is aware of ANSI codes.
 
-    This class can be used nearly identically to unicode, in that it will
-    report string length, handle slices, etc, much like a unicode or
-    string object would. The methods should be used identically as unicode
-    methods are.
+    This class can be used nearly identically to strings, in that it will
+    report string length, handle slices, etc, much like a string object
+    would. The methods should be used identically as string methods are.
 
     There is at least one exception to this (and there may be more, though
     they have not come up yet). When using ''.join() or u''.join() on an
@@ -735,18 +734,11 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
         ANSI parser with one of your own syntax if you wish, so long as it
         implements the same interface.
 
-        The second is the _raw_string. It should be noted that the ANSIStrings
-        are unicode based. This seemed more reasonable than basing it off of
-        the string class, because if someone were to use a unicode character,
-        the benefits of knowing the indexes of the ANSI characters would be
-        negated by the fact that a character within the string might require
-        more than one byte to be represented. The raw string is, then, a
-        unicode object rather than a true encoded string. If you need the
-        encoded string for sending over the wire, try using the .encode()
-        method.
+        The second is the _raw_string. This is the original "dumb" string
+        with ansi escapes that ANSIString represents.
 
-        The third thing to set is the _clean_string. This is a unicode object
-        that is devoid of all ANSI Escapes.
+        The third thing to set is the _clean_string. This is a string that is
+        devoid of all ANSI Escapes.
 
         Finally, _code_indexes and _char_indexes are defined. These are lookup
         tables for which characters in the raw string are related to ANSI
@@ -894,20 +886,20 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
 
     def clean(self):
         """
-        Return a unicode object without the ANSI escapes.
+        Return a string object *without* the ANSI escapes.
 
         Returns:
-            clean_string (unicode): A unicode object with no ANSI escapes.
+            clean_string (str): A unicode object with no ANSI escapes.
 
         """
         return self._clean_string
 
     def raw(self):
         """
-        Return a unicode object with the ANSI escapes.
+        Return a string object with the ANSI escapes.
 
         Returns:
-            raw (unicode): A unicode object with the raw ANSI escape sequences.
+            raw (str): A unicode object *with* the raw ANSI escape sequences.
 
         """
         return self._raw_string
@@ -951,7 +943,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
         readable characters, and one which contains the indexes of all ANSI
         escapes. It's important to remember that ANSI escapes require more
         that one character at a time, though no readable character needs more
-        than one character, since the unicode base class abstracts that away
+        than one character, since the string base class abstracts that away
         from us. However, several readable characters can be placed in a row.
 
         We must use regexes here to figure out where all the escape sequences
@@ -1229,7 +1221,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
 
         NOTE: This should always be used for joining strings when ANSIStrings
             are involved. Otherwise color information will be discarded by
-            python, due to details in the C implementation of unicode strings.
+            python, due to details in the C implementation of strings.
 
         Args:
             iterable (list of strings): A list of strings to join together

@@ -3,10 +3,6 @@ This is an advanced ASCII table creator. It was inspired by
 [prettytable](https://code.google.com/p/prettytable/) but shares no
 code.
 
-> Note: to test ANSI colors on the command line you need to call the
-printed table in a unicode() call, like print unicode(table).  This is
-due to a bug in the python interpreter and print.
-
 Example usage:
 
 ```python
@@ -140,7 +136,6 @@ def _to_ansi(obj):
         return ANSIString(obj)
 
 
-_unicode = str
 _whitespace = '\t\n\x0b\x0c\r '
 
 
@@ -167,8 +162,6 @@ class ANSITextWrapper(TextWrapper):
 #        if self.replace_whitespace:
 #            if isinstance(text, str):
 #                text = text.translate(self.whitespace_trans)
-#            elif isinstance(text, _unicode):
-#                text = text.translate(self.unicode_whitespace_trans)
 #        return text
 
     def _split(self, text):
@@ -440,7 +433,6 @@ class EvCell(object):
         self.align = kwargs.get("align", "l")
         self.valign = kwargs.get("valign", "c")
 
-        # self.data = self._split_lines(unicode(data))
         self.data = self._split_lines(_to_ansi(data))
         self.raw_width = max(m_len(line) for line in self.data)
         self.raw_height = len(self.data)
@@ -740,7 +732,6 @@ class EvCell(object):
             `EvCell.__init__`.
 
         """
-        # self.data = self._split_lines(unicode(data))
         self.data = self._split_lines(_to_ansi(data))
         self.raw_width = max(m_len(line) for line in self.data)
         self.raw_height = len(self.data)
