@@ -69,8 +69,6 @@ class Tag(models.Model):
     def __lt__(self, other):
         return str(self) < str(other)
 
-    def __repr__(self):
-        return "<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
 
     def __str__(self):
         return str("<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else ""))
@@ -405,9 +403,6 @@ class TagHandler(object):
             self.add(tag=key, category=category, data=data.get(category, None))
 
     def __str__(self):
-        return ",".join(self.all())
-
-    def __unicode(self):
         return ",".join(self.all())
 
 
