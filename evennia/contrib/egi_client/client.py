@@ -77,8 +77,8 @@ class EvenniaGameIndexClient(object):
     def _form_and_send_request(self):
         agent = Agent(reactor, pool=self._conn_pool)
         headers = {
-            'User-Agent': ['Evennia Game Index Client'],
-            'Content-Type': ['application/x-www-form-urlencoded'],
+            b'User-Agent': [b'Evennia Game Index Client'],
+            b'Content-Type': [b'application/x-www-form-urlencoded'],
         }
         egi_config = self._get_config_dict()
         # We are using `or` statements below with dict.get() to avoid sending
@@ -110,7 +110,7 @@ class EvenniaGameIndexClient(object):
         data = urllib.parse.urlencode(values)
 
         d = agent.request(
-            'POST', self.report_url,
+            b'POST', bytes(self.report_url, 'utf-8'),
             headers=Headers(headers),
             bodyProducer=StringProducer(data))
 
@@ -144,6 +144,7 @@ class SimpleResponseReceiver(protocol.Protocol):
     def connectionLost(self, reason=protocol.connectionDone):
         self.d.callback((self.status_code, self.buf))
 
+
 @implementer(IBodyProducer)
 class StringProducer(object):
     """
@@ -151,7 +152,7 @@ class StringProducer(object):
     """
 
     def __init__(self, body):
-        self.body = body
+        self.body = bytes(body, 'utf-8')
         self.length = len(body)
 
     def startProducing(self, consumer):
