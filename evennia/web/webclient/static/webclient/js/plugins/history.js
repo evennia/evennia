@@ -6,50 +6,72 @@
 let history_plugin = (function () {
 
     // Manage history for input line
-    var history_max = 21;
-    var history = new Array();
-    var history_pos = 0;
-
-    history[0] = ''; // the very latest input is empty for new entry.
+    var history_max = 20;
+    var history = {};
+    var history_pos = {};
 
     //
-    // move back in the history
-    var back = function () {
-        // step backwards in history stack
-        history_pos = Math.min(++history_pos, history.length - 1);
-        return history[history.length - 1 - history_pos];
+    // Add a new textarea to track history for.
+    var track_history_for_id = function(id) {
+        if( ! history.hasOwnProperty( id ) ) {
+            history[id] = new Array;
+            history_pos[id] = -1;
+        } else {
+            console.log('IGNORED -- already tracking history for that DOM element!');
+        }
     }
 
     //
-    // move forward in the history
-    var fwd = function () {
-        // step forwards in history stack
-        history_pos = Math.max(--history_pos, 0);
-        return history[history.length - 1 - history_pos];
+    // Return whichever inputfield (if any) is focused, out of the set we are tracking
+    var get_focused_input = function () {
+        let inputfield = $( document.activeElement );
+
+        // is the focused element one of the ones we are tracking history for?
+        if( history.hasOwnProperty( inputfield.attr('id') ) ) { 
+            return inputfield;
+        }
+        return null;
+    }
+
+    //
+    // move back from the history (to newer elements)
+    var back = function (id) {
+        // step back in history queue, to the most recently stored entry.
+        if( history_pos[id] >= 0 ) {
+            history_pos[id]--;
+
+            // if we've stepped "before" the first element of our queue, return new, empty string
+            if( history_pos[id] == -1 ) {
+                return '';
+            }
+        }
+
+        return history[id][ history_pos[id] ];
+    }
+
+    //
+    // move forward into the history (to older elements)
+    var fwd = function (id) {
+        // step forward in history queue, restricted by bounds checking
+        if( history_pos[id] < Math.min( history[id].length - 1, history_max - 1 ) ) {
+            history_pos[id]++;
+        }
+        return history[id][ history_pos[id] ];
     }
 
     //
     // add a new history line
-    var add = function (input) {
+    var add = function (id, input) {
         // add a new entry to history, don't repeat latest
-        if (input && input != history[history.length-2]) {
-            if (history.length >= history_max) {
-                history.shift(); // kill oldest entry
+        if (input && input != history[id][0]) {
+            // make sure to trim the history queue length to 'history_max'
+            if (history[id].length + 1 >= history_max) {
+                history[id].pop(); // remove oldest entry from queue
             }
-            history[history.length-1] = input;
-            history[history.length] = '';
+            history[id].unshift(input); // add newest entry to beginning of queue
         }
-        // reset the position to the last history entry
-        history_pos = 0;
-    }
-
-    //
-    // Add input to the scratch line
-    var scratch = function (input) {
-        // Put the input into the last history entry (which is normally empty)
-        // without making the array larger as with add.
-        // Allows for in-progress editing to be saved.
-        history[history.length-1] = input;
+        // reset the position to the beginning of the queue
+        history_pos[id] = -1;
     }
 
     // Public
@@ -57,39 +79,52 @@ let history_plugin = (function () {
     //
     // Handle up arrow and down arrow events.
     var onKeydown = function(event) {
-        var code = event.which;
-        var history_entry = null;
-        var inputfield = $("#inputfield");
+        var keycode = event.which;
 
-        if (code === 38) { // Arrow up
-            history_entry = back();
-        }
-        else if (code === 40) { // Arrow down
-            history_entry = fwd();
-        }
+        // Is one of the two input fields focused?
+        let inputfield = get_focused_input();
+        if( inputfield != null ) {
+            let id = inputfield.attr('id')
+            let history_entry = null; // check the keycode for up/down arrows
+            if (keycode === 40) { // Arrow down
+                history_entry = back(id);
+            }
+            else if (keycode === 38) { // Arrow up
+                history_entry = fwd(id);
+            }
 
-        if (history_entry !== null) {
-            // Performing a history navigation
-            // replace the text in the input and move the cursor to the end of the new value
-            inputfield.val('');
-            inputfield.blur().focus().val(history_entry);
-            event.preventDefault();
-            return true;
+            if (history_entry !== null) {
+                // Performing a history navigation
+                // replace the text in the input and move the cursor to the end of the new value
+                inputfield.blur().focus().val(history_entry);
+                event.preventDefault();
+                return true;
+            }
         }
-
         return false;
     }
 
     //
     // Listen for onSend lines to add to history
     var onSend = function (line) {
-        add(line);
+        let inputfield = get_focused_input();
+        if( inputfield != null ) {
+            add(inputfield.attr('id'), line);
+        }
         return null; // we are not returning an altered input line
     }
 
     //
     // Init function
     var init = function () {
+        track_history_for_id('inputfield'); // The default inputfield
+
+        // check to see if the dual_input plugin is enabled.
+        if( !(typeof plugins['dual_input'] === "undefined") ) {
+            console.log('configuring history tracking for dual_input plugin');
+            track_history_for_id('inputfield2');
+        }
+
         console.log('History Plugin Initialized.');
     } 
 
