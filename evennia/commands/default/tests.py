@@ -21,9 +21,12 @@ from mock import Mock, mock
 
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
-from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin
+from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin, syscommands
+from evennia.commands.cmdparser import build_matches
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
+from evennia.commands import cmdparser
+from evennia.commands.cmdset import CmdSet
 from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
@@ -283,30 +286,30 @@ class TestAccount(CommandTest):
     def test_char_create(self):
         self.call(account.CmdCharCreate(), "Test1=Test char",
                   "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
-                  
+
     def test_char_delete(self):
-        # Chardelete requires user input; this test is mainly to confirm 
+        # Chardelete requires user input; this test is mainly to confirm
         # whether permissions are being checked
-        
+
         # Add char to account playable characters
         self.account.db._playable_characters.append(self.char1)
-        
+
         # Try deleting as Developer
         self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
-        
+
         # Downgrade permissions on account
         self.account.permissions.add('Player')
         self.account.permissions.remove('Developer')
-        
+
         # Set lock on character object to prevent deletion
         self.char1.locks.add('delete:none()')
-        
+
         # Try deleting as Player
         self.call(account.CmdCharDelete(), "Char", "You do not have permission to delete this character.", caller=self.account)
-        
+
         # Set lock on character object to allow self-delete
         self.char1.locks.add('delete:pid(%i)' % self.account.id)
-        
+
         # Try deleting as Player again
         self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
 
@@ -657,3 +660,33 @@ class TestUnconnectedCommand(CommandTest):
                         datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
                         SESSIONS.account_count(), utils.get_evennia_version())
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
+
+
+# Test syscommands
+
+class TestSystemCommands(CommandTest):
+
+    def test_simple_defaults(self):
+        self.call(syscommands.SystemNoInput(), "")
+        self.call(syscommands.SystemNoMatch(), "Huh?")
+
+    def test_multimatch(self):
+        # set up fake matches and store on command instance
+        cmdset = CmdSet()
+        cmdset.add(general.CmdLook())
+        cmdset.add(general.CmdLook())
+        matches = cmdparser.build_matches("look", cmdset)
+
+        multimatch = syscommands.SystemMultimatch()
+        multimatch.matches = matches
+
+        self.call(multimatch, "look", "")
+
+    @mock.patch("evennia.commands.default.syscommands.ChannelDB")
+    def test_channelcommand(self, mock_channeldb):
+        channel = mock.MagicMock()
+        channel.msg = mock.MagicMock()
+        mock_channeldb.objects.get_channel = mock.MagicMock(return_value=channel)
+
+        self.call(syscommands.SystemSendToChannel(), "public:Hello")
+        channel.msg.assert_called()

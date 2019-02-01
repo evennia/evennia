@@ -1857,7 +1857,9 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     Returns:
         processed_result (Object or None): This is always a single result
             or `None`. If `None`, any error reporting/handling should
-            already have happened.
+            already have happened. The returned object is of the type we are
+            checking multimatches for (e.g. Objects or Commands)
+
     """
 
     error = ""
