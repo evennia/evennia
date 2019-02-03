@@ -831,9 +831,9 @@ AUTH_USERNAME_VALIDATORS = [
     {'NAME': 'evennia.server.validators.EvenniaUsernameAvailabilityValidator'}]
 
 # Use a custom test runner that just tests Evennia-specific apps.
-TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
+TEST_RUNNER = 'evennia.server.tests.testrunner.EvenniaTestSuiteRunner'
 
-# Messages and Bootstrap don't classify events the same way; this setting maps 
+# Messages and Bootstrap don't classify events the same way; this setting maps
 # messages.error() to Bootstrap 'danger' classes.
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',

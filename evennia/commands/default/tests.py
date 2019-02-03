@@ -21,9 +21,12 @@ from mock import Mock, mock
 
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
-from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin
+from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin, syscommands
+from evennia.commands.cmdparser import build_matches
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
+from evennia.commands import cmdparser
+from evennia.commands.cmdset import CmdSet
 from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
@@ -660,3 +663,33 @@ class TestUnconnectedCommand(CommandTest):
                         SESSIONS.account_count(), utils.get_evennia_version())
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
         del gametime.SERVER_START_TIME
+
+
+# Test syscommands
+
+class TestSystemCommands(CommandTest):
+
+    def test_simple_defaults(self):
+        self.call(syscommands.SystemNoInput(), "")
+        self.call(syscommands.SystemNoMatch(), "Huh?")
+
+    def test_multimatch(self):
+        # set up fake matches and store on command instance
+        cmdset = CmdSet()
+        cmdset.add(general.CmdLook())
+        cmdset.add(general.CmdLook())
+        matches = cmdparser.build_matches("look", cmdset)
+
+        multimatch = syscommands.SystemMultimatch()
+        multimatch.matches = matches
+
+        self.call(multimatch, "look", "")
+
+    @mock.patch("evennia.commands.default.syscommands.ChannelDB")
+    def test_channelcommand(self, mock_channeldb):
+        channel = mock.MagicMock()
+        channel.msg = mock.MagicMock()
+        mock_channeldb.objects.get_channel = mock.MagicMock(return_value=channel)
+
+        self.call(syscommands.SystemSendToChannel(), "public:Hello")
+        channel.msg.assert_called()
