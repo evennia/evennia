@@ -165,7 +165,23 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
         uninherited (dict): Parts of prototype to not inherit.
         _workprot (dict, optional): Work dict for the recursive algorithm.
 
+    Returns:
+        merged (dict): A prototype where parent's have been merged as needed (the
+            `prototype_parent` key is removed).
+
     """
+    def _inherit_tags(old_tags, new_tags):
+        old = {(tup[0], tup[1]): tup for tup in old_tags}
+        new = {(tup[0], tup[1]): tup for tup in new_tags}
+        old.update(new)
+        return list(old.values())
+
+    def _inherit_attrs(old_attrs, new_attrs):
+        old = {(tup[0], tup[2]): tup for tup in old_attrs}
+        new = {(tup[0], tup[2]): tup for tup in new_attrs}
+        old.update(new)
+        return list(old.values())
+
     _workprot = {} if _workprot is None else _workprot
     if "prototype_parent" in inprot:
         # move backwards through the inheritance
@@ -173,8 +189,20 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
             # Build the prot dictionary in reverse order, overloading
             new_prot = _get_prototype(protparents.get(prototype.lower(), {}),
                                       protparents, _workprot=_workprot)
+
+            # attrs, tags have internal structure that should be inherited separately
+            new_prot['attrs'] = _inherit_attrs(
+                _workprot.get("attrs", {}), new_prot.get("attrs", {}))
+            new_prot['tags'] = _inherit_tags(
+                _workprot.get("tags", {}), new_prot.get("tags", {}))
+
             _workprot.update(new_prot)
     # the inprot represents a higher level (a child prot), which should override parents
+
+    inprot['attrs'] = _inherit_attrs(
+        _workprot.get("attrs", {}), inprot.get("attrs", {}))
+    inprot['tags'] = _inherit_tags(
+        _workprot.get("tags", {}), inprot.get("tags", {}))
     _workprot.update(inprot)
     if uninherited:
         # put back the parts that should not be inherited
