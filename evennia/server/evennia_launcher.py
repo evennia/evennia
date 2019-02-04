@@ -2134,7 +2134,6 @@ def main():
         if unknown_args:
             for arg in unknown_args:
                 if arg.startswith("--"):
-                    print("arg:", arg)
                     if "=" in arg:
                         arg, value = [p.strip() for p in arg.split("=", 1)]
                     else:
@@ -2148,6 +2147,8 @@ def main():
             args.insert(1, "-l")
 
         try:
+            print("calling django admin with: {} {}".format(
+                " ".join(args),  " ".join(unknown_args)))
             django.core.management.call_command(*args, **kwargs)
         except django.core.management.base.CommandError as exc:
             args = ", ".join(args)
