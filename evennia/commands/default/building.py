@@ -1040,6 +1040,11 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
             if not target:
                 return
 
+            if target == obj:
+                self.caller.msg("Cannot link an object to itself.")
+                return
+
+
             string = ""
             note = "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing."
             if not obj.destination:
@@ -1123,6 +1128,7 @@ class CmdSetHome(CmdLink):
 
     Usage:
       @sethome <obj> [= <home_location>]
+      @sethom <obj>
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
@@ -1162,10 +1168,10 @@ class CmdSetHome(CmdLink):
             old_home = obj.home
             obj.home = new_home
             if old_home:
-                string = "%s's home location was changed from %s(%s) to %s(%s)." % (
+                string = "Home location of %s was changed from %s(%s) to %s(%s)." % (
                         obj, old_home, old_home.dbref, new_home, new_home.dbref)
             else:
-                string = "%s' home location was set to %s(%s)." % (obj, new_home, new_home.dbref)
+                string = "Home location of %s was set to %s(%s)." % (obj, new_home, new_home.dbref)
         self.caller.msg(string)
 
 
