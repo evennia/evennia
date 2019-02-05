@@ -510,7 +510,7 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + editor._copy_buffer + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                caller.msg("Copied buffer %s to %s." % (editor._copy_buffer, self.lstr))
+                caller.msg("Pasted buffer %s to %s." % (editor._copy_buffer, self.lstr))
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
             new_lines = self.args.split('\n')
