@@ -351,7 +351,7 @@ class TestBuilding(CommandTest):
 
         self.call(building.CmdCpAttr(), "/copy Obj2/test2 = Obj2/test3",
                   "@cpattr: Extra switch \"/copy\" ignored.|\nCopied Obj2.test2 -> Obj2.test3. "
-                  "(value: 'value2'))
+                  "(value: 'value2')")
         self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
         self.call(building.CmdMvAttr(), "", "Usage: ")
         self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 -> Obj2.test3")
