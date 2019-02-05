@@ -11,10 +11,10 @@ main test suite started with
  > python game/manage.py test.
 
 """
-
 import re
 import types
 import datetime
+from anything import Anything
 
 from django.conf import settings
 from mock import Mock, mock
@@ -322,30 +322,66 @@ class TestBuilding(CommandTest):
         name = settings.BASE_OBJECT_TYPECLASS.rsplit('.', 1)[1]
         self.call(building.CmdCreate(), "/d TestObj1",   # /d switch is abbreviated form of /drop
                   "You create a new %s: TestObj1." % name)
+        self.call(building.CmdCreate(), "", "Usage: ")
+        self.call(building.CmdCreate(), "TestObj1;foo;bar",
+                  "You create a new %s: TestObj1 (aliases: foo, bar)." % name)
 
     def test_examine(self):
         self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
 
     def test_set_obj_alias(self):
-        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj(#4)")
+        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj")
         self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to 'testobj1b'.")
+        self.call(building.CmdSetObjAlias(), "", "Usage: ")
+        self.call(building.CmdSetObjAlias(), "NotFound =", "Could not find 'NotFound'.")
+        self.call(building.CmdSetObjAlias(), "Obj", "Aliases for Obj(#4): 'testobj1b'")
+        self.call(building.CmdSetObjAlias(), "Obj2 =", "Cleared aliases from Obj2")
+        self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
 
     def test_copy(self):
         self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b",
                   "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
+        self.call(building.CmdCopy(), "", "Usage: ")
+        self.call(building.CmdCopy(), "Obj", "Identical copy of Obj, named 'Obj_copy' was created.")
+        self.call(building.CmdCopy(), "NotFound = Foo", "Could not find 'NotFound'.")
 
     def test_attribute_commands(self):
         self.call(building.CmdSetAttribute(), "Obj/test1=\"value1\"", "Created attribute Obj/test1 = 'value1'")
         self.call(building.CmdSetAttribute(), "Obj2/test2=\"value2\"", "Created attribute Obj2/test2 = 'value2'")
+
+        self.call(building.CmdCpAttr(), "/copy Obj2/test2 = Obj2/test3",
+                  "@cpattr: Extra switch \"/copy\" ignored.| Copied Obj2.test2 -> Obj2.test3. "
+                  "(value: 'value2')Copied Obj2.test1 -> Obj2.test3")
         self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
+        self.call(building.CmdMvAttr(), "", "Usage: ")
         self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 -> Obj2.test3")
+        self.call(building.CmdCpAttr(), "", "Usage: ")
+
         self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
+        self.call(building.CmdWipe(), "", "Usage: ")
 
     def test_name(self):
         self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
+        self.call(building.CmdName(), "", "Usage: ")
+        self.call(building.CmdName(), "*TestAccount=TestAccountRenamed",
+                  "Account's name changed to 'TestAccountRenamed'.")
+        self.call(building.CmdName(), "*NotFound=TestAccountRenamed",
+                  "Could not find '*NotFound'")
+        self.call(building.CmdName(), "Obj3=Obj4;foo;bar",
+                  "Object's name changed to 'Obj4' (foo, bar).")
+        self.call(building.CmdName(), "Obj4=", "No names or aliases defined!")
 
     def test_desc(self):
         self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
+        self.call(building.CmdDesc(), "", "Usage: ")
+
+        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+            self.call(building.CmdDesc(), "/edit")
+            mock_ed.assert_called_with(self.char1, key='desc',
+                                       loadfunc=building._desc_load,
+                                       quitfunc=building._desc_quit,
+                                       savefunc=building._desc_save,
+                                       persistent=True)
 
     def test_empty_desc(self):
         """
@@ -365,39 +401,77 @@ class TestBuilding(CommandTest):
         assert self.obj2.db.desc == o2d
         assert self.room1.db.desc == 'Obj2' and self.room1.db.desc != r1d
 
-    def test_wipe(self):
+    def test_destroy(self):
         confirm = building.CmdDestroy.confirm
         building.CmdDestroy.confirm = False
+        self.call(building.CmdDestroy(), "", "Usage: ")
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
+        self.call(building.CmdDestroy(), "Obj", "Obj2 was destroyed.")
+        self.call(building.CmdDestroy(), "Obj", "Could not find 'Obj'.| (Objects to destroy "
+                  "must either be local or specified with a unique #dbref.)")
+        self.call(building.CmdDestroy(), "#1", "You are trying to delete")  # DEFAULT_HOME
+        self.char2.location = self.room2
+        self.call(building.CmdDestroy(), self.room2.dbref,
+                  "Char2(#7) arrives to Room(#1) from Room2(#2).|Room2 was destroyed.")
         building.CmdDestroy.confirm = confirm
+
+    def test_destroy_sequence(self):
+        confirm = building.CmdDestroy.confirm
+        building.CmdDestroy.confirm = False
+        self.call(building.CmdDestroy(),
+                  "{}-{}".format(self.obj1.dbref, self.obj2.dbref),
+                  "Obj was destroyed.\nObj2 was destroyed.")
 
     def test_dig(self):
         self.call(building.CmdDig(), "TestRoom1=testroom;tr,back;b", "Created room TestRoom1")
+        self.call(building.CmdDig(), "", "Usage: ")
 
     def test_tunnel(self):
         self.call(building.CmdTunnel(), "n = TestRoom2;test2", "Created room TestRoom2")
+        self.call(building.CmdTunnel(), "", "Usage: ")
+        self.call(building.CmdTunnel(), "foo = TestRoom2;test2", "@tunnel can only understand the")
+        self.call(building.CmdTunnel(), "/tel e = TestRoom3;test3",
+                  "Created room TestRoom3(#11) (test3) of type typeclasses.rooms.Room.\n"
+                  "Created Exit from Room to TestRoom3: east(#12) (e).\n"
+                  "Created Exit back from TestRoom3 to Room: west(#13) (w).|TestRoom3(#11)")
 
     def test_tunnel_exit_typeclass(self):
-        self.call(building.CmdTunnel(), "n:evennia.objects.objects.DefaultExit = TestRoom3", "Created room TestRoom3")
+        self.call(building.CmdTunnel(), "n:evennia.objects.objects.DefaultExit = TestRoom3",
+                  "Created room TestRoom3")
 
     def test_exit_commands(self):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
         self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
+        self.call(building.CmdUnLink(), "", "Usage: ")
         self.char1.location = self.room2
         self.call(building.CmdOpen(), "TestExit2=Room", "Created new Exit 'TestExit2' from Room2 to Room.")
         # ensure it matches locally first
         self.call(building.CmdLink(), "TestExit=Room2", "Link created TestExit2 -> Room2 (one way).")
+        self.call(building.CmdLink(), "/twoway TestExit={}".format(self.exit.dbref),
+                  "Link created TestExit2 (in Room2) <-> out (in Room) (two-way).")
+        self.call(building.CmdLink(), "/twoway TestExit={}".format(self.room1.dbref),
+                  "To create a two-way link, TestExit2 and Room must both have a location ")
+        self.call(building.CmdLink(), "/twoway {}={}".format(self.exit.dbref, self.exit.dbref),
+                  "Cannot link an object to itself.")
+        self.call(building.CmdLink(), "", "Usage: ")
         # ensure can still match globally when not a local name
         self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1(#8) did not have a destination set before. "
                                                          "Make sure you linked the right thing.\n"
                                                          "Link created TestExit1 -> Room2 (one way).")
+        self.call(building.CmdLink(), "TestExit1=", "Former exit TestExit1 no longer links anywhere.")
 
     def test_set_home(self):
-        self.call(building.CmdSetHome(), "Obj = Room2", "Obj's home location was changed from Room")
+        self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was changed from Room")
+        self.call(building.CmdSetHome(), "", "Usage: ")
+        self.call(building.CmdSetHome(), "self", "Char's current home is Room")
+        self.call(building.CmdSetHome(), "Obj", "Obj's current home is Room2")
+        self.obj1.home = None
+        self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was set to Room")
 
     def test_list_cmdsets(self):
         self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
+        self.call(building.CmdListCmdSets(), "NotFound", "Could not find 'NotFound'")
 
     def test_typeclass(self):
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
