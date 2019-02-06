@@ -637,8 +637,6 @@ class TestBuilding(CommandTest):
 
         # Tests "@spawn" without any arguments.
         self.call(building.CmdSpawn(), " ", "Usage: @spawn")
-        self.call(building.CmdSpawn(), "/search ", "Key ")
-        self.call(building.CmdSpawn(), "/search test;test2", "")
 
         # Tests "@spawn <prototype_dictionary>" without specifying location.
 
@@ -646,6 +644,9 @@ class TestBuilding(CommandTest):
                   "/save {'prototype_key': 'testprot', 'key':'Test Char', "
                   "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
                   "Saved prototype: testprot", inputs=['y'])
+
+        self.call(building.CmdSpawn(), "/search ", "Key ")
+        self.call(building.CmdSpawn(), "/search test;test2", "")
 
         self.call(building.CmdSpawn(),
                   "/save {'key':'Test Char', "
