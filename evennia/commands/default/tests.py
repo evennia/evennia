@@ -327,7 +327,20 @@ class TestBuilding(CommandTest):
                   "You create a new %s: TestObj1 (aliases: foo, bar)." % name)
 
     def test_examine(self):
+        self.call(building.CmdExamine(), "", "Name/key: Room")
         self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
+        self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
+        self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
+
+        self.char1.db.test = "testval"
+        self.call(building.CmdExamine(), "self/test", "Persistent attributes:\n test = testval")
+        self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
+        self.call(building.CmdExamine(), "out", "Name/key: out")
+
+        self.room1.scripts.add(self.script.__class__)
+        self.call(building.CmdExamine(), "")
+        self.account.scripts.add(self.script.__class__)
+        self.call(building.CmdExamine(), "*TestAccount")
 
     def test_set_obj_alias(self):
         self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj")
@@ -346,23 +359,34 @@ class TestBuilding(CommandTest):
         self.call(building.CmdCopy(), "NotFound = Foo", "Could not find 'NotFound'.")
 
     def test_attribute_commands(self):
+        self.call(building.CmdSetAttribute(), "", "Usage: ")
         self.call(building.CmdSetAttribute(), "Obj/test1=\"value1\"", "Created attribute Obj/test1 = 'value1'")
         self.call(building.CmdSetAttribute(), "Obj2/test2=\"value2\"", "Created attribute Obj2/test2 = 'value2'")
+        self.call(building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2")
+        self.call(building.CmdSetAttribute(), "Obj2/NotFound", "Obj2 has no attribute 'notfound'.")
+
+        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+            self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
+            mock_ed.assert_called_with(self.char1, Anything, Anything, key='Obj2/test3')
+
+        self.call(building.CmdSetAttribute(), "Obj2/test3=\"value3\"", "Created attribute Obj2/test3 = 'value3'")
+        self.call(building.CmdSetAttribute(), "Obj2/test3 = ", "Deleted attribute 'test3' (= True) from Obj2.")
 
         self.call(building.CmdCpAttr(), "/copy Obj2/test2 = Obj2/test3",
                   "@cpattr: Extra switch \"/copy\" ignored.|\nCopied Obj2.test2 -> Obj2.test3. "
                   "(value: 'value2')")
-        self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
         self.call(building.CmdMvAttr(), "", "Usage: ")
-        self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 -> Obj2.test3")
+        self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
         self.call(building.CmdCpAttr(), "", "Usage: ")
+        self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 -> Obj2.test3")
 
-        self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
         self.call(building.CmdWipe(), "", "Usage: ")
+        self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
+        self.call(building.CmdWipe(), "Obj2", "Wiped all attributes on Obj2.")
 
     def test_name(self):
-        self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
         self.call(building.CmdName(), "", "Usage: ")
+        self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
         self.call(building.CmdName(), "*TestAccount=TestAccountRenamed",
                   "Account's name changed to 'TestAccountRenamed'.")
         self.call(building.CmdName(), "*NotFound=TestAccountRenamed",
@@ -481,15 +505,48 @@ class TestBuilding(CommandTest):
         self.call(building.CmdListCmdSets(), "NotFound", "Could not find 'NotFound'")
 
     def test_typeclass(self):
+        self.call(building.CmdTypeclass(), "", "Usage: ")
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
                   "Obj changed typeclass from evennia.objects.objects.DefaultObject "
                   "to evennia.objects.objects.DefaultExit.")
+        self.call(building.CmdTypeclass(), "Obj2 = evennia.objects.objects.DefaultExit",
+                  "Obj2 changed typeclass from evennia.objects.objects.DefaultObject "
+                  "to evennia.objects.objects.DefaultExit.", cmdstring="@swap")
+        self.call(building.CmdTypeclass(), "/list Obj", "Core typeclasses")
+        self.call(building.CmdTypeclass(), "/show Obj", "Obj's current typeclass is 'evennia.objects.objects.DefaultExit'")
+        self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
+                  "Obj already has the typeclass 'evennia.objects.objects.DefaultExit'. Use /force to override.")
+        self.call(building.CmdTypeclass(), "/force Obj = evennia.objects.objects.DefaultExit",
+                  "Obj updated its existing typeclass ")
+        self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultObject")
+        self.call(building.CmdTypeclass(), "/show Obj", "Obj's current typeclass is 'evennia.objects.objects.DefaultObject'")
+        self.call(building.CmdTypeclass(), "Obj",
+                  "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
+                  "Only the at_object_creation hook was run (update mode). Attributes set before swap were not removed.",
+                  cmdstring="@update")
+        self.call(building.CmdTypeclass(), "/reset/force Obj=evennia.objects.objects.DefaultObject",
+                  "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
+                  "All object creation hooks were run. All old attributes where deleted before the swap.")
 
     def test_lock(self):
-        self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
+        self.call(building.CmdLock(), "", "Usage: ")
+        self.call(building.CmdLock(), "Obj = test:all()", "Added lock 'test:all()' to Obj.")
+        self.call(building.CmdLock(), "*TestAccount = test:all()", "Added lock 'test:all()' to TestAccount")
+        self.call(building.CmdLock(), "Obj/notfound", "Obj has no lock of access type 'notfound'.")
+        self.call(building.CmdLock(), "Obj/test", "test:all()")
+        self.call(building.CmdLock(), "/view Obj = edit:false()",
+                  "Switch(es) view can not be used with a lock assignment. "
+                  "Use e.g. @lock/del objname/locktype instead.")
+        self.call(building.CmdLock(), "Obj = edit:false()")
+        self.call(building.CmdLock(), "Obj/test", "You need 'edit' access to view or delete lock on this object.")
+        self.call(building.CmdLock(), "Obj", "call:true()")  # etc
+        self.call(building.CmdLock(), "*TestAccount", "boot:perm(Admin)")  # etc
 
     def test_find(self):
+        self.call(building.CmdFind(), "", "Usage: ")
         self.call(building.CmdFind(), "oom2", "One Match")
+        self.call(building.CmdFind(), "oom2 = 1-100", "One Match")
+        self.call(building.CmdFind(), "oom2 = 1 100", "One Match")  # space works too
         expect = "One Match(#1-#7, loc):\n   " +\
                  "Char2(#7) - evennia.objects.objects.DefaultCharacter (location: Room(#1))"
         self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
@@ -501,17 +558,71 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
         self.call(building.CmdFind(), "/startswith Room2", "One Match")
 
+        self.call(building.CmdFind(), self.char1.dbref,
+                  "Exact dbref match(#1-#7):\n "
+                  "  Char(#6) - evennia.objects.objects.DefaultCharacter")
+        self.call(building.CmdFind(), "*TestAccount",
+                  "Match(#1-#7):\n"
+                  "   TestAccount - evennia.accounts.accounts.DefaultAccount")
+
+        self.call(building.CmdFind(), "/char Obj")
+        self.call(building.CmdFind(), "/room Obj")
+        self.call(building.CmdFind(), "/exit Obj")
+        self.call(building.CmdFind(), "/exact Obj", "One Match")
+
     def test_script(self):
+        self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
+        self.call(building.CmdScript(), "", "Usage: ")
+        self.call(building.CmdScript(), "= Obj", "To create a global script you need @scripts/add <typeclass>.")
+        self.call(building.CmdScript(), "Obj = ", "dbref obj")
+
+        self.call(building.CmdScript(), "/start Obj", "0 scripts started on Obj")  # because it's already started
+        self.call(building.CmdScript(), "/stop Obj", "Stopping script")
+
+        self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
+        self.call(building.CmdScript(), "/start Obj = scripts.Script", "Script scripts.Script could not be (re)started.")
+        self.call(building.CmdScript(), "/stop Obj = scripts.Script", "Script stopped and removed from object.")
 
     def test_teleport(self):
-        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#2)\n|Teleported to Room2.")
+        self.call(building.CmdTeleport(), "", "Usage: ")
+        self.call(building.CmdTeleport(), "Obj = Room", "Obj is already at Room.")
+        self.call(building.CmdTeleport(), "Obj = NotFound", "Could not find 'NotFound'.|Destination not found.")
+        self.call(building.CmdTeleport(),
+                  "Obj = Room2", "Obj(#4) is leaving Room(#1), heading for Room2(#2).|Teleported Obj -> Room2.")
+        self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
+        self.call(building.CmdTeleport(), "Obj = Obj", "You can't teleport an object inside of itself!")
+
+        self.call(building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location.")
+        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#2)")
         self.call(building.CmdTeleport(), "/t",  # /t switch is abbreviated form of /tonone
                   "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a None-location.")
         self.call(building.CmdTeleport(), "/l Room2",  # /l switch is abbreviated form of /loc
                   "Destination has no location.")
         self.call(building.CmdTeleport(), "/q me to Room2",  # /q switch is abbreviated form of /quiet
                   "Char is already at Room2.")
+
+    def test_tag(self):
+        self.call(building.CmdTag(), "", "Usage: ")
+
+        self.call(building.CmdTag(), "Obj = testtag")
+        self.call(building.CmdTag(), "Obj = testtag2")
+        self.call(building.CmdTag(), "Obj = testtag2:category1")
+        self.call(building.CmdTag(), "Obj = testtag3")
+
+        self.call(building.CmdTag(), "Obj", "Tags on Obj: 'testtag', 'testtag2', "
+                  "'testtag2' (category: category1), 'testtag3'")
+
+        self.call(building.CmdTag(), "/search NotFound", "No objects found with tag 'NotFound'.")
+        self.call(building.CmdTag(), "/search testtag", "Found 1 object with tag 'testtag':")
+        self.call(building.CmdTag(), "/search testtag2", "Found 1 object with tag 'testtag2':")
+        self.call(building.CmdTag(), "/search testtag2:category1",
+                  "Found 1 object with tag 'testtag2' (category: 'category1'):")
+
+
+        self.call(building.CmdTag(), "/del Obj = testtag3", "Removed tag 'testtag3' from Obj.")
+        self.call(building.CmdTag(), "/del Obj",
+            "Cleared all tags from Obj: testtag, testtag2, testtag2 (category: category1)")
 
     def test_spawn(self):
         def getObject(commandTest, objKeyStr):
@@ -526,6 +637,8 @@ class TestBuilding(CommandTest):
 
         # Tests "@spawn" without any arguments.
         self.call(building.CmdSpawn(), " ", "Usage: @spawn")
+        self.call(building.CmdSpawn(), "/search ", "Key ")
+        self.call(building.CmdSpawn(), "/search test;test2", "")
 
         # Tests "@spawn <prototype_dictionary>" without specifying location.
 
@@ -533,6 +646,11 @@ class TestBuilding(CommandTest):
                   "/save {'prototype_key': 'testprot', 'key':'Test Char', "
                   "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
                   "Saved prototype: testprot", inputs=['y'])
+
+        self.call(building.CmdSpawn(),
+                  "/save {'key':'Test Char', "
+                  "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+                  "To save a prototype it must have the 'prototype_key' set.")
 
         self.call(building.CmdSpawn(), "/list", "Key ")
 

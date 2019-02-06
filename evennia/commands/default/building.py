@@ -1931,7 +1931,7 @@ class CmdLock(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            string = "@lock <object>[ = <lockstring>] or @lock[/switch] " \
+            string = "Usage: @lock <object>[ = <lockstring>] or @lock[/switch] " \
                      "<object>/<access_type>"
             caller.msg(string)
             return
@@ -1952,8 +1952,8 @@ class CmdLock(ObjManipCommand):
                 caller.msg("You need 'control' access to change this type of lock.")
                 return
 
-            if not has_control_access or obj.access(caller, "edit"):
-                caller.msg("You are not allowed to do that.")
+            if not has_control_access or not obj.access(caller, "edit"):
+                caller.msg("You need 'edit' access to view or delete lock on this object.")
                 return
 
             lockdef = obj.locks.get(access_type)
@@ -2728,11 +2728,11 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                         obj)
             else:
                 # no tag specified, clear all tags
-                old_tags = ["%s%s" % (tag, " (category: %s" % category if category else "")
+                old_tags = ["%s%s" % (tag, " (category: %s)" % category if category else "")
                             for tag, category in obj.tags.all(return_key_and_category=True)]
                 if old_tags:
                     obj.tags.clear()
-                    string = "Cleared all tags from %s: %s" % (obj, ", ".join(old_tags))
+                    string = "Cleared all tags from %s: %s" % (obj, ", ".join(sorted(old_tags)))
                 else:
                     string = "No Tags to clear on %s." % obj
             self.caller.msg(string)
@@ -2763,8 +2763,9 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             tags = [tup[0] for tup in tagtuples]
             categories = [" (category: %s)" % tup[1] if tup[1] else "" for tup in tagtuples]
             if ntags:
-                string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "", obj,
-                                              ", ".join("'%s'%s" % (tags[i], categories[i]) for i in range(ntags)))
+                string = "Tag%s on %s: %s" % (
+                    "s" if ntags > 1 else "", obj,
+                    ", ".join(sorted("'%s'%s" % (tags[i], categories[i]) for i in range(ntags))))
             else:
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
