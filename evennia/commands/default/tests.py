@@ -442,10 +442,17 @@ class TestBuilding(CommandTest):
     def test_exit_commands(self):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
         self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
-        self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
         self.call(building.CmdUnLink(), "", "Usage: ")
+        self.call(building.CmdLink(), "NotFound", "Could not find 'NotFound'.")
+        self.call(building.CmdLink(), "TestExit", "TestExit1 is an exit to Room.")
+        self.call(building.CmdLink(), "Obj", "Obj is not an exit. Its home location is Room.")
+        self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
+
         self.char1.location = self.room2
         self.call(building.CmdOpen(), "TestExit2=Room", "Created new Exit 'TestExit2' from Room2 to Room.")
+        self.call(building.CmdOpen(), "TestExit2=Room", "Exit TestExit2 already exists. It already points to the correct place.")
+
+
         # ensure it matches locally first
         self.call(building.CmdLink(), "TestExit=Room2", "Link created TestExit2 -> Room2 (one way).")
         self.call(building.CmdLink(), "/twoway TestExit={}".format(self.exit.dbref),
