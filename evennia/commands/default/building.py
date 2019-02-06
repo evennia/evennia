@@ -1436,37 +1436,6 @@ def _convert_from_string(cmd, strobj):
     string this will always fail).
     """
 
-    def rec_convert(obj):
-        """
-        Helper function of recursive conversion calls. This is only
-        used for Python <=2.5. After that literal_eval is available.
-        """
-        # simple types
-        try:
-            return int(obj)
-        except ValueError:
-            # obj cannot be converted to int - that's fine
-            pass
-        try:
-            return float(obj)
-        except ValueError:
-            # obj cannot be converted to float - that's fine
-            pass
-        # iterables
-        if obj.startswith('[') and obj.endswith(']'):
-            "A list. Traverse recursively."
-            return [rec_convert(val) for val in obj[1:-1].split(',')]
-        if obj.startswith('(') and obj.endswith(')'):
-            "A tuple. Traverse recursively."
-            return tuple([rec_convert(val) for val in obj[1:-1].split(',')])
-        if obj.startswith('{') and obj.endswith('}') and ':' in obj:
-            "A dict. Traverse recursively."
-            return dict([(rec_convert(pair.split(":", 1)[0]),
-                          rec_convert(pair.split(":", 1)[1]))
-                         for pair in obj[1:-1].split(',') if ":" in pair])
-        # if nothing matches, return as-is
-        return obj
-
     # Use literal_eval to parse python structure exactly.
     try:
         return _LITERAL_EVAL(strobj)
@@ -1477,10 +1446,9 @@ def _convert_from_string(cmd, strobj):
                  "Make sure this is acceptable." % strobj
         cmd.caller.msg(string)
         return strobj
-    else:
-        # fall back to old recursive solution (does not support
-        # nested lists/dicts)
-        return rec_convert(strobj.strip())
+    except Exception as err:
+        string = "|RUnknown error in evaluating Attribute: {}".format(err)
+        return string
 
 
 class CmdSetAttribute(ObjManipCommand):
