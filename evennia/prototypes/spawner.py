@@ -673,8 +673,10 @@ def spawn(*prototypes, **kwargs):
         prototype_parents (dict): A dictionary holding a custom
             prototype-parent dictionary. Will overload same-named
             prototypes from prototype_modules.
-        return_parents (bool): Only return a dict of the
-            prototype-parents (no object creation happens)
+        return_parents (bool): Return a dict of the entire prototype-parent tree
+            available to this prototype (no object creation happens). This is a
+            merged result between the globally found protparents and whatever
+            custom `prototype_parents` are given to this function.
         only_validate (bool): Only run validation of prototype/parents
             (no object creation) and return the create-kwargs.
 
