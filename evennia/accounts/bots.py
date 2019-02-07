@@ -146,8 +146,11 @@ class IRCBot(Bot):
     Bot for handling IRC connections.
 
     """
+    # override this on a child class to use custom factory
+    factory_path = "evennia.server.portal.irc.IRCBotFactory"
 
-    def start(self, ev_channel=None, irc_botname=None, irc_channel=None, irc_network=None, irc_port=None, irc_ssl=None):
+    def start(self, ev_channel=None, irc_botname=None, irc_channel=None,
+              irc_network=None, irc_port=None, irc_ssl=None):
         """
         Start by telling the portal to start a new session.
 
@@ -203,7 +206,7 @@ class IRCBot(Bot):
                       "network": self.db.irc_network,
                       "port": self.db.irc_port,
                       "ssl": self.db.irc_ssl}
-        _SESSIONS.start_bot_session("evennia.server.portal.irc.IRCBotFactory", configdict)
+        _SESSIONS.start_bot_session(self.factory_path, configdict)
 
     def at_msg_send(self, **kwargs):
         "Shortcut here or we can end up in infinite loop"
