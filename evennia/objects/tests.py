@@ -1,5 +1,6 @@
 from evennia.utils.test_resources import EvenniaTest
 from evennia import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
+from evennia.objects.models import ObjectDB
 
 
 class DefaultObjectTest(EvenniaTest):
@@ -45,3 +46,21 @@ class DefaultObjectTest(EvenniaTest):
 
         self.assertTrue(self.room1.get_absolute_url())
         self.assertTrue('admin' in self.room1.web_get_admin_url())
+
+
+class TestObjectManager(EvenniaTest):
+    "Test object manager methods"
+    def test_get_object_with_account(self):
+        query = ObjectDB.objects.get_object_with_account("TestAccount").first()
+        self.assertEqual(query, self.char1)
+        query = ObjectDB.objects.get_object_with_account(self.account.dbref)
+        self.assertEqual(query, self.char1)
+        query = ObjectDB.objects.get_object_with_account("TestAccou").first()
+        self.assertEqual(query, None)
+
+        query = ObjectDB.objects.get_object_with_account("TestAccou", exact=False)
+        self.assertEqual(tuple(query), (self.char1, self.char2))
+
+        query = ObjectDB.objects.get_object_with_account(
+            "TestAccou", candidates=[self.char1, self.obj1], exact=False)
+        self.assertEqual(list(query), [self.char1])
