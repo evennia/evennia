@@ -69,7 +69,7 @@ class ObjectDBManager(TypedObjectManager):
                 object candidates.
 
         Return:
-            match (Object or list): One or more matching results.
+            match (query): Matching query.
 
         """
         ostring = to_unicode(ostring).lstrip('*')
@@ -77,7 +77,7 @@ class ObjectDBManager(TypedObjectManager):
         dbref = self.dbref(ostring)
         if dbref:
             try:
-                return self.get(id=dbref)
+                return self.get(db_account__id=dbref)
             except self.model.DoesNotExist:
                 pass
 
@@ -87,13 +87,13 @@ class ObjectDBManager(TypedObjectManager):
         if exact:
             return self.filter(cand_restriction & Q(db_account__username__iexact=ostring))
         else:  # fuzzy matching
-            ply_cands = self.filter(cand_restriction & Q(accountdb__username__istartswith=ostring)
-                                    ).values_list("db_key", flat=True)
-            if candidates:
-                index_matches = string_partial_matching(ply_cands, ostring, ret_index=True)
-                return [obj for ind, obj in enumerate(make_iter(candidates)) if ind in index_matches]
-            else:
-                return string_partial_matching(ply_cands, ostring, ret_index=False)
+            obj_cands = self.select_related().filter(cand_restriction & Q(db_account__username__istartswith=ostring))
+            acct_cands = [obj.account for obj in obj_cands]
+
+            if obj_cands:
+                index_matches = string_partial_matching([acct.key for acct in acct_cands], ostring, ret_index=True)
+                acct_cands = [acct_cands[i].id for i in index_matches]
+                return obj_cands.filter(db_account__id__in=acct_cands)
 
     def get_objs_with_key_and_typeclass(self, oname, otypeclass_path, candidates=None):
         """
