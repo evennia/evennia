@@ -56,9 +56,9 @@ class TestObjectManager(EvenniaTest):
         query = ObjectDB.objects.get_object_with_account(self.account.dbref)
         self.assertEqual(query, self.char1)
         query = ObjectDB.objects.get_object_with_account("#123456")
-        self.assertEqual(query, None)
+        self.assertFalse(query)
         query = ObjectDB.objects.get_object_with_account("TestAccou").first()
-        self.assertEqual(query, None)
+        self.assertFalse(query)
 
         query = ObjectDB.objects.get_object_with_account("TestAccou", exact=False)
         self.assertEqual(tuple(query), (self.char1, self.char2))
