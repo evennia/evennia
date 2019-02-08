@@ -55,6 +55,8 @@ class TestObjectManager(EvenniaTest):
         self.assertEqual(query, self.char1)
         query = ObjectDB.objects.get_object_with_account(self.account.dbref)
         self.assertEqual(query, self.char1)
+        query = ObjectDB.objects.get_object_with_account("#123456")
+        self.assertEqual(query, None)
         query = ObjectDB.objects.get_object_with_account("TestAccou").first()
         self.assertEqual(query, None)
 
@@ -64,3 +66,28 @@ class TestObjectManager(EvenniaTest):
         query = ObjectDB.objects.get_object_with_account(
             "TestAccou", candidates=[self.char1, self.obj1], exact=False)
         self.assertEqual(list(query), [self.char1])
+
+    def test_get_objs_with_key_and_typeclass(self):
+        query = ObjectDB.objects.get_objs_with_key_and_typeclass(
+            "Char", "evennia.objects.objects.DefaultCharacter")
+        self.assertEqual(list(query), [self.char1])
+        query = ObjectDB.objects.get_objs_with_key_and_typeclass(
+            "Char", "evennia.objects.objects.DefaultObject")
+        self.assertFalse(query)
+        query = ObjectDB.objects.get_objs_with_key_and_typeclass(
+            "NotFound", "evennia.objects.objects.DefaultCharacter")
+        self.assertFalse(query)
+        query = ObjectDB.objects.get_objs_with_key_and_typeclass(
+            "Char", "evennia.objects.objects.DefaultCharacter", candidates=[self.char1, self.char2])
+        self.assertEqual(list(query), [self.char1])
+
+    def test_get_objs_with_attr(self):
+        self.obj1.db.testattr = "testval1"
+        query = ObjectDB.objects.get_objs_with_attr("testattr")
+        self.assertEqual(list(query), [self.obj1])
+        query = ObjectDB.objects.get_objs_with_attr(
+            "testattr", candidates=[self.char1, self.obj1] )
+        self.assertEqual(list(query), [self.obj1])
+        query = ObjectDB.objects.get_objs_with_attr(
+            "NotFound", candidates=[self.char1, self.obj1] )
+        self.assertFalse(query)
