@@ -2138,7 +2138,7 @@ def node_prototype_save(caller, **kwargs):
         # we already validated and accepted the save, so this node acts as a goto callback and
         # should now only return the next node
         prototype_key = prototype.get("prototype_key")
-        protlib.save_prototype(**prototype)
+        protlib.save_prototype(prototype)
 
         spawned_objects = protlib.search_objects_with_prototype(prototype_key)
         nspawned = spawned_objects.count()

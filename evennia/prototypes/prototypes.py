@@ -147,13 +147,13 @@ class DbPrototype(DefaultScript):
 # Prototype manager functions
 
 
-def save_prototype(**kwargs):
+def save_prototype(prototype):
     """
     Create/Store a prototype persistently.
 
-    Kwargs:
-        prototype_key (str): This is required for any storage.
-        All other kwargs are considered part of the new prototype dict.
+    Args:
+        prototype (dict): The prototype to save. A `prototype_key` key is 
+            required.
 
     Returns:
         prototype (dict or None): The prototype stored using the given kwargs, None if deleting.
@@ -166,8 +166,8 @@ def save_prototype(**kwargs):
         is expected to have valid permissions.
 
     """
-
-    kwargs = homogenize_prototype(kwargs)
+    in_prototype = prototype
+    in_prototype = homogenize_prototype(in_prototype)
 
     def _to_batchtuple(inp, *args):
         "build tuple suitable for batch-creation"
@@ -176,7 +176,7 @@ def save_prototype(**kwargs):
             return inp
         return (inp, ) + args
 
-    prototype_key = kwargs.get("prototype_key")
+    prototype_key = in_prototype.get("prototype_key")
     if not prototype_key:
         raise ValidationError("Prototype requires a prototype_key")
 
@@ -192,21 +192,21 @@ def save_prototype(**kwargs):
     stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
     prototype = stored_prototype[0].prototype if stored_prototype else {}
 
-    kwargs['prototype_desc'] = kwargs.get("prototype_desc", prototype.get("prototype_desc", ""))
-    prototype_locks = kwargs.get(
+    in_prototype['prototype_desc'] = in_prototype.get("prototype_desc", prototype.get("prototype_desc", ""))
+    prototype_locks = in_prototype.get(
         "prototype_locks", prototype.get('prototype_locks', "spawn:all();edit:perm(Admin)"))
     is_valid, err = validate_lockstring(prototype_locks)
     if not is_valid:
         raise ValidationError("Lock error: {}".format(err))
-    kwargs['prototype_locks'] = prototype_locks
+    in_prototype['prototype_locks'] = prototype_locks
 
     prototype_tags = [
         _to_batchtuple(tag, _PROTOTYPE_TAG_META_CATEGORY)
-        for tag in make_iter(kwargs.get("prototype_tags",
+        for tag in make_iter(in_prototype.get("prototype_tags",
                              prototype.get('prototype_tags', [])))]
-    kwargs["prototype_tags"] = prototype_tags
+    in_prototype["prototype_tags"] = prototype_tags
 
-    prototype.update(kwargs)
+    prototype.update(in_prototype)
 
     if stored_prototype:
         # edit existing prototype
@@ -261,19 +261,25 @@ def delete_prototype(prototype_key, caller=None):
     return True
 
 
-def search_prototype(key=None, tags=None):
+def search_prototype(key=None, tags=None, require_single=False):
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
     Kwargs:
         key (str): An exact or partial key to query for.
-        tags (str or list): Tag key or keys to query for. These
+        tags (str or list): Tag key or keys to query for. These 
             will always be applied with the 'db_protototype'
             tag category.
+        require_single (bool): If set, raise KeyError if the result
+            was not found or if there are multiple matches.
 
     Return:
-        matches (list): All found prototype dicts. If no keys
-            or tags are given, all available prototypes will be returned.
+        matches (list): All found prototype dicts. Empty list if 
+            no match was found. Note that if neither `key` nor `tags` 
+            were given, *all* available prototypes will be returned.
+
+    Raises: 
+        KeyError: If `require_single` is True and there are 0 or >1 matches.
 
     Note:
         The available prototypes is a combination of those supplied in
@@ -329,6 +335,10 @@ def search_prototype(key=None, tags=None):
                           if mta.get('prototype_key') and mta['prototype_key'] == key]
         if filter_matches and len(filter_matches) < nmatches:
             matches = filter_matches
+    
+    nmatches = len(matches)
+    if nmatches != 1 and require_single:
+        raise KeyError("Found {} matching prototypes.".format(nmatches))
 
     return matches
 

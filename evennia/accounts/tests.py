@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from mock import Mock, MagicMock
+import sys
+from mock import Mock, MagicMock, patch
 from random import randint
 from unittest import TestCase
 
 from django.test import override_settings
 from evennia.accounts.accounts import AccountSessionHandler
 from evennia.accounts.accounts import DefaultAccount, DefaultGuest
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import EvenniaTest, unload_module
 from evennia.utils import create
 
 from django.conf import settings
@@ -59,6 +60,7 @@ class TestAccountSessionHandler(TestCase):
     def test_count(self):
         "Check count method"
         self.assertEqual(self.handler.count(), len(self.handler.get()))
+
 
 class TestDefaultGuest(EvenniaTest):
     "Check DefaultGuest class"
@@ -161,6 +163,7 @@ class TestDefaultAccountAuth(EvenniaTest):
         # Try setting a better password (test for False; returns None on success)
         self.assertFalse(account.set_password('Mxyzptlk'))
         account.delete()
+
 
 class TestDefaultAccount(TestCase):
     "Check DefaultAccount class"
@@ -279,13 +282,36 @@ class TestAccountPuppetDeletion(EvenniaTest):
     @override_settings(MULTISESSION_MODE=2)
     def test_puppet_deletion(self):
         # Check for existing chars
-        self.assertFalse(self.account.db._playable_characters, 'Account should not have any chars by default.')
+        self.assertFalse(self.account.db._playable_characters, 
+                         'Account should not have any chars by default.')
 
         # Add char1 to account's playable characters
         self.account.db._playable_characters.append(self.char1)
-        self.assertTrue(self.account.db._playable_characters, 'Char was not added to account.')
+        self.assertTrue(self.account.db._playable_characters, 
+                        'Char was not added to account.')
 
         # See what happens when we delete char1.
         self.char1.delete()
         # Playable char list should be empty.
-        self.assertFalse(self.account.db._playable_characters, 'Playable character list is not empty! %s' % self.account.db._playable_characters)
+        self.assertFalse(self.account.db._playable_characters, 
+                         'Playable character list is not empty! %s' % self.account.db._playable_characters)
+
+
+class TestDefaultAccountEv(EvenniaTest):
+    """
+    Testing using the EvenniaTest parent
+
+    """
+    def test_characters_property(self):
+        "test existence of None in _playable_characters Attr"
+        self.account.db._playable_characters = [self.char1, None]
+        chars = self.account.characters
+        self.assertEqual(chars, [self.char1])
+        self.assertEqual(self.account.db._playable_characters, [self.char1])
+
+    def test_puppet_success(self):
+        unload_module(DefaultAccount)
+        self.account.msg = MagicMock()
+        with patch("evennia.accounts.accounts._MULTISESSION_MODE", 2):
+            self.account.puppet_object(self.session, self.char1)
+            self.account.msg.assert_called_with("You are already puppeting this object.")

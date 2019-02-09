@@ -54,9 +54,17 @@ class TestSpawner(EvenniaTest):
         self.prot1 = {"prototype_key": "testprototype",
                       "typeclass": "evennia.objects.objects.DefaultObject"}
 
-    def test_spawn(self):
+    def test_spawn_from_prot(self):
         obj1 = spawner.spawn(self.prot1)
         # check spawned objects have the right tag
+        self.assertEqual(list(protlib.search_objects_with_prototype("testprototype")), obj1)
+        self.assertEqual([o.key for o in spawner.spawn(
+                          _PROTPARENTS["GOBLIN"], _PROTPARENTS["GOBLIN_ARCHWIZARD"],
+                          prototype_parents=_PROTPARENTS)], ['goblin grunt', 'goblin archwizard'])
+
+    def test_spawn_from_str(self):
+        protlib.save_prototype(self.prot1)
+        obj1 = spawner.spawn(self.prot1['prototype_key'])
         self.assertEqual(list(protlib.search_objects_with_prototype("testprototype")), obj1)
         self.assertEqual([o.key for o in spawner.spawn(
                           _PROTPARENTS["GOBLIN"], _PROTPARENTS["GOBLIN_ARCHWIZARD"],
@@ -245,6 +253,7 @@ class TestProtLib(EvenniaTest):
         super(TestProtLib, self).setUp()
         self.obj1.attributes.add("testattr", "testval")
         self.prot = spawner.prototype_from_object(self.obj1)
+        
 
     def test_prototype_to_str(self):
         prstr = protlib.prototype_to_str(self.prot)
@@ -252,6 +261,22 @@ class TestProtLib(EvenniaTest):
 
     def test_check_permission(self):
         pass
+
+    def test_save_prototype(self):
+        result = protlib.save_prototype(self.prot)
+        self.assertEqual(result, self.prot)
+        # faulty
+        self.prot['prototype_key'] = None
+        self.assertRaises(protlib.ValidationError, protlib.save_prototype, self.prot)
+
+    def test_search_prototype(self):
+        protlib.save_prototype(self.prot)
+        match = protlib.search_prototype("NotFound")
+        self.assertFalse(match)
+        match = protlib.search_prototype()
+        self.assertTrue(match)
+        match = protlib.search_prototype(self.prot['prototype_key'])
+        self.assertEqual(match, [self.prot])
 
 
 @override_settings(PROT_FUNC_MODULES=['evennia.prototypes.protfuncs'], CLIENT_DEFAULT_WIDTH=20)
@@ -424,7 +449,7 @@ class TestPrototypeStorage(EvenniaTest):
     def test_prototype_storage(self):
 
         # from evennia import set_trace;set_trace(term_size=(180, 50))
-        prot1 = protlib.create_prototype(**self.prot1)
+        prot1 = protlib.create_prototype(self.prot1)
 
         self.assertTrue(bool(prot1))
         self.assertEqual(prot1, self.prot1)
@@ -436,7 +461,7 @@ class TestPrototypeStorage(EvenniaTest):
             protlib.DbPrototype.objects.get_by_tag(
                 "foo1", _PROTOTYPE_TAG_META_CATEGORY)[0].db.prototype, prot1)
 
-        prot2 = protlib.create_prototype(**self.prot2)
+        prot2 = protlib.create_prototype(self.prot2)
         self.assertEqual(
             [pobj.db.prototype
              for pobj in protlib.DbPrototype.objects.get_by_tag(
@@ -445,7 +470,7 @@ class TestPrototypeStorage(EvenniaTest):
 
         # add to existing prototype
         prot1b = protlib.create_prototype(
-            prototype_key='testprototype1', foo='bar', prototype_tags=['foo2'])
+            {"prototype_key": 'testprototype1', "foo": 'bar', "prototype_tags": ['foo2']})
 
         self.assertEqual(
             [pobj.db.prototype
@@ -457,7 +482,7 @@ class TestPrototypeStorage(EvenniaTest):
         self.assertNotEqual(list(protlib.search_prototype("testprototype1")), [prot1])
         self.assertEqual(list(protlib.search_prototype("testprototype1")), [prot1b])
 
-        prot3 = protlib.create_prototype(**self.prot3)
+        prot3 = protlib.create_prototype(self.prot3)
 
         # partial match
         with mock.patch("evennia.prototypes.prototypes._MODULE_PROTOTYPES", {}):
@@ -606,7 +631,7 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(olc_menus._display_tag(olc_menus._get_menu_prototype(caller)['tags'][0]), Something)
         self.assertEqual(olc_menus._caller_tags(caller), ["foo2", "foo3"])
 
-        protlib.save_prototype(**self.test_prot)
+        protlib.save_prototype(self.test_prot)
 
         # locks helpers
         self.assertEqual(olc_menus._lock_add(caller, "foo:false()"), "Added lock 'foo:false()'.")
