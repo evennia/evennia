@@ -680,9 +680,9 @@ class TestBuilding(CommandTest):
         goblin.delete()
 
         # create prototype
-        protlib.create_prototype(**{'key': 'Ball',
-                                    'typeclass': 'evennia.objects.objects.DefaultCharacter',
-                                    'prototype_key': 'testball'})
+        protlib.create_prototype({'key': 'Ball',
+                                  'typeclass': 'evennia.objects.objects.DefaultCharacter',
+                                  'prototype_key': 'testball'})
 
         # Tests "@spawn <prototype_name>"
         self.call(building.CmdSpawn(), "testball", "Spawned Ball")

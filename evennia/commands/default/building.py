@@ -2978,7 +2978,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                prot = protlib.save_prototype(**prototype)
+                prot = protlib.save_prototype(prototype)
                 if not prot:
                     caller.msg("|rError saving:|R {}.|n".format(prototype_key))
                     return

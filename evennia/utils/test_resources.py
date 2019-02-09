@@ -1,3 +1,8 @@
+"""
+Various helper resources for writing unittests.
+
+"""
+import sys
 from django.conf import settings
 from django.test import TestCase
 from mock import Mock
@@ -12,6 +17,35 @@ from evennia.utils.idmapper.models import flush_cache
 
 SESSIONS.data_out = Mock()
 SESSIONS.disconnect = Mock()
+
+
+def unload_module(module_or_object):
+    """
+    Reset import so one can mock global constants.
+
+    Args:
+        module_or_object (module or object): The module will
+            be removed so it will have to be imported again.
+
+    Example: 
+        # (in a test method)
+        unload_module(foo)
+        with mock.patch("foo.GLOBALTHING", "mockval"):
+            import foo
+            ... # test code using foo.GLOBALTHING, now set to 'mockval'
+            
+
+    This allows for mocking constants global to the module, since
+    otherwise those would not be mocked (since a module is only
+    loaded once).
+
+    """
+    if hasattr(module_or_object, "__module__"):
+        modulename = module_or_object.__module__
+    else:
+        modulename = module_or_object.__name__
+    if modulename in sys.modules:
+        del sys.modules[modulename]
 
 
 class EvenniaTest(TestCase):
