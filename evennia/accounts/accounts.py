@@ -1340,19 +1340,28 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
             sessions = self.sessions.all()
+            if not sessions:
+                # no sessions, nothing to report
+                return ""
             is_su = self.is_superuser
 
             # text shown when looking in the ooc area
             result = ["Account |g%s|n (you are Out-of-Character)" % self.key]
 
             nsess = len(sessions)
-            result.append(nsess == 1 and "\n\n|wConnected session:|n" or "\n\n|wConnected sessions (%i):|n" % nsess)
+            result.append(nsess == 1 and
+                          "\n\n|wConnected session:|n" or
+                          "\n\n|wConnected sessions (%i):|n" % nsess)
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
                 addr = "%s (%s)" % (sess.protocol_key, isinstance(sess.address, tuple) and
-                                    str(sess.address[0]) or str(sess.address))
-                result.append("\n %s %s" % (session.sessid == csessid and "|w* %s|n" % (isess + 1) or
-                                            "  %s" % (isess + 1), addr))
+                                    str(sess.address[0]) or
+                                    str(sess.address))
+                result.append("\n %s %s" % (
+                    session and
+                    session.sessid == csessid and
+                    "|w* %s|n" % (isess + 1) or
+                    "  %s" % (isess + 1), addr))
             result.append("\n\n |whelp|n - more commands")
             result.append("\n |wooc <Text>|n - talk on public channel")
 

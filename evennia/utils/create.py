@@ -402,6 +402,7 @@ def create_account(key, email, password,
                    typeclass=None,
                    is_superuser=False,
                    locks=None, permissions=None,
+                   tags=None, attributes=None,
                    report_to=None):
     """
     This creates a new account.
@@ -414,14 +415,19 @@ def create_account(key, email, password,
         password (str): Password in cleartext.
 
     Kwargs:
+        typeclass (str): The typeclass to use for the account.
         is_superuser (bool): Wether or not this account is to be a superuser
         locks (str): Lockstring.
         permission (list): List of permission strings.
+        tags (list): List of Tags on form `(key, category[, data])`
+        attributes (list): List of Attributes on form 
+             `(key, value [, category, [,lockstring [, default_pass]]])`
         report_to (Object): An object with a msg() method to report
             errors to. If not given, errors will be logged.
 
     Raises:
         ValueError: If `key` already exists in database.
+        
 
     Notes:
         Usually only the server admin should need to be superuser, all
@@ -437,6 +443,8 @@ def create_account(key, email, password,
     typeclass = typeclass if typeclass else settings.BASE_ACCOUNT_TYPECLASS
     locks = make_iter(locks) if locks is not None else None
     permissions = make_iter(permissions) if permissions is not None else None
+    tags = make_iter(tags) if tags is not None else None
+    attributes = make_iter(attributes) if attributes is not None else None
 
     if isinstance(typeclass, basestring):
         # a path is given. Load the actual typeclass.
@@ -462,7 +470,8 @@ def create_account(key, email, password,
                             is_staff=is_superuser, is_superuser=is_superuser,
                             last_login=now, date_joined=now)
     new_account.set_password(password)
-    new_account._createdict = dict(locks=locks, permissions=permissions, report_to=report_to)
+    new_account._createdict = dict(locks=locks, permissions=permissions, report_to=report_to,
+                                   tags=tags, attributes=attributes)
     # saving will trigger the signal that calls the
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.
