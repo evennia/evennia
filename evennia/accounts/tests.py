@@ -62,19 +62,19 @@ class TestAccountSessionHandler(TestCase):
         self.assertEqual(self.handler.count(), len(self.handler.get()))
 
 
+@override_settings(GUEST_ENABLED=True, GUEST_LIST=["bruce_wayne"])
 class TestDefaultGuest(EvenniaTest):
     "Check DefaultGuest class"
 
     ip = '212.216.134.22'
-
-    def test_authenticate(self):
+    
+    @override_settings(GUEST_ENABLED=False)
+    def test_create_not_enabled(self):
         # Guest account should not be permitted
         account, errors = DefaultGuest.authenticate(ip=self.ip)
         self.assertFalse(account, 'Guest account was created despite being disabled.')
 
-        settings.GUEST_ENABLED = True
-        settings.GUEST_LIST = ['bruce_wayne']
-
+    def test_authenticate(self):
         # Create a guest account
         account, errors = DefaultGuest.authenticate(ip=self.ip)
         self.assertTrue(account, 'Guest account should have been created.')
@@ -83,7 +83,32 @@ class TestDefaultGuest(EvenniaTest):
         account, errors = DefaultGuest.authenticate(ip=self.ip)
         self.assertFalse(account, 'Two guest accounts were created with a single entry on the guest list!')
 
-        settings.GUEST_ENABLED = False
+    @patch("evennia.accounts.accounts.ChannelDB.objects.get_channel")
+    def test_create(self, get_channel):
+        get_channel.connect = MagicMock(return_value=True)
+        account, errors = DefaultGuest.create()
+        self.assertTrue(account, "Guest account should have been created.")
+        self.assertFalse(errors)
+
+    def test_at_post_login(self):
+        self.account.db._last_puppet = self.char1
+        self.account.at_post_login(self.session)
+        self.account.at_post_login()
+
+    def test_at_server_shutdown(self):
+        account, errors = DefaultGuest.create(ip=self.ip)
+        self.char1.delete = MagicMock()
+        account.db._playable_characters = [self.char1]
+        account.at_server_shutdown()
+        self.char1.delete.assert_called()
+
+    def test_at_post_disconnect(self):
+        account, errors = DefaultGuest.create(ip=self.ip)
+        self.char1.delete = MagicMock()
+        account.db._playable_characters = [self.char1]
+        account.at_post_disconnect()
+        self.char1.delete.assert_called()
+
 
 class TestDefaultAccountAuth(EvenniaTest):
 
@@ -315,3 +340,50 @@ class TestDefaultAccountEv(EvenniaTest):
         with patch("evennia.accounts.accounts._MULTISESSION_MODE", 2):
             self.account.puppet_object(self.session, self.char1)
             self.account.msg.assert_called_with("You are already puppeting this object.")
+
+    @patch("evennia.accounts.accounts.time.time", return_value=10000)
+    def test_idle_time(self, mock_time):
+        self.session.cmd_last_visible = 10000 - 10
+        idle = self.account.idle_time
+        self.assertEqual(idle, 10)
+
+        # test no sessions
+        unload_module("evennia.accounts.accounts")
+        with patch("evennia.accounts.accounts._SESSIONS.sessions_from_account", return_value=[]) as mock_sessh: 
+            idle = self.account.idle_time
+            self.assertEqual(idle, None)
+
+    @patch("evennia.accounts.accounts.time.time", return_value=10000)
+    def test_connection_time(self, mock_time):
+        self.session.conn_time = 10000 - 10
+        conn = self.account.connection_time
+        self.assertEqual(conn, 10)
+
+        # test no sessions
+        unload_module("evennia.accounts.accounts")
+        with patch("evennia.accounts.accounts._SESSIONS.sessions_from_account", return_value=[]) as mock_sessh: 
+            idle = self.account.connection_time
+            self.assertEqual(idle, None)
+
+    def test_create_account(self):
+        acct = create.account(
+            "TestAccount3", "test@test.com", "testpassword123",
+            locks="test:all()",
+            tags=[("tag1", "category1"), ("tag2", "category2", "data1"), ("tag3", None)],
+            attributes=[("key1", "value1", "category1",
+                         "edit:false()", True),
+                        ("key2", "value2")])
+        acct.save()
+        self.assertTrue(acct.pk)
+
+    def test_at_look(self):
+        ret = self.account.at_look()
+        self.assertTrue("Out-of-Character" in ret)
+        ret = self.account.at_look(target=self.obj1)
+        self.assertTrue("Obj" in ret)
+        ret = self.account.at_look(session=self.session)
+        self.assertTrue("*" in ret)  #  * marks session is active in list
+        ret = self.account.at_look(target=self.obj1, session=self.session)
+        self.assertTrue("Obj" in ret)
+        ret = self.account.at_look(target="Invalid", session=self.session)
+        self.assertEqual(ret, 'Invalid has no in-game appearance.')

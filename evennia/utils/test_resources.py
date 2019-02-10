@@ -19,13 +19,15 @@ SESSIONS.data_out = Mock()
 SESSIONS.disconnect = Mock()
 
 
-def unload_module(module_or_object):
+def unload_module(module):
     """
     Reset import so one can mock global constants.
 
     Args:
-        module_or_object (module or object): The module will
-            be removed so it will have to be imported again.
+        module (module, object or str): The module will
+            be removed so it will have to be imported again. If given
+            an object, the module in which that object sits will be unloaded. A string
+            should directly give the module pathname to unload.
 
     Example: 
         # (in a test method)
@@ -40,10 +42,13 @@ def unload_module(module_or_object):
     loaded once).
 
     """
-    if hasattr(module_or_object, "__module__"):
-        modulename = module_or_object.__module__
+    if isinstance(module, basestring):
+        modulename = module
+    elif hasattr(module, "__module__"):
+        modulename = module.__module__
     else:
-        modulename = module_or_object.__name__
+        modulename = module.__name__
+
     if modulename in sys.modules:
         del sys.modules[modulename]
 

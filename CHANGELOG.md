@@ -85,7 +85,8 @@ Web/Django standard initiative (@strikaco)
 
 ### Utils
 
-- Added more unit tests.
+- `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
+- Added many more unit tests.
 
 
 ## Evennia 0.8 (2018)
