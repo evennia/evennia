@@ -8,7 +8,7 @@ from unittest import TestCase
 from django.test import override_settings
 from evennia.accounts.accounts import AccountSessionHandler
 from evennia.accounts.accounts import DefaultAccount, DefaultGuest
-from evennia.utils.test_resources import EvenniaTest, unload_module
+from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import create
 
 from django.conf import settings
@@ -318,7 +318,7 @@ class TestAccountPuppetDeletion(EvenniaTest):
         # See what happens when we delete char1.
         self.char1.delete()
         # Playable char list should be empty.
-        self.assertFalse(self.account.db._playable_characters, 
+        self.assertFalse(self.account.db._playable_characters,
                          'Playable character list is not empty! %s' % self.account.db._playable_characters)
 
 
@@ -335,7 +335,6 @@ class TestDefaultAccountEv(EvenniaTest):
         self.assertEqual(self.account.db._playable_characters, [self.char1])
 
     def test_puppet_success(self):
-        unload_module(DefaultAccount)
         self.account.msg = MagicMock()
         with patch("evennia.accounts.accounts._MULTISESSION_MODE", 2):
             self.account.puppet_object(self.session, self.char1)
@@ -348,8 +347,7 @@ class TestDefaultAccountEv(EvenniaTest):
         self.assertEqual(idle, 10)
 
         # test no sessions
-        unload_module("evennia.accounts.accounts")
-        with patch("evennia.accounts.accounts._SESSIONS.sessions_from_account", return_value=[]) as mock_sessh: 
+        with patch("evennia.accounts.accounts._SESSIONS.sessions_from_account", return_value=[]) as mock_sessh:
             idle = self.account.idle_time
             self.assertEqual(idle, None)
 
@@ -360,7 +358,6 @@ class TestDefaultAccountEv(EvenniaTest):
         self.assertEqual(conn, 10)
 
         # test no sessions
-        unload_module("evennia.accounts.accounts")
         with patch("evennia.accounts.accounts._SESSIONS.sessions_from_account", return_value=[]) as mock_sessh: 
             idle = self.account.connection_time
             self.assertEqual(idle, None)

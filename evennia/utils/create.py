@@ -420,14 +420,14 @@ def create_account(key, email, password,
         locks (str): Lockstring.
         permission (list): List of permission strings.
         tags (list): List of Tags on form `(key, category[, data])`
-        attributes (list): List of Attributes on form 
+        attributes (list): List of Attributes on form
              `(key, value [, category, [,lockstring [, default_pass]]])`
         report_to (Object): An object with a msg() method to report
             errors to. If not given, errors will be logged.
 
     Raises:
         ValueError: If `key` already exists in database.
-        
+
 
     Notes:
         Usually only the server admin should need to be superuser, all
