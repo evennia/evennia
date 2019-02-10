@@ -30,11 +30,11 @@ class TestServer(TestCase):
                             _MAINTENANCE_COUNT=0,
                             ServerConfig=DEFAULT) as mocks:
             mocks['connection'].close = MagicMock()
-            mocks['ServerConfig'].objects.conf = MagicMock(return_value=100)
+            mocks['ServerConfig'].objects.conf = MagicMock(return_value=456)
 
             # flush cache
             self.server._server_maintenance()
-            mock['ServerConfig'].objects.conf.assert_called_with('runtime', default=0.0)
+            mocks['ServerConfig'].objects.conf.assert_called_with('runtime', 456)
 
     def test__server_maintenance_flush(self):
         with patch.multiple("evennia.server.server",
@@ -189,11 +189,12 @@ class TestServer(TestCase):
             mocks['AccountDB'].objects.get = MagicMock(return_value=acct)
             evennia = self.server.Evennia(MagicMock())
             evennia.run_initial_setup()
+        acct.delete()
 
     def test_initial_setup_retry(self):
         from evennia.utils.create import create_account
 
-        acct = create_account("TestSuperuser", "test@test.com", "testpassword",
+        acct = create_account("TestSuperuser2", "test@test.com", "testpassword",
                               is_superuser=True)
 
         with patch.multiple("evennia.server.initial_setup",
@@ -230,6 +231,10 @@ class TestServer(TestCase):
                 mockacct.get_all_cached_instances.assert_called()
                 mockobj.get_all_cached_instances.assert_called()
                 mockobj.objects.clear_all_sessids.assert_called_with()
+        obj1.delete()
+        obj2.delete()
+        acct1.delete()
+        acct2.delete()
 
     @patch('evennia.server.server.INFO_DICT', {"test": "foo"})
     def test_get_info_dict(self):
