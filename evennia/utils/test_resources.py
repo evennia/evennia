@@ -35,7 +35,7 @@ def unload_module(module):
         with mock.patch("foo.GLOBALTHING", "mockval"):
             import foo
             ... # test code using foo.GLOBALTHING, now set to 'mockval'
-            
+
 
     This allows for mocking constants global to the module, since
     otherwise those would not be mocked (since a module is only
