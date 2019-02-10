@@ -2131,11 +2131,16 @@ def main():
 
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
-        # pass on to the core django manager - re-parse the entire input line
-        # but keep 'evennia' as the name instead of django-admin. This is
-        # an exit condition.
-        sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-        sys.exit(execute_from_command_line())
+        if option == "migrate":
+            # we have to launch migrate within the program to make sure migrations
+            # run within the scope of the launcher (otherwise missing a db will cause errors)
+            django.core.management.call_command(*([option] + unknown_args))
+        else:
+            # pass on to the core django manager - re-parse the entire input line
+            # but keep 'evennia' as the name instead of django-admin. This is
+            # an exit condition.
+            sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+            sys.exit(execute_from_command_line())
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)
