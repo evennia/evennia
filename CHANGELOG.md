@@ -85,6 +85,7 @@ Web/Django standard initiative (@strikaco)
 
 ### Utils
 
+- `evennia` launcher now fully handles all django-admin commands, like running tests in parallel.
 - `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
 - Added many more unit tests.
 

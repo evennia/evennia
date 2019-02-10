@@ -15,6 +15,7 @@ from builtins import input, range
 
 import os
 import sys
+import re
 import signal
 import shutil
 import importlib
@@ -22,6 +23,7 @@ from distutils.version import LooseVersion
 from argparse import ArgumentParser
 import argparse
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
+
 
 try:
     import cPickle as pickle
@@ -31,6 +33,7 @@ except ImportError:
 from twisted.protocols import amp
 from twisted.internet import reactor, endpoints
 import django
+from django.core.management import execute_from_command_line
 
 # Signal processing
 SIG = signal.SIGINT
@@ -399,6 +402,7 @@ ERROR_DJANGO_MIN = \
     ERROR: Django {dversion} found. Evennia requires version {django_min}
     or higher.
 
+    TE_TEST
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
     in a virtualenv you can install django with for example `pip install --upgrade django`
@@ -434,16 +438,15 @@ NOTE_KEYBOARDINTERRUPT = \
 NOTE_TEST_DEFAULT = \
     """
     TESTING: Using Evennia's default settings file (evennia.settings_default).
-    (use 'evennia --settings settings.py test .' to run tests on the game dir)
+    (use 'evennia test --settings settings.py .' to run only your custom game tests)
     """
 
 NOTE_TEST_CUSTOM = \
     """
     TESTING: Using specified settings file '{settings_dotpath}'.
 
-    (Obs: Evennia's full test suite may not pass if the settings are very
-    different from the default. Use 'test .' as arguments to run only tests
-    on the game dir.)
+    OBS: Evennia's full test suite may not pass if the settings are very
+    different from the default (use 'evennia test evennia' to run core tests)
     """
 
 PROCESS_ERROR = \
@@ -2108,7 +2111,7 @@ def main():
             else:
                 kill(SERVER_PIDFILE, 'Server')
     elif option != "noop":
-        # pass-through to django manager
+        # pass-through to django manager, but set things up first
         check_db = False
         need_gamedir = True
         # some commands don't require the presence of a game directory to work
@@ -2128,32 +2131,11 @@ def main():
 
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
-        # pass on to the manager
-        args = [option]
-        kwargs = {}
-        if unknown_args:
-            for arg in unknown_args:
-                if arg.startswith("--"):
-                    if "=" in arg:
-                        arg, value = [p.strip() for p in arg.split("=", 1)]
-                    else:
-                        value = True
-                    kwargs[arg.lstrip("--")] = value
-                else:
-                    args.append(arg)
-
-        # makemessages needs a special syntax to not conflict with the -l option
-        if len(args) > 1 and args[0] == "makemessages":
-            args.insert(1, "-l")
-
-        try:
-            print("calling django admin with: {} {}".format(
-                " ".join(args),  " ".join(unknown_args)))
-            django.core.management.call_command(*args, **kwargs)
-        except django.core.management.base.CommandError as exc:
-            args = ", ".join(args)
-            kwargs = ", ".join(["--%s" % kw for kw in kwargs])
-            print(ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs))
+        # pass on to the core django manager - re-parse the entire input line
+        # but keep 'evennia' as the name instead of django-admin. This is
+        # an exit condition.
+        sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+        sys.exit(execute_from_command_line())
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)

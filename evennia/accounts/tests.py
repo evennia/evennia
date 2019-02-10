@@ -387,3 +387,6 @@ class TestDefaultAccountEv(EvenniaTest):
         self.assertTrue("Obj" in ret)
         ret = self.account.at_look(target="Invalid", session=self.session)
         self.assertEqual(ret, 'Invalid has no in-game appearance.')
+
+    def test_msg(self):
+        self.account.msg
