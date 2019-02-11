@@ -12,3 +12,4 @@ inflect
 # testing
 mock >= 1.0.1
 anything
+codecov
