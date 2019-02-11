@@ -5,7 +5,6 @@ sudo: false
 install: 
   - pip install -e .
   - pip install coveralls
-  - pip install codecov
 before_script:
   - evennia --init dummy
   - cd dummy
