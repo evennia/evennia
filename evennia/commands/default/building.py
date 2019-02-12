@@ -3067,7 +3067,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             elif nprots > 1:
                 caller.msg("Found {} prototypes matching '{}':\n  {}".format(
-                    nprots, prototype, ", ".join(prot.get('prototype_key', '')
+                    nprots, prototype, ", ".join(proto.get('prototype_key', '')
                                                  for proto in prototypes)))
                 return
             # we have a prototype, check access
