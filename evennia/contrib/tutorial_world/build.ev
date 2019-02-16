@@ -836,7 +836,7 @@ archway
 #
 # Set its home to this location
 #
-@home ghost = tut#11
+@sethome ghost = tut#11
 #
 @lock ghost = get:false()
 #
