@@ -444,7 +444,7 @@ north
 # Players trying to pickup barrel will receive hint to 'get weapon' instead
 #
 @set barrel/get_err_msg =
-    The barkeep shakes his head. He says: 'Get weapon, not the barrel.'
+ The barkeep shakes his head. He says: 'Get weapon, not the barrel.'
 #
 # This id makes sure that we cannot pick more than one weapon from this rack
 #
