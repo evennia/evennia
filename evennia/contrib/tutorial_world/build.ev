@@ -442,6 +442,7 @@ north
 @lock barrel = get:false()
 #
 # Players trying to pickup barrel will receive hint to 'get weapon' instead
+#
 @set barrel/get_err_msg =
     The barkeep shakes his head. He says: 'Get weapon, not the barrel.'
 #
