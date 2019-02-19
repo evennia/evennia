@@ -274,6 +274,8 @@ class AMPMultiConnectionProtocol(amp.AMP):
         self.send_mode = True
         self.send_task = None
         self.multibatches = 0
+        # later twisted amp has its own __init__
+        super(AMPMultiConnectionProtocol, self).__init__(*args, **kwargs)
 
     def dataReceived(self, data):
         """
