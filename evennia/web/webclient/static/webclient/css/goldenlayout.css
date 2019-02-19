@@ -1,0 +1,106 @@
+/*
+ *
+ */
+
+#clientwrapper #main {
+  height: 100%;
+}
+
+#clientwrapper #main #main-sub {
+  height: 100%;
+}
+
+#toolbar {
+    display: none;
+}
+
+#optionsbutton {
+    font-size: .9rem;
+    width: .9rem;
+    vertical-align: top;
+}
+
+.content {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body .lm_popout {
+  display: none;
+}
+
+label {
+    display: block;
+}
+
+.lm_title {
+    text-align: center;
+}
+
+#typelist {
+    position: relative;
+}
+
+.typelistsub {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: max-content;
+    background-color: #333333;
+    line-height: .5em;
+    padding: .3em;
+    font-size: .9em;
+    z-index: 1;
+}
+
+#renamebox {
+    position: relative;
+}
+
+#renameboxin {
+    position: absolute;
+    z-index: 1;
+}
+
+#updatelist {
+    position: relative;
+}
+
+.updatelistsub {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: max-content;
+    background-color: #333333;
+    line-height: .5em;
+    padding: .3em;
+    font-size: .9em;
+    z-index: 1;
+}
+
+#inputcontrol {
+    height: 100%;
+}
+
+.inputwrap {
+    position: relative;
+    height: 100%;
+}
+
+#inputsend {
+    position: absolute;
+    right: 0;
+    z-index: 1;
+}
+
+#inputfield {
+    position: absolute;
+    top: 0;
+}
+
+.glbutton {
+    font-size: 0.6em;
+    line-height: 1.3em;
+    padding: .5em;
+}
