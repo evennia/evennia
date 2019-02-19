@@ -105,7 +105,8 @@ class Portal(object):
         sys.path.append('.')
 
         # create a store of services
-        self.services = service.IServiceCollection(application)
+        self.services = service.MultiService()
+        self.services.setServiceParent(application)
         self.amp_protocol = None  # set by amp factory
         self.sessions = PORTAL_SESSIONS
         self.sessions.portal = self
