@@ -203,6 +203,11 @@ Web/Django standard initiative (@strikaco)
  - `tb_range` - Adds system for abstract positioning and movement.
 - Updates and some cleanup of existing contribs.
 
+
+### Internationalization 
+
+- Polish translation by user ogotai
+
 # Overviews
 
 ## Sept 2017:
