@@ -177,7 +177,7 @@ start
 #
 # This room inherits from a Typeclass called WeatherRoom. It regularly
 # and randomly shows some weather effects. Note how we can spread the
-# command's arguments over more than one line for easy reading.  we
+# command's arguments over more than one line for easy reading.  We
 # also make sure to create plenty of aliases for the room and
 # exits. Note the alias tut#02: this unique identifier can be used
 # later in the script to always find the way back to this room (for
@@ -440,6 +440,11 @@ north
 @create/drop barrel: tutorial_world.objects.WeaponRack
 #
 @lock barrel = get:false()
+#
+# Players trying to pickup barrel will receive hint to 'get weapon' instead
+#
+@set barrel/get_err_msg =
+ The barkeep shakes his head. He says: 'Get weapon, not the barrel.'
 #
 # This id makes sure that we cannot pick more than one weapon from this rack
 #
@@ -836,7 +841,7 @@ archway
 #
 # Set its home to this location
 #
-@home ghost = tut#11
+@sethome ghost = tut#11
 #
 @lock ghost = get:false()
 #

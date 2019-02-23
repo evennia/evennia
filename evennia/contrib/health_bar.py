@@ -90,7 +90,7 @@ def display_meter(cur_value, max_value,
     
     # Pick which fill color to use based on how full the bar is
     fillcolor_index = (float(len(fill_color)) * percent_full)
-    fillcolor_index = int(round(fillcolor_index)) - 1
+    fillcolor_index = max(0, int(round(fillcolor_index)) - 1)
     fillcolor_code = "|[" + fill_color[fillcolor_index]
     
     # Make color codes for empty bar portion and text_color
