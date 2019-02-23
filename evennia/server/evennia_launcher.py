@@ -528,7 +528,7 @@ def _print_info(portal_info_dict, server_info_dict):
         out = {}
         for key, value in dct.iteritems():
             if isinstance(value, list):
-                value = "\n{}".format(ind).join(value)
+                value = "\n{}".format(ind).join(str(val) for val in value)
             out[key] = value
         return out
 
@@ -695,13 +695,14 @@ def send_instruction(operation, arguments, callback=None, errback=None):
 
     if AMP_CONNECTION:
         # already connected - send right away
-        _send()
+        return _send()
     else:
         # we must connect first, send once connected
         point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
         deferred = endpoints.connectProtocol(point, AMPLauncherProtocol())
         deferred.addCallbacks(_on_connect, _on_connect_fail)
         REACTOR_RUN = True
+        return deferred
 
 
 def query_status(callback=None):
