@@ -99,6 +99,7 @@ class TestMemPlot(TestCase):
     @patch.object(memplot, "os")
     @patch.object(memplot, "open", new_callable=mock_open, create=True)
     @patch.object(memplot, "time")
+    @patch("evennia.utils.idmapper.models.SharedMemoryModel.flush_from_cache", new=Mock())
     def test_memplot(self, mock_time, mocked_open, mocked_os, mocked_idmapper):
         from evennia.utils.create import create_script
         mocked_idmapper.cache_size.return_value = (9, 5000)
