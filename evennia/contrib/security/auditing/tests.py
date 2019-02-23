@@ -2,6 +2,7 @@
 Module containing the test cases for the Audit system.
 """
 
+from django.test import override_settings
 from django.conf import settings
 from evennia.utils.test_resources import EvenniaTest
 import re
@@ -12,10 +13,8 @@ settings.AUDIT_IN = True
 settings.AUDIT_OUT = True
 settings.AUDIT_ALLOW_SPARSE = True
 
-# Configure settings to use custom session
-settings.SERVER_SESSION_CLASS = "evennia.contrib.security.auditing.server.AuditedServerSession"
 
-
+@override_settings(SERVER_SESSION_CLASS="evennia.contrib.security.auditing.server.AuditedServerSession")
 class AuditingTest(EvenniaTest):
 
     def test_mask(self):

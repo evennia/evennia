@@ -15,10 +15,6 @@ from evennia.utils import create
 from evennia.utils.idmapper.models import flush_cache
 
 
-SESSIONS.data_out = Mock()
-SESSIONS.disconnect = Mock()
-
-
 def unload_module(module):
     """
     Reset import so one can mock global constants.
@@ -68,6 +64,11 @@ class EvenniaTest(TestCase):
         """
         Sets up testing environment
         """
+        self.backups = (SESSIONS.data_out, SESSIONS.disconnect,
+                        settings.DEFAULT_HOME, settings.PROTOTYPE_MODULES)
+        SESSIONS.data_out = Mock()
+        SESSIONS.disconnect = Mock()
+
         self.account = create.create_account("TestAccount", email="test@test.com", password="testpassword", typeclass=self.account_typeclass)
         self.account2 = create.create_account("TestAccount2", email="test@test.com", password="testpassword", typeclass=self.account_typeclass)
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
@@ -101,6 +102,11 @@ class EvenniaTest(TestCase):
 
     def tearDown(self):
         flush_cache()
+        SESSIONS.data_out = self.backups[0]
+        SESSIONS.disconnect = self.backups[1]
+        settings.DEFAULT_HOME = self.backups[2]
+        settings.PROTOTYPE_MODULES = self.backups[3]
+
         del SESSIONS[self.session.sessid]
         self.account.delete()
         self.account2.delete()
