@@ -103,16 +103,16 @@ class TestLauncher(TwistedTestCase):
 
         return all_sent
 
-    @patch("evennia.server.portal.amp.amp.BinaryBoxProtocol.transport")
-    def test_send_instruction_pstatus(self, mocktransport):
+    # @patch("evennia.server.portal.amp.amp.BinaryBoxProtocol.transport")
+    # def test_send_instruction_pstatus(self, mocktransport):
 
-        deferred = evennia_launcher.send_instruction(
-            evennia_launcher.PSTATUS,
-            (),
-            callback=MagicMock(),
-            errback=MagicMock())
+    #     deferred = evennia_launcher.send_instruction(
+    #         evennia_launcher.PSTATUS,
+    #         (),
+    #         callback=MagicMock(),
+    #         errback=MagicMock())
 
-        on_wire = self._catch_wire_read(mocktransport)
-        self.assertEqual(on_wire, "")
+    #     on_wire = self._catch_wire_read(mocktransport)
+    #     self.assertEqual(on_wire, "")
 
-        return deferred
+    #     return deferred
