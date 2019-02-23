@@ -6,6 +6,7 @@ Test AMP client
 import pickle
 from unittest import TestCase
 from mock import MagicMock, patch
+from twisted.trial.unittest import TestCase as TwistedTestCase
 from evennia.server import amp_client
 from evennia.server.portal import amp_server
 from evennia.server.portal import amp
@@ -14,10 +15,13 @@ from evennia.server.portal import portal
 from evennia.server import serversession, session
 from evennia.utils import create
 
+from twisted.internet.base import DelayedCall
+DelayedCall.debug = True
 
-class _TestAMP(TestCase):
+class _TestAMP(TwistedTestCase):
 
     def setUp(self):
+        super(_TestAMP, self).setUp()
         with patch("evennia.server.initial_setup.get_god_account") as mockgod:
             self.account = create.account("TestAMPAccount", "test@test.com", "testpassword")
             mockgod.return_value = self.account
@@ -26,8 +30,9 @@ class _TestAMP(TestCase):
             self.server.sessions.data_out = MagicMock()
             self.amp_client_factory = amp_client.AMPClientFactory(self.server)
             self.amp_client = self.amp_client_factory.buildProtocol("127.0.0.1")
-            self.session = serversession.ServerSession()
+            self.session = MagicMock() # serversession.ServerSession()
             self.session.sessid = 1
+            self.server.sessions[1] = self.session
 
             self.portal = portal.Portal(MagicMock())
             self.portalsession = session.Session()
@@ -40,6 +45,7 @@ class _TestAMP(TestCase):
 
     def tearDown(self):
         self.account.delete()
+        super(_TestAMP, self).tearDown()
 
     def _connect_client(self, mocktransport):
         "Setup client to send data for testing"
@@ -71,7 +77,7 @@ class _TestAMP(TestCase):
 class TestAMPClientSend(_TestAMP):
     """Test amp client sending data"""
 
-    def test_msg2portal(self, mocktransport):
+    def test_msgserver2portal(self, mocktransport):
         self._connect_client(mocktransport)
         self.amp_client.send_MsgServer2Portal(self.session, text={"foo": "bar"})
         wire_data = self._catch_wire_read(mocktransport)[0]
@@ -92,3 +98,29 @@ class TestAMPClientSend(_TestAMP):
         self.amp_server.data_in = MagicMock()
         self.amp_server.dataReceived(wire_data)
         self.amp_server.data_in.assert_called()
+
+
+@patch("evennia.server.portal.amp.amp.BinaryBoxProtocol.transport")
+class TestAMPClientRecv(_TestAMP):
+    """Test amp client sending data"""
+
+    def test_msgportal2server(self, mocktransport):
+        self._connect_server(mocktransport)
+        self.amp_server.send_MsgPortal2Server(self.session, text={"foo": "bar"})
+        wire_data = self._catch_wire_read(mocktransport)[0]
+
+        self._connect_client(mocktransport)
+        self.amp_client.dataReceived(wire_data)
+        self.server.sessions.data_in.assert_called_with(self.session, text={"foo": "bar"})
+
+    def test_adminportal2server(self, mocktransport):
+        self._connect_server(mocktransport)
+
+        self.amp_server.send_AdminPortal2Server(self.session,
+                                                operation=amp.PDISCONNALL)
+        wire_data = self._catch_wire_read(mocktransport)[0]
+
+        self._connect_client(mocktransport)
+        self.server.sessions.portal_disconnect_all = MagicMock()
+        self.amp_client.dataReceived(wire_data)
+        self.server.sessions.portal_disconnect_all.assert_called()
