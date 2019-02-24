@@ -420,10 +420,6 @@ north
 
  (to get a weapon from the barrel, use |wget weapon|n)
 #
-@desc barrel =
- This barrel has the air of leftovers - it contains an assorted
- mess of random weaponry in various states and qualities.
-#
 @detail barkeep;man;landlord =
  The landlord is a cheerful fellow, always ready to supply you with
  more beer. He mentions doing some sort of arcane magic known as
@@ -438,6 +434,10 @@ north
 # Create the weapon rack (the barrel)
 #
 @create/drop barrel: tutorial_world.objects.WeaponRack
+#
+@desc barrel =
+ This barrel has the air of leftovers - it contains an assorted
+ mess of random weaponry in various states and qualities.
 #
 @lock barrel = get:false()
 #
