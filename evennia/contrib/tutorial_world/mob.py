@@ -37,7 +37,7 @@ class CmdMobOnOff(Command):
         to turn on/off the mob."
         """
         if not self.args:
-            self.caller.msg("Usage: mobon|moboff <mob>")
+            self.caller.msg("Usage: mobon||moboff <mob>")
             return
         mob = self.caller.search(self.args)
         if not mob:
