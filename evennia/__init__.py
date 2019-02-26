@@ -1,10 +1,9 @@
 """
 Evennia MUD/MUX/MU* creation system
 
-This is the main top-level API for Evennia. You can also explore the
-evennia library by accessing evennia.<subpackage> directly. From
-inside the game you can read docs of all object by viewing its
-`__doc__` string, such as through
+This is the main top-level API for Evennia. You can explore the evennia library
+by accessing evennia.<subpackage> directly. From inside the game you can read
+docs of all object by viewing its `__doc__` string, such as through
 
     @py evennia.ObjectDB.__doc__
 
@@ -20,6 +19,31 @@ See www.evennia.com for full documentation.
 from __future__ import print_function
 from __future__ import absolute_import
 from builtins import object
+
+# docstring header
+
+DOCSTRING = """
+|cEvennia|n 'flat' API (use |wevennia.<component>.__doc__|n to read doc-strings
+                        and |wdict(evennia.component)|n or
+                        |wevennia.component.__dict__ to see contents)
+|cTypeclass-bases:|n                      |cDatabase models|n:
+   DefaultAccount     DefaultObject          AccountDB     ObjectDB
+     DefaultGuest       DefaultCharacter     ChannelDB
+                        DefaultRoom          ScriptDB
+   DefaultChannel       DefaultExit          Msg
+   DefaultScript
+|cSearch functions:|n                     |cCommand parents and helpers:|n
+   search_account       search_object        default_cmds
+   search_script        search_channel       Command       InterruptCommand
+   search_help          search_message       CmdSet
+   search_tag           managers          |cUtilities:|n
+|cCreate functions:|n                        settings       lockfuncs
+   create_account       create_object        logger         gametime
+   create_script        create_channel       ansi           spawn
+   create_help_entry    create_message       contrib        managers
+|cGlobal handlers:|n                         set_trace
+   TICKER_HANDLER       TASK_HANDLER         EvMenu         EvTable
+   SESSION_HANDLER      CHANNEL_HANDLER      EvForm         EvEditor """
 
 # Delayed loading of properties
 
@@ -114,7 +138,6 @@ def _create_version():
 __version__ = _create_version()
 del _create_version
 
-
 def _init():
     """
     This function is called automatically by the launcher only after
@@ -188,6 +211,10 @@ def _init():
     from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
 
+    # initialize the doc string
+    global __doc__
+    __doc__ = ansi.parse_ansi(DOCSTRING)
+
     # API containers
 
     class _EvContainer(object):
@@ -205,15 +232,17 @@ def _init():
 
     class DBmanagers(_EvContainer):
         """
-        Links to instantiated database managers.
+        Links to instantiated Django database managers. These are used
+        to perform more advanced custom database queries than the standard
+        search functions allow.
 
-        helpentry - HelpEntry.objects
+        helpentries - HelpEntry.objects
         accounts - AccountDB.objects
         scripts - ScriptDB.objects
         msgs    - Msg.objects
         channels - Channel.objects
         objects - ObjectDB.objects
-        serverconfigs = ServerConfig.objects
+        serverconfigs - ServerConfig.objects
         tags - Tags.objects
         attributes - Attributes.objects
 
@@ -375,3 +404,4 @@ def set_trace(debugger="auto", term_size=(140, 40)):
         # Start debugger, forcing it up one stack frame (otherwise `set_trace` will start debugger
         # this point, not the actual code location)
         dbg.set_trace(sys._getframe().f_back)
+
