@@ -6,7 +6,7 @@ Test the evennia launcher.
 import os
 import pickle
 from anything import Something
-from mock import patch, MagicMock
+from mock import patch, MagicMock, create_autospec
 from twisted.internet import reactor
 from twisted.trial.unittest import TestCase as TwistedTestCase
 from evennia.server import evennia_launcher
@@ -116,3 +116,23 @@ class TestLauncher(TwistedTestCase):
     #     self.assertEqual(on_wire, "")
 
     #     return deferred
+
+    def _msend_status_ok(operation, arguments, callback=None, errback=None):
+        callback({"status": pickle.dumps((True, True, 2, 24, "info1", "info2"))})
+
+    def _msend_status_err(operation, arguments, callback=None, errback=None):
+        errback({"status": pickle.dumps((False, False, 2, 24, "info1", "info2"))})
+
+    @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_ok)
+    @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)
+    @patch("evennia.server.evennia_launcher.print")
+    def test_query_status_run(self, mprint):
+        evennia_launcher.query_status()
+        mprint.assert_called_with("")
+
+    @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_err)
+    @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)
+    @patch("evennia.server.evennia_launcher.print")
+    def test_query_status_not_run(self, mprint):
+        evennia_launcher.query_status()
+        mprint.assert_called_with("")
