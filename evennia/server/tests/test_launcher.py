@@ -121,18 +121,77 @@ class TestLauncher(TwistedTestCase):
         callback({"status": pickle.dumps((True, True, 2, 24, "info1", "info2"))})
 
     def _msend_status_err(operation, arguments, callback=None, errback=None):
-        errback({"status": pickle.dumps((False, False, 2, 24, "info1", "info2"))})
+        errback({"status": pickle.dumps((False, False, 3, 25, "info3", "info4"))})
 
     @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_ok)
     @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)
+    @patch("evennia.server.evennia_launcher.get_pid", MagicMock(return_value=100))
     @patch("evennia.server.evennia_launcher.print")
     def test_query_status_run(self, mprint):
         evennia_launcher.query_status()
-        mprint.assert_called_with("")
+        mprint.assert_called_with('Portal: RUNNING (pid 100)\nServer: RUNNING (pid 100)')
 
     @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_err)
     @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)
     @patch("evennia.server.evennia_launcher.print")
     def test_query_status_not_run(self, mprint):
         evennia_launcher.query_status()
-        mprint.assert_called_with("")
+        mprint.assert_called_with('Portal: NOT RUNNING\nServer: NOT RUNNING')
+
+    @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_ok)
+    @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)
+    def test_query_status_callback(self):
+        mprint = MagicMock()
+
+        def testcall(response):
+            resp = pickle.loads(response['status'])
+            mprint(resp)
+
+        evennia_launcher.query_status(callback=testcall)
+        mprint.assert_called_with((True, True, 2, 24, "info1", "info2"))
+
+    @patch("evennia.server.evennia_launcher.AMP_CONNECTION")
+    @patch("evennia.server.evennia_launcher.print")
+    def test_wait_for_status_reply(self, mprint, aconn):
+        aconn.wait_for_status = MagicMock()
+
+        def test():
+            pass
+
+        evennia_launcher.wait_for_status_reply(test)
+        aconn.wait_for_status.assert_called_with(test)
+
+    @patch("evennia.server.evennia_launcher.AMP_CONNECTION", None)
+    @patch("evennia.server.evennia_launcher.print")
+    def test_wait_for_status_reply_fail(self, mprint):
+        evennia_launcher.wait_for_status_reply(None)
+        mprint.assert_called_with("No Evennia connection established.")
+
+    @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_ok)
+    @patch("evennia.server.evennia_launcher.reactor.callLater")
+    def test_wait_for_status(self, mcalllater):
+        mcall = MagicMock()
+        merr = MagicMock()
+        evennia_launcher.wait_for_status(
+            portal_running=True,
+            server_running=True,
+            callback=mcall,
+            errback=merr)
+
+        mcall.assert_called_with(True, True)
+        merr.assert_not_called()
+
+    @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_err)
+    @patch("evennia.server.evennia_launcher.reactor.callLater")
+    def test_wait_for_status_fail(self, mcalllater):
+        mcall = MagicMock()
+        merr = MagicMock()
+        evennia_launcher.wait_for_status(
+            portal_running=True,
+            server_running=True,
+            callback=mcall,
+            errback=merr)
+
+        mcall.assert_not_called()
+        merr.assert_not_called()
+        mcalllater.assert_called()
