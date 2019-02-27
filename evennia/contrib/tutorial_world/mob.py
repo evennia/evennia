@@ -39,13 +39,16 @@ class CmdMobOnOff(Command):
         if not self.args:
             self.caller.msg("Usage: mobon||moboff <mob>")
             return
-        mob = self.caller.search(self.args)
+        args = str(self.args).lstrip()
+        mob = self.caller.search(args)
         if not mob:
             return
         if self.cmdstring == "mobon":
             mob.set_alive()
+            self.caller.msg("Mobile set alive.")
         else:
             mob.set_dead()
+            self.caller.msg("Mobile set dead.")
 
 
 class MobCmdSet(CmdSet):
