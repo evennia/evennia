@@ -18,7 +18,7 @@ parties (although it also has options for hidden and secret rolls).
 
 Installation:
 
-To use in your code, just import the roll_dice function from this module.
+To use in your code, just import the CmdDice function from this module.
 
 To use  the dice/roll command, just import this module in your custom
 cmdset module and add the following line to the end of DefaultCmdSet's
