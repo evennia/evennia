@@ -43,12 +43,16 @@ class CmdMobOnOff(Command):
         mob = self.caller.search(args)
         if not mob:
             return
+        # checks for mob.db.is_dead help to prevent some instance of command
+        # triggered by irrelevant argument
         if self.cmdstring == "mobon":
-            mob.set_alive()
-            self.caller.msg("Mobile set alive.")
+            if mob.db.is_dead == True:
+                mob.set_alive()
+                self.caller.msg("Mobile set alive.")
         else:
-            mob.set_dead()
-            self.caller.msg("Mobile set dead.")
+            if mob.db.is_dead == False: 
+                mob.set_dead()
+                self.caller.msg("Mobile set dead.")
 
 
 class MobCmdSet(CmdSet):
