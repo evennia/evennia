@@ -33,7 +33,7 @@ LABEL maintainer="www.evennia.com"
 
 # install compilation environment
 RUN apk update && apk add bash gcc jpeg-dev musl-dev procps py-pip \
-py-setuptools py2-openssl python python-dev zlib-dev
+py-setuptools py2-openssl python python-dev zlib-dev gettext
 
 # add the files required for pip installation
 COPY ./setup.py /usr/src/evennia/
