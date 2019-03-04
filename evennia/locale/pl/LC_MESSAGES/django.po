@@ -1,0 +1,315 @@
+# Polish localization for the EVENNIA.
+# Copyright (C) 2019
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <akroczyk@gmail.com>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ArkMUD Polish translation v0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-20 12:13+0000\n"
+"PO-Revision-Date: 2019-02-20 14:18+0100\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
+"%100<12 || n%100>=14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
+"%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"Last-Translator: \n"
+"Language-Team: ArkMUD team\n"
+"X-Generator: Poedit 2.2.1\n"
+
+#: accounts/accounts.py:440
+msgid "Account being deleted."
+msgstr "Konto zostalo usuniete."
+
+#: commands/cmdhandler.py:681
+msgid "There were multiple matches."
+msgstr "Znaleziono wiele dopasowan."
+
+#: commands/cmdhandler.py:704
+#, python-format
+msgid "Command '%s' is not available."
+msgstr "Komenda '%s' jests niedostepna."
+
+#: commands/cmdhandler.py:709
+#, python-format
+msgid " Maybe you meant %s?"
+msgstr " Czy miales na mysli %s?"
+
+#: commands/cmdhandler.py:709
+msgid "or"
+msgstr "lub"
+
+#: commands/cmdhandler.py:711
+msgid " Type \"help\" for help."
+msgstr " Wpisz \"help\" aby otworzyc pomoc."
+
+#: commands/cmdsethandler.py:89
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:94
+#, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:98
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:103
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+
+#: commands/cmdsethandler.py:108
+#, python-brace-format
+msgid ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+
+#: commands/cmdsethandler.py:114
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr ""
+
+#: commands/cmdsethandler.py:182 commands/cmdsethandler.py:192
+#, python-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '%s')."
+msgstr ""
+"\n"
+"(Bezskuteczna proba '%s')."
+
+#: commands/cmdsethandler.py:311
+#, python-brace-format
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr ""
+
+#: commands/cmdsethandler.py:314
+#, python-brace-format
+msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+msgstr ""
+
+#: commands/cmdsethandler.py:322
+#, python-brace-format
+msgid ""
+" <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
+" {keylist}"
+msgstr ""
+
+#: commands/cmdsethandler.py:426
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr ""
+
+#: comms/channelhandler.py:100
+msgid "Say what?"
+msgstr "Ze co?"
+
+#: comms/channelhandler.py:105
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "Kanal '%s' nie odnaleziony."
+
+#: comms/channelhandler.py:108
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "Nie jestes polaczony z kanalem '%s'."
+
+#: comms/channelhandler.py:112
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "Nie masz uprawnien do wysylania wiadomosci na kanal '%s'."
+
+#: comms/channelhandler.py:155
+msgid " (channel)"
+msgstr " (kanal)"
+
+#: locks/lockhandler.py:236
+#, python-format
+msgid "Lock: lock-function '%s' is not available."
+msgstr ""
+
+#: locks/lockhandler.py:249
+#, python-format
+msgid "Lock: definition '%s' has syntax errors."
+msgstr ""
+
+#: locks/lockhandler.py:253
+#, python-format
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+
+#: locks/lockhandler.py:320
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr ""
+
+#: locks/lockhandler.py:328
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr ""
+
+#: locks/lockhandler.py:336
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr ""
+
+#: locks/lockhandler.py:343
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr ""
+
+#: objects/objects.py:732
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "Nie udalo sie wykonac ruchu ('%s'). Skontaktuj sie z adminem."
+
+#: objects/objects.py:742
+msgid "The destination doesn't exist."
+msgstr "Punkt przeznaczenia nie istnieje."
+
+#: objects/objects.py:833
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Nie znaleziono domyslnego domu '(#%d)'."
+
+#: objects/objects.py:849
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr "Cos poszlo zle! Zostales wrzucony w nicosc. Skontaktuj sie z adminem."
+
+#: objects/objects.py:915
+#, python-format
+msgid "Your character %s has been destroyed."
+msgstr "Twoja postac %s zostala zniszczona."
+
+#: scripts/scripthandler.py:53
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+
+#: scripts/scripts.py:205
+#, python-format
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+
+#: server/initial_setup.py:28
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Account #1 you can create a demo/tutorial area with |w@batchcommand "
+"tutorial_world.build|n.\n"
+"    "
+msgstr ""
+"\n"
+"Witaj w swojej nowej grze, bazujacej na  |wEvennia|n! Odwiedz http://www."
+"evennia.com\n"
+"jesli potrzebujesz pomocy, chcesz pomoc badz zglosic blad, lub po prostu "
+"chcesz dolaczyc do spolecznosci.\n"
+"Jako Konto #1 mozesz otworzyc demo/samouczek wpisujac |w@batchcommand "
+"tutorial_world.build|n.\n"
+"    "
+
+#: server/initial_setup.py:92
+msgid "This is User #1."
+msgstr "To jest User #1."
+
+#: server/initial_setup.py:105
+msgid "Limbo"
+msgstr "Otchlan"
+
+#: server/server.py:139
+msgid "idle timeout exceeded"
+msgstr "czas bezczynnosci przekroczony"
+
+#: server/sessionhandler.py:386
+msgid " ... Server restarted."
+msgstr " ... Serwer zrestartowany."
+
+#: server/sessionhandler.py:606
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "Zalogowano z innego miejsca. Rozlaczanie."
+
+#: server/sessionhandler.py:634
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "Czas bezczynnosci przekroczony, rozlaczanie."
+
+#: server/validators.py:50
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"%s Z poziomu terminala, mozesz rowniez uzyc frazy z wieloma slowami jesli "
+"ujmiesz haslo w cudzyslowie."
+
+#: utils/evmenu.py:192
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice."
+msgstr ""
+
+#: utils/evmenu.py:194
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr ""
+
+#: utils/evmenu.py:195
+msgid "No description."
+msgstr "Brak opisu."
+
+#: utils/evmenu.py:196
+msgid "Commands: <menu option>, help, quit"
+msgstr ""
+
+#: utils/evmenu.py:197
+msgid "Commands: <menu option>, help"
+msgstr ""
+
+#: utils/evmenu.py:198
+msgid "Commands: help, quit"
+msgstr ""
+
+#: utils/evmenu.py:199
+msgid "Commands: help"
+msgstr ""
+
+#: utils/evmenu.py:200
+msgid "Choose an option or try 'help'."
+msgstr "Wybierz opcje lub uzyj komendy 'help'."
+
+#: utils/utils.py:1866
+#, python-format
+msgid "Could not find '%s'."
+msgstr "Nie odnaleziono '%s'."
+
+#: utils/utils.py:1873
+#, python-format
+msgid "More than one match for '%s' (please narrow target):\n"
+msgstr "Wiecej niz jedno dopasowanie dla '%s' (prosze zawezyc cel):\n"

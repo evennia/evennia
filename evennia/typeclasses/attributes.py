@@ -383,7 +383,9 @@ class AttributeHandler(object):
 
         """
         ret = []
+        category = category.strip().lower() if category is not None else None
         for keystr in make_iter(key):
+            keystr = key.strip().lower()
             ret.extend(bool(attr) for attr in self._getcache(keystr, category))
         return ret[0] if len(ret) == 1 else ret
 
@@ -605,7 +607,8 @@ class AttributeHandler(object):
         Remove attribute or a list of attributes from object.
 
         Args:
-            key (str): An Attribute key to remove.
+            key (str or list): An Attribute key to remove or a list of keys. If
+                multiple keys, they must all be of the same `category`.
             raise_exception (bool, optional): If set, not finding the
                 Attribute to delete will raise an exception instead of
                 just quietly failing.
@@ -623,7 +626,11 @@ class AttributeHandler(object):
                 was found matching `key`.
 
         """
+        category = category.strip().lower() if category is not None else None
+
         for keystr in make_iter(key):
+            keystr = keystr.lower()
+
             attr_objs = self._getcache(keystr, category)
             for attr_obj in attr_objs:
                 if not (
@@ -634,10 +641,11 @@ class AttributeHandler(object):
                     try:
                         attr_obj.delete()
                     except AssertionError:
+                        print("Assertionerror for attr.delete()")
                         # this happens if the attr was already deleted
                         pass
                     finally:
-                        self._delcache(key, category)
+                        self._delcache(keystr, category)
             if not attr_objs and raise_exception:
                 raise AttributeError
 
@@ -655,6 +663,8 @@ class AttributeHandler(object):
                 type `attredit` on the Attribute in question.
 
         """
+        category = category.strip().lower() if category is not None else None
+
         if not self._cache_complete:
             self._fullcache()
         if accessing_obj:

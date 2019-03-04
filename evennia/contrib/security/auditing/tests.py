@@ -2,17 +2,18 @@
 Module containing the test cases for the Audit system.
 """
 
+from django.test import override_settings
 from django.conf import settings
 from evennia.utils.test_resources import EvenniaTest
 import re
 
-# Configure session auditing settings
+# Configure session auditing settings - TODO: This is bad practice that leaks over to other tests
 settings.AUDIT_CALLBACK = "evennia.security.contrib.auditing.outputs.to_syslog"
 settings.AUDIT_IN = True
 settings.AUDIT_OUT = True
 settings.AUDIT_ALLOW_SPARSE = True
 
-# Configure settings to use custom session
+# Configure settings to use custom session - TODO: This is bad practice, changing global settings
 settings.SERVER_SESSION_CLASS = "evennia.contrib.security.auditing.server.AuditedServerSession"
 
 

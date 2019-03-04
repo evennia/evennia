@@ -143,8 +143,6 @@ def _server_maintenance():
                     session.account.access(session.account, "noidletimeout", default=False):
                 SESSIONS.disconnect(session, reason=reason)
 
-maintenance_task = LoopingCall(_server_maintenance)
-maintenance_task.start(60, now=True)  # call every minute
 
 #------------------------------------------------------------
 # Evennia Main Server object
@@ -198,6 +196,7 @@ class Evennia(object):
             d.addCallback(lambda _: reactor.stop())
             reactor.callLater(1, d.callback, None)
         reactor.sigInt = _wrap_sigint_handler
+
 
     # Server startup methods
 
@@ -303,6 +302,10 @@ class Evennia(object):
         """
         from evennia.objects.models import ObjectDB
 
+        # start server time and maintenance task
+        self.maintenance_task = LoopingCall(_server_maintenance)
+        self.maintenance_task.start(60, now=True)  # call every minute
+
         # update eventual changed defaults
         self.update_defaults()
 
@@ -322,6 +325,7 @@ class Evennia(object):
             # clear eventual lingering session storages
             ObjectDB.objects.clear_all_sessids()
             logger.log_msg("Evennia Server successfully started.")
+
         # always call this regardless of start type
         self.at_server_start()
 

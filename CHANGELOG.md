@@ -58,6 +58,15 @@ Web/Django standard initiative (@strikaco)
 - Bugfixes
   - Fixes bug on login page where error messages were not being displayed
 
+### Prototypes
+
+- `evennia.prototypes.save_prototype` now takes the prototype as a normal 
+  argument (`prototype`) instead of having to give it as `**prototype`.
+- `evennia.prototypes.search_prototype` has a new kwarg `require_single=False` that
+  raises a KeyError exception if query gave 0 or >1 results.
+- `evennia.prototypes.spawner` can now spawn by passing a `prototype_key`
+
+
 ### Typeclasses
 
 - Add new methods on all typeclasses, useful specifically for object handling from the website/admin:
@@ -81,7 +90,9 @@ Web/Django standard initiative (@strikaco)
 
 ### Utils
 
-- Added more unit tests.
+- `evennia` launcher now fully handles all django-admin commands, like running tests in parallel.
+- `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
+- Added many more unit tests.
 
 ### Server
 
@@ -212,6 +223,11 @@ Web/Django standard initiative (@strikaco)
  - `tb_magic` - Extends `tb_equip` with spellcasting.
  - `tb_range` - Adds system for abstract positioning and movement.
 - Updates and some cleanup of existing contribs.
+
+
+### Internationalization 
+
+- Polish translation by user ogotai
 
 # Overviews
 

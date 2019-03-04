@@ -1,3 +1,8 @@
+"""
+Various helper resources for writing unittests.
+
+"""
+import sys
 from django.conf import settings
 from django.test import TestCase
 from mock import Mock
@@ -10,8 +15,38 @@ from evennia.utils import create
 from evennia.utils.idmapper.models import flush_cache
 
 
-SESSIONS.data_out = Mock()
-SESSIONS.disconnect = Mock()
+def unload_module(module):
+    """
+    Reset import so one can mock global constants.
+
+    Args:
+        module (module, object or str): The module will
+            be removed so it will have to be imported again. If given
+            an object, the module in which that object sits will be unloaded. A string
+            should directly give the module pathname to unload.
+
+    Example: 
+        # (in a test method)
+        unload_module(foo)
+        with mock.patch("foo.GLOBALTHING", "mockval"):
+            import foo
+            ... # test code using foo.GLOBALTHING, now set to 'mockval'
+
+
+    This allows for mocking constants global to the module, since
+    otherwise those would not be mocked (since a module is only
+    loaded once).
+
+    """
+    if isinstance(module, basestring):
+        modulename = module
+    elif hasattr(module, "__module__"):
+        modulename = module.__module__
+    else:
+        modulename = module.__name__
+
+    if modulename in sys.modules:
+        del sys.modules[modulename]
 
 
 class EvenniaTest(TestCase):
@@ -29,6 +64,11 @@ class EvenniaTest(TestCase):
         """
         Sets up testing environment
         """
+        self.backups = (SESSIONS.data_out, SESSIONS.disconnect,
+                        settings.DEFAULT_HOME, settings.PROTOTYPE_MODULES)
+        SESSIONS.data_out = Mock()
+        SESSIONS.disconnect = Mock()
+
         self.account = create.create_account("TestAccount", email="test@test.com", password="testpassword", typeclass=self.account_typeclass)
         self.account2 = create.create_account("TestAccount2", email="test@test.com", password="testpassword", typeclass=self.account_typeclass)
         self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
@@ -62,6 +102,11 @@ class EvenniaTest(TestCase):
 
     def tearDown(self):
         flush_cache()
+        SESSIONS.data_out = self.backups[0]
+        SESSIONS.disconnect = self.backups[1]
+        settings.DEFAULT_HOME = self.backups[2]
+        settings.PROTOTYPE_MODULES = self.backups[3]
+
         del SESSIONS[self.session.sessid]
         self.account.delete()
         self.account2.delete()

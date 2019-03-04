@@ -1040,6 +1040,11 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
             if not target:
                 return
 
+            if target == obj:
+                self.caller.msg("Cannot link an object to itself.")
+                return
+
+
             string = ""
             note = "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing."
             if not obj.destination:
@@ -1123,6 +1128,7 @@ class CmdSetHome(CmdLink):
 
     Usage:
       @sethome <obj> [= <home_location>]
+      @sethom <obj>
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
@@ -1162,10 +1168,10 @@ class CmdSetHome(CmdLink):
             old_home = obj.home
             obj.home = new_home
             if old_home:
-                string = "%s's home location was changed from %s(%s) to %s(%s)." % (
+                string = "Home location of %s was changed from %s(%s) to %s(%s)." % (
                         obj, old_home, old_home.dbref, new_home, new_home.dbref)
             else:
-                string = "%s' home location was set to %s(%s)." % (obj, new_home, new_home.dbref)
+                string = "Home location of %s was set to %s(%s)." % (obj, new_home, new_home.dbref)
         self.caller.msg(string)
 
 
@@ -1430,37 +1436,6 @@ def _convert_from_string(cmd, strobj):
     string this will always fail).
     """
 
-    def rec_convert(obj):
-        """
-        Helper function of recursive conversion calls. This is only
-        used for Python <=2.5. After that literal_eval is available.
-        """
-        # simple types
-        try:
-            return int(obj)
-        except ValueError:
-            # obj cannot be converted to int - that's fine
-            pass
-        try:
-            return float(obj)
-        except ValueError:
-            # obj cannot be converted to float - that's fine
-            pass
-        # iterables
-        if obj.startswith('[') and obj.endswith(']'):
-            "A list. Traverse recursively."
-            return [rec_convert(val) for val in obj[1:-1].split(',')]
-        if obj.startswith('(') and obj.endswith(')'):
-            "A tuple. Traverse recursively."
-            return tuple([rec_convert(val) for val in obj[1:-1].split(',')])
-        if obj.startswith('{') and obj.endswith('}') and ':' in obj:
-            "A dict. Traverse recursively."
-            return dict([(rec_convert(pair.split(":", 1)[0]),
-                          rec_convert(pair.split(":", 1)[1]))
-                         for pair in obj[1:-1].split(',') if ":" in pair])
-        # if nothing matches, return as-is
-        return obj
-
     # Use literal_eval to parse python structure exactly.
     try:
         return _LITERAL_EVAL(strobj)
@@ -1471,10 +1446,9 @@ def _convert_from_string(cmd, strobj):
                  "Make sure this is acceptable." % strobj
         cmd.caller.msg(string)
         return strobj
-    else:
-        # fall back to old recursive solution (does not support
-        # nested lists/dicts)
-        return rec_convert(strobj.strip())
+    except Exception as err:
+        string = "|RUnknown error in evaluating Attribute: {}".format(err)
+        return string
 
 
 class CmdSetAttribute(ObjManipCommand):
@@ -1957,7 +1931,7 @@ class CmdLock(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            string = "@lock <object>[ = <lockstring>] or @lock[/switch] " \
+            string = "Usage: @lock <object>[ = <lockstring>] or @lock[/switch] " \
                      "<object>/<access_type>"
             caller.msg(string)
             return
@@ -1978,8 +1952,8 @@ class CmdLock(ObjManipCommand):
                 caller.msg("You need 'control' access to change this type of lock.")
                 return
 
-            if not has_control_access or obj.access(caller, "edit"):
-                caller.msg("You are not allowed to do that.")
+            if not has_control_access or not obj.access(caller, "edit"):
+                caller.msg("You need 'edit' access to view or delete lock on this object.")
                 return
 
             lockdef = obj.locks.get(access_type)
@@ -2753,11 +2727,11 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                         obj)
             else:
                 # no tag specified, clear all tags
-                old_tags = ["%s%s" % (tag, " (category: %s" % category if category else "")
+                old_tags = ["%s%s" % (tag, " (category: %s)" % category if category else "")
                             for tag, category in obj.tags.all(return_key_and_category=True)]
                 if old_tags:
                     obj.tags.clear()
-                    string = "Cleared all tags from %s: %s" % (obj, ", ".join(old_tags))
+                    string = "Cleared all tags from %s: %s" % (obj, ", ".join(sorted(old_tags)))
                 else:
                     string = "No Tags to clear on %s." % obj
             self.caller.msg(string)
@@ -2788,8 +2762,9 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             tags = [tup[0] for tup in tagtuples]
             categories = [" (category: %s)" % tup[1] if tup[1] else "" for tup in tagtuples]
             if ntags:
-                string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "", obj,
-                                              ", ".join("'%s'%s" % (tags[i], categories[i]) for i in range(ntags)))
+                string = "Tag%s on %s: %s" % (
+                    "s" if ntags > 1 else "", obj,
+                    ", ".join(sorted("'%s'%s" % (tags[i], categories[i]) for i in range(ntags))))
             else:
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
@@ -3002,7 +2977,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                prot = protlib.save_prototype(**prototype)
+                prot = protlib.save_prototype(prototype)
                 if not prot:
                     caller.msg("|rError saving:|R {}.|n".format(prototype_key))
                     return
@@ -3091,7 +3066,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             elif nprots > 1:
                 caller.msg("Found {} prototypes matching '{}':\n  {}".format(
-                    nprots, prototype, ", ".join(prot.get('prototype_key', '')
+                    nprots, prototype, ", ".join(proto.get('prototype_key', '')
                                                  for proto in prototypes)))
                 return
             # we have a prototype, check access

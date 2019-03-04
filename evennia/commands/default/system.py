@@ -7,6 +7,7 @@ System commands
 
 import traceback
 import os
+import io
 import datetime
 import sys
 import django
@@ -21,7 +22,7 @@ from evennia.accounts.models import AccountDB
 from evennia.utils import logger, utils, gametime, create, search
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import crop, class_from_module
+from evennia.utils.utils import crop, class_from_module, to_unicode
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -197,6 +198,7 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
             duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
         else:
             ret = eval(pycode_compiled, {}, available_vars)
+
         if mode == "eval":
             ret = "%s%s" % (str(ret), duration)
         else:
@@ -238,7 +240,9 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
       inherits_from(obj, parent) : check object inheritance
 
     You can explore The evennia API from inside the game by calling
-    evennia.help(), evennia.managers.help() etc.
+    the `__doc__` property on entities:
+        @py evennia.__doc__
+        @py evennia.managers.__doc__
 
     |rNote: In the wrong hands this command is a severe security risk.
     It should only be accessible by trusted server admins/superusers.|n

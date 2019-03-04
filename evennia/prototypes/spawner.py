@@ -23,7 +23,7 @@ prot = {
  "attrs": [("weapon", "sword")]
 }
 
-prot = prototypes.create_prototype(**prot)
+prot = prototypes.create_prototype(prot)
 
 ```
 
@@ -662,8 +662,9 @@ def spawn(*prototypes, **kwargs):
     Spawn a number of prototyped objects.
 
     Args:
-        prototypes (dict): Each argument should be a prototype
-            dictionary.
+        prototypes (str or dict): Each argument should either be a
+            prototype_key (will be used to find the prototype) or a full prototype
+            dictionary. These will be batched-spawned as one object each. 
     Kwargs:
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
@@ -673,8 +674,10 @@ def spawn(*prototypes, **kwargs):
         prototype_parents (dict): A dictionary holding a custom
             prototype-parent dictionary. Will overload same-named
             prototypes from prototype_modules.
-        return_parents (bool): Only return a dict of the
-            prototype-parents (no object creation happens)
+        return_parents (bool): Return a dict of the entire prototype-parent tree
+            available to this prototype (no object creation happens). This is a
+            merged result between the globally found protparents and whatever
+            custom `prototype_parents` are given to this function.
         only_validate (bool): Only run validation of prototype/parents
             (no object creation) and return the create-kwargs.
 
@@ -684,6 +687,11 @@ def spawn(*prototypes, **kwargs):
             `return_parents` is set, instead return dict of prototype parents.
 
     """
+    # search string (=prototype_key) from input
+    prototypes = [protlib.search_prototype(prot, require_single=True)[0] 
+                  if isinstance(prot, basestring) else prot 
+                  for prot in prototypes]
+
     # get available protparents
     protparents = {prot['prototype_key'].lower(): prot for prot in protlib.search_prototype()}
 
