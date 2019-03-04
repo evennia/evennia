@@ -689,7 +689,7 @@ def spawn(*prototypes, **kwargs):
     """
     # search string (=prototype_key) from input
     prototypes = [protlib.search_prototype(prot, require_single=True)[0] 
-                  if isinstance(prot, basestring) else prot 
+                  if isinstance(prot, str) else prot 
                   for prot in prototypes]
 
     # get available protparents

@@ -22,7 +22,7 @@ from evennia.accounts.models import AccountDB
 from evennia.utils import logger, utils, gametime, create, search
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import crop, class_from_module, to_unicode
+from evennia.utils.utils import crop, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 

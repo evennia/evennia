@@ -38,7 +38,7 @@ def unload_module(module):
     loaded once).
 
     """
-    if isinstance(module, basestring):
+    if isinstance(module, str):
         modulename = module
     elif hasattr(module, "__module__"):
         modulename = module.__module__
