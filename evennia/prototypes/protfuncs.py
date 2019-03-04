@@ -333,7 +333,7 @@ def objlist(*args, **kwargs):
 def dbref(*args, **kwargs):
     """
     Usage $dbref(<#dbref>)
-    Returns one Object searched globally by #dbref. Error if #dbref is invalid.
+    Validate that a #dbref input is valid.
     """
     if not args or len(args) < 1 or _RE_DBREF.match(args[0]) is None:
         raise ValueError('$dbref requires a valid #dbref argument.')

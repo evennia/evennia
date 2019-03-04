@@ -215,6 +215,7 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
+        return text
         return text.replace(r'\n', r'<br>')
 
     def convert_urls(self, text):

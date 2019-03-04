@@ -69,7 +69,7 @@ class ObjectDBManager(TypedObjectManager):
                 object candidates.
 
         Return:
-            match (Object or list): One or more matching results.
+            match (query): Matching query.
 
         """
         ostring = str(ostring).lstrip('*')
@@ -77,7 +77,7 @@ class ObjectDBManager(TypedObjectManager):
         dbref = self.dbref(ostring)
         if dbref:
             try:
-                return self.get(id=dbref)
+                return self.get(db_account__id=dbref)
             except self.model.DoesNotExist:
                 pass
 
@@ -87,13 +87,13 @@ class ObjectDBManager(TypedObjectManager):
         if exact:
             return self.filter(cand_restriction & Q(db_account__username__iexact=ostring))
         else:  # fuzzy matching
-            ply_cands = self.filter(cand_restriction & Q(accountdb__username__istartswith=ostring)
-                                    ).values_list("db_key", flat=True)
-            if candidates:
-                index_matches = string_partial_matching(ply_cands, ostring, ret_index=True)
-                return [obj for ind, obj in enumerate(make_iter(candidates)) if ind in index_matches]
-            else:
-                return string_partial_matching(ply_cands, ostring, ret_index=False)
+            obj_cands = self.select_related().filter(cand_restriction & Q(db_account__username__istartswith=ostring))
+            acct_cands = [obj.account for obj in obj_cands]
+
+            if obj_cands:
+                index_matches = string_partial_matching([acct.key for acct in acct_cands], ostring, ret_index=True)
+                acct_cands = [acct_cands[i].id for i in index_matches]
+                return obj_cands.filter(db_account__id__in=acct_cands)
 
     def get_objs_with_key_and_typeclass(self, oname, otypeclass_path, candidates=None):
         """
@@ -105,7 +105,7 @@ class ObjectDBManager(TypedObjectManager):
             candidates (list, optional): Only match among the given list of candidates.
 
         Returns:
-            matches (list): The matching objects.
+            matches (query): The matching objects.
         """
         cand_restriction = candidates is not None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates)
                                                                 if obj]) or Q()
@@ -119,18 +119,19 @@ class ObjectDBManager(TypedObjectManager):
 
         Args:
             attribute_name (str): Attribute name to search for.
-            candidates (list, optional): Only match among the given list of candidates.
+            candidates (list, optional): Only match among the given list of object
+                candidates.
 
         Returns:
-            matches (list):  All objects having the given attribute_name defined at all.
+            matches (query):  All objects having the given attribute_name defined at all.
 
         """
-        cand_restriction = candidates is not None and Q(db_attributes__db_obj__pk__in=[_GA(obj, "id") for obj
-                                                                                       in make_iter(candidates)
-                                                                                       if obj]) or Q()
-        return list(self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name)))
+        cand_restriction = \
+            candidates is not None and Q(id__in=[obj.id for obj in candidates]) or Q()
+        return self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name))
 
-    def get_objs_with_attr_value(self, attribute_name, attribute_value, candidates=None, typeclasses=None):
+    def get_objs_with_attr_value(self, attribute_name, attribute_value,
+                                 candidates=None, typeclasses=None):
         """
         Get all objects having the given attrname set to the given value.
 
@@ -141,7 +142,8 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list, optional): Python pats to restrict matches with.
 
         Returns:
-            matches (list): Objects fullfilling both the `attribute_name` and `attribute_value` criterions.
+            matches (list): Objects fullfilling both the `attribute_name` and
+            `attribute_value` criterions.
 
         Notes:
             This uses the Attribute's PickledField to transparently search the database by matching

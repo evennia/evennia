@@ -262,7 +262,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         con = self.contents_cache.get(exclude=exclude)
         # print "contents_get:", self, con, id(self), calledby()  # DEBUG
         return con
-    contents = property(contents_get)
+
+    def contents_set(self, *args):
+        "You cannot replace this property"
+        raise AttributeError("{}.contents is read-only. Use obj.move_to or "
+                             "obj.location to move an object here.".format(self.__class__))
+
+    contents = property(contents_get, contents_set, contents_set)
 
     @property
     def exits(self):
