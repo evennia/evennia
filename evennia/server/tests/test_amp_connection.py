@@ -18,30 +18,29 @@ from evennia.utils import create
 from twisted.internet.base import DelayedCall
 DelayedCall.debug = True
 
+@patch("evennia.server.initial_setup.get_god_account",
+       MagicMock(return_value=create.account("TestAMPAccount", "test@test.com", "testpassword")))
 class _TestAMP(TwistedTestCase):
 
     def setUp(self):
         super(_TestAMP, self).setUp()
-        with patch("evennia.server.initial_setup.get_god_account") as mockgod:
-            self.account = create.account("TestAMPAccount", "test@test.com", "testpassword")
-            mockgod.return_value = self.account
-            self.server = server.Evennia(MagicMock())
-            self.server.sessions.data_in = MagicMock()
-            self.server.sessions.data_out = MagicMock()
-            self.amp_client_factory = amp_client.AMPClientFactory(self.server)
-            self.amp_client = self.amp_client_factory.buildProtocol("127.0.0.1")
-            self.session = MagicMock() # serversession.ServerSession()
-            self.session.sessid = 1
-            self.server.sessions[1] = self.session
+        self.server = server.Evennia(MagicMock())
+        self.server.sessions.data_in = MagicMock()
+        self.server.sessions.data_out = MagicMock()
+        self.amp_client_factory = amp_client.AMPClientFactory(self.server)
+        self.amp_client = self.amp_client_factory.buildProtocol("127.0.0.1")
+        self.session = MagicMock()  # serversession.ServerSession()
+        self.session.sessid = 1
+        self.server.sessions[1] = self.session
 
-            self.portal = portal.Portal(MagicMock())
-            self.portalsession = session.Session()
-            self.portalsession.sessid = 1
-            self.portal.sessions[1] = self.portalsession
-            self.portal.sessions.data_in = MagicMock()
-            self.portal.sessions.data_out = MagicMock()
-            self.amp_server_factory = amp_server.AMPServerFactory(self.portal)
-            self.amp_server = self.amp_server_factory.buildProtocol("127.0.0.1")
+        self.portal = portal.Portal(MagicMock())
+        self.portalsession = session.Session()
+        self.portalsession.sessid = 1
+        self.portal.sessions[1] = self.portalsession
+        self.portal.sessions.data_in = MagicMock()
+        self.portal.sessions.data_out = MagicMock()
+        self.amp_server_factory = amp_server.AMPServerFactory(self.portal)
+        self.amp_server = self.amp_server_factory.buildProtocol("127.0.0.1")
 
     def tearDown(self):
         self.account.delete()
