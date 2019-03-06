@@ -5,8 +5,9 @@ They are instantiated by the 'CurrencyHandler' object, which is typically
 set up as a property on the object or character's typeclass.
 
 **Setup**
-    To use currency on an object, add a function that passes the object
-    itself into the constructor and returns a 'CurrencyHandler'. This 
+    
+    To use currency on an object, add a function that passes the object	
+    itself into the constructor and returns a 'CurrencyHandler'. This 	
     function should be decorated with the 'lazy_property' decorator.
 
     Example:
@@ -20,22 +21,41 @@ set up as a property on the object or character's typeclass.
         def purse(self):
             return CurrencyHandler(self, db_attribute='purse')
     ```
+
+    You can now add properies in order to represent
+    cooper coins (CC) and silver coins (SC). Each property
+    is a Python dict object, that contains a value (used
+    for conversions between currencys), a name (for display),
+    and an amount.
+
+    ```python
+    currency = {
+        'CC': {'value': 10, 'name': 'copper coin', 'amount': 0},
+        'SC': {'value': 100, 'name': 'silver coin', 'amount': 0}
+        }
+    ```
+
 **Currency Configuration**
-    'Currency' objects can be configured with a name and a value (relative to other
-    Currency). All currency objects have a settable 'amt' property that contains the 
-    amount of that currency type.
+
+    When called, the CurrencyHandler returns a standard Python object of type
+    Currency. Properties on the Currency object can then be referenced for
+    calculating amounts and doing conversions. Currency objects can be
+    configured with a name and a value (relative to other Currency).
 
     Example:
+
+        Let's get the amount of copper coins (CC) on our test object:
+
         ```python
-        >>> gp = obj.currency.gp
-        >>> gp.amt
+        >>> cc = obj.currency.CC
+        >>> cc.amount
         100
         ```
 
     Constructor Args:
         name(str): name of the currency type
         value(int, float): value based on other currency types in handler
-        amt(int, float): amount of currency type held
+        amount(int, float): amount of currency type held
     
     Methods:
         convert(Currency, Optional amount): Convert between Currency types.
@@ -43,19 +63,33 @@ set up as a property on the object or character's typeclass.
         total(): Returns a total in lowest currency
         
     Examples:
+
+        Let's convert some of the silver coins (SC) on our test
+        object into copper coins (CC).
+
         ```python
-        >>> purse.CC.convert(self.purse.SC,2)
+        >>> obj.purse.CC.convert(self.purse.SC,2)
         Converted 2 silver coin --> 20 copper coin
-        >>> purse.CC.amt = 4    # Add 4 copper coins
-        >>> str(purse.CC)
+        ```
+
+        We can also do add more copper coins (CC).
+
+        ```python
+        >>> obj.purse.CC.amount = 4    # Add 4 copper coins
+        >>> str(obj.purse.CC)
         '35 copper coins'
+        ```
+
+        Finally, let's look at the current state of the Currency
+        object's properties, to verify they reflects our changes.
+
+        ```python
         >>> self.purse.contents
         20 copper coins, 2 silver coins
-        >>> purse
-        Currency({'CC': {'amt': 35, 'value': 10, 'name': 'copper coin'}, 
-        'SC': {'amt': 19, 'value': 100, 'name': 'silver coin'}, 
-        'GC': {'amt': 20, 'value': 1000, 'name': 'gold coin'}, 
-        'BC': {'amt': 0, 'value': 1, 'name': 'brass coin'}})
+        >>> obj.purse
+        Currency({'CC': {'amount': 35, 'value': 10, 'name': 'copper coin'},
+        'SC': {'amount': 19, 'value': 100, 'name': 'silver coin'}})
+        ```
 """
 from evennia.utils.dbserialize import _SaverDict
 from evennia.utils import logger, lazy_property
@@ -64,6 +98,7 @@ from functools import total_ordering
 class CurrencyException(Exception):
     def __init__(self, msg):
         self.msg = msg
+
 
 class CurrencyHandler(object):
     def __init__(self, obj, db_attribute='currency'):
@@ -115,19 +150,45 @@ class CurrencyHandler(object):
             self.cache[currency] = Currency(data)
         return self.cache[currency]
 
-    def add(self, key, name, value, amt):
-        # Create a new Currency and add it to the handler.
+    def add(self, key, name, value, amount):
+        """
+        Create a new Currency dict and add it to the CurrencyHandler.
+
+        Args:
+            key (str): key that will be representing currency dict
+            name (str): a pretty text representation of the dict used
+                for print exports.
+            value (int): value of one unit of currency, relative to other
+                currency dicts in the handler.
+
+                Example:
+
+                    currency.add('CC', 'copper coin', 10, 1)
+                    currency.add('SC', 'silver coin', 100, 1)
+                    currency.add('BC', 'brass coin', 1, 1)
+
+                    One silver coin will convert to 10 copper coins (10 to 1)
+                    or 100 brass coins (100 to 1).
+
+            amount (int): value that represents how many units of a given
+            currency there are in the handler.
+        """
         if key in self.attr_dict:
             raise CurrencyException("Currency '{}' already exists.".format(key))
 
         currency = dict(name=name,
-                     value=value, 
-                     amt=amt)
+                        value=value,
+                        amount=amount)
 
         self.attr_dict[key] = currency
 
     def remove(self, currency):
-        # Remove a Currency type from the handler's parent object.
+        """
+        Remove a Currency type from the handler's parent object.
+
+        Args:
+            currency (dict): remove selected dict object from CurrencyHandler
+        """
         if currency not in self.attr_dict:
             raise CurrencyException("Currency not found: {}".format(currency))
 
@@ -136,35 +197,49 @@ class CurrencyHandler(object):
         del self.attr_dict[currency]
 
     def clear(self):
+        """
+        Remove all Currency dicts from the handler's parent object.
+        """
         # Remove all Currency from the handler's parent object.
         for currency in self.all:
             self.remove(currency)
 
     @property
     def all(self):
-        # Return a list of all currency in this CurrencyHandler.
+        """
+        Return a list of all currency dicts in CurrencyHandler.
+        """
         return self.attr_dict.keys()
 
     @property
     def contents(self):
-        # Return a formatted list of currency and amounts in this CurrencyHandler.
+        """
+        Return a formatted list of currency and amounts in this CurrencyHandler.
+        """
         liststr = ""
         for key in self.attr_dict.keys():
             cur = Currency(self.attr_dict[key])
-            if cur.amt > 0:
+            if cur.amount > 0:
                 liststr += "{}, ".format(cur)
-        if len(liststr.strip()) > 0: return liststr[:-2]
-        else: return liststr.strip()
+        if len(liststr.strip()) > 0:
+            return liststr[:-2]
+        else:
+            return liststr.strip()
 
     @property
     def total(self):
+        """
+        Calculates the effective value for each Currency dict contained in the
+        CurrencyHandler based on the amount * value attributes in each dict and
+        then returns a formatted list of currency and amounts in CurrencyHandler
+        """
         total = 0
         in_currency = None
         for key in self.attr_dict.keys():
             cur = Currency(self.attr_dict[key])
-            if cur.amt > 0:
+            if cur.amount > 0:
                 # Add currency to the total
-                total += cur.amt * cur.value
+                total += cur.amount * cur.value
             if in_currency is None:
                 # Use the first currency we find
                 in_currency = cur
@@ -173,8 +248,10 @@ class CurrencyHandler(object):
                 in_currency = cur
 
         # Now we want to return what we have collected
-        if in_currency is None: return {'total': 0, 'name': ''}
-        else: return {'total': total, 'name': in_currency.name}
+        if in_currency is None:
+            return {'total': 0, 'name': ''}
+        else:
+            return {'total': total, 'name': in_currency.name}
 
 @total_ordering
 class Currency(object):
@@ -191,11 +268,11 @@ class Currency(object):
             raise CurrencyException(
                 "Required key not found in currency data: 'value'")
         self._value = data['value']
-        if not 'amt' in data:
-            data['amt'] = 0
+        if not 'amount' in data:
+            data['amount'] = 0
 
         self._data = data
-        self._keys = {'name', 'value', 'amt'}
+        self._keys = {'name', 'value', 'amount'}
         self._locked = True
 
         if not isinstance(data, _SaverDict):
@@ -212,11 +289,11 @@ class Currency(object):
 
     def __str__(self):
         # String returned from Currency
-        if self._data['amt'] == 1: name = self.name
+        if self._data['amount'] == 1: name = self.name
         else: name = "{}s".format(self.name)
 
-        return "{amt} {name}".format(
-            amt=self._data['amt'], name=name)
+        return "{amount} {name}".format(
+            amount=self._data['amount'], name=name)
 
     def __unicode__(self):
         # User-friendly unicode representation of this Currency
@@ -233,58 +310,58 @@ class Currency(object):
             only `__eq__` and `__lt__` are implemented.
         """
         if type(other) == Currency:
-            return self.amt == other.amt
+            return self.amount == other.amount
         elif type(other) in (float, int):
-            return self.amt == other
+            return self.amount == other
         else:
             return NotImplemented
 
     def __lt__(self, other):
         # Supports less than comparison between Currencys or Currency and numeric
         if isinstance(other, Currency):
-            return self.amt < other.amt
+            return self.amount < other.amount
         elif type(other) in (float, int):
-            return self.amt < other
+            return self.amount < other
         else:
             return NotImplemented
 
     def __pos__(self):
         # Access 'value' property through unary '+' operator
-        return self.amt
+        return self.amount
 
     def __add__(self, other):
         # Support addition between Currencys or Currency and numeric
         if isinstance(other, Currency):
-            return self.amt + other.amt
+            return self.amount + other.amount
         elif type(other) in (float, int):
-            return self.amt + other
+            return self.amount + other
         else:
             return NotImplemented
 
     def __sub__(self, other):
         # Support subtraction between Currency or Currency and numeric
         if isinstance(other, Currency):
-            return self.amt - other.amt
+            return self.amount - other.amount
         elif type(other) in (float, int):
-            return self.amt - other
+            return self.amount - other
         else:
             return NotImplemented
 
     def __mul__(self, other):
         # Support multiplication between Currency or Currency and numeric
         if isinstance(other, Currency):
-            return self.amt * other.amt
+            return self.amount * other.amount
         elif type(other) in (float, int):
-            return self.amt * other
+            return self.amount * other
         else:
             return NotImplemented
 
     def __floordiv__(self, other):
         # Support floor division between Currency or Currency and numeric
         if isinstance(other, Currency):
-            return self.amt // other.amt
+            return self.amount // other.amount
         elif type(other) in (float, int):
-            return self.amt // other
+            return self.amount // other
         else:
             return NotImplemented
 
@@ -295,18 +372,18 @@ class Currency(object):
     def __rsub__(self, other):
         # Support subtraction between Currency or Currency and numeric
         if isinstance(other, Currency):
-            return other.amt - self.amt
+            return other.amount - self.amount
         elif type(other) in (float, int):
-            return other - self.amt
+            return other - self.amount
         else:
             return NotImplemented
 
     def __rfloordiv__(self, other):
         # Support floor division between Currency or Currency and numeric
         if isinstance(other, Currency):
-            return other.amt // self.amt
+            return other.amount // self.amount
         elif type(other) in (float, int):
-            return other // self.amt
+            return other // self.amount
         else:
             return NotImplemented
 
@@ -314,61 +391,77 @@ class Currency(object):
 
     @property
     def name(self):
-        # Display name for Currency
+        """
+        Display name attribute for Currency dict
+        """
         return self._data['name']
 
     @property
     def value(self):
-        # Display name for Currency
+        """
+        Display value attribute for Currency dict
+        """
         return self._data['value']
 
     @property
-    def amt(self):
-        # Display name for Currency
-        return self._data['amt']
+    def amount(self):
+        """
+        Display amount attribute for Currency dict
+        """
+        return self._data['amount']
 
-    @amt.setter
-    def amt(self, value):
+    @amount.setter
+    def amount(self, value):
         if type(value) in (int, float):
-            if value >= 0: self._data['amt'] = value
-            else: self._data['amt'] = 0
+            if value >= 0: self._data['amount'] = value
+            else: self._data['amount'] = 0
 
     # Public routines
 
-    def convert(self, obj, amt=None):
+    def convert(self, obj, amount=None):
+        """
+        Use to convert Currency from one defined type, into another
+        based on their defined values in the CurrencyHandler.
+
+        Args:
+            obj (dict): selected dict object from CurrencyHandler
+            amount (int): integer value amount to convert from
+                selected type to current type. If no amount is specified,
+                the entire amount in dict will be converted.
+        """
         if isinstance(obj, Currency):
-            if amt == None:
+            if not amount:
                 # Convert the full amount
-                amt_to_convert = obj.amt
+                amount_to_convert = obj.amount
             else:
-                if type(amt) in (int, float):
-                    if amt > obj.amt:
+                if type(amount) in (int, float):
+                    if amount > obj.amount:
                         raise CurrencyException("There are not that many to convert")
-                    if amt < 0:
+                    if amount < 0:
                        raise CurrencyException("Cannot convert negative amounts")
                     else:
-                        amt_to_convert = amt
-                else: 
-                    amt_to_convert = 0
+                        amount_to_convert = amount
+                else:
+                    amount_to_convert = 0
 
             # Subtract converted amount
-            obj.amt -= amt_to_convert      
+            obj.amount -= amount_to_convert
 
             if obj.value > self.value:
                 modifier = obj.value / self.value
-                self.amt += amt_to_convert * modifier
+                self.amount += amount_to_convert * modifier
                 print "Converted {} {} --> {} {}".format(
-                    amt_to_convert, obj.name, amt_to_convert * modifier, self.name)
+                    amount_to_convert, obj.name, amount_to_convert * modifier, self.name)
             elif obj.value < self.value:
                 modifier = self.value / obj.value
-                self.amt += amt_to_convert / modifier
+                self.amount += amount_to_convert / modifier
                 print "Converted {} {} --> {} {}".format(
-                    amt_to_convert, obj.name, amt_to_convert / modifier, self.name)                
+                    amount_to_convert, obj.name, amount_to_convert / modifier, self.name)
             else:
                 modifier = 1
-                self.amt += amt_to_convert
+                self.amount += amount_to_convert
                 print "Converted {} {} --> {} {}".format(
-                    amt_to_convert, obj.name, amt_to_convert, self.name)
+                    amount_to_convert, obj.name, amount_to_convert, self.name)
 
         else:
             return NotImplemented
