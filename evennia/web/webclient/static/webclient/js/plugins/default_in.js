@@ -8,8 +8,10 @@ let defaultin_plugin = (function () {
     //
     // handle the default <enter> key triggering onSend()
     var onKeydown = function (event) {
-        if ( (event.which === 13) && (!event.shiftKey) ) {  // Enter Key without shift
-            var inputfield = $("#inputfield");
+        var inputfield = $("#inputfield");
+ 
+        // Enter Key without shift
+        if ( inputfield.is(":focus") && (event.which === 13) && (!event.shiftKey) ) {
             var outtext = inputfield.val();
             var lines = outtext.trim().replace(/[\r]+/,"\n").replace(/[\n]+/, "\n").split("\n");
             for (var i = 0; i < lines.length; i++) {
