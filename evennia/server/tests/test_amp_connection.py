@@ -4,6 +4,7 @@ Test AMP client
 """
 
 import pickle
+from model_mommy import mommy
 from unittest import TestCase
 from mock import MagicMock, patch
 from twisted.trial.unittest import TestCase as TwistedTestCase
@@ -18,12 +19,13 @@ from evennia.utils import create
 from twisted.internet.base import DelayedCall
 DelayedCall.debug = True
 
-@patch("evennia.server.initial_setup.get_god_account",
-       MagicMock(return_value=create.account("TestAMPAccount", "test@test.com", "testpassword")))
+# @patch("evennia.server.initial_setup.get_god_account",
+#        MagicMock(return_value=create.account("TestAMPAccount", "test@test.com", "testpassword")))
 class _TestAMP(TwistedTestCase):
 
     def setUp(self):
         super(_TestAMP, self).setUp()
+        self.account = mommy.make("accounts.AccountDB", id=1)
         self.server = server.Evennia(MagicMock())
         self.server.sessions.data_in = MagicMock()
         self.server.sessions.data_out = MagicMock()

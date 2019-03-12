@@ -12,6 +12,7 @@ future >= 0.15.2
 django-sekizai
 autobahn >= 17.9.3
 inflect
+model_mommy
 
 # testing
 mock >= 1.0.1
