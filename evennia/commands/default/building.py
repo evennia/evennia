@@ -1972,7 +1972,7 @@ class CmdLock(ObjManipCommand):
                 caller.msg("You need 'control' access to change this type of lock.")
                 return
 
-            if not has_control_access or obj.access(caller, "edit"):
+            if not (has_control_access or obj.access(caller, "edit")):
                 caller.msg("You are not allowed to do that.")
                 return
 
