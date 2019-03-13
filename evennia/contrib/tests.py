@@ -242,14 +242,24 @@ class TestExtendedRoom(CommandTest):
         self.call(extended_room.CmdExtendedLook(), "testdetail", self.DETAIL_DESC)
         self.call(extended_room.CmdExtendedLook(), "nonexistent", "Could not find 'nonexistent'.")
 
-    def test_cmdextendeddesc(self):
-        self.call(extended_room.CmdExtendedDesc(), "", "Details on Room", cmdstring="detail")
-        self.call(extended_room.CmdExtendedDesc(), "thingie = newdetail with spaces",
-                  "Set Detail thingie to 'newdetail with spaces'.", cmdstring="detail")
-        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' on Room:\n", cmdstring="detail")
-        self.call(extended_room.CmdExtendedDesc(), "/del thingie", "Detail thingie deleted, if it existed.", cmdstring="detail")
-        self.call(extended_room.CmdExtendedDesc(), "thingie", "Detail 'thingie' not found.", cmdstring="detail")
-        self.call(extended_room.CmdExtendedDesc(), "", "Descriptions on Room:")
+    def test_cmdsetdetail(self):
+        self.call(extended_room.CmdSetDetail(), "", "Details on Room")
+        self.call(extended_room.CmdSetDetail(), "thingie = newdetail with spaces",
+                "Detail set 'thingie': 'newdetail with spaces'")
+        self.call(extended_room.CmdSetDetail(), "thingie", "Detail 'thingie' on Room:\n")
+        self.call(extended_room.CmdSetDetail(), "/del thingie", "Detail thingie deleted, if it existed.", cmdstring="detail")
+        self.call(extended_room.CmdSetDetail(), "thingie", "Detail 'thingie' not found.")
+
+        # Test with aliases
+        self.call(extended_room.CmdSetDetail(), "", "Details on Room")
+        self.call(extended_room.CmdSetDetail(), "thingie;other;stuff = newdetail with spaces",
+                "Detail set 'thingie;other;stuff': 'newdetail with spaces'")
+        self.call(extended_room.CmdSetDetail(), "thingie", "Detail 'thingie' on Room:\n")
+        self.call(extended_room.CmdSetDetail(), "other", "Detail 'other' on Room:\n")
+        self.call(extended_room.CmdSetDetail(), "stuff", "Detail 'stuff' on Room:\n")
+        self.call(extended_room.CmdSetDetail(), "/del other;stuff", "Detail other;stuff deleted, if it existed.")
+        self.call(extended_room.CmdSetDetail(), "other", "Detail 'other' not found.")
+        self.call(extended_room.CmdSetDetail(), "stuff", "Detail 'stuff' not found.")
 
     def test_cmdgametime(self):
         self.call(extended_room.CmdGameTime(), "", "It's a spring day, in the evening.")
@@ -1596,7 +1606,7 @@ class TestFieldFillFunc(EvenniaTest):
 
     def test_field_functions(self):
         self.assertTrue(fieldfill.form_template_to_dict(FIELD_TEST_TEMPLATE) == FIELD_TEST_DATA)
-        
+
 # Test of the unixcommand module
 
 from evennia.contrib.unixcommand import UnixCommand
