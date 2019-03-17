@@ -1,7 +1,7 @@
 """
 Extended Room
 
-Evennia Contribution - Griatch 2012
+Evennia Contribution - Griatch 2012, vincent-lg 2019
 
 This is an extended Room typeclass for Evennia. It is supported
 by an extended `Look` command and an extended `desc` command, also
@@ -50,21 +50,36 @@ if applicable. The `@detail` command is used to change details.
 
 4) Extra commands
 
-  CmdExtendedLook - look command supporting room details
-  CmdExtendedDesc - desc command allowing to add seasonal descs,
-  CmdSetDetail    - command allowing to manipulate details in this room
+  CmdExtendedRoomLook - look command supporting room details
+  CmdExtendedRoomDesc - desc command allowing to add seasonal descs,
+  CmdExtendedRoomDetail - command allowing to manipulate details in this room
                     as well as listing them
-  CmdGameTime     - A simple `time` command, displaying the current
+  CmdExtendedRoomGameTime - A simple `time` command, displaying the current
                     time and season.
 
 
 Installation/testing:
 
-1) Add `CmdExtendedLook`, `CmdExtendedDesc`, `CmdDetail` and `CmdGameTime` to the default `cmdset`
-   (see Wiki for how to do this).
-2) `@dig` a room of type `contrib.extended_room.ExtendedRoom` (or make it the
-   default room type)
-3) Use `desc` and `detail` to customize the room, then play around!
+Adding the `ExtendedRoomCmdset` to the default character cmdset will add all
+new commands for use.
+
+In more detail, in mygame/commands/default_cmdsets.py:
+
+```
+...
+from evennia.contrib import extended_room   # <-new
+
+class CharacterCmdset(default_cmds.Character_CmdSet):
+    ...
+    def at_cmdset_creation(self):
+        ...
+        self.add(extended_room.ExtendedRoomCmdSet)  # <-new
+
+```
+
+Then reload to make the bew commands available. Note that they only work
+on rooms with the typeclass `ExtendedRoom`. Create new rooms with the right
+typeclass or use the `typeclass` command to swap existing rooms.
 
 """
 from __future__ import division
@@ -76,6 +91,7 @@ from evennia import DefaultRoom
 from evennia import gametime
 from evennia import default_cmds
 from evennia import utils
+from evennia import CmdSet
 
 # error return function, needed by Extended Look command
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
@@ -305,7 +321,7 @@ class ExtendedRoom(DefaultRoom):
 # Custom Look command supporting Room details. Add this to
 # the Default cmdset to use.
 
-class CmdExtendedLook(default_cmds.CmdLook):
+class CmdExtendedRoomLook(default_cmds.CmdLook):
     """
     look
 
@@ -366,7 +382,7 @@ class CmdExtendedLook(default_cmds.CmdLook):
 # Custom build commands for setting seasonal descriptions
 # and detailing extended rooms.
 
-class CmdExtendedDesc(default_cmds.CmdDesc):
+class CmdExtendedRoomDesc(default_cmds.CmdDesc):
     """
     `desc` - describe an object or room.
 
@@ -457,7 +473,7 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
                 caller.msg("The description was set on %s." % obj.key)
 
 
-class CmdSetDetail(default_cmds.MuxCommand):
+class CmdExtendedRoomDetail(default_cmds.MuxCommand):
 
     """
     sets a detail on a room
@@ -505,7 +521,7 @@ class CmdSetDetail(default_cmds.MuxCommand):
                 self.msg("Detail '{}' not found.".format(self.lhs))
             return
 
-        method = "set_detail" if "del"  not in self.switches else "del_detail"
+        method = "set_detail" if "del" not in self.switches else "del_detail"
         if not hasattr(location, method):
             self.caller.msg("Details cannot be set on %s." % location)
             return
@@ -521,7 +537,7 @@ class CmdSetDetail(default_cmds.MuxCommand):
 
 # Simple command to view the current time and season
 
-class CmdGameTime(default_cmds.MuxCommand):
+class CmdExtendedRoomGameTime(default_cmds.MuxCommand):
     """
     Check the game time
 
@@ -545,3 +561,17 @@ class CmdGameTime(default_cmds.MuxCommand):
             if season == "autumn":
                 prep = "an"
             self.caller.msg("It's %s %s day, in the %s." % (prep, season, timeslot))
+
+
+# CmdSet for easily install all commands
+
+class ExtendedRoomCmdSet(CmdSet):
+    """
+    Groups the extended-room commands.
+
+    """
+    def at_cmdset_creation(self):
+        self.add(CmdExtendedRoomLook)
+        self.add(CmdExtendedRoomDesc)
+        self.add(CmdExtendedRoomDetail)
+        self.add(CmdExtendedRoomGameTime)
