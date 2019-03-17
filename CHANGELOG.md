@@ -214,6 +214,15 @@ Web/Django standard initiative (@strikaco)
  - `tb_items` - Extends `tb_equip` with item use with conditions/status effects.
  - `tb_magic` - Extends `tb_equip` with spellcasting.
  - `tb_range` - Adds system for abstract positioning and movement.
+ - The `extended_room` contrib saw some backwards-incompatible refactoring: 
+   - All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
+     it's `CmdExtendedRoomLook` etc.
+   - The `detail` command was broken out of the `desc` command and is now a new, stand-alone command
+     `CmdExtendedRoomDetail`.  This was done to make things easier to extend and to mimic how the detail
+     command works in the tutorial-world.
+   - The `detail` command now also supports deleting details (like the tutorial-world version).
+   - The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
+     to install the extended-room contrib. 
 - Updates and some cleanup of existing contribs.
 
 
