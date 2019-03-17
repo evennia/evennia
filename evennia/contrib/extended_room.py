@@ -1,7 +1,7 @@
 """
 Extended Room
 
-Evennia Contribution - Griatch 2012
+Evennia Contribution - Griatch 2012, vincent-lg 2019
 
 This is an extended Room typeclass for Evennia. It is supported
 by an extended `Look` command and an extended `desc` command, also
@@ -45,25 +45,41 @@ at, without there having to be a database object created for it. The
 Details are simply stored in a dictionary on the room and if the look
 command cannot find an object match for a `look <target>` command it
 will also look through the available details at the current location
-if applicable. An extended `desc` command is used to set details.
+if applicable. The `@detail` command is used to change details.
 
 
 4) Extra commands
 
-  CmdExtendedLook - look command supporting room details
-  CmdExtendedDesc - desc command allowing to add seasonal descs and details,
+  CmdExtendedRoomLook - look command supporting room details
+  CmdExtendedRoomDesc - desc command allowing to add seasonal descs,
+  CmdExtendedRoomDetail - command allowing to manipulate details in this room
                     as well as listing them
-  CmdGameTime     - A simple `time` command, displaying the current
+  CmdExtendedRoomGameTime - A simple `time` command, displaying the current
                     time and season.
 
 
 Installation/testing:
 
-1) Add `CmdExtendedLook`, `CmdExtendedDesc` and `CmdGameTime` to the default `cmdset`
-   (see Wiki for how to do this).
-2) `@dig` a room of type `contrib.extended_room.ExtendedRoom` (or make it the
-   default room type)
-3) Use `desc` and `detail` to customize the room, then play around!
+Adding the `ExtendedRoomCmdset` to the default character cmdset will add all
+new commands for use.
+
+In more detail, in mygame/commands/default_cmdsets.py:
+
+```
+...
+from evennia.contrib import extended_room   # <-new
+
+class CharacterCmdset(default_cmds.Character_CmdSet):
+    ...
+    def at_cmdset_creation(self):
+        ...
+        self.add(extended_room.ExtendedRoomCmdSet)  # <-new
+
+```
+
+Then reload to make the bew commands available. Note that they only work
+on rooms with the typeclass `ExtendedRoom`. Create new rooms with the right
+typeclass or use the `typeclass` command to swap existing rooms.
 
 """
 from __future__ import division
@@ -75,6 +91,7 @@ from evennia import DefaultRoom
 from evennia import gametime
 from evennia import default_cmds
 from evennia import utils
+from evennia import CmdSet
 
 # error return function, needed by Extended Look command
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
@@ -213,6 +230,42 @@ class ExtendedRoom(DefaultRoom):
             return detail
         return None
 
+    def set_detail(self, detailkey, description):
+        """
+        This sets a new detail, using an Attribute "details".
+
+        Args:
+            detailkey (str): The detail identifier to add (for
+                aliases you need to add multiple keys to the
+                same description). Case-insensitive.
+            description (str): The text to return when looking
+                at the given detailkey.
+
+        """
+        if self.db.details:
+            self.db.details[detailkey.lower()] = description
+        else:
+            self.db.details = {detailkey.lower(): description}
+
+    def del_detail(self, detailkey, description):
+        """
+        Delete a detail.
+
+        The description is ignored.
+
+        Args:
+            detailkey (str): the detail to remove (case-insensitive).
+            description (str, ignored): the description.
+
+        The description is only included for compliance but is completely
+        ignored.  Note that this method doesn't raise any exception if
+        the detail doesn't exist in this room.
+
+        """
+        if self.db.details and detailkey.lower() in self.db.details:
+            del self.db.details[detailkey.lower()]
+
+
     def return_appearance(self, looker, **kwargs):
         """
         This is called when e.g. the look command wants to retrieve
@@ -268,7 +321,7 @@ class ExtendedRoom(DefaultRoom):
 # Custom Look command supporting Room details. Add this to
 # the Default cmdset to use.
 
-class CmdExtendedLook(default_cmds.CmdLook):
+class CmdExtendedRoomLook(default_cmds.CmdLook):
     """
     look
 
@@ -329,14 +382,12 @@ class CmdExtendedLook(default_cmds.CmdLook):
 # Custom build commands for setting seasonal descriptions
 # and detailing extended rooms.
 
-class CmdExtendedDesc(default_cmds.CmdDesc):
+class CmdExtendedRoomDesc(default_cmds.CmdDesc):
     """
     `desc` - describe an object or room.
 
     Usage:
       desc[/switch] [<obj> =] <description>
-      detail[/del] [<key> = <description>]
-
 
     Switches for `desc`:
       spring  - set description for <season> in current room.
@@ -344,14 +395,8 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
       autumn
       winter
 
-    Switch for `detail`:
-      del   - delete a named detail.
-
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
-
-    The alias `detail` allows to assign a "detail" (a non-object
-    target for the `look` command) to the current room (only).
 
     You can also embed special time markers in your room description, like this:
 
@@ -362,11 +407,11 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
     Text marked this way will only display when the server is truly at the given
     timeslot. The available times are night, morning, afternoon and evening.
 
-    Note that `detail`, seasons and time-of-day slots only work on rooms in this
+    Note that seasons and time-of-day slots only work on rooms in this
     version of the `desc` command.
 
     """
-    aliases = ["describe", "detail"]
+    aliases = ["describe"]
     switch_options = ()  # Inherits from default_cmds.CmdDesc, but unused here
 
     def reset_times(self, obj):
@@ -378,97 +423,121 @@ class CmdExtendedDesc(default_cmds.CmdDesc):
         """Define extended command"""
         caller = self.caller
         location = caller.location
-        if self.cmdname == 'detail':
-            # switch to detailing mode. This operates only on current location
+        if not self.args:
+            if location:
+                string = "|wDescriptions on %s|n:\n" % location.key
+                string += " |wspring:|n %s\n" % location.db.spring_desc
+                string += " |wsummer:|n %s\n" % location.db.summer_desc
+                string += " |wautumn:|n %s\n" % location.db.autumn_desc
+                string += " |wwinter:|n %s\n" % location.db.winter_desc
+                string += " |wgeneral:|n %s" % location.db.general_desc
+                caller.msg(string)
+                return
+        if self.switches and self.switches[0] in ("spring", "summer", "autumn", "winter"):
+            # a seasonal switch was given
+            if self.rhs:
+                caller.msg("Seasonal descs only work with rooms, not objects.")
+                return
+            switch = self.switches[0]
             if not location:
-                caller.msg("No location to detail!")
+                caller.msg("No location was found!")
                 return
-            if location.db.details is None:
-                caller.msg("|rThis location does not support details.|n")
-                return
-            if self.switches and self.switches[0] in 'del':
-                # removing a detail.
-                if self.lhs in location.db.details:
-                    del location.db.details[self.lhs]
-                caller.msg("Detail %s deleted, if it existed." % self.lhs)
-                self.reset_times(location)
-                return
-            if not self.args:
-                # No args given. Return all details on location
-                string = "|wDetails on %s|n:" % location
-                details = "\n".join(" |w%s|n: %s"
-                                    % (key, utils.crop(text)) for key, text in location.db.details.items())
-                caller.msg("%s\n%s" % (string, details) if details else "%s None." % string)
-                return
-            if not self.rhs:
-                # no '=' used - list content of given detail
-                if self.args in location.db.details:
-                    string = "|wDetail '%s' on %s:\n|n" % (self.args, location)
-                    string += str(location.db.details[self.args])
-                    caller.msg(string)
-                else:
-                    caller.msg("Detail '%s' not found." % self.args)
-                return
-            # setting a detail
-            location.db.details[self.lhs] = self.rhs
-            caller.msg("Set Detail %s to '%s'." % (self.lhs, self.rhs))
+            if switch == 'spring':
+                location.db.spring_desc = self.args
+            elif switch == 'summer':
+                location.db.summer_desc = self.args
+            elif switch == 'autumn':
+                location.db.autumn_desc = self.args
+            elif switch == 'winter':
+                location.db.winter_desc = self.args
+            # clear flag to force an update
             self.reset_times(location)
-            return
+            caller.msg("Seasonal description was set on %s." % location.key)
         else:
-            # we are doing a desc call
-            if not self.args:
-                if location:
-                    string = "|wDescriptions on %s|n:\n" % location.key
-                    string += " |wspring:|n %s\n" % location.db.spring_desc
-                    string += " |wsummer:|n %s\n" % location.db.summer_desc
-                    string += " |wautumn:|n %s\n" % location.db.autumn_desc
-                    string += " |wwinter:|n %s\n" % location.db.winter_desc
-                    string += " |wgeneral:|n %s" % location.db.general_desc
-                    caller.msg(string)
+            # No seasonal desc set, maybe this is not an extended room
+            if self.rhs:
+                text = self.rhs
+                obj = caller.search(self.lhs)
+                if not obj:
                     return
-            if self.switches and self.switches[0] in ("spring", "summer", "autumn", "winter"):
-                # a seasonal switch was given
-                if self.rhs:
-                    caller.msg("Seasonal descs only work with rooms, not objects.")
-                    return
-                switch = self.switches[0]
-                if not location:
-                    caller.msg("No location was found!")
-                    return
-                if switch == 'spring':
-                    location.db.spring_desc = self.args
-                elif switch == 'summer':
-                    location.db.summer_desc = self.args
-                elif switch == 'autumn':
-                    location.db.autumn_desc = self.args
-                elif switch == 'winter':
-                    location.db.winter_desc = self.args
-                # clear flag to force an update
-                self.reset_times(location)
-                caller.msg("Seasonal description was set on %s." % location.key)
             else:
-                # No seasonal desc set, maybe this is not an extended room
-                if self.rhs:
-                    text = self.rhs
-                    obj = caller.search(self.lhs)
-                    if not obj:
-                        return
-                else:
-                    text = self.args
-                    obj = location
-                obj.db.desc = text  # a compatibility fallback
-                if obj.attributes.has("general_desc"):
-                    obj.db.general_desc = text
-                    self.reset_times(obj)
-                    caller.msg("General description was set on %s." % obj.key)
-                else:
-                    # this is not an ExtendedRoom.
-                    caller.msg("The description was set on %s." % obj.key)
+                text = self.args
+                obj = location
+            obj.db.desc = text  # a compatibility fallback
+            if obj.attributes.has("general_desc"):
+                obj.db.general_desc = text
+                self.reset_times(obj)
+                caller.msg("General description was set on %s." % obj.key)
+            else:
+                # this is not an ExtendedRoom.
+                caller.msg("The description was set on %s." % obj.key)
+
+
+class CmdExtendedRoomDetail(default_cmds.MuxCommand):
+
+    """
+    sets a detail on a room
+
+    Usage:
+        @detail[/del] <key> [= <description>]
+        @detail <key>;<alias>;... = description
+
+    Example:
+        @detail
+        @detail walls = The walls are covered in ...
+        @detail castle;ruin;tower = The distant ruin ...
+        @detail/del wall
+        @detail/del castle;ruin;tower
+
+    This command allows to show the current room details if you enter it
+    without any argument.  Otherwise, sets or deletes a detail on the current
+    room, if this room supports details like an extended room. To add new
+    detail, just use the @detail command, specifying the key, an equal sign
+    and the description.  You can assign the same description to several
+    details using the alias syntax (replace key by alias1;alias2;alias3;...).
+    To remove one or several details, use the @detail/del switch.
+
+    """
+    key = "@detail"
+    locks = "cmd:perm(Builder)"
+    help_category = "Building"
+
+    def func(self):
+        location = self.caller.location
+        if not self.args:
+            details = location.db.details
+            if not details:
+                self.msg("|rThe room {} doesn't have any detail set.|n".format(location))
+            else:
+                details = sorted(["|y{}|n: {}".format(key, desc) for key, desc in details.items()])
+                self.msg("Details on Room:\n" + "\n".join(details))
+            return
+
+        if not self.rhs and "del" not in self.switches:
+            detail = location.return_detail(self.lhs)
+            if detail:
+                self.msg("Detail '|y{}|n' on Room:\n{}".format(self.lhs, detail))
+            else:
+                self.msg("Detail '{}' not found.".format(self.lhs))
+            return
+
+        method = "set_detail" if "del" not in self.switches else "del_detail"
+        if not hasattr(location, method):
+            self.caller.msg("Details cannot be set on %s." % location)
+            return
+        for key in self.lhs.split(";"):
+            # loop over all aliases, if any (if not, this will just be
+            # the one key to loop over)
+            getattr(location, method)(key, self.rhs)
+        if "del" in self.switches:
+            self.caller.msg("Detail %s deleted, if it existed." % self.lhs)
+        else:
+            self.caller.msg("Detail set '%s': '%s'" % (self.lhs, self.rhs))
 
 
 # Simple command to view the current time and season
 
-class CmdGameTime(default_cmds.MuxCommand):
+class CmdExtendedRoomGameTime(default_cmds.MuxCommand):
     """
     Check the game time
 
@@ -492,3 +561,17 @@ class CmdGameTime(default_cmds.MuxCommand):
             if season == "autumn":
                 prep = "an"
             self.caller.msg("It's %s %s day, in the %s." % (prep, season, timeslot))
+
+
+# CmdSet for easily install all commands
+
+class ExtendedRoomCmdSet(CmdSet):
+    """
+    Groups the extended-room commands.
+
+    """
+    def at_cmdset_creation(self):
+        self.add(CmdExtendedRoomLook)
+        self.add(CmdExtendedRoomDesc)
+        self.add(CmdExtendedRoomDetail)
+        self.add(CmdExtendedRoomGameTime)

@@ -64,7 +64,7 @@ class SetGender(Command):
 
     """
     key = "@gender"
-    alias = "@sex"
+    aliases = "@sex"
     locks = "call:all()"
 
     def func(self):
