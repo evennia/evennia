@@ -90,6 +90,19 @@ Web/Django standard initiative (@strikaco)
 - Added many more unit tests.
 
 
+### Contribs
+- The `extended_room` contrib saw some backwards-incompatible refactoring: 
+  + All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
+     it's `CmdExtendedRoomLook` etc.
+  + The `detail` command was broken out of the `desc` command and is now a new, stand-alone command
+     `CmdExtendedRoomDetail`.  This was done to make things easier to extend and to mimic how the detail
+     command works in the tutorial-world.
+  + The `detail` command now also supports deleting details (like the tutorial-world version).
+  + The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
+     to install the extended-room contrib. 
+
+
+
 ## Evennia 0.8 (2018)
 
 ### Requirements
