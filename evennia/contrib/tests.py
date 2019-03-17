@@ -238,31 +238,31 @@ class TestExtendedRoom(CommandTest):
         self.assertEqual(self.DETAIL_DESC, self.room1.return_detail("testdetail"))
 
     def test_cmdextendedlook(self):
-        self.call(extended_room.CmdExtendedLook(), "here", "Room(#1)\n%s" % self.SPRING_DESC)
-        self.call(extended_room.CmdExtendedLook(), "testdetail", self.DETAIL_DESC)
-        self.call(extended_room.CmdExtendedLook(), "nonexistent", "Could not find 'nonexistent'.")
+        self.call(extended_room.CmdExtendedRoomLook(), "here", "Room(#1)\n%s" % self.SPRING_DESC)
+        self.call(extended_room.CmdExtendedRoomLook(), "testdetail", self.DETAIL_DESC)
+        self.call(extended_room.CmdExtendedRoomLook(), "nonexistent", "Could not find 'nonexistent'.")
 
     def test_cmdsetdetail(self):
-        self.call(extended_room.CmdSetDetail(), "", "Details on Room")
-        self.call(extended_room.CmdSetDetail(), "thingie = newdetail with spaces",
+        self.call(extended_room.CmdExtendedRoomDetail(), "", "Details on Room")
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie = newdetail with spaces",
                 "Detail set 'thingie': 'newdetail with spaces'")
-        self.call(extended_room.CmdSetDetail(), "thingie", "Detail 'thingie' on Room:\n")
-        self.call(extended_room.CmdSetDetail(), "/del thingie", "Detail thingie deleted, if it existed.", cmdstring="detail")
-        self.call(extended_room.CmdSetDetail(), "thingie", "Detail 'thingie' not found.")
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' on Room:\n")
+        self.call(extended_room.CmdExtendedRoomDetail(), "/del thingie", "Detail thingie deleted, if it existed.", cmdstring="detail")
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' not found.")
 
         # Test with aliases
-        self.call(extended_room.CmdSetDetail(), "", "Details on Room")
-        self.call(extended_room.CmdSetDetail(), "thingie;other;stuff = newdetail with spaces",
+        self.call(extended_room.CmdExtendedRoomDetail(), "", "Details on Room")
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie;other;stuff = newdetail with spaces",
                 "Detail set 'thingie;other;stuff': 'newdetail with spaces'")
-        self.call(extended_room.CmdSetDetail(), "thingie", "Detail 'thingie' on Room:\n")
-        self.call(extended_room.CmdSetDetail(), "other", "Detail 'other' on Room:\n")
-        self.call(extended_room.CmdSetDetail(), "stuff", "Detail 'stuff' on Room:\n")
-        self.call(extended_room.CmdSetDetail(), "/del other;stuff", "Detail other;stuff deleted, if it existed.")
-        self.call(extended_room.CmdSetDetail(), "other", "Detail 'other' not found.")
-        self.call(extended_room.CmdSetDetail(), "stuff", "Detail 'stuff' not found.")
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' on Room:\n")
+        self.call(extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' on Room:\n")
+        self.call(extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' on Room:\n")
+        self.call(extended_room.CmdExtendedRoomDetail(), "/del other;stuff", "Detail other;stuff deleted, if it existed.")
+        self.call(extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' not found.")
+        self.call(extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' not found.")
 
     def test_cmdgametime(self):
-        self.call(extended_room.CmdGameTime(), "", "It's a spring day, in the evening.")
+        self.call(extended_room.CmdExtendedRoomGameTime(), "", "It's a spring day, in the evening.")
 
 
 # Test the contrib barter system
