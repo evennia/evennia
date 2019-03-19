@@ -39,6 +39,7 @@ SERVERNAME = "testing_mygame"
 # Testing database types
 
 if os.environ.get("TESTING_DB") == "postgresql":
+    print("Loading PostGreSQL database backend.")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -49,6 +50,7 @@ if os.environ.get("TESTING_DB") == "postgresql":
             'PORT': ''    # use default
         }}
 elif os.environ.get("TESTING_DB") == "mysql":
+    print("Loading MySQL database backend.")
     DATABASES = {
        'default': {
            'ENGINE': 'django.db.backends.mysql',
@@ -60,6 +62,7 @@ elif os.environ.get("TESTING_DB") == "mysql":
        }
     }
 else:  # default sqlite3, use default settings
+    print("Loading SQlite3 database backend (default).")
     pass
 
 
