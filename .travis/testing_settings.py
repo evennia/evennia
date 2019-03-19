@@ -44,7 +44,7 @@ if os.environ.get("TESTING_DB") == "postgresql":
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'evennia',
             'USER': 'evennia',
-            'PASSWORD': '',
+            'PASSWORD': 'password',
             'HOST': 'localhost',
             'PORT': ''    # use default
         }}
@@ -54,7 +54,7 @@ elif os.environ.get("TESTING_DB") == "mysql":
            'ENGINE': 'django.db.backends.mysql',
            'NAME': 'evennia',
            'USER': 'evennia',
-           'PASSWORD': '',
+           'PASSWORD': 'password',
            'HOST': 'localhost',  # or an IP Address that your DB is hosted on
            'PORT': '',  # use default port
        }
