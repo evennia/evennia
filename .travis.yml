@@ -3,7 +3,7 @@ language: python
 cache: pip
 
 service:
-  - posgresql
+  - postgresql
   - mysql
 
 python:
