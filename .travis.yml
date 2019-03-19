@@ -1,16 +1,37 @@
 language: python
 cache: pip
+
+service:
+  - posgresql
+  - mysql
+
 python:
-  - "3.6"
-sudo: false
+  - "3.7"
+
+env:
+  - TESTING_DB=sqlite3
+  - TESTING_DB=postgresql
+  - TESTING_DB=mysql
+
+before_install:
+  - psql -c "CREATE USER evennia WITH PASSWORD 'password'; CREATE DATABASE evennia; GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;'"
+  - mysql -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password'; CREATE DATABASE evennia; ALTER DATABASE `evennia` CHARACTER SET utf8; GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localost'; FLUSH PRIVILEGES;"
+
 install:
+  - pip install psycopg2-binary
+  - pip install mysqlclient
   - pip install -e .
   - pip install coveralls
+
 before_script:
-  - evennia --init dummy
-  - cd dummy
+  - python -VV
+  - evennia --init testing_mygame
+  - cp .travis/testing_settings.py testing_mygame/server/conf/settings.py
+  - cd testing_mygame
   - evennia migrate
+
 script:
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test evennia
+
 after_success:
   - coveralls
