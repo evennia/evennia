@@ -8,7 +8,7 @@ import sys
 import datetime
 from django.test import override_settings
 from evennia.commands.default.tests import CommandTest
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import EvenniaTest, mockdelay, mockdeferLater
 from mock import Mock, patch
 
 # Testing of rplanguage module
@@ -809,12 +809,18 @@ from evennia.contrib import slow_exit
 slow_exit.MOVE_DELAY = {"stroll": 0, "walk": 0, "run": 0, "sprint": 0}
 
 
+def _cancellable_mockdelay(time, callback, *args, **kwargs):
+    callback(*args, **kwargs)
+    return Mock()
+
 class TestSlowExit(CommandTest):
+    @patch("evennia.utils.delay", _cancellable_mockdelay)
     def test_exit(self):
         exi = create_object(slow_exit.SlowExit, key="slowexit", location=self.room1, destination=self.room2)
         exi.at_traverse(self.char1, self.room2)
         self.call(slow_exit.CmdSetSpeed(), "walk", "You are now walking.")
         self.call(slow_exit.CmdStop(), "", "You stop moving.")
+
 
 # test talking npc contrib
 
@@ -858,22 +864,7 @@ from twisted.internet.base import DelayedCall
 DelayedCall.debug = True
 
 
-def _mockdelay(tim, func, *args, **kwargs):
-    func(*args, **kwargs)
-    return MagicMock()
-
-
-def _mockdeferLater(reactor, timedelay, callback, *args, **kwargs):
-    callback(*args, **kwargs)
-    return MagicMock()
-
-
 class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
-
-    def setUp(self):
-        self.patch(sys.modules['evennia.contrib.tutorial_world.objects'], 'delay', _mockdelay)
-        self.patch(sys.modules['evennia.scripts.taskhandler'], 'deferLater', _mockdeferLater)
-        super(TestTutorialWorldObjects, self).setUp()
 
     def test_tutorialobj(self):
         obj1 = create_object(tutobjects.TutorialObject, key="tutobj")
@@ -885,6 +876,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         readable.db.readable_text = "Text to read"
         self.call(tutobjects.CmdRead(), "book", "You read book:\n  Text to read", obj=readable)
 
+
     def test_climbable(self):
         climbable = create_object(tutobjects.Climbable, key="tree", location=self.room1)
         self.call(tutobjects.CmdClimb(), "tree", "You climb tree. Having looked around, you climb down again.", obj=climbable)
@@ -894,11 +886,15 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         obelisk = create_object(tutobjects.Obelisk, key="obelisk", location=self.room1)
         self.assertEqual(obelisk.return_appearance(self.char1).startswith("|cobelisk("), True)
 
+    @patch("evennia.contrib.tutorial_world.objects.delay", mockdelay)
+    @patch("evennia.scripts.taskhandler.deferLater", mockdeferLater)
     def test_lightsource(self):
         light = create_object(tutobjects.LightSource, key="torch", location=self.room1)
         self.call(tutobjects.CmdLight(), "", "A torch on the floor flickers and dies.|You light torch.", obj=light)
         self.assertFalse(light.pk)
 
+    @patch("evennia.contrib.tutorial_world.objects.delay", mockdelay)
+    @patch("evennia.scripts.taskhandler.deferLater", mockdeferLater)
     def test_crumblingwall(self):
         wall = create_object(tutobjects.CrumblingWall, key="wall", location=self.room1)
         self.assertFalse(wall.db.button_exposed)
@@ -917,10 +913,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         # we patch out the delay, so these are closed immediately
         self.assertFalse(wall.db.button_exposed)
         self.assertFalse(wall.db.exit_open)
-        wall.reset()
-        wall.delete()
-        return wall.deferred
-
+ 
     def test_weapon(self):
         weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
         self.call(tutobjects.CmdAttack(), "Char", "You stab with sword.", obj=weapon, cmdstring="stab")
