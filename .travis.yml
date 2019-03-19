@@ -37,6 +37,7 @@ before_script:
   - evennia migrate
 
 script:
+  - head -n 100 server/conf/settings.py
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test evennia
 
 after_success:
