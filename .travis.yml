@@ -15,8 +15,8 @@ env:
   - TESTING_DB=mysql
 
 before_install: 
-  - psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password'; CREATE DATABASE evennia; GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;'"
-  - mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password'; CREATE DATABASE evennia; ALTER DATABASE `evennia` CHARACTER SET utf8; GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localost'; FLUSH PRIVILEGES;" -U postgres
+  - psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password'; CREATE DATABASE evennia; GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;"
+  - mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password'; CREATE DATABASE evennia; ALTER DATABASE `evennia` CHARACTER SET utf8; GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localost'; FLUSH PRIVILEGES;"
 
 install:
   - pip install psycopg2-binary
