@@ -6,7 +6,7 @@ service:
   - mysql
 
 python:
-  - "3.7"
+  - "3.7-dev"
 
 env:
   - TESTING_DB=sqlite3
