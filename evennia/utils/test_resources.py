@@ -3,9 +3,10 @@ Various helper resources for writing unittests.
 
 """
 import sys
+from twisted.internet.defer import Deferred
 from django.conf import settings
 from django.test import TestCase
-from mock import Mock
+from mock import Mock, patch
 from evennia.objects.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
@@ -13,6 +14,18 @@ from evennia.server.serversession import ServerSession
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import create
 from evennia.utils.idmapper.models import flush_cache
+
+
+# mocking of evennia.utils.utils.delay
+def mockdelay(timedelay, callback, *args, **kwargs):
+    callback(*args, **kwargs)
+    return Deferred()
+
+
+# mocking of twisted's deferLater
+def mockdeferLater(reactor, timedelay, callback, *args, **kwargs):
+    callback(*args, **kwargs)
+    return Deferred()
 
 
 def unload_module(module):
@@ -49,6 +62,11 @@ def unload_module(module):
         del sys.modules[modulename]
 
 
+def _mock_deferlater(reactor, timedelay, callback, *args, **kwargs):
+    callback(*args, **kwargs)
+    return Deferred()
+
+
 class EvenniaTest(TestCase):
     """
     Base test for Evennia, sets up a basic environment.
@@ -60,6 +78,7 @@ class EvenniaTest(TestCase):
     room_typeclass = DefaultRoom
     script_typeclass = DefaultScript
 
+    @patch("evennia.scripts.taskhandler.deferLater", _mock_deferlater)
     def setUp(self):
         """
         Sets up testing environment
