@@ -21,7 +21,7 @@ before_install:
   - psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;"
   - mysql -u root -e "CREATE DATABASE evennia;"
   - mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
-  - mysql -u root -e "ALTER DATABASE `evennia` CHARACTER SET utf8;"
+  - mysql -u root -e "ALTER DATABASE evennia CHARACTER SET utf8;"
   - mysql -u root -e "GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localost'; FLUSH PRIVILEGES;"
 
 install:
