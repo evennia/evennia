@@ -1,3 +1,4 @@
+dist: xenial
 language: python
 cache: pip
 
@@ -6,7 +7,7 @@ service:
   - mysql
 
 python:
-  - "3.7-dev"
+  - "3.7"
 
 env:
   - TESTING_DB=sqlite3
@@ -15,7 +16,7 @@ env:
 
 before_install:
   - psql -c "CREATE USER evennia WITH PASSWORD 'password'; CREATE DATABASE evennia; GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;'"
-  - mysql -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password'; CREATE DATABASE evennia; ALTER DATABASE `evennia` CHARACTER SET utf8; GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localost'; FLUSH PRIVILEGES;"
+  - mysql -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password'; CREATE DATABASE evennia; ALTER DATABASE `evennia` CHARACTER SET utf8; GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localost'; FLUSH PRIVILEGES;" -U postgres
 
 install:
   - pip install psycopg2-binary
