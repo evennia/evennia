@@ -27,14 +27,15 @@ before_install:
 install:
   - pip install psycopg2-binary
   - pip install mysqlclient
-  - pip install -e .
   - pip install coveralls
+  - pip install -e .
 
 before_script:
   - evennia --init testing_mygame
   - cp .travis/${TESTING_DB}_settings.py testing_mygame/server/conf/settings.py
   - cd testing_mygame
   - evennia migrate
+  - evennia collectstatic
 
 script:
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings evennia

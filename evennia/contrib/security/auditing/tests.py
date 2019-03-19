@@ -2,6 +2,7 @@
 Module containing the test cases for the Audit system.
 """
 
+from anything import Anything
 from django.test import override_settings
 from django.conf import settings
 from evennia.utils.test_resources import EvenniaTest
@@ -85,7 +86,7 @@ class AuditingTest(EvenniaTest):
         self.assertEqual(obj, {
             'direction': 'RCV',
             'protocol': 'telnet',
-            'application': 'Evennia',
+            'application': Anything,  # this will change if running tests from the game dir 
             'text': 'hello'
         })
 
