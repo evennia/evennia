@@ -30,14 +30,12 @@ install:
   - pip install coveralls
 
 before_script:
-  - python -VV
   - evennia --init testing_mygame
   - cp .travis/testing_settings.py testing_mygame/server/conf/settings.py
   - cd testing_mygame
   - evennia migrate
 
 script:
-  - head -n 100 server/conf/settings.py
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test evennia
 
 after_success:
