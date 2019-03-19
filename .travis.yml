@@ -32,6 +32,7 @@ install:
 before_script:
   - evennia --init testing_mygame
   - cp .travis/${TESTING_DB}_settings.py testing_mygame/server/conf/settings.py
+  - head -n 100 testing_mygame/server/conf/settings.py
   - cd testing_mygame
   - evennia migrate
 
