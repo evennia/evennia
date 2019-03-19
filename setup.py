@@ -23,7 +23,7 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     install_requires=[
-        'commonmark>=0.7.3',
+        'commonmark>=0.8.1',
         'docutils>=0.11',
         'sphinx>=1.3.1',
     ],
