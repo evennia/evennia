@@ -47,7 +47,10 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',  # use default port
         'TEST': {
-            'NAME': 'default'
+            'NAME': 'default',
+            'OPTIONS': {
+                'ENCODING': 'utf8mb4'
+            }
         }
     }
 }
