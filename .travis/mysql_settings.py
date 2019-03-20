@@ -47,7 +47,8 @@ DATABASES = {
         'HOST': 'localhost',  # or an IP Address that your DB is hosted on
         'PORT': '',  # use default port
         'TEST': {
-            "TEMPLATE": 'default'
+            'CHARSET': 'utf8',
+            'COLLATION': 'utf8_unicode_ci'
         }
     }
 }
