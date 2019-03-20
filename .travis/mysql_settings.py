@@ -46,10 +46,15 @@ DATABASES = {
         'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '',  # use default port
+        'OPTIONS': {
+            'ENCODING': 'utf8mb4',
+            'COLLATE': 'utf8mb4_unicode_ci'
+        },
         'TEST': {
             'NAME': 'default',
             'OPTIONS': {
-                'ENCODING': 'utf8mb4'
+                'ENCODING': 'utf8mb4',
+                'COLLATE': 'utf8mb4_unicode_ci'
             }
         }
     }
