@@ -48,13 +48,13 @@ DATABASES = {
         'PORT': '',  # use default port
         'OPTIONS': {
             'ENCODING': 'utf8mb4',
-            'COLLATE': 'utf8mb4_unicode_ci'
+            'COLLATION': 'utf8mb4_unicode_ci'
         },
         'TEST': {
             'NAME': 'default',
             'OPTIONS': {
                 'ENCODING': 'utf8mb4',
-                'COLLATE': 'utf8mb4_unicode_ci'
+                'COLLATION': 'utf8mb4_unicode_ci'
             }
         }
     }
