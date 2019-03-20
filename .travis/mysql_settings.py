@@ -47,14 +47,12 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',  # use default port
         'OPTIONS': {
-            'ENCODING': 'utf8mb4',
-            'COLLATION': 'utf8mb4_unicode_ci'
+            'init_command': 'SET collation_connection = utf8_general_ci'
         },
         'TEST': {
             'NAME': 'default',
             'OPTIONS': {
-                'ENCODING': 'utf8mb4',
-                'COLLATION': 'utf8mb4_unicode_ci'
+                'init_command': 'SET collation_connection = utf8_general_ci'
             }
         }
     }
