@@ -46,9 +46,6 @@ DATABASES = {
         'PASSWORD': 'password',
         'HOST': 'localhost',  # or an IP Address that your DB is hosted on
         'PORT': '',  # use default port
-        'OPTIONS': {
-            'default-character-set': 'utf8'
-        }
     }
 }
 
