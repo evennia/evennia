@@ -45,7 +45,10 @@ DATABASES = {
         'USER': 'evennia',
         'PASSWORD': 'password',
         'HOST': 'localhost',
-        'PORT': ''    # use default
+        'PORT': '',    # use default
+        'TEST': {
+            'NAME': 'default'
+        }
     }
 }
 
