@@ -39,7 +39,7 @@ before_script:
   - evennia collectstatic --noinput
 
 script:
-  - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings evennia
+  - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
 
 after_success:
   - coveralls

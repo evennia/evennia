@@ -44,11 +44,10 @@ DATABASES = {
         'NAME': 'evennia',
         'USER': 'evennia',
         'PASSWORD': 'password',
-        'HOST': 'localhost',  # or an IP Address that your DB is hosted on
+        'HOST': 'localhost',
         'PORT': '',  # use default port
         'TEST': {
-            'CHARSET': 'utf8',
-            'COLLATION': 'utf8_unicode_ci'
+            'NAME': 'default'
         }
     }
 }
