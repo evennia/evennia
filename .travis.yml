@@ -25,8 +25,8 @@ before_install:
   - mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
 
 install:
-  - if [[ $TESTING_DB == postgresql ]]; then pip install psycopg2-binary fi
-  - if [[ $TESTING_DB == mysql ]]; then pip install mysqlclient fi
+  - pip install psycopg2-binary
+  - pip install mysqlclient
   - pip install coveralls
   - pip install -e .
 
