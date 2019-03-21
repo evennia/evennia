@@ -44,7 +44,7 @@ class TestTypedObjectManager(EvenniaTest):
         self.obj2.tags.add("tag4")
         self.obj2.tags.add("tag2c")
         self.assertEqual(self._manager("get_by_tag", "tag1"), [self.obj1])
-        self.assertEqual(self._manager("get_by_tag", "tag2"), [self.obj1, self.obj2])
+        self.assertEqual(set(self._manager("get_by_tag", "tag2")), set([self.obj1, self.obj2]))
         self.assertEqual(self._manager("get_by_tag", "tag2a"), [self.obj2])
         self.assertEqual(self._manager("get_by_tag", "tag3 with spaces"), [self.obj2])
         self.assertEqual(self._manager("get_by_tag", ["tag2a", "tag2b"]), [self.obj2])

@@ -730,10 +730,11 @@ class TestMail(CommandTest):
         self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account)
         self.call(mail.CmdMail(), "test", "'test' is not a valid mail id.")
         self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.account)
-        self.call(mail.CmdMail(), "Char=Message 1", "You have received a new @mail from Char|You sent your message.", caller=self.char1)
+        self.call(mail.CmdMail(), "Char=Message 1", 
+                  "You have received a new @mail from Char|You sent your message.", caller=self.char1)
         self.call(mail.CmdMail(), "Char=Message 2", "You sent your message.", caller=self.char2)
         self.call(mail.CmdMail(), "TestAccount2=Message 2",
-                  "You have received a new @mail from TestAccount2(account 2)|You sent your message.", caller=self.account2)
+                  "You have received a new @mail from TestAccount2", caller=self.account2)
         self.call(mail.CmdMail(), "TestAccount=Message 1", "You sent your message.", caller=self.account2)
         self.call(mail.CmdMail(), "TestAccount=Message 2", "You sent your message.", caller=self.account2)
         self.call(mail.CmdMail(), "", "| ID:   From:             Subject:", caller=self.account)
@@ -1762,13 +1763,16 @@ class TestPuzzles(CommandTest):
         super(TestPuzzles, self).setUp()
         self.steel = create_object(
                 self.object_typeclass,
-                key='steel', location=self.char1.location)
+                key='steel', 
+                location=self.char1.location)
         self.flint = create_object(
                 self.object_typeclass,
-                key='flint', location=self.char1.location)
+                key='flint', 
+                location=self.char1.location)
         self.fire = create_object(
                 self.object_typeclass,
-                key='fire', location=self.char1.location)
+                key='fire', 
+                location=self.char1.location)
         self.steel.tags.add('tag-steel')
         self.steel.tags.add('tag-steel', category='tagcat')
         self.flint.tags.add('tag-flint')
