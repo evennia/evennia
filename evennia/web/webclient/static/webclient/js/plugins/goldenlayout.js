@@ -21,6 +21,7 @@ plugin_handler.add('goldenlayout', (function () {
                         type: 'component',
                         componentName: 'Main',
                         isClosable: false,
+                        tooltip: 'Main - drag to desird position.',
                         componentState: {
                             types: 'untagged',
                             update_method: 'newlines',
@@ -32,12 +33,14 @@ plugin_handler.add('goldenlayout', (function () {
                 componentName: 'input',
                 id: 'inputComponent',
                 height: 12,
+                tooltip: 'Input - The last input in the layout is always the default.',
             }, {
                 type: 'component',
                 componentName: 'input',
                 id: 'inputComponent',
                 height: 12,
                 isClosable: false,
+                tooltip: 'Input - The last input in the layout is always the default.',
             }]
         }]
     };
