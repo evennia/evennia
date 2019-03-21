@@ -134,8 +134,8 @@ class TestUtils(EvenniaTest):
                                     ('oldtest', 'to_keep', None, ''),
                                     ('test', 'testval', None, '')],
                           'key': 'Obj',
-                          'home': '#1',
-                          'location': '#1',
+                          'home': Something,
+                          'location': Something,
                           'locks': 'call:true();control:perm(Developer);delete:perm(Admin);'
                                    'edit:perm(Admin);examine:perm(Builder);get:all();'
                                    'puppet:pperm(Developer);tell:perm(Admin);view:all()',
@@ -149,9 +149,9 @@ class TestUtils(EvenniaTest):
         self.assertEqual(old_prot,
                          {'attrs': [('oldtest', 'to_keep', None, ''),
                                     ('fooattr', 'fooattrval', None, '')],
-                          'home': '#1',
+                          'home': Something,
                           'key': 'Obj',
-                          'location': '#1',
+                          'location': Something,
                           'locks': 'call:true();control:perm(Developer);delete:perm(Admin);'
                                    'edit:perm(Admin);examine:perm(Builder);get:all();'
                                    'puppet:pperm(Developer);tell:perm(Admin);view:all()',
@@ -166,11 +166,11 @@ class TestUtils(EvenniaTest):
 
         self.assertEqual(
              pdiff,
-             {'home': ('#1', '#1', 'KEEP'),
+             {'home': (Something, Something, 'KEEP'),
               'prototype_locks': ('spawn:all();edit:all()',
                                   'spawn:all();edit:all()', 'KEEP'),
               'prototype_key': (Something, Something, 'UPDATE'),
-              'location': ('#1', '#1', 'KEEP'),
+              'location': (Something, Something, 'KEEP'),
               'locks': ('call:true();control:perm(Developer);delete:perm(Admin);'
                         'edit:perm(Admin);examine:perm(Builder);get:all();'
                         'puppet:pperm(Developer);tell:perm(Admin);view:all()',
@@ -340,13 +340,14 @@ class TestProtFuncs(EvenniaTest):
 
 
         # no object search
+        odbref = self.obj1.dbref
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("obj(#1)", session=self.session), 'obj(#1)')
+            self.assertEqual(protlib.protfunc_parser("obj({})".format(odbref), session=self.session), 'obj({})'.format(odbref))
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("dbref(#1)", session=self.session), 'dbref(#1)')
+            self.assertEqual(protlib.protfunc_parser("dbref({})".format(odbref), session=self.session), 'dbref({})'.format(odbref))
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
@@ -354,7 +355,7 @@ class TestProtFuncs(EvenniaTest):
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("#1", session=self.session), '#1')
+            self.assertEqual(protlib.protfunc_parser(odbref, session=self.session), odbref)
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
@@ -362,7 +363,7 @@ class TestProtFuncs(EvenniaTest):
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("nothing(#1)", session=self.session), 'nothing(#1)')
+            self.assertEqual(protlib.protfunc_parser("nothing({})".format(odbref), session=self.session), 'nothing({})'.format(odbref))
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
@@ -374,7 +375,7 @@ class TestProtFuncs(EvenniaTest):
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("objlist(#1)", session=self.session), 'objlist(#1)')
+            self.assertEqual(protlib.protfunc_parser("objlist({})".format(odbref), session=self.session), 'objlist({})'.format(odbref))
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
@@ -385,22 +386,24 @@ class TestProtFuncs(EvenniaTest):
         # obj search happens
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$objlist(#1)", session=self.session), ['#1'])
+            self.assertEqual(protlib.protfunc_parser("$objlist({})".format(odbref), session=self.session), [odbref])
             mocked__obj_search.assert_called_once()
-            assert ('#1',) == mocked__obj_search.call_args[0]
+            assert (odbref,) == mocked__obj_search.call_args[0]
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$obj(#1)", session=self.session), '#1')
+            self.assertEqual(protlib.protfunc_parser("$obj({})".format(odbref), session=self.session), odbref)
             mocked__obj_search.assert_called_once()
-            assert ('#1',) == mocked__obj_search.call_args[0]
+            assert (odbref,) == mocked__obj_search.call_args[0]
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$dbref(#1)", session=self.session), '#1')
+            self.assertEqual(protlib.protfunc_parser("$dbref({})".format(odbref), session=self.session), odbref)
             mocked__obj_search.assert_called_once()
-            assert ('#1',) == mocked__obj_search.call_args[0]
+            assert (odbref,) == mocked__obj_search.call_args[0]
+
+        cdbref = self.char1.dbref
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), '#6')
+            self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), cdbref)
             mocked__obj_search.assert_called_once()
             assert ('Char',) == mocked__obj_search.call_args[0]
 
@@ -408,7 +411,7 @@ class TestProtFuncs(EvenniaTest):
         # bad invocation
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$badfunc(#1)", session=self.session), '<UNKNOWN>')
+            self.assertEqual(protlib.protfunc_parser("$badfunc(#112345)", session=self.session), '<UNKNOWN>')
             mocked__obj_search.assert_not_called()
 
         with mock.patch("evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search) as mocked__obj_search:
@@ -417,11 +420,11 @@ class TestProtFuncs(EvenniaTest):
 
 
         self.assertEqual(protlib.value_to_obj(
-            protlib.protfunc_parser("#6", session=self.session)), self.char1)
+            protlib.protfunc_parser(cdbref, session=self.session)), self.char1)
         self.assertEqual(protlib.value_to_obj_or_any(
-            protlib.protfunc_parser("#6", session=self.session)), self.char1)
+            protlib.protfunc_parser(cdbref, session=self.session)), self.char1)
         self.assertEqual(protlib.value_to_obj_or_any(
-            protlib.protfunc_parser("[1,2,3,'#6',5]", session=self.session)),
+            protlib.protfunc_parser("[1,2,3,'{}',5]".format(cdbref), session=self.session)),
                 [1, 2, 3, self.char1, 5])
 
 
