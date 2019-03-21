@@ -17,16 +17,16 @@ env:
 before_install: 
 
     # - psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;"
-  - if [[ $TESTING_DB == postgresql ]]; psql -U postgres -c "CREATE DATABASE evennia;" fi
-  - if [[ $TESTING_DB == postgresql ]]; psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';" fi
-  - if [[ $TESTING_DB == postgresql ]]; psql -U postgres -c "ALTER USER evennia CREATEDB;" fi
-  - if [[ $TESTING_DB == mysql ]]; then mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4;" fi
-  - if [[ $TESTING_DB == mysql ]]; then mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';" fi
-  - if [[ $TESTING_DB == mysql ]]; mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';" fi
+  - psql -U postgres -c "CREATE DATABASE evennia;"
+  - psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
+  - psql -U postgres -c "ALTER USER evennia CREATEDB;"
+  - if mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4;"
+  - mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
+  - mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
 
 install:
-  - if [[ $TESTING_DB == postgresql ]]; pip install psycopg2-binary fi
-  - if [[ $TESTING_DB == mysql ]]; pip install mysqlclient fi
+  - if [[ $TESTING_DB == postgresql ]]; then pip install psycopg2-binary fi
+  - if [[ $TESTING_DB == mysql ]]; then pip install mysqlclient fi
   - pip install coveralls
   - pip install -e .
 
