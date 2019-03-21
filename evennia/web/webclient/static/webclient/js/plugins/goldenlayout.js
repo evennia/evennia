@@ -14,25 +14,36 @@ plugin_handler.add('goldenlayout', (function () {
         content: [{
             type: 'column',
             content: [{
-                type: 'component',
-                componentName: 'Main',
-                isClosable: false,
-                componentState: {
-                    types: 'untagged',
-                    update_method: 'newlines',
-                }
+                type: 'row',
+                content: [{
+                    type: 'column',
+                    content: [{
+                        type: 'component',
+                        componentName: 'Main',
+                        isClosable: false,
+                        componentState: {
+                            types: 'untagged',
+                            update_method: 'newlines',
+                        },
+                    }]
+                }],
             }, {
                 type: 'component',
                 componentName: 'input',
                 id: 'inputComponent',
-                height: 15,
+                height: 12,
+            }, {
+                type: 'component',
+                componentName: 'input',
+                id: 'inputComponent',
+                height: 12,
                 isClosable: false,
             }]
         }]
     };
 
 
-    var newDragConfig = {
+    var newTabConfig = {
         title: 'Untitled',
         type: 'component',
         componentName: 'evennia',
@@ -97,16 +108,26 @@ plugin_handler.add('goldenlayout', (function () {
         let content = element.find('.content');
         let title   = evnt.data.contentItem.config.title;
         let renamebox = document.getElementById('renamebox');
+
+        // check that no other popup is open
+        if( document.getElementById('typelist') || document.getElementById('updatelist') ) {
+            return;
+        }
+
         if( !renamebox ) {
             renamebox = $('<div id="renamebox">');
             renamebox.append('<input type="textbox" id="renameboxin" value="'+title+'">');
             renamebox.insertBefore( content );
         } else {
             let title = $('#renameboxin').val();
-            evnt.data.setTitle( title );
-            evnt.data.contentItem.setTitle( title );
-            myLayout.emit('stateChanged');
-            $('#renamebox').remove();
+
+            // check that the renamebox that is open is for this contentItem
+            if( $('#renamebox').parent()[0] === content.parent()[0] ) {
+                evnt.data.setTitle( title );
+                evnt.data.contentItem.setTitle( title );
+                myLayout.emit('stateChanged');
+                $('#renamebox').remove();
+            }
         }
     }
 
@@ -140,9 +161,7 @@ plugin_handler.add('goldenlayout', (function () {
 
     //
     //
-    var commitCheckboxes = function (evnt) {
-        let element = $(evnt.data.contentItem.element);
-        let content = element.find('.content');
+    var commitCheckboxes = function (evnt, content) {
         let checkboxes = $('#typelist :input');
         let types = [];
         for (i=0; i<checkboxes.length; i++ ) {
@@ -160,12 +179,23 @@ plugin_handler.add('goldenlayout', (function () {
     // Handle the typePopup
     var typePopup = function (evnt) {
         let typelist = document.getElementById('typelist');
+
+        // check that no other popup is open
+        if( document.getElementById('renamebox') || document.getElementById('updatelist') ) {
+            return;
+        }
+
         if( !typelist ) {
             onSelectTypesClicked(evnt);
         } else {
-            commitCheckboxes(evnt);
-            calculate_untagged_types();
-            $('#typelist').remove();
+            let element = $(evnt.data.contentItem.element);
+            let content = element.find('.content');
+            if( $('#typelist').parent().children('.lm_content')[0] === content.parent()[0] ) {
+            // check that the typelist that is open is for this contentItem
+                commitCheckboxes(evnt, content);
+                calculate_untagged_types();
+                $('#typelist').remove();
+            } 
         }
     }
 
@@ -201,14 +231,24 @@ plugin_handler.add('goldenlayout', (function () {
     // Handle the updatePopup
     var updatePopup = function (evnt) {
         let updatelist = document.getElementById('updatelist');
+
+        // check that no other popup is open
+        if( document.getElementById('renamebox') || document.getElementById('typelist') ) {
+            return;
+        }
+
         if( !updatelist ) {
             onUpdateMethodClicked(evnt);
         } else {
             let element = $(evnt.data.contentItem.element);
             let content = element.find('.content');
-            content.attr('update_method', $('input[name=update_method]:checked').val() );
-            myLayout.emit('stateChanged');
-            $('#updatelist').remove();
+
+            // check that the updatelist that is open is for this contentItem
+            if( $('#updatelist').parent().children('.lm_content')[0] === content.parent()[0] ) {
+                content.attr('update_method', $('input[name=update_method]:checked').val() );
+                myLayout.emit('stateChanged');
+                $('#updatelist').remove();
+            }
         }
     }
 
@@ -230,7 +270,7 @@ plugin_handler.add('goldenlayout', (function () {
         updatePopupControl.click( tab, updatePopup );
 
         splitControl.click( tab, function (evnt) {
-            evnt.data.header.parent.addChild( newDragConfig );
+            evnt.data.header.parent.addChild( newTabConfig );
         });
 
         // Add the typeDropdown to the header
@@ -278,11 +318,6 @@ plugin_handler.add('goldenlayout', (function () {
 
 
     //
-    // Public
-    //
-
-
-    //
     //
     var initComponent = function (div, container, state, default_types, update_method) {
         // set this container's content div types attribute
@@ -295,6 +330,22 @@ plugin_handler.add('goldenlayout', (function () {
         }
         div.appendTo( container.getElement() );
         container.on('tab', onTabCreate);
+    }
+
+
+    //
+    // Public
+    //
+
+
+    //
+    //
+    var onKeydown = function(evnt) {
+        var renamebox = document.getElementById('renamebox'); 
+        if( renamebox ) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -350,42 +401,12 @@ plugin_handler.add('goldenlayout', (function () {
 
 
     //
-    // required Init me
-    var init = function (options) {
-        // Set up our GoldenLayout instance built off of the default main-sub div
-        var savedState = localStorage.getItem( 'evenniaGoldenLayoutSavedState' );
-        var mainsub = document.getElementById('main-sub');
-
-        if( savedState !== null ) {
-            myLayout = new GoldenLayout( JSON.parse( savedState ), mainsub );
-        } else {
-            myLayout = new GoldenLayout( config, mainsub );
-        }
-
-        // register our component and replace the default messagewindow with the Main component element
-        myLayout.registerComponent( 'Main', function (container, componentState) {
-            let main = $('#messagewindow').addClass('content');
-            initComponent(main, container, componentState, 'untagged', 'newlines' );
-        });
-
-        myLayout.registerComponent( 'input', function (container, componentState) {
-            $('#inputcontrol').remove(); // remove the cluttered, HTML-defined input divs
-            $('<div id="inputcontrol">')
-                .append( '<div class="inputwrap"><button id="inputsend" type="button"">&gt;</button></div>' )
-                .append( '<textarea id="inputfield" type="text" class="form-control"></textarea>' )
-                .appendTo( container.getElement() );
-        });
-
-        myLayout.registerComponent( 'evennia', function (container, componentState) {
-            let div = $('<div class="content"></div>');
-            initComponent(div, container, componentState, 'all', 'newlines');
-            container.on('destroy', calculate_untagged_types);
-        });
-
-        // Make it go.
+    //
+    var postInit = function () {
+        // finish the setup and actually start GoldenLayout
         myLayout.init();
 
-        // Event when client window changes
+        // Set the Event handler for when the client window changes size
         $(window).bind("resize", scrollAll);
 
         // Set Save State callback
@@ -394,10 +415,64 @@ plugin_handler.add('goldenlayout', (function () {
         console.log('Golden Layout Plugin Initialized.');
     }
 
+
+    //
+    // required Init me
+    var init = function (options) {
+        // Set up our GoldenLayout instance built off of the default main-sub div
+        var savedState = localStorage.getItem( 'evenniaGoldenLayoutSavedState' );
+        var mainsub = document.getElementById('main-sub');
+
+        if( savedState !== null ) {
+            config = JSON.parse( savedState );
+        }
+
+        myLayout = new GoldenLayout( config, mainsub );
+
+        $('#inputcontrol').remove(); // remove the cluttered, HTML-defined input divs
+
+        // register our component and replace the default messagewindow with the Main component
+        myLayout.registerComponent( 'Main', function (container, componentState) {
+            let main = $('#messagewindow').addClass('content');
+            initComponent(main, container, componentState, 'untagged', 'newlines' );
+        });
+
+        // register our new input component
+        myLayout.registerComponent( 'input', function (container, componentState) {
+            var inputfield = $('<textarea type="text" class="inputfield form-control"></textarea>');
+            var button = $('<button type="button" class="inputsend">&gt;</button>');
+
+            $('<div class="inputwrap">')
+                .append( button )
+                .append( inputfield )
+                .appendTo( container.getElement() );
+
+            button.bind('click', function (evnt) {
+                // focus our textarea
+                $( $(evnt.target).siblings('.inputfield')[0] ).focus();
+                // fake a carriage return event
+                var e = $.Event('keydown');
+                e.which = 13;
+                $( $(evnt.target).siblings('.inputfield')[0] ).trigger(e);
+            });
+
+        });
+
+        myLayout.registerComponent( 'evennia', function (container, componentState) {
+            let div = $('<div class="content"></div>');
+            initComponent(div, container, componentState, 'all', 'newlines');
+            container.on('destroy', calculate_untagged_types);
+        });
+    }
+
+
     return {
         init: init,
+        postInit: postInit,
+        onKeydown: onKeydown,
         onText: onText,
         getGL: function () { return myLayout },
-        initComponent: initComponent,
+        getConfig: function () { return config },
+        setConfig: function (newconfig) { config = newconfig },
     }
 })());

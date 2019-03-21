@@ -88,15 +88,26 @@ label {
     height: 100%;
 }
 
-#inputsend {
+.inputsend {
     position: absolute;
     right: 0;
     z-index: 1;
+    height: inherit;
+    width: 30px;
 }
 
-#inputfield {
+.inputfield {
     position: absolute;
     top: 0;
+    height: inherit;
+    width: calc(100% - 30px);
+    background-color: black;
+    color: white;
+}
+
+.inputfield:focus {
+    background-color: black;
+    color: white;
 }
 
 .glbutton {
