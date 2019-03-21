@@ -19,6 +19,7 @@ from anything import Anything
 from django.conf import settings
 from mock import Mock, mock
 
+from evennia import DefaultRoom, DefaultExit
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin, syscommands
@@ -140,7 +141,8 @@ class CommandTest(EvenniaTest):
 
 class TestGeneral(CommandTest):
     def test_look(self):
-        self.call(general.CmdLook(), "here", "Room(#1)\nroom_desc")
+        rid = self.room1.id
+        self.call(general.CmdLook(), "here", "Room(#{})\nroom_desc".format(rid))
 
     def test_home(self):
         self.call(general.CmdHome(), "", "You are already home")
@@ -247,7 +249,9 @@ class TestAdmin(CommandTest):
         self.call(admin.CmdBan(), "Char", "Name-Ban char was added.")
 
     def test_force(self):
-        self.call(admin.CmdForce(), "Char2=say test", 'Char2(#7) says, "test"|You have forced Char2 to: say test')
+        cid = self.char2.id
+        self.call(admin.CmdForce(), "Char2=say test", 
+                  'Char2(#{}) says, "test"|You have forced Char2 to: say test'.format(cid))
 
 
 class TestAccount(CommandTest):
@@ -343,11 +347,15 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "*TestAccount")
 
     def test_set_obj_alias(self):
+        oid = self.obj1.id
         self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj")
-        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to 'testobj1b'.")
+        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b",
+                  "Alias(es) for 'Obj(#{})' set to 'testobj1b'.".format(oid))
         self.call(building.CmdSetObjAlias(), "", "Usage: ")
         self.call(building.CmdSetObjAlias(), "NotFound =", "Could not find 'NotFound'.")
-        self.call(building.CmdSetObjAlias(), "Obj", "Aliases for Obj(#4): 'testobj1b'")
+
+        self.call(building.CmdSetObjAlias(), "Obj",
+                  "Aliases for Obj(#{}): 'testobj1b'".format(oid))
         self.call(building.CmdSetObjAlias(), "Obj2 =", "Cleared aliases from Obj2")
         self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
 
@@ -396,7 +404,9 @@ class TestBuilding(CommandTest):
         self.call(building.CmdName(), "Obj4=", "No names or aliases defined!")
 
     def test_desc(self):
-        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
+        oid = self.obj2.id
+        self.call(building.CmdDesc(), "Obj2=TestDesc", 
+                  "The description was set on Obj2(#{}).".format(oid))
         self.call(building.CmdDesc(), "", "Usage: ")
 
         with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
@@ -411,17 +421,21 @@ class TestBuilding(CommandTest):
         """
         empty desc sets desc as ''
         """
+        oid = self.obj2.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#5).")
+        self.call(building.CmdDesc(), "Obj2=", 
+                  "The description was set on Obj2(#{}).".format(oid))
         assert self.obj2.db.desc == '' and self.obj2.db.desc != o2d
         assert self.room1.db.desc == r1d
 
     def test_desc_default_to_room(self):
         """no rhs changes room's desc"""
+        rid = self.room1.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#1).")
+        self.call(building.CmdDesc(), "Obj2", 
+                  "The description was set on Room(#{}).".format(rid))
         assert self.obj2.db.desc == o2d
         assert self.room1.db.desc == 'Obj2' and self.room1.db.desc != r1d
 
@@ -433,10 +447,15 @@ class TestBuilding(CommandTest):
         self.call(building.CmdDestroy(), "Obj", "Obj2 was destroyed.")
         self.call(building.CmdDestroy(), "Obj", "Could not find 'Obj'.| (Objects to destroy "
                   "must either be local or specified with a unique #dbref.)")
-        self.call(building.CmdDestroy(), "#1", "You are trying to delete")  # DEFAULT_HOME
+        default_home_dbref = settings.DEFAULT_HOME
+        self.call(building.CmdDestroy(), default_home_dbref, "You are trying to delete")  # DEFAULT_HOME
         self.char2.location = self.room2
+        charid = self.char2.id
+        room1id = self.room1.id
+        room2id = self.room2.id
         self.call(building.CmdDestroy(), self.room2.dbref,
-                  "Char2(#7) arrives to Room(#1) from Room2(#2).|Room2 was destroyed.")
+                  "Char2(#{}) arrives to Room(#{}) from Room2(#{}).|Room2 was destroyed.".format(
+                    charid, room1id, room2id))
         building.CmdDestroy.confirm = confirm
 
     def test_destroy_sequence(self):
@@ -454,10 +473,10 @@ class TestBuilding(CommandTest):
         self.call(building.CmdTunnel(), "n = TestRoom2;test2", "Created room TestRoom2")
         self.call(building.CmdTunnel(), "", "Usage: ")
         self.call(building.CmdTunnel(), "foo = TestRoom2;test2", "@tunnel can only understand the")
-        self.call(building.CmdTunnel(), "/tel e = TestRoom3;test3",
-                  "Created room TestRoom3(#11) (test3) of type typeclasses.rooms.Room.\n"
-                  "Created Exit from Room to TestRoom3: east(#12) (e).\n"
-                  "Created Exit back from TestRoom3 to Room: west(#13) (w).|TestRoom3(#11)")
+        self.call(building.CmdTunnel(), "/tel e = TestRoom3;test3", "Created room TestRoom3")
+        DefaultRoom.objects.get_family(db_key="TestRoom3")
+        exits = DefaultExit.objects.filter_family(db_key__in=("east", "west"))
+        self.assertEqual(len(exits), 2)
 
     def test_tunnel_exit_typeclass(self):
         self.call(building.CmdTunnel(), "n:evennia.objects.objects.DefaultExit = TestRoom3",
@@ -487,9 +506,7 @@ class TestBuilding(CommandTest):
                   "Cannot link an object to itself.")
         self.call(building.CmdLink(), "", "Usage: ")
         # ensure can still match globally when not a local name
-        self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1(#8) did not have a destination set before. "
-                                                         "Make sure you linked the right thing.\n"
-                                                         "Link created TestExit1 -> Room2 (one way).")
+        self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1")
         self.call(building.CmdLink(), "TestExit1=", "Former exit TestExit1 no longer links anywhere.")
 
     def test_set_home(self):
@@ -537,8 +554,10 @@ class TestBuilding(CommandTest):
         self.call(building.CmdLock(), "/view Obj = edit:false()",
                   "Switch(es) view can not be used with a lock assignment. "
                   "Use e.g. @lock/del objname/locktype instead.")
+        self.call(building.CmdLock(), "Obj = control:false()")
         self.call(building.CmdLock(), "Obj = edit:false()")
-        self.call(building.CmdLock(), "Obj/test", "You need 'edit' access to view or delete lock on this object.")
+        self.call(building.CmdLock(), "Obj/test", "You are not allowed to do that.")
+        self.obj1.locks.add("control:true()")
         self.call(building.CmdLock(), "Obj", "call:true()")  # etc
         self.call(building.CmdLock(), "*TestAccount", "boot:perm(Admin)")  # etc
 
@@ -547,23 +566,17 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "oom2", "One Match")
         self.call(building.CmdFind(), "oom2 = 1-100", "One Match")
         self.call(building.CmdFind(), "oom2 = 1 100", "One Match")  # space works too
-        expect = "One Match(#1-#7, loc):\n   " +\
-                 "Char2(#7) - evennia.objects.objects.DefaultCharacter (location: Room(#1))"
-        self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="locate")
         self.call(building.CmdFind(), "/ex Char2",  # /ex is an ambiguous switch
-                  "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|" + expect,
+                  "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|",
                   cmdstring="locate")
-        self.call(building.CmdFind(), "Char2", expect, cmdstring="@locate")
-        self.call(building.CmdFind(), "/l Char2", expect, cmdstring="find")  # /l switch is abbreviated form of /loc
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@locate")
+        self.call(building.CmdFind(), "/l Char2", "One Match", cmdstring="find")  # /l switch is abbreviated form of /loc
         self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
         self.call(building.CmdFind(), "/startswith Room2", "One Match")
 
-        self.call(building.CmdFind(), self.char1.dbref,
-                  "Exact dbref match(#1-#7):\n "
-                  "  Char(#6) - evennia.objects.objects.DefaultCharacter")
-        self.call(building.CmdFind(), "*TestAccount",
-                  "Match(#1-#7):\n"
-                  "   TestAccount - evennia.accounts.accounts.DefaultAccount")
+        self.call(building.CmdFind(), self.char1.dbref, "Exact dbref match")
+        self.call(building.CmdFind(), "*TestAccount", "Match")
 
         self.call(building.CmdFind(), "/char Obj")
         self.call(building.CmdFind(), "/room Obj")
@@ -585,16 +598,20 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScript(), "/stop Obj = scripts.Script", "Script stopped and removed from object.")
 
     def test_teleport(self):
+        oid = self.obj1.id
+        rid = self.room1.id
+        rid2 = self.room2.id
         self.call(building.CmdTeleport(), "", "Usage: ")
         self.call(building.CmdTeleport(), "Obj = Room", "Obj is already at Room.")
         self.call(building.CmdTeleport(), "Obj = NotFound", "Could not find 'NotFound'.|Destination not found.")
         self.call(building.CmdTeleport(),
-                  "Obj = Room2", "Obj(#4) is leaving Room(#1), heading for Room2(#2).|Teleported Obj -> Room2.")
+                  "Obj = Room2", "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2.".format(
+                  oid, rid, rid2))
         self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
         self.call(building.CmdTeleport(), "Obj = Obj", "You can't teleport an object inside of itself!")
 
         self.call(building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location.")
-        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#2)")
+        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#{})".format(rid2))
         self.call(building.CmdTeleport(), "/t",  # /t switch is abbreviated form of /tonone
                   "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a None-location.")
         self.call(building.CmdTeleport(), "/l Room2",  # /l switch is abbreviated form of /loc

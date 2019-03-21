@@ -564,7 +564,8 @@ class CmdPressButton(Command):
                  "decisive push. First nothing happens, then there is a rumble and a hidden " \
                  "|wpassage|n opens, dust and pebbles rumbling as part of the wall moves aside."
         self.caller.location.msg_contents(string % self.caller.key, exclude=self.caller)
-        self.obj.open_wall()
+        if not self.obj.open_wall():
+            self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
 
 
 class CmdSetCrumblingWall(CmdSet):
@@ -638,7 +639,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # this will make it into a proper exit (this returns a list)
         eloc = search.search_object(self.db.destination)
         if not eloc:
-            self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
+            return False
         else:
             self.destination = eloc[0]
         self.db.exit_open = True
