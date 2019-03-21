@@ -47,12 +47,12 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',  # use default port
         'OPTIONS': {
-            'init_command': 'SET collation_connection = utf8_general_ci'
+            'read_default_file': '.travis/my.conf'
         },
         'TEST': {
             'NAME': 'default',
             'OPTIONS': {
-                'init_command': 'SET collation_connection = utf8_general_ci'
+                'read_default_file': '.travis/my.conf'
             }
         }
     }
