@@ -424,7 +424,7 @@ class TestBuilding(CommandTest):
         oid = self.obj2.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2=", 
+        self.call(building.CmdDesc(), "Obj2=",
                   "The description was set on Obj2(#{}).".format(oid))
         assert self.obj2.db.desc == '' and self.obj2.db.desc != o2d
         assert self.room1.db.desc == r1d
@@ -434,7 +434,7 @@ class TestBuilding(CommandTest):
         rid = self.room1.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2", 
+        self.call(building.CmdDesc(), "Obj2",
                   "The description was set on Room(#{}).".format(rid))
         assert self.obj2.db.desc == o2d
         assert self.room1.db.desc == 'Obj2' and self.room1.db.desc != r1d
@@ -444,11 +444,13 @@ class TestBuilding(CommandTest):
         building.CmdDestroy.confirm = False
         self.call(building.CmdDestroy(), "", "Usage: ")
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
+        settings.DEFAULT_HOME = self.room1.dbref
         self.call(building.CmdDestroy(), "Obj", "Obj2 was destroyed.")
         self.call(building.CmdDestroy(), "Obj", "Could not find 'Obj'.| (Objects to destroy "
                   "must either be local or specified with a unique #dbref.)")
         default_home_dbref = settings.DEFAULT_HOME
-        self.call(building.CmdDestroy(), default_home_dbref, "You are trying to delete")  # DEFAULT_HOME
+        self.call(building.CmdDestroy(), default_home_dbref,
+                  "You are trying to delete")  # DEFAULT_HOME
         self.char2.location = self.room2
         charid = self.char2.id
         room1id = self.room1.id
@@ -562,10 +564,12 @@ class TestBuilding(CommandTest):
         self.call(building.CmdLock(), "*TestAccount", "boot:perm(Admin)")  # etc
 
     def test_find(self):
+        rid2 = self.room2.id
+        rmax = rid2 + 100
         self.call(building.CmdFind(), "", "Usage: ")
         self.call(building.CmdFind(), "oom2", "One Match")
-        self.call(building.CmdFind(), "oom2 = 1-100", "One Match")
-        self.call(building.CmdFind(), "oom2 = 1 100", "One Match")  # space works too
+        self.call(building.CmdFind(), "oom2 = 1-{}".format(rmax), "One Match")
+        self.call(building.CmdFind(), "oom2 = 1 {}".format(rmax), "One Match")  # space works too
         self.call(building.CmdFind(), "Char2", "One Match", cmdstring="locate")
         self.call(building.CmdFind(), "/ex Char2",  # /ex is an ambiguous switch
                   "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|",
@@ -613,7 +617,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location.")
         self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#{})".format(rid2))
         self.call(building.CmdTeleport(), "/t",  # /t switch is abbreviated form of /tonone
-                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a None-location.")
+                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount")
         self.call(building.CmdTeleport(), "/l Room2",  # /l switch is abbreviated form of /loc
                   "Destination has no location.")
         self.call(building.CmdTeleport(), "/q me to Room2",  # /q switch is abbreviated form of /quiet

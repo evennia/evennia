@@ -252,7 +252,9 @@ class TestExtendedRoom(CommandTest):
         self.assertEqual(self.DETAIL_DESC, self.room1.return_detail("testdetail"))
 
     def test_cmdextendedlook(self):
-        self.call(extended_room.CmdExtendedRoomLook(), "here", "Room(#1)\n%s" % self.SPRING_DESC)
+        rid = self.room1.id
+        self.call(extended_room.CmdExtendedRoomLook(), "here", 
+                  "Room(#{})\n{}".format(rid, self.SPRING_DESC))
         self.call(extended_room.CmdExtendedRoomLook(), "testdetail", self.DETAIL_DESC)
         self.call(extended_room.CmdExtendedRoomLook(), "nonexistent", "Could not find 'nonexistent'.")
 
@@ -2038,12 +2040,14 @@ class TestPuzzles(CommandTest):
         self.flint.delete()
         self.fire.delete()
 
+        sid = self.script.id
         # bad syntax
         _puzzleedit(None, None, None, "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', '1', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', '', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', recipe_dbref, 'dummy', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
-        _puzzleedit('', self.script.dbref, '', 'Script(#1) is not a puzzle')
+        _puzzleedit('', self.script.dbref, '', 
+                    'Script(#{}) is not a puzzle'.format(sid))
 
         # edit use_success_message and use_success_location_message
         _puzzleedit('', recipe_dbref, '/use_success_message = Yes!', 'makefire(%s) use_success_message = Yes!' % recipe_dbref)
