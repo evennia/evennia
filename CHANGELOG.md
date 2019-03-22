@@ -14,6 +14,9 @@ Update to Python 3
 - Add new `@force` command to have another object perform a command.
 - Add the Portal uptime to the `@time` command.
 - Make the `@link` command first make a local search before a global search.
+- Have the default Unloggedin-look command look for optional `connection_screen()` callable in 
+  `mygame/server/conf/connection_screen.py`. This allows for more flexible welcome screens 
+  that are calculated on the fly. 
 
 ### Web
 

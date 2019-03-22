@@ -234,9 +234,14 @@ class CmdUnconnectedLook(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         """Show the connect screen."""
-        connection_screen = utils.random_string_from_module(CONNECTION_SCREEN_MODULE)
-        if not connection_screen:
-            connection_screen = "No connection screen found. Please contact an admin."
+
+        callables = utils.callables_from_module(CONNECTION_SCREEN_MODULE)  
+        if "connection_screen" in callables:
+            connection_screen = callables['connection_screen']()
+        else:
+            connection_screen = utils.random_string_from_module(CONNECTION_SCREEN_MODULE)
+            if not connection_screen:
+                connection_screen = "No connection screen found. Please contact an admin."
         self.caller.msg(connection_screen)
 
 
