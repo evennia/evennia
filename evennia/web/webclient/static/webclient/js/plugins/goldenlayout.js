@@ -60,7 +60,7 @@ plugin_handler.add('goldenlayout', (function () {
     // helper function:  filter vals out of array
     function filter (vals, array) {
         let tmp = array.slice();
-        for (i=0; i<vals.length; i++) {
+        for (let i=0; i<vals.length; i++) {
             let val = vals[i];
             while( tmp.indexOf(val) > -1 ) {
                 tmp.splice( tmp.indexOf(val), 1 );
@@ -73,7 +73,7 @@ plugin_handler.add('goldenlayout', (function () {
     //
     // Calculate all known_types minus the 'all' type,
     //     then filter out all types that have been mapped to a pane.
-    var calculate_untagged_types = function () {
+    var calculateUntaggedTypes = function () {
         // set initial untagged list
         untagged = filter( ['all', 'untagged'], known_types);
         // for each .content pane
@@ -86,6 +86,208 @@ plugin_handler.add('goldenlayout', (function () {
     }
 
 
+    //
+    //
+    var closeRenameDropdown = function () {
+        let content = $('#renamebox').parent().parent().parent().parent()[0];
+        let title = $('#renameboxin').val();
+
+        let components = myLayout.root.getItemsByType('component');
+
+        components.forEach( function (component) {
+           let element = component.tab.header.parent.element[0];
+           if( element == content && component.tab.isActive ) {
+               component.setTitle( title );
+           }
+        });
+
+        myLayout.emit('stateChanged');
+        $('#renamebox').remove();
+    }
+
+
+    //
+    // Handle the renameDropdown
+    var renameDropdown = function (evnt) {
+        let element = $(evnt.data.contentItem.element);
+        let content = element.find('.content');
+        let title   = evnt.data.contentItem.config.title;
+        let renamebox = document.getElementById('renamebox');
+
+        // check that no other dropdown is open
+        if( document.getElementById('typelist') ) {
+            closeTypelistDropdown();
+        }
+
+        if( document.getElementById('updatelist') ) {
+            closeUpdatelistDropdown();
+        }
+
+        if( !renamebox ) {
+            renamebox = $('<div id="renamebox">');
+            renamebox.append('<input type="textbox" id="renameboxin" value="'+title+'">');
+            renamebox.insertBefore( content );
+        } else {
+            closeRenameDropdown();
+        }
+    }
+
+
+    //
+    //
+    var closeTypelistDropdown = function () {
+        let content = $('#typelist').parent().find('.content');
+        let checkboxes = $('#typelist :input');
+
+        let types = [];
+        for (let i=0; i<checkboxes.length; i++ ) {
+            let box = checkboxes[i];
+            if( $(box).prop('checked') ) {
+                types.push( $(box).val() );
+            }
+        }
+
+        content.attr('types', types.join(' '));
+        myLayout.emit('stateChanged');
+
+        calculateUntaggedTypes();
+        $('#typelist').remove();
+    }
+
+
+    //
+    //
+    var onSelectTypesClicked = function (evnt) {
+        let element = $(evnt.data.contentItem.element);
+        let content = element.find('.content');
+        let selected_types = content.attr('types');
+        let menu = $('<div id="typelist">');
+        let div = $('<div class="typelistsub">');
+
+        if( selected_types ) {
+            selected_types = selected_types.split(' ');
+        }
+        for (let i=0; i<known_types.length;i++) {
+            let type = known_types[i];
+            let choice;
+            if( selected_types && selected_types.includes(type) ) {
+                choice = $('<label><input type="checkbox" value="'+type+'" checked="checked"/>'+type+'</label>');
+            } else {
+                choice = $('<label><input type="checkbox" value="'+type+'"/>'+type+'</label>');
+            }
+            choice.appendTo(div);
+        }
+        div.appendTo(menu);
+
+        element.prepend(menu);
+    }
+
+
+    //
+    // Handle the typeDropdown
+    var typeDropdown = function (evnt) {
+        let typelist = document.getElementById('typelist');
+
+        // check that no other dropdown is open
+        if( document.getElementById('renamebox') ) {
+            closeRenameDropdown();
+        }
+
+        if( document.getElementById('updatelist') ) {
+            closeUpdatelistDropdown();
+        }
+
+        if( !typelist ) {
+            onSelectTypesClicked(evnt);
+        } else {
+            closeTypelistDropdown();
+        }
+    }
+
+
+    //
+    //
+    var closeUpdatelistDropdown = function () {
+        let content = $('#updatelist').parent().find('.content');
+        let value   = $('input[name=upmethod]:checked').val();
+
+        content.attr('update_method', value );
+        myLayout.emit('stateChanged');
+        $('#updatelist').remove();
+    }
+
+
+    //
+    //
+    var onUpdateMethodClicked = function (evnt) {
+        let element = $(evnt.data.contentItem.element);
+        let content = element.find('.content');
+        let update_method = content.attr('update_method');
+        let nlchecked = (update_method == 'newlines') ? 'checked="checked"' : '';
+        let apchecked = (update_method == 'append')   ? 'checked="checked"' : '';
+        let rpchecked = (update_method == 'replace')  ? 'checked="checked"' : '';
+
+        let menu = $('<div id="updatelist">');
+        let div = $('<div class="updatelistsub">');
+
+        let newlines = $('<label><input type="radio" name="upmethod" value="newlines" '+nlchecked+'/>Newlines</label>');
+        let append   = $('<label><input type="radio" name="upmethod" value="append" '+apchecked+'/>Append</label>');
+        let replace  = $('<label><input type="radio" name="upmethod" value="replace" '+rpchecked+'/>Replace</label>');
+
+        newlines.appendTo(div);
+        append.appendTo(div);
+        replace.appendTo(div);
+
+        div.appendTo(menu);
+
+        element.prepend(menu);
+    }
+
+
+    //
+    // Handle the updateDropdown
+    var updateDropdown = function (evnt) {
+        let updatelist = document.getElementById('updatelist');
+
+        // check that no other dropdown is open
+        if( document.getElementById('renamebox') ) {
+            closeRenameDropdown();
+        }
+
+        if( document.getElementById('typelist') ) {
+            closeTypelistDropdown();
+        }
+
+        if( !updatelist ) {
+            onUpdateMethodClicked(evnt);
+        } else {
+            closeUpdatelistDropdown();
+        }
+    }
+
+
+    //
+    //
+    var onActiveTabChange = function (tab) {
+        let renamebox  = document.getElementById('renamebox');
+        let typelist   = document.getElementById('typelist');
+        let updatelist = document.getElementById('updatelist');
+
+        if( renamebox ) {
+            closeRenameDropdown();
+        }
+
+        if( typelist ) {
+            closeTypelistDropdown();
+        }
+
+        if( updatelist ) {
+            closeUpdatelistDropdown();
+        }
+    }
+
+
+    //
     // Save the GoldenLayout state to localstorage whenever it changes.
     var onStateChanged = function () {
         let components = myLayout.root.getItemsByType('component');
@@ -105,186 +307,36 @@ plugin_handler.add('goldenlayout', (function () {
 
     //
     //
-    // Handle the renamePopup
-    var renamePopup = function (evnt) {
-        let element = $(evnt.data.contentItem.element);
-        let content = element.find('.content');
-        let title   = evnt.data.contentItem.config.title;
-        let renamebox = document.getElementById('renamebox');
-
-        // check that no other popup is open
-        if( document.getElementById('typelist') || document.getElementById('updatelist') ) {
-            return;
-        }
-
-        if( !renamebox ) {
-            renamebox = $('<div id="renamebox">');
-            renamebox.append('<input type="textbox" id="renameboxin" value="'+title+'">');
-            renamebox.insertBefore( content );
-        } else {
-            let title = $('#renameboxin').val();
-
-            // check that the renamebox that is open is for this contentItem
-            if( $('#renamebox').parent()[0] === content.parent()[0] ) {
-                evnt.data.setTitle( title );
-                evnt.data.contentItem.setTitle( title );
-                myLayout.emit('stateChanged');
-                $('#renamebox').remove();
-            }
-        }
-    }
-
-
-    //
-    var onSelectTypesClicked = function (evnt) {
-        let element = $(evnt.data.contentItem.element);
-        let content = element.find('.content');
-        let selected_types = content.attr('types');
-        let menu = $('<div id="typelist">');
-        let div = $('<div class="typelistsub">');
-
-        if( selected_types ) {
-            selected_types = selected_types.split(' ');
-        }
-        for (i=0; i<known_types.length;i++) {
-            let type = known_types[i];
-            let choice;
-            if( selected_types && selected_types.includes(type) ) {
-                choice = $('<label><input type="checkbox" value="'+type+'" checked="checked"/>'+type+'</label>');
-            } else {
-                choice = $('<label><input type="checkbox" value="'+type+'"/>'+type+'</label>');
-            }
-            choice.appendTo(div);
-        }
-        div.appendTo(menu);
-
-        element.prepend(menu);
-    }
-
-
-    //
-    //
-    var commitCheckboxes = function (evnt, content) {
-        let checkboxes = $('#typelist :input');
-        let types = [];
-        for (i=0; i<checkboxes.length; i++ ) {
-            let box = checkboxes[i];
-            if( $(box).prop('checked') ) {
-                types.push( $(box).val() );
-            }
-        }
-        content.attr('types', types.join(' '));
-        myLayout.emit('stateChanged');
-    }
-
-
-    //
-    // Handle the typePopup
-    var typePopup = function (evnt) {
-        let typelist = document.getElementById('typelist');
-
-        // check that no other popup is open
-        if( document.getElementById('renamebox') || document.getElementById('updatelist') ) {
-            return;
-        }
-
-        if( !typelist ) {
-            onSelectTypesClicked(evnt);
-        } else {
-            let element = $(evnt.data.contentItem.element);
-            let content = element.find('.content');
-            if( $('#typelist').parent().children('.lm_content')[0] === content.parent()[0] ) {
-            // check that the typelist that is open is for this contentItem
-                commitCheckboxes(evnt, content);
-                calculate_untagged_types();
-                $('#typelist').remove();
-            } 
-        }
-    }
-
-
-    //
-    //
-    var onUpdateMethodClicked = function (evnt) {
-        let element = $(evnt.data.contentItem.element);
-        let content = element.find('.content');
-        let update_method = content.attr('update_method');
-        let nlchecked = (update_method == 'newlines') ? 'checked="checked"' : '';
-        let apchecked = (update_method == 'append')   ? 'checked="checked"' : '';
-        let rpchecked = (update_method == 'replace')  ? 'checked="checked"' : '';
-
-        let menu = $('<div id="updatelist">');
-        let div = $('<div class="updatelistsub">');
-
-        let newlines = $('<label><input type="radio" name="update_method" value="newlines" '+nlchecked+'/>Newlines</label>');
-        let append   = $('<label><input type="radio" name="update_method" value="append" '+apchecked+'/>Append</label>');
-        let replace  = $('<label><input type="radio" name="update_method" value="replace" '+rpchecked+'/>Replace</label>');
-
-        newlines.appendTo(div);
-        append.appendTo(div);
-        replace.appendTo(div);
-
-        div.appendTo(menu);
-
-        element.prepend(menu);
-    }
-
-
-    //
-    // Handle the updatePopup
-    var updatePopup = function (evnt) {
-        let updatelist = document.getElementById('updatelist');
-
-        // check that no other popup is open
-        if( document.getElementById('renamebox') || document.getElementById('typelist') ) {
-            return;
-        }
-
-        if( !updatelist ) {
-            onUpdateMethodClicked(evnt);
-        } else {
-            let element = $(evnt.data.contentItem.element);
-            let content = element.find('.content');
-
-            // check that the updatelist that is open is for this contentItem
-            if( $('#updatelist').parent().children('.lm_content')[0] === content.parent()[0] ) {
-                content.attr('update_method', $('input[name=update_method]:checked').val() );
-                myLayout.emit('stateChanged');
-                $('#updatelist').remove();
-            }
-        }
-    }
-
-
-    //
-    //
     var onTabCreate = function (tab) {
         //HTML for the typeDropdown
-        let tabRenameControl   = $('<span class="lm_title" style="font-size: 1em;width: 1.5em;">\u2B57</span>');
-        let typePopupControl   = $('<span class="lm_title" style="font-size: 1.5em;width: 1em;">&#11163;</span>');
-        let updatePopupControl = $('<span class="lm_title" style="font-size: 1.5em;width: 1em;">&#11163;</span>');
-        let splitControl       = $('<span class="lm_title" style="font-size: 2em;width: 1em;">+</span>');
+        let renameDropdownControl = $('<span class="lm_title" style="font-size: 1em;width: 1.5em;">\u2B57</span>');
+        let typeDropdownControl   = $('<span class="lm_title" style="font-size: 1.5em;width: 1em;">&#11163;</span>');
+        let updateDropdownControl = $('<span class="lm_title" style="font-size: 1.5em;width: 1em;">&#11163;</span>');
+        let splitControl          = $('<span class="lm_title" style="font-size: 2em;width: 1em;">+</span>');
 
-        // track popups when the associated control is clicked
-        tabRenameControl.click( tab, renamePopup ); 
+        // track dropdowns when the associated control is clicked
+        renameDropdownControl.click( tab, renameDropdown ); 
 
-        typePopupControl.click( tab, typePopup );
+        typeDropdownControl.click( tab, typeDropdown );
 
-        updatePopupControl.click( tab, updatePopup );
+        updateDropdownControl.click( tab, updateDropdown );
 
+        // track adding a new tab
         splitControl.click( tab, function (evnt) {
             evnt.data.header.parent.addChild( newTabConfig );
         });
 
         // Add the typeDropdown to the header
-        tab.element.prepend( tabRenameControl );
-        tab.element.append(  typePopupControl );
-        tab.element.append(  updatePopupControl );
+        tab.element.prepend( renameDropdownControl );
+        tab.element.append(  typeDropdownControl );
+        tab.element.append(  updateDropdownControl );
         tab.element.append(  splitControl );
 
         if( tab.contentItem.config.componentName == "Main" ) {
             tab.element.prepend( $('#optionsbutton').clone(true).addClass('lm_title') );
         }
+
+        tab.header.parent.on( 'activeContentItemChanged', onActiveTabChange );
     }
 
 
@@ -306,7 +358,7 @@ plugin_handler.add('goldenlayout', (function () {
 
     //
     //
-    var route_msg = function (text_div, txt, update_method) {
+    var routeMsg = function (text_div, txt, update_method) {
         if ( update_method == 'replace' ) {
             text_div.html(txt)
         } else if ( update_method == 'append' ) {
@@ -383,14 +435,14 @@ plugin_handler.add('goldenlayout', (function () {
 
             // is this message type listed in this pane's types (or is this pane catching 'all')
             if( pane_types.includes(msgtype) || pane_types.includes('all') ) {
-                route_msg( text_div, txt, update_method );
+                routeMsg( text_div, txt, update_method );
                 message_delivered = true;
             }
 
             // is this pane catching 'upmapped' messages?
             // And is this message type listed in the untagged types array?
             if( pane_types.includes("untagged") && untagged.includes(msgtype) ) {
-                route_msg( text_div, txt, update_method );
+                routeMsg( text_div, txt, update_method );
                 message_delivered = true;
             }
         });
@@ -464,7 +516,7 @@ plugin_handler.add('goldenlayout', (function () {
         myLayout.registerComponent( 'evennia', function (container, componentState) {
             let div = $('<div class="content"></div>');
             initComponent(div, container, componentState, 'all', 'newlines');
-            container.on('destroy', calculate_untagged_types);
+            container.on('destroy', calculateUntaggedTypes);
         });
     }
 
