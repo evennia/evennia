@@ -777,7 +777,7 @@ def initialize_nick_templates(in_template, out_template):
         # We don't have the same $-tags in input/output.
         raise NickTemplateInvalid
 
-    regex_string = _RE_NICK_SPACE.sub("\s+", regex_string)
+    regex_string = _RE_NICK_SPACE.sub(r"\\s+", regex_string)
     regex_string = _RE_NICK_ARG.sub(lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string)
     template_string = _RE_NICK_TEMPLATE_ARG.sub(lambda m: "{arg%s}" % m.group(2), out_template)
 
