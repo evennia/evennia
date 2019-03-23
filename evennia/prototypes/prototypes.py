@@ -319,10 +319,11 @@ def search_prototype(key=None, tags=None, require_single=False):
         tag_categories = ["db_prototype" for _ in tags]
         db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
     else:
-        db_matches = DbPrototype.objects.all()
+        db_matches = DbPrototype.objects.all().order_by("id")
     if key:
         # exact or partial match on key
-        db_matches = db_matches.filter(db_key=key) or db_matches.filter(db_key__icontains=key)
+        db_matches = (db_matches.filter(db_key=key) or
+                      db_matches.filter(db_key__icontains=key)).order_by("id")
         # return prototype
     db_prototypes = [dbprot.prototype for dbprot in db_matches]
 
