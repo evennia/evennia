@@ -18,12 +18,14 @@ from evennia.utils.idmapper.models import flush_cache
 
 # mocking of evennia.utils.utils.delay
 def mockdelay(timedelay, callback, *args, **kwargs):
+    print("mockdelay: callback {}(*{}, **{}) called immediately!".format(callback, args, kwargs))
     callback(*args, **kwargs)
     return Deferred()
 
 
 # mocking of twisted's deferLater
 def mockdeferLater(reactor, timedelay, callback, *args, **kwargs):
+    print("mockdeferLater: callback {}(*{}, **{}) called immediately!".format(callback, args, kwargs))
     callback(*args, **kwargs)
     return Deferred()
 
