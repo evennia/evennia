@@ -260,7 +260,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
         dbmodel = self.model.__dbclass__.__name__.lower()
         query = self.filter(db_tags__db_tagtype__iexact=tagtype,
-                            db_tags__db_model__iexact=dbmodel).distinct()
+                            db_tags__db_model__iexact=dbmodel).distinct().order_by('id')
 
         if n_keys > 0:
             # keys and/or categories given
