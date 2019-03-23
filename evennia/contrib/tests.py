@@ -1844,7 +1844,6 @@ class TestPuzzles(CommandTest):
                 if check_test_tags:
                     for gi in grp:
                         tags = gi.tags.all(return_key_and_category=True)
-                        self.assertIn(('tag-' + gi.key, None), tags)
                         self.assertIn(('tag-' + gi.key, 'tagcat'), tags)
 
     def _arm(self, recipe_dbref, name, parts):
