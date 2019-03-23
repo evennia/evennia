@@ -85,7 +85,7 @@ class ObjectDBManager(TypedObjectManager):
         cand_restriction = candidates is not None and Q(
                 pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         if exact:
-            return self.filter(cand_restriction & Q(db_account__username__iexact=ostring))
+            return self.filter(cand_restriction & Q(db_account__username__iexact=ostring)).order_by("id")
         else:  # fuzzy matching
             obj_cands = self.select_related().filter(cand_restriction & Q(db_account__username__istartswith=ostring))
             acct_cands = [obj.account for obj in obj_cands]
@@ -93,7 +93,7 @@ class ObjectDBManager(TypedObjectManager):
             if obj_cands:
                 index_matches = string_partial_matching([acct.key for acct in acct_cands], ostring, ret_index=True)
                 acct_cands = [acct_cands[i].id for i in index_matches]
-                return obj_cands.filter(db_account__id__in=acct_cands)
+                return obj_cands.filter(db_account__id__in=acct_cands).order_by("id")
 
     def get_objs_with_key_and_typeclass(self, oname, otypeclass_path, candidates=None):
         """
@@ -109,7 +109,8 @@ class ObjectDBManager(TypedObjectManager):
         """
         cand_restriction = candidates is not None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates)
                                                                 if obj]) or Q()
-        return self.filter(cand_restriction & Q(db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path))
+        return self.filter(cand_restriction & Q(
+            db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path)).order_by('id')
 
     # attr/property related
 
@@ -128,7 +129,7 @@ class ObjectDBManager(TypedObjectManager):
         """
         cand_restriction = \
             candidates is not None and Q(id__in=[obj.id for obj in candidates]) or Q()
-        return self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name))
+        return self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name)).order_by('id')
 
     def get_objs_with_attr_value(self, attribute_name, attribute_value,
                                  candidates=None, typeclasses=None):
@@ -158,16 +159,16 @@ class ObjectDBManager(TypedObjectManager):
         # This doesn't work if attribute_value is an object. Workaround below
 
         if isinstance(attribute_value, (str, int, float, bool)):
-            return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name,
-                                                                       db_attributes__db_value=attribute_value))
+            return self.filter(cand_restriction & type_restriction & Q(
+                db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value)).order_by('id')
         else:
             # We must loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
             global _ATTR
             if not _ATTR:
                 from evennia.typeclasses.models import Attribute as _ATTR
             cands = list(self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)))
-            results = [attr.objectdb_set.all() for attr in _ATTR.objects.filter(objectdb__in=cands,
-                                                                                db_value=attribute_value)]
+            results = [attr.objectdb_set.all() for attr in _ATTR.objects.filter(
+                objectdb__in=cands, db_value=attribute_value).order_by('id')]
             return chain(*results)
 
     def get_objs_with_db_property(self, property_name, candidates=None):
@@ -187,7 +188,7 @@ class ObjectDBManager(TypedObjectManager):
                                                                 if obj]) or Q()
         querykwargs = {property_name: None}
         try:
-            return list(self.filter(cand_restriction).exclude(Q(**querykwargs)))
+            return list(self.filter(cand_restriction).exclude(Q(**querykwargs)).order_by('id'))
         except exceptions.FieldError:
             return []
 
@@ -210,7 +211,7 @@ class ObjectDBManager(TypedObjectManager):
                                                                 if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         try:
-            return list(self.filter(cand_restriction & type_restriction & Q(**querykwargs)))
+            return list(self.filter(cand_restriction & type_restriction & Q(**querykwargs)).order_by('id'))
         except exceptions.FieldError:
             return []
         except ValueError:
@@ -232,7 +233,7 @@ class ObjectDBManager(TypedObjectManager):
             contents (list): Matching contents, without excludeobj, if given.
         """
         exclude_restriction = Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
-        return self.filter(db_location=location).exclude(exclude_restriction)
+        return self.filter(db_location=location).exclude(exclude_restriction).order_by('id')
 
     def get_objs_with_key_or_alias(self, ostring, exact=True,
                                    candidates=None, typeclasses=None):
@@ -264,8 +265,9 @@ class ObjectDBManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         if exact:
             # exact match - do direct search
-            return self.filter(cand_restriction & type_restriction & (Q(db_key__iexact=ostring) |
-                                                                      Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_tagtype__iexact="alias"))).distinct()
+            return self.filter(cand_restriction & type_restriction & (
+                Q(db_key__iexact=ostring) | Q(db_tags__db_key__iexact=ostring) & Q(
+                    db_tags__db_tagtype__iexact="alias"))).order_by('id').distinct()
         elif candidates:
             # fuzzy with candidates
             search_candidates = self.filter(cand_restriction & type_restriction).order_by('id')
