@@ -444,13 +444,11 @@ class TestBuilding(CommandTest):
         building.CmdDestroy.confirm = False
         self.call(building.CmdDestroy(), "", "Usage: ")
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
-        settings.DEFAULT_HOME = self.room1.dbref
         self.call(building.CmdDestroy(), "Obj", "Obj2 was destroyed.")
         self.call(building.CmdDestroy(), "Obj", "Could not find 'Obj'.| (Objects to destroy "
                   "must either be local or specified with a unique #dbref.)")
-        default_home_dbref = settings.DEFAULT_HOME
-        self.call(building.CmdDestroy(), default_home_dbref,
-                  "You are trying to delete")  # DEFAULT_HOME
+        self.call(building.CmdDestroy(), settings.DEFAULT_HOME,
+                  "You are trying to delete")  # DEFAULT_HOME should not be deleted
         self.char2.location = self.room2
         charid = self.char2.id
         room1id = self.room1.id

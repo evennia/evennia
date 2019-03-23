@@ -268,11 +268,11 @@ class ObjectDBManager(TypedObjectManager):
                                                                       Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_tagtype__iexact="alias"))).distinct()
         elif candidates:
             # fuzzy with candidates
-            search_candidates = self.filter(cand_restriction & type_restriction)
+            search_candidates = self.filter(cand_restriction & type_restriction).order_by('id')
         else:
             # fuzzy without supplied candidates - we select our own candidates
             search_candidates = self.filter(type_restriction & (Q(db_key__istartswith=ostring) |
-                                                                Q(db_tags__db_key__istartswith=ostring))).distinct()
+                                                                Q(db_tags__db_key__istartswith=ostring))).distinct().order_by('id')
         # fuzzy matching
         key_strings = search_candidates.values_list("db_key", flat=True).order_by("id")
 
