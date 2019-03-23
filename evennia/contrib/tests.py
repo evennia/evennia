@@ -910,6 +910,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
     @patch("evennia.scripts.taskhandler.deferLater", mockdeferLater)
     def test_crumblingwall(self):
         wall = create_object(tutobjects.CrumblingWall, key="wall", location=self.room1)
+        wall.db.destination = self.room2.dbref
         self.assertFalse(wall.db.button_exposed)
         self.assertFalse(wall.db.exit_open)
         wall.db.root_pos = {"yellow": 0, "green": 0, "red": 0, "blue": 0}
