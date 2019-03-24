@@ -13,8 +13,8 @@ class TestDatabase(TestCase):
     def test_database(self):
 
         import subprocess
-        subprocess.call(["mysql", "-u root", '-e "SHOW TABLE STATUS;"', "evennia"])
-        subprocess.call(["mysql", "-u root", '-e "SHOW TABLE STATUS;"', "test_evennia"])
+        subprocess.call(["mysql", "-u", "root", '-e', '"SHOW TABLE STATUS;"', "evennia"])
+        subprocess.call(["mysql", "-u", "root", '-e', '"SHOW TABLE STATUS;"', "test_evennia"])
 
 
 @patch("evennia.server.server.LoopingCall", new=MagicMock())
