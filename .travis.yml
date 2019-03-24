@@ -20,7 +20,7 @@ before_install:
   - psql -U postgres -c "CREATE DATABASE evennia;"
   - psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
   - psql -U postgres -c "ALTER USER evennia CREATEDB;"
-  - mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4;"
+  - mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   - mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
   - mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
   - mysql -u root -e "SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';"
