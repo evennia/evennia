@@ -39,7 +39,7 @@ before_script:
   - cp .travis/${TESTING_DB}_settings.py testing_mygame/server/conf/settings.py
   - cd testing_mygame
   - evennia migrate
-  - mysql -u root -e "ALTER TABLE `accounts_accountdb` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+  - mysql -u root -e "ALTER TABLE accounts_accountdb CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" evennia
   - evennia collectstatic --noinput
 
 script:
