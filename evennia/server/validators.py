@@ -31,9 +31,7 @@ class EvenniaUsernameAvailabilityValidator:
             )
 
         # Check database
-        exists = AccountDB.objects.filter(username__iexact=username)
-        print("\nusernamevalidator query: {}".format(exists.query))
-        exists = exists.exists()
+        exists = AccountDB.objects.filter(username__iexact=username).exists()
         if exists:
             raise ValidationError(
                 _('Sorry, that username is already taken.'),
