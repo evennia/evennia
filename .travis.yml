@@ -1,4 +1,5 @@
-dist: xenial
+# dist: xenial
+dist: trusty
 language: python
 cache: pip
 
