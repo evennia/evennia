@@ -9,14 +9,6 @@ from django.test import override_settings
 from evennia.utils.test_resources import unload_module
 
 
-class TestDatabase(TestCase):
-    def test_database(self):
-
-        import subprocess
-        # subprocess.call(["mysql", "-u", "root", '-e "SHOW TABLE STATUS;"', "evennia"], shell=True)
-        subprocess.call("mysql -u root -e \"SHOW TABLE STATUS;\" evennia", shell=True)
-
-
 @patch("evennia.server.server.LoopingCall", new=MagicMock())
 class TestServer(TestCase):
     """
