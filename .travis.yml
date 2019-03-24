@@ -39,7 +39,6 @@ before_script:
   - evennia collectstatic --noinput
   - mysql -u root -e "SHOW TABLE STATUS;" evennia
   - mysql -u root -e "SHOW FULL COLUMNS FROM accounts_accountdb;" evennia
-  - mysql -u root -e "SHOW FULL COLUMNS FROM accounts_accountdb_user_permissions;" evennia
 
 script:
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
