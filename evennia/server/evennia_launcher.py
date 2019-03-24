@@ -89,7 +89,7 @@ PSTATUS = chr(18)      # ping server or portal status
 SRESET = chr(19)       # shutdown server in reset mode
 
 # requirements
-PYTHON_MIN = '3.5'
+PYTHON_MIN = '3.7'
 TWISTED_MIN = '18.0.0'
 DJANGO_MIN = '1.11'
 DJANGO_REC = '1.11'
