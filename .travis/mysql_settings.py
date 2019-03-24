@@ -47,12 +47,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',  # use default port
         'OPTIONS': {
-            'read_default_file': '.travis/my.conf'
+            # 'read_default_file': '.travis/my.conf',
+            'charset': 'utf8mb4'
         },
         'TEST': {
             'NAME': 'default',
             'OPTIONS': {
-                'read_default_file': '.travis/my.conf'
+                # 'read_default_file': '.travis/my.conf'
+                'charset': 'utf8mb4'
             }
         }
     }

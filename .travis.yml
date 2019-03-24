@@ -23,6 +23,7 @@ before_install:
   - mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4;"
   - mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
   - mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
+  - mysql -u root -e "SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';"
 
 install:
   - pip install psycopg2-binary
