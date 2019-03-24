@@ -37,6 +37,7 @@ before_script:
   - cd testing_mygame
   - evennia migrate
   - evennia collectstatic --noinput
+  - mysql -u root -e "SHOW TABLE STATUS;"
 
 script:
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
