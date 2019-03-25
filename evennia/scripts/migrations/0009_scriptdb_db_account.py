@@ -27,6 +27,6 @@ class Migration(migrations.Migration):
             migrations.AddField(
                 model_name='scriptdb',
                 name='db_account',
-                field=models.ForeignKey(blank=True, help_text=b'the account to store this script on (should not be set if db_obj is set)', null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.AccountDB', verbose_name=b'scripted account'),
+                field=models.ForeignKey(blank=True, help_text='the account to store this script on (should not be set if db_obj is set)', null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.AccountDB', verbose_name='scripted account'),
             ),
         ]

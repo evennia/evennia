@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='msg',
             name='db_tags',
-            field=models.ManyToManyField(help_text=b'tags on this message. Tags are simple string markers to identify, group and alias messages.', to='typeclasses.Tag', null=True),
+            field=models.ManyToManyField(help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.', to='typeclasses.Tag', null=True),
         ),
     ]

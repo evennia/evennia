@@ -188,7 +188,8 @@ class TestDefaultAccountAuth(EvenniaTest):
         from django.core.exceptions import ValidationError
         # Try setting some bad passwords
         for bad in ('', '#', 'TestAccount', 'password'):
-            self.assertRaises(ValidationError, account.set_password, bad)
+            valid, error = account.validate_password(bad, account)
+            self.assertFalse(valid)
 
         # Try setting a better password (test for False; returns None on success)
         self.assertFalse(account.set_password('Mxyzptlk'))

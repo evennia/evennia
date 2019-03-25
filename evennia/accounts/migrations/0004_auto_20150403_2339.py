@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='accountdb',
             managers=[
-                (b'objects', evennia.accounts.manager.AccountDBManager()),
+                ('objects', evennia.accounts.manager.AccountDBManager()),
             ],
         ),
         migrations.AlterField(

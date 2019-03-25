@@ -16,11 +16,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='msg',
             name='db_receivers_scripts',
-            field=models.ManyToManyField(blank=True, help_text=b'script_receivers', null=True, related_name='receiver_script_set', to='scripts.ScriptDB'),
+            field=models.ManyToManyField(blank=True, help_text='script_receivers', null=True, related_name='receiver_script_set', to='scripts.ScriptDB'),
         ),
         migrations.AddField(
             model_name='msg',
             name='db_sender_scripts',
-            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name=b'sender(script)'),
+            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name='sender(script)'),
         ),
     ]

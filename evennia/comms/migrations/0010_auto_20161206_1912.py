@@ -16,11 +16,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='channeldb',
             name='db_object_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name=b'subscriptions'),
+            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name='subscriptions'),
         ),
         migrations.AlterField(
             model_name='channeldb',
             name='db_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='subscription_set', to=settings.AUTH_USER_MODEL, verbose_name=b'subscriptions'),
+            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='subscription_set', to=settings.AUTH_USER_MODEL, verbose_name='subscriptions'),
         ),
     ]
