@@ -10,11 +10,12 @@ class CaseInsensitiveModelBackend(ModelBackend):
 
     """
 
-    def authenticate(self, username=None, password=None, autologin=None):
+    def authenticate(self, request, username=None, password=None, autologin=None):
         """
         Custom authenticate with bypass for auto-logins
 
         Args:
+            request (Request): Request object.
             username (str, optional): Name of user to authenticate.
             password (str, optional): Password of user
             autologin (Account, optional): If given, assume this is
