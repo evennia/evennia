@@ -16,22 +16,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='channeldb',
             name='db_attributes',
-            field=models.ManyToManyField(help_text=b'attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).', to='typeclasses.Attribute'),
+            field=models.ManyToManyField(help_text='attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).', to='typeclasses.Attribute'),
         ),
         migrations.AlterField(
             model_name='channeldb',
             name='db_object_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name=b'subscriptions'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name='subscriptions'),
         ),
         migrations.AlterField(
             model_name='channeldb',
             name='db_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='subscription_set', to=settings.AUTH_USER_MODEL, verbose_name=b'subscriptions'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='subscription_set', to=settings.AUTH_USER_MODEL, verbose_name='subscriptions'),
         ),
         migrations.AlterField(
             model_name='channeldb',
             name='db_tags',
-            field=models.ManyToManyField(help_text=b'tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag'),
+            field=models.ManyToManyField(help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag'),
         ),
         migrations.AlterField(
             model_name='msg',
@@ -51,31 +51,31 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='msg',
             name='db_receivers_channels',
-            field=models.ManyToManyField(blank=True, help_text=b'channel recievers', related_name='channel_set', to='comms.ChannelDB'),
+            field=models.ManyToManyField(blank=True, help_text='channel recievers', related_name='channel_set', to='comms.ChannelDB'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_receivers_objects',
-            field=models.ManyToManyField(blank=True, help_text=b'object receivers', related_name='receiver_object_set', to='objects.ObjectDB'),
+            field=models.ManyToManyField(blank=True, help_text='object receivers', related_name='receiver_object_set', to='objects.ObjectDB'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_receivers_accounts',
-            field=models.ManyToManyField(blank=True, help_text=b'account receivers', related_name='receiver_account_set', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(blank=True, help_text='account receivers', related_name='receiver_account_set', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_sender_objects',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_object_set', to='objects.ObjectDB', verbose_name=b'sender(object)'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_object_set', to='objects.ObjectDB', verbose_name='sender(object)'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_sender_accounts',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_account_set', to=settings.AUTH_USER_MODEL, verbose_name=b'sender(account)'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_account_set', to=settings.AUTH_USER_MODEL, verbose_name='sender(account)'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_tags',
-            field=models.ManyToManyField(blank=True, help_text=b'tags on this message. Tags are simple string markers to identify, group and alias messages.', to='typeclasses.Tag'),
+            field=models.ManyToManyField(blank=True, help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.', to='typeclasses.Tag'),
         ),
     ]

@@ -27,6 +27,6 @@ class Migration(migrations.Migration):
             migrations.AddField(
                 model_name='objectdb',
                 name='db_account',
-                field=models.ForeignKey(help_text=b'an Account connected to this object, if any.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.AccountDB', verbose_name=b'account'),
+                field=models.ForeignKey(help_text='an Account connected to this object, if any.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.AccountDB', verbose_name='account'),
             ),
         ]

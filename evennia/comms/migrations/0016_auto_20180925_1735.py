@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='msg',
             name='db_message',
-            field=models.TextField(verbose_name=b'message'),
+            field=models.TextField(verbose_name='message'),
         ),
     ]

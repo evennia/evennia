@@ -23,37 +23,37 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='channeldb',
             name='db_account_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='account_subscription_set', to='accounts.AccountDB', verbose_name=b'account subscriptions'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='account_subscription_set', to='accounts.AccountDB', verbose_name='account subscriptions'),
         ),
         migrations.AlterField(
             model_name='channeldb',
             name='db_object_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name=b'object subscriptions'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name='object subscriptions'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_receivers_scripts',
-            field=models.ManyToManyField(blank=True, help_text=b'script_receivers', related_name='receiver_script_set', to='scripts.ScriptDB'),
+            field=models.ManyToManyField(blank=True, help_text='script_receivers', related_name='receiver_script_set', to='scripts.ScriptDB'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_sender_scripts',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name=b'sender(script)'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name='sender(script)'),
         ),
         migrations.AlterField(
             model_name='channeldb',
             name='db_object_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name=b'object subscriptions'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name='object subscriptions'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_receivers_scripts',
-            field=models.ManyToManyField(blank=True, help_text=b'script_receivers', related_name='receiver_script_set', to='scripts.ScriptDB'),
+            field=models.ManyToManyField(blank=True, help_text='script_receivers', related_name='receiver_script_set', to='scripts.ScriptDB'),
         ),
         migrations.AlterField(
             model_name='msg',
             name='db_sender_scripts',
-            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name=b'sender(script)'),
+            field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_script_set', to='scripts.ScriptDB', verbose_name='sender(script)'),
         ),
     ]
 
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
             migrations.AddField(
                 model_name='channeldb',
                 name='db_account_subscriptions',
-                field=models.ManyToManyField(blank=True, db_index=True, related_name='account_subscription_set', to='accounts.AccountDB', verbose_name=b'account subscriptions'),
+                field=models.ManyToManyField(blank=True, db_index=True, related_name='account_subscription_set', to='accounts.AccountDB', verbose_name='account subscriptions'),
             ),
             migrations.AddField(
                 model_name='msg',
@@ -74,11 +74,11 @@ class Migration(migrations.Migration):
             migrations.AddField(
                 model_name='msg',
                 name='db_receivers_accounts',
-                field=models.ManyToManyField(blank=True, help_text=b'account receivers', related_name='receiver_account_set', to='accounts.AccountDB'),
+                field=models.ManyToManyField(blank=True, help_text='account receivers', related_name='receiver_account_set', to='accounts.AccountDB'),
             ),
             migrations.AddField(
                 model_name='msg',
                 name='db_sender_accounts',
-                field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_account_set', to='accounts.AccountDB', verbose_name=b'sender(account)'),
+                field=models.ManyToManyField(blank=True, db_index=True, related_name='sender_account_set', to='accounts.AccountDB', verbose_name='sender(account)'),
             ),
         ]

@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             },
             bases=('accounts.accountdb',),
             managers=[
-                (b'objects', evennia.accounts.manager.AccountManager()),
+                ('objects', evennia.accounts.manager.AccountManager()),
             ],
         ),
         migrations.CreateModel(
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             },
             bases=('typeclasses.defaultaccount',),
             managers=[
-                (b'objects', evennia.accounts.manager.AccountManager()),
+                ('objects', evennia.accounts.manager.AccountManager()),
             ],
         ),
         migrations.CreateModel(

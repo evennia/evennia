@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='helpentry',
             name='db_tags',
-            field=models.ManyToManyField(blank=True, help_text=b'tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag'),
+            field=models.ManyToManyField(blank=True, help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag'),
         ),
     ]
