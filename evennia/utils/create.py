@@ -469,6 +469,10 @@ def create_account(key, email, password,
     new_account = typeclass(username=key, email=email,
                             is_staff=is_superuser, is_superuser=is_superuser,
                             last_login=now, date_joined=now)
+    valid, error = new_account.validate_password(password, new_account)
+    if not valid:
+        raise error
+
     new_account.set_password(password)
     new_account._createdict = dict(locks=locks, permissions=permissions, report_to=report_to,
                                    tags=tags, attributes=attributes)
