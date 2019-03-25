@@ -595,29 +595,18 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         return valid, error
 
-    def set_password(self, password, force=False):
+    def set_password(self, password, **kwargs):
         """
-        Applies the given password to the account if it passes validation checks.
-        Can be overridden by using the 'force' flag.
+        Applies the given password to the account. Logs and triggers the `at_password_change` hook.
 
         Args:
-            password (str): Password to set
+            password (str): Password to set.
 
-        Kwargs:
-            force (bool): Sets password without running validation checks.
-
-        Raises:
-            ValidationError
-
-        Returns:
-            None (None): Does not return a value.
+        Notes:
+            This is called by Django also when logging in; it should not be mixed up with validation, since that
+            would mean old passwords in the database (pre validation checks) could get invalidated.
 
         """
-        if not force:
-            # Run validation checks
-            valid, error = self.validate_password(password, account=self)
-            if error: raise error
-
         super(DefaultAccount, self).set_password(password)
         logger.log_sec("Password successfully changed for %s." % self)
         self.at_password_change()
