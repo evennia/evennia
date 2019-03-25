@@ -1,7 +1,7 @@
 # Evennia dependencies, for Linux/Mac platforms
 
 # general
-django >= 2.0, < 2.1
+django >= 2.1, < 2.2
 twisted >= 18.0.0, < 19.0.0
 pillow == 5.2.0
 pytz
