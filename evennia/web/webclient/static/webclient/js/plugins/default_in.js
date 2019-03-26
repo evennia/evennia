@@ -13,6 +13,7 @@ let defaultin_plugin = (function () {
 
         // check for important keys
         switch (event.which) {
+            case  9:  // ignore tab key -- allows normal focus control
             case 16:  // ignore shift
             case 17:  // ignore alt
             case 18:  // ignore control
