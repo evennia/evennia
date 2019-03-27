@@ -529,5 +529,6 @@ plugin_handler.add('goldenlayout', (function () {
         getGL: function () { return myLayout },
         getConfig: function () { return config },
         setConfig: function (newconfig) { config = newconfig },
+        addKnownType: function (newtype) { known_types.push(newtype) },
     }
 })());
