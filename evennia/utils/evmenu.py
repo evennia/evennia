@@ -1008,6 +1008,10 @@ class EvMenu(object):
 
         ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
 
+        if ncols <= 0:
+            # no visible option at all
+            return ""
+
         # get the amount of rows needed (start with 4 rows)
         nrows = 4
         while nrows * ncols < nlist:
