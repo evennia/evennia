@@ -38,7 +38,7 @@ things you want from here into your game folder and change them there.
   on a character and access it in an emote with a custom marker.
 * Health Bar (Tim Ashley Jenkins 2017) - Tool to create colorful bars/meters.
 * Mail (grungies1138 2016) - An in-game mail system for communication.
-* Menu login (Griatch 2011) - A login system using menus asking
+* Menu login (Griatch 2011, 2019, Vincent-lg 2016) - A login system using menus asking
   for name/password rather than giving them as one command.
 * Map Builder (CloudKeeper 2016) - Build a game area based on a 2D
   "graphical" unicode map. Supports assymmetric exits.
