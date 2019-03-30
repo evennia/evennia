@@ -419,9 +419,11 @@ class EvCell(object):
 
         borderchar = kwargs.get("border_char", None)
         self.border_left_char = kwargs.get("border_left_char", borderchar if borderchar else "|")
-        self.border_right_char = kwargs.get("border_right_char", borderchar if borderchar else "|")
-        self.border_top_char = kwargs.get("border_topchar", borderchar if borderchar else "-")
-        self.border_bottom_char = kwargs.get("border_bottom_char", borderchar if borderchar else "-")
+        self.border_right_char = kwargs.get("border_right_char",
+                                            borderchar if borderchar else self.border_left_char)
+        self.border_top_char = kwargs.get("border_top_char", borderchar if borderchar else "-")
+        self.border_bottom_char = kwargs.get("border_bottom_char",
+                                             borderchar if borderchar else self.border_top_char)
 
         corner_char = kwargs.get("corner_char", "+")
         self.corner_top_left_char = kwargs.get("corner_top_left_char", corner_char)
