@@ -220,6 +220,7 @@ class TestSystem(CommandTest):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
         self.call(system.CmdPy(), "1+2", ">>> 1+2|3")
+        self.call(system.CmdPy(), "/clientraw 1+2", ">>> 1+2|3")
 
     def test_scripts(self):
         self.call(system.CmdScripts(), "", "dbref ")
