@@ -805,6 +805,12 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
 #
 # ------------------------------------------------------------
 
+
+def collectstatic():
+    "Run the collectstatic django command"
+    django.core.management.call_command("collectstatic", interactive=False, verbosity=0)
+
+
 def start_evennia(pprofiler=False, sprofiler=False):
     """
     This will start Evennia anew by launching the Evennia Portal (which in turn
@@ -855,6 +861,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
             _reactor_stop()
         wait_for_status(True, None, _portal_started)
 
+    collectstatic()
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
@@ -895,6 +902,7 @@ def reload_evennia(sprofiler=False, reset=False):
         print("Evennia not running. Starting up ...")
         start_evennia()
 
+    collectstatic()
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
@@ -966,6 +974,7 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
         print("Evennia not running. Starting up ...")
         start_evennia()
 
+    collectstatic()
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
@@ -975,6 +984,7 @@ def start_only_server():
     """
     portal_cmd, server_cmd = _get_twistd_cmdline(False, False)
     print("launcher: Sending to portal: SSTART + {}".format(server_cmd))
+    collectstatic()
     send_instruction(SSTART, server_cmd)
 
 
@@ -993,6 +1003,8 @@ def start_server_interactive():
             print("... Stopped Server with Ctrl-C.")
         else:
             print("... Server stopped (leaving interactive mode).")
+
+    collectstatic()
     stop_server_only(when_stopped=_iserver, interactive=True)
 
 
