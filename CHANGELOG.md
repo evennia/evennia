@@ -124,6 +124,7 @@ Web/Django standard initiative (@strikaco)
   + The `detail` command now also supports deleting details (like the tutorial-world version).
   + The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
      to install the extended-room contrib. 
+- Reworked `menu_login` contrib to use latest EvMenu standards. Now also supports guest logins.
 
 
 

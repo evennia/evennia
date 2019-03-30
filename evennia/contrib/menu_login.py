@@ -1,320 +1,209 @@
 """
 A login menu using EvMenu.
 
-Contribution - Vincent-lg 2016
+Contribution - Vincent-lg 2016, Griatch 2019 (rework for modern EvMenu)
 
-This module contains the functions (nodes) of the EvMenu, with the
-CmdSet and UnloggedCommand called when a user logs in.  In other
-words, instead of using the 'connect' or 'create' commands once on the
-login screen, players navigates through a simple menu asking them to
-enter their username followed by password, or to type 'new' to create
-a new one. You will need to change update your login screen if you use
-this system.
+This changes the Evennia login to ask for the account name and password in
+sequence instead of requiring you to enter both at once. 
 
-In order to install, to your settings file, add/edit the line:
+To install, add this line to the settings file (`mygame/server/conf/settings.py`):
 
-CMDSET_UNLOGGEDIN = "contrib.menu_login.UnloggedinCmdSet"
+    CMDSET_UNLOGGEDIN = "evennia.contrib.menu_login.UnloggedinCmdSet"
 
-When you'll reload the server, new sessions will connect to the new
-login system, where they will be able to:
+Reload the server and the new connection method will be active. Note that you must
+independently change the connection screen to match this login style, by editing 
+`mygame/server/conf/connection_screens.py`.
 
-* Enter their username, assuming they have an existing account.
-* Enter 'NEW' to create a new account.
-
-The top-level functions in this file are menu nodes (as described in
-evennia.utils.evmenu.py). Each one of these functions is responsible
-for prompting the user for a specific piece of information (username,
-password and so on). At the bottom of the file is defined the CmdSet
-for Unlogging users. This adds a new command that is called just after
-a new session has been created, in order to create the menu.  See the
-specific documentation on functions (nodes) to see what each one
-should do.
+This uses Evennia's menu system EvMenu and is triggered by a command that is 
+called automatically when a new user connects.
 
 """
-
-import re
-from textwrap import dedent
 
 from django.conf import settings
 
 from evennia import Command, CmdSet
-from evennia import logger
-from evennia import managers
-from evennia import ObjectDB
-from evennia.server.models import ServerConfig
 from evennia import syscmdkeys
 from evennia.utils.evmenu import EvMenu
-from evennia.utils.utils import random_string_from_module
+from evennia.utils.utils import (
+    random_string_from_module, class_from_module, callables_from_module)
 
-# Constants
-RE_VALID_USERNAME = re.compile(r"^[a-z]{3,}$", re.I)
-LEN_PASSWD = 6
-CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
+_CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
+_GUEST_ENABLED = settings.GUEST_ENABLED
+_ACCOUNT = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+_GUEST = class_from_module(settings.BASE_GUEST_TYPECLASS)
 
-# Menu notes (top-level functions)
+_ACCOUNT_HELP = ("Enter the name you used to log into the game before, "
+                 "or a new account-name if you are new.")
+_PASSWORD_HELP = ("Password should be a minimum of 8 characters (preferably longer) and "
+                  "can contain a mix of letters, spaces, digits and @/./+/-/_/'/, only.")
+
+# Menu nodes
 
 
-def start(caller):
-    """The user should enter his/her username or NEW to create one.
+def _show_help(caller, raw_string, **kwargs):
+    """Echo help message, then re-run node that triggered it"""
+    help_entry = kwargs['help_entry']
+    caller.msg(help_entry)
+    return None  # re-run calling node
 
-    This node is called at the very beginning of the menu, when
-    a session has been created OR if an error occurs further
-    down the menu tree.  From there, users can either enter a
-    username (if this username exists) or type NEW (capitalized
-    or not) to create a new account.
+
+def node_enter_username(caller, raw_text, **kwargs):
+    """
+    Start node of menu
+    Start login by displaying the connection screen and ask for a user name.
 
     """
-    text = random_string_from_module(CONNECTION_SCREEN_MODULE)
-    text += "\n\nEnter your username or |yNEW|n to create a new account."
-    options = (
-        {"key": "",
-         "goto": "start"},
-        {"key": "new",
-         "goto": "create_account"},
-        {"key": "quit",
-         "goto": "quit"},
-        {"key": "_default",
-         "goto": "username"})
-    return text, options
+    def _check_input(caller, username, **kwargs):
+        """
+        'Goto-callable', set up to be called from the _default option below.
 
+        Called when user enters a username string. Check if this username already exists and set the flag
+        'new_user' if not. Will also directly login if the username is 'guest'
+        and GUEST_ENABLED is True.
 
-def username(caller, string_input):
-    """Check that the username leads to an existing account.
+        The return from this goto-callable determines which node we go to next
+        and what kwarg it will be called with.
 
-    Check that the specified username exists.  If the username doesn't
-    exist, display an error message and ask the user to try again.  If
-    entering an empty string, return to start node.  If user exists,
-    move to the next node (enter password).
+        """
+        username = username.rstrip('\n')
 
-    """
-    string_input = string_input.strip()
-    account = managers.accounts.get_account_from_name(string_input)
-    if account is None:
-        text = dedent("""
-            |rThe username '{}' doesn't exist. Have you created it?|n
-            Try another name or leave empty to go back.
-        """.strip("\n")).format(string_input)
-        options = (
-            {"key": "",
-             "goto": "start"},
-            {"key": "_default",
-             "goto": "username"})
-    else:
-        caller.ndb._menutree.account = account
-        text = "Enter the password for the {} account.".format(account.name)
-        # Disables echo for the password
-        caller.msg("", options={"echo": False})
-        options = (
-            {"key": "",
-             "exec": lambda caller: caller.msg("", options={"echo": True}),
-             "goto": "start"},
-            {"key": "_default",
-             "goto": "ask_password"})
+        if username == 'guest' and _GUEST_ENABLED:
+            # do an immediate guest login
+            session = caller
+            address = session.address
+            account, errors = _GUEST.authenticate(ip=address)
+            if account:
+                return "node_quit_or_login", {"login": True, "account": account}
+            else:
+                session.msg("|R{}|n".format("\n".join(errors)))
+                return None # re-run the username node
 
-    return text, options
-
-
-def ask_password(caller, string_input):
-    """Ask the user to enter the password to this account.
-
-    This is assuming the user exists (see 'create_username' and
-    'create_password').  This node "loops" if needed:  if the
-    user specifies a wrong password, offers the user to try
-    again or to go back by entering 'b'.
-    If the password is correct, then login.
-
-    """
-    menutree = caller.ndb._menutree
-    string_input = string_input.strip()
-
-    # Check the password and login is correct; also check for bans
-
-    account = menutree.account
-    password_attempts = menutree.password_attempts \
-        if hasattr(menutree, "password_attempts") else 0
-    bans = ServerConfig.objects.conf("server_bans")
-    banned = bans and (any(tup[0] == account.name.lower() for tup in bans) or
-                       any(tup[2].match(caller.address) for tup in bans if tup[2]))
-
-    if not account.check_password(string_input):
-        # Didn't enter a correct password
-        password_attempts += 1
-        if password_attempts > 2:
-            # Too many tries
-            caller.sessionhandler.disconnect(
-                caller, "|rToo many failed attempts. Disconnecting.|n")
-            text = ""
-            options = {}
-        else:
-            menutree.password_attempts = password_attempts
-            text = dedent("""
-                |rIncorrect password.|n
-                Try again or leave empty to go back.
-            """.strip("\n"))
-            # Loops on the same node
-            options = (
-                {"key": "",
-                 "exec": lambda caller: caller.msg("", options={"echo": True}),
-                 "goto": "start"},
-                {"key": "_default",
-                 "goto": "ask_password"})
-    elif banned:
-        # This is a banned IP or name!
-        string = dedent("""
-            |rYou have been banned and cannot continue from here.
-            If you feel this ban is in error, please email an admin.|n
-            Disconnecting.
-        """.strip("\n"))
-        caller.sessionhandler.disconnect(caller, string)
-        text = ""
-        options = {}
-    else:
-        # We are OK, log us in.
-        text = ""
-        options = {}
-        caller.msg("", options={"echo": True})
-        caller.sessionhandler.login(caller, account)
-
-    return text, options
-
-
-def create_account(caller):
-    """Create a new account.
-
-    This node simply prompts the user to entere a username.
-    The input is redirected to 'create_username'.
-
-    """
-    text = "Enter your new account name."
-    options = (
-        {"key": "_default",
-         "goto": "create_username"},)
-    return text, options
-
-
-def create_username(caller, string_input):
-    """Prompt to enter a valid username (one that doesnt exist).
-
-    'string_input' contains the new username.  If it exists, prompt
-    the username to retry or go back to the login screen.
-
-    """
-    menutree = caller.ndb._menutree
-    string_input = string_input.strip()
-    account = managers.accounts.get_account_from_name(string_input)
-
-    # If an account with that name exists, a new one will not be created
-    if account:
-        text = dedent("""
-            |rThe account {} already exists.|n
-            Enter another username or leave blank to go back.
-        """.strip("\n")).format(string_input)
-        # Loops on the same node
-        options = (
-            {"key": "",
-             "goto": "start"},
-            {"key": "_default",
-             "goto": "create_username"})
-    elif not RE_VALID_USERNAME.search(string_input):
-        text = dedent("""
-            |rThis username isn't valid.|n
-            Only letters are accepted, without special characters.
-            The username must be at least 3 characters long.
-            Enter another username or leave blank to go back.
-        """.strip("\n"))
-        options = (
-            {"key": "",
-             "goto": "start"},
-            {"key": "_default",
-             "goto": "create_username"})
-    else:
-        # a valid username - continue getting the password
-        menutree.accountname = string_input
-        # Disables echo for entering password
-        caller.msg("", options={"echo": False})
-        # Redirects to the creation of a password
-        text = "Enter this account's new password."
-        options = (
-            {"key": "_default",
-             "goto": "create_password"},)
-
-    return text, options
-
-
-def create_password(caller, string_input):
-    """Ask the user to create a password.
-
-    This node is at the end of the menu for account creation.  If
-    a proper MULTI_SESSION is configured, a character is also
-    created with the same name (we try to login into it).
-
-    """
-    menutree = caller.ndb._menutree
-    text = ""
-    options = (
-        {"key": "",
-         "exec": lambda caller: caller.msg("", options={"echo": True}),
-         "goto": "start"},
-        {"key": "_default",
-         "goto": "create_password"})
-
-    password = string_input.strip()
-    accountname = menutree.accountname
-
-    if len(password) < LEN_PASSWD:
-        # The password is too short
-        text = dedent("""
-            |rYour password must be at least {} characters long.|n
-            Enter another password or leave it empty to go back.
-        """.strip("\n")).format(LEN_PASSWD)
-    else:
-        # Everything's OK.  Create the new player account and
-        # possibly the character, depending on the multisession mode
-        from evennia.commands.default import unloggedin
-        # We make use of the helper functions from the default set here.
         try:
-            permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-            typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_account = unloggedin._create_account(caller, accountname,
-                                                     password, permissions)
-            if new_account:
-                if settings.MULTISESSION_MODE < 2:
-                    default_home = ObjectDB.objects.get_id(
-                        settings.DEFAULT_HOME)
-                    unloggedin._create_character(caller, new_account,
-                                                 typeclass, default_home, permissions)
-        except Exception:
-            # We are in the middle between logged in and -not, so we have
-            # to handle tracebacks ourselves at this point. If we don't, we
-            # won't see any errors at all.
-            caller.msg(dedent("""
-                |rAn error occurred.|n  Please e-mail an admin if
-                the problem persists. Try another password or leave
-                it empty to go back to the login screen.
-            """.strip("\n")))
-            logger.log_trace()
+            _ACCOUNT.objects.get(username__iexact=username)
+        except _ACCOUNT.DoesNotExist:
+            new_user = True
         else:
-            text = ""
-            caller.msg("|gWelcome, your new account has been created!|n")
-            caller.msg("", options={"echo": True})
-            caller.sessionhandler.login(caller, new_account)
+            new_user = False
 
+        # pass username/new_user into next node as kwargs
+        return "node_enter_password", {'new_user': new_user, 'username': username}
+
+    callables = callables_from_module(_CONNECTION_SCREEN_MODULE)
+    if "connection_screen" in callables:
+        connection_screen = callables['connection_screen']()
+    else:
+        connection_screen = random_string_from_module(_CONNECTION_SCREEN_MODULE)
+
+    if _GUEST_ENABLED:
+        text = "Enter a new or existing user name to login (write 'guest' for a guest login):"
+    else: 
+        text = "Enter a new or existing user name to login:"
+    text = "{}\n\n{}".format(connection_screen, text)
+
+    options = ({"key": "",
+                "goto": "node_enter_username"},
+               {"key": ("quit", "q"),
+                "goto": "node_quit_or_login"},
+               {"key": ("help", "h"), 
+                "goto": (_show_help, {"help_entry": _ACCOUNT_HELP, **kwargs})},
+               {"key": "_default",
+                "goto": _check_input})
     return text, options
 
 
-def quit(caller):
-    caller.sessionhandler.disconnect(caller, "Goodbye! Logging off.")
+def node_enter_password(caller, raw_string, **kwargs):
+    """
+    Handle password input.
+
+    """
+    def _check_input(caller, password, **kwargs):
+        """
+        'Goto-callable', set up to be called from the _default option below.
+
+        Called when user enters a password string. Check username + password
+        viability. If it passes, the account will have been created and login
+        will be initiated.
+
+        The return from this goto-callable determines which node we go to next
+        and what kwarg it will be called with.
+
+        """
+        # these flags were set by the goto-callable
+        username = kwargs['username']
+        new_user = kwargs['new_user']
+        password = password.rstrip('\n')
+
+        session = caller
+        address = session.address
+        if new_user:
+            # create a new account
+            account, errors = _ACCOUNT.create(username=username, password=password,
+                                              ip=address, session=session)
+        else:
+            # check password against existing account
+            account, errors = _ACCOUNT.authenticate(username=username, password=password,
+                                                    ip=address, session=session)
+
+        if account:
+            if new_user:
+                session.msg("|gA new account |c{}|g was created. Welcome!|n".format(username))
+            # pass login info to login node
+            return "node_quit_or_login", {"login": True, "account": account}
+        else:
+            # restart due to errors
+            session.msg("|R{}".format("\n".join(errors)))
+            kwargs['retry_password'] = True
+            return "node_enter_password", kwargs
+
+    def _restart_login(caller, *args, **kwargs):
+        caller.msg("|yCancelled login.|n")
+        return "node_enter_username"
+
+    username = kwargs['username']
+    if kwargs["new_user"]:
+
+        if kwargs.get('retry_password'):
+            # Attempting to fix password
+            text = "Enter a new password:"
+        else:
+            text = ("Creating a new account |c{}|n. "
+                    "Enter a password (empty to abort):".format(username))
+    else:
+        text = "Enter the password for account |c{}|n (empty to abort):".format(username)
+    options = ({"key": "",
+                "goto": _restart_login},
+               {"key": ("quit", "q"),
+                "goto": "node_quit_or_login"},
+               {"key": ("help", "h"),
+                "goto": (_show_help, {"help_entry": _PASSWORD_HELP, **kwargs})},
+               {"key": "_default",
+                "goto": (_check_input, kwargs)})
+    return text, options
+
+
+def node_quit_or_login(caller, raw_text, **kwargs):
+    """
+    Exit menu, either by disconnecting or logging in.
+
+    """
+    session = caller
+    if kwargs.get("login"):
+        account = kwargs.get("account")
+        session.msg("|gLogging in ...|n")
+        session.sessionhandler.login(session, account)
+    else:
+        session.sessionhandler.disconnect(session, "Goodbye! Logging off.")
     return "", {}
 
-# Other functions
 
+# EvMenu helper function
 
-def _formatter(nodetext, optionstext, caller=None):
+def _node_formatter(nodetext, optionstext, caller=None):
     """Do not display the options, only the text.
 
-    This function is used by EvMenu to format the text of nodes.
-    Options are not displayed for this menu, where it doesn't often
-    make much sense to do so.  Thus, only the node text is displayed.
+    This function is used by EvMenu to format the text of nodes. The menu login
+    is just a series of prompts so we disable all automatic display decoration
+    and let the nodes handle everything on their own.
 
     """
     return nodetext
@@ -337,13 +226,17 @@ class CmdUnloggedinLook(Command):
     An unloggedin version of the look command. This is called by the server
     when the account first connects. It sets up the menu before handing off
     to the menu's own look command.
+
     """
     key = syscmdkeys.CMD_LOGINSTART
     locks = "cmd:all()"
     arg_regex = r"^$"
 
     def func(self):
-        "Execute the menu"
+        """
+        Run the menu using the nodes in this module.
+
+        """
         EvMenu(self.caller, "evennia.contrib.menu_login",
-               startnode="start", auto_look=False, auto_quit=False,
-               cmd_on_exit=None, node_formatter=_formatter)
+               startnode="node_enter_username", auto_look=False, auto_quit=False,
+               cmd_on_exit=None, node_formatter=_node_formatter)
