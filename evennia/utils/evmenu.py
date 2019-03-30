@@ -458,7 +458,6 @@ class EvMenu(object):
         for key, val in kwargs.items():
             setattr(self, key, val)
 
-        #
         if self.caller.ndb._menutree:
             # an evmenu already exists - we try to close it cleanly. Note that this will
             # not fire the previous menu's end node.
@@ -992,21 +991,24 @@ class EvMenu(object):
         table_width_max = -1
         table = []
         for key, desc in optionlist:
-            if not (key or desc):
-                continue
-            desc_string = ": %s" % desc if desc else ""
-            table_width_max = max(table_width_max,
-                                  max(m_len(p) for p in key.split("\n")) +
-                                  max(m_len(p) for p in desc_string.split("\n")) + colsep)
-            raw_key = strip_ansi(key)
-            if raw_key != key:
-                # already decorations in key definition
-                table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
-            else:
-                # add a default white color to key
-                table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
+            if key or desc:
+                desc_string = ": %s" % desc if desc else ""
+                table_width_max = max(table_width_max,
+                                      max(m_len(p) for p in key.split("\n")) +
+                                      max(m_len(p) for p in desc_string.split("\n")) + colsep)
+                raw_key = strip_ansi(key)
+                if raw_key != key:
+                    # already decorations in key definition
+                    table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
+                else:
+                    # add a default white color to key
+                    table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
 
         ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
+
+        if ncols <= 0:
+            # no visible option at all
+            return ""
 
         # get the amount of rows needed (start with 4 rows)
         nrows = 4
