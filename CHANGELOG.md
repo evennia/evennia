@@ -17,6 +17,8 @@ Update to Python 3
 - Have the default Unloggedin-look command look for optional `connection_screen()` callable in 
   `mygame/server/conf/connection_screen.py`. This allows for more flexible welcome screens 
   that are calculated on the fly. 
+- `@py` command now defaults to escaping html tags in its output when viewing in the webclient. 
+  Use new `/clientraw` switch to get old behavior (issue #1369).
 
 ### Web
 

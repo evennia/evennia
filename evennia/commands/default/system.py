@@ -133,11 +133,13 @@ def _py_code(caller, buf):
     Execute the buffer.
     """
     measure_time = caller.db._py_measure_time
+    client_raw = caller.db._py_clientraw
     string = "Executing code%s ..." % (
         " (measure timing)" if measure_time else "")
     caller.msg(string)
     _run_code_snippet(caller, buf, mode="exec",
                       measure_time=measure_time,
+                      client_raw=client_raw,
                       show_input=False)
     return True
 
@@ -148,15 +150,16 @@ def _py_quit(caller):
 
 
 def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
-                      show_input=True):
+                      client_raw=False, show_input=True):
     """
     Run code and try to display information to the caller.
 
     Args:
-        caller (Object): the caller.
-        pycode (str): the Python code to run.
-        m_time (bool, optional): should we measure the time of execution?
-        show_input (bookl, optional): should we display the input?
+        caller (Object): The caller.
+        pycode (str): The Python code to run.
+        measure_time (bool, optional): Should we measure the time of execution?
+        client_raw (bool, optional): Should we turn off all client-specific escaping?
+        show_input (bookl, optional): Should we display the input?
 
     """
     # Try to retrieve the session
@@ -211,9 +214,11 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
 
     for session in sessions:
         try:
-            caller.msg(ret, session=session, options={"raw": True})
+            caller.msg(ret, session=session, options={"raw": True,
+                                                      "client_raw": client_raw})
         except TypeError:
-            caller.msg(ret, options={"raw": True})
+            caller.msg(ret, options={"raw": True,
+                                     "client_raw": client_raw})
 
 
 class CmdPy(COMMAND_DEFAULT_CLASS):
@@ -227,6 +232,9 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     Switches:
       time - output an approximate execution time for <cmd>
       edit - open a code editor for multi-line code experimentation
+      clientraw - turn off all client-specific escaping. Note that this may
+        lead to different output depending on prototocol (such as angular brackets
+        being parsed as HTML in the webclient but not in telnet clients)
 
     Separate multiple commands by ';' or open the editor using the
     /edit switch.  A few variables are made available for convenience
@@ -250,7 +258,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     """
     key = "@py"
     aliases = ["!"]
-    switch_options = ("time", "edit")
+    switch_options = ("time", "edit", "clientraw")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
 
@@ -262,6 +270,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
         if "edit" in self.switches:
             caller.db._py_measure_time = "time" in self.switches
+            caller.db._py_clientraw = "clientraw" in self.switches
             EvEditor(self.caller, loadfunc=_py_load, savefunc=_py_code,
                      quitfunc=_py_quit, key="Python exec: :w  or :!", persistent=True,
                      codefunc=_py_code)
@@ -272,7 +281,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
 
-        _run_code_snippet(caller, self.args, measure_time="time" in self.switches)
+        _run_code_snippet(caller, self.args, measure_time="time" in self.switches,
+                          client_raw="clientraw" in self.switches)
 
 # helper function. Kept outside so it can be imported and run
 # by other commands.
