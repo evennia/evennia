@@ -16,6 +16,7 @@ from the command line and interprets it as an Evennia Command: `["text", ["look"
 """
 import re
 import json
+import html
 from twisted.internet.protocol import Protocol
 from django.conf import settings
 from evennia.server.session import Session
@@ -198,6 +199,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))
+        client_raw = options.get("client_raw", False)
         nocolor = options.get("nocolor", flags.get("NOCOLOR", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
@@ -208,7 +210,10 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             text = _RE_SCREENREADER_REGEX.sub("", text)
         cmd = "prompt" if prompt else "text"
         if raw:
-            args[0] = text
+            if client_raw:
+                args[0] = text
+            else:
+                args[0] = html.escape(text)  # escape html!
         else:
             args[0] = parse_html(text, strip_ansi=nocolor)
 
