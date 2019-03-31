@@ -93,18 +93,17 @@ Web/Django standard initiative (@strikaco)
   + `validate_password`: Mechanism for validating a password based on predefined Django validators.
   + `set_password`: Apply password to account, using validation checks.
 
+### Server
+
+- Convert ServerConf model to store its values as a Picklefield (same as Attributes) instead of using a custom solution.
+- OOB: Add support for MSDP LIST, REPORT, UNREPORT commands (re-mapped to `msdp_list`, 
+  `msdp_report`, `msdp_unreport` inlinefuncs_)
+
 ### Utils
 
 - `evennia` launcher now fully handles all django-admin commands, like running tests in parallel.
 - `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
 - Added many more unit tests.
-
-### Server
-
-- Convert ServerConf model to store its values as a Picklefield (same as Attributes) instead of using a custom solution.
-
-### Utils
-
 - Swap argument order of `evennia.set_trace` to `set_trace(term_size=(140, 40), debugger='auto')`
   since the size is more likely to be changed on the command line.
 - `utils.to_str(text, session=None)` now acts as the old `utils.to_unicode` (which was removed).
@@ -113,7 +112,8 @@ Web/Django standard initiative (@strikaco)
   `force_string` flag was removed and assumed always set).
 - `utils.to_bytes(text, session=None)` replaces the old `utils.to_str()` functionality and converts
   str to bytes.
-
+- `evennia.MONITOR_HANDLER.all` now takes keyword argument `obj` to only retrieve monitors from that specific
+  Object (rather than all monitors in the entire handler).
 
 
 ### Contribs
