@@ -13,6 +13,7 @@ user.  Depreciated example forms are available by extending
 the ansi mapping.
 
 """
+import functools
 from builtins import object, range
 
 import re
@@ -534,8 +535,8 @@ def _spacing_preflight(func):
     functions used for padding ANSIStrings.
 
     """
-
-    def wrapped(self, width, fillchar=None):
+    @functools.wraps(func)
+    def wrapped(self, width=78, fillchar=None):
         if fillchar is None:
             fillchar = " "
         if (len(fillchar) != 1) or (not isinstance(fillchar, str)):
@@ -555,7 +556,6 @@ def _query_super(func_name):
     of ANSIString.
 
     """
-
     def wrapped(self, *args, **kwargs):
         return getattr(self.clean(), func_name)(*args, **kwargs)
     return wrapped
@@ -566,7 +566,6 @@ def _on_raw(func_name):
     Like query_super, but makes the operation run on the raw string.
 
     """
-
     def wrapped(self, *args, **kwargs):
         args = list(args)
         try:
@@ -593,7 +592,6 @@ def _transform(func_name):
     with the resulting string.
 
     """
-
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
         to_string = []
@@ -1289,7 +1287,7 @@ class ANSIString(with_metaclass(ANSIMeta, str)):
 
         """
         remainder = _difference % 2
-        _difference /= 2
+        _difference //= 2
         spacing = self._filler(fillchar, _difference)
         result = spacing + self + spacing + self._filler(fillchar, remainder)
         return result

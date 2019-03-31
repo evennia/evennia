@@ -98,6 +98,7 @@ Web/Django standard initiative (@strikaco)
 - Convert ServerConf model to store its values as a Picklefield (same as Attributes) instead of using a custom solution.
 - OOB: Add support for MSDP LIST, REPORT, UNREPORT commands (re-mapped to `msdp_list`, 
   `msdp_report`, `msdp_unreport` inlinefuncs_)
+- Added `evennia.ANSIString` to flat API.
 
 ### Utils
 

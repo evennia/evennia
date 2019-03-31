@@ -101,6 +101,7 @@ EvTable = None
 EvForm = None
 EvEditor = None
 EvMore = None
+ANSIString = None
 
 # Handlers
 SESSION_HANDLER = None
@@ -153,6 +154,7 @@ def _init():
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER, TASK_HANDLER
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
+    global ANSIString 
 
     from .accounts.accounts import DefaultAccount
     from .accounts.accounts import DefaultGuest
@@ -203,6 +205,7 @@ def _init():
     from .utils.evtable import EvTable
     from .utils.evform import EvForm
     from .utils.eveditor import EvEditor
+    from .utils.ansi import ANSIString
 
     # handlers
     from .scripts.tickerhandler import TICKER_HANDLER
