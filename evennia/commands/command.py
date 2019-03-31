@@ -24,7 +24,10 @@ def _init_command(cls, **kwargs):
     and (optionally) at instantiation time.
 
     If kwargs are given, these are set as instance-specific properties
-    on the command.
+    on the command - but note that the Command instance is *re-used* on a given
+    host object, so a kwarg value set on the instance will *remain* on the instance
+    for subsequent uses of that Command on that particular object.
+
     """
     for i in range(len(kwargs)):
         # used for dynamic creation of commands
