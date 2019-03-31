@@ -496,7 +496,7 @@ def _object_search_actions(caller, raw_inp, **kwargs):
         else:
             # load prototype
 
-            if not obj.access(caller, 'control'):
+            if not obj.access(caller, 'edit'):
                 caller.msg("|rYou don't have access to do this with this object.|n")
                 del caller.ndb._menutree.olc_search_object_term
                 return "node_search_object"
