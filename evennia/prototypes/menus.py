@@ -685,6 +685,8 @@ def node_prototype_key(caller):
         The |cPrototype-Key|n uniquely identifies the prototype and is |wmandatory|n. It is used to
         find and use the prototype to spawn new entities. It is not case sensitive.
 
+        (To set a new value, just write it and press enter)
+
         {current}""".format(current=_get_current_value(caller, "prototype_key"))
 
     helptext = """
