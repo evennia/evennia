@@ -350,6 +350,13 @@ class TelnetOOB(object):
         for key, var in variables.items():
             cmds[key] = [[var], {}]
 
+        # remap the 'generic msdp commands' to avoid colliding with builtins etc
+        # by prepending "msdp_"
+        lower_case = {key.lower(): key for key in cmds}
+        for remap in ("list", "report", "reset", "send", "unreport"):
+            if remap in lower_case:
+                cmds["msdp_{}".format(remap)] = cmds.pop(lower_case[remap])
+
         # print("msdp data in:", cmds)  # DEBUG
         self.protocol.data_in(**cmds)
 

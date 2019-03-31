@@ -3,7 +3,8 @@ Functions for processing input commands.
 
 All global functions in this module whose name does not start with "_"
 is considered an inputfunc. Each function must have the following
-callsign:
+callsign (where inputfunc name is always lower-case, no matter what the
+OOB input name looked like):
 
     inputfunc(session, *args, **kwargs)
 
@@ -138,6 +139,11 @@ def default(session, cmdname, *args, **kwargs):
     log_err(err)
 
 
+_CLIENT_OPTIONS = \
+    ("ANSI", "XTERM256", "MXP", "UTF-8", "SCREENREADER", "ENCODING", "MCCP",
+     "SCREENHEIGHT", "SCREENWIDTH", "INPUTDEBUG", "RAW", "NOCOLOR", "NOGOAHEAD")
+
+
 def client_options(session, *args, **kwargs):
     """
     This allows the client an OOB way to inform us about its name and capabilities.
@@ -165,12 +171,7 @@ def client_options(session, *args, **kwargs):
     if not kwargs or kwargs.get("get", False):
         # return current settings
         options = dict((key, old_flags[key]) for key in old_flags
-                       if key.upper() in ("ANSI", "XTERM256", "MXP",
-                                          "UTF-8", "SCREENREADER", "ENCODING",
-                                          "MCCP", "SCREENHEIGHT",
-                                          "SCREENWIDTH", "INPUTDEBUG",
-                                          "RAW", "NOCOLOR",
-                                          "NOGOAHEAD"))
+                       if key.upper() in _CLIENT_OPTIONS)
         session.msg(client_options=options)
         return
 
@@ -237,11 +238,6 @@ def client_options(session, *args, **kwargs):
     # we must update the protocol flags on the portal session copy as well
     session.sessionhandler.session_portal_partial_sync(
             {session.sessid: {"protocol_flags": flags}})
-
-
-# GMCP alias
-hello = client_options
-supports_set = client_options
 
 
 def get_client_options(session, *args, **kwargs):
@@ -368,10 +364,14 @@ def _on_monitor_change(**kwargs):
     obj = kwargs["obj"]
     name = kwargs["name"]
     session = kwargs["session"]
+    outputfunc_name = kwargs['outputfunc_name']
+
     # the session may be None if the char quits and someone
     # else then edits the object
+
     if session:
-        session.msg(monitor={"name": name, "value": _GA(obj, fieldname)})
+        callsign = {outputfunc_name: {"name": name, "value": _GA(obj, fieldname)}}
+        session.msg(**callsign)
 
 
 def monitor(session, *args, **kwargs):
@@ -384,10 +384,14 @@ def monitor(session, *args, **kwargs):
         in the _monitorable dict earlier in this module
         are accepted.
       stop (bool): Stop monitoring the above name.
+      outputfunc_name (str, optional): Change the name of
+        the outputfunc name. This is used e.g. by MSDP which
+        has its own specific output format.
 
     """
     from evennia.scripts.monitorhandler import MONITOR_HANDLER
     name = kwargs.get("name", None)
+    outputfunc_name = kwargs("outputfunc_name", "monitor")
     if name and name in _monitorable and session.puppet:
         field_name = _monitorable[name]
         obj = session.puppet
@@ -396,7 +400,8 @@ def monitor(session, *args, **kwargs):
         else:
             # the handler will add fieldname and obj to the kwargs automatically
             MONITOR_HANDLER.add(obj, field_name, _on_monitor_change, idstring=session.sessid,
-                                persistent=False, name=name, session=session)
+                                persistent=False, name=name, session=session,
+                                outputfunc_name=outputfunc_name)
 
 
 def unmonitor(session, *args, **kwargs):
@@ -405,6 +410,17 @@ def unmonitor(session, *args, **kwargs):
     """
     kwargs["stop"] = True
     monitor(session, *args, **kwargs)
+
+
+def monitored(session, *args, **kwargs):
+    """
+    Report on what is being monitored
+
+    """
+    from evennia.scripts.monitorhandler import MONITOR_HANDLER
+    obj = session.puppet
+    monitors = MONITOR_HANDLER.all(obj=obj)
+    session.msg(monitored=(monitors, {}))
 
 
 def _on_webclient_options_change(**kwargs):
@@ -469,3 +485,60 @@ def webclient_options(session, *args, **kwargs):
         # kwargs provided: persist them to the account object
         for key, value in kwargs.items():
             clientoptions[key] = value
+
+
+# OOB protocol-specific aliases and wrappers
+
+# GMCP aliases
+hello = client_options
+supports_set = client_options
+
+
+# MSDP aliases (some of the the generic MSDP commands defined in the MSDP spec are prefixed
+# by msdp_ at the protocol level)
+# See https://tintin.sourceforge.io/protocols/msdp/
+
+
+def msdp_list(session, *args, **kwargs):
+    """
+    MSDP LIST command
+
+    """
+    from evennia.scripts.monitorhandler import MONITOR_HANDLER
+    args_lower = [arg.lower() for arg in args]
+    if "commands" in args_lower:
+        inputfuncs = [key[5:] if key.startswith("msdp_") else key
+                      for key in session.sessionhandler.get_inputfuncs().keys()]
+        session.msg(commands=(inputfuncs, {}))
+    if "lists" in args_lower:
+        session.msg(lists=(['commands', 'lists', 'configurable_variables', 'reportable_variables',
+                            'reported_variables', 'sendable_variables'], {}))
+    if "configurable_variables" in args_lower:
+        session.msg(configurable_variables=(_CLIENT_OPTIONS, {}))
+    if "reportable_variables" in args_lower:
+        session.msg(reportable_variables=(_monitorable, {}))
+    if "reported_variables" in args_lower:
+        obj = session.puppet
+        monitor_infos = MONITOR_HANDLER.all(obj=obj)
+        fieldnames = [tup[1] for tup in monitor_infos]
+        session.msg(reported_variables=(fieldnames, {}))
+    if "sendable_variables" in args_lower:
+        # no default sendable variables
+        session.msg(sendable_variables=([], {}))
+
+
+def msdp_report(session, *args, **kwargs):
+    """
+    MSDP REPORT command
+
+    """
+    kwargs['outputfunc_name': 'report']
+    monitor(session, *args, **kwargs)
+
+
+def msdp_unreport(session, *args, **kwargs):
+    """
+    MSDP UNREPORT command
+
+    """
+    unmonitor(session, *args, **kwargs)
