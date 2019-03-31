@@ -99,6 +99,8 @@ Web/Django standard initiative (@strikaco)
 - OOB: Add support for MSDP LIST, REPORT, UNREPORT commands (re-mapped to `msdp_list`, 
   `msdp_report`, `msdp_unreport` inlinefuncs_)
 - Added `evennia.ANSIString` to flat API.
+- Server/Portal log files now cycle to names on the form `server_.log_19_03_08_` instead of `server.log___19.3.8`, retaining
+  unix file sorting order.
 
 ### Utils
 
