@@ -171,30 +171,35 @@ class EvMore(object):
         height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
         width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
 
-        if justify_kwargs is False:
-            # no justification. Simple division by line
-            lines = text.split("\n")
+        if "\f" in text:
+            self._pages = text.split("\f")
+            self._npages = len(self._pages)
+            self._npos = 0
         else:
-            # we must break very long lines into multiple ones
-            justify_kwargs = justify_kwargs or {}
-            width = justify_kwargs.get("width", width)
-            justify_kwargs["width"] = width
-            justify_kwargs["align"] = justify_kwargs.get("align", 'l')
-            justify_kwargs["indent"] = justify_kwargs.get("indent", 0)
+            if justify_kwargs is False:
+                # no justification. Simple division by line
+                lines = text.split("\n")
+            else:
+                # we must break very long lines into multiple ones
+                justify_kwargs = justify_kwargs or {}
+                width = justify_kwargs.get("width", width)
+                justify_kwargs["width"] = width
+                justify_kwargs["align"] = justify_kwargs.get("align", 'l')
+                justify_kwargs["indent"] = justify_kwargs.get("indent", 0)
 
-            lines = []
-            for line in text.split("\n"):
-                if len(line) > width:
-                    lines.extend(justify(line, **justify_kwargs).split("\n"))
-                else:
-                    lines.append(line)
+                lines = []
+                for line in text.split("\n"):
+                    if len(line) > width:
+                        lines.extend(justify(line, **justify_kwargs).split("\n"))
+                    else:
+                        lines.append(line)
 
-        # always limit number of chars to 10 000 per page
-        height = min(10000 // max(1, width), height)
+            # always limit number of chars to 10 000 per page
+            height = min(10000 // max(1, width), height)
 
-        self._pages = ["\n".join(lines[i:i + height]) for i in range(0, len(lines), height)]
-        self._npages = len(self._pages)
-        self._npos = 0
+            self._pages = ["\n".join(lines[i:i + height]) for i in range(0, len(lines), height)]
+            self._npages = len(self._pages)
+            self._npos = 0
 
         if self._npages <= 1 and not always_page:
             # no need for paging; just pass-through.
