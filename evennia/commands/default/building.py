@@ -2805,7 +2805,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       @spawn GOBLIN
       @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
       @spawn/save {"key": "grunt", prototype: "goblin"};;mobs;edit:all()
-
+    \f
     Dictionary keys:
       |wprototype_parent  |n - name of parent prototype to use. Required if typeclass is
                         not set. Can be a path or a list for multiple inheritance (inherits

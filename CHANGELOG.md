@@ -115,9 +115,10 @@ Web/Django standard initiative (@strikaco)
   str to bytes.
 - `evennia.MONITOR_HANDLER.all` now takes keyword argument `obj` to only retrieve monitors from that specific
   Object (rather than all monitors in the entire handler).
-
+- Support adding `\f` in command doc strings to force where EvMore puts page breaks.
 
 ### Contribs
+
 - The `extended_room` contrib saw some backwards-incompatible refactoring: 
   + All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
      it's `CmdExtendedRoomLook` etc.
