@@ -56,6 +56,12 @@ plugin_handler.add('goldenlayout', (function () {
         },
     };
 
+    var newInputConfig = {
+        title: 'input',
+        type: 'component',
+        componentName: 'input',
+        id: 'inputComponent',
+    };
 
     // helper function:  filter vals out of array
     function filter (vals, array) {
@@ -342,6 +348,23 @@ plugin_handler.add('goldenlayout', (function () {
 
     //
     //
+    var onInputCreate = function (tab) {
+        //HTML for the typeDropdown
+        let splitControl          = $('<span class="lm_title" style="font-size: 2em;width: 1em;">+</span>');
+
+        // track adding a new tab
+        splitControl.click( tab, function (evnt) {
+            evnt.data.header.parent.addChild( newInputConfig );
+        });
+
+        // Add the typeDropdown to the header
+        tab.element.append(  splitControl );
+
+        tab.header.parent.on( 'activeContentItemChanged', onActiveTabChange );
+    }
+
+    //
+    //
     var scrollAll = function () {
         let components = myLayout.root.getItemsByType('component');
         components.forEach( function (component) {
@@ -511,6 +534,7 @@ plugin_handler.add('goldenlayout', (function () {
                 $( $(evnt.target).siblings('.inputfield')[0] ).trigger(e);
             });
 
+            container.on('tab', onInputCreate);
         });
 
         myLayout.registerComponent( 'evennia', function (container, componentState) {
