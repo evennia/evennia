@@ -11,6 +11,10 @@ let defaultin_plugin = (function () {
         // find where the key comes from
         var inputfield = $(".inputfield:focus");
 
+        if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
+            inputfield = $("#inputfield:focus");
+        }
+
         // check for important keys
         switch (event.which) {
             case  9:  // ignore tab key -- allows normal focus control
@@ -22,13 +26,13 @@ let defaultin_plugin = (function () {
                 break;
 
             case 13: // Enter key
-                var outtext = inputfield.val();
+                var outtext = inputfield.val(); // Grab the text from which-ever inputfield is focused
                 if ( outtext && !event.shiftKey ) {  // Enter Key without shift --> send Mesg
                     var lines = outtext.trim().replace(/[\r]+/,"\n").replace(/[\n]+/, "\n").split("\n");
                     for (var i = 0; i < lines.length; i++) {
                         plugin_handler.onSend( lines[i].trim() );
                     }
-                    inputfield.val('');
+                    inputfield.val(''); // Clear this inputfield
                     event.preventDefault();
                 }
                 inputfield.blur();
@@ -36,10 +40,15 @@ let defaultin_plugin = (function () {
 
             // Anything else, focus() a textarea if needed, and allow the default event
             default:
-                // is anything actually focused?  if not, focus the first .inputfield found in the DOM
-                if( !inputfield.hasClass('inputfield') ) {
-                    // :first only matters if dual_input or similar multi-input plugins are in use
-                    $('.inputfield:last').focus();
+                // is an inputfield actually focused?
+                if( inputfield.length < 1 ) {
+                    // Nope, focus the last .inputfield found in the DOM (or #inputfield)
+                    //     :last only matters if multi-input plugins are in use
+                    inputfield = $(".inputfield:last")
+                    inputfield.focus();
+                    if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
+                        $("#inputfield").focus();
+                    }
                 }
         }
 
@@ -49,13 +58,13 @@ let defaultin_plugin = (function () {
     //
     // Mandatory plugin init function
     var init = function () {
-        // Handle pressing the send button
+        // Handle pressing the send button, this only applies to non-goldenlayout setups
         $("#inputsend")
             .bind("click", function (evnt) {
                 // simulate a carriage return
                 var e = $.Event( "keydown" );
                 e.which = 13;
-                $('.inputfield:last').trigger(e);
+                $("#inputfield").focus().trigger(e);
             });
 
         console.log('DefaultIn initialized');
