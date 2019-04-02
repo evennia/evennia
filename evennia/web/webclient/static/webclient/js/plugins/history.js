@@ -42,15 +42,6 @@ let history_plugin = (function () {
         history_pos = 0;
     }
 
-    //
-    // Add input to the scratch line
-    var scratch = function (input) {
-        // Put the input into the last history entry (which is normally empty)
-        // without making the array larger as with add.
-        // Allows for in-progress editing to be saved.
-        history[history.length-1] = input;
-    }
-
     // Public
 
     //
@@ -58,7 +49,6 @@ let history_plugin = (function () {
     var onKeydown = function(event) {
         var code = event.which;
         var history_entry = null;
-        var inputfield = $('.inputfield:focus');
 
         // Only process up/down arrow if cursor is at the end of the line.
         if (code === 38 && event.shiftKey) { // Arrow up
@@ -70,7 +60,12 @@ let history_plugin = (function () {
 
         // are we processing an up or down history event?
         if (history_entry !== null) {
-            // Doing a history navigation; replace the text in the input and move the cursor to the end of the new value
+            // Doing a history navigation; replace the text in the input and
+            // move the cursor to the end of the new value
+            var inputfield = $('.inputfield:focus');
+            if( inputfield.length < 1 ) { // pre-goldenlayout backwards compatibility
+                inputfield = $('#inputfield');
+            }
             inputfield.val('');
             inputfield.blur().focus().val(history_entry);
             event.preventDefault();
