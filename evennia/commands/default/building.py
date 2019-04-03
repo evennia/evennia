@@ -2067,7 +2067,7 @@ class CmdExamine(ObjManipCommand):
         """
 
         if attrname:
-            db_attr = [(attrname, obj.attributes.get(attrname))]
+            db_attr = [(attrname, obj.attributes.get(attrname), None)]
             try:
                 ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
             except Exception:
