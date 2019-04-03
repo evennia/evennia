@@ -10,7 +10,7 @@ let history_plugin = (function () {
     var history = new Array();
     var history_pos = 0;
 
-    history[0] = ''; // the very latest input is empty for new entry.
+    history[0] = ""; // the very latest input is empty for new entry.
 
     //
     // move back in the history
@@ -37,7 +37,7 @@ let history_plugin = (function () {
                 history.shift(); // kill oldest entry
             }
             history[history.length-1] = input;
-            history[history.length] = '';
+            history[history.length] = "";
         }
         history_pos = 0;
     }
@@ -62,11 +62,11 @@ let history_plugin = (function () {
         if (history_entry !== null) {
             // Doing a history navigation; replace the text in the input and
             // move the cursor to the end of the new value
-            var inputfield = $('.inputfield:focus');
+            var inputfield = $(".inputfield:focus");
             if( inputfield.length < 1 ) { // pre-goldenlayout backwards compatibility
-                inputfield = $('#inputfield');
+                inputfield = $("#inputfield");
             }
-            inputfield.val('');
+            inputfield.val("");
             inputfield.blur().focus().val(history_entry);
             event.preventDefault();
             return true;
@@ -85,7 +85,7 @@ let history_plugin = (function () {
     //
     // Init function
     var init = function () {
-        console.log('History Plugin Initialized.');
+        console.log("History Plugin Initialized.");
     } 
 
     return {
@@ -94,4 +94,4 @@ let history_plugin = (function () {
         onSend: onSend,
     }
 })()
-plugin_handler.add('history', history_plugin);
+plugin_handler.add("history", history_plugin);
