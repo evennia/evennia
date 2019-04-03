@@ -1,6 +1,6 @@
 /*
  *
- * Assignable 'hot-buttons' Plugin
+ * Assignable "hot-buttons" Plugin
  *
  * This adds a bar of 9 buttons that can be shift-click assigned whatever is in the textinput buffer, so you can simply
  * click the button again and have it execute those commands, instead of having to type it all out again and again.
@@ -18,10 +18,10 @@
  *          <script src={% static "webclient/js/plugins/hotbuttons.js" %} language="javascript" type="text/javascript"></script>
  *     after the other <script></script> plugin tags.
  *
- *     Run:  evennia collectstatic (say 'yes' to the overwrite prompt)
+ *     Run:  evennia collectstatic (say "yes" to the overwrite prompt)
  *     Start Evennia
  */
-plugin_handler.add('hotbuttons', (function () {
+let hotbuttons = (function () {
     var dependencies_met = true; // To start, assume either splithandler or goldenlayout plugin is enabled.
 
     var num_buttons = 9;
@@ -29,41 +29,41 @@ plugin_handler.add('hotbuttons', (function () {
 
     var hotButtonConfig = {
         content: [{
-            type: 'column',
+            type: "column",
             content: [{
-                type: 'row',
+                type: "row",
                 content: [{
-                    type: 'column',
+                    type: "column",
                     content: [{
-                        type: 'component',
-                        componentName: 'Main',
+                        type: "component",
+                        componentName: "Main",
                         isClosable: false,
-                        tooltip: 'Main - drag to desird position.',
+                        tooltip: "Main - drag to desird position.",
                         componentState: {
-                            types: 'untagged',
-                            update_method: 'newlines',
+                            types: "untagged",
+                            update_method: "newlines",
                         },
                     }]
                 }],
             }, {
-                type: 'component',
-                componentName: 'hotbuttons',
-                id: 'inputComponent',
+                type: "component",
+                componentName: "hotbuttons",
+                id: "inputComponent",
                 height: 12,
-                tooltip: 'Input - The last input in the layout is always the default.',
+                tooltip: "Input - The last input in the layout is always the default.",
             }, {
-                type: 'component',
-                componentName: 'input',
-                id: 'inputComponent',
+                type: "component",
+                componentName: "input",
+                id: "inputComponent",
                 height: 12,
-                tooltip: 'Input - The last input in the layout is always the default.',
+                tooltip: "Input - The last input in the layout is always the default.",
             }, {
-                type: 'component',
-                componentName: 'input',
-                id: 'inputComponent',
+                type: "component",
+                componentName: "input",
+                id: "inputComponent",
                 height: 12,
                 isClosable: false,
-                tooltip: 'Input - The last input in the layout is always the default.',
+                tooltip: "Input - The last input in the layout is always the default.",
             }]
         }]
     };
@@ -72,29 +72,29 @@ plugin_handler.add('hotbuttons', (function () {
     // Add Buttons UI for SplitHandler
     var addButtonsUI = function () {
         var buttons = $( [
-                '<div id="buttons" class="split split-vertical">',
-                ' <div id="buttonsform">',
-                '  <div id="buttonscontrol" class="input-group">',
-                '   <button class="btn" id="assign_button0" type="button" value="button0">unassigned</button>',
-                '   <button class="btn" id="assign_button1" type="button" value="button1">unassigned</button>',
-                '   <button class="btn" id="assign_button2" type="button" value="button2">unassigned</button>',
-                '   <button class="btn" id="assign_button3" type="button" value="button3">unassigned</button>',
-                '   <button class="btn" id="assign_button4" type="button" value="button4">unassigned</button>',
-                '   <button class="btn" id="assign_button5" type="button" value="button5">unassigned</button>',
-                '   <button class="btn" id="assign_button6" type="button" value="button6">unassigned</button>',
-                '   <button class="btn" id="assign_button7" type="button" value="button7">unassigned</button>',
-                '   <button class="btn" id="assign_button8" type="button" value="button8">unassigned</button>',
-                '  </div>',
-                ' </div>',
-                '</div>',
+                "<div id='buttons' class='split split-vertical'>",
+                " <div id='buttonsform'>",
+                "  <div id='buttonscontrol' class='input-group'>",
+                "   <button class='btn' id='assign_button0' type='button' value='button0'>unassigned</button>",
+                "   <button class='btn' id='assign_button1' type='button' value='button1'>unassigned</button>",
+                "   <button class='btn' id='assign_button2' type='button' value='button2'>unassigned</button>",
+                "   <button class='btn' id='assign_button3' type='button' value='button3'>unassigned</button>",
+                "   <button class='btn' id='assign_button4' type='button' value='button4'>unassigned</button>",
+                "   <button class='btn' id='assign_button5' type='button' value='button5'>unassigned</button>",
+                "   <button class='btn' id='assign_button6' type='button' value='button6'>unassigned</button>",
+                "   <button class='btn' id='assign_button7' type='button' value='button7'>unassigned</button>",
+                "   <button class='btn' id='assign_button8' type='button' value='button8'>unassigned</button>",
+                "  </div>",
+                " </div>",
+                "</div>",
             ].join("\n") );
 
         // Add buttons in front of the existing #inputform
-        $('#input').prev().replaceWith(buttons);
+        $("#input").prev().replaceWith(buttons);
 
-        Split(['#main','#buttons','#input'], {
+        Split(["#main","#buttons","#input"], {
             sizes: [85,5,10],
-            direction: 'vertical',
+            direction: "vertical",
             gutterSize: 4,
             minSize: [150,20,50],
         });
@@ -150,9 +150,9 @@ plugin_handler.add('hotbuttons', (function () {
         console.log("button " + e.data + " clicked");
         if( button.text() == "unassigned" ) {
             // Assign the button and send the full button state to the server using a Webclient_Options event
-            var input = $('.inputfield:last');
+            var input = $(".inputfield:last");
             if( input.length < 1 ) {
-                input = $('#inputfield');
+                input = $("#inputfield");
             }
             assignButton( e.data, input.val() );
             Evennia.msg("webclient_options", [], { "HotButtons": command_cache });
@@ -171,20 +171,20 @@ plugin_handler.add('hotbuttons', (function () {
     //
     // Create and register the hotbuttons golden-layout component
     var buildComponent = function () {
-        var myLayout = plugins['goldenlayout'].getGL();
+        var myLayout = plugins["goldenlayout"].getGL();
 
-        myLayout.registerComponent( 'hotbuttons', function (container, componentState) {
-            console.log('hotbuttons');
+        myLayout.registerComponent( "hotbuttons", function (container, componentState) {
+            console.log("hotbuttons");
 
             // build the buttons
-            var div = $('<div class="input-group">');
+            var div = $("<div class='input-group'>");
 
             var len = command_cache.length;
             for( var x=len; x < len + num_buttons; x++ ) {
                 command_cache.push("unassigned");
 
                 // initialize button command cache and onClick handler
-                button = $('<button class="btn" id="assign_button'+x+'" type="button" value="button'+x+'">');
+                button = $("<button class='btn' id='assign_button"+x+"' type='button' value='button"+x+"'>");
                 button.html("unassigned");
                 button.click( x, hotButtonClicked );
 
@@ -201,8 +201,8 @@ plugin_handler.add('hotbuttons', (function () {
     //
     // Handle the HotButtons part of a Webclient_Options event
     var onGotOptions = function(args, kwargs) {
-        if( dependencies_met && kwargs['HotButtons'] ) {
-            var button_options = kwargs['HotButtons'];
+        if( dependencies_met && kwargs["HotButtons"] ) {
+            var button_options = kwargs["HotButtons"];
             $.each( button_options, function( key, value ) {
                 assignButton(key, value);
             });
@@ -214,15 +214,15 @@ plugin_handler.add('hotbuttons', (function () {
     // Initialize me
     var init = function() {
         // Are we using GoldenLayout?
-        if( plugins['goldenlayout'] ) {
-            // update goldenlayout's global config
-            plugins['goldenlayout'].setConfig( hotButtonConfig );
+        if( plugins["goldenlayout"] ) {
+            // update goldenlayout"s global config
+            plugins["goldenlayout"].setConfig( hotButtonConfig );
             // wait for postInit() to create the required component
             dependencies_met = true;
         }
 
         // Are we using splithandler?
-        if( plugins['splithandler'] ) { 
+        if( plugins["splithandler"] ) { 
             addButtonsUI();
             dependencies_met = true;
         }
@@ -233,7 +233,7 @@ plugin_handler.add('hotbuttons', (function () {
     //
     var postInit = function() {
         if( dependencies_met ) {
-            if( plugins['goldenlayout'] ) {
+            if( plugins["goldenlayout"] ) {
                 buildComponent();
             }
  
@@ -248,4 +248,5 @@ plugin_handler.add('hotbuttons', (function () {
         postInit: postInit,
         onGotOptions: onGotOptions,
     }
-})());
+})();
+window.plugin_handler.add("hotbuttons", hotbuttons);

@@ -1,6 +1,6 @@
 /*
  *
- * Evennia Webclient default 'send-text-on-enter-key' IO plugin
+ * Evennia Webclient default "send-text-on-enter-key" IO plugin
  *
  */
 let defaultin_plugin = (function () {
@@ -32,7 +32,7 @@ let defaultin_plugin = (function () {
                     for (var i = 0; i < lines.length; i++) {
                         plugin_handler.onSend( lines[i].trim() );
                     }
-                    inputfield.val(''); // Clear this inputfield
+                    inputfield.val(""); // Clear this inputfield
                     event.preventDefault();
                 }
                 inputfield.blur();
@@ -44,7 +44,7 @@ let defaultin_plugin = (function () {
                 if( inputfield.length < 1 ) {
                     // Nope, focus the last .inputfield found in the DOM (or #inputfield)
                     //     :last only matters if multi-input plugins are in use
-                    inputfield = $(".inputfield:last")
+                    inputfield = $(".inputfield:last");
                     inputfield.focus();
                     if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
                         $("#inputfield").focus();
@@ -67,7 +67,7 @@ let defaultin_plugin = (function () {
                 $("#inputfield").focus().trigger(e);
             });
 
-        console.log('DefaultIn initialized');
+        console.log("DefaultIn initialized");
     }
 
     return {
@@ -75,4 +75,4 @@ let defaultin_plugin = (function () {
         onKeydown: onKeydown,
     }
 })();
-plugin_handler.add('defaultin', defaultin_plugin);
+window.plugin_handler.add("defaultin", defaultin_plugin);
