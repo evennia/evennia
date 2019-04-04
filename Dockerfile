@@ -27,13 +27,13 @@
 # as a base for creating your own custom containerized Evennia game. For more
 # info, see https://github.com/evennia/evennia/wiki/Running%20Evennia%20in%20Docker .
 #
-FROM alpine
+FROM python:3.7-alpine
 
 LABEL maintainer="www.evennia.com"
 
 # install compilation environment
-RUN apk update && apk add bash gcc jpeg-dev musl-dev procps py-pip \
-py-setuptools py2-openssl python python-dev zlib-dev gettext
+RUN apk update && apk add bash gcc jpeg-dev musl-dev procps \
+libffi-dev openssl-dev zlib-dev gettext
 
 # add the files required for pip installation
 COPY ./setup.py /usr/src/evennia/
