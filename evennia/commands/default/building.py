@@ -2077,11 +2077,11 @@ class CmdExamine(ObjManipCommand):
                 ndb_attr = None
         string = ""
         if db_attr and db_attr[0]:
-            string += "\n|wPersistent attributes|n:"
+            string += "\n|wPersistent attributes|n:\n"
             for attr, value, in db_attr:
                 string += self.list_attribute(crop, attr, value)
         if ndb_attr and ndb_attr[0]:
-            string += "\n|wNon-Persistent attributes|n:"
+            string += "\n|wNon-Persistent attributes|n:\n"
             for attr, value in ndb_attr:
                 string += self.list_attribute(crop, attr, value)
         return string
