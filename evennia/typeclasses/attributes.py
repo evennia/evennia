@@ -191,6 +191,17 @@ class Attribute(SharedMemoryModel):
         result = self.locks.check(accessing_obj, access_type=access_type, default=default)
         return result
 
+    def pretty_format(self, alternate_value=None):
+        """
+        Prints the attribute in a standard style for various commands.
+
+        Returns:
+            formatted (str): A string that looks like this: "key[category] = value" or "key = value" as appropriate.
+        """
+        if self.category:
+            return "%s[%s] = %s" % (self.key, self.category, self.value if not alternate_value else alternate_value)
+        return "%s = %s" % (self.key, self.value)
+
 
 #
 # Handlers making use of the Attribute model
