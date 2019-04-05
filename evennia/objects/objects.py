@@ -959,7 +959,22 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       if obj.key.startswith(key) and obj.key.lstrip(key).isdigit())
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
-        return ObjectDB.objects.copy_object(self, new_key=new_key)
+        new_obj = ObjectDB.objects.copy_object(self, new_key=new_key)
+        new_obj.at_object_creation_copy(self)
+        return new_obj
+
+
+    def at_object_creation_copy(self, source_obj):
+        """
+        Called by DefaultObject.copy(). This is meant to be overloaded for custom copy mechanics.
+
+        Args:
+            source_obj: The object this was copied from.
+
+        Returns:
+            Nothing
+        """
+        pass
 
     def delete(self):
         """
