@@ -27,7 +27,7 @@ from evennia.utils import logger
 from evennia.utils import ansi
 from evennia.utils.utils import (variable_from_module, lazy_property,
                                  make_iter, is_iter, list_to_string,
-                                 to_str)
+                                 to_str, fill)
 from django.utils.translation import ugettext as _
 
 _INFLECT = inflect.engine()
@@ -1888,6 +1888,112 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                        from_obj=self,
                                        exclude=exclude,
                                        mapping=location_mapping)
+
+    examine_hooks = ('base', 'locks', 'commands', 'scripts', 'tags', 'attributes', 'nattributes', 'contents')
+
+    def return_examine_base(self, viewer, cmdsets, *args, **kwargs):
+        """
+        Return basic information about this Object to @examine users.
+        Args:
+            viewer: The Account or Character seeing the output. Provided in case permission checks are needed.
+            cmdsets: Passed because of the requirements on return_examine_commands
+            *args:
+            **kwargs:
+        Returns:
+            results (str): Basic information about this Object.
+        """
+        message = list()
+        message.append("|wName/key|n: |c%s|n (%s)" % (self.name, self.dbref))
+        if self.aliases.all():
+            message.append("|wAliases|n: %s" % (", ".join(make_iter(str(self.aliases)))))
+        sessions = self.sessions.all()
+        if sessions:
+            message.append("|wSession id(s)|n: %s" % (", ".join("#%i" % sess.sessid
+                                                                for sess in sessions)))
+        if self.has_account:
+            message.append("|wAccount|n: |c%s|n" % self.account.name)
+            perms = self.account.permissions.all()
+            if self.account.is_superuser:
+                perms = ["<Superuser>"]
+            elif not perms:
+                perms = ["<None>"]
+            message.append("|wAccount Perms|n: %s" % (", ".join(perms)))
+            if self.account.attributes.has("_quell"):
+                message.append(" |r(quelled)|n")
+        message.append("|wTypeclass|n: %s (%s)" % (self.typename,
+                                                   self.typeclass_path))
+        message.append("|wLocation|n: %s (%s)" % (self.location, self.location.dbref if self.location else 'N/A'))
+        message.append("|wHome|n: %s (%s)" % (self.home, self.home.dbref if self.home else 'N/A'))
+        message.append("|wDestination|n: %s (%s)" % (self.destination,
+                                                     self.destination.dbref if self.destination else 'N/A'))
+        return '\n'.join(str(l) for l in message)
+
+    def return_examine_commands(self, viewer, cmdsets, *args, **kwargs):
+        message = list()
+
+        if not (len(self.cmdset.all()) == 1 and self.cmdset.current.key == "_EMPTY_CMDSET"):
+            # all() returns a 'stack', so make a copy to sort.
+            stored_cmdsets = sorted(self.cmdset.all(), key=lambda x: x.priority, reverse=True)
+            message.append("|wStored Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % (
+                cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority) for cmdset in stored_cmdsets
+                                                                      if cmdset.key != "_EMPTY_CMDSET")))
+
+            # this gets all components of the currently merged set
+            all_cmdsets = [(cmdset.key, cmdset) for cmdset in cmdsets.merged_from]
+            # we always at least try to add account- and session sets since these are ignored
+            # if we merge on the object level.
+            if hasattr(self, "account") and self.account:
+                all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in self.account.cmdset.all()])
+                if self.sessions.count():
+                    # if there are more sessions than one on objects it's because of multisession mode 3.
+                    # we only show the first session's cmdset here (it is -in principle- possible that
+                    # different sessions have different cmdsets but for admins who want such madness
+                    # it is better that they overload with their own CmdExamine to handle it).
+                    all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in self.account.sessions.all()[0].cmdset.all()])
+            else:
+                try:
+                    # we have to protect this since many objects don't have sessions.
+                    all_cmdsets.extend([(cmdset.key, cmdset)
+                                        for cmdset in self.get_session(self.sessions.get()).cmdset.all()])
+                except (TypeError, AttributeError):
+                    # an error means we are merging an object without a session
+                    pass
+            all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
+            all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
+            message.append("|wMerged Cmdset(s)|n:\n %s" % ("\n ".join("%s [%s] (%s, prio %s)" % (
+                cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority) for cmdset in all_cmdsets)))
+
+            # list the commands available to this object
+            avail_cmdset = sorted([cmd.key for cmd in cmdsets
+                                   if cmd.access(self, "cmd")])
+            cmdsetstr = fill(", ".join(str(cmd) for cmd in cmdsets), indent=2)
+            message.append("|wCommands available to %s (result of Merged CmdSets)|n:\n %s" % (self.key, cmdsetstr))
+
+        return '\n'.join(str(l) for l in message)
+
+    def return_examine_contents(self, viewer, cmdsets, *args, **kwargs):
+        exits = []
+        pobjs = []
+        things = []
+        message = list()
+        for content in self.contents:
+            if content.destination:
+                exits.append(content)
+            elif content.account:
+                pobjs.append(content)
+            else:
+                things.append(content)
+        if exits:
+            message.append("|wExits|n: %s" % ", ".join(
+                ["%s(%s)" % (exit.name, exit.dbref) for exit in exits]))
+        if pobjs:
+            message.append("|wCharacters|n: %s" % ", ".join(
+                ["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs]))
+        if things:
+            message.append("|wContents|n: %s" % ", ".join(
+                ["%s(%s)" % (cont.name, cont.dbref) for cont in self.contents
+                 if cont not in exits and cont not in pobjs]))
+        return '\n'.join(str(l) for l in message)
 
 
 #
