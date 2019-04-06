@@ -6,45 +6,8 @@
 let goldenlayout = (function () {
 
     var myLayout;
-    var input_component = null;
     var known_types = ["all", "untagged"];
     var untagged = [];
-
-    var config = {
-        content: [{
-            type: "column",
-            content: [{
-                type: "row",
-                content: [{
-                    type: "column",
-                    content: [{
-                        type: "component",
-                        componentName: "Main",
-                        isClosable: false,
-                        tooltip: "Main - drag to desird position.",
-                        componentState: {
-                            types: "untagged",
-                            update_method: "newlines",
-                        },
-                    }]
-                }],
-            }, {
-                type: "component",
-                componentName: "input",
-                id: "inputComponent",
-                height: 12,
-                tooltip: "Input - The last input in the layout is always the default.",
-            }, {
-                type: "component",
-                componentName: "input",
-                id: "inputComponent",
-                height: 12,
-                isClosable: false,
-                tooltip: "Input - The last input in the layout is always the default.",
-            }]
-        }]
-    };
-
 
     var newTabConfig = {
         title: "Untitled",
@@ -113,6 +76,40 @@ let goldenlayout = (function () {
 
 
     //
+    //
+    var closeTypelistDropdown = function () {
+        let content = $("#typelist").parent().find(".content");
+        let checkboxes = $("#typelist :input");
+
+        let types = [];
+        for (let i=0; i<checkboxes.length; i++ ) {
+            let box = checkboxes[i];
+            if( $(box).prop("checked") ) {
+                types.push( $(box).val() );
+            }
+        }
+
+        content.attr("types", types.join(" "));
+        myLayout.emit("stateChanged");
+
+        calculateUntaggedTypes();
+        $("#typelist").remove();
+    }
+
+
+    //
+    //
+    var closeUpdatelistDropdown = function () {
+        let content = $("#updatelist").parent().find(".content");
+        let value   = $("input[name=upmethod]:checked").val();
+
+        content.attr("update_method", value );
+        myLayout.emit("stateChanged");
+        $("#updatelist").remove();
+    }
+
+
+    //
     // Handle the renameDropdown
     var renameDropdown = function (evnt) {
         let element = $(evnt.data.contentItem.element);
@@ -136,28 +133,6 @@ let goldenlayout = (function () {
         } else {
             closeRenameDropdown();
         }
-    }
-
-
-    //
-    //
-    var closeTypelistDropdown = function () {
-        let content = $("#typelist").parent().find(".content");
-        let checkboxes = $("#typelist :input");
-
-        let types = [];
-        for (let i=0; i<checkboxes.length; i++ ) {
-            let box = checkboxes[i];
-            if( $(box).prop("checked") ) {
-                types.push( $(box).val() );
-            }
-        }
-
-        content.attr("types", types.join(" "));
-        myLayout.emit("stateChanged");
-
-        calculateUntaggedTypes();
-        $("#typelist").remove();
     }
 
 
@@ -213,25 +188,13 @@ let goldenlayout = (function () {
 
     //
     //
-    var closeUpdatelistDropdown = function () {
-        let content = $("#updatelist").parent().find(".content");
-        let value   = $("input[name=upmethod]:checked").val();
-
-        content.attr("update_method", value );
-        myLayout.emit("stateChanged");
-        $("#updatelist").remove();
-    }
-
-
-    //
-    //
     var onUpdateMethodClicked = function (evnt) {
         let element = $(evnt.data.contentItem.element);
         let content = element.find(".content");
         let update_method = content.attr("update_method");
-        let nlchecked = (update_method == "newlines") ? "checked="checked"" : "";
-        let apchecked = (update_method == "append")   ? "checked="checked"" : "";
-        let rpchecked = (update_method == "replace")  ? "checked="checked"" : "";
+        let nlchecked = (update_method == "newlines") ? "checked='checked'" : "";
+        let apchecked = (update_method == "append")   ? "checked='checked'" : "";
+        let rpchecked = (update_method == "replace")  ? "checked='checked'" : "";
 
         let menu = $("<div id='updatelist'>");
         let div = $("<div class='updatelistsub'>");
@@ -383,7 +346,7 @@ let goldenlayout = (function () {
     //
     var routeMsg = function (text_div, txt, update_method) {
         if ( update_method == "replace" ) {
-            text_div.html(txt)
+            text_div.html(txt);
         } else if ( update_method == "append" ) {
             text_div.append(txt);
         } else {  // line feed
@@ -438,7 +401,7 @@ let goldenlayout = (function () {
             msgtype = kwargs["type"];
             if ( ! known_types.includes(msgtype) ) {
                 // this is a new output type that can be mapped to panes
-                console.log("detected new output type: " + msgtype)
+                console.log("detected new output type: " + msgtype);
                 known_types.push(msgtype);
                 untagged.push(msgtype);
             }
@@ -502,10 +465,11 @@ let goldenlayout = (function () {
         var mainsub = document.getElementById("main-sub");
 
         if( savedState !== null ) {
-            config = JSON.parse( savedState );
+            // Overwrite the global-variable configuration with the version from localstorage
+            window.goldenlayout_config = JSON.parse( savedState );
         }
 
-        myLayout = new GoldenLayout( config, mainsub );
+        myLayout = new GoldenLayout( window.goldenlayout_config, mainsub );
 
         $("#inputcontrol").remove(); // remove the cluttered, HTML-defined input divs
 
@@ -551,8 +515,6 @@ let goldenlayout = (function () {
         onKeydown: onKeydown,
         onText: onText,
         getGL: function () { return myLayout },
-        getConfig: function () { return config },
-        setConfig: function (newconfig) { config = newconfig },
         addKnownType: function (newtype) { known_types.push(newtype) },
     }
 })();
