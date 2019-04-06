@@ -178,8 +178,9 @@ class CommonMarkParser(parsers.Parser):
         img_node = nodes.image()
         img_node['uri'] = mdnode.destination
 
-        if mdnode.title:
-            img_node['alt'] = mdnode.title
+        if mdnode.first_child and mdnode.first_child.literal:
+            img_node['alt'] = mdnode.first_child.literal
+            mdnode.first_child.literal = ''
 
         self.current_node.append(img_node)
         self.current_node = img_node

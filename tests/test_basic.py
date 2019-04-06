@@ -232,7 +232,7 @@ class TestParsing(unittest.TestCase):
             <?xml version="1.0" ?>
             <document source="&lt;string&gt;">
               <paragraph>
-                <image alt="title" uri="/url">foo</image>
+                <image alt="foo" uri="/url"></image>
               </paragraph>
             </document>
             """
