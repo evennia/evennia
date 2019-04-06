@@ -29,10 +29,10 @@
  * REQUIRES: goldenlayout.js OR splithandler.js
  */
 let hotbuttons = (function () {
-    var dependencies_met = false;
+    var dependenciesMet = false;
 
-    var num_buttons = 9;
-    var command_cache = new Array;
+    var numButtons = 9;
+    var commandCache = new Array;
 
     //
     // collect command text
@@ -40,7 +40,7 @@ let hotbuttons = (function () {
         // make sure text has something in it
         if( text && text.length ) {
             // cache the command text
-            command_cache[n] = text;
+            commandCache[n] = text;
 
             // is there a space in the command, indicating "command argument" syntax?
             if( text.indexOf(" ") > 0 ) {
@@ -59,13 +59,13 @@ let hotbuttons = (function () {
         // change button text to "unassigned"
         $("#assign_button"+n).text( "unassigned" );
         // clear current command
-        command_cache[n] = "unassigned";
+        commandCache[n] = "unassigned";
     }
 
     //
     // actually send the command associated with the button that is clicked
     var sendImmediate = function(n) {
-        var text = command_cache[n];
+        var text = commandCache[n];
         if( text.length ) {
             Evennia.msg("text", [text], {});
         }
@@ -75,7 +75,6 @@ let hotbuttons = (function () {
     // send, assign, or clear the button
     var hotButtonClicked = function(e) {
         var button = $("#assign_button"+e.data);
-        console.log("button " + e.data + " clicked");
         if( button.text() == "unassigned" ) {
             // Assign the button and send the full button state to the server using a Webclient_Options event
             var input = $(".inputfield:last");
@@ -83,12 +82,12 @@ let hotbuttons = (function () {
                 input = $("#inputfield");
             }
             assignButton( e.data, input.val() );
-            Evennia.msg("webclient_options", [], { "HotButtons": command_cache });
+            Evennia.msg("webclient_options", [], { "HotButtons": commandCache });
         } else {
             if( e.shiftKey ) {
                 // Clear the button and send the full button state to the server using a Webclient_Options event
                 clearButton(e.data);
-                Evennia.msg("webclient_options", [], { "HotButtons": command_cache });
+                Evennia.msg("webclient_options", [], { "HotButtons": commandCache });
             } else {
                 sendImmediate(e.data);
             }
@@ -127,8 +126,8 @@ let hotbuttons = (function () {
             minSize: [150,20,50],
         });
 
-        for( var n=0; n<num_buttons; n++ ) { 
-            command_cache.push("unassigned");
+        for( var n=0; n<numButtons; n++ ) { 
+            commandCache.push("unassigned");
             $("#assign_button"+n).click( n, hotButtonClicked );
         }
     }
@@ -140,14 +139,12 @@ let hotbuttons = (function () {
         var myLayout = window.plugins["goldenlayout"].getGL();
 
         myLayout.registerComponent( "hotbuttons", function (container, componentState) {
-            console.log("hotbuttons");
-
             // build the buttons
             var div = $("<div class='input-group'>");
 
-            var len = command_cache.length;
-            for( var x=len; x < len + num_buttons; x++ ) {
-                command_cache.push("unassigned");
+            var len = commandCache.length;
+            for( var x=len; x < len + numButtons; x++ ) {
+                commandCache.push("unassigned");
 
                 // initialize button command cache and onClick handler
                 var button = $("<button class='btn' id='assign_button"+x+"' type='button' value='button"+x+"'>");
@@ -167,9 +164,9 @@ let hotbuttons = (function () {
     //
     // Handle the HotButtons part of a Webclient_Options event
     var onGotOptions = function(args, kwargs) {
-        if( dependencies_met && kwargs["HotButtons"] ) {
-            var button_options = kwargs["HotButtons"];
-            $.each( button_options, function( key, value ) {
+        if( dependenciesMet && kwargs["HotButtons"] ) {
+            var buttonOptions = kwargs["HotButtons"];
+            $.each( buttonOptions, function( key, value ) {
                 assignButton(key, value);
             });
         }
@@ -182,7 +179,7 @@ let hotbuttons = (function () {
         // Are we using splithandler?
         if( window.plugins["splithandler"] ) { 
             addButtonsUI();
-            dependencies_met = true;
+            dependenciesMet = true;
         }
     }
 
@@ -193,14 +190,7 @@ let hotbuttons = (function () {
         // Are we using GoldenLayout?
         if( window.plugins["goldenlayout"] ) {
             buildComponent();
-            dependencies_met = true;
-        }
-
-        if( dependencies_met ) {
-            console.log("HotButtons Plugin Initialized.");
-        } else {
-            console.log("HotButtons Plugin Dependencies Not Met!!");
-            console.log("No splithandler.js or goldenlayout.js plugin found.");
+            dependenciesMet = true;
         }
     }
 

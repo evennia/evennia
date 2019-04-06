@@ -6,7 +6,7 @@
 let goldenlayout = (function () {
 
     var myLayout;
-    var known_types = ["all", "untagged"];
+    var knownTypes = ["all", "untagged"];
     var untagged = [];
 
     var newTabConfig = {
@@ -15,7 +15,7 @@ let goldenlayout = (function () {
         componentName: "evennia",
         componentState: {
             types: "all",
-            update_method: "newlines",
+            updateMethod: "newlines",
         },
     };
 
@@ -28,23 +28,26 @@ let goldenlayout = (function () {
 
     // helper function:  filter vals out of array
     function filter (vals, array) {
-        let tmp = array.slice();
-        for (let i=0; i<vals.length; i++) {
-            let val = vals[i];
-            while( tmp.indexOf(val) > -1 ) {
-                tmp.splice( tmp.indexOf(val), 1 );
-            }
+        if( Array.isArray( vals ) && Array.isArray( array ) ) {
+            let tmp = array.slice();
+            vals.forEach( function (val) {
+                while( tmp.indexOf(val) > -1 ) {
+                    tmp.splice( tmp.indexOf(val), 1 );
+                }
+            });
+            return tmp;
         }
-        return tmp;
+        // pass along whatever we got, since our arguments aren't right.
+        return array;
     }
 
 
     //
-    // Calculate all known_types minus the "all" type,
+    // Calculate all knownTypes minus the "all" type,
     //     then filter out all types that have been mapped to a pane.
     var calculateUntaggedTypes = function () {
         // set initial untagged list
-        untagged = filter( ["all", "untagged"], known_types);
+        untagged = filter( ["all", "untagged"], knownTypes);
         // for each .content pane
         $(".content").each( function () {
             let types = $(this).attr("types");
@@ -65,7 +68,7 @@ let goldenlayout = (function () {
 
         components.forEach( function (component) {
            let element = component.tab.header.parent.element[0];
-           if( element == content && component.tab.isActive ) {
+           if( (element === content) && (component.tab.isActive) ) {
                component.setTitle( title );
            }
         });
@@ -82,12 +85,11 @@ let goldenlayout = (function () {
         let checkboxes = $("#typelist :input");
 
         let types = [];
-        for (let i=0; i<checkboxes.length; i++ ) {
-            let box = checkboxes[i];
-            if( $(box).prop("checked") ) {
-                types.push( $(box).val() );
+        checkboxes.each( function (idx) {
+            if( $(checkboxes[idx]).prop("checked") ) {
+                types.push( $(checkboxes[idx]).val() );
             }
-        }
+        });
 
         content.attr("types", types.join(" "));
         myLayout.emit("stateChanged");
@@ -103,7 +105,7 @@ let goldenlayout = (function () {
         let content = $("#updatelist").parent().find(".content");
         let value   = $("input[name=upmethod]:checked").val();
 
-        content.attr("update_method", value );
+        content.attr("updateMethod", value );
         myLayout.emit("stateChanged");
         $("#updatelist").remove();
     }
@@ -141,23 +143,22 @@ let goldenlayout = (function () {
     var onSelectTypesClicked = function (evnt) {
         let element = $(evnt.data.contentItem.element);
         let content = element.find(".content");
-        let selected_types = content.attr("types");
+        let selectedTypes = content.attr("types");
         let menu = $("<div id='typelist'>");
         let div = $("<div class='typelistsub'>");
 
-        if( selected_types ) {
-            selected_types = selected_types.split(" ");
+        if( selectedTypes ) {
+            selectedTypes = selectedTypes.split(" ");
         }
-        for (let i=0; i<known_types.length;i++) {
-            let itype = known_types[i];
+        knownTypes.forEach( function (itype) {
             let choice;
-            if( selected_types && selected_types.includes(itype) ) {
+            if( selectedTypes && selectedTypes.includes(itype) ) {
                 choice = $("<label><input type='checkbox' value='"+itype+"' checked='checked'/>"+itype+"</label>");
             } else {
                 choice = $("<label><input type='checkbox' value='"+itype+"'/>"+itype+"</label>");
             }
             choice.appendTo(div);
-        }
+        });
         div.appendTo(menu);
 
         element.prepend(menu);
@@ -191,10 +192,10 @@ let goldenlayout = (function () {
     var onUpdateMethodClicked = function (evnt) {
         let element = $(evnt.data.contentItem.element);
         let content = element.find(".content");
-        let update_method = content.attr("update_method");
-        let nlchecked = (update_method == "newlines") ? "checked='checked'" : "";
-        let apchecked = (update_method == "append")   ? "checked='checked'" : "";
-        let rpchecked = (update_method == "replace")  ? "checked='checked'" : "";
+        let updateMethod = content.attr("updateMethod");
+        let nlchecked = (updateMethod === "newlines") ? "checked='checked'" : "";
+        let apchecked = (updateMethod === "append")   ? "checked='checked'" : "";
+        let rpchecked = (updateMethod === "replace")  ? "checked='checked'" : "";
 
         let menu = $("<div id='updatelist'>");
         let div = $("<div class='updatelistsub'>");
@@ -263,10 +264,10 @@ let goldenlayout = (function () {
         components.forEach( function (component) {
             if( component.hasId("inputComponent") ) { return; } // ignore input components
 
-            let text_div = component.container.getElement().children(".content");
-            let types = text_div.attr("types");
-            let update_method = text_div.attr("update_method");
-            component.container.extendState({ "types": types, "update_method": update_method });
+            let textDiv = component.container.getElement().children(".content");
+            let types = textDiv.attr("types");
+            let updateMethod = textDiv.attr("updateMethod");
+            component.container.extendState({ "types": types, "updateMethod": updateMethod });
         });
 
         var state = JSON.stringify( myLayout.toConfig() );
@@ -301,7 +302,7 @@ let goldenlayout = (function () {
         tab.element.append(  updateDropdownControl );
         tab.element.append(  splitControl );
 
-        if( tab.contentItem.config.componentName == "Main" ) {
+        if( tab.contentItem.config.componentName === "Main" ) {
             tab.element.prepend( $("#optionsbutton").clone(true).addClass("lm_title") );
         }
 
@@ -333,10 +334,10 @@ let goldenlayout = (function () {
         components.forEach( function (component) {
             if( component.hasId("inputComponent") ) { return; } // ignore input components
 
-            let text_div = component.container.getElement().children(".content");
-            let scrollHeight = text_div.prop("scrollHeight");
-            let clientHeight = text_div.prop("clientHeight");
-            text_div.scrollTop( scrollHeight - clientHeight );
+            let textDiv = component.container.getElement().children(".content");
+            let scrollHeight = textDiv.prop("scrollHeight");
+            let clientHeight = textDiv.prop("clientHeight");
+            textDiv.scrollTop( scrollHeight - clientHeight );
         });
         myLayout.updateSize();
     }
@@ -344,30 +345,30 @@ let goldenlayout = (function () {
 
     //
     //
-    var routeMsg = function (text_div, txt, update_method) {
-        if ( update_method == "replace" ) {
-            text_div.html(txt);
-        } else if ( update_method == "append" ) {
-            text_div.append(txt);
+    var routeMsg = function (textDiv, txt, updateMethod) {
+        if ( updateMethod === "replace" ) {
+            textDiv.html(txt);
+        } else if ( updateMethod === "append" ) {
+            textDiv.append(txt);
         } else {  // line feed
-            text_div.append("<div class='out'>" + txt + "</div>");
+            textDiv.append("<div class='out'>" + txt + "</div>");
         }
-        let scrollHeight = text_div.prop("scrollHeight");
-        let clientHeight = text_div.prop("clientHeight");
-        text_div.scrollTop( scrollHeight - clientHeight );
+        let scrollHeight = textDiv.prop("scrollHeight");
+        let clientHeight = textDiv.prop("clientHeight");
+        textDiv.scrollTop( scrollHeight - clientHeight );
     }
 
 
     //
     //
-    var initComponent = function (div, container, state, default_types, update_method) {
+    var initComponent = function (div, container, state, defaultTypes, updateMethod) {
         // set this container"s content div types attribute
         if( state ) {
             div.attr("types", state.types);
-            div.attr("update_method", state.update_method);
+            div.attr("updateMethod", state.updateMethod);
         } else {
-            div.attr("types", default_types);
-            div.attr("update_method", update_method);
+            div.attr("types", defaultTypes);
+            div.attr("updateMethod", updateMethod);
         }
         div.appendTo( container.getElement() );
         container.on("tab", onTabCreate);
@@ -399,41 +400,40 @@ let goldenlayout = (function () {
 
         if ( kwargs && "type" in kwargs ) {
             msgtype = kwargs["type"];
-            if ( ! known_types.includes(msgtype) ) {
+            if ( ! knownTypes.includes(msgtype) ) {
                 // this is a new output type that can be mapped to panes
-                console.log("detected new output type: " + msgtype);
-                known_types.push(msgtype);
+                knownTypes.push(msgtype);
                 untagged.push(msgtype);
             }
         }
 
-        let message_delivered = false;
+        let messageDelivered = false;
         let components = myLayout.root.getItemsByType("component");
 
         components.forEach( function (component) {
             if( component.hasId("inputComponent") ) { return; } // ignore the input component
 
-            let text_div = component.container.getElement().children(".content");
-            let attr_types = text_div.attr("types");
-            let pane_types = attr_types ? attr_types.split(" ") : [];
-            let update_method = text_div.attr("update_method");
+            let textDiv = component.container.getElement().children(".content");
+            let attrTypes = textDiv.attr("types");
+            let paneTypes = attrTypes ? attrTypes.split(" ") : [];
+            let updateMethod = textDiv.attr("updateMethod");
             let txt = args[0];
 
             // is this message type listed in this pane"s types (or is this pane catching "all")
-            if( pane_types.includes(msgtype) || pane_types.includes("all") ) {
-                routeMsg( text_div, txt, update_method );
-                message_delivered = true;
+            if( paneTypes.includes(msgtype) || paneTypes.includes("all") ) {
+                routeMsg( textDiv, txt, updateMethod );
+                messageDelivered = true;
             }
 
             // is this pane catching "upmapped" messages?
             // And is this message type listed in the untagged types array?
-            if( pane_types.includes("untagged") && untagged.includes(msgtype) ) {
-                routeMsg( text_div, txt, update_method );
-                message_delivered = true;
+            if( paneTypes.includes("untagged") && untagged.includes(msgtype) ) {
+                routeMsg( textDiv, txt, updateMethod );
+                messageDelivered = true;
             }
         });
 
-        if ( message_delivered ) {
+        if ( messageDelivered ) {
             return true;
         }
         // unhandled message
@@ -452,8 +452,6 @@ let goldenlayout = (function () {
 
         // Set Save State callback
         myLayout.on( "stateChanged", onStateChanged );
-
-        console.log("Golden Layout Plugin Initialized.");
     }
 
 
@@ -514,8 +512,8 @@ let goldenlayout = (function () {
         postInit: postInit,
         onKeydown: onKeydown,
         onText: onText,
-        getGL: function () { return myLayout },
-        addKnownType: function (newtype) { known_types.push(newtype) },
+        getGL: function () { return myLayout; },
+        addKnownType: function (newtype) { knownTypes.push(newtype); },
     }
-})();
+}());
 window.plugin_handler.add("goldenlayout", goldenlayout);

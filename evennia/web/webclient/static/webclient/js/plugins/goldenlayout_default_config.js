@@ -27,7 +27,7 @@ var goldenlayout_config = { // Global Variable used in goldenlayout.js init()
                     tooltip: "Main - drag to desird position.",
                     componentState: {
                         types: "untagged",
-                        update_method: "newlines",
+                        updateMethod: "newlines",
                     },
                 }]
             }],
