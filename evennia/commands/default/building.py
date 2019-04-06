@@ -2045,7 +2045,7 @@ class CmdExamine(ObjManipCommand):
 
     account_mode = False
 
-    def list_attribute(self, crop, attr, value):
+    def list_attribute(self, crop, attr, category, value):
         """
         Formats a single attribute line.
         """
@@ -2053,8 +2053,10 @@ class CmdExamine(ObjManipCommand):
             if not isinstance(value, str):
                 value = utils.to_str(value)
             value = utils.crop(value)
-
-        string = "\n %s = %s" % (attr, value)
+        if category:
+            string = '\n %s[%s] = %s' % (attr, category, value)
+        else:
+            string = "\n %s = %s" % (attr, value)
         string = raw(string)
         return string
 
@@ -2065,13 +2067,13 @@ class CmdExamine(ObjManipCommand):
         """
 
         if attrname:
-            db_attr = [(attrname, obj.attributes.get(attrname))]
+            db_attr = [(attrname, obj.attributes.get(attrname), None)]
             try:
                 ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
             except Exception:
                 ndb_attr = None
         else:
-            db_attr = [(attr.key, attr.value) for attr in obj.db_attributes.all()]
+            db_attr = [(attr.key, attr.value, attr.category) for attr in obj.db_attributes.all()]
             try:
                 ndb_attr = obj.nattributes.all(return_tuples=True)
             except Exception:
@@ -2079,12 +2081,12 @@ class CmdExamine(ObjManipCommand):
         string = ""
         if db_attr and db_attr[0]:
             string += "\n|wPersistent attributes|n:"
-            for attr, value in db_attr:
-                string += self.list_attribute(crop, attr, value)
+            for attr, value, category in db_attr:
+                string += self.list_attribute(crop, attr, category, value)
         if ndb_attr and ndb_attr[0]:
             string += "\n|wNon-Persistent attributes|n:"
             for attr, value in ndb_attr:
-                string += self.list_attribute(crop, attr, value)
+                string += self.list_attribute(crop, attr, None, value)
         return string
 
     def format_output(self, obj, avail_cmdset):
