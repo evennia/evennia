@@ -94,4 +94,4 @@ let history_plugin = (function () {
         onSend: onSend,
     }
 })()
-plugin_handler.add("history", history_plugin);
+window.plugin_handler.add("history", history_plugin);
