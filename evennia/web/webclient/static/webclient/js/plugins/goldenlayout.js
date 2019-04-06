@@ -13,7 +13,7 @@ let goldenlayout = (function () {
         title: "Untitled",
         type: "component",
         componentName: "evennia",
-        tooltip: "Click and drag tabs to make new panes"
+        tooltip: "Click and drag tabs to make new panes",
         componentState: {
             types: "all",
             updateMethod: "newlines",
