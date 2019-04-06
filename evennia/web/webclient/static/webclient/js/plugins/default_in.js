@@ -66,8 +66,6 @@ let defaultin_plugin = (function () {
                 e.which = 13;
                 $("#inputfield").focus().trigger(e);
             });
-
-        console.log("DefaultIn initialized");
     }
 
     return {
