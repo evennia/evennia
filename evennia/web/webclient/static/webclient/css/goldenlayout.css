@@ -34,8 +34,36 @@ label {
     display: block;
 }
 
+.lm_header .lm_tab {
+    padding-right: 6px;
+    padding-left: 3px;
+    padding-bottom: 5px;
+    padding-top: 0px;
+    margin-top: 1px;
+    margin-right: 5px;
+}
+
 .lm_title {
     text-align: center;
+    margin-right: 2px;
+}
+
+.lm_tab.lm_active {
+    padding-bottom: 5px;
+    padding-top: 0px;
+    margin-top: 1px;
+}
+.lm_close_tab {
+    opacity: 1 !important;
+    background-image: none !important;
+    top: 0px !important; 
+    right: 0px !important;
+}
+
+.lm_close_tab:before {
+    font-size: 1.15em;
+    width: 1.15em;
+    content: "\2715";
 }
 
 #typelist {
@@ -94,6 +122,9 @@ label {
     z-index: 1;
     height: inherit;
     width: 30px;
+    color: white;
+    background-color: black;
+    border: 0px;
 }
 
 .inputfield {

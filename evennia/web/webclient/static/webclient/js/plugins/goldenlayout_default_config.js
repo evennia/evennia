@@ -24,7 +24,7 @@ var goldenlayout_config = { // Global Variable used in goldenlayout.js init()
                     type: "component",
                     componentName: "Main",
                     isClosable: false, // remove the 'x' control to close this
-                    tooltip: "Main - drag to desird position.",
+                    tooltip: "Main - drag to desired position.",
                     componentState: {
                         types: "untagged",
                         updateMethod: "newlines",
