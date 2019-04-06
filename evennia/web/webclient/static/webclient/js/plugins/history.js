@@ -51,10 +51,10 @@ let history = (function () {
         var historyEntry = null;
 
         // Only process up/down arrow if cursor is at the end of the line.
-        if (code === 38 && event.shiftKey) { // Arrow up
+        if (code === 38 && event.shiftKey) { // Shift + Arrow up
             historyEntry = back();
         }
-        else if (code === 40 && event.shiftKey) { // Arrow down
+        else if (code === 40 && event.shiftKey) { // Shift + Arrow down
             historyEntry = fwd();
         }
 

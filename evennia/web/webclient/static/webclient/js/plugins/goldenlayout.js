@@ -13,6 +13,7 @@ let goldenlayout = (function () {
         title: "Untitled",
         type: "component",
         componentName: "evennia",
+        tooltip: "Click and drag tabs to make new panes"
         componentState: {
             types: "all",
             updateMethod: "newlines",
@@ -279,11 +280,10 @@ let goldenlayout = (function () {
     //
     var onTabCreate = function (tab) {
         //HTML for the typeDropdown
-        let renameDropdownControl = $("<span class='lm_title' style='font-size: 1em;width: 1.5em;'>\u2B57</span>");
-        let typeDropdownControl   = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>&#11163;</span>");
-        let updateDropdownControl = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>&#11163;</span>");
-        let splitControl          = $("<span class='lm_title' style='font-size: 2em;width: 1em;'>+</span>");
-
+        let renameDropdownControl = $("<span class='lm_title' style='font-size: 1.5em;width: 0.5em;'>&#129170;</span>");
+        let typeDropdownControl   = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#11201;</span>");
+        let updateDropdownControl = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#11208;</span>");
+        let splitControl          = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>");
         // track dropdowns when the associated control is clicked
         renameDropdownControl.click( tab, renameDropdown ); 
 
@@ -314,7 +314,7 @@ let goldenlayout = (function () {
     //
     var onInputCreate = function (tab) {
         //HTML for the typeDropdown
-        let splitControl          = $("<span class='lm_title' style='font-size: 2em;width: 1em;'>+</span>");
+        let splitControl          = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>");
 
         // track adding a new tab
         splitControl.click( tab, function (evnt) {
