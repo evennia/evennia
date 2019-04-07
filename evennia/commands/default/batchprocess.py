@@ -260,9 +260,13 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
         except IOError as err:
-            string = "'%s' not found.\nYou have to supply the python path\n" \
-                     "using one of the defined batch-file directories\n (%s)."
-            caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
+            if err:
+                err = "{}\n".format(str(err))
+            else:
+                err = ""
+            string = "%s'%s' could not load. You have to supply python paths " \
+                     "from one of the defined batch-file directories\n (%s)."
+            caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not commands:
             caller.msg("File %s seems empty of valid commands." % python_path)
@@ -288,7 +292,8 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
             caller.msg("\nBatch-command processor - Interactive mode for %s ..." % python_path)
             show_curr(caller)
         else:
-            caller.msg("Running Batch-command processor - Automatic mode for %s (this might take some time) ..."
+            caller.msg("Running Batch-command processor - Automatic mode "
+                       "for %s (this might take some time) ..."
                        % python_path)
 
             procpool = False
@@ -370,10 +375,14 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
         except UnicodeDecodeError as err:
             caller.msg(_UTF8_ERROR % (python_path, err))
             return
-        except IOError:
-            string = "'%s' not found.\nYou have to supply the python path\n" \
+        except IOError as err:
+            if err:
+                err = "{}\n".format(str(err))
+            else:
+                err = ""
+            string = "%s'%s' could not load. You have to supply python paths " \
                      "from one of the defined batch-file directories\n (%s)."
-            caller.msg(string % (python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
+            caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not codes:
             caller.msg("File %s seems empty of functional code." % python_path)
