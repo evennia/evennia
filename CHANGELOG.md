@@ -139,6 +139,8 @@ Web/Django standard initiative (@strikaco)
   + The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
      to install the extended-room contrib. 
 - Reworked `menu_login` contrib to use latest EvMenu standards. Now also supports guest logins.
+- Mail contrib was refactored to have optional Command classes `CmdMail` for OOC+IC mail (added
+    to the CharacterCmdSet and `CmdMailCharacter` for IC-only mailing between chars (added to CharacterCmdSet)
 
 
 
