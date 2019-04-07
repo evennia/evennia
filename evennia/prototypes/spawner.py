@@ -633,11 +633,11 @@ def batch_create_object(*objparams):
     # it out for now:
     #  dbobjs = _ObjectDB.objects.bulk_create(dbobjs)
 
-    dbobjs = [ObjectDB(**objparam[0]) for objparam in objparams]
     objs = []
-    for iobj, obj in enumerate(dbobjs):
-        # call all setup hooks on each object
-        objparam = objparams[iobj]
+    for objparam in objparams:
+
+        obj = ObjectDB(**objparam[0])
+
         # setup
         obj._createdict = {"permissions": make_iter(objparam[1]),
                            "locks": objparam[2],
