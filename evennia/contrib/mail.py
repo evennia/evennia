@@ -3,18 +3,47 @@ In-Game Mail system
 
 Evennia Contribution - grungies1138 2016
 
-A simple Brandymail style @mail system that uses the Msg class from Evennia Core.
+A simple Brandymail style @mail system that uses the Msg class from Evennia
+Core. It has two Commands, both of which can be used on their own:
+   - CmdMail - this should sit on the Account cmdset and makes the @mail command
+    available both IC and OOC. Mails will always go to Accounts (other players).
+   - CmdMailCharacter - this should sit on the Character cmdset and makes the @mail
+    command ONLY available when puppeting a character. Mails will be sent to other
+    Characters only and will not be available when OOC.
+   - If adding *both* commands to their respective cmdsets, you'll get two separate
+    IC and OOC mailing systems, with different lists of mail for IC and OOC modes.
 
 Installation:
-    import CmdMail from this module (from evennia.contrib.mail import CmdMail),
-    and add into the default Account or Character command set (self.add(CmdMail)).
+
+Install one or both of the following (see above):
+
+- CmdMail (IC + OOC mail, sent between players)
+
+    # mygame/commands/default_cmds.py
+
+    from evennia.contrib import mail
+
+    # in AccountCmdSet.at_cmdset_creation:
+        self.add(mail.CmdMail())
+
+- CmdMailCharacter (optional, IC only mail, sent between characters)
+
+    # mygame/commands/default_cmds.py
+
+    from evennia.contrib import mail
+
+    # in CharacterCmdSet.at_cmdset_creation:
+        self.add(mail.CmdMailCharacter())
+
+Once installed, use `help mail` in game for help with the mail command. Use
+@ic/@ooc to switch in and out of IC/OOC modes.
 
 """
 
 import re
 from evennia import ObjectDB, AccountDB
 from evennia import default_cmds
-from evennia.utils import create, evtable, make_iter
+from evennia.utils import create, evtable, make_iter, inherits_from, datetime_format
 from evennia.comms.models import Msg
 
 
@@ -23,44 +52,48 @@ _SUB_HEAD_CHAR = "-"
 _WIDTH = 78
 
 
-class CmdMail(default_cmds.MuxCommand):
+class CmdMail(default_cmds.MuxAccountCommand):
     """
-    Commands that allow either IC or OOC communications
+    Communicate with others by sending mail.
 
     Usage:
-        @mail       - Displays all the mail an account has in their mailbox
-
-        @mail <#>   - Displays a specific message
-
-        @mail <accounts>=<subject>/<message>
-                - Sends a message to the comma separated list of accounts.
-
-        @mail/delete <#> - Deletes a specific message
-
-        @mail/forward <account list>=<#>[/<Message>]
-                - Forwards an existing message to the specified list of accounts,
-                  original message is delivered with optional Message prepended.
-
-        @mail/reply <#>=<message>
-                - Replies to a message #.  Prepends message to the original
-                  message text.
+      @mail       - Displays all the mail an account has in their mailbox
+      @mail <#>   - Displays a specific message
+      @mail <accounts>=<subject>/<message>
+              - Sends a message to the comma separated list of accounts.
+      @mail/delete <#> - Deletes a specific message
+      @mail/forward <account list>=<#>[/<Message>]
+              - Forwards an existing message to the specified list of accounts,
+                original message is delivered with optional Message prepended.
+      @mail/reply <#>=<message>
+              - Replies to a message #. Prepends message to the original
+                message text.
     Switches:
-        delete  - deletes a message
-        forward - forward a received message to another object with an optional message attached.
-        reply   - Replies to a received message, appending the original message to the bottom.
-
+      delete  - deletes a message
+      forward - forward a received message to another object with an optional message attached.
+      reply   - Replies to a received message, appending the original message to the bottom.
     Examples:
-        @mail 2
-        @mail Griatch=New mail/Hey man, I am sending you a message!
-        @mail/delete 6
-        @mail/forward feend78 Griatch=4/You guys should read this.
-        @mail/reply 9=Thanks for the info!
+      @mail 2
+      @mail Griatch=New mail/Hey man, I am sending you a message!
+      @mail/delete 6
+      @mail/forward feend78 Griatch=4/You guys should read this.
+      @mail/reply 9=Thanks for the info!
 
     """
     key = "@mail"
     aliases = ["mail"]
     lock = "cmd:all()"
     help_category = "General"
+
+    def parse(self):
+        """
+        Add convenience check to know if caller is an Account or not since this cmd 
+        will be able to add to either Object- or Account level.
+
+        """
+        super().parse()
+        self.caller_is_account = bool(inherits_from(self.caller,
+                                                    "evennia.accounts.accounts.DefaultAccount"))
 
     def search_targets(self, namelist):
         """
@@ -71,39 +104,38 @@ class CmdMail(default_cmds.MuxCommand):
             namelist (list): List of strings for objects to search for.
 
         Returns:
-            targetlist (list): List of matches, if any.
+            targetlist (Queryset): Any target matches.
 
         """
         nameregex = r"|".join(r"^%s$" % re.escape(name) for name in make_iter(namelist))
-        if hasattr(self.caller, "account") and self.caller.account:
-            matches = list(ObjectDB.objects.filter(db_key__iregex=nameregex))
+        if self.caller_is_account:
+            matches = AccountDB.objects.filter(username__iregex=nameregex)
         else:
-            matches = list(AccountDB.objects.filter(username__iregex=nameregex))
+            matches = ObjectDB.objects.filter(db_key__iregex=nameregex)
         return matches
 
     def get_all_mail(self):
         """
-        Returns a list of all the messages where the caller is a recipient.
+        Returns a list of all the messages where the caller is a recipient. These
+            are all messages tagged with tags of the `mail` category.
 
         Returns:
-            messages (list): list of Msg objects.
+            messages (QuerySet): Matching Msg objects.
 
         """
-        # mail_messages = Msg.objects.get_by_tag(category="mail")
-        # messages = []
-        try:
-            account = self.caller.account
-        except AttributeError:
-            account = self.caller
-        messages = Msg.objects.get_by_tag(category="mail").filter(db_receivers_accounts=account)
-        return messages
+        if self.caller_is_account:
+            return Msg.objects.get_by_tag(category="mail").filter(db_receivers_accounts=self.caller)
+        else:
+            return Msg.objects.get_by_tag(category="mail").filter(db_receivers_objects=self.caller)
 
     def send_mail(self, recipients, subject, message, caller):
         """
-        Function for sending new mail.  Also useful for sending notifications from objects or systems.
+        Function for sending new mail.  Also useful for sending notifications
+        from objects or systems.
 
         Args:
-            recipients (list): list of Account or character objects to receive the newly created mails.
+            recipients (list): list of Account or Character objects to receive
+                the newly created mails.
             subject (str): The header or subject of the message to be delivered.
             message (str): The body of the message being sent.
             caller (obj): The object (or Account or Character) that is sending the message.
@@ -111,43 +143,57 @@ class CmdMail(default_cmds.MuxCommand):
         """
         for recipient in recipients:
             recipient.msg("You have received a new @mail from %s" % caller)
-            new_message = create.create_message(self.caller, message, receivers=recipient, header=subject)
-            new_message.tags.add("U", category="mail")
+            new_message = create.create_message(self.caller, message,
+                                                receivers=recipient,
+                                                header=subject)
+            new_message.tags.add("new", category="mail")
 
         if recipients:
             caller.msg("You sent your message.")
             return
         else:
-            caller.msg("No valid accounts found.  Cannot send message.")
+            caller.msg("No valid target(s) found. Cannot send message.")
             return
 
     def func(self):
+        """
+        Do the main command functionality
+        """
+
         subject = ""
         body = ""
 
         if self.switches or self.args:
-            if "delete" in self.switches:
+            if "delete" in self.switches or "del" in self.switches:
                 try:
                     if not self.lhs:
-                        self.caller.msg("No Message ID given.  Unable to delete.")
+                        self.caller.msg("No Message ID given. Unable to delete.")
                         return
                     else:
                         all_mail = self.get_all_mail()
                         mind_max = max(0, all_mail.count() - 1)
                         mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
-                            all_mail[mind].delete()
-                            self.caller.msg("Message %s deleted" % self.lhs)
+                            mail = all_mail[mind]
+                            question = "Delete message {} ({}) [Y]/N?".format(mind + 1, mail.header)
+                            ret = yield(question)
+                            # handle not ret, it will be None during unit testing
+                            if not ret or ret.strip().upper() not in ("N", "No"):
+                                all_mail[mind].delete()
+                                self.caller.msg("Message %s deleted" % (mind + 1,))
+                            else:
+                                self.caller.msg("Message not deleted.")
                         else:
                             raise IndexError
                 except IndexError:
                     self.caller.msg("That message does not exist.")
                 except ValueError:
                     self.caller.msg("Usage: @mail/delete <message ID>")
-            elif "forward" in self.switches:
+            elif "forward" in self.switches or "fwd" in self.switches:
                 try:
                     if not self.rhs:
-                        self.caller.msg("Cannot forward a message without an account list.  Please try again.")
+                        self.caller.msg("Cannot forward a message without a target list. "
+                                        "Please try again.")
                         return
                     elif not self.lhs:
                         self.caller.msg("You must define a message to forward.")
@@ -175,15 +221,15 @@ class CmdMail(default_cmds.MuxCommand):
                                 self.send_mail(self.search_targets(self.lhslist), "FWD: " + old_message.header,
                                                "\n---- Original Message ----\n" + old_message.message, self.caller)
                                 self.caller.msg("Message forwarded.")
-                                old_message.tags.remove("u", category="mail")
-                                old_message.tags.add("f", category="mail")
+                                old_message.tags.remove("new", category="mail")
+                                old_message.tags.add("fwd", category="mail")
                             else:
                                 raise IndexError
                 except IndexError:
                     self.caller.msg("Message does not exixt.")
                 except ValueError:
                     self.caller.msg("Usage: @mail/forward <account list>=<#>[/<Message>]")
-            elif "reply" in self.switches:
+            elif "reply" in self.switches or "rep" in self.switches:
                 try:
                     if not self.rhs:
                         self.caller.msg("You must define a message to reply to.")
@@ -199,8 +245,8 @@ class CmdMail(default_cmds.MuxCommand):
                             old_message = all_mail[mind]
                             self.send_mail(old_message.senders, "RE: " + old_message.header,
                                            self.rhs + "\n---- Original Message ----\n" + old_message.message, self.caller)
-                            old_message.tags.remove("u", category="mail")
-                            old_message.tags.add("r", category="mail")
+                            old_message.tags.remove("new", category="mail")
+                            old_message.tags.add("-", category="mail")
                             return
                         else:
                             raise IndexError
@@ -229,27 +275,35 @@ class CmdMail(default_cmds.MuxCommand):
                     messageForm = []
                     if message:
                         messageForm.append(_HEAD_CHAR * _WIDTH)
-                        messageForm.append("|wFrom:|n %s" % (message.senders[0].key))
-                        messageForm.append("|wSent:|n %s" % message.db_date_created.strftime("%m/%d/%Y %H:%M:%S"))
+                        messageForm.append("|wFrom:|n %s" % (message.senders[0].get_display_name(self.caller)))
+                        messageForm.append("|wSent:|n %s" % message.db_date_created.strftime("%b %-d, %Y - %H:%M:%S"))
                         messageForm.append("|wSubject:|n %s" % message.header)
                         messageForm.append(_SUB_HEAD_CHAR * _WIDTH)
                         messageForm.append(message.message)
                         messageForm.append(_HEAD_CHAR * _WIDTH)
                     self.caller.msg("\n".join(messageForm))
-                    message.tags.remove("u", category="mail")
-                    message.tags.add("o", category="mail")
+                    message.tags.remove("new", category="mail")
+                    message.tags.add("-", category="mail")
 
         else:
+            # list messages 
             messages = self.get_all_mail()
 
             if messages:
-                table = evtable.EvTable("|wID:|n", "|wFrom:|n", "|wSubject:|n", "|wDate:|n", "|wSta:|n",
-                                        table=None, border="header", header_line_char=_SUB_HEAD_CHAR, width=_WIDTH)
+                table = evtable.EvTable("|wID|n", "|wFrom|n", "|wSubject|n",
+                                        "|wArrived|n", "",
+                                        table=None, border="header",
+                                        header_line_char=_SUB_HEAD_CHAR, width=_WIDTH)
                 index = 1
                 for message in messages:
-                    table.add_row(index, message.senders[0], message.header,
-                                  message.db_date_created.strftime("%m/%d/%Y"),
-                                  str(message.db_tags.last().db_key.upper()))
+                    status = str(message.db_tags.last().db_key.upper())
+                    if status == "NEW":
+                        status = "|gNEW|n"
+
+                    table.add_row(index, message.senders[0].get_display_name(self.caller), 
+                                  message.header,
+                                  datetime_format(message.db_date_created),
+                                  status)
                     index += 1
 
                 table.reformat_column(0, width=6)
@@ -263,3 +317,9 @@ class CmdMail(default_cmds.MuxCommand):
                 self.caller.msg(_HEAD_CHAR * _WIDTH)
             else:
                 self.caller.msg("There are no messages in your inbox.")
+
+
+# character - level version of the command
+
+class CmdMailCharacter(CmdMail):
+    account_caller = False
