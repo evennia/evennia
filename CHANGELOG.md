@@ -6,6 +6,7 @@ Update to Python 3
 
 - Use `python3 -m venv <myenvname>`
 - Use `python3 -m pdb <script>` for debugging
+- Docker image updated
 
 ### Commands
 
@@ -22,6 +23,13 @@ Update to Python 3
 
 ### Web
 
+New golden-layout based Webclient UI (@security-related)
+- Features
+  - Much slicker behavior and more professional look
+  - Allows tabbing as well as click and drag of panes in any grid position
+  - Renaming tabs, assignments of data tags and output types are simple per-pane menus now
+  - Any number of input panes, with separate histories
+  - Button UI (disabled in JS by default)
 Web/Django standard initiative (@strikaco)
 - Features
   - Adds a series of web-based forms and generic class-based views
