@@ -38,6 +38,7 @@ class AccountCmdSet(CmdSet):
         self.add(account.CmdPassword())
         self.add(account.CmdColorTest())
         self.add(account.CmdQuell())
+        self.add(account.CmdStyle())
 
         # nicks
         self.add(general.CmdNick())

@@ -112,7 +112,7 @@ def list_bans(banlist):
     if not banlist:
         return "No active bans were found."
 
-    table = evtable.EvTable("|wid", "|wname/ip", "|wdate", "|wreason")
+    table = evtable.self.style_table("|wid", "|wname/ip", "|wdate", "|wreason")
     for inum, ban in enumerate(banlist):
         table.add_row(str(inum + 1),
                       ban[0] and ban[0] or ban[1],

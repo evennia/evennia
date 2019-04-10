@@ -293,7 +293,7 @@ def format_script_list(scripts):
     if not scripts:
         return "<No scripts>"
 
-    table = EvTable("|wdbref|n", "|wobj|n", "|wkey|n", "|wintval|n", "|wnext|n",
+    table = self.style_table("|wdbref|n", "|wobj|n", "|wkey|n", "|wintval|n", "|wnext|n",
                     "|wrept|n", "|wdb", "|wtypeclass|n", "|wdesc|n",
                     align='r', border="tablecols")
     for script in scripts:
@@ -445,7 +445,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         nobjs = nobjs or 1  # fix zero-div error with empty database
 
         # total object sum table
-        totaltable = EvTable("|wtype|n", "|wcomment|n", "|wcount|n", "|w%%|n", border="table", align="l")
+        totaltable = self.style_table("|wtype|n", "|wcomment|n", "|wcount|n", "|w%%|n", border="table", align="l")
         totaltable.align = 'l'
         totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars) / nobjs) * 100))
         totaltable.add_row("Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100))
@@ -453,7 +453,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
 
         # typeclass table
-        typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="table", align="l")
+        typetable = self.style_table("|wtypeclass|n", "|wcount|n", "|w%%|n", border="table", align="l")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
         for path, count in dbtotals.items():
@@ -461,7 +461,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
-        latesttable = EvTable("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table")
+        latesttable = self.style_table("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table")
         latesttable.align = 'l'
         for obj in objs:
             latesttable.add_row(utils.datetime_format(obj.date_created),
@@ -557,12 +557,12 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
 
         # typeclass table
         dbtotals = AccountDB.objects.object_totals()
-        typetable = EvTable("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
+        typetable = self.style_table("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
         for path, count in dbtotals.items():
             typetable.add_row(path, count, "%.2f" % ((float(count) / naccounts) * 100))
         # last N table
         plyrs = AccountDB.objects.all().order_by("db_date_created")[max(0, naccounts - nlim):]
-        latesttable = EvTable("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l")
+        latesttable = self.style_table("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l")
         for ply in plyrs:
             latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.path)
 
@@ -613,7 +613,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their
             # status, then exit.
-            table = EvTable("|wService|n (use @services/start|stop|delete)", "|wstatus", align="l")
+            table = self.style_table("|wService|n (use @services/start|stop|delete)", "|wstatus", align="l")
             for service in service_collection.services:
                 table.add_row(service.name, service.running and "|gRunning" or "|rNot Running")
             caller.msg(str(table))
@@ -723,14 +723,14 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         """Show server time data in a table."""
-        table1 = EvTable("|wServer time", "", align="l", width=78)
+        table1 = self.style_table("|wServer time", "", align="l", width=78)
         table1.add_row("Current uptime", utils.time_format(gametime.uptime(), 3))
         table1.add_row("Portal uptime", utils.time_format(gametime.portal_uptime(), 3))
         table1.add_row("Total runtime", utils.time_format(gametime.runtime(), 2))
         table1.add_row("First start", datetime.datetime.fromtimestamp(gametime.server_epoch()))
         table1.add_row("Current time", datetime.datetime.now())
         table1.reformat_column(0, width=30)
-        table2 = EvTable("|wIn-Game time", "|wReal time x %g" % gametime.TIMEFACTOR, align="l", width=77, border_top=0)
+        table2 = self.style_table("|wIn-Game time", "|wReal time x %g" % gametime.TIMEFACTOR, align="l", width=77, border_top=0)
         epochtxt = "Epoch (%s)" % ("from settings" if settings.TIME_GAME_EPOCH else "server start")
         table2.add_row(epochtxt, datetime.datetime.fromtimestamp(gametime.game_epoch()))
         table2.add_row("Total time passed:", utils.time_format(gametime.gametime(), 2))
@@ -824,7 +824,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
                     self.caller.msg(string % (rmem, pmem))
                     return
                 # Display table
-                loadtable = EvTable("property", "statistic", align="l")
+                loadtable = self.style_table("property", "statistic", align="l")
                 loadtable.add_row("Total CPU load", "%g %%" % loadavg)
                 loadtable.add_row("Total computer memory usage", "%g MB (%g%%)" % (rmem, pmem))
                 loadtable.add_row("Process ID", "%g" % pid),
@@ -850,7 +850,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
                 self.caller.msg(string % (rmem, pmem, vmem))
                 return
 
-            loadtable = EvTable("property", "statistic", align="l")
+            loadtable = self.style_table("property", "statistic", align="l")
             loadtable.add_row("Server load (1 min)", "%g" % loadavg)
             loadtable.add_row("Process ID", "%g" % pid),
             loadtable.add_row("Memory usage", "%g MB (%g%%)" % (rmem, pmem))
@@ -875,7 +875,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
         total_num, cachedict = _IDMAPPER.cache_size()
         sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
                               key=lambda tup: tup[1], reverse=True)
-        memtable = EvTable("entity name", "number", "idmapper %", align="l")
+        memtable = self.style_table("entity name", "number", "idmapper %", align="l")
         for tup in sorted_cache:
             memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
 
@@ -907,7 +907,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
         if not all_subs:
             self.caller.msg("No tickers are currently active.")
             return
-        table = EvTable("interval (s)", "object", "path/methodname", "idstring", "db")
+        table = self.style_table("interval (s)", "object", "path/methodname", "idstring", "db")
         for sub in all_subs:
             table.add_row(sub[3],
                           "%s%s" % (sub[0] or "[None]",

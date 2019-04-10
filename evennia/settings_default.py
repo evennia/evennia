@@ -490,6 +490,27 @@ START_LOCATION = "#2"
 TYPECLASS_AGGRESSIVE_CACHE = True
 
 ######################################################################
+# Styles
+######################################################################
+
+# Replace entries in this dictionary to change the default stylings
+# Evennia uses for commands. Or add more entries! Accounts can have
+# per-user settings that override these.
+
+DEFAULT_STYLES = {
+    'border_color': ('Headers, footers, table borders, etc.', 'color', 'M'),
+    'header_star_color': ('* inside Header lines.', 'color', 'm'),
+    'header_text_color': ('Text inside Header lines.', 'color', 'w'),
+    'footer_text_color': ('Text inside Footer Lines.', 'color', 'w'),
+    'column_names_color': ('Table column header text.', 'color', 'G'),
+    'header_fill': ('Fill for Header lines.', 'word', '='),
+    'separator_fill': ('Fill for Separator Lines.', 'word', '-'),
+    'footer_fill': ('Fill for Footer Lines.', 'word', '='),
+    'help_category_color': ('Help category names.', 'color', 'g'),
+    'help_entry_color': ('Help entry names.', 'color', 'c'),
+}
+
+######################################################################
 # Batch processors
 ######################################################################
 
