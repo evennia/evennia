@@ -367,7 +367,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
         """Implement function"""
         account = self.account
         sessions = account.sessions.all()
-        table = evtable.EvTable("|wsessid",
+        table = evtable.self.style_table("|wsessid",
                                 "|wprotocol",
                                 "|whost",
                                 "|wpuppet/character",
@@ -418,7 +418,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         naccounts = (SESSIONS.account_count())
         if show_session_data:
             # privileged info
-            table = evtable.EvTable("|wAccount Name",
+            table = evtable.self.style_table("|wAccount Name",
                                     "|wOn for",
                                     "|wIdle",
                                     "|wPuppeting",
@@ -444,7 +444,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                               isinstance(session.address, tuple) and session.address[0] or session.address)
         else:
             # unprivileged
-            table = evtable.EvTable("|wAccount name", "|wOn for", "|wIdle")
+            table = evtable.self.style_table("|wAccount name", "|wOn for", "|wIdle")
             for session in session_list:
                 if not session.logged_in:
                     continue
@@ -524,7 +524,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             options.pop("TTYPE", None)
 
             header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
-            table = evtable.EvTable(*header)
+            table = evtable.self.style_table(*header)
             for key in sorted(options):
                 row = [key, options[key]]
                 if saved_options:
@@ -870,3 +870,19 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
             else:
                 self.msg("Quelling Account permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(account)
+
+
+class CmdStyle(COMMAND_DEFAULT_CLASS):
+    key = "@style"
+    switch_options = ['clear']
+
+    def func(self):
+        if not self.args:
+            self.list_styles()
+            return
+
+    def list_styles(self):
+        styles_table = self.style_table('Option', 'Description', 'Value')
+        for k, v in settings.DEFAULT_STYLES.items():
+            styles_table.add_row(k, v[0], v[2])
+        self.msg(str(styles_table))
