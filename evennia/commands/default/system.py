@@ -293,7 +293,7 @@ def format_script_list(scripts):
     if not scripts:
         return "<No scripts>"
 
-    table = self.style_table("|wdbref|n", "|wobj|n", "|wkey|n", "|wintval|n", "|wnext|n",
+    table = EvTable("|wdbref|n", "|wobj|n", "|wkey|n", "|wintval|n", "|wnext|n",
                     "|wrept|n", "|wdb", "|wtypeclass|n", "|wdesc|n",
                     align='r', border="tablecols")
     for script in scripts:
