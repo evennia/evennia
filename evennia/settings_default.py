@@ -521,7 +521,7 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc & PrototypeFuncs
+# Inlinefunc, PrototypeFuncs, and ValidFuncs
 ######################################################################
 # Evennia supports inline function preprocessing. This allows users
 # to supply inline calls on the form $func(arg, arg, ...) to do
@@ -537,6 +537,10 @@ INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
 # functional code in prototypes
 PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
                          "server.conf.prototypefuncs"]
+
+# Module holding validator functions. functions in later modules will
+# override those in earlier ones.
+VALIDFUNC_MODULES = ['evennia.utils.validfuncs', ]
 
 ######################################################################
 # Default Account setup and access
