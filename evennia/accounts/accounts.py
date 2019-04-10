@@ -20,6 +20,7 @@ from django.utils.module_loading import import_string
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
+from evennia.accounts.styles import StyleHandler
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
@@ -1382,6 +1383,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                         result.append("\n - %s [%s]" % (char.key, ", ".join(char.permissions.all())))
             look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
             return look_string
+
+    @lazy_property
+    def style(self):
+        return StyleHandler(self)
 
 
 class DefaultGuest(DefaultAccount):
