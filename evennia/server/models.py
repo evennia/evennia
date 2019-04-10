@@ -128,3 +128,16 @@ class ServerConfig(WeakSharedMemoryModel):
         """
         self.key = key
         self.value = value
+
+
+class Host(models.Model):
+    """
+    Simple table used for keeping track of all IP addresses that have connected to
+    the game.
+    """
+
+    # The IP address to be stored.
+    ip = models.GenericIPAddressField(blank=False, null=False, unique=True)
+
+    # If available, the site/reverse DNS lookup attached to the IP.
+    site = models.TextField(blank=True, null=True)

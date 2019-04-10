@@ -897,3 +897,17 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
             return
         self.msg('Success! The new value is: %s' % result)
 
+
+class CmdLogins(COMMAND_DEFAULT_CLASS):
+    """
+    View your recent login records. Useful for spotting potential hijinx.
+
+    Usage:
+        @logins
+    """
+    key = '@logins'
+    locks = 'cmd:pperm(Player)'
+    help_category = 'General'
+
+    def func(self):
+        pass

@@ -23,7 +23,7 @@ from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
-from evennia.server.models import ServerConfig
+from evennia.server.models import ServerConfig, Host
 from evennia.server.throttle import Throttle
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import (lazy_property, to_str,
@@ -514,6 +514,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                     account.at_failed_login(session)
 
             return None, errors
+
+        # Record Host and login.
+        host, created = Host.objects.get_or_create(ip=ip)
+        account.login_records.create(source=host, date=time.time())
 
         # Account successfully authenticated
         logger.log_sec('Authentication Success: %s (IP: %s).' % (account, ip))

@@ -170,3 +170,12 @@ class AccountDB(TypedObject, AbstractUser):
     def __uid_del(self):
         raise Exception("User id cannot be deleted!")
     uid = property(__uid_get, __uid_set, __uid_del)
+
+
+class Login(models.Model):
+    """
+    Model for tracking Account logins.
+    """
+    account = models.ForeignKey(AccountDB, related_name='login_records', on_delete=models.CASCADE)
+    source = models.ForeignKey('server.Host', related_name='account_logins', on_delete=models.CASCADE)
+    date = models.DateTimeField(null=False, db_index=True)
