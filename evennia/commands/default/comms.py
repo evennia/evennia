@@ -292,7 +292,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
-            comtable = evtable.EvTable("|wchannel|n", "|wmy aliases|n",
+            comtable = self.style_table("|wchannel|n", "|wmy aliases|n",
                                        "|wdescription|n", align="l", maxwidth=_DEFAULT_WIDTH)
             for chan in subs:
                 clower = chan.key.lower()
@@ -306,7 +306,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                      " |waddcom|n/|wdelcom|n to sub/unsub):|n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
-            comtable = evtable.EvTable("|wsub|n", "|wchannel|n", "|wmy aliases|n",
+            comtable = self.style_table("|wsub|n", "|wchannel|n", "|wmy aliases|n",
                                        "|wlocks|n", "|wdescription|n", maxwidth=_DEFAULT_WIDTH)
             for chan in channels:
                 clower = chan.key.lower()
@@ -815,7 +815,7 @@ def _list_bots():
     ircbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
     if ircbots:
         from evennia.utils.evtable import EvTable
-        table = EvTable("|w#dbref|n", "|wbotname|n", "|wev-channel|n",
+        table = self.style_table("|w#dbref|n", "|wbotname|n", "|wev-channel|n",
                         "|wirc-channel|n", "|wSSL|n", maxwidth=_DEFAULT_WIDTH)
         for ircbot in ircbots:
             ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
@@ -1051,7 +1051,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             rssbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
             if rssbots:
                 from evennia.utils.evtable import EvTable
-                table = EvTable("|wdbid|n", "|wupdate rate|n", "|wev-channel",
+                table = self.style_table("|wdbid|n", "|wupdate rate|n", "|wev-channel",
                                 "|wRSS feed URL|n", border="cells", maxwidth=_DEFAULT_WIDTH)
                 for rssbot in rssbots:
                     table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
