@@ -292,7 +292,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
-            comtable = evtable.self.style_table("|wchannel|n", "|wmy aliases|n",
+            comtable = self.style_table("|wchannel|n", "|wmy aliases|n",
                                        "|wdescription|n", align="l", maxwidth=_DEFAULT_WIDTH)
             for chan in subs:
                 clower = chan.key.lower()
@@ -306,7 +306,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                      " |waddcom|n/|wdelcom|n to sub/unsub):|n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
-            comtable = evtable.self.style_table("|wsub|n", "|wchannel|n", "|wmy aliases|n",
+            comtable = self.style_table("|wsub|n", "|wchannel|n", "|wmy aliases|n",
                                        "|wlocks|n", "|wdescription|n", maxwidth=_DEFAULT_WIDTH)
             for chan in channels:
                 clower = chan.key.lower()
