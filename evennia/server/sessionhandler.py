@@ -18,6 +18,7 @@ from future.utils import listvalues
 
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
+from evennia.utils.eventhandler import EVENT_HANDLER
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import (variable_from_module, is_iter,
                                  to_str, make_iter, delay, callables_from_module)
@@ -488,6 +489,9 @@ class ServerSessionHandler(SessionHandler):
             # don't log in a session that is already logged in.
             return
 
+        # Check this for the Event Handler.
+        already_connected = account.is_connected
+
         account.is_connected = True
 
         # sets up and assigns all properties on the session
@@ -518,6 +522,10 @@ class ServerSessionHandler(SessionHandler):
                                                              operation=SLOGIN,
                                                              sessiondata={"logged_in": True,
                                                                           "uid": session.uid})
+        # Trigger the event handler if appropriate.
+        if not already_connected:
+            EVENT_HANDLER.trigger('account_login', account, session)
+
         account.at_post_login(session=session)
 
     def disconnect(self, session, reason="", sync_portal=True):

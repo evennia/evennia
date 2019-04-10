@@ -109,6 +109,7 @@ TASK_HANDLER = None
 TICKER_HANDLER = None
 MONITOR_HANDLER = None
 CHANNEL_HANDLER = None
+EVENT_HANDLER = None
 
 
 def _create_version():
@@ -213,6 +214,7 @@ def _init():
     from .server.sessionhandler import SESSION_HANDLER
     from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
+    from .utils.eventhandler import EVENT_HANDLER
 
     # initialize the doc string
     global __doc__

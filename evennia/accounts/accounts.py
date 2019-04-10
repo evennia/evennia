@@ -25,6 +25,7 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
+from evennia.utils.eventhandler import EVENT_HANDLER
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, is_iter,
@@ -736,7 +737,13 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             logger.log_trace()
 
         # Update the throttle to indicate a new account was created from this IP
-        if ip and not guest: CREATION_THROTTLE.update(ip, 'Too many accounts being created.')
+        if ip and not guest:
+            CREATION_THROTTLE.update(ip, 'Too many accounts being created.')
+
+        # Trigger the EVENT_HANDLER
+        EVENT_HANDLER.trigger('account_create', account)
+
+        # Finally, return.
         return account, errors
 
     def delete(self, *args, **kwargs):
