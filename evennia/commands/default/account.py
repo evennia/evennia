@@ -367,7 +367,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
         """Implement function"""
         account = self.account
         sessions = account.sessions.all()
-        table = evtable.self.style_table("|wsessid",
+        table = self.style_table("|wsessid",
                                 "|wprotocol",
                                 "|whost",
                                 "|wpuppet/character",
@@ -418,7 +418,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         naccounts = (SESSIONS.account_count())
         if show_session_data:
             # privileged info
-            table = evtable.self.style_table("|wAccount Name",
+            table = self.style_table("|wAccount Name",
                                     "|wOn for",
                                     "|wIdle",
                                     "|wPuppeting",
@@ -444,7 +444,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                               isinstance(session.address, tuple) and session.address[0] or session.address)
         else:
             # unprivileged
-            table = evtable.self.style_table("|wAccount name", "|wOn for", "|wIdle")
+            table = self.style_table("|wAccount name", "|wOn for", "|wIdle")
             for session in session_list:
                 if not session.logged_in:
                     continue
@@ -524,7 +524,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             options.pop("TTYPE", None)
 
             header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
-            table = evtable.self.style_table(*header)
+            table = self.style_table(*header)
             for key in sorted(options):
                 row = [key, options[key]]
                 if saved_options:

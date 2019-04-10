@@ -157,7 +157,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             if not nicklist:
                 string = "|wNo nicks defined.|n"
             else:
-                table = evtable.self.style_table("#", "Type", "Nick match", "Replacement")
+                table = self.style_table("#", "Type", "Nick match", "Replacement")
                 for inum, nickobj in enumerate(nicklist):
                     _, _, nickvalue, replacement = nickobj.value
                     table.add_row(str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement))
@@ -338,7 +338,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
         if not items:
             string = "You are not carrying anything."
         else:
-            table = evtable.self.style_table(border="header")
+            table = self.style_table(border="header")
             for item in items:
                 table.add_row("|C%s|n" % item.name, item.db.desc or "")
             string = "|wYou are carrying:\n%s" % table
