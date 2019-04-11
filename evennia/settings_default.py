@@ -490,14 +490,14 @@ START_LOCATION = "#2"
 TYPECLASS_AGGRESSIVE_CACHE = True
 
 ######################################################################
-# Styles
+# Options
 ######################################################################
 
 # Replace entries in this dictionary to change the default stylings
 # Evennia uses for commands. Or add more entries! Accounts can have
 # per-user settings that override these.
 
-DEFAULT_STYLES = {
+ACCOUNT_OPTIONS = {
     'border_color': ('Headers, footers, table borders, etc.', 'color', 'M'),
     'header_star_color': ('* inside Header lines.', 'color', 'm'),
     'header_text_color': ('Text inside Header lines.', 'color', 'w'),
@@ -508,6 +508,7 @@ DEFAULT_STYLES = {
     'footer_fill': ('Fill for Footer Lines.', 'word', '='),
     'help_category_color': ('Help category names.', 'color', 'g'),
     'help_entry_color': ('Help entry names.', 'color', 'c'),
+
 }
 
 ######################################################################

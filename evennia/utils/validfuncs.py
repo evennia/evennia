@@ -158,7 +158,7 @@ def email(entry, thing_name="Email Address"):
     return entry
 
 
-def lockstring(entry, thing_name='lockstring', options=None):
+def lock(entry, thing_name='lockstring', options=None):
     entry = entry.strip()
     if not entry:
         raise ValueError(f"No {thing_name} entered to set!")

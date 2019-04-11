@@ -20,7 +20,7 @@ from django.utils.module_loading import import_string
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
-from evennia.accounts.styles import StyleHandler
+from evennia.utils.option import OptionHandler
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
@@ -1385,8 +1385,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             return look_string
 
     @lazy_property
-    def style(self):
-        return StyleHandler(self)
+    def option(self):
+        return OptionHandler(self, options_dict=settings.ACCOUNT_OPTIONS, save_category='option')
 
 
 class DefaultGuest(DefaultAccount):
