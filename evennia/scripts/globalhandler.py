@@ -6,23 +6,23 @@ class GlobalHandler(object):
     """
     Simple Handler object loaded by the Evennia API to contain and manage a game's Global Scripts.
 
-    This is accessed like a dictionary.
+    This is accessed like a dictionary. Alternatively you can access Properties on it.
 
     Example:
         import evennia
-        evennia.GLOBAL_HANDLER['key']
+        evennia.GLOBAL_SCRIPTS['key']
     """
 
     def __init__(self):
         self.typeclass_storage = dict()
         self.script_storage = dict()
-        for k, v in settings.GLOBAL_SCRIPTS.items():
-            self.typeclass_storage[k] = class_from_module(v)
-        for k, v in self.typeclass_storage.items():
-            found = v.objects.filter_family(db_key=k).first()
+        for key, typeclass_path in settings.GLOBAL_SCRIPTS.items():
+            self.typeclass_storage[key] = class_from_module(typeclass_path)
+        for key, typeclass in self.typeclass_storage.items():
+            found = typeclass.objects.filter(db_key=key).first()
             if not found:
-                found = v.create(key=k, typeclass=v, persistent=True)
-            self.script_storage[k] = found
+                found = typeclass.create(key=key, typeclass=typeclass, persistent=True)
+            self.script_storage[key] = found
 
     def __getitem__(self, item):
 
@@ -40,6 +40,9 @@ class GlobalHandler(object):
             self.script_storage[item] = reloaded
             return reloaded
 
+    def __getattr__(self, item):
+        return self[item]
+
 
 # Create singleton of the GlobalHandler for the API.
-GLOBAL_HANDLER = GlobalHandler()
+GLOBAL_SCRIPTS = GlobalHandler()
