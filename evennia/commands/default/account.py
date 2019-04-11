@@ -880,9 +880,19 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         if not self.args:
             self.list_styles()
             return
+        self.set()
 
     def list_styles(self):
-        styles_table = self.style_table('Option', 'Description', 'Value')
-        for k, v in settings.DEFAULT_STYLES.items():
-            styles_table.add_row(k, v[0], v[2])
+        styles_table = self.style_table('Option', 'Description', 'Type', 'Value')
+        for k, v in self.account.option.options_dict.items():
+            styles_table.add_row(k, v[0], v[1], v[2])
         self.msg(str(styles_table))
+
+    def set(self):
+        try:
+            result = self.account.option.set(self.lhs, self.rhs)
+        except ValueError as e:
+            self.msg(str(e))
+            return
+        self.msg('Success! The new value is: %s' % result)
+

@@ -236,8 +236,8 @@ class MuxCommand(Command):
         return self.session.protocol_flags['SCREENWIDTH'][0]
 
     def style_table(self, *args, **kwargs):
-        border_color = self.account.style.get('border_color')
-        column_color = self.account.style.get('column_names_color')
+        border_color = self.account.option.get('border_color')
+        column_color = self.account.option.get('column_names_color')
 
         colornames = ['|%s%s|n' % (column_color, col) for col in args]
 
@@ -267,9 +267,9 @@ class MuxCommand(Command):
     def render_header(self, header_text=None, fill_character=None, edge_character=None,
                       mode='header', color_header=True):
         colors = dict()
-        colors['border'] = self.account.style.get('border_color')
-        colors['headertext'] = self.account.style.get('%s_text_color' % mode)
-        colors['headerstar'] = self.account.style.get('%s_star_color' % mode)
+        colors['border'] = self.account.option.get('border_color')
+        colors['headertext'] = self.account.option.get('%s_text_color' % mode)
+        colors['headerstar'] = self.account.option.get('%s_star_color' % mode)
 
         width = self.width()
         if edge_character:
@@ -288,7 +288,7 @@ class MuxCommand(Command):
         else:
             center_string = ''
 
-        fill_character = self.account.style.get('%s_fill' % mode)
+        fill_character = self.account.option.get('%s_fill' % mode)
 
         remain_fill = width - len(center_string)
         if remain_fill % 2 == 0:

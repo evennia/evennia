@@ -112,6 +112,7 @@ CHANNEL_HANDLER = None
 VALID_HANDLER = None
 
 
+
 def _create_version():
     """
     Helper function for building the version string
