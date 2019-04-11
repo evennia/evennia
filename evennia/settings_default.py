@@ -549,9 +549,8 @@ PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
 # this for Scripts that absolutely MUST be running for your game as a
 # simple way to get them launched.
 
-# One limitation with this system is that each Script must be have a
-# unique Typeclass. The 'key' is a way to quickly index them but is
-# not necessarily the Script Typeclasss's key.
+# The 'key' is a way to quickly index them, and it will also be the
+# Script Typeclasss's key so it can be quickly retrieved.
 
 GLOBAL_SCRIPTS = {
     # 'key': 'typeclass.path.here',
