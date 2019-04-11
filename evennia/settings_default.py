@@ -493,21 +493,24 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 # Options
 ######################################################################
 
-# Replace entries in this dictionary to change the default stylings
-# Evennia uses for commands. Or add more entries! Accounts can have
-# per-user settings that override these.
+# Replace entries in this dictionary to change the default options
+# Evennia uses for commands. Or add more entries! Accounts can change
+# their own settings with a command, but this sets down defaults.
+
+# Option tuples are in this format:
+# ("Description", 'Option Class', 'Default Value')
 
 ACCOUNT_OPTIONS = {
-    'border_color': ('Headers, footers, table borders, etc.', 'color', 'M'),
-    'header_star_color': ('* inside Header lines.', 'color', 'm'),
-    'header_text_color': ('Text inside Header lines.', 'color', 'w'),
-    'footer_text_color': ('Text inside Footer Lines.', 'color', 'w'),
-    'column_names_color': ('Table column header text.', 'color', 'G'),
-    'header_fill': ('Fill for Header lines.', 'word', '='),
-    'separator_fill': ('Fill for Separator Lines.', 'word', '-'),
-    'footer_fill': ('Fill for Footer Lines.', 'word', '='),
-    'help_category_color': ('Help category names.', 'color', 'g'),
-    'help_entry_color': ('Help entry names.', 'color', 'c'),
+    'border_color': ('Headers, footers, table borders, etc.', 'Color', 'M'),
+    'header_star_color': ('* inside Header lines.', 'Color', 'm'),
+    'header_text_color': ('Text inside Header lines.', 'Color', 'w'),
+    'footer_text_color': ('Text inside Footer Lines.', 'Color', 'w'),
+    'column_names_color': ('Table column header text.', 'Color', 'G'),
+    'header_fill': ('Fill for Header lines.', 'Text', '='),
+    'separator_fill': ('Fill for Separator Lines.', 'Text', '-'),
+    'footer_fill': ('Fill for Footer Lines.', 'Text', '='),
+    'help_category_color': ('Help category names.', 'Color', 'g'),
+    'help_entry_color': ('Help entry names.', 'Color', 'c'),
 
 }
 
@@ -563,6 +566,10 @@ PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
 # Module holding validator functions. functions in later modules will
 # override those in earlier ones.
 VALIDFUNC_MODULES = ['evennia.utils.validfuncs', ]
+
+# Modules holding Option classes. Those in later modules will
+# override ones in earlier modules.
+OPTIONCLASS_MODULES = ['evennia.utils.opclasses', ]
 
 ######################################################################
 # Default Account setup and access

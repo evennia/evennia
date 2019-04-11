@@ -1385,7 +1385,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             return look_string
 
     @lazy_property
-    def option(self):
+    def options(self):
         return OptionHandler(self, options_dict=settings.ACCOUNT_OPTIONS, save_category='option')
 
 
