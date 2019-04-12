@@ -47,8 +47,8 @@ def datetime(entry, thing_name='Datetime', account=None, from_tz=None, **kwargs)
     if not entry:
         raise ValueError(f"No {thing_name} entered!")
     if not from_tz:
-        from_tz = _pytz['UTC']
-    utc = _pytz['UTC']
+        from_tz = _pytz.UTC
+    utc = _pytz.UTC
     now = _dt.datetime.utcnow().replace(tzinfo=utc)
     cur_year = now.strftime('%Y')
     split_time = entry.split(' ')

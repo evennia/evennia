@@ -1,27 +1,5 @@
-from django.conf import settings
-from evennia.utils.utils import string_partial_matching, callables_from_module
-
-
-class OptionManager(object):
-    """
-    Loads and stores the final list of OPTION CLASSES.
-
-    Can access these as properties or dictionary-contents.
-    """
-    def __init__(self):
-        self.option_storage = {}
-        for module in settings.OPTIONCLASS_MODULES:
-            self.option_storage.update(callables_from_module(module))
-
-    def __getitem__(self, item):
-        return self.option_storage.get(item, None)
-
-    def __getattr__(self, item):
-        return self[item]
-
-
-# Ensure that we have a Singleton that keeps all loaded Options.
-OPTION_MANAGER = OptionManager()
+from evennia.utils.utils import string_partial_matching
+from evennia.utils.containers import OPTION_CONTAINER
 
 
 class OptionHandler(object):
@@ -58,7 +36,7 @@ class OptionHandler(object):
         # We use lazy-loading of each Option when it's called for, but it's good to have the save data
         # on hand.
         self.save_data = {s.key: s.value for s in obj.attributes.get(category=save_category,
-                                                               return_list=True, return_obj=True) if s}
+                                                                     return_list=True, return_obj=True) if s}
 
     def __getitem__(self, item):
         return self.get(item).value
@@ -78,19 +56,17 @@ class OptionHandler(object):
         option_def = self.options_dict[key]
         save_data = self.save_data.get(key, None)
         self.obj.msg(save_data)
-        loaded_option = OPTION_MANAGER[option_def[1]](self, key, option_def[0], option_def[2], save_data)
+        loaded_option = OPTION_CONTAINER[option_def[1]](self, key, option_def[0], option_def[2], save_data)
         self.options[key] = loaded_option
         return loaded_option
 
-    def set(self, option, value, account):
+    def set(self, option, value):
         """
         Change an individual option.
 
         Args:
             option (str): The key of an option that can be changed. Allows partial matching.
             value (str): The value that should be checked, coerced, and stored.
-            account (AccountDB): The Account performing the setting. Necessary due to other
-                option lookups like timezone.
 
         Returns:
             New value
@@ -104,4 +80,8 @@ class OptionHandler(object):
             raise ValueError(f"That matched: {', '.join(found)}. Please be more specific.")
         found = found[0]
         op = self.get(found, return_obj=True)
-        return op.set(value, account)
+        op.value = value
+        return op.display()
+
+
+
