@@ -198,6 +198,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     def sessions(self):
         return AccountSessionHandler(self)
 
+    @lazy_property
+    def options(self):
+        return OptionHandler(self, options_dict=settings.OPTIONS_ACCOUNT_DEFAULT, save_category='option')
+
     # Do not make this a lazy property; the web UI will not refresh it!
     @property
     def characters(self):
@@ -1383,10 +1387,6 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                         result.append("\n - %s [%s]" % (char.key, ", ".join(char.permissions.all())))
             look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
             return look_string
-
-    @lazy_property
-    def options(self):
-        return OptionHandler(self, options_dict=settings.ACCOUNT_OPTIONS, save_category='option')
 
 
 class DefaultGuest(DefaultAccount):

@@ -500,7 +500,7 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 # Option tuples are in this format:
 # ("Description", 'Option Class', 'Default Value')
 
-ACCOUNT_OPTIONS = {
+OPTIONS_ACCOUNT_DEFAULT = {
     'border_color': ('Headers, footers, table borders, etc.', 'Color', 'M'),
     'header_star_color': ('* inside Header lines.', 'Color', 'm'),
     'header_text_color': ('Text inside Header lines.', 'Color', 'w'),
@@ -565,11 +565,11 @@ PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
 
 # Module holding validator functions. functions in later modules will
 # override those in earlier ones.
-VALIDFUNC_MODULES = ['evennia.utils.validfuncs', ]
+VALIDATOR_MODULES = ['evennia.utils.validfuncs', ]
 
 # Modules holding Option classes. Those in later modules will
 # override ones in earlier modules.
-OPTIONCLASS_MODULES = ['evennia.utils.opclasses', ]
+OPTION_MODULES = ['evennia.utils.opclasses', ]
 
 ######################################################################
 # Default Account setup and access

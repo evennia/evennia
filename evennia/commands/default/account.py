@@ -886,12 +886,12 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         styles_table = self.style_table('Option', 'Description', 'Type', 'Value', width=78)
         for op_key in self.account.options.options_dict.keys():
             op_found = self.account.options.get(op_key, return_obj=True)
-            styles_table.add_row(op_key, op_found.description, op_found.expect_type, op_found.display())
+            styles_table.add_row(op_key, op_found.description, op_found.__class__.__name__, op_found.display())
         self.msg(str(styles_table))
 
     def set(self):
         try:
-            result = self.account.options.set(self.lhs, self.rhs, account=self.account)
+            result = self.account.options.set(self.lhs, self.rhs)
         except ValueError as e:
             self.msg(str(e))
             return
