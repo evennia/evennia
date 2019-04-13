@@ -29,6 +29,8 @@ from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, is_iter,
                                  variable_from_module)
+from evennia.utils.signals import (ACCOUNT_CREATE, OBJECT_PUPPET,
+                                   OBJECT_UNPUPPET, ACCOUNT_LOGOUT)
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -50,6 +52,7 @@ _CONNECT_CHANNEL = None
 # Create throttles for too many account-creations and login attempts
 CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
 LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
+
 
 class AccountSessionHandler(object):
     """
@@ -227,6 +230,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         _SESSIONS.disconnect(session, reason)
+        if not self.sessions.all():
+            ACCOUNT_LOGOUT.send(sender=self)
 
     # puppeting operations
 
@@ -301,6 +306,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         # re-cache locks to make sure superuser bypass is updated
         obj.locks.cache_lock_bypass(obj)
         # final hook
+        OBJECT_PUPPET.send(sender=obj, account=self, session=session)
         obj.at_post_puppet()
 
     def unpuppet_object(self, session):
@@ -323,6 +329,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                 obj.sessions.remove(session)
                 if not obj.sessions.count():
                     del obj.account
+                OBJECT_UNPUPPET.send(sender=obj, session=session, account=self)
                 obj.at_post_unpuppet(self, session=session)
             # Just to be sure we're always clear.
             session.puppet = None
@@ -736,7 +743,9 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             logger.log_trace()
 
         # Update the throttle to indicate a new account was created from this IP
-        if ip and not guest: CREATION_THROTTLE.update(ip, 'Too many accounts being created.')
+        if ip and not guest:
+            CREATION_THROTTLE.update(ip, 'Too many accounts being created.')
+        ACCOUNT_CREATE.send(sender=account)
         return account, errors
 
     def delete(self, *args, **kwargs):

@@ -21,6 +21,7 @@ from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import (variable_from_module, is_iter,
                                  to_str, make_iter, delay, callables_from_module)
+from evennia.utils.signals import ACCOUNT_LOGIN
 from evennia.utils.inlinefuncs import parse_inlinefunc
 from codecs import decode as codecs_decode
 
@@ -483,7 +484,6 @@ class ServerSessionHandler(SessionHandler):
                 faking login without any AMP being actually active.
 
         """
-
         if session.logged_in and not force:
             # don't log in a session that is already logged in.
             return
@@ -518,6 +518,8 @@ class ServerSessionHandler(SessionHandler):
                                                              operation=SLOGIN,
                                                              sessiondata={"logged_in": True,
                                                                           "uid": session.uid})
+        if nsess < 2:
+            ACCOUNT_LOGIN.send(sender=account, session=session)
         account.at_post_login(session=session)
 
     def disconnect(self, session, reason="", sync_portal=True):
