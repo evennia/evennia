@@ -49,8 +49,8 @@ class GlobalContainer(object):
         desc = self.script_data[item].get('desc', '')
 
         if not found:
-            new_script = typeclass.create(key=item, persistent=True, interval=interval, start_delay=start_delay,
-                                          repeats=repeats, desc=desc)
+            new_script, errors = typeclass.create(key=item, persistent=True, interval=interval, start_delay=start_delay,
+                                                  repeats=repeats, desc=desc)
             new_script.start()
             self.script_storage[item] = new_script
             return new_script
