@@ -552,8 +552,13 @@ PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
 # The 'key' is a way to quickly index them, and it will also be the
 # Script Typeclasss's key so it can be quickly retrieved.
 
+# Values are a dictionary that uses the example format. Available keys
+# are typeclass (required), interval, repeats, start_delay, and desc
+# only typeclass is required.
+
 GLOBAL_SCRIPTS = {
-    # 'key': 'typeclass.path.here',
+    # 'key': {'typeclass': 'typeclass.path.here',
+    #         'repeats': -1, 'interval': 50, 'desc': 'Example script'},
 }
 
 ######################################################################
