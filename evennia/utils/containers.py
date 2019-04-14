@@ -6,7 +6,6 @@ represent Singletons and acts as a convenient place to find resources (
 available as properties on the singleton)
 
 evennia.GLOBAL_SCRIPTS
-evennia.VALIDATOR_FUNCS
 evennia.OPTION_CLASSES
 
 """
