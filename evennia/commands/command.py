@@ -7,11 +7,15 @@ All commands in Evennia inherit from the 'Command' class in this module.
 from builtins import range
 
 import re
+import math
 
 from django.conf import settings
 
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
+from evennia.utils.evtable import EvTable
+from evennia.utils.ansi import ANSIString
+
 from future.utils import with_metaclass
 
 
@@ -467,6 +471,98 @@ class Command(with_metaclass(CommandMeta, object)):
 
         """
         return self.__doc__
+
+    def client_width(self):
+        return self.session.protocol_flags['SCREENWIDTH'][0]
+
+    def style_table(self, *args, **kwargs):
+        border_color = self.account.options.get('border_color')
+        column_color = self.account.options.get('column_names_color')
+
+        colornames = ['|%s%s|n' % (column_color, col) for col in args]
+
+        h_line_char = kwargs.pop('header_line_char', '~')
+        header_line_char = ANSIString(f'|{border_color}{h_line_char}|n')
+
+        c_char = kwargs.pop('corner_char', '+')
+        corner_char = ANSIString(f'|{border_color}{c_char}|n')
+
+        b_left_char = kwargs.pop('border_left_char', '||')
+        border_left_char = ANSIString(f'|{border_color}{b_left_char}|n')
+
+        b_right_char = kwargs.pop('border_right_char', '||')
+        border_right_char = ANSIString(f'|{border_color}{b_right_char}|n')
+
+        b_bottom_char = kwargs.pop('border_bottom_char', '-')
+        border_bottom_char = ANSIString(f'|{border_color}{b_bottom_char}|n')
+
+        b_top_char = kwargs.pop('border_top_char', '-')
+        border_top_char = ANSIString(f'|{border_color}{b_top_char}|n')
+
+        table = EvTable(*colornames, header_line_char=header_line_char, corner_char=corner_char,
+                        border_left_char=border_left_char, border_right_char=border_right_char,
+                        border_top_char=border_top_char, **kwargs)
+        return table
+
+    def render_header(self, header_text=None, fill_character=None, edge_character=None,
+                      mode='header', color_header=True):
+        colors = dict()
+        colors['border'] = self.account.options.get('border_color')
+        colors['headertext'] = self.account.options.get('%s_text_color' % mode)
+        colors['headerstar'] = self.account.options.get('%s_star_color' % mode)
+
+        width = self.width()
+        if edge_character:
+            width -= 2
+
+        if header_text:
+            if color_header:
+                header_text = ANSIString(header_text).clean()
+                header_text = ANSIString('|n|%s%s|n' % (colors['headertext'], header_text))
+            if mode == 'header':
+                begin_center = ANSIString("|n|%s<|%s* |n" % (colors['border'], colors['headerstar']))
+                end_center = ANSIString("|n |%s*|%s>|n" % (colors['headerstar'], colors['border']))
+                center_string = ANSIString(begin_center + header_text + end_center)
+            else:
+                center_string = ANSIString('|n |%s%s |n' % (colors['headertext'], header_text))
+        else:
+            center_string = ''
+
+        fill_character = self.account.options.get('%s_fill' % mode)
+
+        remain_fill = width - len(center_string)
+        if remain_fill % 2 == 0:
+            right_width = remain_fill / 2
+            left_width = remain_fill / 2
+        else:
+            right_width = math.floor(remain_fill / 2)
+            left_width = math.ceil(remain_fill / 2)
+
+        right_fill = ANSIString('|n|%s%s|n' % (colors['border'], fill_character * int(right_width)))
+        left_fill = ANSIString('|n|%s%s|n' % (colors['border'], fill_character * int(left_width)))
+
+        if edge_character:
+            edge_fill = ANSIString('|n|%s%s|n' % (colors['border'], edge_character))
+            main_string = ANSIString(center_string)
+            final_send = ANSIString(edge_fill) + left_fill + main_string + right_fill + ANSIString(edge_fill)
+        else:
+            final_send = left_fill + ANSIString(center_string) + right_fill
+        return final_send
+
+    def style_header(self, *args, **kwargs):
+        if 'mode' not in kwargs:
+            kwargs['mode'] = 'header'
+        return self.render_header(*args, **kwargs)
+
+    def style_separator(self, *args, **kwargs):
+        if 'mode' not in kwargs:
+            kwargs['mode'] = 'separator'
+        return self.render_header(*args, **kwargs)
+
+    def style_footer(self, *args, **kwargs):
+        if 'mode' not in kwargs:
+            kwargs['mode'] = 'footer'
+        return self.render_header(*args, **kwargs)
 
 
 class InterruptCommand(Exception):

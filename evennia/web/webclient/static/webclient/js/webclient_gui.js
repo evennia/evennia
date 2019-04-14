@@ -228,6 +228,20 @@ var plugin_handler = (function () {
     }
 
 
+    //
+    // normally init() is all that is needed, but some cases may require a second
+    // pass to avoid chicken/egg dependencies between two plugins.
+    var postInit = function () {
+        // does this plugin need postInit() to be called?
+        for( let n=0; n < ordered_plugins.length; n++ ) {
+            let plugin = ordered_plugins[n];
+            if( 'postInit' in plugin ) {
+                plugin.postInit();
+            }
+        }
+    }
+
+
     return {
         add: add,
         onKeydown: onKeydown,
@@ -241,6 +255,7 @@ var plugin_handler = (function () {
         onConnectionClose: onConnectionClose,
         onSend: onSend,
         init: init,
+        postInit: postInit,
     }
 })();
 
@@ -284,6 +299,9 @@ $(document).ready(function() {
 
     // Initialize all plugins
     plugin_handler.init();
+
+    // Finish Initializing any plugins that need a second stage
+    plugin_handler.postInit();
 
     console.log("Completed Webclient setup");
 });

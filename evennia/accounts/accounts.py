@@ -32,6 +32,7 @@ from evennia.utils.utils import (lazy_property, to_str,
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.utils.optionhandler import OptionHandler
 
 from django.utils.translation import ugettext as _
 from future.utils import with_metaclass
@@ -196,6 +197,15 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @lazy_property
     def sessions(self):
         return AccountSessionHandler(self)
+
+    @lazy_property
+    def options(self):
+        return OptionHandler(self, 
+                             options_dict=settings.OPTIONS_ACCOUNT_DEFAULT,
+                             savefunc=self.attributes.add,
+                             loadfunc=self.attributes.get,
+                             save_kwargs={"category": 'option'},
+                             load_kwargs={"category": 'option'})
 
     # Do not make this a lazy property; the web UI will not refresh it!
     @property
@@ -645,7 +655,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         guest = kwargs.get('guest', False)
 
         permissions = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
-        typeclass = kwargs.get('typeclass', settings.BASE_ACCOUNT_TYPECLASS)
+        typeclass = kwargs.get('typeclass', cls)
 
         ip = kwargs.get('ip', '')
         if ip and CREATION_THROTTLE.check(ip):

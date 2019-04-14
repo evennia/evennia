@@ -490,6 +490,41 @@ START_LOCATION = "#2"
 TYPECLASS_AGGRESSIVE_CACHE = True
 
 ######################################################################
+# Options and validators
+######################################################################
+
+# Options available on Accounts. Each such option is described by a 
+# class available from evennia.OPTION_CLASSES, in turn making use
+# of validators from evennia.VALIDATOR_FUNCS to validate input when
+# the user changes an option. The options are accessed through the
+# `Account.options` handler.
+
+# ("Description", 'Option Class name in evennia.OPTIONS_CLASSES', 'Default Value')
+
+OPTIONS_ACCOUNT_DEFAULT = {
+    'border_color': ('Headers, footers, table borders, etc.', 'Color', 'M'),
+    'header_star_color': ('* inside Header lines.', 'Color', 'm'),
+    'header_text_color': ('Text inside Header lines.', 'Color', 'w'),
+    'footer_text_color': ('Text inside Footer Lines.', 'Color', 'w'),
+    'column_names_color': ('Table column header text.', 'Color', 'G'),
+    'header_fill': ('Fill for Header lines.', 'Text', '='),
+    'separator_fill': ('Fill for Separator Lines.', 'Text', '-'),
+    'footer_fill': ('Fill for Footer Lines.', 'Text', '='),
+    'help_category_color': ('Help category names.', 'Color', 'g'),
+    'help_entry_color': ('Help entry names.', 'Color', 'c'),
+    'timezone': ('Timezone for dates. @tz for a list.', 'Timezone', 'UTC')
+}
+# Modules holding Option classes, responsible for serializing the option and
+# calling validator functions on it. Same-named functions in modules added
+# later in this list will override those added earlier.
+OPTION_CLASS_MODULES = ['evennia.utils.optionclasses', ]
+# Module holding validator functions. These are used as a resource for
+# validating options, but can also be used as input validators in general.#
+# Same-named functions in modules added later in this list will override those
+# added earlier.
+VALIDATOR_FUNC_MODULES = ['evennia.utils.validatorfuncs', ]
+
+######################################################################
 # Batch processors
 ######################################################################
 
@@ -521,7 +556,7 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc & PrototypeFuncs
+# Inlinefunc, PrototypeFuncs
 ######################################################################
 # Evennia supports inline function preprocessing. This allows users
 # to supply inline calls on the form $func(arg, arg, ...) to do
@@ -537,6 +572,22 @@ INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
 # functional code in prototypes
 PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
                          "server.conf.prototypefuncs"]
+
+######################################################################
+# Global Scripts
+######################################################################
+
+# Global scripts started here will be available through
+# 'evennia.GLOBAL_SCRIPTS.key'. The scripts will survive a reload and be
+# recreated automatically if deleted. Each entry must have the script keys,
+# whereas all other fields in the specification are optional. If 'typeclass' is
+# not given, BASE_SCRIPT_TYPECLASS will be assumed.  Note that if you change
+# typeclass for the same key, a new Script will replace the old one on
+# `evennia.GLOBAL_SCRIPTS`.
+GLOBAL_SCRIPTS = {
+    # 'key': {'typeclass': 'typeclass.path.here',
+    #         'repeats': -1, 'interval': 50, 'desc': 'Example script'},
+}
 
 ######################################################################
 # Default Account setup and access

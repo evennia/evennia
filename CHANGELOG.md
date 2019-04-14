@@ -6,6 +6,7 @@ Update to Python 3
 
 - Use `python3 -m venv <myenvname>`
 - Use `python3 -m pdb <script>` for debugging
+- Docker image updated
 
 ### Commands
 
@@ -22,6 +23,13 @@ Update to Python 3
 
 ### Web
 
+New golden-layout based Webclient UI (@security-related)
+- Features
+  - Much slicker behavior and more professional look
+  - Allows tabbing as well as click and drag of panes in any grid position
+  - Renaming tabs, assignments of data tags and output types are simple per-pane menus now
+  - Any number of input panes, with separate histories
+  - Button UI (disabled in JS by default)
 Web/Django standard initiative (@strikaco)
 - Features
   - Adds a series of web-based forms and generic class-based views
@@ -118,6 +126,9 @@ Web/Django standard initiative (@strikaco)
 - `evennia.MONITOR_HANDLER.all` now takes keyword argument `obj` to only retrieve monitors from that specific
   Object (rather than all monitors in the entire handler).
 - Support adding `\f` in command doc strings to force where EvMore puts page breaks.
+- Validation Functions now added with standard API to homogenize user input validation.
+- Option Classes added to make storing user-options easier and smoother.
+- `evennia.VALIDATOR_CONTAINER` and `evennia.OPTION_CONTAINER` added to load these.
 
 ### Contribs
 
@@ -131,6 +142,8 @@ Web/Django standard initiative (@strikaco)
   + The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
      to install the extended-room contrib. 
 - Reworked `menu_login` contrib to use latest EvMenu standards. Now also supports guest logins.
+- Mail contrib was refactored to have optional Command classes `CmdMail` for OOC+IC mail (added
+    to the CharacterCmdSet and `CmdMailCharacter` for IC-only mailing between chars (added to CharacterCmdSet)
 
 
 

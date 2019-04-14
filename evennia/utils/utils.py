@@ -570,22 +570,20 @@ def datetime_format(dtobj):
 
     """
 
-    year, month, day = dtobj.year, dtobj.month, dtobj.day
-    hour, minute, second = dtobj.hour, dtobj.minute, dtobj.second
     now = timezone.now()
 
-    if year < now.year:
-        # another year
-        timestring = str(dtobj.date())
+    if dtobj.year < now.year:
+        # another year (Apr 5, 2019)
+        timestring = dtobj.strftime("%b %-d, %Y")
     elif dtobj.date() < now.date():
-        # another date, same year
-        timestring = "%02i-%02i" % (day, month)
-    elif hour < now.hour - 1:
-        # same day, more than 1 hour ago
-        timestring = "%02i:%02i" % (hour, minute)
+        # another date, same year  (Apr 5)
+        timestring = dtobj.strftime("%b %-d")
+    elif dtobj.hour < now.hour - 1:
+        # same day, more than 1 hour ago (10:45)
+        timestring = dtobj.strftime("%H:%M")
     else:
-        # same day, less than 1 hour ago
-        timestring = "%02i:%02i:%02i" % (hour, minute, second)
+        # same day, less than 1 hour ago (10:45:33)
+        timestring = dtobj.strftime("%H:%M:%S")
     return timestring
 
 

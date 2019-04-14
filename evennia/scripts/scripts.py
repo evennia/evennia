@@ -165,6 +165,12 @@ class ScriptBase(with_metaclass(TypeclassBase, ScriptDB)):
         except Exception:
             return False
 
+    def __str__(self):
+        return "<{cls} {key}>".format(cls=self.__class__.__name__, key=self.key)
+
+    def __repr__(self):
+        return str(self)
+
     def _start_task(self):
         """
         Start task runner.
@@ -341,6 +347,9 @@ class DefaultScript(ScriptBase):
         obj = None
 
         kwargs['key'] = key
+
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
 
         try:
             obj = create.create_script(**kwargs)

@@ -367,7 +367,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
         """Implement function"""
         account = self.account
         sessions = account.sessions.all()
-        table = evtable.EvTable("|wsessid",
+        table = self.style_table("|wsessid",
                                 "|wprotocol",
                                 "|whost",
                                 "|wpuppet/character",
@@ -418,7 +418,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         naccounts = (SESSIONS.account_count())
         if show_session_data:
             # privileged info
-            table = evtable.EvTable("|wAccount Name",
+            table = self.style_table("|wAccount Name",
                                     "|wOn for",
                                     "|wIdle",
                                     "|wPuppeting",
@@ -444,7 +444,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                               isinstance(session.address, tuple) and session.address[0] or session.address)
         else:
             # unprivileged
-            table = evtable.EvTable("|wAccount name", "|wOn for", "|wIdle")
+            table = self.style_table("|wAccount name", "|wOn for", "|wIdle")
             for session in session_list:
                 if not session.logged_in:
                     continue
@@ -524,7 +524,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             options.pop("TTYPE", None)
 
             header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
-            table = evtable.EvTable(*header)
+            table = self.style_table(*header)
             for key in sorted(options):
                 row = [key, options[key]]
                 if saved_options:
@@ -870,3 +870,30 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
             else:
                 self.msg("Quelling Account permissions%s. Use @unquell to get them back." % permstr)
         self._recache_locks(account)
+
+
+class CmdStyle(COMMAND_DEFAULT_CLASS):
+    key = "@style"
+    switch_options = ['clear']
+
+    def func(self):
+        if not self.args:
+            self.list_styles()
+            return
+        self.set()
+
+    def list_styles(self):
+        styles_table = self.style_table('Option', 'Description', 'Type', 'Value', width=78)
+        for op_key in self.account.options.options_dict.keys():
+            op_found = self.account.options.get(op_key, return_obj=True)
+            styles_table.add_row(op_key, op_found.description, op_found.__class__.__name__, op_found.display())
+        self.msg(str(styles_table))
+
+    def set(self):
+        try:
+            result = self.account.options.set(self.lhs, self.rhs)
+        except ValueError as e:
+            self.msg(str(e))
+            return
+        self.msg('Success! The new value is: %s' % result)
+
