@@ -3,6 +3,7 @@ from evennia import logger as _log
 from evennia.utils.ansi import ANSIString as _ANSI
 from evennia.utils.validatorfuncs import _TZ_DICT
 from evennia.utils.containers import VALIDATOR_FUNCS
+from evennia.utils.utils import crop
 
 
 class BaseOption(object):
@@ -22,7 +23,11 @@ class BaseOption(object):
     validator_key = ''
 
     def __str__(self):
-        return self.key
+        return "<Option {key}: {value}>".format(
+            key=self.key, value=crop(str(self.value), width=10))
+
+    def __repr__(self):
+        return str(self)
 
     def __init__(self, handler, key, description, default, save_data=None):
         """
@@ -163,6 +168,10 @@ class BaseOption(object):
         """
         Renders the Option's value as something pretty to look at.
 
+        Kwargs:
+            any (any): These are options passed by the caller to potentially
+                customize display dynamically.
+
         Returns:
             str: How the stored value should be projected to users (e.g. a raw
                 timedelta is pretty ugly).
@@ -171,6 +180,7 @@ class BaseOption(object):
         return self.value
 
 
+# Option classes
 
 
 class Text(BaseOption):

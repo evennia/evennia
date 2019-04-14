@@ -35,32 +35,34 @@ class Container(object):
         """
         self.loaded_data = None
 
-    def _load_data(self):
+    def load_data(self):
         """
         Delayed import to avoid eventual circular imports from inside
         the storage modules.
 
         """
         if self.loaded_data is None:
+            self.loaded_data = {}
             for module in self.storage_modules:
                 self.loaded_data.update(callables_from_module(module))
 
     def __getattr__(self, key):
-        self._load_data()
-        return self.loaded_data.get(key)
+        return self.get(key)
 
-    def get(self, key):
+    def get(self, key, default=None):
         """
         Retrive data by key (in case of not knowing it beforehand).
 
         Args:
             key (str): The name of the script.
+            default (any, optional): Value to return if key is not found.
 
         Returns:
             any (any): The data loaded on this container.
 
         """
-        return self.__getattr__(key)
+        self.load_data()
+        return self.loaded_data.get(key, default)
 
     def all(self):
         """
@@ -70,7 +72,7 @@ class Container(object):
             scripts (list): All global script objects stored on the container.
 
         """
-        self._load_data()
+        self.load_data()
         return list(self.loaded_data.values())
 
 
@@ -121,12 +123,7 @@ class GlobalScriptContainer(Container):
         self.script_storage = {}
         self.typeclass_storage = None
 
-    def __getattr__(self, key):
-        if key not in self.loaded_data:
-            return None
-        return self.script_storage.get(key) or self._load_script(key)
-
-    def _load_data(self):
+    def load_data(self):
         """
         This delayed import avoids trying to load Scripts before they are
         initialized.
@@ -144,7 +141,7 @@ class GlobalScriptContainer(Container):
 
     def _load_script(self, key):
 
-        self._load_data()
+        self.load_data()
 
         typeclass = self.typeclass_storage[key]
         found = typeclass.objects.filter(db_key=key).first()
@@ -174,6 +171,23 @@ class GlobalScriptContainer(Container):
             found.desc = desc
         self.script_storage[key] = found
         return found
+
+    def get(self, key, default=None):
+        """
+        Retrive data by key (in case of not knowing it beforehand).
+
+        Args:
+            key (str): The name of the script.
+            default (any, optional): Value to return if key is not found
+                at all on this container (i.e it cannot be loaded at all).
+
+        Returns:
+            any (any): The data loaded on this container.
+        """
+
+        if key not in self.loaded_data:
+            return default
+        return self.script_storage.get(key) or self._load_script(key)
 
     def all(self):
         """
