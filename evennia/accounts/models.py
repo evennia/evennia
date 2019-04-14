@@ -25,6 +25,7 @@ from django.utils.encoding import smart_str
 from evennia.accounts.manager import AccountDBManager
 from evennia.typeclasses.models import TypedObject
 from evennia.utils.utils import make_iter
+from evennia.server.signals import SIGNAL_ACCOUNT_POST_RENAME
 
 __all__ = ("AccountDB",)
 
@@ -146,8 +147,10 @@ class AccountDB(TypedObject, AbstractUser):
         return self.username
 
     def __username_set(self, value):
+        old_name = self.username
         self.username = value
         self.save(update_fields=["username"])
+        SIGNAL_ACCOUNT_POST_RENAME.send(self, old_name=old_name, new_name=value)
 
     def __username_del(self):
         del self.username

@@ -1,0 +1,60 @@
+"""
+This module brings Django Signals into Evennia. These are events that
+can be subscribed to by importing a given Signal and using the
+following code.
+
+THIS_SIGNAL.connect(callback, sender_object)
+
+When other code calls THIS_SIGNAL.send(sender, **kwargs), the callback
+will be triggered.
+
+Callbacks must be in the following format:
+
+def my_callback(sender, **kwargs):
+    ...
+
+This is used on top of hooks to make certain features easier to
+add to contribs without necessitating a full takeover of hooks
+that may be in high demand.
+
+"""
+from django.dispatch import Signal
+
+# The sender is the created Account. This is triggered at the very end of Account.create()
+# after the Account is created.
+SIGNAL_ACCOUNT_POST_CREATE = Signal(providing_args=['ip', ])
+
+# The Sender is the renamed Account. This is triggered by the username setter in AccountDB.
+SIGNAL_ACCOUNT_POST_RENAME = Signal(providing_args=['old_name', 'new_name'])
+
+# The Sender is the connecting Account. This is triggered when an Account connects cold;
+# that is, it had no other sessions connected.
+SIGNAL_ACCOUNT_POST_LOGIN = Signal(providing_args=['session', ])
+
+# The Sender is the Account attempting to authenticate. This is triggered whenever a
+# session tries to login to an Account but fails.
+SIGNAL_ACCOUNT_POST_LOGIN_FAIL = Signal(providing_args=['session', ])
+
+# The sender is the connecting Account. This is triggered whenever a session authenticates
+# to an Account regardless of existing sessions.
+SIGNAL_ACCOUNT_POST_CONNECT = Signal(providing_args=['session', ])
+
+# The sender is the Account. This is triggered when an Account's final session disconnects.
+SIGNAL_ACCOUNT_POST_LOGOUT = Signal(providing_args=['session', ])
+
+# The sender is the disconnecting Account. This is triggered whenever a session disconnects
+# from the account, regardless of how many it started with or remain.
+SIGNAL_ACCOUNT_POST_DISCONNECT = Signal(providing_args=['session', ])
+
+# The sender is the Object being puppeted. This is triggered after all puppeting hooks have
+# been called. The Object has already been puppeted by this point.
+SIGNAL_OBJECT_POST_PUPPET = Signal(providing_args=['session', 'account'])
+
+# The sender is the Object being released. This is triggered after all hooks are called.
+# The Object is no longer puppeted by this point.
+SIGNAL_OBJECT_POST_UNPUPPET = Signal(providing_args=['session', 'account'])
+
+# The sender is the Typed Object being released. This isn't necessarily an Object;
+# it could be a script. It fires whenever the value of the Typed object's 'key'
+# changes. Will need to use isinstance() or other filtering on things that use this.
+SIGNAL_TYPED_OBJECT_POST_RENAME = Signal(providing_args=['old_key', 'new_key'])
