@@ -539,6 +539,29 @@ PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
                          "server.conf.prototypefuncs"]
 
 ######################################################################
+# Global Scripts
+######################################################################
+
+# While any script that is not attached to any object is considered
+# Global, any listed here will be started by Evennia during boot
+# and attached to its API for an easy-lookup. This ensures the Script
+# is always accessible, and re-created if it is somehow deleted. Use
+# this for Scripts that absolutely MUST be running for your game as a
+# simple way to get them launched.
+
+# The 'key' is a way to quickly index them, and it will also be the
+# Script Typeclasss's key so it can be quickly retrieved.
+
+# Values are a dictionary that uses the example format. Available keys
+# are typeclass (required), interval, repeats, start_delay, and desc
+# only typeclass is required.
+
+GLOBAL_SCRIPTS = {
+    # 'key': {'typeclass': 'typeclass.path.here',
+    #         'repeats': -1, 'interval': 50, 'desc': 'Example script'},
+}
+
+######################################################################
 # Default Account setup and access
 ######################################################################
 
