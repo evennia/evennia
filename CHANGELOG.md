@@ -126,6 +126,9 @@ Web/Django standard initiative (@strikaco)
 - `evennia.MONITOR_HANDLER.all` now takes keyword argument `obj` to only retrieve monitors from that specific
   Object (rather than all monitors in the entire handler).
 - Support adding `\f` in command doc strings to force where EvMore puts page breaks.
+- Validation Functions now added with standard API to homogenize user input validation.
+- Option Classes added to make storing user-options easier and smoother.
+- `evennia.VALIDATOR_CONTAINER` and `evennia.OPTION_CONTAINER` added to load these.
 
 ### Contribs
 

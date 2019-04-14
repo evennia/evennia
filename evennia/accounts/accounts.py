@@ -20,6 +20,7 @@ from django.utils.module_loading import import_string
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
+from evennia.utils.option import OptionHandler
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
@@ -196,6 +197,10 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
     @lazy_property
     def sessions(self):
         return AccountSessionHandler(self)
+
+    @lazy_property
+    def options(self):
+        return OptionHandler(self, options_dict=settings.OPTIONS_ACCOUNT_DEFAULT, save_category='option')
 
     # Do not make this a lazy property; the web UI will not refresh it!
     @property
