@@ -68,8 +68,19 @@ from django.db.models.signals import (
     pre_delete,  # Sent before an object is deleted.
     post_delete,  #       after         "
     m2m_changed,  # Sent when a ManyToManyField changes.
+    pre_migrate,  # Sent before migration starts
+    post_migrate,  #     after     " 
+    pre_init,  # Sent at start of typeclass __init__ (before at_init)
+    post_init,  #        end                         
 )
 from django.core.signals import (
     request_started,  # Sent when HTTP request begins.
     request_finished,  #         "             ends.
+)
+from django.test.signals import (
+    setting_changed,  # Sent when setting changes from override
+    template_rendered,  # Sent when test system renders template
+)
+from django.db.backends.signals import (
+    connection_created,  # Sent when making initial connection to database
 )
