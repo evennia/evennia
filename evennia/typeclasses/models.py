@@ -42,6 +42,7 @@ from evennia.typeclasses.attributes import Attribute, AttributeHandler, NAttribu
 from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
 
 from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
+from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
 
 from evennia.typeclasses import managers
 from evennia.locks.lockhandler import LockHandler
@@ -326,6 +327,7 @@ class TypedObject(SharedMemoryModel):
         self.db_key = value
         self.save(update_fields=["db_key"])
         self.at_rename(oldname, value)
+        SIGNAL_TYPED_OBJECT_POST_RENAME.send(sender=self, old_key=oldname, new_key=value)
 
     #
     #
