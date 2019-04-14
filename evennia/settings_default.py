@@ -493,14 +493,13 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 # Options and validators
 ######################################################################
 
-# Replace or add entries in this dictionary to specify options available
-# on accounts. An option goes goteth
+# Options available on Accounts. Each such option is described by a 
+# class available from evennia.OPTION_CLASSES, in turn making use
+# of validators from evennia.VALIDATOR_FUNCS to validate input when
+# the user changes an option. The options are accessed through the
+# `Account.options` handler.
 
-# Evennia uses for commands. Or add more entries! Accounts can change
-# their own settings with a command, but this sets down defaults.
-
-# Option tuples are in this format:
-# ("Description", 'Option Class', 'Default Value')
+# ("Description", 'Option Class name in evennia.OPTIONS_CLASSES', 'Default Value')
 
 OPTIONS_ACCOUNT_DEFAULT = {
     'border_color': ('Headers, footers, table borders, etc.', 'Color', 'M'),
@@ -518,12 +517,12 @@ OPTIONS_ACCOUNT_DEFAULT = {
 # Modules holding Option classes, responsible for serializing the option and
 # calling validator functions on it. Same-named functions in modules added
 # later in this list will override those added earlier.
-OPTION_MODULES = ['evennia.utils.optionclasses', ]
+OPTION_CLASS_MODULES = ['evennia.utils.optionclasses', ]
 # Module holding validator functions. These are used as a resource for
 # validating options, but can also be used as input validators in general.#
 # Same-named functions in modules added later in this list will override those
 # added earlier.
-VALIDATOR_MODULES = ['evennia.utils.validatorfunctions', ]
+VALIDATOR_FUNC_MODULES = ['evennia.utils.validatorfuncs', ]
 
 ######################################################################
 # Batch processors

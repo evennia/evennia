@@ -13,17 +13,20 @@ import pytz as _pytz
 import datetime as _dt
 from django.core.exceptions import ValidationError as _error
 from django.core.validators import validate_email as _val_email
-from evennia.utils.ansi import ANSIString as _ansi
+from evennia.utils.ansi import strip_ansi
 from evennia.utils.utils import string_partial_matching as _partial
 
 _TZ_DICT = {str(tz): _pytz.timezone(tz) for tz in _pytz.common_timezones}
 
 
 def color(entry, thing_name='Color', **kwargs):
+    """
+    The color should be just a color character, so 'r' if red color is desired.
+    """
     if not entry:
         raise ValueError(f"Nothing entered for a {thing_name}!")
-    test_str = _ansi('|%s|n' % entry)
-    if len(test_str):
+    test_str = strip_ansi(f'|{entry}|n')
+    if test_str:
         raise ValueError(f"'{entry}' is not a valid {thing_name}.")
     return entry
 

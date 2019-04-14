@@ -223,9 +223,9 @@ def _init():
     from .server.sessionhandler import SESSION_HANDLER
     from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
-    from .utils.containers import GLOBAL_SCRIPTS
 
     # containers
+    from .utils.containers import GLOBAL_SCRIPTS
     from .utils.containers import VALIDATOR_FUNCS
     from .utils.containers import OPTION_CLASSES
 

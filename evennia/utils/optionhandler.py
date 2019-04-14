@@ -1,5 +1,5 @@
 from evennia.utils.utils import string_partial_matching
-from evennia.utils.containers import OPTION_CONTAINER
+from evennia.utils.containers import OPTION_CLASSES
 
 
 class OptionHandler(object):

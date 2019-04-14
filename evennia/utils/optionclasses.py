@@ -1,21 +1,23 @@
 import datetime as _dt
 from evennia import logger as _log
 from evennia.utils.ansi import ANSIString as _ANSI
-from evennia.utils.validatorfunctions import _TZ_DICT
-from evennia.utils.containers import VALIDATOR_CONTAINER as _VAL
+from evennia.utils.validatorfuncs import _TZ_DICT
+from evennia.utils.containers import VALIDATOR_FUNCS
 
 
 class BaseOption(object):
     """
-    Abstract Class to deal with encapsulating individual Options. An Option has a name/key, a description
-    to display in relevant commands and menus, and a default value. It saves to the owner's Attributes using
-    its Handler's save category.
+    Abstract Class to deal with encapsulating individual Options. An Option has
+    a name/key, a description to display in relevant commands and menus, and a
+    default value. It saves to the owner's Attributes using its Handler's save
+    category.
 
     Designed to be extremely overloadable as some options can be cantankerous.
 
     Properties:
         valid: Shortcut to the loaded VALID_HANDLER.
         validator_key (str): The key of the Validator this uses.
+
     """
     validator_key = ''
 
@@ -27,11 +29,12 @@ class BaseOption(object):
 
         Args:
             handler (OptionHandler): The OptionHandler that 'owns' this Option.
-            key (str): The name this will be used for storage in a dictionary. Must be unique per
-                OptionHandler.
+            key (str): The name this will be used for storage in a dictionary.
+                Must be unique per OptionHandler.
             description (str): What this Option's text will show in commands and menus.
             default: A default value for this Option.
             save_data: Whatever was saved to Attributes. This differs by Option.
+
         """
         self.handler = handler
         self.key = key
@@ -44,64 +47,6 @@ class BaseOption(object):
 
         # And it's not loaded until it's called upon to spit out its contents.
         self.loaded = False
-
-    def display(self, **kwargs):
-        """
-        Renders the Option's value as something pretty to look at.
-
-        Returns:
-            How the stored value should be projected to users. a raw timedelta is pretty ugly, y'know?
-        """
-        return self.value
-
-    def load(self):
-        """
-        Takes the provided save data, validates it, and gets this Option ready to use.
-
-        Returns:
-            Boolean: Whether loading was successful.
-        """
-        if self.save_data is not None:
-            try:
-                self.value_storage = self.deserialize(self.save_data)
-                self.loaded = True
-                return True
-            except Exception as e:
-                _log.log_trace(e)
-        return False
-
-    def save(self):
-        """
-        Exports the current value to an Attribute.
-
-        Returns:
-            None
-        """
-        self.handler.obj.attributes.add(self.key, category=self.handler.save_category, value=self.serialize())
-
-    def deserialize(self, save_data):
-        """
-        Perform sanity-checking on the save data. This isn't the same as Validators, as Validators deal with
-        user input. save data might be a timedelta or a list or some other object. isinstance() is probably
-        very useful here.
-
-        Args:
-            save_data: The data to check.
-
-        Returns:
-            Arbitrary: Whatever the Option needs to track, like a string or a datetime. Not the same as what
-                users are SHOWN.
-        """
-        return save_data
-
-    def serialize(self):
-        """
-        Serializes the save data for Attribute storage if it's something complicated.
-
-        Returns:
-            Whatever best handles the Attribute.
-        """
-        return self.value_storage
 
     @property
     def changed(self):
@@ -126,18 +71,77 @@ class BaseOption(object):
 
     def set(self, value, **kwargs):
         """
-        Takes user input, presumed to be a string, and changes the value if it is a valid input.
+        Takes user input and stores appropriately. This method allows for
+        passing extra instructions into the validator.
 
         Args:
-            value: The new value of this Option.
+            value (str): The new value of this Option.
+            kwargs (any): Any kwargs will be passed into
+                `self.validate(value, **kwargs)` and `self.save(**kwargs)`.
 
-        Returns:
-            None
         """
         final_value = self.validate(value, **kwargs)
         self.value_storage = final_value
         self.loaded = True
-        self.save()
+        self.save(**kwargs)
+
+    def load(self):
+        """
+        Takes the provided save data, validates it, and gets this Option ready to use.
+
+        Returns:
+            Boolean: Whether loading was successful.
+
+        """
+        if self.save_data is not None:
+            try:
+                self.value_storage = self.deserialize(self.save_data)
+                self.loaded = True
+                return True
+            except Exception as e:
+                _log.log_trace(e)
+        return False
+
+    def save(self, **kwargs):
+        """
+        Stores the current value (to an Attribute by default).
+
+        Kwargs:
+            any (any): Not used by default. These are passed in from self.set
+                and allows the option to let the caller customize saving
+                if desrired.
+
+        """
+        self.handler.obj.attributes.add(self.key,
+                                        category=self.handler.save_category,
+                                        value=self.serialize())
+
+    def deserialize(self, save_data):
+        """
+        Perform sanity-checking on the save data as it is loaded from storage.
+        This isn't the same as what validator-functions provide (those work on
+        user input). For example, save data might be a timedelta or a list or
+        some other object.
+
+        Args:
+            save_data: The data to check.
+
+        Returns:
+            any (any): Whatever the Option needs to track, like a string or a
+                datetime. The display hook is responsible for what is actually
+                displayed to user.
+        """
+        return save_data
+
+    def serialize(self):
+        """
+        Serializes the save data for Attribute storage.
+
+        Returns:
+            any (any): Whatever is best for storage.
+
+        """
+        return self.value_storage
 
     def validate(self, value, **kwargs):
         """
@@ -145,14 +149,28 @@ class BaseOption(object):
 
         Args:
             value (str): User input.
-            account (AccountDB): The Account that is performing the validation. This is necessary because of
-                other settings which may affect the check, such as an Account's timezone affecting how their
-                datetime entries are processed.
+            account (AccountDB): The Account that is performing the validation.
+                This is necessary because of other settings which may affect the
+                check, such as an Account's timezone affecting how their datetime
+                entries are processed.
 
         Returns:
             The results of a Validator call. Might be any kind of python object.
         """
-        return _VAL[self.validator_key](value, thing_name=self.key, **kwargs)
+        return VALIDATOR_FUNCS[self.validator_key](value, thing_name=self.key, **kwargs)
+
+    def display(self, **kwargs):
+        """
+        Renders the Option's value as something pretty to look at.
+
+        Returns:
+            str: How the stored value should be projected to users (e.g. a raw
+                timedelta is pretty ugly).
+
+        """
+        return self.value
+
+
 
 
 class Text(BaseOption):
