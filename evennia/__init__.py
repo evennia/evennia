@@ -214,7 +214,7 @@ def _init():
     from .server.sessionhandler import SESSION_HANDLER
     from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
-    from .scripts.globalhandler import GLOBAL_SCRIPTS
+    from .utils.containers import GLOBAL_SCRIPTS
 
     # initialize the doc string
     global __doc__

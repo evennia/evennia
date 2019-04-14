@@ -342,6 +342,9 @@ class DefaultScript(ScriptBase):
 
         kwargs['key'] = key
 
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+
         try:
             obj = create.create_script(**kwargs)
         except Exception as e:
