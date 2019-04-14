@@ -2,46 +2,90 @@ from evennia.utils.utils import string_partial_matching
 from evennia.utils.containers import OPTION_CLASSES
 
 
+class InMemorySaveHandler(object):
+    """
+    Fallback SaveHandler, implementing a minimum of the required save mechanism
+    and storing data in memory.
+
+    """
+    def __init__(self):
+        self.storage = {}
+
+    def add(self, key, value=None, **kwargs):
+        self.storage[key] = value
+
+    def get(self, key, default=None, **kwargs):
+        return self.storage.get(key, default)
+
+
 class OptionHandler(object):
     """
-    This is a generic Option handler meant for Typed Objects - anything that
+    This is a generic Option handler. It is commonly used
     implements AttributeHandler. Retrieve options eithers as properties on
     this handler or by using the .get method.
 
     This is used for Account.options but it could be used by Scripts or Objects
     just as easily. All it needs to be provided is an options_dict.
+
     """
 
-    def __init__(self, obj, options_dict=None, save_category=None):
+    def __init__(self, obj, options_dict=None, savefunc=None, loadfunc=None,
+                 save_kwargs=None, load_kwargs=None):
         """
         Initialize an OptionHandler.
 
         Args:
-            obj (TypedObject): The Typed Object this sits on. Obj MUST
-                implement the Evennia AttributeHandler or this will barf.
+            obj (object): The object this handler sits on. This is usually a TypedObject.
             options_dict (dict): A dictionary of option keys, where the values
                 are options. The format of those tuples is: ('key', "Description to
                 show", 'option_type', <default value>)
-            save_category (str): The Options data will be stored to this
-                Attribute category on obj.
+            savefunc (callable): A callable for all options to call when saving itself.
+                It will be called as `savefunc(key, value, **save_kwargs)`. A common one
+                to pass would be AttributeHandler.add.
+            loadfunc (callable): A callable for all options to call when loading data into
+                itself. It will be called as `loadfunc(key, default=default, **load_kwargs)`. 
+                A common one to pass would be AttributeHandler.get.
+            save_kwargs (any): Optional extra kwargs to pass into `savefunc` above.
+            load_kwargs (any): Optional extra kwargs to pass into `loadfunc` above.
+        Notes:
+            Both loadfunc and savefunc must be specified. If only one is given, the other
+            will be ignored and in-memory storage will be used.
 
         """
-        if not options_dict:
-            options_dict = {}
-        self.options_dict = options_dict
-        self.save_category = save_category
         self.obj = obj
+        self.options_dict = {} if options_dict is None else options_dict
 
-        # This dictionary stores the in-memory Options by their key. Values are the Option objects.
+        if not savefunc and loadfunc:
+            self._in_memory_handler = InMemorySaveHandler()
+            savefunc = InMemorySaveHandler.add
+            loadfunc = InMemorySaveHandler.get
+        self.savefunc = savefunc
+        self.loadfunc = loadfunc
+        self.save_kwargs = {} if save_kwargs is None else save_kwargs
+        self.load_kwargs = {} if load_kwargs is None else load_kwargs
+
+        # This dictionary stores the in-memory Options objects by their key for
+        # quick lookup.
         self.options = {}
 
-        # We use lazy-loading of each Option when it's called for, but it's
-        # good to have the save data on hand.
-        self.save_data = {s.key: s.value for s in obj.attributes.get(
-            category=save_category, return_list=True, return_obj=True) if s}
-
     def __getattr__(self, key):
-        return self.get(key).value
+        return self.get(key)
+
+    def _load_option(self, key):
+        """
+        Loads option on-demand if it has not been loaded yet.
+
+        Args:
+            key (str): The option being loaded.
+
+        Returns:
+
+        """
+        desc, clsname, default_val = self.options_dict[key]
+        loaded_option = OPTION_CLASSES.get(clsname)(self, key, desc, default_val)
+        # store the value for future easy access
+        self.options[key] = loaded_option
+        return loaded_option
 
     def get(self, key, return_obj=False):
         """
@@ -59,13 +103,34 @@ class OptionHandler(object):
         """
         if key not in self.options_dict:
             raise KeyError("Option not found!")
-        if key in self.options:
-            op_found = self.options[key]
-        else:
-            op_found = self._load_option(key)
-        if return_obj:
-            return op_found
-        return op_found.value
+        op_found = self.options.get(key) or self._load_option(key)
+        return op_found if return_obj else op_found.value
+
+    def set(self, key, value, **kwargs):
+        """
+        Change an individual option.
+
+        Args:
+            key (str): The key of an option that can be changed. Allows partial matching.
+            value (str): The value that should be checked, coerced, and stored.:
+            kwargs (any, optional): These are passed into the Option's validation function,
+                save function and display function and allows to customize either.
+
+        Returns:
+            value (any): Value stored in option, after validation.
+
+        """
+        if not key:
+            raise ValueError("Option field blank!")
+        match = string_partial_matching(list(self.options_dict.keys()), key, ret_index=False)
+        if not match:
+            raise ValueError("Option not found!")
+        if len(match) > 1:
+            raise ValueError(f"Multiple matches: {', '.join(match)}. Please be more specific.")
+        match = match[0]
+        op = self.get(match, return_obj=True)
+        op.set(value, **kwargs)
+        return op.value
 
     def all(self, return_objs=False):
         """
@@ -80,45 +145,3 @@ class OptionHandler(object):
 
         """
         return [self.get(key, return_obj=return_objs) for key in self.options_dict]
-
-    def _load_option(self, key):
-        """
-        Loads option on-demand if it has not been loaded yet.
-
-        Args:
-            key (str): The option being loaded.
-
-        Returns:
-
-        """
-        desc, clsname, default_val = self.options_dict[key]
-        save_data = self.save_data.get(key, None)
-        self.obj.msg(save_data)
-        loaded_option = OPTION_CLASSES.get(clsname)(self, key, desc, default_val, save_data)
-        self.options[key] = loaded_option
-        return loaded_option
-
-    def set(self, option, value, **kwargs):
-        """
-        Change an individual option.
-
-        Args:
-            option (str): The key of an option that can be changed. Allows partial matching.
-            value (str): The value that should be checked, coerced, and stored.
-            kwargs (any, optional): These are passed into the Option's validation function,
-                save function and display function and allows to customize either.
-
-        Returns:
-            New value
-        """
-        if not option:
-            raise ValueError("Option field blank!")
-        found = string_partial_matching(list(self.options_dict.keys()), option, ret_index=False)
-        if not found:
-            raise ValueError("Option not found!")
-        if len(found) > 1:
-            raise ValueError(f"That matched: {', '.join(found)}. Please be more specific.")
-        found = found[0]
-        op = self.get(found, return_obj=True)
-        op.set(value, **kwargs)
-        return op.display(**kwargs)

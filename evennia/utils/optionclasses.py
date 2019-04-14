@@ -1,6 +1,6 @@
-import datetime as _dt
-from evennia import logger as _log
-from evennia.utils.ansi import ANSIString as _ANSI
+import datetime
+from evennia import logger
+from evennia.utils.ansi import strip_ansi
 from evennia.utils.validatorfuncs import _TZ_DICT
 from evennia.utils.containers import VALIDATOR_FUNCS
 from evennia.utils.utils import crop
@@ -29,7 +29,7 @@ class BaseOption(object):
     def __repr__(self):
         return str(self)
 
-    def __init__(self, handler, key, description, default, save_data=None):
+    def __init__(self, handler, key, description, default):
         """
 
         Args:
@@ -38,14 +38,12 @@ class BaseOption(object):
                 Must be unique per OptionHandler.
             description (str): What this Option's text will show in commands and menus.
             default: A default value for this Option.
-            save_data: Whatever was saved to Attributes. This differs by Option.
 
         """
         self.handler = handler
         self.key = key
         self.default_value = default
         self.description = description
-        self.save_data = save_data
 
         # Value Storage contains None until the Option is loaded.
         self.value_storage = None
@@ -63,7 +61,7 @@ class BaseOption(object):
 
     @property
     def value(self):
-        if not self.loaded and self.save_data is not None:
+        if not self.loaded:
             self.load()
         if self.loaded:
             return self.value_storage
@@ -98,28 +96,36 @@ class BaseOption(object):
             Boolean: Whether loading was successful.
 
         """
-        if self.save_data is not None:
-            try:
-                self.value_storage = self.deserialize(self.save_data)
-                self.loaded = True
-                return True
-            except Exception as e:
-                _log.log_trace(e)
-        return False
+        loadfunc = self.handler.loadfunc
+        load_kwargs = self.handler.load_kwargs
+
+        print("load", self.key, loadfunc, load_kwargs)
+        try:
+            self.value_storage = self.deserialize(
+                loadfunc(self.key, default=self.default_value, **load_kwargs))
+        except Exception:
+            logger.log_trace()
+            return False
+        self.loaded = True
+        return True
 
     def save(self, **kwargs):
         """
-        Stores the current value (to an Attribute by default).
+        Stores the current value using .handler.save_handler(self.key, value, **kwargs)
+        where kwargs are a combination of those passed into this function and the
+        ones specified by the OptionHandler.
 
         Kwargs:
             any (any): Not used by default. These are passed in from self.set
-                and allows the option to let the caller customize saving
-                if desrired.
+                and allows the option to let the caller customize saving by
+                overriding or extend the default save kwargs
 
         """
-        self.handler.obj.attributes.add(self.key,
-                                        category=self.handler.save_category,
-                                        value=self.serialize())
+        value = self.serialize()
+        save_kwargs = {**self.handler.save_kwargs, **kwargs}
+        savefunc = self.handler.savefunc
+        print("save:", self.key, value, savefunc, save_kwargs)
+        savefunc(self.key, value=value, **save_kwargs)
 
     def deserialize(self, save_data):
         """
@@ -160,9 +166,10 @@ class BaseOption(object):
                 entries are processed.
 
         Returns:
-            The results of a Validator call. Might be any kind of python object.
+            any (any): The results of the validation.
+
         """
-        return VALIDATOR_FUNCS[self.validator_key](value, thing_name=self.key, **kwargs)
+        return VALIDATOR_FUNCS.get(self.validator_key)(value, thing_name=self.key, **kwargs)
 
     def display(self, **kwargs):
         """
@@ -227,7 +234,7 @@ class Color(BaseOption):
         return f'{self.value} - |{self.value}this|n'
 
     def deserialize(self, save_data):
-        if not save_data or len(_ANSI(f'|{save_data}|n')) > 0:
+        if not save_data or len(strip_ansi(f'|{save_data}|n')) > 0:
             raise ValueError(f"{self.key} expected Color Code, got '{save_data}'")
         return save_data
 
@@ -280,7 +287,7 @@ class Duration(BaseOption):
 
     def deserialize(self, save_data):
         if isinstance(save_data, int):
-            return _dt.timedelta(0, save_data, 0, 0, 0, 0, 0)
+            return datetime.timedelta(0, save_data, 0, 0, 0, 0, 0)
         raise ValueError(f"{self.key} expected Timedelta in seconds, got '{save_data}'")
 
     def serialize(self):
@@ -292,7 +299,7 @@ class Datetime(BaseOption):
 
     def deserialize(self, save_data):
         if isinstance(save_data, int):
-            return _dt.datetime.utcfromtimestamp(save_data)
+            return datetime.datetime.utcfromtimestamp(save_data)
         raise ValueError(f"{self.key} expected UTC Datetime in EPOCH format, got '{save_data}'")
 
     def serialize(self):
