@@ -490,6 +490,42 @@ START_LOCATION = "#2"
 TYPECLASS_AGGRESSIVE_CACHE = True
 
 ######################################################################
+# Options and validators
+######################################################################
+
+# Replace or add entries in this dictionary to specify options available
+# on accounts. An option goes goteth
+
+# Evennia uses for commands. Or add more entries! Accounts can change
+# their own settings with a command, but this sets down defaults.
+
+# Option tuples are in this format:
+# ("Description", 'Option Class', 'Default Value')
+
+OPTIONS_ACCOUNT_DEFAULT = {
+    'border_color': ('Headers, footers, table borders, etc.', 'Color', 'M'),
+    'header_star_color': ('* inside Header lines.', 'Color', 'm'),
+    'header_text_color': ('Text inside Header lines.', 'Color', 'w'),
+    'footer_text_color': ('Text inside Footer Lines.', 'Color', 'w'),
+    'column_names_color': ('Table column header text.', 'Color', 'G'),
+    'header_fill': ('Fill for Header lines.', 'Text', '='),
+    'separator_fill': ('Fill for Separator Lines.', 'Text', '-'),
+    'footer_fill': ('Fill for Footer Lines.', 'Text', '='),
+    'help_category_color': ('Help category names.', 'Color', 'g'),
+    'help_entry_color': ('Help entry names.', 'Color', 'c'),
+    'timezone': ('Timezone for dates. @tz for a list.', 'Timezone', 'UTC')
+}
+# Modules holding Option classes, responsible for serializing the option and
+# calling validator functions on it. Same-named functions in modules added
+# later in this list will override those added earlier.
+OPTION_MODULES = ['evennia.utils.optionclasses', ]
+# Module holding validator functions. These are used as a resource for
+# validating options, but can also be used as input validators in general.#
+# Same-named functions in modules added later in this list will override those
+# added earlier.
+VALIDATOR_MODULES = ['evennia.utils.validatorfunctions', ]
+
+######################################################################
 # Batch processors
 ######################################################################
 
@@ -521,7 +557,7 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc & PrototypeFuncs
+# Inlinefunc, PrototypeFuncs
 ######################################################################
 # Evennia supports inline function preprocessing. This allows users
 # to supply inline calls on the form $func(arg, arg, ...) to do

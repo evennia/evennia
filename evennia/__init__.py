@@ -111,6 +111,10 @@ MONITOR_HANDLER = None
 CHANNEL_HANDLER = None
 GLOBAL_SCRIPTS = None
 
+# Containers
+VALIDATOR_FUNCTIONS = None
+OPTION_CLASSES = None
+
 
 def _create_version():
     """
@@ -140,6 +144,7 @@ def _create_version():
 __version__ = _create_version()
 del _create_version
 
+
 def _init():
     """
     This function is called automatically by the launcher only after
@@ -150,12 +155,16 @@ def _init():
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, AccountDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys, InterruptCommand
-    global search_object, search_script, search_account, search_channel, search_help, search_tag, search_message
-    global create_object, create_script, create_account, create_channel, create_message, create_help_entry
+    global search_object, search_script, search_account, search_channel
+    global search_help, search_tag, search_message
+    global create_object, create_script, create_account, create_channel
+    global create_message, create_help_entry
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
-    global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER, TASK_HANDLER, GLOBAL_SCRIPTS
+    global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER
+    global CHANNEL_HANDLER, TASK_HANDLER, GLOBAL_SCRIPTS
+    global VALIDATOR_FUNCS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
-    global ANSIString 
+    global ANSIString
 
     from .accounts.accounts import DefaultAccount
     from .accounts.accounts import DefaultGuest
@@ -215,6 +224,10 @@ def _init():
     from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
     from .utils.containers import GLOBAL_SCRIPTS
+
+    # containers
+    from .utils.containers import VALIDATOR_FUNCS
+    from .utils.containers import OPTION_CLASSES
 
     # initialize the doc string
     global __doc__
