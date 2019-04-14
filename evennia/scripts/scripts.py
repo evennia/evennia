@@ -165,6 +165,9 @@ class ScriptBase(with_metaclass(TypeclassBase, ScriptDB)):
         except Exception:
             return False
 
+    def __str__(self):
+        return "<{cls} {key}>".format(cls=self.__class__.__name__, key=self.key)
+
     def _start_task(self):
         """
         Start task runner.
