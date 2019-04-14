@@ -76,15 +76,6 @@ class Container(object):
         return list(self.loaded_data.values())
 
 
-class ValidatorContainer(Container):
-    """
-    Loads and stores the final list of VALIDATOR FUNCTIONS.
-
-    Can access these as properties or dictionary-contents.
-    """
-    storage_modules = settings.VALIDATOR_FUNC_MODULES
-
-
 class OptionContainer(Container):
     """
     Loads and stores the final list of OPTION CLASSES.
@@ -203,5 +194,4 @@ class GlobalScriptContainer(Container):
 # Create all singletons
 
 GLOBAL_SCRIPTS = GlobalScriptContainer()
-VALIDATOR_FUNCS = ValidatorContainer()
 OPTION_CLASSES = OptionContainer()

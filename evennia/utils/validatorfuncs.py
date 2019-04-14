@@ -19,25 +19,32 @@ from evennia.utils.utils import string_partial_matching as _partial
 _TZ_DICT = {str(tz): _pytz.timezone(tz) for tz in _pytz.common_timezones}
 
 
-def color(entry, thing_name='Color', **kwargs):
+def text(entry, option_key='Text', **kwargs):
+    try:
+        return str(entry)
+    except Exception as err:
+        raise ValueError(f"Input could not be converted to text ({err})")
+
+
+def color(entry, option_key='Color', **kwargs):
     """
     The color should be just a color character, so 'r' if red color is desired.
     """
     if not entry:
-        raise ValueError(f"Nothing entered for a {thing_name}!")
+        raise ValueError(f"Nothing entered for a {option_key}!")
     test_str = strip_ansi(f'|{entry}|n')
     if test_str:
-        raise ValueError(f"'{entry}' is not a valid {thing_name}.")
+        raise ValueError(f"'{entry}' is not a valid {option_key}.")
     return entry
 
 
-def datetime(entry, thing_name='Datetime', account=None, from_tz=None, **kwargs):
+def datetime(entry, option_key='Datetime', account=None, from_tz=None, **kwargs):
     """
     Process a datetime string in standard forms while accounting for the inputter's timezone.
 
     Args:
         entry (str): A date string from a user.
-        thing_name (str): Name to display this datetime as.
+        option_key (str): Name to display this datetime as.
         account (AccountDB): The Account performing this lookup. Unless from_tz is provided,
             account's timezone will be used (if found) for local time and convert the results
             to UTC.
@@ -48,7 +55,7 @@ def datetime(entry, thing_name='Datetime', account=None, from_tz=None, **kwargs)
         datetime in utc.
     """
     if not entry:
-        raise ValueError(f"No {thing_name} entered!")
+        raise ValueError(f"No {option_key} entered!")
     if not from_tz:
         from_tz = _pytz.UTC
     utc = _pytz.UTC
@@ -60,23 +67,23 @@ def datetime(entry, thing_name='Datetime', account=None, from_tz=None, **kwargs)
     elif len(split_time) == 4:
         entry = f"{split_time[0]} {split_time[1]} {split_time[2]} {split_time[3]}"
     else:
-        raise ValueError(f"{thing_name} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}")
+        raise ValueError(f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}")
     try:
         local = _dt.datetime.strptime(input, '%b %d %H:%M %Y')
     except ValueError:
-        raise ValueError(f"{thing_name} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}")
+        raise ValueError(f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}")
     local_tz = from_tz.localize(local)
     return local_tz.astimezone(utc)
 
 
-def duration(entry, thing_name='Duration', **kwargs):
+def duration(entry, option_key='Duration', **kwargs):
     """
     Take a string and derive a datetime timedelta from it.
 
     Args:
         entry (string): This is a string from user-input. The intended format is, for example: "5d 2w 90s" for
                             'five days, two weeks, and ninety seconds.' Invalid sections are ignored.
-        thing_name (str): Name to display this query as.
+        option_key (str): Name to display this query as.
 
     Returns:
         timedelta
@@ -103,54 +110,54 @@ def duration(entry, thing_name='Duration', **kwargs):
         elif _re.match(r'^[\d]+y$', interval):
             days =+ int(interval.lower().rstrip("y")) * 365
         else:
-            raise ValueError(f"Could not convert section '{interval}' to a {thing_name}.")
+            raise ValueError(f"Could not convert section '{interval}' to a {option_key}.")
 
     return _dt.timedelta(days, seconds, 0, 0, minutes, hours, weeks)
 
 
-def future(entry, thing_name="Future Datetime", from_tz=None, **kwargs):
-    time = datetime(entry, thing_name)
+def future(entry, option_key="Future Datetime", from_tz=None, **kwargs):
+    time = datetime(entry, option_key)
     if time < _dt.datetime.utcnow():
-        raise ValueError(f"That {thing_name} is in the past! Must give a Future datetime!")
+        raise ValueError(f"That {option_key} is in the past! Must give a Future datetime!")
     return time
 
 
-def signed_integer(entry, thing_name="Signed Integer", **kwargs):
+def signed_integer(entry, option_key="Signed Integer", **kwargs):
     if not entry:
-        raise ValueError(f"Must enter a whole number for {thing_name}!")
+        raise ValueError(f"Must enter a whole number for {option_key}!")
     try:
         num = int(entry)
     except ValueError:
-        raise ValueError(f"Could not convert '{entry}' to a whole number for {thing_name}!")
+        raise ValueError(f"Could not convert '{entry}' to a whole number for {option_key}!")
     return num
 
 
-def positive_integer(entry, thing_name="Positive Integer", **kwargs):
-    num = signed_integer(entry, thing_name)
+def positive_integer(entry, option_key="Positive Integer", **kwargs):
+    num = signed_integer(entry, option_key)
     if not num >= 1:
-        raise ValueError(f"Must enter a whole number greater than 0 for {thing_name}!")
+        raise ValueError(f"Must enter a whole number greater than 0 for {option_key}!")
     return num
 
 
-def unsigned_integer(entry, thing_name="Unsigned Integer", **kwargs):
-    num = signed_integer(entry, thing_name)
+def unsigned_integer(entry, option_key="Unsigned Integer", **kwargs):
+    num = signed_integer(entry, option_key)
     if not num >= 0:
-        raise ValueError(f"{thing_name} must be a whole number greater than or equal to 0!")
+        raise ValueError(f"{option_key} must be a whole number greater than or equal to 0!")
     return num
 
 
-def boolean(entry, thing_name="True/False", **kwargs):
+def boolean(entry, option_key="True/False", **kwargs):
     """
     Simplest check in computer logic, right? This will take user input to flick the switch on or off
     Args:
         entry (str): A value such as True, On, Enabled, Disabled, False, 0, or 1.
-        thing_name (str): What kind of Boolean we are setting. What Option is this for?
+        option_key (str): What kind of Boolean we are setting. What Option is this for?
 
     Returns:
         Boolean
     """
     entry = entry.upper()
-    error = f"Must enter 0 (false) or 1 (true) for {thing_name}. Also accepts True, False, On, Off, Yes, No, Enabled, and Disabled"
+    error = f"Must enter 0 (false) or 1 (true) for {option_key}. Also accepts True, False, On, Off, Yes, No, Enabled, and Disabled"
     if not entry:
         raise ValueError(error)
     if entry in ('1', 'TRUE', 'ON', 'ENABLED', 'ENABLE', 'YES'):
@@ -160,41 +167,41 @@ def boolean(entry, thing_name="True/False", **kwargs):
     raise ValueError(error)
 
 
-def timezone(entry, thing_name="Timezone", **kwargs):
+def timezone(entry, option_key="Timezone", **kwargs):
     """
     Takes user input as string, and partial matches a Timezone.
 
     Args:
         entry (str): The name of the Timezone.
-        thing_name (str): What this Timezone is used for.
+        option_key (str): What this Timezone is used for.
 
     Returns:
         A PYTZ timezone.
     """
     if not entry:
-        raise ValueError(f"No {thing_name} entered!")
+        raise ValueError(f"No {option_key} entered!")
     found = _partial(list(_TZ_DICT.keys()), entry, ret_index=False)
     if len(found) > 1:
         raise ValueError(f"That matched: {', '.join(str(t) for t in found)}. Please be more specific!")
     if found:
         return _TZ_DICT[found[0]]
-    raise ValueError(f"Could not find timezone '{entry}' for {thing_name}!")
+    raise ValueError(f"Could not find timezone '{entry}' for {option_key}!")
 
 
-def email(entry, thing_name="Email Address", **kwargs):
+def email(entry, option_key="Email Address", **kwargs):
     if not entry:
         raise ValueError("Email address field empty!")
     try:
         _val_email(entry)  # offloading the hard work to Django!
     except _error:
-        raise ValueError(f"That isn't a valid {thing_name}!")
+        raise ValueError(f"That isn't a valid {option_key}!")
     return entry
 
 
-def lock(entry, thing_name='locks', access_options=None, **kwargs):
+def lock(entry, option_key='locks', access_options=None, **kwargs):
     entry = entry.strip()
     if not entry:
-        raise ValueError(f"No {thing_name} entered to set!")
+        raise ValueError(f"No {option_key} entered to set!")
     for locksetting in entry.split(';'):
         access_type, lockfunc = locksetting.split(':', 1)
         if not access_type:
