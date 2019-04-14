@@ -1,6 +1,9 @@
 from evennia.utils.utils import string_partial_matching
 from evennia.utils.containers import OPTION_CLASSES
 
+_GA = object.__getattribute__
+_SA = object.__setattr__
+
 
 class InMemorySaveHandler(object):
     """
@@ -69,7 +72,25 @@ class OptionHandler(object):
         self.options = {}
 
     def __getattr__(self, key):
+        """
+        Allow for obj.options.key
+
+        """
         return self.get(key)
+
+    def __setattr__(self, key, value):
+        """
+        Allow for obj.options.key = value
+
+        But we must be careful to avoid infinite loops!
+
+        """
+        try:
+            if key in _GA(self, "options_dict"):
+                _GA(self, "set")(key, value)
+        except AttributeError:
+            pass
+        _SA(self, key, value)
 
     def _load_option(self, key):
         """

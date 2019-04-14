@@ -2,8 +2,8 @@ import datetime
 from evennia import logger
 from evennia.utils.ansi import strip_ansi
 from evennia.utils.validatorfuncs import _TZ_DICT
-from evennia.utils.containers import VALIDATOR_FUNCS
 from evennia.utils.utils import crop
+from evennia.utils import validatorfuncs
 
 
 class BaseOption(object):
@@ -20,8 +20,6 @@ class BaseOption(object):
         validator_key (str): The key of the Validator this uses.
 
     """
-    validator_key = ''
-
     def __str__(self):
         return "<Option {key}: {value}>".format(
             key=self.key, value=crop(str(self.value), width=10))
@@ -99,7 +97,6 @@ class BaseOption(object):
         loadfunc = self.handler.loadfunc
         load_kwargs = self.handler.load_kwargs
 
-        print("load", self.key, loadfunc, load_kwargs)
         try:
             self.value_storage = self.deserialize(
                 loadfunc(self.key, default=self.default_value, **load_kwargs))
@@ -124,7 +121,6 @@ class BaseOption(object):
         value = self.serialize()
         save_kwargs = {**self.handler.save_kwargs, **kwargs}
         savefunc = self.handler.savefunc
-        print("save:", self.key, value, savefunc, save_kwargs)
         savefunc(self.key, value=value, **save_kwargs)
 
     def deserialize(self, save_data):
@@ -164,12 +160,13 @@ class BaseOption(object):
                 This is necessary because of other settings which may affect the
                 check, such as an Account's timezone affecting how their datetime
                 entries are processed.
-
         Returns:
             any (any): The results of the validation.
+        Raises:
+            ValidationError: If input value failed validation.
 
         """
-        return VALIDATOR_FUNCS.get(self.validator_key)(value, thing_name=self.key, **kwargs)
+        return validatorfuncs.text(value, option_key=self.key, **kwargs)
 
     def display(self, **kwargs):
         """
@@ -191,7 +188,6 @@ class BaseOption(object):
 
 
 class Text(BaseOption):
-    validator_key = 'text'
 
     def deserialize(self, save_data):
         got_data = str(save_data)
@@ -201,7 +197,9 @@ class Text(BaseOption):
 
 
 class Email(BaseOption):
-    validator_key = 'email'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.email(value, option_key=self.key, **kwargs)
 
     def deserialize(self, save_data):
         got_data = str(save_data)
@@ -211,7 +209,9 @@ class Email(BaseOption):
 
 
 class Boolean(BaseOption):
-    validator_key = 'boolean'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.boolean(value, option_key=self.key, **kwargs)
 
     def display(self, **kwargs):
         if self.value:
@@ -228,7 +228,9 @@ class Boolean(BaseOption):
 
 
 class Color(BaseOption):
-    validator_key = 'color'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.color(value, option_key=self.key, **kwargs)
 
     def display(self, **kwargs):
         return f'{self.value} - |{self.value}this|n'
@@ -240,7 +242,9 @@ class Color(BaseOption):
 
 
 class Timezone(BaseOption):
-    validator_key = 'timezone'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.timezone(value, option_key=self.key, **kwargs)
 
     @property
     def default(self):
@@ -258,6 +262,9 @@ class Timezone(BaseOption):
 class UnsignedInteger(BaseOption):
     validator_key = 'unsigned_integer'
 
+    def validate(self, value, **kwargs):
+        return validatorfuncs.unsigned_integer(value, option_key=self.key, **kwargs)
+
     def deserialize(self, save_data):
         if isinstance(save_data, int) and save_data >= 0:
             return save_data
@@ -265,7 +272,9 @@ class UnsignedInteger(BaseOption):
 
 
 class SignedInteger(BaseOption):
-    validator_key = 'signed_integer'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.signed_integer(value, option_key=self.key, **kwargs)
 
     def deserialize(self, save_data):
         if isinstance(save_data, int):
@@ -274,7 +283,9 @@ class SignedInteger(BaseOption):
 
 
 class PositiveInteger(BaseOption):
-    validator_key = 'positive_integer'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.positive_integer(value, option_key=self.key, **kwargs)
 
     def deserialize(self, save_data):
         if isinstance(save_data, int) and save_data > 0:
@@ -283,7 +294,9 @@ class PositiveInteger(BaseOption):
 
 
 class Duration(BaseOption):
-    validator_key = 'duration'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.duration(value, option_key=self.key, **kwargs)
 
     def deserialize(self, save_data):
         if isinstance(save_data, int):
@@ -295,7 +308,9 @@ class Duration(BaseOption):
 
 
 class Datetime(BaseOption):
-    validator_key = 'datetime'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.datetime(value, option_key=self.key, **kwargs)
 
     def deserialize(self, save_data):
         if isinstance(save_data, int):
@@ -307,8 +322,12 @@ class Datetime(BaseOption):
 
 
 class Future(Datetime):
-    validator_key = 'future'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.future(value, option_key=self.key, **kwargs)
 
 
 class Lock(Text):
-    validator_key = 'lock'
+
+    def validate(self, value, **kwargs):
+        return validatorfuncs.lock(value, option_key=self.key, **kwargs)

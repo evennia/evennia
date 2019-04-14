@@ -109,10 +109,9 @@ TASK_HANDLER = None
 TICKER_HANDLER = None
 MONITOR_HANDLER = None
 CHANNEL_HANDLER = None
-GLOBAL_SCRIPTS = None
 
 # Containers
-VALIDATOR_FUNCTIONS = None
+GLOBAL_SCRIPTS = None
 OPTION_CLASSES = None
 
 
@@ -161,8 +160,8 @@ def _init():
     global create_message, create_help_entry
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER
-    global CHANNEL_HANDLER, TASK_HANDLER, GLOBAL_SCRIPTS
-    global VALIDATOR_FUNCS, OPTION_CLASSES
+    global CHANNEL_HANDLER, TASK_HANDLER 
+    global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
 
@@ -226,7 +225,6 @@ def _init():
 
     # containers
     from .utils.containers import GLOBAL_SCRIPTS
-    from .utils.containers import VALIDATOR_FUNCS
     from .utils.containers import OPTION_CLASSES
 
     # initialize the doc string
