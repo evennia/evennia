@@ -256,6 +256,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         try:
             kwargs['desc'] = kwargs.pop('description', '')
+            kwargs['typeclass'] = kwargs.get('typeclass', cls)
             obj = create.create_channel(key, *args, **kwargs)
 
             # Record creator id and creation IP

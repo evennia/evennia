@@ -20,6 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.signals import post_save
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import pre_delete, post_migrate
+from django.db.utils import DatabaseError
 from evennia.utils import logger
 from evennia.utils.utils import dbref, get_evennia_pids, to_str
 
@@ -391,7 +392,16 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
 
         if _IS_MAIN_THREAD:
             # in main thread - normal operation
-            super().save(*args, **kwargs)
+            try:
+                super().save(*args, **kwargs)
+            except DatabaseError:
+                # we handle the 'update_fields did not update any rows' error that 
+                # may happen due to timing issues with attributes
+                ufields_removed = kwargs.pop('update_fields', None)
+                if ufields_removed:
+                    super().save(*args, **kwargs)
+                else:
+                    raise
         else:
             # in another thread; make sure to save in reactor thread
             def _save_callback(cls, *args, **kwargs):

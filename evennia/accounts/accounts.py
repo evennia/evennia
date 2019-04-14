@@ -645,7 +645,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         guest = kwargs.get('guest', False)
 
         permissions = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
-        typeclass = kwargs.get('typeclass', settings.BASE_ACCOUNT_TYPECLASS)
+        typeclass = kwargs.get('typeclass', cls)
 
         ip = kwargs.get('ip', '')
         if ip and CREATION_THROTTLE.check(ip):
