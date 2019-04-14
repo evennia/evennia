@@ -713,6 +713,12 @@ class AttributeHandler(object):
         else:
             return attrs
 
+    def return_examine(self):
+        attrs = self.all()
+        if not attrs:
+            return
+        return "|wPersistent Attributes[category]|n:\n" + "\n".join(a.pretty_format() for a in attrs)
+
 
 # Nick templating
 #
@@ -1028,3 +1034,9 @@ class NAttributeHandler(object):
         if return_tuples:
             return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
         return [key for key in self._store if not key.startswith("_")]
+
+    def return_examine(self):
+        nattrs = self.all(return_tuples=True)
+        if not nattrs:
+            return
+        return "|wNon-Persistent Attributes|n:\n" + "\n".join("%s = %s" % (n[0], n[1]) for n in nattrs)

@@ -14,7 +14,7 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.db import models
-from evennia.utils.utils import to_str, make_iter
+from evennia.utils.utils import to_str, make_iter, fill
 
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
@@ -404,6 +404,11 @@ class TagHandler(object):
 
     def __str__(self):
         return ",".join(self.all())
+
+    def return_examine(self):
+        tags_string = fill(", ".join("%s[%s]" % (tag, category)
+                                     for tag, category in self.all(return_key_and_category=True)), indent=5)
+        return "|wTags[category]|n: %s" % tags_string.strip() if tags_string else None
 
 
 class AliasHandler(TagHandler):

@@ -108,7 +108,7 @@ from builtins import object
 
 import re
 from django.conf import settings
-from evennia.utils import logger, utils
+from evennia.utils import logger, utils, fill
 from django.utils.translation import ugettext as _
 
 __all__ = ("LockHandler", "LockException")
@@ -608,6 +608,11 @@ class LockHandler(object):
             # embedded in the lockstring we assume all must be true
             return all(self._eval_access_type(
                 accessing_obj, locks, access_type) for access_type in locks)
+
+    def return_examine(self):
+        locks = str(self)
+        locks_string = fill("; ".join([lock for lock in locks.split(';')]), indent=6) if locks else " Default"
+        return "|wLocks|n:%s" % locks_string
 
 
 # convenience access function

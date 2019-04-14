@@ -152,3 +152,7 @@ class ScriptHandler(object):
 
         """
         ScriptDB.objects.validate(obj=self.obj, init_mode=init_mode)
+
+    def return_examine(self):
+        scripts = self.all()
+        return "|wScripts|n:\n %s" % scripts if scripts else None

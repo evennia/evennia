@@ -2099,7 +2099,8 @@ class CmdExamine(ObjManipCommand):
             that function finishes. Taking the resulting cmdset, we continue
             to format and output the result.
             """
-            string = obj.return_examine(self, cmdset)
+            sep_line = '-' * 78
+            string = f"{sep_line}\n{obj.return_examine(caller, cmdsets=cmdset)}\n{sep_line}"
             self.msg(string.strip())
 
         if not self.args:

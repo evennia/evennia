@@ -1891,19 +1891,20 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
     examine_hooks = ('base', 'locks', 'commands', 'scripts', 'tags', 'attributes', 'nattributes', 'contents')
 
-    def return_examine_base(self, viewer, cmdsets, *args, **kwargs):
+    def return_examine(self, viewer, *args, **kwargs):
         """
         Return basic information about this Object to @examine users.
+
         Args:
             viewer: The Account or Character seeing the output. Provided in case permission checks are needed.
-            cmdsets: Passed because of the requirements on return_examine_commands
             *args:
             **kwargs:
+
         Returns:
             results (str): Basic information about this Object.
         """
         message = list()
-        message.append("|wName/key|n: |c%s|n (%s)" % (self.name, self.dbref))
+        message.append(f"|wName/key|n: |c{self.name}|n ({self.dbref})")
         if self.aliases.all():
             message.append("|wAliases|n: %s" % (", ".join(make_iter(str(self.aliases)))))
         sessions = self.sessions.all()
@@ -1911,7 +1912,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             message.append("|wSession id(s)|n: %s" % (", ".join("#%i" % sess.sessid
                                                                 for sess in sessions)))
         if self.has_account:
-            message.append("|wAccount|n: |c%s|n" % self.account.name)
+            message.append(f"|wAccount|n: |c{self.account.name}|n")
             perms = self.account.permissions.all()
             if self.account.is_superuser:
                 perms = ["<Superuser>"]
@@ -1920,13 +1921,21 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             message.append("|wAccount Perms|n: %s" % (", ".join(perms)))
             if self.account.attributes.has("_quell"):
                 message.append(" |r(quelled)|n")
-        message.append("|wTypeclass|n: %s (%s)" % (self.typename,
-                                                   self.typeclass_path))
+        message.append(f"|wTypeclass|n: {self.typename} ({self.typeclass_path})")
         message.append("|wLocation|n: %s (%s)" % (self.location, self.location.dbref if self.location else 'N/A'))
         message.append("|wHome|n: %s (%s)" % (self.home, self.home.dbref if self.home else 'N/A'))
         message.append("|wDestination|n: %s (%s)" % (self.destination,
                                                      self.destination.dbref if self.destination else 'N/A'))
-        return '\n'.join(str(l) for l in message)
+        message.append(self.locks.return_examine())
+        cmdsets = kwargs.pop('cmdsets', None)
+        if cmdsets:
+            message.append(self.return_examine_commands(viewer, cmdsets, *args, **kwargs))
+        message.append(self.scripts.return_examine())
+        message.append(self.tags.return_examine())
+        message.append(self.attributes.return_examine())
+        message.append(self.nattributes.return_examine())
+        message.append(self.return_examine_contents(viewer, *args, **kwargs))
+        return '\n'.join(str(l) for l in message if l)
 
     def return_examine_commands(self, viewer, cmdsets, *args, **kwargs):
         message = list()
@@ -1971,7 +1980,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         return '\n'.join(str(l) for l in message)
 
-    def return_examine_contents(self, viewer, cmdsets, *args, **kwargs):
+    def return_examine_contents(self, viewer, *args, **kwargs):
         exits = []
         pobjs = []
         things = []
