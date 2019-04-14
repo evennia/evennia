@@ -472,7 +472,7 @@ class Command(with_metaclass(CommandMeta, object)):
         """
         return self.__doc__
 
-    def width(self):
+    def client_width(self):
         return self.session.protocol_flags['SCREENWIDTH'][0]
 
     def style_table(self, *args, **kwargs):
