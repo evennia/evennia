@@ -200,7 +200,12 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
     @lazy_property
     def options(self):
-        return OptionHandler(self, options_dict=settings.OPTIONS_ACCOUNT_DEFAULT, save_category='option')
+        return OptionHandler(self, 
+                             options_dict=settings.OPTIONS_ACCOUNT_DEFAULT,
+                             savefunc=self.attributes.add,
+                             loadfunc=self.attributes.get,
+                             save_kwargs={"category": 'option'},
+                             load_kwargs={"category": 'option'})
 
     # Do not make this a lazy property; the web UI will not refresh it!
     @property
