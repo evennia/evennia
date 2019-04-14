@@ -168,6 +168,9 @@ class ScriptBase(with_metaclass(TypeclassBase, ScriptDB)):
     def __str__(self):
         return "<{cls} {key}>".format(cls=self.__class__.__name__, key=self.key)
 
+    def __repr__(self):
+        return str(self)
+
     def _start_task(self):
         """
         Start task runner.

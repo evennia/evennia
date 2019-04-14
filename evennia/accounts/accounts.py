@@ -20,7 +20,6 @@ from django.utils.module_loading import import_string
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
-from evennia.utils.option import OptionHandler
 from evennia.objects.models import ObjectDB
 from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
@@ -33,6 +32,7 @@ from evennia.utils.utils import (lazy_property, to_str,
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.utils.optionhandler import OptionHandler
 
 from django.utils.translation import ugettext as _
 from future.utils import with_metaclass
