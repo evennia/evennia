@@ -58,3 +58,18 @@ SIGNAL_OBJECT_POST_UNPUPPET = Signal(providing_args=['session', 'account'])
 # it could be a script. It fires whenever the value of the Typed object's 'key'
 # changes. Will need to use isinstance() or other filtering on things that use this.
 SIGNAL_TYPED_OBJECT_POST_RENAME = Signal(providing_args=['old_key', 'new_key'])
+
+
+# Django default signals (https://docs.djangoproject.com/en/2.2/topics/signals/)
+
+from django.db.models.signals import (
+    pre_save,  # Sent before a typeclass' .save is called.
+    post_save,  #       after            "
+    pre_delete,  # Sent before an object is deleted.
+    post_delete,  #       after         "
+    m2m_changed,  # Sent when a ManyToManyField changes.
+)
+from django.core.signals import (
+    request_started,  # Sent when HTTP request begins.
+    request_finished,  #         "             ends.
+)
