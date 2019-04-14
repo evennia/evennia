@@ -39,20 +39,49 @@ class OptionHandler(object):
                                                                      return_list=True, return_obj=True) if s}
 
     def __getitem__(self, item):
+        """
+        Shortcut to self.get(item) used as a different syntax. This entire object is
+        essentially a dictionary of option_key -> value.
+
+        Args:
+            item (str): The Key of the item to get.
+
+        Returns:
+            The Option's value.
+        """
         return self.get(item).value
 
     def get(self, item, return_obj=False):
+        """
+        Retrieves an Option stored in the handler. Will load it if it doesn't exist.
+
+        Args:
+            item (str): The key to retrieve.
+            return_obj (bool): If True, returns the actual option object instead of its value.
+
+        Returns:
+            An option value (varies) or the Option itself.
+        """
         if item not in self.options_dict:
             raise KeyError("Option not found!")
         if item in self.options:
             op_found = self.options[item]
         else:
-            op_found = self.load_option(item)
+            op_found = self._load_option(item)
         if return_obj:
             return op_found
         return op_found.value
 
-    def load_option(self, key):
+    def _load_option(self, key):
+        """
+        Loads option on-demand if it has not been loaded yet.
+
+        Args:
+            key (str): The option being loaded.
+
+        Returns:
+
+        """
         option_def = self.options_dict[key]
         save_data = self.save_data.get(key, None)
         self.obj.msg(save_data)
@@ -60,7 +89,7 @@ class OptionHandler(object):
         self.options[key] = loaded_option
         return loaded_option
 
-    def set(self, option, value):
+    def set(self, option, value, **kwargs):
         """
         Change an individual option.
 
@@ -80,7 +109,7 @@ class OptionHandler(object):
             raise ValueError(f"That matched: {', '.join(found)}. Please be more specific.")
         found = found[0]
         op = self.get(found, return_obj=True)
-        op.value = value
+        op.set(value, **kwargs)
         return op.display()
 
 
