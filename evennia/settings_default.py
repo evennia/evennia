@@ -511,6 +511,7 @@ OPTIONS_ACCOUNT_DEFAULT = {
     'footer_fill': ('Fill for Footer Lines.', 'Text', '='),
     'help_category_color': ('Help category names.', 'Color', 'g'),
     'help_entry_color': ('Help entry names.', 'Color', 'c'),
+    'timezone': ('Timezone for dates. @tz for a list.', 'Timezone', 'UTC')
 
 }
 
@@ -565,11 +566,11 @@ PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
 
 # Module holding validator functions. functions in later modules will
 # override those in earlier ones.
-VALIDATOR_MODULES = ['evennia.utils.validfuncs', ]
+VALIDATOR_MODULES = ['evennia.utils.validatorfunctions', ]
 
 # Modules holding Option classes. Those in later modules will
 # override ones in earlier modules.
-OPTION_MODULES = ['evennia.utils.opclasses', ]
+OPTION_MODULES = ['evennia.utils.optionclasses', ]
 
 ######################################################################
 # Default Account setup and access

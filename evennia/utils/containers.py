@@ -2,7 +2,7 @@ from django.conf import settings
 from evennia.utils.utils import callables_from_module
 
 
-class ValidContainer(object):
+class ValidatorContainer(object):
     """
     Loads and stores the final list of VALIDATOR FUNCTIONS.
 
@@ -22,7 +22,7 @@ class ValidContainer(object):
 
 
 # Ensure that we have a Singleton of ValidHandler that is always loaded... and only needs to be loaded once.
-VALID_CONTAINER = ValidContainer()
+VALIDATOR_CONTAINER = ValidatorContainer()
 
 
 class OptionContainer(object):

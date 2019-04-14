@@ -170,9 +170,11 @@ def timezone(entry, thing_name="Timezone", **kwargs):
     """
     if not entry:
         raise ValueError(f"No {thing_name} entered!")
-    found = _partial(list(_TZ_DICT.keys()), entry)
+    found = _partial(list(_TZ_DICT.keys()), entry, ret_index=False)
+    if len(found) > 1:
+        raise ValueError(f"That matched: {', '.join(str(t) for t in found)}. Please be more specific!")
     if found:
-        return _TZ_DICT[found]
+        return _TZ_DICT[found[0]]
     raise ValueError(f"Could not find timezone '{entry}' for {thing_name}!")
 
 

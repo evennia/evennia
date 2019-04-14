@@ -1,8 +1,8 @@
 import datetime as _dt
 from evennia import logger as _log
 from evennia.utils.ansi import ANSIString as _ANSI
-from evennia.utils.validfuncs import _TZ_DICT
-from evennia.utils.containers import VALID_CONTAINER as _VAL
+from evennia.utils.validatorfunctions import _TZ_DICT
+from evennia.utils.containers import VALIDATOR_CONTAINER as _VAL
 
 
 class BaseOption(object):
@@ -14,9 +14,8 @@ class BaseOption(object):
     Designed to be extremely overloadable as some options can be cantankerous.
 
     Properties:
-        expect_type (str): What users will see this as asking for. Example: Color or email.
         valid: Shortcut to the loaded VALID_HANDLER.
-        valid_type (str): The key of the Validator this uses.
+        validator_key (str): The key of the Validator this uses.
     """
     validator_key = ''
 
@@ -55,7 +54,7 @@ class BaseOption(object):
         """
         return self.value
 
-    def _load(self):
+    def load(self):
         """
         Takes the provided save data, validates it, and gets this Option ready to use.
 
@@ -71,7 +70,7 @@ class BaseOption(object):
                 _log.log_trace(e)
         return False
 
-    def _save(self):
+    def save(self):
         """
         Exports the current value to an Attribute.
 
@@ -115,7 +114,7 @@ class BaseOption(object):
     @property
     def value(self):
         if not self.loaded and self.save_data is not None:
-            self._load()
+            self.load()
         if self.loaded:
             return self.value_storage
         else:
@@ -123,22 +122,24 @@ class BaseOption(object):
 
     @value.setter
     def value(self, value):
+        self.set(value)
+
+    def set(self, value, **kwargs):
         """
         Takes user input, presumed to be a string, and changes the value if it is a valid input.
 
         Args:
-            value:
-            account:
+            value: The new value of this Option.
 
         Returns:
             None
         """
-        final_value = self.validate(value)
+        final_value = self.validate(value, **kwargs)
         self.value_storage = final_value
         self.loaded = True
-        self._save()
+        self.save()
 
-    def validate(self, value):
+    def validate(self, value, **kwargs):
         """
         Validate user input, which is presumed to be a string.
 
@@ -151,7 +152,7 @@ class BaseOption(object):
         Returns:
             The results of a Validator call. Might be any kind of python object.
         """
-        return _VAL[self.validator_key](value, thing_name=self.key)
+        return _VAL[self.validator_key](value, thing_name=self.key, **kwargs)
 
 
 class Text(BaseOption):
