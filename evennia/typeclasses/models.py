@@ -50,7 +50,6 @@ from evennia.utils.utils import (
     is_iter, inherits_from, lazy_property,
     class_from_module)
 from evennia.utils.logger import log_trace
-from .signals import remove_attributes_on_delete, post_save
 
 __all__ = ("TypedObject", )
 
@@ -61,11 +60,29 @@ _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 _GA = object.__getattribute__
 _SA = object.__setattr__
 
-#------------------------------------------------------------
+
+# signal receivers. Connected in __new__
+
+def call_at_first_save(sender, instance, created, **kwargs):
+    """
+    Receives a signal just after the object is saved.
+    """
+    if created:
+        instance.at_first_save()
+
+
+def remove_attributes_on_delete(sender, instance, **kwargs):
+    """
+    Wipe object's Attributes when it's deleted
+    """
+    instance.db_attributes.all().delete()
+
+
+# ------------------------------------------------------------
 #
 # Typed Objects
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 #
@@ -101,7 +118,7 @@ class TypeclassBase(SharedMemoryModelBase):
         new_class = ModelBase.__new__(cls, name, bases, attrs)
 
         # attach signals
-        signals.post_save.connect(post_save, sender=new_class)
+        signals.post_save.connect(call_at_first_save, sender=new_class)
         signals.pre_delete.connect(remove_attributes_on_delete, sender=new_class)
         return new_class
 
