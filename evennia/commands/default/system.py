@@ -357,7 +357,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
         if args:
             if "start" in self.switches:
                 # global script-start mode
-                new_script = create.create_script(args)
+                new_script = create.create_script(args, creator=caller)
                 if new_script:
                     caller.msg("Global script %s was started successfully." % args)
                 else:

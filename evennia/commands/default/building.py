@@ -521,7 +521,8 @@ class CmdCreate(ObjManipCommand):
             lockstring = self.new_obj_lockstring.format(id=caller.id)
             obj = create.create_object(typeclass, name, caller,
                                        home=caller, aliases=aliases,
-                                       locks=lockstring, report_to=caller)
+                                       locks=lockstring, report_to=caller,
+                                       creator=caller)
             if not obj:
                 continue
             if aliases:
@@ -815,7 +816,7 @@ class CmdDig(ObjManipCommand):
         # create room
         new_room = create.create_object(typeclass, room["name"],
                                         aliases=room["aliases"],
-                                        report_to=caller)
+                                        report_to=caller, creator=caller)
         lockstring = self.new_room_lockstring.format(id=caller.id)
         new_room.locks.add(lockstring)
         alias_string = ""
@@ -846,7 +847,7 @@ class CmdDig(ObjManipCommand):
                                                    aliases=to_exit["aliases"],
                                                    locks=lockstring,
                                                    destination=new_room,
-                                                   report_to=caller)
+                                                   report_to=caller, creator=caller)
                 alias_string = ""
                 if new_to_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_to_exit.aliases.all())
@@ -876,7 +877,7 @@ class CmdDig(ObjManipCommand):
                                                      aliases=back_exit["aliases"],
                                                      locks=lockstring,
                                                      destination=location,
-                                                     report_to=caller)
+                                                     report_to=caller, creator=caller)
                 alias_string = ""
                 if new_back_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases.all())
@@ -1345,7 +1346,7 @@ class CmdOpen(ObjManipCommand):
                                             key=exit_name,
                                             location=location,
                                             aliases=exit_aliases,
-                                            report_to=caller)
+                                            report_to=caller, creator=caller)
             if exit_obj:
                 # storing a destination is what makes it an exit!
                 exit_obj.destination = destination

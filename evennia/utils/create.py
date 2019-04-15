@@ -26,6 +26,8 @@ from django.db import IntegrityError
 from django.utils import timezone
 from evennia.utils import logger
 from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
+from evennia.server.signals import (SIGNAL_OBJECT_POST_CREATE, SIGNAL_CHANNEL_POST_CREATE,
+                                    SIGNAL_SCRIPT_POST_CREATE)
 
 # delayed imports
 _User = None
@@ -55,7 +57,7 @@ _GA = object.__getattribute__
 def create_object(typeclass=None, key=None, location=None, home=None,
                   permissions=None, locks=None, aliases=None, tags=None,
                   destination=None, report_to=None, nohome=False, attributes=None,
-                  nattributes=None):
+                  nattributes=None, creator=None):
     """
 
     Create a new in-game object.
@@ -81,6 +83,8 @@ def create_object(typeclass=None, key=None, location=None, home=None,
             to set as Attributes on the new object.
         nattributes (list): Non-persistent tuples on the form (key, value). Note that
             adding this rarely makes sense since this data will not survive a reload.
+        creator (TypedObject): The creator of this object, if there is one. Used
+            for signaling.
 
     Returns:
         object (Object): A newly created object of the given typeclass.
@@ -135,6 +139,7 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     # at_first_save hook on the typeclass, where the _createdict can be
     # used.
     new_object.save()
+    SIGNAL_OBJECT_POST_CREATE.send(sender=new_object, creator=creator)
     return new_object
 
 
@@ -148,7 +153,7 @@ object = create_object
 def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
                   interval=None, start_delay=None, repeats=None,
                   persistent=None, autostart=True, report_to=None, desc=None,
-                  tags=None, attributes=None):
+                  tags=None, attributes=None, creator=None):
     """
     Create a new script. All scripts are a combination of a database
     object that communicates with the database, and an typeclass that
@@ -181,6 +186,8 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
         tags (list): List of tags or tuples (tag, category).
         attributes (list): List if tuples (key, value) or (key, value, category)
            (key, value, lockstring) or (key, value, lockstring, default_access).
+        creator (TypedObject): The creator of this object, if there is one. Used
+            for signaling.
 
     See evennia.scripts.manager for methods to manipulate existing
     scripts in the database.
@@ -234,7 +241,8 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
         # this happens in the case of having a repeating script with `repeats=1` and
         # `start_delay=False` - the script will run once and immediately stop before save is over.
         return None
-
+    if persistent:
+        SIGNAL_SCRIPT_POST_CREATE.send(sender=new_script, creator=creator)
     return new_script
 
 
@@ -347,7 +355,7 @@ message = create_message
 
 def create_channel(key, aliases=None, desc=None,
                    locks=None, keep_log=True,
-                   typeclass=None):
+                   typeclass=None, creator=None):
     """
     Create A communication Channel. A Channel serves as a central hub
     for distributing Msgs to groups of people without specifying the
@@ -366,6 +374,8 @@ def create_channel(key, aliases=None, desc=None,
         keep_log (bool): Log channel throughput.
         typeclass (str or class): The typeclass of the Channel (not
             often used).
+        creator (TypedObject): The creator of this object, if there is one. Used
+            for signaling.
 
     Returns:
         channel (Channel): A newly created channel.
@@ -387,6 +397,7 @@ def create_channel(key, aliases=None, desc=None,
     # at_first_save hook on the typeclass, where the _createdict can be
     # used.
     new_channel.save()
+    SIGNAL_CHANNEL_POST_CREATE.send(sender=new_channel, creator=creator)
     return new_channel
 
 
@@ -403,7 +414,8 @@ def create_account(key, email, password,
                    is_superuser=False,
                    locks=None, permissions=None,
                    tags=None, attributes=None,
-                   report_to=None):
+                   report_to=None, creator=None,
+                   ip=None):
     """
     This creates a new account.
 
@@ -424,6 +436,10 @@ def create_account(key, email, password,
              `(key, value [, category, [,lockstring [, default_pass]]])`
         report_to (Object): An object with a msg() method to report
             errors to. If not given, errors will be logged.
+        creator (TypedObject): The creator of this, if there is one. Used
+            for signaling. This can be a TypedObject or a Session.
+        ip (str): The IP address that created the account, if any.
+            used for signaling.
 
     Raises:
         ValueError: If `key` already exists in database.

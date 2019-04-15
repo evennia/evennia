@@ -61,7 +61,8 @@ limbo = search_object('Limbo')[0]
 
 # create a red button in limbo
 red_button = create_object(red_button.RedButton, key="Red button",
-                           location=limbo, aliases=["button"])
+                           location=limbo, aliases=["button"],
+                           creator=caller)
 
 # we take a look at what we created
 caller.msg("A %s was created." % red_button.key)
@@ -77,8 +78,8 @@ caller.msg("A %s was created." % red_button.key)
 # the Python variables we assign to must match the ones given in the
 # header for the system to be able to delete them afterwards during a
 # debugging run.
-table = create_object(DefaultObject, key="Table", location=limbo)
-chair = create_object(DefaultObject, key="Chair", location=limbo)
+table = create_object(DefaultObject, key="Table", location=limbo, creator=caller)
+chair = create_object(DefaultObject, key="Chair", location=limbo, creator=caller)
 
 string = "A %s and %s were created."
 if DEBUG:

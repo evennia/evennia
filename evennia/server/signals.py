@@ -17,12 +17,17 @@ This is used on top of hooks to make certain features easier to
 add to contribs without necessitating a full takeover of hooks
 that may be in high demand.
 
+Make ABSOLUTELY CERTAIN that no receiver causes a Traceback.
+ Signals are called synchronously and could prevent further
+ events in the chain from happening. Receivers also cannot
+ return anything.
+
 """
 from django.dispatch import Signal
 
 # The sender is the created Account. This is triggered at the very end of Account.create()
 # after the Account is created.
-SIGNAL_ACCOUNT_POST_CREATE = Signal(providing_args=['ip', ])
+SIGNAL_ACCOUNT_POST_CREATE = Signal(providing_args=['creator', 'ip', 'session'])
 
 # The Sender is the renamed Account. This is triggered by the username setter in AccountDB.
 SIGNAL_ACCOUNT_POST_RENAME = Signal(providing_args=['old_name', 'new_name'])
@@ -46,6 +51,10 @@ SIGNAL_ACCOUNT_POST_LOGOUT = Signal(providing_args=['session', ])
 # from the account, regardless of how many it started with or remain.
 SIGNAL_ACCOUNT_POST_DISCONNECT = Signal(providing_args=['session', ])
 
+# The sender is the new Object. This is triggered after it's already created.
+# Creator will probably be an Account or another Object, or None.
+SIGNAL_OBJECT_POST_CREATE = Signal(providing_args=['creator'])
+
 # The sender is the Object being puppeted. This is triggered after all puppeting hooks have
 # been called. The Object has already been puppeted by this point.
 SIGNAL_OBJECT_POST_PUPPET = Signal(providing_args=['session', 'account'])
@@ -53,6 +62,12 @@ SIGNAL_OBJECT_POST_PUPPET = Signal(providing_args=['session', 'account'])
 # The sender is the Object being released. This is triggered after all hooks are called.
 # The Object is no longer puppeted by this point.
 SIGNAL_OBJECT_POST_UNPUPPET = Signal(providing_args=['session', 'account'])
+
+# The sender is the new Channel. This is triggered after all hooks are called.
+SIGNAL_CHANNEL_POST_CREATE = Signal(providing_args=['creator'])
+
+# The sender is the new Script. This is triggered after all hooks are called.
+SIGNAL_SCRIPT_POST_CREATE = Signal(providing_args=['creator'])
 
 # The sender is the Typed Object being released. This isn't necessarily an Object;
 # it could be a script. It fires whenever the value of the Typed object's 'key'

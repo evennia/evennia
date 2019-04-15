@@ -29,7 +29,7 @@ from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, is_iter,
                                  variable_from_module)
-from evennia.server.signals import (SIGNAL_ACCOUNT_POST_CREATE, SIGNAL_OBJECT_POST_PUPPET,
+from evennia.server.signals import (SIGNAL_OBJECT_POST_PUPPET,
                                     SIGNAL_OBJECT_POST_UNPUPPET)
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
@@ -644,6 +644,9 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             typeclass (str, optional): Typeclass to use for new Account
             character_typeclass (str, optional): Typeclass to use for new char
                 when applicable.
+            creator (TypedObj or session): The enactor of this creation, if any.
+            session (ServerSession): The creating session, if any. Used for
+                signaling.
 
         Returns:
             account (Account): Account if successfully created; None if not
@@ -753,7 +756,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         # Update the throttle to indicate a new account was created from this IP
         if ip and not guest:
             CREATION_THROTTLE.update(ip, 'Too many accounts being created.')
-        SIGNAL_ACCOUNT_POST_CREATE.send(sender=account, ip=ip)
+        SIGNAL_ACCOUNT_POST_CREATE.send(sender=account, ip=ip, creator=kwargs.get('creator', None),
+                                        session=kwargs.get('session', None))
         return account, errors
 
     def delete(self, *args, **kwargs):

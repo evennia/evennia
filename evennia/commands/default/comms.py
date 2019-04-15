@@ -570,7 +570,7 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
         new_chan = create.create_channel(channame.strip(),
                                          aliases,
                                          description,
-                                         locks=lockstring)
+                                         locks=lockstring, creator=caller)
         new_chan.connect(caller)
         CHANNELHANDLER.update()
         self.msg("Created channel %s and connected to it." % new_chan.key)
@@ -924,7 +924,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         else:
             password = hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:11]
             try:
-                bot = create.create_account(botname, None, password, typeclass=botclass)
+                bot = create.create_account(botname, None, password, typeclass=botclass, creator=caller)
             except Exception as err:
                 self.msg("|rError, could not create the bot:|n '%s'." % err)
                 return
@@ -1090,6 +1090,6 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Account '%s' already exists and is not a bot." % botname)
                 return
         else:
-            bot = create.create_account(botname, None, None, typeclass=bots.RSSBot)
+            bot = create.create_account(botname, None, None, typeclass=bots.RSSBot, creator=caller)
         bot.start(ev_channel=channel, rss_url=url, rss_rate=10)
         self.msg("RSS reporter created. Fetching RSS.")

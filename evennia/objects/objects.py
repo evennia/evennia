@@ -21,6 +21,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
+from evennia.server.signals import SIGNAL_OBJECT_POST_CREATE
 from evennia.utils import create
 from evennia.utils import search
 from evennia.utils import logger
@@ -933,7 +934,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         return obj, errors
 
-    def copy(self, new_key=None):
+    def copy(self, new_key=None, creator=None):
         """
         Makes an identical copy of this object, identical except for a
         new dbref in the database. If you want to customize the copy
@@ -943,6 +944,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         Args:
             new_key (string): New key/name of copied object. If new_key is not
                 specified, the copy will be named <old_key>_copy by default.
+            creator (TypedObject or None): The enactor of this copy action.
         Returns:
             copy (Object): A copy of this object.
 
@@ -959,7 +961,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       if obj.key.startswith(key) and obj.key.lstrip(key).isdigit())
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
-        return ObjectDB.objects.copy_object(self, new_key=new_key)
+        new_obj = ObjectDB.objects.copy_object(self, new_key=new_key)
+        SIGNAL_OBJECT_POST_CREATE.send(sender=new_obj, creator=creator)
+        return new_obj
 
     def delete(self):
         """
