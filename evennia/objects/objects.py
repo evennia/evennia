@@ -933,7 +933,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         return obj, errors
 
-    def copy(self, new_key=None):
+    def copy(self, new_key=None, **kwargs):
         """
         Makes an identical copy of this object, identical except for a
         new dbref in the database. If you want to customize the copy
@@ -959,17 +959,17 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       if obj.key.startswith(key) and obj.key.lstrip(key).isdigit())
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
-        new_obj = ObjectDB.objects.copy_object(self, new_key=new_key)
-        new_obj.at_object_creation_copy(self)
+        new_obj = ObjectDB.objects.copy_object(self, new_key=new_key, **kwargs)
+        self.at_object_post_copy(new_obj, **kwargs)
         return new_obj
 
-    def at_object_creation_copy(self, source_obj):
+    def at_object_post_copy(self, new_obj, **kwargs):
         """
         Called by DefaultObject.copy(). Meant to be overloaded. In case there's extra data not covered by
         .copy(), this can be used to deal with it.
 
         Args:
-            source_obj (Object): The Object this was copied from.
+            new_obj (Object): The new Copy of this object.
 
         Returns:
             None
