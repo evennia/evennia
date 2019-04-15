@@ -8,8 +8,10 @@ import time
 import re
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
-from evennia.server.models import ServerConfig
+from evennia.server.models import ServerConfig, Host
+from evennia.accounts.models import LoginSource, Login
 from evennia.utils import evtable, logger, search, class_from_module
+from evennia import AccountDB, search_account
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -112,7 +114,7 @@ def list_bans(banlist):
     if not banlist:
         return "No active bans were found."
 
-    table = self.style_table("|wid", "|wname/ip", "|wdate", "|wreason")
+    table = evtable.EvTable("|wid", "|wname/ip", "|wdate", "|wreason")
     for inum, ban in enumerate(banlist):
         table.add_row(str(inum + 1),
                       ban[0] and ban[0] or ban[1],
@@ -543,3 +545,77 @@ class CmdForce(COMMAND_DEFAULT_CLASS):
             return
         targ.execute_cmd(self.rhs)
         self.caller.msg("You have forced %s to: %s" % (targ, self.rhs))
+
+
+class CmdIp(COMMAND_DEFAULT_CLASS):
+    """
+    Checks for multi-playing (same IP controlling multiple accounts) and peruses
+    login records for Accounts in the system.
+
+    Usage:
+        @ip <account>
+        @ip/ip <ip address>
+        @ip/list
+
+    The first usage will show all Accounts that use the same IP addresses as the
+    given one.
+
+    The /ip usage will show all Accounts that use a given IP address.
+
+    The /list usage will show a table of all Accounts and the IP addresses they
+    use.
+    """
+    key = "@ip"
+    locks = "cmd:pperm(Admin)"
+    help_category = "Admin"
+    switch_options = ('ip', 'list')
+
+    def func(self):
+        if 'list' in self.switches:
+            return self.switch_list()
+
+        if 'ip' in self.switches:
+            if not self.args:
+                self.msg('Usage: @ip/ip <address>')
+                return
+            host_found = Host.objects.filter(ip=self.args).first()
+
+            if not host_found:
+                self.msg("Nobody currently using that IP Address.")
+                return
+
+            accounts = [source.account for source in host_found.account_logins.all()]
+            if not accounts:
+                self.msg("Nobody currently using that IP Address.")
+                return
+
+        else:
+            if not self.args:
+                self.msg('Usage: @ip <account>')
+                return
+            account_found = search_account(self.args)
+            if not account_found:
+                self.msg("No matching accounts found.")
+                return
+            if len(account_found) > 1:
+                matches = ', '.join([a.key for a in account_found])
+                self.msg(f"Results matched: {matches}. Please be more specific!")
+                return
+            account_found = account_found[0]
+            hosts = [source.host for source in account_found.login_records.all()]
+            accounts = list()
+            for host in hosts:
+                accounts += [source.account for source in host.account_logins.all()]
+
+        table = self.style_table('DB', 'Name', 'Address', 'Date')
+        for record in Login.objects.filter(source__account__in=accounts).order_by('date'):
+            table.add_row(record.source.account.dbref, record.source.account.username,
+                          record.source.host.ip, record.date)
+        self.msg(str(table))
+
+    def switch_list(self):
+        table = self.style_table('DB', 'Name', 'Addresses')
+        for account in AccountDB.objects.order_by('username'):
+            addresses = [source.host.ip for source in account.login_records.all()]
+            table.add_row(account.dbref, account.key, ', '.join(str(l) for l in addresses))
+        self.msg(str(table))

@@ -24,7 +24,8 @@ import time
 from codecs import lookup as codecs_lookup
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
-from evennia.utils import utils, create, logger, search, evtable
+from evennia.utils import utils, create, logger, search
+from evennia.accounts.models import Login
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -910,4 +911,7 @@ class CmdLogins(COMMAND_DEFAULT_CLASS):
     help_category = 'General'
 
     def func(self):
-        pass
+        table = self.style_table('ID', 'IP', 'Date')
+        for record in Login.objects.filter(source__account=self.account).order_by('date'):
+            table.add_row(record.id, record.source.host.ip, record.date)
+        self.msg(str(table))

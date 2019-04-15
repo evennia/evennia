@@ -231,6 +231,11 @@ MAX_CHAR_LIMIT_WARNING = ("You entered a string that was too long. "
 # security problem -turn this off in a production game!
 IN_GAME_ERRORS = True
 
+# This tracks the maximum amount of login records per Account, per
+# IP address. Older ones will be deleted as new ones are created.
+MAX_ACCOUNT_LOGINS_PER_IP = 20
+
+
 ######################################################################
 # Evennia Database config
 ######################################################################

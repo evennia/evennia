@@ -12,11 +12,13 @@ instead for most things).
 """
 import re
 import time
+import datetime
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
+from django.dispatch import receiver
 from evennia.typeclasses.models import TypeclassBase
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
@@ -30,7 +32,8 @@ from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, is_iter,
                                  variable_from_module)
 from evennia.server.signals import (SIGNAL_ACCOUNT_POST_CREATE, SIGNAL_OBJECT_POST_PUPPET,
-                                    SIGNAL_OBJECT_POST_UNPUPPET)
+                                    SIGNAL_OBJECT_POST_UNPUPPET, SIGNAL_ACCOUNT_POST_CONNECT)
+from evennia.server.models import Host
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -514,10 +517,6 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                     account.at_failed_login(session)
 
             return None, errors
-
-        # Record Host and login.
-        host, created = Host.objects.get_or_create(ip=ip)
-        account.login_records.create(source=host, date=time.time())
 
         # Account successfully authenticated
         logger.log_sec('Authentication Success: %s (IP: %s).' % (account, ip))
@@ -1403,6 +1402,18 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
                         result.append("\n - %s [%s]" % (char.key, ", ".join(char.permissions.all())))
             look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
             return look_string
+
+
+@receiver(SIGNAL_ACCOUNT_POST_CONNECT)
+def _record_login(sender, **kwargs):
+    session = kwargs.get('session')
+    host_record, created = Host.objects.get_or_create(ip=session.address)
+    login_source, created2 = sender.login_records.get_or_create(host=host_record)
+    new_login = login_source.logins.create(date=datetime.datetime.utcnow())
+    max_logins = settings.MAX_ACCOUNT_LOGINS_PER_IP
+    if login_source.logins.count() > max_logins:
+        keep_logins = login_source.logins.order_by('-date')[:max_logins]
+        login_source.logins.exclude(id__in=keep_logins).delete()
 
 
 class DefaultGuest(DefaultAccount):

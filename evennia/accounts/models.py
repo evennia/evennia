@@ -172,10 +172,20 @@ class AccountDB(TypedObject, AbstractUser):
     uid = property(__uid_get, __uid_set, __uid_del)
 
 
-class Login(models.Model):
+class LoginSource(models.Model):
     """
-    Model for tracking Account logins.
+    Model for tracking Account logins by their host. This is for normalization.
     """
     account = models.ForeignKey(AccountDB, related_name='login_records', on_delete=models.CASCADE)
-    source = models.ForeignKey('server.Host', related_name='account_logins', on_delete=models.CASCADE)
+    host = models.ForeignKey('server.Host', related_name='account_logins', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('account', 'host', ), )
+
+
+class Login(models.Model):
+    """
+    Each individual Login has a source and a date. Pretty simple.
+    """
+    source = models.ForeignKey(LoginSource, related_name='logins', on_delete=models.CASCADE)
     date = models.DateTimeField(null=False, db_index=True)
