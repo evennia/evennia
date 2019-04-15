@@ -29,7 +29,7 @@ from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import (lazy_property, to_str,
                                  make_iter, is_iter,
                                  variable_from_module)
-from evennia.server.signals import (SIGNAL_OBJECT_POST_PUPPET,
+from evennia.server.signals import (SIGNAL_OBJECT_POST_PUPPET, SIGNAL_ACCOUNT_POST_CREATE,
                                     SIGNAL_OBJECT_POST_UNPUPPET)
 from evennia.typeclasses.attributes import NickHandler
 from evennia.scripts.scripthandler import ScriptHandler
