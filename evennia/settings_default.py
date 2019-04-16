@@ -502,16 +502,16 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 # ("Description", 'Option Class name in evennia.OPTIONS_CLASSES', 'Default Value')
 
 OPTIONS_ACCOUNT_DEFAULT = {
-    'border_color': ('Headers, footers, table borders, etc.', 'Color', 'M'),
-    'header_star_color': ('* inside Header lines.', 'Color', 'm'),
+    'border_color': ('Headers, footers, table borders, etc.', 'Color', 'n'),
+    'header_star_color': ('* inside Header lines.', 'Color', 'n'),
     'header_text_color': ('Text inside Header lines.', 'Color', 'w'),
-    'footer_text_color': ('Text inside Footer Lines.', 'Color', 'w'),
-    'column_names_color': ('Table column header text.', 'Color', 'G'),
+    'footer_text_color': ('Text inside Footer Lines.', 'Color', 'n'),
+    'column_names_color': ('Table column header text.', 'Color', 'w'),
     'header_fill': ('Fill for Header lines.', 'Text', '='),
     'separator_fill': ('Fill for Separator Lines.', 'Text', '-'),
     'footer_fill': ('Fill for Footer Lines.', 'Text', '='),
-    'help_category_color': ('Help category names.', 'Color', 'g'),
-    'help_entry_color': ('Help entry names.', 'Color', 'c'),
+    'help_category_color': ('Help category names.', 'Color', 'n'),
+    'help_entry_color': ('Help entry names.', 'Color', 'n'),
     'timezone': ('Timezone for dates. @tz for a list.', 'Timezone', 'UTC')
 }
 # Modules holding Option classes, responsible for serializing the option and
