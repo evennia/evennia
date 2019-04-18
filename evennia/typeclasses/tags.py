@@ -300,17 +300,27 @@ class TagHandler(object):
             return ret if ret else [default] if default is not None else []
         return ret[0] if len(ret) == 1 else (ret if ret else default)
 
-    def remove(self, key, category=None):
+    def remove(self, key=None, category=None):
         """
-        Remove a tag from the handler based ond key and category.
+        Remove a tag from the handler based ond key and/or category.
 
         Args:
-            key (str or list): The tag or tags to retrieve.
+            key (str or list, optional): The tag or tags to retrieve.
             category (str, optional): The Tag category to limit the
                 request to. Note that `None` is the valid, default
-                category.
+                category
+        Raises:
+            RuntimeError: If neither key nor category is specifed.
 
         """
+        if key is None and category is None:
+            raise RuntimeError("TagHandler.remove requires either key or category. "
+                               "Use TagHandler.clear to remove all tags.")
+        if not key:
+            # only category
+            self.clear(category=category)
+            return
+
         for key in make_iter(key):
             if not (key or key.strip()):  # we don't allow empty tags
                 continue
@@ -320,8 +330,10 @@ class TagHandler(object):
             # This does not delete the tag object itself. Maybe it should do
             # that when no objects reference the tag anymore (but how to check)?
             # For now, tags are never deleted, only their connection to objects.
-            tagobj = getattr(self.obj, self._m2m_fieldname).filter(db_key=tagstr, db_category=category,
-                                                                   db_model=self._model, db_tagtype=self._tagtype)
+            tagobj = getattr(self.obj, self._m2m_fieldname).filter(
+                db_key=tagstr, db_category=category,
+                db_model=self._model,
+                db_tagtype=self._tagtype)
             if tagobj:
                 getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])
             self._delcache(key, category)
