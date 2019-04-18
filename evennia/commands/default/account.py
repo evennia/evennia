@@ -423,10 +423,10 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                 account = session.get_account()
                 puppet = session.get_puppet()
                 location = puppet.location.key if puppet and puppet.location else "None"
-                table.add_row(utils.crop(account.name, width=25),
+                table.add_row(utils.crop(account.get_display_name(account), width=25),
                               utils.time_format(delta_conn, 0),
                               utils.time_format(delta_cmd, 1),
-                              utils.crop(puppet.key if puppet else "None", width=25),
+                              utils.crop(puppet.get_display_name(account) if puppet else "None", width=25),
                               utils.crop(location, width=25),
                               session.cmd_total,
                               session.protocol_key,
@@ -440,7 +440,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
                 account = session.get_account()
-                table.add_row(utils.crop(account.key, width=25),
+                table.add_row(utils.crop(account.get_display_name(account), width=25),
                               utils.time_format(delta_conn, 0),
                               utils.time_format(delta_cmd, 1))
         is_one = naccounts == 1
