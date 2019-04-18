@@ -309,13 +309,11 @@ class TagHandler(object):
             category (str, optional): The Tag category to limit the
                 request to. Note that `None` is the valid, default
                 category
-        Raises:
-            RuntimeError: If neither key nor category is specifed.
+        Notes:
+            If neither key nor category is specified, this acts
+            as .clear().
 
         """
-        if key is None and category is None:
-            raise RuntimeError("TagHandler.remove requires either key or category. "
-                               "Use TagHandler.clear to remove all tags.")
         if not key:
             # only category
             self.clear(category=category)

@@ -601,14 +601,15 @@ class AttributeHandler(object):
             # Add new objects to m2m field all at once
             getattr(self.obj, self._m2m_fieldname).add(*new_attrobjs)
 
-    def remove(self, key, raise_exception=False, category=None,
+    def remove(self, key=None, raise_exception=False, category=None,
                accessing_obj=None, default_access=True):
         """
         Remove attribute or a list of attributes from object.
 
         Args:
-            key (str or list): An Attribute key to remove or a list of keys. If
-                multiple keys, they must all be of the same `category`.
+            key (str or list, optional): An Attribute key to remove or a list of keys. If
+                multiple keys, they must all be of the same `category`. If None and
+                category is not given, remove all Attributes.
             raise_exception (bool, optional): If set, not finding the
                 Attribute to delete will raise an exception instead of
                 just quietly failing.
@@ -625,7 +626,16 @@ class AttributeHandler(object):
             AttributeError: If `raise_exception` is set and no matching Attribute
                 was found matching `key`.
 
+        Notes:
+            If neither key nor category is given, this acts as clear().
+
         """
+
+        if key is None:
+            self.clear(category=category, accessing_obj=accessing_obj,
+                       default_access=default_access)
+            return
+
         category = category.strip().lower() if category is not None else None
 
         for keystr in make_iter(key):
