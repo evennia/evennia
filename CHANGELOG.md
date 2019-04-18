@@ -100,6 +100,8 @@ Web/Django standard initiative (@strikaco)
   + `validate_username`: Mechanism for validating a username based on predefined Django validators.
   + `validate_password`: Mechanism for validating a password based on predefined Django validators.
   + `set_password`: Apply password to account, using validation checks.
+- `AttributeHandler.remove` and `TagHandler.remove` can now be used to delete by-category. If neither
+     key nor category is given, they now work the same as .clear().
 
 ### Server
 
