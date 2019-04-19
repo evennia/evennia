@@ -78,7 +78,6 @@ class TestGametime(TestCase):
         self.assertAlmostEqual(gametime.real_seconds_until(day=17), 501120)
         self.assertAlmostEqual(gametime.real_seconds_until(month=1), 4752000)
 
-    @unittest.expectedFailure
     def test_real_seconds_until_leap_year(self):
         self.assertAlmostEqual(gametime.real_seconds_until(month=3), 5788800)
 
