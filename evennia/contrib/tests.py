@@ -222,6 +222,8 @@ class ForceUTCDatetime(datetime.datetime):
 
 
 @patch('evennia.contrib.extended_room.datetime.datetime', ForceUTCDatetime)
+# mock gametime to return April 9, 2064, at 21:06 (spring evening)
+@patch('evennia.utils.gametime.gametime', new=Mock(return_value=2975000766))
 class TestExtendedRoom(CommandTest):
     room_typeclass = extended_room.ExtendedRoom
     DETAIL_DESC = "A test detail."
@@ -236,8 +238,6 @@ class TestExtendedRoom(CommandTest):
         self.room1.db.details = {'testdetail': self.DETAIL_DESC}
         self.room1.db.spring_desc = self.SPRING_DESC
         self.room1.db.desc = self.OLD_DESC
-        # mock gametime to return April 9, 2064, at 21:06 (spring evening)
-        gametime.gametime = Mock(return_value=2975000766)
 
     def test_return_appearance(self):
         # get the appearance of a non-extended room for contrast purposes
@@ -607,11 +607,8 @@ def _testcallback():
     pass
 
 
+@patch('evennia.utils.gametime.gametime', new=Mock(return_value=2975000898.46))
 class TestCustomGameTime(EvenniaTest):
-    def setUp(self):
-        super().setUp()
-        gametime.gametime = Mock(return_value=2975000898.46)  # does not seem to work
-
     def tearDown(self):
         if hasattr(self, "timescript"):
             self.timescript.stop()
