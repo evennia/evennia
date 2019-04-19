@@ -10,21 +10,28 @@ from django.test import TestCase
 
 from evennia.utils import gametime
 
-time.time = Mock(return_value=1555595378.0)
-
 
 class TestGametime(TestCase):
     def setUp(self) -> None:
+        self.time = time.time
+        self._SERVER_EPOCH = gametime._SERVER_EPOCH
+        time.time = Mock(return_value=1555595378.0)
+        gametime._SERVER_EPOCH = None
         gametime.SERVER_RUNTIME = 600.0
         gametime.SERVER_START_TIME = time.time() - 300
         gametime.SERVER_RUNTIME_LAST_UPDATED = time.time() - 30
         gametime.TIMEFACTOR = 5.0
+        self.timescripts = []
 
     def tearDown(self) -> None:
+        time.time = self.time
+        gametime._SERVER_EPOCH = self._SERVER_EPOCH
         gametime.SERVER_RUNTIME_LAST_UPDATED = 0.0
         gametime.SERVER_RUNTIME = 0.0
         gametime.SERVER_START_TIME = 0.0
         gametime.TIMEFACTOR = settings.TIME_FACTOR
+        for script in self.timescripts:
+            script.stop()
 
     def test_runtime(self):
         self.assertAlmostEqual(gametime.runtime(), 630.0)
@@ -73,15 +80,15 @@ class TestGametime(TestCase):
     def test_schedule(self):
         callback = Mock()
         script = gametime.schedule(callback, day=19)
+        self.timescripts.append(script)
         self.assertIsInstance(script, gametime.TimeScript)
         self.assertAlmostEqual(script.interval, 17280)
         self.assertEqual(script.repeats, 1)
-        script.stop()
 
     def test_repeat_schedule(self):
         callback = Mock()
         script = gametime.schedule(callback, repeat=True, min=32)
+        self.timescripts.append(script)
         self.assertIsInstance(script, gametime.TimeScript)
         self.assertAlmostEqual(script.interval, 12)
         self.assertEqual(script.repeats, -1)
-        script.stop()
