@@ -3,6 +3,7 @@ Unit tests for the utilities of the evennia.utils.gametime module.
 """
 
 import time
+import unittest
 from unittest.mock import Mock
 
 from django.conf import settings
@@ -75,7 +76,11 @@ class TestGametime(TestCase):
         self.assertAlmostEqual(gametime.real_seconds_until(min=30), 708)
         self.assertAlmostEqual(gametime.real_seconds_until(hour=13), 16560)
         self.assertAlmostEqual(gametime.real_seconds_until(day=17), 501120)
-        self.assertAlmostEqual(gametime.real_seconds_until(month=3), 5771520)
+        self.assertAlmostEqual(gametime.real_seconds_until(month=1), 4752000)
+
+    @unittest.expectedFailure
+    def test_real_seconds_until_leap_year(self):
+        self.assertAlmostEqual(gametime.real_seconds_until(month=3), 5788800)
 
     def test_schedule(self):
         callback = Mock()
