@@ -15,10 +15,10 @@ Update to Python 3
 - Add new `@force` command to have another object perform a command.
 - Add the Portal uptime to the `@time` command.
 - Make the `@link` command first make a local search before a global search.
-- Have the default Unloggedin-look command look for optional `connection_screen()` callable in 
-  `mygame/server/conf/connection_screen.py`. This allows for more flexible welcome screens 
-  that are calculated on the fly. 
-- `@py` command now defaults to escaping html tags in its output when viewing in the webclient. 
+- Have the default Unloggedin-look command look for optional `connection_screen()` callable in
+  `mygame/server/conf/connection_screen.py`. This allows for more flexible welcome screens
+  that are calculated on the fly.
+- `@py` command now defaults to escaping html tags in its output when viewing in the webclient.
   Use new `/clientraw` switch to get old behavior (issue #1369).
 
 ### Web
@@ -73,7 +73,7 @@ Web/Django standard initiative (@strikaco)
 
 ### Prototypes
 
-- `evennia.prototypes.save_prototype` now takes the prototype as a normal 
+- `evennia.prototypes.save_prototype` now takes the prototype as a normal
   argument (`prototype`) instead of having to give it as `**prototype`.
 - `evennia.prototypes.search_prototype` has a new kwarg `require_single=False` that
   raises a KeyError exception if query gave 0 or >1 results.
@@ -106,7 +106,7 @@ Web/Django standard initiative (@strikaco)
 ### Server
 
 - Convert ServerConf model to store its values as a Picklefield (same as Attributes) instead of using a custom solution.
-- OOB: Add support for MSDP LIST, REPORT, UNREPORT commands (re-mapped to `msdp_list`, 
+- OOB: Add support for MSDP LIST, REPORT, UNREPORT commands (re-mapped to `msdp_list`,
   `msdp_report`, `msdp_unreport` inlinefuncs_)
 - Added `evennia.ANSIString` to flat API.
 - Server/Portal log files now cycle to names on the form `server_.log_19_03_08_` instead of `server.log___19.3.8`, retaining
@@ -116,6 +116,9 @@ Web/Django standard initiative (@strikaco)
 
 - `evennia` launcher now fully handles all django-admin commands, like running tests in parallel.
 - `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
+- `evennia.utils.interactive` decorator can now allow you to use yield(secs) to pause operation
+  in any function, not just in Command.func. Likewise, response = yield(question) will work
+  if the decorated function has an argument or kwarg `caller`.
 - Added many more unit tests.
 - Swap argument order of `evennia.set_trace` to `set_trace(term_size=(140, 40), debugger='auto')`
   since the size is more likely to be changed on the command line.
@@ -134,7 +137,7 @@ Web/Django standard initiative (@strikaco)
 
 ### Contribs
 
-- The `extended_room` contrib saw some backwards-incompatible refactoring: 
+- The `extended_room` contrib saw some backwards-incompatible refactoring:
   + All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
      it's `CmdExtendedRoomLook` etc.
   + The `detail` command was broken out of the `desc` command and is now a new, stand-alone command
@@ -142,7 +145,7 @@ Web/Django standard initiative (@strikaco)
      command works in the tutorial-world.
   + The `detail` command now also supports deleting details (like the tutorial-world version).
   + The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
-     to install the extended-room contrib. 
+     to install the extended-room contrib.
 - Reworked `menu_login` contrib to use latest EvMenu standards. Now also supports guest logins.
 - Mail contrib was refactored to have optional Command classes `CmdMail` for OOC+IC mail (added
     to the CharacterCmdSet and `CmdMailCharacter` for IC-only mailing between chars (added to CharacterCmdSet)
@@ -260,7 +263,7 @@ Web/Django standard initiative (@strikaco)
  - `tb_items` - Extends `tb_equip` with item use with conditions/status effects.
  - `tb_magic` - Extends `tb_equip` with spellcasting.
  - `tb_range` - Adds system for abstract positioning and movement.
- - The `extended_room` contrib saw some backwards-incompatible refactoring: 
+ - The `extended_room` contrib saw some backwards-incompatible refactoring:
    - All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
      it's `CmdExtendedRoomLook` etc.
    - The `detail` command was broken out of the `desc` command and is now a new, stand-alone command
@@ -268,11 +271,11 @@ Web/Django standard initiative (@strikaco)
      command works in the tutorial-world.
    - The `detail` command now also supports deleting details (like the tutorial-world version).
    - The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
-     to install the extended-room contrib. 
+     to install the extended-room contrib.
 - Updates and some cleanup of existing contribs.
 
 
-### Internationalization 
+### Internationalization
 
 - Polish translation by user ogotai
 

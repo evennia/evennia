@@ -16,10 +16,11 @@ import math
 import re
 import textwrap
 import random
-import pickle
+import inspect
+from twisted.internet.task import deferLater
 from os.path import join as osjoin
 from importlib import import_module
-from importlib.util import find_spec, module_from_spec
+from importlib.util import find_spec
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
 from twisted.internet import threads, reactor, task
@@ -1981,3 +1982,67 @@ def get_all_typeclasses(parent=None):
         typeclasses = {name: typeclass for name, typeclass in typeclasses.items()
                        if inherits_from(typeclass, parent)}
     return typeclasses
+
+
+def interactive(func):
+    """
+    Decorator to make a method pausable with yield(seconds)
+    and able to ask for user-input with response=yield(question).
+    For the question-asking to work, 'caller' must the name
+    of an argument or kwarg to the decorated function.
+
+    Note that this turns the method into a generator.
+
+    Example usage:
+
+    @interactive
+    def myfunc(caller):
+        caller.msg("This is a test")
+        # wait five seconds
+        yield(5)
+        # ask user (caller) a question
+        response = yield("Do you want to continue waiting?")
+        if response == "yes":
+            yield(5)
+        else:
+            # ...
+
+    """
+    from evennia.utils.evmenu import get_input
+    def _process_input(caller, prompt, result, generator):
+        deferLater(reactor, 0, _iterate, generator, caller, response=result)
+        return False
+
+    def _iterate(generator, caller=None, response=None):
+        try:
+            if response is None:
+                value = next(generator)
+            else:
+                value = generator.send(response)
+        except StopIteration:
+            pass
+        else:
+            if isinstance(value, (int, float)):
+                delay(value, _iterate, generator, caller=caller)
+            elif isinstance(value, str):
+                if not caller:
+                    raise ValueError("To retrieve input from a @pausable method, that method "
+                                     "must be called with a 'caller' argument)")
+                get_input(caller, value, _process_input, generator=generator)
+            else:
+                raise ValueError("yield(val) in a @pausable method must have an int/float as arg.")
+
+    def decorator(*args, **kwargs):
+        argnames = inspect.getfullargspec(func).args
+        caller = None
+        if 'caller' in argnames:
+            # we assume this is an object
+            caller = args[argnames.index('caller')]
+
+        ret = func(*args, **kwargs)
+        if isinstance(ret, types.GeneratorType):
+            _iterate(ret, caller)
+        else:
+            return ret
+
+    return decorator
