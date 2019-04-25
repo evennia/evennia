@@ -7,7 +7,7 @@
 # Usage:
 #    cd to a folder where you want your game data to be (or where it already is).
 #
-#	docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4005:4005 -v $PWD:/usr/src/game evennia/evennia
+#        docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 -v $PWD:/usr/src/game evennia/evennia
 #
 #    (If your OS does not support $PWD, replace it with the full path to your current
 #    folder).
@@ -16,8 +16,8 @@
 #    can install and run the game normally. Use Ctrl-D to exit the evennia docker container.
 #
 #    You can also start evennia directly by passing arguments to the folder:
-#  
-#       docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4005:4005 -v $PWD:/usr/src/game evennia/evennia evennia start -l
+#
+#        docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 -v $PWD:/usr/src/game evennia/evennia evennia start -l
 #
 #    This will start Evennia running as the core process of the container. Note that you *must* use -l
 #    or one of the foreground modes (like evennia ipstart) since otherwise the container will immediately
@@ -69,4 +69,4 @@ ENV PS1 "evennia|docker \w $ "
 ENTRYPOINT ["/usr/src/evennia/bin/unix/evennia-docker-start.sh"]
 
 # expose the telnet, webserver and websocket client ports
-EXPOSE 4000 4001 4005
+EXPOSE 4000 4001 4002
