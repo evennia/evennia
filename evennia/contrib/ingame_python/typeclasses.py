@@ -179,6 +179,11 @@ class EventCharacter(DefaultCharacter):
         "unpuppeted": (["character"], CHARACTER_UNPUPPETED),
     }
 
+    @lazy_property
+    def callbacks(self):
+        """Return the CallbackHandler."""
+        return CallbackHandler(self)
+
     def announce_move_from(self, destination, msg=None, mapping=None):
         """
         Called if the move is to be announced. This is
@@ -602,6 +607,11 @@ class EventExit(DefaultExit):
         "traverse": (["character", "exit", "origin", "destination"], EXIT_TRAVERSE),
     }
 
+    @lazy_property
+    def callbacks(self):
+        """Return the CallbackHandler."""
+        return CallbackHandler(self)
+
     def at_traverse(self, traversing_object, target_location):
         """
         This hook is responsible for handling the actual traversal,
@@ -861,6 +871,11 @@ class EventRoom(DefaultRoom):
         "time": (["room"], ROOM_TIME, None, time_event),
         "unpuppeted_in": (["character", "room"], ROOM_UNPUPPETED_IN),
     }
+
+    @lazy_property
+    def callbacks(self):
+        """Return the CallbackHandler."""
+        return CallbackHandler(self)
 
     def at_object_delete(self):
         """
