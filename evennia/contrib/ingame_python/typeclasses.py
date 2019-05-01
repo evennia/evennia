@@ -1,8 +1,9 @@
 """
 Typeclasses for the in-game Python system.
 
-To use them, one should inherit from these classes (EventObject,
-EventRoom, EventCharacter and EventExit).
+To use them, change your base typeclasses to inherit from the classes in this
+module (EventObject, EventRoom, EventCharacter and EventExit) instead of the
+default ones in evennia core.
 
 """
 
