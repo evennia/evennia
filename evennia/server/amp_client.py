@@ -198,44 +198,47 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         operation = kwargs.pop("operation", "")
         server_sessionhandler = self.factory.server.sessions
 
-        if operation == amp.PCONN:  # portal_session_connect
-            # create a new session and sync it
-            server_sessionhandler.portal_connect(kwargs.get("sessiondata"))
+        try:
+            if operation == amp.PCONN:  # portal_session_connect
+                # create a new session and sync it
+                server_sessionhandler.portal_connect(kwargs.get("sessiondata"))
 
-        elif operation == amp.PCONNSYNC:  # portal_session_sync
-            server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
+            elif operation == amp.PCONNSYNC:  # portal_session_sync
+                server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
 
-        elif operation == amp.PDISCONN:  # portal_session_disconnect
-            # session closed from portal sid
-            session = server_sessionhandler.get(sessid)
-            if session:
-                server_sessionhandler.portal_disconnect(session)
+            elif operation == amp.PDISCONN:  # portal_session_disconnect
+                # session closed from portal sid
+                session = server_sessionhandler.get(sessid)
+                if session:
+                    server_sessionhandler.portal_disconnect(session)
 
-        elif operation == amp.PDISCONNALL:  # portal_disconnect_all
-            # portal orders all sessions to close
-            server_sessionhandler.portal_disconnect_all()
+            elif operation == amp.PDISCONNALL:  # portal_disconnect_all
+                # portal orders all sessions to close
+                server_sessionhandler.portal_disconnect_all()
 
-        elif operation == amp.PSYNC:  # portal_session_sync
-            # force a resync of sessions from the portal side. This happens on
-            # first server-connect.
-            server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
-            self.factory.server.run_init_hooks(server_restart_mode)
-            server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
+            elif operation == amp.PSYNC:  # portal_session_sync
+                # force a resync of sessions from the portal side. This happens on
+                # first server-connect.
+                server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
+                self.factory.server.run_init_hooks(server_restart_mode)
+                server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
 
-        elif operation == amp.SRELOAD:  # server reload
-            # shut down in reload mode
-            server_sessionhandler.all_sessions_portal_sync()
-            server_sessionhandler.server.shutdown(mode='reload')
+            elif operation == amp.SRELOAD:  # server reload
+                # shut down in reload mode
+                server_sessionhandler.all_sessions_portal_sync()
+                server_sessionhandler.server.shutdown(mode='reload')
 
-        elif operation == amp.SRESET:
-            # shut down in reset mode
-            server_sessionhandler.all_sessions_portal_sync()
-            server_sessionhandler.server.shutdown(mode='reset')
+            elif operation == amp.SRESET:
+                # shut down in reset mode
+                server_sessionhandler.all_sessions_portal_sync()
+                server_sessionhandler.server.shutdown(mode='reset')
 
-        elif operation == amp.SSHUTD:  # server shutdown
-            # shutdown in stop mode
-            server_sessionhandler.server.shutdown(mode='shutdown')
+            elif operation == amp.SSHUTD:  # server shutdown
+                # shutdown in stop mode
+                server_sessionhandler.server.shutdown(mode='shutdown')
 
-        else:
-            raise Exception("operation %(op)s not recognized." % {'op': operation})
+            else:
+                raise Exception("operation %(op)s not recognized." % {'op': operation})
+        except Exception:
+            logger.log_trace()
         return {}
