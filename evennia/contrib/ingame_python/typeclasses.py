@@ -1,7 +1,7 @@
 """
 Typeclasses for the in-game Python system.
 
-To use thm, one should inherit from these classes (EventObject,
+To use them, one should inherit from these classes (EventObject,
 EventRoom, EventCharacter and EventExit).
 
 """
