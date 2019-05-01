@@ -241,4 +241,5 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
 
         else:
             raise Exception("operation %(op)s not recognized." % {'op': operation})
+
         return {}

@@ -1169,7 +1169,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         """
         # if we have saved protocol flags on ourselves, load them here.
-        protocol_flags = self.attributes.get("_saved_protocol_flags", None)
+        protocol_flags = self.attributes.get("_saved_protocol_flags", {})
         if session and protocol_flags:
             session.update_flags(**protocol_flags)
 
