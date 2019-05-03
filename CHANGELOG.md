@@ -150,6 +150,9 @@ Web/Django standard initiative (@strikaco)
 - Mail contrib was refactored to have optional Command classes `CmdMail` for OOC+IC mail (added
     to the CharacterCmdSet and `CmdMailCharacter` for IC-only mailing between chars (added to CharacterCmdSet)
 
+### Translations
+
+- Simplified chinese, courtesy of user MaxAlex.
 
 
 ## Evennia 0.8 (2018)
