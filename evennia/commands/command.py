@@ -483,7 +483,6 @@ class Command(with_metaclass(CommandMeta, object)):
 
         h_line_char = kwargs.pop('header_line_char', '~')
         header_line_char = ANSIString(f'|{border_color}{h_line_char}|n')
-
         c_char = kwargs.pop('corner_char', '+')
         corner_char = ANSIString(f'|{border_color}{c_char}|n')
 

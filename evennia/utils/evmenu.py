@@ -318,6 +318,9 @@ class EvMenu(object):
 
     """
 
+    # convenient helpers for easy overloading
+    node_border_char = "_"
+
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
                  auto_quit=True, auto_look=True, auto_help=True,
@@ -1047,6 +1050,7 @@ class EvMenu(object):
             node (str): The formatted node to display.
 
         """
+        sep = self.node_border_char
 
         if self._session:
             screen_width = self._session.protocol_flags.get(
@@ -1057,8 +1061,8 @@ class EvMenu(object):
         nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
         options_width_max = max(m_len(line) for line in optionstext.split("\n"))
         total_width = min(screen_width, max(options_width_max, nodetext_width_max))
-        separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
-        separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
+        separator1 = sep * total_width + "\n\n" if nodetext_width_max else ""
+        separator2 = "\n" + sep * total_width + "\n\n" if total_width else ""
         return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
 
 
@@ -1079,10 +1083,12 @@ def list_node(option_generator, select=None, pagesize=10):
             that is called as option_generator(caller) to produce such a list.
         select (callable or str, optional): Node to redirect a selection to. Its `**kwargs` will
             contain the `available_choices` list and `selection` will hold one of the elements in
-            that list.  If a callable, it will be called as select(caller, menuchoice) where
-            menuchoice is the chosen option as a string. Should return the target node to goto after
-            this selection (or None to repeat the list-node). Note that if this is not given, the
-            decorated node must itself provide a way to continue from the node!
+            that list.  If a callable, it will be called as
+                select(caller, menuchoice, **kwargs) where menuchoice is the chosen option as a
+            string and `available_choices` is a kwarg mapping the option keys to the choices
+            offered by the option_generator. The callable whould return the name of the target node
+            to goto after this selection (or None to repeat the list-node). Note that if this is not
+            given, the decorated node must itself provide a way to continue from the node!
         pagesize (int): How many options to show per page.
 
     Example:

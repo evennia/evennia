@@ -415,7 +415,7 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         else:
             show_session_data = account.check_permstring("Developer") or account.check_permstring("Admins")
 
-        naccounts = (SESSIONS.account_count())
+        naccounts = SESSIONS.account_count()
         if show_session_data:
             # privileged info
             table = self.style_table("|wAccount Name",

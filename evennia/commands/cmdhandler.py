@@ -647,6 +647,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 args = raw_string
                 unformatted_raw_string = "%s%s" % (cmdname, args)
                 cmdset = None
+                raw_cmdname = cmdname
                 # session = session
                 # account = account
 

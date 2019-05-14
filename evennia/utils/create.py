@@ -103,7 +103,6 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     tags = make_iter(tags) if tags is not None else None
     attributes = make_iter(attributes) if attributes is not None else None
 
-
     if isinstance(typeclass, str):
         # a path is given. Load the actual typeclass
         typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
@@ -119,8 +118,9 @@ def create_object(typeclass=None, key=None, location=None, home=None,
         try:
             home = dbid_to_obj(settings.DEFAULT_HOME, _ObjectDB) if not nohome else None
         except _ObjectDB.DoesNotExist:
-            raise _ObjectDB.DoesNotExist("settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
-                                         settings.DEFAULT_HOME)
+            raise _ObjectDB.DoesNotExist(
+                "settings.DEFAULT_HOME (= '%s') does not exist, or the setting is malformed." %
+                settings.DEFAULT_HOME)
 
     # create new instance
     new_object = typeclass(db_key=key, db_location=location,
