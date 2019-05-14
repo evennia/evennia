@@ -677,11 +677,18 @@ class AttributeHandler(object):
 
         if not self._cache_complete:
             self._fullcache()
-        if accessing_obj:
-            [attr.delete() for attr in self._cache.values()
-             if attr and attr.access(accessing_obj, self._attredit, default=default_access)]
+
+        if category is not None:
+            attrs = [attr for attr in self._cache.values() if attr.category == category]
         else:
-            [attr.delete() for attr in self._cache.values() if attr and attr.pk]
+            attrs = self._cache.values()
+
+        if accessing_obj:
+            [attr.delete() for attr in attrs
+             if attr and
+             attr.access(accessing_obj, self._attredit, default=default_access)]
+        else:
+            [attr.delete() for attr in attrs if attr and attr.pk]
         self._cache = {}
         self._catcache = {}
         self._cache_complete = False

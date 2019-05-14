@@ -493,7 +493,7 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 # Options and validators
 ######################################################################
 
-# Options available on Accounts. Each such option is described by a 
+# Options available on Accounts. Each such option is described by a
 # class available from evennia.OPTION_CLASSES, in turn making use
 # of validators from evennia.VALIDATOR_FUNCS to validate input when
 # the user changes an option. The options are accessed through the

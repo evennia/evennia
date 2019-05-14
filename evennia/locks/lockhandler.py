@@ -618,7 +618,7 @@ class _ObjDummy:
     lock_storage = ''
 
 
-def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
+def check_lockstring(accessing_obj, lockstring, no_superuser_bypass=False,
                      default=False, access_type=None):
     """
     Do a direct check against a lockstring ('atype:func()..'),
@@ -643,9 +643,9 @@ def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
         access (bool): If check is passed or not.
 
     """
-    global _LOCKHANDLER
-    if not _LOCKHANDLER:
-        _LOCKHANDLER = LockHandler(_ObjDummy())
+    global _LOCK_HANDLER
+    if not _LOCK_HANDLER:
+        _LOCK_HANDLER = LockHandler(_ObjDummy())
     return _LOCK_HANDLER.check_lockstring(
         accessing_obj, lockstring, no_superuser_bypass=no_superuser_bypass,
         default=default, access_type=access_type)

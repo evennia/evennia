@@ -26,8 +26,8 @@ let defaultin_plugin = (function () {
                 break;
 
             case 13: // Enter key
-                var outtext = inputfield.val(); // Grab the text from which-ever inputfield is focused
-                if ( outtext && !event.shiftKey ) {  // Enter Key without shift --> send Mesg
+                var outtext = inputfield.val() || ""; // Grab the text from which-ever inputfield is focused
+                if ( !event.shiftKey ) {  // Enter Key without shift --> send Mesg
                     var lines = outtext.trim().replace(/[\r]+/,"\n").replace(/[\n]+/, "\n").split("\n");
                     for (var i = 0; i < lines.length; i++) {
                         plugin_handler.onSend( lines[i].trim() );

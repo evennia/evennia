@@ -256,7 +256,7 @@ def justify(text, width=None, align="f", indent=0):
     words = []
     for ip, paragraph in enumerate(paragraphs):
         if ip > 0:
-            words.append(("\n\n", 0))
+            words.append(("\n", 0))
         words.extend((word, len(word)) for word in paragraph.split())
     ngaps, wlen, line = 0, 0, []
 
