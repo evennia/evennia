@@ -1005,10 +1005,7 @@ class EvMenu(object):
             else:
                 # add a default white color to key
                 table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
-        logger.log_msg('Table Width Max: %s' % table_width_max)
-        logger.log_msg('Max Width: %d' % _MAX_TEXT_WIDTH)
         ncols = (_MAX_TEXT_WIDTH // table_width_max)  # number of ncols
-        logger.log_msg('Max Columns: %d' % ncols)
 
         if ncols < 0:
             # no visible option at all
