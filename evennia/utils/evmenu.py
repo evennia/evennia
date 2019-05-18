@@ -1058,6 +1058,7 @@ class EvMenu(object):
         nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
         options_width_max = max(m_len(line) for line in optionstext.split("\n"))
         total_width = min(screen_width, max(options_width_max, nodetext_width_max))
+        logger.log_msg("Total Width: %d\nOptions Width Max: %d\nNodeText Width Max: %d" % (total_width, options_with_max, nodetext_width_max))
         separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
         separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
         return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
