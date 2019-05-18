@@ -203,7 +203,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
     @lazy_property
     def options(self):
-        return OptionHandler(self, 
+        return OptionHandler(self,
                              options_dict=settings.OPTIONS_ACCOUNT_DEFAULT,
                              savefunc=self.attributes.add,
                              loadfunc=self.attributes.get,
