@@ -235,7 +235,7 @@ class CmdUnconnectedLook(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Show the connect screen."""
 
-        callables = utils.callables_from_module(CONNECTION_SCREEN_MODULE)  
+        callables = utils.callables_from_module(CONNECTION_SCREEN_MODULE)
         if "connection_screen" in callables:
             connection_screen = callables['connection_screen']()
         else:
