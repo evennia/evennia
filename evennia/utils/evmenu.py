@@ -1052,6 +1052,7 @@ class EvMenu(object):
         if self._session:
             screen_width = self._session.protocol_flags.get(
                     "SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
+            logger.log_msg("Screen Width: %d" % screen_width)
         else:
             screen_width = _MAX_TEXT_WIDTH
 
