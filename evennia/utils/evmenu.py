@@ -1005,13 +1005,13 @@ class EvMenu(object):
             else:
                 # add a default white color to key
                 table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
+        ncols = (_MAX_TEXT_WIDTH // table_width_max)  # number of ncols
 
-        ncols = (_MAX_TEXT_WIDTH // table_width_max) + 1  # number of ncols
-
-        if ncols <= 0:
+        if ncols < 0:
             # no visible option at all
             return ""
 
+        ncols = ncols + 1 if ncols == 0 else ncols
         # get the amount of rows needed (start with 4 rows)
         nrows = 4
         while nrows * ncols < nlist:
