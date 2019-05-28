@@ -104,23 +104,28 @@ class Ttype(object):
             # this is supposed to be the name of the client/terminal.
             # For clients not supporting the extended TTYPE
             # definition, subsequent calls will just repeat-return this.
-            clientname = option.upper()
+            try:
+                clientname = option.upper()
+            except AttributeError:
+                # malformed option (not a string)
+                clientname = "UNKNOWN"
+
             # use name to identify support for xterm256. Many of these
             # only support after a certain version, but all support
             # it since at least 4 years. We assume recent client here for now.
-            cupper = clientname.upper()
             xterm256 = False
-            if cupper.startswith("MUDLET"):
+            if clientname.startswith("MUDLET"):
                 # supports xterm256 stably since 1.1 (2010?)
-                xterm256 = cupper.split("MUDLET", 1)[1].strip() >= "1.1"
+                xterm256 = clientname.split("MUDLET", 1)[1].strip() >= "1.1"
                 self.protocol.protocol_flags["FORCEDENDLINE"] = False
 
-            if cupper.startswith("TINTIN++"):
+            if clientname.startswith("TINTIN++"):
                 self.protocol.protocol_flags["FORCEDENDLINE"] = True
 
-            if (cupper.startswith("XTERM") or
-                cupper.endswith("-256COLOR") or
-                cupper in ("ATLANTIS",      # > 0.9.9.0 (aug 2009)
+            if (clientname.startswith("XTERM") or
+                clientname.endswith("-256COLOR") or
+                clientname in (
+                           "ATLANTIS",      # > 0.9.9.0 (aug 2009)
                            "CMUD",          # > 3.04 (mar 2009)
                            "KILDCLIENT",    # > 2.2.0 (sep 2005)
                            "MUDLET",        # > beta 15 (sep 2009)
