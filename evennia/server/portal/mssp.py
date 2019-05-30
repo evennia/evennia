@@ -196,9 +196,9 @@ class Mssp(object):
                 value = value()
             if utils.is_iter(value):
                 for partval in value:
-                    varlist += MSSP_VAR + str(variable) + MSSP_VAL + str(partval)
+                    varlist += MSSP_VAR + bytes(variable, 'utf-8') + MSSP_VAL + bytes(partval, 'utf-8')
             else:
-                varlist += MSSP_VAR + str(variable) + MSSP_VAL + str(value)
+                varlist += MSSP_VAR + bytes(variable, 'utf-8') + MSSP_VAL + bytes(value, 'utf-8')
 
         # send to crawler by subnegotiation
         self.protocol.requestNegotiation(MSSP, varlist)

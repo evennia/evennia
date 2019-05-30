@@ -23,14 +23,17 @@ Update to Python 3
 
 ### Web
 
-New golden-layout based Webclient UI (@security-related)
+- Change webclient to use Autobahn websocket library (which is actually maintained)
+
+#### New golden-layout based Webclient UI (@friarzen)
 - Features
   - Much slicker behavior and more professional look
   - Allows tabbing as well as click and drag of panes in any grid position
   - Renaming tabs, assignments of data tags and output types are simple per-pane menus now
   - Any number of input panes, with separate histories
   - Button UI (disabled in JS by default)
-Web/Django standard initiative (@strikaco)
+
+#### Web/Django standard initiative (@strikaco)
 - Features
   - Adds a series of web-based forms and generic class-based views
     - Accounts
@@ -78,7 +81,6 @@ Web/Django standard initiative (@strikaco)
 - `evennia.prototypes.search_prototype` has a new kwarg `require_single=False` that
   raises a KeyError exception if query gave 0 or >1 results.
 - `evennia.prototypes.spawner` can now spawn by passing a `prototype_key`
-
 
 ### Typeclasses
 

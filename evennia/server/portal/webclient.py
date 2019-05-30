@@ -65,6 +65,13 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         client_address = client_address[0] if client_address else None
         self.init_session("websocket", client_address, self.factory.sessionhandler)
 
+        from evennia.utils import logger
+        try:
+            csessid = self.http_request_uri.split("?", 1)[1]
+            logger.log_msg("csessid: ", csessid)
+        except Exception:
+            logger.log_trace(str(self.__dict__))
+
         csession = self.get_client_session()
         uid = csession and csession.get("webclient_authenticated_uid", None)
         if uid:
