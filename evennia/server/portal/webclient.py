@@ -53,6 +53,11 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             # browser session.
             self.csessid = None
             return None
+        except AttributeError:
+            from evennia.utils import logger
+            self.csessid = None
+            logger.log_trace(str(self))
+            return None
         if self.csessid:
             return _CLIENT_SESSIONS(session_key=self.csessid)
 
@@ -68,7 +73,6 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         from evennia.utils import logger
         try:
             csessid = self.http_request_uri.split("?", 1)[1]
-            logger.log_msg("csessid: ", csessid)
         except Exception:
             logger.log_trace(str(self.__dict__))
 
