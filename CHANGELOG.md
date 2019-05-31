@@ -23,7 +23,7 @@ Update to Python 3
 
 ### Web
 
-- Change webclient to use Autobahn websocket library (which is actually maintained)
+- Change webclient from old txws version to use more supported/feature-rich Autobahn websocket library
 
 #### New golden-layout based Webclient UI (@friarzen)
 - Features
