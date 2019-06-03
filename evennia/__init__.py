@@ -170,7 +170,7 @@ def _init():
     global create_message, create_help_entry
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER
-    global CHANNEL_HANDLER, TASK_HANDLER 
+    global CHANNEL_HANDLER, TASK_HANDLER
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
