@@ -510,7 +510,6 @@ class TestChargen(CommandTest):
 
 # Testing clothing contrib
 from evennia.contrib import clothing
-from evennia.objects.objects import DefaultRoom
 
 
 class TestClothingCmd(CommandTest):
@@ -985,7 +984,6 @@ class TestTutorialWorldRooms(CommandTest):
 
 # test turnbattle
 from evennia.contrib.turnbattle import tb_basic, tb_equip, tb_range, tb_items, tb_magic
-from evennia.objects.objects import DefaultRoom
 
 
 class TestTurnBattleBasicCmd(CommandTest):
