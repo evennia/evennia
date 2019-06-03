@@ -270,7 +270,7 @@ class ObjectDBManager(TypedObjectManager):
                     db_tags__db_tagtype__iexact="alias"))).order_by('id').distinct()
         elif candidates:
             # fuzzy with candidates
-            search_candidates = self.filter(cand_restriction & type_restriction).order_by('id')
+            search_candidates = self.filter(cand_restriction & type_restriction).distinct().order_by('id')
         else:
             # fuzzy without supplied candidates - we select our own candidates
             search_candidates = self.filter(type_restriction & (Q(db_key__istartswith=ostring) |
@@ -281,7 +281,7 @@ class ObjectDBManager(TypedObjectManager):
         index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
         if index_matches:
             # a match by key
-            return list({obj for ind, obj in enumerate(search_candidates) if ind in index_matches})
+            return [obj for ind, obj in enumerate(search_candidates) if ind in index_matches]
         else:
             # match by alias rather than by key
             search_candidates = search_candidates.filter(db_tags__db_tagtype__iexact="alias",
