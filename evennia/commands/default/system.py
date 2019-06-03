@@ -436,20 +436,25 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         nlim = int(self.args) if self.args and self.args.isdigit() else 10
         nobjs = ObjectDB.objects.count()
-        base_char_typeclass = settings.BASE_CHARACTER_TYPECLASS
-        nchars = ObjectDB.objects.filter(db_typeclass_path=base_char_typeclass).count()
-        nrooms = ObjectDB.objects.filter(db_location__isnull=True).exclude(
-            db_typeclass_path=base_char_typeclass).count()
-        nexits = ObjectDB.objects.filter(db_location__isnull=False, db_destination__isnull=False).count()
+        Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+        nchars = Character.objects.all_family().count()
+        Room = class_from_module(settings.BASE_ROOM_TYPECLASS)
+        nrooms = Room.objects.all_family().count()
+        Exit = class_from_module(settings.BASE_EXIT_TYPECLASS)
+        nexits = Exit.objects.all_family().count()
         nother = nobjs - nchars - nrooms - nexits
         nobjs = nobjs or 1  # fix zero-div error with empty database
 
         # total object sum table
-        totaltable = self.style_table("|wtype|n", "|wcomment|n", "|wcount|n", "|w%%|n", border="table", align="l")
+        totaltable = self.style_table("|wtype|n", "|wcomment|n", "|wcount|n", "|w%%|n",
+                                      border="table", align="l")
         totaltable.align = 'l'
-        totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS)", nchars, "%.2f" % ((float(nchars) / nobjs) * 100))
-        totaltable.add_row("Rooms", "(location=None)", nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100))
-        totaltable.add_row("Exits", "(destination!=None)", nexits, "%.2f" % ((float(nexits) / nobjs) * 100))
+        totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS + children)",
+                           nchars, "%.2f" % ((float(nchars) / nobjs) * 100))
+        totaltable.add_row("Rooms", "(BASE_ROOM_TYPECKLASS + children)",
+                           nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100))
+        totaltable.add_row("Exits", "(BASE_EXIT_TYPECLASS + children)",
+                           nexits, "%.2f" % ((float(nexits) / nobjs) * 100))
         totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
 
         # typeclass table
