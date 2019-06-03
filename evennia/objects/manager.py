@@ -281,11 +281,11 @@ class ObjectDBManager(TypedObjectManager):
         index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
         if index_matches:
             # a match by key
-            return [obj for ind, obj in enumerate(search_candidates) if ind in index_matches]
+            return list({obj for ind, obj in enumerate(search_candidates) if ind in index_matches})
         else:
             # match by alias rather than by key
             search_candidates = search_candidates.filter(db_tags__db_tagtype__iexact="alias",
-                                                         db_tags__db_key__icontains=ostring)
+                                                         db_tags__db_key__icontains=ostring).distinct()
             alias_strings = []
             alias_candidates = []
             # TODO create the alias_strings and alias_candidates lists more efficiently?
@@ -295,7 +295,8 @@ class ObjectDBManager(TypedObjectManager):
                     alias_candidates.append(candidate)
             index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
             if index_matches:
-                return [alias_candidates[ind] for ind in index_matches]
+                # it's possible to have multiple matches to the same Object, we must weed those out
+                return list({alias_candidates[ind] for ind in index_matches})
             return []
 
     # main search methods and helper functions
@@ -507,7 +508,7 @@ class ObjectDBManager(TypedObjectManager):
         # copy over all tags, if any
         for tag in original_object.tags.get(return_tagobj=True, return_list=True):
             new_object.tags.add(tag=tag.key, category=tag.category, data=tag.data)
-    
+
         return new_object
 
     def clear_all_sessids(self):

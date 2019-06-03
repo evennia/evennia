@@ -466,6 +466,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                                  candidates=candidates,
                                                  exact=exact,
                                                  use_dbref=use_dbref)
+
         if quiet:
             return results
         return _AT_SEARCH_RESULT(results, self, query=searchdata,
