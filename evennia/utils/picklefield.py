@@ -107,8 +107,9 @@ def dbsafe_decode(value, compress_object=False):
 
 
 class PickledWidget(Textarea):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         """Display of the PickledField in django admin"""
+
         value = repr(value)
         try:
             # necessary to convert it back after repr(), otherwise validation errors will mutate it
@@ -121,11 +122,18 @@ class PickledWidget(Textarea):
             attrs["name"] = name
         else:
             attrs = {"name": name}
+        attrs['cols'] = 30
+        # adapt rows to width
+        rows = 1
+        if isinstance(value, str) and "\n" in value:
+            rows = max(1, len(value.split('\n')))
+        attrs['rows'] = rows
+        attrs = self.build_attrs(attrs)
 
-        final_attrs = self.build_attrs(attrs)
-        return format_html('<textarea{0}>\r\n{1}</textarea>',
-                           flatatt(final_attrs),
-                           value)
+        return super().render(name, value, attrs=attrs, renderer=renderer)
+        # return format_html('<textarea{0}>\r\n{1}</textarea>',
+        #                    flatatt(final_attrs),
+        #                    value)
 
 
 class PickledFormField(CharField):
@@ -137,6 +145,7 @@ class PickledFormField(CharField):
         "type them in the Python Interpreter. For instance, strings must be "
         "surrounded by quote marks. We have converted it to a string for your "
         "convenience. If it is acceptable, please hit save again.")
+
 
     def __init__(self, *args, **kwargs):
         # This needs to fall through to literal_eval.
