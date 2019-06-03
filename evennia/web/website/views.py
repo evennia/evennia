@@ -46,13 +46,15 @@ def _gamestats():
     nsess = SESSION_HANDLER.account_count()
     # nsess = len(AccountDB.objects.get_connected_accounts()) or "no one"
 
-    nobjs = ObjectDB.objects.all().count()
-    nrooms = ObjectDB.objects.filter(
-        db_location__isnull=True).exclude(db_typeclass_path=_BASE_CHAR_TYPECLASS).count()
-    nexits = ObjectDB.objects.filter(
-        db_location__isnull=False, db_destination__isnull=False).count()
-    nchars = ObjectDB.objects.filter(db_typeclass_path=_BASE_CHAR_TYPECLASS).count()
-    nothers = nobjs - nrooms - nchars - nexits
+    nobjs = ObjectDB.objects.count()
+    nobjs = nobjs or 1  # fix zero-div error with empty database
+    Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+    nchars = Character.objects.all_family().count()
+    Room = class_from_module(settings.BASE_ROOM_TYPECLASS)
+    nrooms = Room.objects.all_family().count()
+    Exit = class_from_module(settings.BASE_EXIT_TYPECLASS)
+    nexits = Exit.objects.all_family().count()
+    nothers = nobjs - nchars - nrooms - nexits
 
     pagevars = {
         "page_title": "Front Page",
