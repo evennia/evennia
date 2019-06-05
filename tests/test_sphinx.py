@@ -129,7 +129,7 @@ class GenericTests(SphinxIntegrationTests):
     def test_image(self):
         output = self.read_file('index.html')
         self.assertIn(
-            '<p><img alt="Example" src="image.png" />foo</p>',
+            '<p><img alt="foo &quot;handle quotes&quot;" src="image.png" /></p>',
             output
         )
 

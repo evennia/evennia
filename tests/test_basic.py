@@ -226,13 +226,13 @@ class TestParsing(unittest.TestCase):
     def test_image(self):
         self.assertParses(
             """
-            ![foo](/url "title")
+            ![foo "handle quotes"](/url "title")
             """,
             """
             <?xml version="1.0" ?>
             <document source="&lt;string&gt;">
               <paragraph>
-                <image alt="title" uri="/url">foo</image>
+                <image alt="foo &quot;handle quotes&quot;" uri="/url"></image>
               </paragraph>
             </document>
             """

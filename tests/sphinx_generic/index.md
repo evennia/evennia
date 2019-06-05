@@ -23,7 +23,7 @@ Foo
 
 Bar
 
-![foo](/image.png "Example")
+![foo "handle quotes"](/image.png "Example")
 
     #!/bin/sh
     python
