@@ -30,6 +30,7 @@ Modified for Evennia by Griatch and the Evennia community.
 """
 from builtins import object
 from ast import literal_eval
+from datetime import datetime
 
 from copy import deepcopy
 from base64 import b64encode, b64decode
@@ -38,9 +39,8 @@ from zlib import compress, decompress
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from django.forms import CharField, Textarea
-from django.forms.utils import flatatt
-from django.utils.html import format_html
+from django.forms.fields import CharField
+from django.forms.widgets import Textarea
 
 from pickle import loads, dumps
 from django.utils.encoding import force_text
@@ -107,36 +107,41 @@ def dbsafe_decode(value, compress_object=False):
 
 
 class PickledWidget(Textarea):
+    """
+    This is responsible for outputting HTML representing a given field.
+    """
     def render(self, name, value, attrs=None, renderer=None):
         """Display of the PickledField in django admin"""
 
-        value = repr(value)
-        try:
-            # necessary to convert it back after repr(), otherwise validation errors will mutate it
-            value = literal_eval(value)
-        except ValueError:
-            return value
+        repr_value = repr(value)
 
-        # fix since the signature of build_attrs changed in Django 1.11
+        # analyze represented value to see how big the field should be
         if attrs is not None:
             attrs["name"] = name
         else:
             attrs = {"name": name}
         attrs['cols'] = 30
-        # adapt rows to width
+        # adapt number of rows to number of lines in string
         rows = 1
-        if isinstance(value, str) and "\n" in value:
+        if isinstance(value, str) and "\n" in repr_value:
             rows = max(1, len(value.split('\n')))
         attrs['rows'] = rows
         attrs = self.build_attrs(attrs)
 
+        try:
+            # necessary to convert it back after repr(), otherwise validation errors will mutate it
+            value = literal_eval(repr_value)
+        except ValueError:
+            pass
         return super().render(name, value, attrs=attrs, renderer=renderer)
-        # return format_html('<textarea{0}>\r\n{1}</textarea>',
-        #                    flatatt(final_attrs),
-        #                    value)
 
 
 class PickledFormField(CharField):
+    """
+    This represents one input field for the form.
+
+    """
+
     widget = PickledWidget
     default_error_messages = dict(CharField.default_error_messages)
     default_error_messages['invalid'] = (
@@ -146,27 +151,40 @@ class PickledFormField(CharField):
         "surrounded by quote marks. We have converted it to a string for your "
         "convenience. If it is acceptable, please hit save again.")
 
-
     def __init__(self, *args, **kwargs):
         # This needs to fall through to literal_eval.
         kwargs['required'] = False
         super().__init__(*args, **kwargs)
 
     def clean(self, value):
+        value = super().clean(value)
+
+        # handle empty input
         try:
             if not value.strip():
                 # Field was left blank. Make this None.
                 value = 'None'
         except AttributeError:
-            value = 'None'
+            pass
+
+        # parse raw Python
         try:
             return literal_eval(value)
         except (ValueError, SyntaxError):
-            try:
-                value = repr(value)
-                return literal_eval(value)
-            except (ValueError, SyntaxError):
-                raise ValidationError(self.error_messages['invalid'])
+            pass
+
+        # handle datetime objects
+        try:
+            return datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
+        except ValueError:
+            pass
+
+        # fall through to parsing the repr() of the data
+        try:
+            value = repr(value)
+            return literal_eval(value)
+        except (ValueError, SyntaxError):
+            raise ValidationError(self.error_messages['invalid'])
 
 
 class PickledObjectField(models.Field):
