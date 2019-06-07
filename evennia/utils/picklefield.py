@@ -135,6 +135,11 @@ class PickledWidget(Textarea):
             pass
         return super().render(name, value, attrs=attrs, renderer=renderer)
 
+    def value_from_datadict(self, data, files, name):
+        dat = data.get(name)
+        # import evennia;evennia.set_trace()
+        return dat
+
 
 class PickledFormField(CharField):
     """
@@ -171,12 +176,6 @@ class PickledFormField(CharField):
         try:
             return literal_eval(value)
         except (ValueError, SyntaxError):
-            pass
-
-        # handle datetime objects
-        try:
-            return datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
-        except ValueError:
             pass
 
         # fall through to parsing the repr() of the data
@@ -222,7 +221,6 @@ class PickledObjectField(models.Field):
         # If the field doesn't have a default, then we punt to models.Field.
         return super().get_default()
 
-    # def to_python(self, value):
     def from_db_value(self, value, *args):
         """
         B64decode and unpickle the object, optionally decompressing it.

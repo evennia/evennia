@@ -73,6 +73,8 @@ Update to Python 3
   - Prettifies Django 'change password' workflow
 - Bugfixes
   - Fixes bug on login page where error messages were not being displayed
+  - Remove strvalue field from admin; it made no sense to have here, being an optimization field 
+    for internal use.
 
 ### Prototypes
 
