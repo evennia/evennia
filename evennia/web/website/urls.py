@@ -50,7 +50,7 @@ if settings.EVENNIA_ADMIN:
         url(r'^admin/', admin.site.urls)]
 else:
     # Just include the normal Django admin.
-    urlpatterns += [url(r'^admin/', include(admin.site.urls))]
+    urlpatterns += [url(r'^admin/', admin.site.urls)]
 
 # This sets up the server if the user want to run the Django
 # test server (this should normally not be needed).
