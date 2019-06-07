@@ -2139,7 +2139,7 @@ def main():
 
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
-        if option == "migrate":
+        if option in ("migrate", "makemigrations"):
             # we have to launch migrate within the program to make sure migrations
             # run within the scope of the launcher (otherwise missing a db will cause errors)
             django.core.management.call_command(*([option] + unknown_args))
