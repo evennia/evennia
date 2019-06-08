@@ -1268,16 +1268,19 @@ class ContribRPObject(DefaultObject):
         is_builder = self.locks.check_lockstring(self, "perm(Builder)")
         use_dbref = is_builder if use_dbref is None else use_dbref
 
-        def search_obj(string): return ObjectDB.objects.object_search(string,
-                                                                      attribute_name=attribute_name,
-                                                                      typeclass=typeclass,
-                                                                      candidates=candidates,
-                                                                      exact=exact,
-                                                                      use_dbref=use_dbref)
+        def search_obj(string):
+            "helper wrapper for searching"
+            return ObjectDB.objects.object_search(string,
+                                                  attribute_name=attribute_name,
+                                                  typeclass=typeclass,
+                                                  candidates=candidates,
+                                                  exact=exact,
+                                                  use_dbref=use_dbref)
 
         if candidates:
             candidates = parse_sdescs_and_recogs(self, candidates,
-                                                 _PREFIX + searchdata, search_mode=True)
+                                                 _PREFIX + searchdata,
+                                                 search_mode=True)
             results = []
             for candidate in candidates:
                 # we search by candidate keys here; this allows full error
@@ -1285,7 +1288,8 @@ class ContribRPObject(DefaultObject):
                 # in eventual error reporting later (not their keys). Doing
                 # it like this e.g. allows for use of the typeclass kwarg
                 # limiter.
-                results.extend(search_obj(candidate.key))
+                results.extend([obj for obj in search_obj(candidate.key)
+                                if obj not in results])
 
             if not results and is_builder:
                 # builders get a chance to search only by key+alias
@@ -1299,7 +1303,8 @@ class ContribRPObject(DefaultObject):
         if quiet:
             return results
         return _AT_SEARCH_RESULT(results, self, query=searchdata,
-                                 nofound_string=nofound_string, multimatch_string=multimatch_string)
+                                 nofound_string=nofound_string,
+                                 multimatch_string=multimatch_string)
 
     def get_display_name(self, looker, **kwargs):
         """
@@ -1497,5 +1502,3 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         """
         return "%s|w%s|n" % ("|W(%s)" % language if language else "", text)
 
-        #from evennia.contrib import rplanguage
-        # return "|w%s|n" % rplanguage.obfuscate_language(text, level=1.0)
