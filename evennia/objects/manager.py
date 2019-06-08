@@ -405,7 +405,7 @@ class ObjectDBManager(TypedObjectManager):
         if not matches:
             # no matches found - check if we are dealing with N-keyword
             # query - if so, strip it.
-            match = _MULTIMATCH_REGEX.match(searchdata)
+            match = _MULTIMATCH_REGEX.match(str(searchdata))
             match_number = None
             if match:
                 # strips the number
