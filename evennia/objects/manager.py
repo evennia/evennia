@@ -265,9 +265,9 @@ class ObjectDBManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         if exact:
             # exact match - do direct search
-            return self.filter(cand_restriction & type_restriction & (
+            return (self.filter(cand_restriction & type_restriction & (
                 Q(db_key__iexact=ostring) | Q(db_tags__db_key__iexact=ostring) & Q(
-                    db_tags__db_tagtype__iexact="alias"))).order_by('id').distinct()
+                    db_tags__db_tagtype__iexact="alias")))).distinct().order_by('id')
         elif candidates:
             # fuzzy with candidates
             search_candidates = self.filter(cand_restriction & type_restriction).distinct().order_by('id')
