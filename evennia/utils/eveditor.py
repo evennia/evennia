@@ -929,9 +929,9 @@ class EvEditor(object):
         nchars = len(buf)
 
         sep = self._sep
-        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH - 20 - len(self._key))
+        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH - 24 - len(self._key))
         footer = "|n" + sep * 10 +\
-                 "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * 28
+                 "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * (_DEFAULT_WIDTH - 54)
         if linenums:
             main = "\n".join("|b%02i|||n %s" % (iline + 1 + offset, raw(line)) for iline, line in enumerate(lines))
         else:
