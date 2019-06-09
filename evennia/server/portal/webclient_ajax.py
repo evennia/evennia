@@ -19,6 +19,7 @@ http://localhost:4001/webclient.)
 import json
 import re
 import time
+import cgi
 
 from twisted.web import server, resource
 from twisted.internet.task import LoopingCall
@@ -35,11 +36,11 @@ _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, r
 _SERVERNAME = settings.SERVERNAME
 _KEEPALIVE = 30  # how often to check keepalive
 
+
 # defining a simple json encoder for returning
 # django data to the client. Might need to
 # extend this if one wants to send more
 # complex database objects too.
-
 
 class LazyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -158,7 +159,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = request.args.get('csessid')[0]
+        csessid = cgi.escape(request.args['csessid'][0])
 
         remote_addr = request.getClientIP()
         host_string = "%s (%s:%s)" % (_SERVERNAME, request.getRequestHostname(), request.getHost().port)
@@ -190,7 +191,7 @@ class AjaxWebClient(resource.Resource):
         This is called by render_POST when the
         client is replying to the keepalive.
         """
-        csessid = request.args.get('csessid')[0]
+        csessid = cgi.escape(request.args['csessid'][0])
         self.last_alive[csessid] = (time.time(), False)
         return '""'
 
@@ -203,13 +204,12 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = request.args.get('csessid')[0]
-
+        csessid = cgi.escape(request.args['csessid'][0])
         self.last_alive[csessid] = (time.time(), False)
         sess = self.sessionhandler.sessions_from_csessid(csessid)
         if sess:
             sess = sess[0]
-            cmdarray = json.loads(request.args.get('data')[0])
+            cmdarray = json.loads(cgi.escape(request.args.get('data')[0]))
             sess.sessionhandler.data_in(sess, **{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
         return '""'
 
@@ -224,7 +224,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = request.args.get('csessid')[0]
+        csessid = cgi.escape(request.args['csessid'][0])
         self.last_alive[csessid] = (time.time(), False)
 
         dataentries = self.databuffer.get(csessid, [])
@@ -245,7 +245,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = request.args.get('csessid')[0]
+        csessid = cgi.escape(request.args['csessid'][0])
         try:
             sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
             sess.sessionhandler.disconnect(sess)
@@ -267,6 +267,7 @@ class AjaxWebClient(resource.Resource):
 
         """
         dmode = request.args.get('mode', [None])[0]
+
         if dmode == 'init':
             # startup. Setup the server.
             return self.mode_init(request)
