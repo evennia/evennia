@@ -19,7 +19,7 @@ http://localhost:4001/webclient.)
 import json
 import re
 import time
-import cgi
+import html
 
 from twisted.web import server, resource
 from twisted.internet.task import LoopingCall
@@ -27,6 +27,7 @@ from django.utils.functional import Promise
 from django.conf import settings
 from evennia.utils.ansi import parse_ansi
 from evennia.utils import utils
+from evennia.utils.utils import to_bytes, to_str
 from evennia.utils.text2html import parse_html
 from evennia.server import session
 
@@ -49,7 +50,7 @@ class LazyEncoder(json.JSONEncoder):
 
 
 def jsonify(obj):
-    return utils.to_str(json.dumps(obj, ensure_ascii=False, cls=LazyEncoder))
+    return to_bytes(json.dumps(obj, ensure_ascii=False, cls=LazyEncoder))
 
 
 #
@@ -158,10 +159,12 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = cgi.escape(request.args['csessid'][0])
+        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
 
         remote_addr = request.getClientIP()
-        host_string = "%s (%s:%s)" % (_SERVERNAME, request.getRequestHostname(), request.getHost().port)
+        host_string = "%s (%s:%s)" % (_SERVERNAME,
+                                      request.getRequestHostname(),
+                                      request.getHost().port)
 
         sess = AjaxWebClientSession()
         sess.client = self
@@ -190,9 +193,9 @@ class AjaxWebClient(resource.Resource):
         This is called by render_POST when the
         client is replying to the keepalive.
         """
-        csessid = cgi.escape(request.args['csessid'][0])
+        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
         self.last_alive[csessid] = (time.time(), False)
-        return '""'
+        return b'""'
 
     def mode_input(self, request):
         """
@@ -203,14 +206,14 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = cgi.escape(request.args['csessid'][0])
+        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
         self.last_alive[csessid] = (time.time(), False)
         sess = self.sessionhandler.sessions_from_csessid(csessid)
         if sess:
             sess = sess[0]
-            cmdarray = json.loads(cgi.escape(request.args.get('data')[0]))
+            cmdarray = json.loads(request.args.get(b'data')[0])
             sess.sessionhandler.data_in(sess, **{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
-        return '""'
+        return b'""'
 
     def mode_receive(self, request):
         """
@@ -223,7 +226,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = cgi.escape(request.args['csessid'][0])
+        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
         self.last_alive[csessid] = (time.time(), False)
 
         dataentries = self.databuffer.get(csessid, [])
@@ -244,13 +247,13 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = cgi.escape(request.args['csessid'][0])
+        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
         try:
             sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
             sess.sessionhandler.disconnect(sess)
         except IndexError:
             self.client_disconnect(csessid)
-        return '""'
+        return b'""'
 
     def render_POST(self, request):
         """
@@ -265,7 +268,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        dmode = request.args.get('mode', [None])[0]
+        dmode = request.args.get(b'mode', [b'None'])[0].decode("utf-8")
 
         if dmode == 'init':
             # startup. Setup the server.
@@ -284,7 +287,7 @@ class AjaxWebClient(resource.Resource):
             return self.mode_keepalive(request)
         else:
             # This should not happen if client sends valid data.
-            return '""'
+            return b'""'
 
 
 #
