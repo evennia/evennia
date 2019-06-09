@@ -106,7 +106,7 @@ def _format_option_value(prop, required=False, prototype=None, cropper=None):
     if utils.is_iter(prop):
         out = ", ".join(str(pr) for pr in prop)
     if not out and required:
-        out = "|rreqrd"
+        out = "|runset"
     if out:
         return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
     return ""
