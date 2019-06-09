@@ -152,7 +152,7 @@ def save_prototype(prototype):
     Create/Store a prototype persistently.
 
     Args:
-        prototype (dict): The prototype to save. A `prototype_key` key is 
+        prototype (dict): The prototype to save. A `prototype_key` key is
             required.
 
     Returns:
@@ -267,18 +267,18 @@ def search_prototype(key=None, tags=None, require_single=False):
 
     Kwargs:
         key (str): An exact or partial key to query for.
-        tags (str or list): Tag key or keys to query for. These 
+        tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'db_protototype'
             tag category.
         require_single (bool): If set, raise KeyError if the result
             was not found or if there are multiple matches.
 
     Return:
-        matches (list): All found prototype dicts. Empty list if 
-            no match was found. Note that if neither `key` nor `tags` 
+        matches (list): All found prototype dicts. Empty list if
+            no match was found. Note that if neither `key` nor `tags`
             were given, *all* available prototypes will be returned.
 
-    Raises: 
+    Raises:
         KeyError: If `require_single` is True and there are 0 or >1 matches.
 
     Note:
@@ -336,7 +336,7 @@ def search_prototype(key=None, tags=None, require_single=False):
                           if mta.get('prototype_key') and mta['prototype_key'] == key]
         if filter_matches and len(filter_matches) < nmatches:
             matches = filter_matches
-    
+
     nmatches = len(matches)
     if nmatches != 1 and require_single:
         raise KeyError("Found {} matching prototypes.".format(nmatches))
@@ -739,7 +739,7 @@ def init_spawn_value(value, validator=None):
     validator = validator if validator else lambda o: o
     if callable(value):
         value = validator(value())
-    elif value and is_iter(value) and callable(value[0]):
+    elif value and isinstance(value, (list, tuple)) and callable(value[0]):
         # a structure (callable, (args, ))
         args = value[1:]
         value = validator(value[0](*make_iter(args)))
