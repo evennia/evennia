@@ -106,7 +106,7 @@ def _format_option_value(prop, required=False, prototype=None, cropper=None):
     if utils.is_iter(prop):
         out = ", ".join(str(pr) for pr in prop)
     if not out and required:
-        out = "|rrequired"
+        out = "|rreqrd"
     if out:
         return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
     return ""
@@ -234,7 +234,7 @@ def _validate_prototype(prototype):
     except RuntimeError as exc:
         errors = "\n\n|r{}|n".format(exc)
         err = True
-    except RuntimeWarning as err:
+    except RuntimeWarning as exc:
         errors = "\n\n|y{}|n".format(exc)
         err = True
 
@@ -627,7 +627,8 @@ def node_index(caller):
         if key == 'Typeclass':
             cropper = _path_cropper
         options.append(
-            {"desc": "|w{}|n{}".format(
+            {"desc": "{}{}|n{}".format(
+                "|W" if key == "Prototype_Parent" else "|w",
                 key.replace("_", "-"),
                 _format_option_value(key, required, prototype, cropper=cropper)),
              "goto": "node_{}".format(key.lower())})
@@ -2141,7 +2142,13 @@ def node_prototype_save(caller, **kwargs):
         # we already validated and accepted the save, so this node acts as a goto callback and
         # should now only return the next node
         prototype_key = prototype.get("prototype_key")
-        protlib.save_prototype(prototype)
+        try:
+            protlib.save_prototype(prototype)
+        except Exception as exc:
+            text = "|rCould not save:|n {}\n(press Return to continue)".format(exc)
+            options = {"key": "_default",
+                       "goto": "node_index"}
+            return text, options
 
         spawned_objects = protlib.search_objects_with_prototype(prototype_key)
         nspawned = spawned_objects.count()
