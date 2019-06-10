@@ -247,9 +247,7 @@ class AccountDBAdmin(BaseUserAdmin):
 
     def response_add(self, request, obj, post_url_continue=None):
         from django.http import HttpResponseRedirect
-        from django.core.urlresolvers import reverse
-        if '_continue' in request.POST:
-            return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
+        from django.urls import reverse
         return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
 
 
