@@ -11,9 +11,9 @@ from commonmark import Parser
 from warnings import warn
 
 if sys.version_info < (3, 0):
-    from urlparse import urlparse
+    from urlparse import urlparse, unquote
 else:
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, unquote
 
 __all__ = ['CommonMarkParser']
 
@@ -152,7 +152,7 @@ class CommonMarkParser(parsers.Parser):
         url_check = urlparse(destination)
         if not url_check.scheme and not url_check.fragment:
             wrap_node = addnodes.pending_xref(
-                reftarget=destination,
+                reftarget=unquote(destination),
                 reftype='any',
                 refdomain=None,  # Added to enable cross-linking
                 refexplicit=True,
