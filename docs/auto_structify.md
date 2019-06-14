@@ -38,13 +38,13 @@ One of important command in tools like sphinx is `toctree`. This is a command to
 tell sphinx about the structure of the documents. In markdown, usually we manually list of contents by a bullet list
 of url reference to the other documents.
 
-AutoStructify will transforms bullet list of document URLs
+AutoStructify transforms bullet list of document URLs like this
 
 ```
 * [Title1](doc1.md)
 * [Title2](doc2.md)
 ```
-will be translated to the AST of following reStructuredText code
+to the AST of this following reStructuredText code
 ```rst
 .. toctree::
    :maxdepth: 1
