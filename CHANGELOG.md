@@ -7,7 +7,7 @@
 - New requirement: Python 3.7 (py2.7 support removed)
 - Django 2.1
 - Twisted 19.2.1
-- Autobahn websockets (remove old tmwx)
+- Autobahn websockets (removed old tmwx)
 - Docker image updated
 
 ### Commands
