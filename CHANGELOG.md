@@ -2,10 +2,12 @@
 
 ## Evennia 0.9 (2018-2019)
 
-Update to Python 3
+### Distribution
 
-- Use `python3 -m venv <myenvname>`
-- Use `python3 -m pdb <script>` for debugging
+- New requirement: Python 3.7 (py2.7 support removed)
+- Django 2.1
+- Twisted 19.2.1
+- Autobahn websockets (remove old tmwx)
 - Docker image updated
 
 ### Commands
@@ -20,6 +22,7 @@ Update to Python 3
   that are calculated on the fly.
 - `@py` command now defaults to escaping html tags in its output when viewing in the webclient.
   Use new `/clientraw` switch to get old behavior (issue #1369).
+- Shorter and more informative, dynamic, listing of on-command vars if not setting func() in child command class.
 
 ### Web
 
@@ -73,7 +76,7 @@ Update to Python 3
   - Prettifies Django 'change password' workflow
 - Bugfixes
   - Fixes bug on login page where error messages were not being displayed
-  - Remove strvalue field from admin; it made no sense to have here, being an optimization field 
+  - Remove strvalue field from admin; it made no sense to have here, being an optimization field
     for internal use.
 
 ### Prototypes
@@ -115,6 +118,8 @@ Update to Python 3
 - Added `evennia.ANSIString` to flat API.
 - Server/Portal log files now cycle to names on the form `server_.log_19_03_08_` instead of `server.log___19.3.8`, retaining
   unix file sorting order.
+- Django signals fire for important events: Puppet/Unpuppet, Object create/rename, Login,
+  Logout, Login fail Disconnect, Account create/rename
 
 ### Utils
 

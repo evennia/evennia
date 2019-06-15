@@ -214,7 +214,7 @@ class SessionHandler(dict):
                 return newdict
             elif is_iter(data):
                 return [_validate(part) for part in data]
-            elif isinstance(data, (str, bytes )):
+            elif isinstance(data, (str, bytes)):
                 data = _utf8(data)
 
                 if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
@@ -257,9 +257,9 @@ class SessionHandler(dict):
         return rkwargs
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Server-SessionHandler class
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 class ServerSessionHandler(SessionHandler):
     """
@@ -413,7 +413,7 @@ class ServerSessionHandler(SessionHandler):
         # set a watchdog to avoid self.disconnect from deleting
         # the session while we are looping over them
         self._disconnect_all = True
-        for session in self.values:
+        for session in self.values():
             session.disconnect()
         del self._disconnect_all
 
@@ -443,7 +443,8 @@ class ServerSessionHandler(SessionHandler):
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SCONN,
-                                                         protocol_path=protocol_path, config=configdict)
+                                                         protocol_path=protocol_path,
+                                                         config=configdict)
 
     def portal_restart_server(self):
         """
@@ -544,7 +545,8 @@ class ServerSessionHandler(SessionHandler):
             nsess = len(self.sessions_from_account(session.account)) - 1
             sreason = " ({})".format(reason) if reason else ""
             string = "Logged out: {account} {address} ({nsessions} sessions(s) remaining){reason}"
-            string = string.format(reason=sreason, account=session.account, address=session.address, nsessions=nsess)
+            string = string.format(reason=sreason, account=session.account,
+                                   address=session.address, nsessions=nsess)
             session.log(string)
 
             if nsess == 0:
@@ -670,7 +672,8 @@ class ServerSessionHandler(SessionHandler):
                 amount of Sessions due to multi-playing).
 
         """
-        return list(set(session.account for session in self.values() if session.logged_in and session.account))
+        return list(set(session.account for session in self.values()
+                        if session.logged_in and session.account))
 
     def session_from_sessid(self, sessid):
         """
@@ -737,13 +740,17 @@ class ServerSessionHandler(SessionHandler):
 
     def sessions_from_csessid(self, csessid):
         """
-        Given a cliend identification hash (for session types that offer them) return all sessions with
-        a matching hash.
+        Given a client identification hash (for session types that offer them)
+        return all sessions with a matching hash.
 
         Args
-            csessid (str): The session hash
+            csessid (str): The session hash.
+        Returns:
+            sessions (list): The sessions with matching .csessid, if any.
 
         """
+        if csessid:
+            return []
         return [session for session in self.values()
                 if session.csessid and session.csessid == csessid]
 

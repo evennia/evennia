@@ -446,7 +446,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         nobjs = nobjs or 1  # fix zero-div error with empty database
 
         # total object sum table
-        totaltable = self.style_table("|wtype|n", "|wcomment|n", "|wcount|n", "|w%%|n",
+        totaltable = self.style_table("|wtype|n", "|wcomment|n", "|wcount|n", "|w%|n",
                                       border="table", align="l")
         totaltable.align = 'l'
         totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS + children)",
@@ -458,7 +458,8 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
 
         # typeclass table
-        typetable = self.style_table("|wtypeclass|n", "|wcount|n", "|w%%|n", border="table", align="l")
+        typetable = self.style_table("|wtypeclass|n", "|wcount|n", "|w%|n",
+                                     border="table", align="l")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
         for path, count in dbtotals.items():
@@ -466,7 +467,8 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
-        latesttable = self.style_table("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table")
+        latesttable = self.style_table("|wcreated|n", "|wdbref|n", "|wname|n",
+                                       "|wtypeclass|n", align="l", border="table")
         latesttable.align = 'l'
         for obj in objs:
             latesttable.add_row(utils.datetime_format(obj.date_created),

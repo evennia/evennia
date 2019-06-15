@@ -200,6 +200,13 @@ class MuxCommand(Command):
          by the cmdhandler right after self.parser() finishes, and so has access
          to all the variables defined therein.
         """
+        variables = '\n'.join(" |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items())
+        string = f"""
+Command {self} has no defined `func()` - showing on-command variables: No child func() defined for {self} - available variables:
+{variables}
+        """
+        self.caller.msg(string)
+        return
         # a simple test command to show the available properties
         string = "-" * 50
         string += "\n|w%s|n - Command variables from evennia:\n" % self.key

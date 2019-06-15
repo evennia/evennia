@@ -68,13 +68,14 @@ def general_context(request):
     is automatically added to context of all views.
     """
     account = None
-    if request.user.is_authenticated: account = request.user
+    if request.user.is_authenticated:
+        account = request.user
 
     puppet = None
     if account and request.session.get('puppet'):
         pk = int(request.session.get('puppet'))
         puppet = next((x for x in account.characters if x.pk == pk), None)
-    
+
     return {
         'account': account,
         'puppet': puppet,

@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     Each Command implements the following methods, called
     in this order (only func() is actually required):
-        - at_pre_cmd(): If this returns True, execution is aborted.
+        - at_pre_cmd(): If this returns anything truthy, execution is aborted.
         - parse(): Should perform any extra parsing needed on self.args
             and store the result on self.
         - func(): Performs the actual work.

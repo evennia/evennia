@@ -420,7 +420,9 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         return False
 
     @classmethod
-    def get_username_validators(cls, validator_config=getattr(settings, 'AUTH_USERNAME_VALIDATORS', [])):
+    def get_username_validators(
+            cls, validator_config=getattr(
+                settings, 'AUTH_USERNAME_VALIDATORS', [])):
         """
         Retrieves and instantiates validators for usernames.
 
@@ -437,7 +439,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             try:
                 klass = import_string(validator['NAME'])
             except ImportError:
-                msg = "The module in NAME could not be imported: %s. Check your AUTH_USERNAME_VALIDATORS setting."
+                msg = ("The module in NAME could not be imported: %s. "
+                       "Check your AUTH_USERNAME_VALIDATORS setting.")
                 raise ImproperlyConfigured(msg % validator['NAME'])
             objs.append(klass(**validator.get('OPTIONS', {})))
         return objs
@@ -473,7 +476,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         """
         errors = []
-        if ip: ip = str(ip)
+        if ip:
+            ip = str(ip)
 
         # See if authentication is currently being throttled
         if ip and LOGIN_THROTTLE.check(ip):
@@ -488,8 +492,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         banned = cls.is_banned(username=username, ip=ip)
         if banned:
             # this is a banned IP or name!
-            errors.append("|rYou have been banned and cannot continue from here." \
-                     "\nIf you feel this ban is in error, please email an admin.|x")
+            errors.append("|rYou have been banned and cannot continue from here."
+                          "\nIf you feel this ban is in error, please email an admin.|x")
             logger.log_sec('Authentication Denied (Banned): %s (IP: %s).' % (username, ip))
             LOGIN_THROTTLE.update(ip, 'Too many sightings of banned artifact.')
             return None, errors
@@ -504,7 +508,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             logger.log_sec('Authentication Failure: %s (IP: %s).' % (username, ip))
 
             # Update throttle
-            if ip: LOGIN_THROTTLE.update(ip, 'Too many authentication failures.')
+            if ip:
+                LOGIN_THROTTLE.update(ip, 'Too many authentication failures.')
 
             # Try to call post-failure hook
             session = kwargs.get('session', None)
@@ -573,7 +578,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
         # Disqualify if any check failed
         if False in valid:
             valid = False
-        else: valid = True
+        else:
+            valid = True
 
         return valid, errors
 
@@ -713,7 +719,8 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             account.db.FIRST_LOGIN = True
 
             # Record IP address of creation, if available
-            if ip: account.db.creator_ip = ip
+            if ip:
+                account.db.creator_ip = ip
 
             # join the new account to the public channel
             pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
@@ -933,7 +940,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
         """
         result = super().access(accessing_obj, access_type=access_type,
-                                                    default=default, no_superuser_bypass=no_superuser_bypass)
+                                default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
@@ -1447,7 +1454,8 @@ class DefaultGuest(DefaultAccount):
                     break
             if not username:
                 errors.append("All guest accounts are in use. Please try again later.")
-                if ip: LOGIN_THROTTLE.update(ip, 'Too many requests for Guest access.')
+                if ip:
+                    LOGIN_THROTTLE.update(ip, 'Too many requests for Guest access.')
                 return None, errors
             else:
                 # build a new account with the found guest username
