@@ -90,8 +90,11 @@ class PortalSessionHandler(SessionHandler):
 
         if session:
             # assign if we are first-connectors
-            self.latest_sessid += 1
-            session.sessid = self.latest_sessid
+            if not session.sessid:
+                # if the session already has a sessid (e.g. being inherited in the
+                # case of a webclient auto-reconnect), keep it
+                self.latest_sessid += 1
+                session.sessid = self.latest_sessid
             session.server_connected = False
             _CONNECTION_QUEUE.appendleft(session)
             if len(_CONNECTION_QUEUE) > 1:

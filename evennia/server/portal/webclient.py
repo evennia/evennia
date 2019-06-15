@@ -29,6 +29,9 @@ _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, r
 _CLIENT_SESSIONS = mod_import(settings.SESSION_ENGINE).SessionStore
 
 
+CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
+
+
 class WebSocketClient(WebSocketServerProtocol, Session):
     """
     Implements the server-side of the Websocket connection.
@@ -70,18 +73,20 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         client_address = client_address[0] if client_address else None
         self.init_session("websocket", client_address, self.factory.sessionhandler)
 
-        from evennia.utils import logger
-        try:
-            csessid = self.http_request_uri.split("?", 1)[1]
-        except Exception:
-            logger.log_trace(str(self.__dict__))
-
-        csession = self.get_client_session()
+        csession = self.get_client_session()  # this sets self.csessid
+        csessid = self.csessid
         uid = csession and csession.get("webclient_authenticated_uid", None)
         if uid:
             # the client session is already logged in.
             self.uid = uid
             self.logged_in = True
+
+            for old_session in self.sessionhandler.sessions_from_csessid(csessid):
+                if (hasattr(old_session, "websocket_close_code") and
+                        old_session.websocket_close_code != CLOSE_NORMAL):
+                    # if we have old sessions with the same csession, they are remnants
+                    self.sessid = old_session.sessid
+                    self.sessionhandler.disconnect(old_session)
 
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
@@ -97,11 +102,19 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             reason (str or None): Motivation for the disconnection.
 
         """
+        csession = self.get_client_session()
+
+        if csession:
+            csession["webclient_authenticated_uid"] = None
+            csession.save()
+            self.logged_in = False
+
+        self.sessionhandler.disconnect(self)
         # autobahn-python: 1000 for a normal close, 3000-4999 for app. specific,
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
-        self.sendClose(1000, reason)
+        self.sendClose(CLOSE_NORMAL, reason)
 
     def onClose(self, wasClean, code=None, reason=None):
         """
@@ -111,19 +124,14 @@ class WebSocketClient(WebSocketServerProtocol, Session):
 
         Args:
             wasClean (bool): ``True`` if the WebSocket was closed cleanly.
-            reason (str): Motivation for the lost connection.
             code (int or None): Close status as sent by the WebSocket peer.
             reason (str or None): Close reason as sent by the WebSocket peer.
 
         """
-        csession = self.get_client_session()
-
-        if csession:
-            csession["webclient_authenticated_uid"] = None
-            csession.save()
-            self.logged_in = False
-
-        self.sessionhandler.disconnect(self)
+        if code == CLOSE_NORMAL:
+            self.disconnect(reason)
+        else:
+            self.websocket_close_code = code
 
     def onMessage(self, payload, isBinary):
         """
