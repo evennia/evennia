@@ -108,6 +108,18 @@ class AjaxWebClient(resource.Resource):
                 self.keep_alive.stop()
                 self.keep_alive = None
 
+    def get_client_sessid(self, request):
+        """
+        Helper to get the client session id out of the request.
+
+        Args:
+            request (Request): Incoming request object.
+        Returns:
+            csessid (int): The client-session id.
+
+        """
+        return html.escape(request.args[b'csessid'][0].decode("utf-8"))
+
     def at_login(self):
         """
         Called when this session gets authenticated by the server.
@@ -159,7 +171,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
+        csessid = self.get_client_sessid(request)
 
         remote_addr = request.getClientIP()
         host_string = "%s (%s:%s)" % (_SERVERNAME,
@@ -178,22 +190,25 @@ class AjaxWebClient(resource.Resource):
             sess.uid = uid
             sess.logged_in = True
 
-        sess.sessionhandler.connect(sess)
-
+        # watch for dead links
         self.last_alive[csessid] = (time.time(), False)
         if not self.keep_alive:
             # the keepalive is not running; start it.
             self.keep_alive = LoopingCall(self._keepalive)
             self.keep_alive.start(_KEEPALIVE, now=False)
 
+        # actually do the connection
+        sess.sessionhandler.connect(sess)
+
         return jsonify({'msg': host_string, 'csessid': csessid})
 
     def mode_keepalive(self, request):
+
         """
         This is called by render_POST when the
         client is replying to the keepalive.
         """
-        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
+        csessid = self.get_client_sessid(request)
         self.last_alive[csessid] = (time.time(), False)
         return b'""'
 
@@ -206,13 +221,11 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
+        csessid = self.get_client_sessid(request)
         self.last_alive[csessid] = (time.time(), False)
-        sess = self.sessionhandler.sessions_from_csessid(csessid)
-        if sess:
-            sess = sess[0]
-            cmdarray = json.loads(request.args.get(b'data')[0])
-            sess.sessionhandler.data_in(sess, **{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
+        cmdarray = json.loads(request.args.get(b'data')[0])
+        for sess in self.sessionhandler.sessions_from_csessid(csessid):
+            sess.data_in(**{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
         return b'""'
 
     def mode_receive(self, request):
@@ -229,14 +242,19 @@ class AjaxWebClient(resource.Resource):
         csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
         self.last_alive[csessid] = (time.time(), False)
 
-        dataentries = self.databuffer.get(csessid, [])
+        dataentries = self.databuffer.get(csessid)
         if dataentries:
+            # we have data that could not be sent earlier (because client was not
+            # ready to receive it). Return this buffered data immediately
             return dataentries.pop(0)
-        request.notifyFinish().addErrback(self._responseFailed, csessid, request)
-        if csessid in self.requests:
-            self.requests[csessid].finish()  # Clear any stale request.
-        self.requests[csessid] = request
-        return server.NOT_DONE_YET
+        else:
+            # we have no data to send. End the old request and start
+            # a new long-polling one
+            request.notifyFinish().addErrback(self._responseFailed, csessid, request)
+            if csessid in self.requests:
+                self.requests[csessid].finish()  # Clear any stale request.
+            self.requests[csessid] = request
+            return server.NOT_DONE_YET
 
     def mode_close(self, request):
         """
@@ -247,7 +265,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
+        csessid = self.get_client_sessid(request)
         try:
             sess = self.sessionhandler.sessions_from_csessid(csessid)[0]
             sess.sessionhandler.disconnect(sess)
@@ -339,6 +357,16 @@ class AjaxWebClientSession(session.Session):
             csession["webclient_authenticated_uid"] = self.uid
             csession.save()
 
+    def data_in(self, **kwargs):
+        """
+        Data User -> Evennia
+
+        Kwargs:
+            kwargs (any): Incoming data.
+
+        """
+        self.sessionhandler.data_in(self, **kwargs)
+
     def data_out(self, **kwargs):
         """
         Data Evennia -> User
@@ -415,5 +443,4 @@ class AjaxWebClientSession(session.Session):
 
         """
         if not cmdname == "options":
-            # print "ajax.send_default", cmdname, args, kwargs
             self.client.lineSend(self.csessid, [cmdname, args, kwargs])
