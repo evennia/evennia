@@ -481,9 +481,32 @@ Command {self} has no defined `func()` - showing on-command variables:
         return self.__doc__
 
     def client_width(self):
-        return self.session.protocol_flags['SCREENWIDTH'][0]
+        """
+        Get the client screenwidth for the session using this command.
 
-    def style_table(self, *args, **kwargs):
+        Returns:
+            client width (int or None): The width (in characters) of the client window. None
+                if this command is run without a Session (such as by an NPC).
+
+        """
+        if self.session:
+            return self.session.protocol_flags['SCREENWIDTH'][0]
+
+    def styled_table(self, *args, **kwargs):
+        """
+        Create an EvTable styled by on user preferences.
+
+        Args:
+            *args (str): Column headers. If not colored explicitly, these will get colors
+                from user options.
+        Kwargs:
+            any (str, int or dict): EvTable options, including, optionally a `table` dict
+                detailing the contents of the table.
+        Returns:
+            table (EvTable): An initialized evtable entity, either complete (if using `table` kwarg)
+                or incomplete and ready for use with `.add_row` or `.add_collumn`.
+
+        """
         border_color = self.account.options.get('border_color')
         column_color = self.account.options.get('column_names_color')
 
@@ -511,14 +534,31 @@ Command {self} has no defined `func()` - showing on-command variables:
                         border_top_char=border_top_char, **kwargs)
         return table
 
-    def render_header(self, header_text=None, fill_character=None, edge_character=None,
-                      mode='header', color_header=True):
+    def _render_decoration(self, header_text=None, fill_character=None, edge_character=None,
+                      mode='header', color_header=True, width=None):
+        """
+        Helper for formatting a string into a prety display, for a header, separator or footer.
+
+        Kwargs:
+            header_text (str): Text to include in header.
+            fill_character (str): This single character will be used to fill the width of the
+                display.
+            edge_character (str): This character caps the edges of the display.
+            mode(str): One of 'header', 'separator' or 'footer'.
+            color_header (bool): If the header should be colorized based on user options.
+            width (int): If not given, the client's width will be used if available.
+
+        Returns:
+            string (str): The decorated and formatted text.
+
+        """
+
         colors = dict()
         colors['border'] = self.account.options.get('border_color')
         colors['headertext'] = self.account.options.get('%s_text_color' % mode)
         colors['headerstar'] = self.account.options.get('%s_star_color' % mode)
 
-        width = self.width()
+        width = width or self.width()
         if edge_character:
             width -= 2
 
@@ -557,19 +597,31 @@ Command {self} has no defined `func()` - showing on-command variables:
         return final_send
 
     def style_header(self, *args, **kwargs):
+        """
+        Create a pretty header.
+        """
+
         if 'mode' not in kwargs:
             kwargs['mode'] = 'header'
-        return self.render_header(*args, **kwargs)
+        return self._render_decoration(*args, **kwargs)
 
     def style_separator(self, *args, **kwargs):
+        """
+        Create a separator.
+
+        """
         if 'mode' not in kwargs:
             kwargs['mode'] = 'separator'
-        return self.render_header(*args, **kwargs)
+        return self._render_decoration(*args, **kwargs)
 
     def style_footer(self, *args, **kwargs):
+        """
+        Create a pretty footer.
+
+        """
         if 'mode' not in kwargs:
             kwargs['mode'] = 'footer'
-        return self.render_header(*args, **kwargs)
+        return self._render_decoration(*args, **kwargs)
 
 
 class InterruptCommand(Exception):

@@ -499,7 +499,7 @@ TYPECLASS_AGGRESSIVE_CACHE = True
 # the user changes an option. The options are accessed through the
 # `Account.options` handler.
 
-# ("Description", 'Option Class name in evennia.OPTIONS_CLASSES', 'Default Value')
+# ("Description", 'Option Class name in evennia.OPTION_CLASS_MODULES', 'Default Value')
 
 OPTIONS_ACCOUNT_DEFAULT = {
     'border_color': ('Headers, footers, table borders, etc.', 'Color', 'n'),
@@ -519,7 +519,7 @@ OPTIONS_ACCOUNT_DEFAULT = {
 # later in this list will override those added earlier.
 OPTION_CLASS_MODULES = ['evennia.utils.optionclasses', ]
 # Module holding validator functions. These are used as a resource for
-# validating options, but can also be used as input validators in general.#
+# validating options, but can also be used as input validators in general.
 # Same-named functions in modules added later in this list will override those
 # added earlier.
 VALIDATOR_FUNC_MODULES = ['evennia.utils.validatorfuncs', ]

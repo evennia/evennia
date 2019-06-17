@@ -295,7 +295,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     Edit the help database.
 
     Usage:
-      @help[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text>]
+      help[/switches] <topic>[[;alias;alias][,category[,locks]] [= <text>]
 
     Switches:
       edit - open a line editor to edit the topic's help text.
@@ -305,10 +305,10 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
       delete - remove help topic.
 
     Examples:
-      @sethelp throw = This throws something at ...
-      @sethelp/append pickpocketing,Thievery = This steals ...
-      @sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
-      @sethelp/edit thievery
+      sethelp throw = This throws something at ...
+      sethelp/append pickpocketing,Thievery = This steals ...
+      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
+      sethelp/edit thievery
 
     This command manipulates the help database. A help entry can be created,
     appended/merged to and deleted. If you don't assign a category, the
@@ -316,7 +316,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     is to let everyone read the help file.
 
     """
-    key = "@sethelp"
+    key = "sethelp"
     switch_options = ("edit", "replace", "append", "extend", "delete")
     locks = "cmd:perm(Helper)"
     help_category = "Building"
@@ -328,7 +328,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
         lhslist = self.lhslist
 
         if not self.args:
-            self.msg("Usage: @sethelp[/switches] <topic>[;alias;alias][,category[,locks,..] = <text>")
+            self.msg("Usage: sethelp[/switches] <topic>[;alias;alias][,category[,locks,..] = <text>")
             return
 
         nlist = len(lhslist)

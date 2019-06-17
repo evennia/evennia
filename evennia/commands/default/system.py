@@ -41,14 +41,14 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
     reload the server
 
     Usage:
-      @reload [reason]
+      reload [reason]
 
     This restarts the server. The Portal is not
-    affected. Non-persistent scripts will survive a @reload (use
-    @reset to purge) and at_reload() hooks will be called.
+    affected. Non-persistent scripts will survive a reload (use
+    reset to purge) and at_reload() hooks will be called.
     """
-    key = "@reload"
-    aliases = ['@restart']
+    key = "reload"
+    aliases = ['restart']
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
@@ -68,23 +68,23 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
     reset and reboot the server
 
     Usage:
-      @reset
+      reset
 
     Notes:
-      For normal updating you are recommended to use @reload rather
-      than this command. Use @shutdown for a complete stop of
+      For normal updating you are recommended to use reload rather
+      than this command. Use shutdown for a complete stop of
       everything.
 
     This emulates a cold reboot of the Server component of Evennia.
-    The difference to @shutdown is that the Server will auto-reboot
+    The difference to shutdown is that the Server will auto-reboot
     and that it does not affect the Portal, so no users will be
-    disconnected. Contrary to @reload however, all shutdown hooks will
+    disconnected. Contrary to reload however, all shutdown hooks will
     be called and any non-database saved scripts, ndb-attributes,
     cmdsets etc will be wiped.
 
     """
-    key = "@reset"
-    aliases = ['@reboot']
+    key = "reset"
+    aliases = ['reboot']
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
@@ -102,11 +102,11 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
     stop the server completely
 
     Usage:
-      @shutdown [announcement]
+      shutdown [announcement]
 
     Gracefully shut down both Server and Portal.
     """
-    key = "@shutdown"
+    key = "shutdown"
     locks = "cmd:perm(shutdown) or perm(Developer)"
     help_category = "System"
 
@@ -226,8 +226,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     execute a snippet of python code
 
     Usage:
-      @py <cmd>
-      @py/edit
+      py <cmd>
+      py/edit
 
     Switches:
       time - output an approximate execution time for <cmd>
@@ -241,7 +241,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     in order to offer access to the system (you can import more at
     execution time).
 
-    Available variables in @py environment:
+    Available variables in py environment:
       self, me                   : caller
       here                       : caller.location
       ev                         : the evennia API
@@ -249,14 +249,14 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
     You can explore The evennia API from inside the game by calling
     the `__doc__` property on entities:
-        @py evennia.__doc__
-        @py evennia.managers.__doc__
+        py evennia.__doc__
+        py evennia.managers.__doc__
 
     |rNote: In the wrong hands this command is a severe security risk.
     It should only be accessible by trusted server admins/superusers.|n
 
     """
-    key = "@py"
+    key = "py"
     aliases = ["!"]
     switch_options = ("time", "edit", "clientraw")
     locks = "cmd:perm(py) or perm(Developer)"
@@ -277,7 +277,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
             return
 
         if not pycode:
-            string = "Usage: @py <code>"
+            string = "Usage: py <code>"
             self.msg(string)
             return
 
@@ -326,7 +326,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     list and manage all running scripts
 
     Usage:
-      @scripts[/switches] [#dbref, key, script.path or <obj>]
+      scripts[/switches] [#dbref, key, script.path or <obj>]
 
     Switches:
       start - start a script (must supply a script path)
@@ -340,10 +340,10 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     or #dbref. For using the /stop switch, a unique script #dbref is
     required since whole classes of scripts often have the same name.
 
-    Use @script for managing commands on objects.
+    Use script for managing commands on objects.
     """
-    key = "@scripts"
-    aliases = ["@globalscript", "@listscripts"]
+    key = "scripts"
+    aliases = ["globalscript", "listscripts"]
     switch_options = ("start", "stop", "kill", "validate")
     locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
@@ -419,14 +419,14 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
     statistics on objects in the database
 
     Usage:
-      @objects [<nr>]
+      objects [<nr>]
 
     Gives statictics on objects in database as well as
     a list of <nr> latest objects in database. If not
     given, <nr> defaults to 10.
     """
-    key = "@objects"
-    aliases = ["@listobjects", "@listobjs", '@stats', '@db']
+    key = "objects"
+    aliases = ["listobjects", "listobjs", 'stats', 'db']
     locks = "cmd:perm(listobjects) or perm(Builder)"
     help_category = "System"
 
@@ -446,7 +446,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         nobjs = nobjs or 1  # fix zero-div error with empty database
 
         # total object sum table
-        totaltable = self.style_table("|wtype|n", "|wcomment|n", "|wcount|n", "|w%|n",
+        totaltable = self.styled_table("|wtype|n", "|wcomment|n", "|wcount|n", "|w%|n",
                                       border="table", align="l")
         totaltable.align = 'l'
         totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS + children)",
@@ -458,7 +458,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
 
         # typeclass table
-        typetable = self.style_table("|wtypeclass|n", "|wcount|n", "|w%|n",
+        typetable = self.styled_table("|wtypeclass|n", "|wcount|n", "|w%|n",
                                      border="table", align="l")
         typetable.align = 'l'
         dbtotals = ObjectDB.objects.object_totals()
@@ -467,7 +467,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim):]
-        latesttable = self.style_table("|wcreated|n", "|wdbref|n", "|wname|n",
+        latesttable = self.styled_table("|wcreated|n", "|wdbref|n", "|wname|n",
                                        "|wtypeclass|n", align="l", border="table")
         latesttable.align = 'l'
         for obj in objs:
@@ -485,8 +485,8 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
     Manage registered accounts
 
     Usage:
-      @accounts [nr]
-      @accounts/delete <name or #id> [: reason]
+      accounts [nr]
+      accounts/delete <name or #id> [: reason]
 
     Switches:
       delete    - delete an account from the server
@@ -495,8 +495,8 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
     It will list the <nr> amount of latest registered accounts
     If not given, <nr> defaults to 10.
     """
-    key = "@accounts"
-    aliases = ["@account", "@listaccounts"]
+    key = "accounts"
+    aliases = ["account", "listaccounts"]
     switch_options = ("delete", )
     locks = "cmd:perm(listaccounts) or perm(Admin)"
     help_category = "System"
@@ -513,7 +513,7 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
                 caller.msg("You are not allowed to delete accounts.")
                 return
             if not args:
-                caller.msg("Usage: @accounts/delete <name or #id> [: reason]")
+                caller.msg("Usage: accounts/delete <name or #id> [: reason]")
                 return
             reason = ""
             if ":" in args:
@@ -564,12 +564,12 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
 
         # typeclass table
         dbtotals = AccountDB.objects.object_totals()
-        typetable = self.style_table("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
+        typetable = self.styled_table("|wtypeclass|n", "|wcount|n", "|w%%|n", border="cells", align="l")
         for path, count in dbtotals.items():
             typetable.add_row(path, count, "%.2f" % ((float(count) / naccounts) * 100))
         # last N table
         plyrs = AccountDB.objects.all().order_by("db_date_created")[max(0, naccounts - nlim):]
-        latesttable = self.style_table("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l")
+        latesttable = self.styled_table("|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l")
         for ply in plyrs:
             latesttable.add_row(utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.path)
 
@@ -583,7 +583,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
     manage system services
 
     Usage:
-      @service[/switch] <service>
+      service[/switch] <service>
 
     Switches:
       list   - shows all available services (default)
@@ -598,8 +598,8 @@ class CmdService(COMMAND_DEFAULT_CLASS):
     in the list.
     """
 
-    key = "@service"
-    aliases = ["@services"]
+    key = "service"
+    aliases = ["services"]
     switch_options = ("list", "start", "stop", "delete")
     locks = "cmd:perm(service) or perm(Developer)"
     help_category = "System"
@@ -611,7 +611,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
         switches = self.switches
 
         if switches and switches[0] not in ("list", "start", "stop", "delete"):
-            caller.msg("Usage: @service/<list|start|stop|delete> [servicename]")
+            caller.msg("Usage: service/<list|start|stop|delete> [servicename]")
             return
 
         # get all services
@@ -620,7 +620,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
         if not switches or switches[0] == "list":
             # Just display the list of installed services and their
             # status, then exit.
-            table = self.style_table("|wService|n (use @services/start|stop|delete)", "|wstatus", align="l")
+            table = self.styled_table("|wService|n (use services/start|stop|delete)", "|wstatus", align="l")
             for service in service_collection.services:
                 table.add_row(service.name, service.running and "|gRunning" or "|rNot Running")
             caller.msg(str(table))
@@ -632,7 +632,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             service = service_collection.getServiceNamed(self.args)
         except Exception:
             string = 'Invalid service name. This command is case-sensitive. '
-            string += 'See @service/list for valid service name (enter the full name exactly).'
+            string += 'See service/list for valid service name (enter the full name exactly).'
             caller.msg(string)
             return
 
@@ -677,13 +677,13 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
     show Evennia info
 
     Usage:
-      @about
+      about
 
     Display info about the game engine.
     """
 
-    key = "@about"
-    aliases = "@version"
+    key = "about"
+    aliases = "version"
     locks = "cmd:all()"
     help_category = "System"
 
@@ -718,26 +718,26 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
     show server time statistics
 
     Usage:
-      @time
+      time
 
     List Server time statistics such as uptime
     and the current time stamp.
     """
-    key = "@time"
-    aliases = "@uptime"
+    key = "time"
+    aliases = "uptime"
     locks = "cmd:perm(time) or perm(Player)"
     help_category = "System"
 
     def func(self):
         """Show server time data in a table."""
-        table1 = self.style_table("|wServer time", "", align="l", width=78)
+        table1 = self.styled_table("|wServer time", "", align="l", width=78)
         table1.add_row("Current uptime", utils.time_format(gametime.uptime(), 3))
         table1.add_row("Portal uptime", utils.time_format(gametime.portal_uptime(), 3))
         table1.add_row("Total runtime", utils.time_format(gametime.runtime(), 2))
         table1.add_row("First start", datetime.datetime.fromtimestamp(gametime.server_epoch()))
         table1.add_row("Current time", datetime.datetime.now())
         table1.reformat_column(0, width=30)
-        table2 = self.style_table("|wIn-Game time", "|wReal time x %g" % gametime.TIMEFACTOR, align="l", width=77, border_top=0)
+        table2 = self.styled_table("|wIn-Game time", "|wReal time x %g" % gametime.TIMEFACTOR, align="l", width=77, border_top=0)
         epochtxt = "Epoch (%s)" % ("from settings" if settings.TIME_GAME_EPOCH else "server start")
         table2.add_row(epochtxt, datetime.datetime.fromtimestamp(gametime.game_epoch()))
         table2.add_row("Total time passed:", utils.time_format(gametime.gametime(), 2))
@@ -751,7 +751,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     show server load and memory statistics
 
     Usage:
-       @server[/mem]
+       server[/mem]
 
     Switches:
         mem - return only a string of the current memory usage
@@ -782,8 +782,8 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
     the released memory will instead be re-used by the program.
 
     """
-    key = "@server"
-    aliases = ["@serverload", "@serverprocess"]
+    key = "server"
+    aliases = ["serverload", "serverprocess"]
     switch_options = ("mem", "flushmem")
     locks = "cmd:perm(list) or perm(Developer)"
     help_category = "System"
@@ -831,7 +831,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
                     self.caller.msg(string % (rmem, pmem))
                     return
                 # Display table
-                loadtable = self.style_table("property", "statistic", align="l")
+                loadtable = self.styled_table("property", "statistic", align="l")
                 loadtable.add_row("Total CPU load", "%g %%" % loadavg)
                 loadtable.add_row("Total computer memory usage", "%g MB (%g%%)" % (rmem, pmem))
                 loadtable.add_row("Process ID", "%g" % pid),
@@ -857,7 +857,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
                 self.caller.msg(string % (rmem, pmem, vmem))
                 return
 
-            loadtable = self.style_table("property", "statistic", align="l")
+            loadtable = self.styled_table("property", "statistic", align="l")
             loadtable.add_row("Server load (1 min)", "%g" % loadavg)
             loadtable.add_row("Process ID", "%g" % pid),
             loadtable.add_row("Memory usage", "%g MB (%g%%)" % (rmem, pmem))
@@ -882,7 +882,7 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
         total_num, cachedict = _IDMAPPER.cache_size()
         sorted_cache = sorted([(key, num) for key, num in cachedict.items() if num > 0],
                               key=lambda tup: tup[1], reverse=True)
-        memtable = self.style_table("entity name", "number", "idmapper %", align="l")
+        memtable = self.styled_table("entity name", "number", "idmapper %", align="l")
         for tup in sorted_cache:
             memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
 
@@ -897,14 +897,14 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
     View running tickers
 
     Usage:
-      @tickers
+      tickers
 
     Note: Tickers are created, stopped and manipulated in Python code
     using the TickerHandler. This is merely a convenience function for
     inspecting the current status.
 
     """
-    key = "@tickers"
+    key = "tickers"
     help_category = "System"
     locks = "cmd:perm(tickers) or perm(Builder)"
 
@@ -914,7 +914,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
         if not all_subs:
             self.caller.msg("No tickers are currently active.")
             return
-        table = self.style_table("interval (s)", "object", "path/methodname", "idstring", "db")
+        table = self.styled_table("interval (s)", "object", "path/methodname", "idstring", "db")
         for sub in all_subs:
             table.add_row(sub[3],
                           "%s%s" % (sub[0] or "[None]",

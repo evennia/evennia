@@ -225,7 +225,7 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
     build from batch-command file
 
     Usage:
-     @batchcommands[/interactive] <python.path.to.file>
+     batchcommands[/interactive] <python.path.to.file>
 
     Switch:
        interactive - this mode will offer more control when
@@ -235,8 +235,8 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
     Runs batches of commands from a batch-cmd text file (*.ev).
 
     """
-    key = "@batchcommands"
-    aliases = ["@batchcommand", "@batchcmd"]
+    key = "batchcommands"
+    aliases = ["batchcommand", "batchcmd"]
     switch_options = ("interactive",)
     locks = "cmd:perm(batchcommands) or perm(Developer)"
     help_category = "Building"
@@ -248,7 +248,7 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
 
         args = self.args
         if not args:
-            caller.msg("Usage: @batchcommands[/interactive] <path.to.file>")
+            caller.msg("Usage: batchcommands[/interactive] <path.to.file>")
             return
         python_path = self.args
 
@@ -337,7 +337,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
     build from batch-code file
 
     Usage:
-     @batchcode[/interactive] <python path to file>
+     batchcode[/interactive] <python path to file>
 
     Switch:
        interactive - this mode will offer more control when
@@ -351,8 +351,8 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
     Runs batches of commands from a batch-code text file (*.py).
 
     """
-    key = "@batchcode"
-    aliases = ["@batchcodes"]
+    key = "batchcode"
+    aliases = ["batchcodes"]
     switch_options = ("interactive", "debug")
     locks = "cmd:superuser()"
     help_category = "Building"
@@ -364,7 +364,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
 
         args = self.args
         if not args:
-            caller.msg("Usage: @batchcode[/interactive/debug] <path.to.file>")
+            caller.msg("Usage: batchcode[/interactive/debug] <path.to.file>")
             return
         python_path = self.args
         debug = 'debug' in self.switches
@@ -452,13 +452,13 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
 
 class CmdStateAbort(_COMMAND_DEFAULT_CLASS):
     """
-    @abort
+    abort
 
     This is a safety feature. It force-ejects us out of the processor and to
     the default cmdset, regardless of what current cmdset the processor might
     have put us in (e.g. when testing buggy scripts etc).
     """
-    key = "@abort"
+    key = "abort"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
 
@@ -813,7 +813,7 @@ class CmdStateHH(_COMMAND_DEFAULT_CLASS):
      cc         - continue processing to end, then quit.
      qq         - quit (abort all remaining commands)
 
-     @abort - this is a safety command that always is available
+     abort - this is a safety command that always is available
               regardless of what cmdsets gets added to us during
               batch-command processing. It immediately shuts down
               the processor and returns us to the default cmdset.
@@ -831,7 +831,7 @@ class CmdStateHH(_COMMAND_DEFAULT_CLASS):
 class BatchSafeCmdSet(CmdSet):
     """
     The base cmdset for the batch processor.
-    This sets a 'safe' @abort command that will
+    This sets a 'safe' abort command that will
     always be available to get out of everything.
     """
     key = "Batch_default"

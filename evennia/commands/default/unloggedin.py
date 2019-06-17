@@ -311,7 +311,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
   """
 
     key = "encoding"
-    aliases = ("@encoding", "@encode")
+    aliases = ("encode")
     locks = "cmd:all()"
 
     def func(self):
@@ -337,7 +337,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
             pencoding = self.session.protocol_flags.get("ENCODING", None)
             string = ""
             if pencoding:
-                string += "Default encoding: |g%s|n (change with |w@encoding <encoding>|n)" % pencoding
+                string += "Default encoding: |g%s|n (change with |wencoding <encoding>|n)" % pencoding
             encodings = settings.ENCODINGS
             if encodings:
                 string += "\nServer's alternative encodings (tested in this order):\n   |g%s|n" % ", ".join(encodings)
@@ -369,10 +369,9 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
         screenreader
 
     Used to flip screenreader mode on and off before logging in (when
-    logged in, use @option screenreader on).
+    logged in, use option screenreader on).
     """
     key = "screenreader"
-    aliases = "@screenreader"
 
     def func(self):
         """Flips screenreader setting."""
@@ -443,7 +442,7 @@ def _create_character(session, new_account, typeclass, home, permissions):
         # If no description is set, set a default description
         if not new_character.db.desc:
             new_character.db.desc = "This is a character."
-        # We need to set this to have @ic auto-connect to this character
+        # We need to set this to have ic auto-connect to this character
         new_account.db._last_puppet = new_character
     except Exception as e:
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)

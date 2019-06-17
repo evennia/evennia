@@ -12,6 +12,7 @@
 
 ### Commands
 
+- Remove `@`-prefix from all default commands (prefixes still works)
 - Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
   question.
 - Add new `@force` command to have another object perform a command.
@@ -23,6 +24,12 @@
 - `@py` command now defaults to escaping html tags in its output when viewing in the webclient.
   Use new `/clientraw` switch to get old behavior (issue #1369).
 - Shorter and more informative, dynamic, listing of on-command vars if not setting func() in child command class.
+- New Command helper methods
+  - `.client_width()` returns client width of the session running the command.
+  - `.styled_table(*args, **kwargs)` returns a formatted evtable styled by user's options
+  - `.style_header(*args, **kwargs)` creates styled header entry
+  - `.style_separator(*args, **kwargs)`      "             separator
+  - `.style_footer(*args, **kwargs)`         "             footer
 
 ### Web
 
@@ -120,6 +127,16 @@
   unix file sorting order.
 - Django signals fire for important events: Puppet/Unpuppet, Object create/rename, Login,
   Logout, Login fail Disconnect, Account create/rename
+
+### Settings
+
+- `GLOBAL_SCRIPTS` - dict defining typeclasses of global scripts to store on the new
+  `evennia.GLOBAL_SCRIPTS` container. These will auto-start when Evennia start and will always
+  exist.
+- `OPTIONS_ACCOUNTS_DEFAULT` - option dict with option defaults and Option classes
+- `OPTION_CLASS_MODULES` - classes representing an on-Account Option, on special form
+- `VALIDATOR_FUNC_MODULES` - (general) text validator functions, for verifying an input
+  is on a specific form.
 
 ### Utils
 
