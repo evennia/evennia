@@ -218,7 +218,7 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         args = self.args
         if not args:
-            self.execute_cmd("@channels")
+            self.execute_cmd("channels")
             self.msg("(Usage: allcom on | off | who | destroy)")
             return
 
@@ -239,7 +239,7 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
             channels = [chan for chan in ChannelDB.objects.get_all_channels()
                         if chan.access(caller, 'control')]
             for channel in channels:
-                self.execute_cmd("@cdestroy %s" % channel.key)
+                self.execute_cmd("cdestroy %s" % channel.key)
         elif args == "who":
             # run a who, listing the subscribers on visible channels.
             string = "\n|CChannel subscriptions|n"
@@ -260,16 +260,16 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
     list all channels available to you
 
     Usage:
-      @channels
-      @clist
+      channels
+      clist
       comlist
 
     Lists all channels available to you, whether you listen to them or not.
     Use 'comlist' to only view your current channel subscriptions.
     Use addcom/delcom to join and leave channels
     """
-    key = "@channels"
-    aliases = ["@clist", "comlist", "chanlist", "channellist", "all channels"]
+    key = "channels"
+    aliases = ["clist", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
     locks = "cmd: not pperm(channel_banned)"
 
@@ -292,8 +292,8 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
-            comtable = self.style_table("|wchannel|n", "|wmy aliases|n",
-                                       "|wdescription|n", align="l", maxwidth=_DEFAULT_WIDTH)
+            comtable = self.styled_table("|wchannel|n", "|wmy aliases|n",
+                                         "|wdescription|n", align="l", maxwidth=_DEFAULT_WIDTH)
             for chan in subs:
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel", return_obj=True)
@@ -302,12 +302,12 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                                    "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
                                                    if nick and nick.value[3].lower() == clower),
                                    chan.db.desc])
-            self.msg("\n|wChannel subscriptions|n (use |w@channels|n to list all,"
+            self.msg("\n|wChannel subscriptions|n (use |wchannels|n to list all,"
                      " |waddcom|n/|wdelcom|n to sub/unsub):|n\n%s" % comtable)
         else:
             # full listing (of channels caller is able to listen to)
-            comtable = self.style_table("|wsub|n", "|wchannel|n", "|wmy aliases|n",
-                                       "|wlocks|n", "|wdescription|n", maxwidth=_DEFAULT_WIDTH)
+            comtable = self.styled_table("|wsub|n", "|wchannel|n", "|wmy aliases|n",
+                                         "|wlocks|n", "|wdescription|n", maxwidth=_DEFAULT_WIDTH)
             for chan in channels:
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel", return_obj=True)
@@ -336,12 +336,12 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
     destroy a channel you created
 
     Usage:
-      @cdestroy <channel>
+      cdestroy <channel>
 
     Destroys a channel that you control.
     """
 
-    key = "@cdestroy"
+    key = "cdestroy"
     help_category = "Comms"
     locks = "cmd: not pperm(channel_banned)"
 
@@ -353,7 +353,7 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            self.msg("Usage: @cdestroy <channelname>")
+            self.msg("Usage: cdestroy <channelname>")
             return
         channel = find_channel(caller, self.args)
         if not channel:
@@ -377,7 +377,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
     kick an account from a channel you control
 
     Usage:
-       @cboot[/quiet] <channel> = <account> [:reason]
+       cboot[/quiet] <channel> = <account> [:reason]
 
     Switch:
        quiet - don't notify the channel
@@ -386,7 +386,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "@cboot"
+    key = "cboot"
     switch_options = ("quiet",)
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
@@ -398,7 +398,7 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
         """implement the function"""
 
         if not self.args or not self.rhs:
-            string = "Usage: @cboot[/quiet] <channel> = <account> [:reason]"
+            string = "Usage: cboot[/quiet] <channel> = <account> [:reason]"
             self.msg(string)
             return
 
@@ -444,7 +444,7 @@ class CmdCemit(COMMAND_DEFAULT_CLASS):
     send an admin message to a channel you control
 
     Usage:
-      @cemit[/switches] <channel> = <message>
+      cemit[/switches] <channel> = <message>
 
     Switches:
       sendername - attach the sender's name before the message
@@ -456,8 +456,8 @@ class CmdCemit(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "@cemit"
-    aliases = ["@cmsg"]
+    key = "cemit"
+    aliases = ["cmsg"]
     switch_options = ("sendername", "quiet")
     locks = "cmd: not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
@@ -469,7 +469,7 @@ class CmdCemit(COMMAND_DEFAULT_CLASS):
         """Implement function"""
 
         if not self.args or not self.rhs:
-            string = "Usage: @cemit[/switches] <channel> = <message>"
+            string = "Usage: cemit[/switches] <channel> = <message>"
             self.msg(string)
             return
         channel = find_channel(self.caller, self.lhs)
@@ -493,11 +493,11 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
     show who is listening to a channel
 
     Usage:
-      @cwho <channel>
+      cwho <channel>
 
     List who is connected to a given channel you have access to.
     """
-    key = "@cwho"
+    key = "cwho"
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
 
@@ -508,7 +508,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
         """implement function"""
 
         if not self.args:
-            string = "Usage: @cwho <channel>"
+            string = "Usage: cwho <channel>"
             self.msg(string)
             return
 
@@ -529,12 +529,12 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
     create a new channel
 
     Usage:
-     @ccreate <new channel>[;alias;alias...] = description
+     ccreate <new channel>[;alias;alias...] = description
 
     Creates a new channel owned by you.
     """
 
-    key = "@ccreate"
+    key = "ccreate"
     aliases = "channelcreate"
     locks = "cmd:not pperm(channel_banned) and pperm(Player)"
     help_category = "Comms"
@@ -548,7 +548,7 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            self.msg("Usage @ccreate <channelname>[;alias;alias..] = description")
+            self.msg("Usage ccreate <channelname>[;alias;alias..] = description")
             return
 
         description = ""
@@ -581,15 +581,15 @@ class CmdClock(COMMAND_DEFAULT_CLASS):
     change channel locks of a channel you control
 
     Usage:
-      @clock <channel> [= <lockstring>]
+      clock <channel> [= <lockstring>]
 
     Changes the lock access restrictions of a channel. If no
     lockstring was given, view the current lock definitions.
     """
 
-    key = "@clock"
+    key = "clock"
     locks = "cmd:not pperm(channel_banned)"
-    aliases = ["@clock"]
+    aliases = ["clock"]
     help_category = "Comms"
 
     # this is used by the COMMAND_DEFAULT_CLASS parent
@@ -599,7 +599,7 @@ class CmdClock(COMMAND_DEFAULT_CLASS):
         """run the function"""
 
         if not self.args:
-            string = "Usage: @clock channel [= lockstring]"
+            string = "Usage: clock channel [= lockstring]"
             self.msg(string)
             return
 
@@ -634,13 +634,13 @@ class CmdCdesc(COMMAND_DEFAULT_CLASS):
     describe a channel you control
 
     Usage:
-      @cdesc <channel> = <description>
+      cdesc <channel> = <description>
 
     Changes the description of the channel as shown in
     channel lists.
     """
 
-    key = "@cdesc"
+    key = "cdesc"
     locks = "cmd:not pperm(channel_banned)"
     help_category = "Comms"
 
@@ -653,7 +653,7 @@ class CmdCdesc(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.rhs:
-            self.msg("Usage: @cdesc <channel> = <description>")
+            self.msg("Usage: cdesc <channel> = <description>")
             return
         channel = find_channel(caller, self.lhs)
         if not channel:
@@ -804,10 +804,12 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         self.msg("You paged %s with: '%s'." % (", ".join(received), message))
 
 
-def _list_bots():
+def _list_bots(cmd):
     """
     Helper function to produce a list of all IRC bots.
 
+    Args:
+        cmd (Command): Instance of the Bot command.
     Returns:
         bots (str): A table of bots or an error message.
 
@@ -815,8 +817,8 @@ def _list_bots():
     ircbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
     if ircbots:
         from evennia.utils.evtable import EvTable
-        table = self.style_table("|w#dbref|n", "|wbotname|n", "|wev-channel|n",
-                        "|wirc-channel|n", "|wSSL|n", maxwidth=_DEFAULT_WIDTH)
+        table = cmd.styled_table("|w#dbref|n", "|wbotname|n", "|wev-channel|n",
+                                 "|wirc-channel|n", "|wSSL|n", maxwidth=_DEFAULT_WIDTH)
         for ircbot in ircbots:
             ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
             table.add_row("#%i" % ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
@@ -830,8 +832,8 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     link an evennia channel to an external IRC channel
 
     Usage:
-      @irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>[:typeclass]
-      @irc2chan/delete botname|#dbid
+      irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>[:typeclass]
+      irc2chan/delete botname|#dbid
 
     Switches:
       /delete     - this will delete the bot and remove the irc connection
@@ -842,8 +844,8 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
       /ssl        - use an SSL-encrypted connection
 
     Example:
-      @irc2chan myircchan = irc.dalnet.net 6667 #mychannel evennia-bot
-      @irc2chan public = irc.freenode.net 6667 #evgaming #evbot:accounts.mybot.MyBot
+      irc2chan myircchan = irc.dalnet.net 6667 #mychannel evennia-bot
+      irc2chan public = irc.freenode.net 6667 #evgaming #evbot:accounts.mybot.MyBot
 
     This creates an IRC bot that connects to a given IRC network and
     channel. If a custom typeclass path is given, this will be used
@@ -852,11 +854,11 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     IRC channel and vice versa. The bot will automatically connect at
     server start, so this command need only be given once. The
     /disconnect switch will permanently delete the bot. To only
-    temporarily deactivate it, use the  |w@services|n command instead.
+    temporarily deactivate it, use the  |wservices|n command instead.
     Provide an optional bot class path to use a custom bot.
     """
 
-    key = "@irc2chan"
+    key = "irc2chan"
     switch_options = ("delete", "remove", "disconnect", "list", "ssl")
     locks = "cmd:serversetting(IRC_ENABLED) and pperm(Developer)"
     help_category = "Comms"
@@ -871,7 +873,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
 
         if 'list' in self.switches:
             # show all connections
-            self.msg(_list_bots())
+            self.msg(_list_bots(self))
             return
 
         if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
@@ -889,7 +891,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: @irc2chan[/switches] <evennia_channel> =" \
+            string = "Usage: irc2chan[/switches] <evennia_channel> =" \
                      " <ircnetwork> <port> <#irchannel> <botname>[:typeclass]"
             self.msg(string)
             return
@@ -941,7 +943,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         ircstatus [#dbref ping||nicklist||reconnect]
 
     If not given arguments, will return a list of all bots (like
-    @irc2chan/list). The 'ping' argument will ping the IRC network to
+    irc2chan/list). The 'ping' argument will ping the IRC network to
     see if the connection is still responsive. The 'nicklist' argument
     (aliases are 'who' and 'users') will return a list of users on the
     remote IRC channel.  Finally, 'reconnect' will force the client to
@@ -951,7 +953,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
     messages sent to either channel will be lost.
 
     """
-    key = "@ircstatus"
+    key = "ircstatus"
     locks = "cmd:serversetting(IRC_ENABLED) and perm(ircstatus) or perm(Builder))"
     help_category = "Comms"
 
@@ -959,12 +961,12 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         """Handles the functioning of the command."""
 
         if not self.args:
-            self.msg(_list_bots())
+            self.msg(_list_bots(self))
             return
         # should always be on the form botname option
         args = self.args.split()
         if len(args) != 2:
-            self.msg("Usage: @ircstatus [#dbref ping||nicklist||reconnect]")
+            self.msg("Usage: ircstatus [#dbref ping||nicklist||reconnect]")
             return
         botname, option = args
         if option not in ("ping", "users", "reconnect", "nicklist", "who"):
@@ -974,7 +976,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         if utils.dbref(botname):
             matches = AccountDB.objects.filter(db_is_bot=True, id=utils.dbref(botname))
         if not matches:
-            self.msg("No matching IRC-bot found. Use @ircstatus without arguments to list active bots.")
+            self.msg("No matching IRC-bot found. Use ircstatus without arguments to list active bots.")
             return
         ircbot = matches[0]
         channel = ircbot.db.irc_channel
@@ -1004,7 +1006,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
     link an evennia channel to an external RSS feed
 
     Usage:
-      @rss2chan[/switches] <evennia_channel> = <rss_url>
+      rss2chan[/switches] <evennia_channel> = <rss_url>
 
     Switches:
       /disconnect - this will stop the feed and remove the connection to the
@@ -1013,7 +1015,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
       /list       - show all rss->evennia mappings
 
     Example:
-      @rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
+      rss2chan rsschan = http://code.google.com/feeds/p/evennia/updates/basic
 
     This creates an RSS reader  that connects to a given RSS feed url. Updates
     will be echoed as a title and news link to the given channel. The rate of
@@ -1024,7 +1026,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
     to identify the connection uniquely.
     """
 
-    key = "@rss2chan"
+    key = "rss2chan"
     switch_options = ("disconnect", "remove", "list")
     locks = "cmd:serversetting(RSS_ENABLED) and pperm(Developer)"
     help_category = "Comms"
@@ -1051,8 +1053,8 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             rssbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
             if rssbots:
                 from evennia.utils.evtable import EvTable
-                table = self.style_table("|wdbid|n", "|wupdate rate|n", "|wev-channel",
-                                "|wRSS feed URL|n", border="cells", maxwidth=_DEFAULT_WIDTH)
+                table = self.styled_table("|wdbid|n", "|wupdate rate|n", "|wev-channel",
+                                         "|wRSS feed URL|n", border="cells", maxwidth=_DEFAULT_WIDTH)
                 for rssbot in rssbots:
                     table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
                 self.msg(table)
@@ -1074,7 +1076,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: @rss2chan[/switches] <evennia_channel> = <rss url>"
+            string = "Usage: rss2chan[/switches] <evennia_channel> = <rss url>"
             self.msg(string)
             return
         channel = self.lhs

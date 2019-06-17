@@ -96,10 +96,10 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     Examples:
       nick hi = say Hello, I'm Sarah!
       nick/object tom = the tall man
-      nick build $1 $2 = @create/drop $1;$2
-      nick tell $1 $2=@page $1=$2
-      nick tm?$1=@page tallman=$1
-      nick tm\=$1=@page tallman=$1
+      nick build $1 $2 = create/drop $1;$2
+      nick tell $1 $2=page $1=$2
+      nick tm?$1=page tallman=$1
+      nick tm\=$1=page tallman=$1
 
     A 'nick' is a personal string replacement. Use $1, $2, ... to catch arguments.
     Put the last $-marker without an ending space to catch all remaining text. You
@@ -113,7 +113,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     Note that no objects are actually renamed or changed by this command - your nicks
     are only available to you. If you want to permanently add keywords to an object
-    for everyone to use, you need build privileges and the @alias command.
+    for everyone to use, you need build privileges and the alias command.
 
     """
     key = "nick"
@@ -152,12 +152,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     utils.make_iter(caller.nicks.get(category="object", return_obj=True) or []) +
                     utils.make_iter(caller.nicks.get(category="account", return_obj=True) or []))
 
-        if 'list' in switches or self.cmdstring in ("nicks", "@nicks"):
+        if 'list' in switches or self.cmdstring in ("nicks",):
 
             if not nicklist:
                 string = "|wNo nicks defined.|n"
             else:
-                table = self.style_table("#", "Type", "Nick match", "Replacement")
+                table = self.styled_table("#", "Type", "Nick match", "Replacement")
                 for inum, nickobj in enumerate(nicklist):
                     _, _, nickvalue, replacement = nickobj.value
                     table.add_row(str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement))
@@ -338,7 +338,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
         if not items:
             string = "You are not carrying anything."
         else:
-            table = self.style_table(border="header")
+            table = self.styled_table(border="header")
             for item in items:
                 table.add_row("|C%s|n" % item.name, item.db.desc or "")
             string = "|wYou are carrying:\n%s" % table

@@ -290,7 +290,7 @@ class TestAccount(CommandTest):
 
     def test_char_create(self):
         self.call(account.CmdCharCreate(), "Test1=Test char",
-                  "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
+                  "Created new character Test1. Use ic Test1 to enter the game", caller=self.account)
 
     def test_char_delete(self):
         # Chardelete requires user input; this test is mainly to confirm
@@ -382,7 +382,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj2/test3 = ", "Deleted attribute 'test3' (= True) from Obj2.")
 
         self.call(building.CmdCpAttr(), "/copy Obj2/test2 = Obj2/test3",
-                  "@cpattr: Extra switch \"/copy\" ignored.|\nCopied Obj2.test2 -> Obj2.test3. "
+                  "cpattr: Extra switch \"/copy\" ignored.|\nCopied Obj2.test2 -> Obj2.test3. "
                   "(value: 'value2')")
         self.call(building.CmdMvAttr(), "", "Usage: ")
         self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
@@ -473,7 +473,7 @@ class TestBuilding(CommandTest):
     def test_tunnel(self):
         self.call(building.CmdTunnel(), "n = TestRoom2;test2", "Created room TestRoom2")
         self.call(building.CmdTunnel(), "", "Usage: ")
-        self.call(building.CmdTunnel(), "foo = TestRoom2;test2", "@tunnel can only understand the")
+        self.call(building.CmdTunnel(), "foo = TestRoom2;test2", "tunnel can only understand the")
         self.call(building.CmdTunnel(), "/tel e = TestRoom3;test3", "Created room TestRoom3")
         DefaultRoom.objects.get_family(db_key="TestRoom3")
         exits = DefaultExit.objects.filter_family(db_key__in=("east", "west"))
@@ -529,7 +529,7 @@ class TestBuilding(CommandTest):
                   "to evennia.objects.objects.DefaultExit.")
         self.call(building.CmdTypeclass(), "Obj2 = evennia.objects.objects.DefaultExit",
                   "Obj2 changed typeclass from evennia.objects.objects.DefaultObject "
-                  "to evennia.objects.objects.DefaultExit.", cmdstring="@swap")
+                  "to evennia.objects.objects.DefaultExit.", cmdstring="swap")
         self.call(building.CmdTypeclass(), "/list Obj", "Core typeclasses")
         self.call(building.CmdTypeclass(), "/show Obj", "Obj's current typeclass is 'evennia.objects.objects.DefaultExit'")
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
@@ -541,7 +541,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdTypeclass(), "Obj",
                   "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
                   "Only the at_object_creation hook was run (update mode). Attributes set before swap were not removed.",
-                  cmdstring="@update")
+                  cmdstring="update")
         self.call(building.CmdTypeclass(), "/reset/force Obj=evennia.objects.objects.DefaultObject",
                   "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
                   "All object creation hooks were run. All old attributes where deleted before the swap.")
@@ -554,7 +554,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdLock(), "Obj/test", "test:all()")
         self.call(building.CmdLock(), "/view Obj = edit:false()",
                   "Switch(es) view can not be used with a lock assignment. "
-                  "Use e.g. @lock/del objname/locktype instead.")
+                  "Use e.g. lock/del objname/locktype instead.")
         self.call(building.CmdLock(), "Obj = control:false()")
         self.call(building.CmdLock(), "Obj = edit:false()")
         self.call(building.CmdLock(), "Obj/test", "You are not allowed to do that.")
@@ -573,9 +573,9 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "/ex Char2",  # /ex is an ambiguous switch
                   "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|",
                   cmdstring="locate")
-        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@locate")
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="locate")
         self.call(building.CmdFind(), "/l Char2", "One Match", cmdstring="find")  # /l switch is abbreviated form of /loc
-        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="find")
         self.call(building.CmdFind(), "/startswith Room2", "One Match")
 
         self.call(building.CmdFind(), self.char1.dbref, "Exact dbref match")
@@ -590,7 +590,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
         self.call(building.CmdScript(), "", "Usage: ")
-        self.call(building.CmdScript(), "= Obj", "To create a global script you need @scripts/add <typeclass>.")
+        self.call(building.CmdScript(), "= Obj", "To create a global script you need scripts/add <typeclass>.")
         self.call(building.CmdScript(), "Obj = ", "dbref obj")
 
         self.call(building.CmdScript(), "/start Obj", "0 scripts started on Obj")  # because it's already started
@@ -655,10 +655,10 @@ class TestBuilding(CommandTest):
             commandTest.assertIsNotNone(obj)
             return obj
 
-        # Tests "@spawn" without any arguments.
-        self.call(building.CmdSpawn(), " ", "Usage: @spawn")
+        # Tests "spawn" without any arguments.
+        self.call(building.CmdSpawn(), " ", "Usage: spawn")
 
-        # Tests "@spawn <prototype_dictionary>" without specifying location.
+        # Tests "spawn <prototype_dictionary>" without specifying location.
 
         self.call(building.CmdSpawn(),
                   "/save {'prototype_key': 'testprot', 'key':'Test Char', "
@@ -682,7 +682,7 @@ class TestBuilding(CommandTest):
         self.assertEqual(testchar.location, self.char1.location)
         testchar.delete()
 
-        # Test "@spawn <prototype_dictionary>" with a location other than the character's.
+        # Test "spawn <prototype_dictionary>" with a location other than the character's.
         spawnLoc = self.room2
         if spawnLoc == self.char1.location:
             # Just to make sure we use a different location, in case someone changes
@@ -704,7 +704,7 @@ class TestBuilding(CommandTest):
                                   'typeclass': 'evennia.objects.objects.DefaultCharacter',
                                   'prototype_key': 'testball'})
 
-        # Tests "@spawn <prototype_name>"
+        # Tests "spawn <prototype_name>"
         self.call(building.CmdSpawn(), "testball", "Spawned Ball")
 
         ball = getObject(self, "Ball")
@@ -712,7 +712,7 @@ class TestBuilding(CommandTest):
         self.assertIsInstance(ball, DefaultObject)
         ball.delete()
 
-        # Tests "@spawn/n ..." without specifying a location.
+        # Tests "spawn/n ..." without specifying a location.
         # Location should be "None".
         self.call(building.CmdSpawn(), "/n 'BALL'", "Spawned Ball")   # /n switch is abbreviated form of /noloc
         ball = getObject(self, "Ball")
@@ -723,7 +723,7 @@ class TestBuilding(CommandTest):
                 "/noloc {'prototype_parent':'TESTBALL', 'prototype_key': 'testball', 'location':'%s'}"
                 % spawnLoc.dbref, "Error: Prototype testball tries to parent itself.")
 
-        # Tests "@spawn/noloc ...", but DO specify a location.
+        # Tests "spawn/noloc ...", but DO specify a location.
         # Location should be the specified location.
         self.call(building.CmdSpawn(),
                 "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo', 'location':'%s'}"
@@ -738,14 +738,14 @@ class TestBuilding(CommandTest):
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
 
-        # @spawn/edit (missing prototype)
+        # spawn/edit (missing prototype)
         # brings up olc menu
         msg = self.call(
             building.CmdSpawn(),
             '/edit')
         assert 'Prototype wizard' in msg
 
-        # @spawn/edit with valid prototype
+        # spawn/edit with valid prototype
         # brings up olc menu loaded with prototype
         msg = self.call(
             building.CmdSpawn(),
@@ -759,34 +759,34 @@ class TestBuilding(CommandTest):
                 and 'Ball' == self.char1.ndb._menutree.olc_prototype['key']
         assert 'Ball' in msg and 'testball' in msg
 
-        # @spawn/edit with valid prototype (synomym)
+        # spawn/edit with valid prototype (synomym)
         msg = self.call(
             building.CmdSpawn(),
             '/edit BALL')
         assert 'Prototype wizard' in msg
         assert 'Ball' in msg and 'testball' in msg
 
-        # @spawn/edit with invalid prototype
+        # spawn/edit with invalid prototype
         msg = self.call(
             building.CmdSpawn(),
             '/edit NO_EXISTS',
             "No prototype 'NO_EXISTS' was found.")
 
-        # @spawn/examine (missing prototype)
+        # spawn/examine (missing prototype)
         # lists all prototypes that exist
         msg = self.call(
             building.CmdSpawn(),
             '/examine')
         assert 'testball' in msg and 'testprot' in msg
 
-        # @spawn/examine with valid prototype
+        # spawn/examine with valid prototype
         # prints the prototype
         msg = self.call(
             building.CmdSpawn(),
             '/examine BALL')
         assert 'Ball' in msg and 'testball' in msg
 
-        # @spawn/examine with invalid prototype
+        # spawn/examine with invalid prototype
         # shows error
         self.call(
             building.CmdSpawn(),
@@ -836,7 +836,7 @@ class TestComms(CommandTest):
 
     def test_cboot(self):
         # No one else connected to boot
-        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <account> [:reason]", receiver=self.account)
+        self.call(comms.CmdCBoot(), "", "Usage: cboot[/quiet] <channel> = <account> [:reason]", receiver=self.account)
 
     def test_cdestroy(self):
         self.call(comms.CmdCdestroy(), "testchan",

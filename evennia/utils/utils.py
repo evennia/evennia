@@ -1229,7 +1229,7 @@ def mod_import(module):
             # check just where the ImportError happened (it could have been
             # an erroneous import inside the module as well). This is the
             # trivial way to do it ...
-            if str(ex) != "Import by filename is not supported.":
+            if not str(ex).startswith("No module named "):
                 raise
 
             # error in this module. Try absolute path import instead
