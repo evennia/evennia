@@ -29,6 +29,7 @@ things you want from here into your game folder and change them there.
 * Dice (Griatch 2012) - A fully featured dice rolling system.
 * Email-login (Griatch 2012) - A variant of the standard login system
   that requires an email to login rather then just name+password.
+* Evscaperoom (Griatch 2019) - A full engine for making escaperoom puzzles
 * Extended Room (Griatch 2012) - An expanded Room typeclass with
   multiple descriptions for time and season as well as details.
 * Field Fill (FlutterSprite 2018) - A simple system for creating an
