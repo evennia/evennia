@@ -15,6 +15,8 @@ _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
 _IRC_ENABLED = settings.IRC_ENABLED
 _RSS_ENABLED = settings.RSS_ENABLED
+_GRAPEWINE_ENABLED = settings.GRAPEWINE_ENABLED
+
 
 _SESSIONS = None
 
@@ -424,3 +426,91 @@ class RSSBot(Bot):
             self.ndb.ev_channel = self.db.ev_channel
         if self.ndb.ev_channel:
             self.ndb.ev_channel.msg(txt, senders=self.id)
+
+
+# Grapewine bot
+
+class GrapewineBot(Bot):
+    """
+    A Grapewine (https://grapewine.haus) relayer. The channel to connect to is the first
+    name in the settings.GRAPEWINE_CHANNELS list.
+
+    """
+    factory_path = "evennia.server.portal.grapewine.RestartingWebsocketServerFactory"
+
+    def start(self, ev_channel=None, grapewine_channel=None):
+        """
+        Start by telling the portal to connect to the grapewine network.
+
+        """
+        if not _GRAPEWINE_ENABLED:
+            self.delete()
+            return
+
+        global _SESSIONS
+        if not _SESSIONS:
+            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
+
+        # connect to Evennia channel
+        if ev_channel:
+            # connect to Evennia channel
+            channel = search.channel_search(ev_channel)
+            if not channel:
+                raise RuntimeError("Evennia Channel '%s' not found." % ev_channel)
+            channel = channel[0]
+            channel.connect(self)
+            self.db.ev_channel = channel
+
+        if grapewine_channel:
+            self.db.grapewine_channel = grapewine_channel
+
+        # these will be made available as properties on the protocol factory
+        configdict = {"uid": self.dbid,
+                      "grapewine_channel": self.db.grapewine_channel}
+
+        _SESSIONS.start_bot_session(self.factory_path, configdict)
+
+    def at_msg_send(self, **kwargs):
+        "Shortcut here or we can end up in infinite loop"
+        pass
+
+    def msg(self, text=None, **kwargs):
+        """
+        Takes text from connected channel (only).
+
+        Args:
+            text (str, optional): Incoming text from channel.
+
+        Kwargs:
+            options (dict): Options dict with the following allowed keys:
+                - from_channel (str): dbid of a channel this text originated from.
+                - from_obj (list): list of objects sending this text.
+
+        """
+        from_obj = kwargs.get("from_obj", None)
+        options = kwargs.get("options", None) or {}
+        if not self.ndb.ev_channel and self.db.ev_channel:
+            # cache channel lookup
+            self.ndb.ev_channel = self.db.ev_channel
+        if ("from_channel" in options and text and
+                self.ndb.ev_channel.dbid == options["from_channel"]):
+            if not from_obj or from_obj != [self]:
+                # send outputfunc text(msg, chan, sender)
+                super().msg(text=(text, self.db.grapewine_channel, from_obj.key))
+
+    def execute_cmd(self, txt=None, session=None, event=None, grapewine_channel=None,
+                    sender=None, game=None, **kwargs):
+        """
+        Take incoming data from protocol and send it to connected channel. This is
+        triggered by the bot_data_in Inputfunc.
+        """
+        if event == "channels/broadcast":
+            # A private message to the bot - a command.
+
+            text = f"{sender}@{game}: {txt}"
+
+            if not self.ndb.ev_channel and self.db.ev_channel:
+                # simple cache of channel lookup
+                self.ndb.ev_channel = self.db.ev_channel
+            if self.ndb.ev_channel:
+                self.ndb.ev_channel.msg(text, senders=self)

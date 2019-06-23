@@ -706,6 +706,22 @@ IRC_ENABLED = False
 RSS_ENABLED = False
 RSS_UPDATE_INTERVAL = 60 * 10  # 10 minutes
 
+# Grapewine (grapewine.haus) is a network for listing MUDs as well as allow
+# users of said MUDs to communicate with each other on shared channels. To use,
+# your game must first be registered by logging in and creating a game entry at
+# https://grapewine.haus. Evennia links grapewine channels to in-game channels
+# with the @grapewine2chan command, available once this flag is set
+# Grapewine requires installing the pyopenssl library (pip install pyopenssl)
+GRAPEWINE_ENABLED = False
+# Grapewine channels to allow connection to. See https://grapevine.haus/chat
+# for the available channels. Only channels in this list can be linked to in-game
+# channels later.
+GRAPEWINE_CHANNELS = ["gossip", "testing"]
+# Grapewine authentication. Register your game at https://grapewine.haus to get
+# them. These are secret and should thus be overridden in secret_settings file
+GRAPEWINE_CLIENT_ID = ""
+GRAPEWINE_CLIENT_SECRET = ""
+
 ######################################################################
 # Django web features
 ######################################################################
