@@ -15,7 +15,7 @@ _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
 _IRC_ENABLED = settings.IRC_ENABLED
 _RSS_ENABLED = settings.RSS_ENABLED
-_GRAPEWINE_ENABLED = settings.GRAPEWINE_ENABLED
+_GRAPEVINE_ENABLED = settings.GRAPEVINE_ENABLED
 
 
 _SESSIONS = None
@@ -270,10 +270,13 @@ class IRCBot(Bot):
         """
         from_obj = kwargs.get("from_obj", None)
         options = kwargs.get("options", None) or {}
+
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
-        if "from_channel" in options and text and self.ndb.ev_channel.dbid == options["from_channel"]:
+
+        if ("from_channel" in options and text and
+                self.ndb.ev_channel.dbid == options["from_channel"]):
             if not from_obj or from_obj != [self]:
                 super().msg(channel=text)
 
@@ -289,13 +292,16 @@ class IRCBot(Bot):
         Kwargs:
             user (str): The name of the user who sent the message.
             channel (str): The name of channel the message was sent to.
-            type (str): Nature of message. Either 'msg', 'action', 'nicklist' or 'ping'.
-            nicklist (list, optional): Set if `type='nicklist'`. This is a list of nicks returned by calling
-                the `self.get_nicklist`. It must look for a list `self._nicklist_callers`
-                which will contain all callers waiting for the nicklist.
-            timings (float, optional): Set if `type='ping'`. This is the return (in seconds) of a
-                ping request triggered with `self.ping`. The return must look for a list
-                `self._ping_callers` which will contain all callers waiting for the ping return.
+            type (str): Nature of message. Either 'msg', 'action', 'nicklist'
+                or 'ping'.
+            nicklist (list, optional): Set if `type='nicklist'`. This is a list
+                of nicks returned by calling the `self.get_nicklist`. It must look
+                for a list `self._nicklist_callers` which will contain all callers
+                waiting for the nicklist.
+            timings (float, optional): Set if `type='ping'`. This is the return
+                (in seconds) of a ping request triggered with `self.ping`. The
+                return must look for a list `self._ping_callers` which will contain
+                all callers waiting for the ping return.
 
         """
         if kwargs["type"] == "nicklist":
@@ -354,6 +360,7 @@ class IRCBot(Bot):
             if not self.ndb.ev_channel and self.db.ev_channel:
                 # cache channel lookup
                 self.ndb.ev_channel = self.db.ev_channel
+
             if self.ndb.ev_channel:
                 self.ndb.ev_channel.msg(text, senders=self)
 
@@ -428,22 +435,22 @@ class RSSBot(Bot):
             self.ndb.ev_channel.msg(txt, senders=self.id)
 
 
-# Grapewine bot
+# Grapevine bot
 
-class GrapewineBot(Bot):
+class GrapevineBot(Bot):
     """
-    A Grapewine (https://grapewine.haus) relayer. The channel to connect to is the first
-    name in the settings.GRAPEWINE_CHANNELS list.
+    g Grapevine (https://grapevine.haus) relayer. The channel to connect to is the first
+    name in the settings.GRAPEVINE_CHANNELS list.
 
     """
-    factory_path = "evennia.server.portal.grapewine.RestartingWebsocketServerFactory"
+    factory_path = "evennia.server.portal.grapevine.RestartingWebsocketServerFactory"
 
-    def start(self, ev_channel=None, grapewine_channel=None):
+    def start(self, ev_channel=None, grapevine_channel=None):
         """
-        Start by telling the portal to connect to the grapewine network.
+        Start by telling the portal to connect to the grapevine network.
 
         """
-        if not _GRAPEWINE_ENABLED:
+        if not _GRAPEVINE_ENABLED:
             self.delete()
             return
 
@@ -461,12 +468,12 @@ class GrapewineBot(Bot):
             channel.connect(self)
             self.db.ev_channel = channel
 
-        if grapewine_channel:
-            self.db.grapewine_channel = grapewine_channel
+        if grapevine_channel:
+            self.db.grapevine_channel = grapevine_channel
 
         # these will be made available as properties on the protocol factory
         configdict = {"uid": self.dbid,
-                      "grapewine_channel": self.db.grapewine_channel}
+                      "grapevine_channel": self.db.grapevine_channel}
 
         _SESSIONS.start_bot_session(self.factory_path, configdict)
 
@@ -489,16 +496,25 @@ class GrapewineBot(Bot):
         """
         from_obj = kwargs.get("from_obj", None)
         options = kwargs.get("options", None) or {}
+
         if not self.ndb.ev_channel and self.db.ev_channel:
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
+
         if ("from_channel" in options and text and
                 self.ndb.ev_channel.dbid == options["from_channel"]):
             if not from_obj or from_obj != [self]:
-                # send outputfunc text(msg, chan, sender)
-                super().msg(text=(text, self.db.grapewine_channel, from_obj.key))
+                # send outputfunc channel(msg, chan, sender)
 
-    def execute_cmd(self, txt=None, session=None, event=None, grapewine_channel=None,
+                # TODO we should refactor channel formatting to operate on the
+                # account/object level instead. For now, remove the channel/name
+                # prefix since we pass that explicitly anyway
+                prefix, text = text.split(":", 1)
+
+                super().msg(channel=(text.strip(), self.db.grapevine_channel,
+                                     ", ".join(obj.key for obj in from_obj), {}))
+
+    def execute_cmd(self, txt=None, session=None, event=None, grapevine_channel=None,
                     sender=None, game=None, **kwargs):
         """
         Take incoming data from protocol and send it to connected channel. This is

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Connection screen 
+Connection screen
 
 This is the text to show the user when they first connect to the game (before
-they log in). 
+they log in).
 
 To change the login screen in this module, do one of the following:
 
@@ -12,7 +12,7 @@ To change the login screen in this module, do one of the following:
   This can be used to produce more dynamic screens.
 - Alternatively, define a string variable in the outermost scope of this module
   with the connection string that should be displayed. If more than one such
-  variable is given, Evennia will pick one of them at random. 
+  variable is given, Evennia will pick one of them at random.
 
 The commands available to the user when the connection screen is shown
 are defined in evennia.default_cmds.UnloggedinCmdSet. The parsing and display
@@ -35,4 +35,4 @@ CONNECTION_SCREEN = """
  If you have spaces in your username, enclose it in quotes.
  Enter |whelp|n for more info. |wlook|n will re-show this screen.
 |b==============================================================|n""" \
-    .format(settings.SERVERNAME, utils.get_evennia_version())
+    .format(settings.SERVERNAME, utils.get_evennia_version("short"))

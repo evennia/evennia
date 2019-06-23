@@ -603,16 +603,29 @@ def host_os_is(osname):
     return os.name == osname
 
 
-def get_evennia_version():
+def get_evennia_version(mode="long"):
     """
     Helper method for getting the current evennia version.
+
+    Args:
+        mode (str, optional): One of:
+            - long: 0.9.0 rev342453534
+            - short: 0.9.0
+            - pretty: Evennia 0.9.0
 
     Returns:
         version (str): The version string.
 
     """
     import evennia
-    return evennia.__version__
+    vers = evennia.__version__
+    if mode == "short":
+        return vers.split()[0].strip()
+    elif mode == "pretty":
+        vers = vers.split()[0].strip()
+        return f"Evennia {vers}"
+    else:  # mode "long":
+        return vers
 
 
 def pypath_to_realpath(python_path, file_ending='.py', pypath_prefixes=None):
