@@ -74,3 +74,4 @@ class AccountCmdSet(CmdSet):
         self.add(comms.CmdIRC2Chan())
         self.add(comms.CmdIRCStatus())
         self.add(comms.CmdRSS2Chan())
+        self.add(comms.CmdGrapewine2Chan())

@@ -816,7 +816,6 @@ def _list_bots(cmd):
     """
     ircbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
     if ircbots:
-        from evennia.utils.evtable import EvTable
         table = cmd.styled_table("|w#dbref|n", "|wbotname|n", "|wev-channel|n",
                                  "|wirc-channel|n", "|wSSL|n", maxwidth=_DEFAULT_WIDTH)
         for ircbot in ircbots:
@@ -829,7 +828,7 @@ def _list_bots(cmd):
 
 class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """
-    link an evennia channel to an external IRC channel
+    Link an evennia channel to an external IRC channel
 
     Usage:
       irc2chan[/switches] <evennia_channel> = <ircnetwork> <port> <#irchannel> <botname>[:typeclass]
@@ -924,9 +923,8 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Account '%s' already exists and is not a bot." % botname)
                 return
         else:
-            password = hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:11]
             try:
-                bot = create.create_account(botname, None, password, typeclass=botclass)
+                bot = create.create_account(botname, None, None, typeclass=botclass)
             except Exception as err:
                 self.msg("|rError, could not create the bot:|n '%s'." % err)
                 return
@@ -1052,7 +1050,6 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             # show all connections
             rssbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
             if rssbots:
-                from evennia.utils.evtable import EvTable
                 table = self.styled_table("|wdbid|n", "|wupdate rate|n", "|wev-channel",
                                          "|wRSS feed URL|n", border="cells", maxwidth=_DEFAULT_WIDTH)
                 for rssbot in rssbots:
@@ -1083,7 +1080,6 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
         url = self.rhs
 
         botname = "rssbot-%s" % url
-        # create a new bot
         bot = AccountDB.objects.filter(username__iexact=botname)
         if bot:
             # re-use existing bot
@@ -1092,6 +1088,95 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Account '%s' already exists and is not a bot." % botname)
                 return
         else:
+            # create a new bot
             bot = create.create_account(botname, None, None, typeclass=bots.RSSBot)
         bot.start(ev_channel=channel, rss_url=url, rss_rate=10)
         self.msg("RSS reporter created. Fetching RSS.")
+
+
+class CmdGrapewine2Chan(COMMAND_DEFAULT_CLASS):
+    """
+    Link an Evennia channel to an exteral Grapewine channel
+
+    Usage:
+      grapewine2chan[/switches] <evennia_channel> = <grapewine_channel>
+      grapewine2chan/disconnect <connection #id>
+
+    Switches:
+        /list     - (or no switch): show existing grapewine <-> Evennia
+                    mappings and available grapewine chans
+        /remove   - alias to disconnect
+        /delete   - alias to disconnect
+
+    Example:
+        grapewine2chan mygrapewine = gossip
+
+    This creates a link between an in-game Evennia channel and an external
+    Grapewine channel. The game must be registered with the Grapewine network
+    (register at https://grapewine.haus) and the GRAPEWINE_* auth information
+    must be added to game settings.
+    """
+
+    key = "grapewine2chan"
+    switch_options = ("disconnect", "remove", "delete", "list")
+    locks = "cmd:serversetting(GRAPEWINE_ENABLED) and pperm(Developer)"
+    help_category = "Comms"
+
+    def func(self):
+        """Setup the Grapewine channel mapping"""
+
+        if not settings.GRAPEWINE_ENABLED:
+            self.msg("Set GRAPEWINE_ENABLED=True in settings to enable.")
+            return
+
+        if "list" in self.switches:
+            # show all connections
+            gwbots = [bot for bot in
+                      AccountDB.objects.filter(db_is_bot=True,
+                                               username__startswith="grapewinebot-")]
+            if gwbots:
+                table = self.styled_table("|wdbid|n", "|wev-channel",
+                                          "|wgw-channel|n", border="cells", maxwidth=_DEFAULT_WIDTH)
+                for gwbot in gwbots:
+                    table.add_row(gwbot.id, gwbot.db.ev_channel, gwbot.db.grapewine_channel)
+                self.msg(table)
+            else:
+                self.msg("No grapewine bots found.")
+            return
+
+        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+            botname = "grapewinebot-%s" % self.lhs
+            matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
+
+            if not matches:
+                # try dbref match
+                matches = AccountDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
+            if matches:
+                matches[0].delete()
+                self.msg("Grapewine connection destroyed.")
+            else:
+                self.msg("Grapewine connection/bot could not be removed, does it exist?")
+            return
+
+        if not self.args or not self.rhs:
+            string = "Usage: grapewine2chan[/switches] <evennia_channel> = <grapewine_channel>"
+            self.msg(string)
+            return
+
+        channel = self.lhs
+        grapewine_channel = self.rhs
+
+        botname = "grapewinebot-%s-%s" % (channel, grapewine_channel)
+        bot = AccountDB.objects.filter(username__iexact=botname)
+        if bot:
+            # re-use existing bot
+            bot = bot[0]
+            if not bot.is_bot:
+                self.msg("Account '%s' already exists and is not a bot." % botname)
+                return
+        else:
+            # create a new bot
+            bot = create.create_account(botname, None, None, typeclass=bots.GrapewineBot)
+
+        bot.start(ev_channel=channel, grapewine_channel=grapewine_channel)
+        self.msg(f"Grapewine connection created {channel} <-> {grapewine_channel}.")
