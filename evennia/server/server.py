@@ -72,7 +72,7 @@ GUEST_ENABLED = settings.GUEST_ENABLED
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
 IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
-GRAPEWINE_ENABLED = settings.GRAPEWINE_ENABLED
+GRAPEVINE_ENABLED = settings.GRAPEVINE_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
 
 INFO_DICT = {"servername": SERVERNAME, "version": VERSION,
@@ -584,9 +584,9 @@ if RSS_ENABLED:
     # RSS feed channel connections
     ENABLED.append('rss')
 
-if GRAPEWINE_ENABLED:
-    # Grapewine channel connections
-    ENABLED.append('grapewine')
+if GRAPEVINE_ENABLED:
+    # Grapevine channel connections
+    ENABLED.append('grapevine')
 
 if ENABLED:
     INFO_DICT["irc_rss"] = ", ".join(ENABLED) + " enabled."

@@ -1094,58 +1094,58 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
         self.msg("RSS reporter created. Fetching RSS.")
 
 
-class CmdGrapewine2Chan(COMMAND_DEFAULT_CLASS):
+class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
     """
-    Link an Evennia channel to an exteral Grapewine channel
+    Link an Evennia channel to an exteral Grapevine channel
 
     Usage:
-      grapewine2chan[/switches] <evennia_channel> = <grapewine_channel>
-      grapewine2chan/disconnect <connection #id>
+      grapevine2chan[/switches] <evennia_channel> = <grapevine_channel>
+      grapevine2chan/disconnect <connection #id>
 
     Switches:
-        /list     - (or no switch): show existing grapewine <-> Evennia
-                    mappings and available grapewine chans
+        /list     - (or no switch): show existing grapevine <-> Evennia
+                    mappings and available grapevine chans
         /remove   - alias to disconnect
         /delete   - alias to disconnect
 
     Example:
-        grapewine2chan mygrapewine = gossip
+        grapevine2chan mygrapevine = gossip
 
     This creates a link between an in-game Evennia channel and an external
-    Grapewine channel. The game must be registered with the Grapewine network
-    (register at https://grapewine.haus) and the GRAPEWINE_* auth information
+    Grapevine channel. The game must be registered with the Grapevine network
+    (register at https://grapevine.haus) and the GRAPEVINE_* auth information
     must be added to game settings.
     """
 
-    key = "grapewine2chan"
+    key = "grapevine2chan"
     switch_options = ("disconnect", "remove", "delete", "list")
-    locks = "cmd:serversetting(GRAPEWINE_ENABLED) and pperm(Developer)"
+    locks = "cmd:serversetting(GRAPEVINE_ENABLED) and pperm(Developer)"
     help_category = "Comms"
 
     def func(self):
-        """Setup the Grapewine channel mapping"""
+        """Setup the Grapevine channel mapping"""
 
-        if not settings.GRAPEWINE_ENABLED:
-            self.msg("Set GRAPEWINE_ENABLED=True in settings to enable.")
+        if not settings.GRAPEVINE_ENABLED:
+            self.msg("Set GRAPEVINE_ENABLED=True in settings to enable.")
             return
 
         if "list" in self.switches:
             # show all connections
             gwbots = [bot for bot in
                       AccountDB.objects.filter(db_is_bot=True,
-                                               username__startswith="grapewinebot-")]
+                                               username__startswith="grapevinebot-")]
             if gwbots:
                 table = self.styled_table("|wdbid|n", "|wev-channel",
                                           "|wgw-channel|n", border="cells", maxwidth=_DEFAULT_WIDTH)
                 for gwbot in gwbots:
-                    table.add_row(gwbot.id, gwbot.db.ev_channel, gwbot.db.grapewine_channel)
+                    table.add_row(gwbot.id, gwbot.db.ev_channel, gwbot.db.grapevine_channel)
                 self.msg(table)
             else:
-                self.msg("No grapewine bots found.")
+                self.msg("No grapevine bots found.")
             return
 
         if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
-            botname = "grapewinebot-%s" % self.lhs
+            botname = "grapevinebot-%s" % self.lhs
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
 
             if not matches:
@@ -1153,20 +1153,20 @@ class CmdGrapewine2Chan(COMMAND_DEFAULT_CLASS):
                 matches = AccountDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
             if matches:
                 matches[0].delete()
-                self.msg("Grapewine connection destroyed.")
+                self.msg("Grapevine connection destroyed.")
             else:
-                self.msg("Grapewine connection/bot could not be removed, does it exist?")
+                self.msg("Grapevine connection/bot could not be removed, does it exist?")
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: grapewine2chan[/switches] <evennia_channel> = <grapewine_channel>"
+            string = "Usage: grapevine2chan[/switches] <evennia_channel> = <grapevine_channel>"
             self.msg(string)
             return
 
         channel = self.lhs
-        grapewine_channel = self.rhs
+        grapevine_channel = self.rhs
 
-        botname = "grapewinebot-%s-%s" % (channel, grapewine_channel)
+        botname = "grapewinebot-%s-%s" % (channel, grapevine_channel)
         bot = AccountDB.objects.filter(username__iexact=botname)
         if bot:
             # re-use existing bot
@@ -1174,9 +1174,11 @@ class CmdGrapewine2Chan(COMMAND_DEFAULT_CLASS):
             if not bot.is_bot:
                 self.msg("Account '%s' already exists and is not a bot." % botname)
                 return
+            else:
+                self.msg("Reusing bot '%s' (%s)" % (botname, bot.dbref))
         else:
             # create a new bot
-            bot = create.create_account(botname, None, None, typeclass=bots.GrapewineBot)
+            bot = create.create_account(botname, None, None, typeclass=bots.GrapevineBot)
 
-        bot.start(ev_channel=channel, grapewine_channel=grapewine_channel)
-        self.msg(f"Grapewine connection created {channel} <-> {grapewine_channel}.")
+        bot.start(ev_channel=channel, grapevine_channel=grapevine_channel)
+        self.msg(f"Grapevine connection created {channel} <-> {grapevine_channel}.")
