@@ -12,7 +12,7 @@
 
 ### Commands
 
-- Remove `@`-prefix from all default commands (prefixes still works)
+- Remove `@`-prefix from all default commands (prefixes still work, optional)
 - Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
   question.
 - Add new `@force` command to have another object perform a command.
