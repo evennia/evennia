@@ -117,6 +117,10 @@
 - `AttributeHandler.remove` and `TagHandler.remove` can now be used to delete by-category. If neither
      key nor category is given, they now work the same as .clear().
 
+### Protocols
+
+- Support for `Grapevine` MUD-chat network ("channels" supported)
+
 ### Server
 
 - Convert ServerConf model to store its values as a Picklefield (same as Attributes) instead of using a custom solution.
