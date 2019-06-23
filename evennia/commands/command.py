@@ -537,7 +537,7 @@ Command {self} has no defined `func()` - showing on-command variables:
     def _render_decoration(self, header_text=None, fill_character=None, edge_character=None,
                       mode='header', color_header=True, width=None):
         """
-        Helper for formatting a string into a prety display, for a header, separator or footer.
+        Helper for formatting a string into a pretty display, for a header, separator or footer.
 
         Kwargs:
             header_text (str): Text to include in header.
@@ -596,7 +596,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             final_send = left_fill + ANSIString(center_string) + right_fill
         return final_send
 
-    def style_header(self, *args, **kwargs):
+    def styled_header(self, *args, **kwargs):
         """
         Create a pretty header.
         """
@@ -605,7 +605,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             kwargs['mode'] = 'header'
         return self._render_decoration(*args, **kwargs)
 
-    def style_separator(self, *args, **kwargs):
+    def styled_separator(self, *args, **kwargs):
         """
         Create a separator.
 
@@ -614,7 +614,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             kwargs['mode'] = 'separator'
         return self._render_decoration(*args, **kwargs)
 
-    def style_footer(self, *args, **kwargs):
+    def styled_footer(self, *args, **kwargs):
         """
         Create a pretty footer.
 
