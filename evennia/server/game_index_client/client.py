@@ -1,3 +1,7 @@
+"""
+The client for sending data to the Evennia Game Index
+
+"""
 import urllib.request, urllib.parse, urllib.error
 import platform
 import warnings
@@ -17,12 +21,15 @@ from evennia.accounts.models import AccountDB
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import get_evennia_version, logger
 
+_EGI_HOST = 'http://evennia-game-index.appspot.com'
+_EGI_REPORT_PATH = '/api/v1/game/check_in'
+
 
 class EvenniaGameIndexClient(object):
     """
     This client class is used for gathering and sending game details to the
     Evennia Game Index. Since EGI is in the early goings, this isn't
-    incredibly configurable as far as what is being sent.
+    incredibly configurable as far as to what is being sent.
     """
 
     def __init__(self, on_bad_request=None):
@@ -30,8 +37,8 @@ class EvenniaGameIndexClient(object):
         :param on_bad_request: Optional callable to trigger when a bad request
             was sent. This is almost always going to be due to bad config.
         """
-        self.report_host = 'http://evennia-game-index.appspot.com'
-        self.report_path = '/api/v1/game/check_in'
+        self.report_host = _EGI_HOST
+        self.report_path = _EGI_REPORT_PATH
         self.report_url = self.report_host + self.report_path
         self.logged_first_connect = False
 
@@ -65,48 +72,47 @@ class EvenniaGameIndexClient(object):
             # to EGD, though.
             self._on_bad_request()
 
-    def _get_config_dict(self):
-        egi_config = getattr(settings, 'GAME_DIRECTORY_LISTING', None)
-        if egi_config:
-            warnings.warn(
-                "settings.GAME_DIRECTORY_LISTING is deprecated. Rename this to "
-                "GAME_INDEX_LISTING in your settings file.", DeprecationWarning)
-            return egi_config
-        return settings.GAME_INDEX_LISTING
-
     def _form_and_send_request(self):
+        """
+        Build the request to send to the index.
+
+        """
         agent = Agent(reactor, pool=self._conn_pool)
         headers = {
             b'User-Agent': [b'Evennia Game Index Client'],
             b'Content-Type': [b'application/x-www-form-urlencoded'],
         }
-        egi_config = self._get_config_dict()
+        egi_config = settings.GAME_INDEX_LISTING
         # We are using `or` statements below with dict.get() to avoid sending
         # stringified 'None' values to the server.
-        values = {
-            # Game listing stuff
-            'game_name': settings.SERVERNAME,
-            'game_status': egi_config['game_status'],
-            'game_website': egi_config.get('game_website') or '',
-            'short_description': egi_config['short_description'],
-            'long_description': egi_config.get('long_description') or '',
-            'listing_contact': egi_config['listing_contact'],
+        try:
+            values = {
+                # Game listing stuff
+                'game_name': settings.SERVERNAME,
+                'game_status': egi_config['game_status'],
+                'game_website': egi_config.get('game_website', ''),
+                'short_description': egi_config['short_description'],
+                'long_description': egi_config.get('long_description', ''),
+                'listing_contact': egi_config['listing_contact'],
 
-            # How to play
-            'telnet_hostname': egi_config.get('telnet_hostname') or '',
-            'telnet_port': egi_config.get('telnet_port') or '',
-            'web_client_url': egi_config.get('web_client_url') or '',
+                # How to play
+                'telnet_hostname': egi_config.get('telnet_hostname', ''),
+                'telnet_port': egi_config.get('telnet_port', ''),
+                'web_client_url': egi_config.get('web_client_url', ''),
 
-            # Game stats
-            'connected_account_count': SESSIONS.account_count(),
-            'total_account_count': AccountDB.objects.num_total_accounts() or 0,
+                # Game stats
+                'connected_account_count': SESSIONS.account_count(),
+                'total_account_count': AccountDB.objects.num_total_accounts() or 0,
 
-            # System info
-            'evennia_version': get_evennia_version(),
-            'python_version': platform.python_version(),
-            'django_version': django.get_version(),
-            'server_platform': platform.platform(),
-        }
+                # System info
+                'evennia_version': get_evennia_version(),
+                'python_version': platform.python_version(),
+                'django_version': django.get_version(),
+                'server_platform': platform.platform(),
+            }
+        except KeyError as err:
+            raise KeyError(f"Error loading GAME_INDEX_LISTING: {err}")
+
         data = urllib.parse.urlencode(values)
 
         d = agent.request(

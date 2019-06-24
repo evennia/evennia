@@ -74,6 +74,7 @@ IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
 GRAPEVINE_ENABLED = settings.GRAPEVINE_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
+GAME_INDEX_ENABLED = settings.GAME_INDEX_ENABLED
 
 INFO_DICT = {"servername": SERVERNAME, "version": VERSION,
              "amp": "", "errors": "", "info": "", "webserver": "", "irc_rss": ""}
@@ -587,6 +588,11 @@ if RSS_ENABLED:
 if GRAPEVINE_ENABLED:
     # Grapevine channel connections
     ENABLED.append('grapevine')
+
+if GAME_INDEX_ENABLED:
+    from evennia.server.game_index_client.service import EvenniaGameIndexService
+    egi_service = EvenniaGameIndexService()
+    EVENNIA.services.addService(egi_service)
 
 if ENABLED:
     INFO_DICT["irc_rss"] = ", ".join(ENABLED) + " enabled."

@@ -682,6 +682,22 @@ DEFAULT_CHANNELS = [
 # While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
 CHANNEL_CONNECTINFO = None
 
+# The Evennia Game Index is a dynamic listing of Evennia games. You can add your game
+# to this list also if it is in closed pre-alpha development.
+GAME_INDEX_ENABLED = False
+# This dict
+GAME_INDEX_LISTING = {
+    'game_status': 'closed-dev',   # closed-dev, pre-alpha, pre-alpha, alpha, beta or launched
+    'short_description': '',
+    'long_description': '',
+    'listing_contact': '',        # email
+    'telnet_hostname': '',        # mygame.com
+    'telnet_port': 1234,
+    'game_website': '',           # http://mygame.com
+    'web_client_url': ''          # http://mygame.com/webclient
+}
+
+
 ######################################################################
 # External Channel connections
 ######################################################################
