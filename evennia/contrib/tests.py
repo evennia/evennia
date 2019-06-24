@@ -1414,3 +1414,54 @@ class TestRandomStringGenerator(EvenniaTest):
         # We can't generate one more
         with self.assertRaises(random_string_generator.ExhaustedGenerator):
             SIMPLE_GENERATOR.get()
+
+       
+# Test for  CurrencyHandler contrib
+
+from django.test import TestCase
+from evennia.utils import create, lazy_property
+from evennia import DefaultCharacter
+from typeclasses.rooms import Room
+from currency import CurrencyHandler
+
+
+class CurrencyTestObject(DefaultCharacter):
+
+    @lazy_property
+    def purse(self):
+        return CurrencyHandler(self, db_attribute='purse')
+
+
+class TestCurrencyHandler(TestCase):
+
+    room_typeclass = Room
+    character_typeclass = CurrencyTestObject
+
+    def setUp(self):
+        # create test room
+        self.room1 = create.create_object(self.room_typeclass, key="Room", nohome=True)
+        self.room1.db.desc = "room_desc"
+
+        # Create test player character
+        self.char1 = create.create_object(self.character_typeclass, key="Char1", location=self.room1, home=self.room1)
+        self.char1.db.purse = {
+            'BC': {'value': 1, 'name': 'brass coin', 'amount': 0},
+            'CC': {'value': 10, 'name': 'copper coin', 'amount': 0},
+            'SC': {'value': 100, 'name': 'silver coin', 'amount': 0},
+            'GC': {'value': 1000, 'name': 'gold coin', 'amount': 0}
+        }
+
+    def test_CurrencyHandler_manipulate_attributes(self):
+
+        """ Show starting amounts """
+        self.assertEqual(str(self.char1.purse.CC.amount), '0')
+        self.assertEqual(str(self.char1.purse.BC.amount), '0')
+
+        """ Add some copper coins (CC) to the object's currency handler (purse) """
+        self.char1.purse.CC.amount = 4
+        self.assertEqual(self.char1.purse.to_string.upper(), '4 COPPER COINS')
+
+        """ Convert copper coins (CC) to brass coins (BC) """
+        self.char1.purse.BC.convert(self.char1.purse.CC, 2)
+        self.assertEqual(self.char1.purse.to_string.upper(), '2 COPPER COINS, 20 BRASS COINS')
+       
