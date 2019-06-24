@@ -1675,7 +1675,8 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     Args:
         path (str): Path to new game directory, including its name.
         check_db (bool, optional): Check if the databae exists.
-        need_gamedir (bool, optional): set to False if Evennia doesn't require to be run in a valid game directory.
+        need_gamedir (bool, optional): set to False if Evennia doesn't require to
+            be run in a valid game directory.
 
     """
     # set the GAMEDIR path
@@ -2090,6 +2091,7 @@ def main():
         elif option == "info":
             query_info()
         elif option == "start":
+            error_check_python_modules()
             start_evennia(args.profiler, args.profiler)
         elif option == "istart":
             start_server_interactive()
