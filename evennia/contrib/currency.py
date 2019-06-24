@@ -5,10 +5,6 @@ They are instantiated by the 'CurrencyHandler' object, which is typically
 set up as a property on the object or character's typeclass.
 
 **Setup**
-    
-    To use currency on an object, add a function that passes the object	
-    itself into the constructor and returns a 'CurrencyHandler'. This 	
-    function should be decorated with the 'lazy_property' decorator.
 
     Example:
     ```python
@@ -25,7 +21,7 @@ set up as a property on the object or character's typeclass.
     You can now add properies in order to represent
     cooper coins (CC) and silver coins (SC). Each property
     is a Python dict object, that contains a value (used
-    for conversions between currencys), a name (for display),
+    for conversions between currencies), a name (for display),
     and an amount.
 
     ```python
@@ -59,7 +55,7 @@ set up as a property on the object or character's typeclass.
     
     Methods:
         convert(Currency, Optional amount): Convert between Currency types.
-        contents(): List all currencies that have amounts greater than zero
+        to_string(): List all currencies that have amounts greater than zero
         total(): Returns a total in lowest currency
         
     Examples:
@@ -84,9 +80,9 @@ set up as a property on the object or character's typeclass.
         object's properties, to verify they reflects our changes.
 
         ```python
-        >>> self.purse.contents
+        >>> self.purse.to_string
         20 copper coins, 2 silver coins
-        >>> obj.purse
+        >>> obj.db.purse
         Currency({'CC': {'amount': 35, 'value': 10, 'name': 'copper coin'},
         'SC': {'amount': 19, 'value': 100, 'name': 'silver coin'}})
         ```
@@ -94,6 +90,7 @@ set up as a property on the object or character's typeclass.
 from evennia.utils.dbserialize import _SaverDict
 from evennia.utils import logger, lazy_property
 from functools import total_ordering
+
 
 class CurrencyException(Exception):
     def __init__(self, msg):
@@ -212,7 +209,7 @@ class CurrencyHandler(object):
         return self.attr_dict.keys()
 
     @property
-    def contents(self):
+    def to_string(self):
         """
         Return a formatted list of currency and amounts in this CurrencyHandler.
         """
@@ -289,8 +286,10 @@ class Currency(object):
 
     def __str__(self):
         # String returned from Currency
-        if self._data['amount'] == 1: name = self.name
-        else: name = "{}s".format(self.name)
+        if self._data['amount'] == 1:
+            name = self.name
+        else:
+            name = "{}s".format(self.name)
 
         return "{amount} {name}".format(
             amount=self._data['amount'], name=name)
@@ -413,8 +412,10 @@ class Currency(object):
     @amount.setter
     def amount(self, value):
         if type(value) in (int, float):
-            if value >= 0: self._data['amount'] = value
-            else: self._data['amount'] = 0
+            if value >= 0:
+                self._data['amount'] = value
+            else:
+                self._data['amount'] = 0
 
     # Public routines
 
@@ -450,18 +451,12 @@ class Currency(object):
             if obj.value > self.value:
                 modifier = obj.value / self.value
                 self.amount += amount_to_convert * modifier
-                print "Converted {} {} --> {} {}".format(
-                    amount_to_convert, obj.name, amount_to_convert * modifier, self.name)
             elif obj.value < self.value:
                 modifier = self.value / obj.value
                 self.amount += amount_to_convert / modifier
-                print "Converted {} {} --> {} {}".format(
-                    amount_to_convert, obj.name, amount_to_convert / modifier, self.name)
             else:
                 modifier = 1
                 self.amount += amount_to_convert
-                print "Converted {} {} --> {} {}".format(
-                    amount_to_convert, obj.name, amount_to_convert, self.name)
 
         else:
             return NotImplemented
