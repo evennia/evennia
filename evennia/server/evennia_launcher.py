@@ -122,12 +122,14 @@ CREATED_NEW_GAMEDIR = \
 
        evennia start
 
-    Make sure to create a superuser when asked for it (the email can
-    be blank if you want). You should now be able to (by default)
-    connect to your server on 'localhost', port 4000 using a
-    telnet/mud client or http://localhost:4001 using your web browser.
-    If things don't work, check so those ports are open.
+    Make sure to create a superuser when asked for it (the email is optional)
+    You should now be able to connect to your server on 'localhost', port 4000
+    using a telnet/mud client or http://localhost:4001 using your web browser.
+    If things don't work, check the log with `evennia --log`. Also make sure
+    ports are open.
 
+    (Finally, why not run `evennia connections` and make the world aware of
+    your new Evennia project!)
     """
 
 ERROR_INPUT = \
