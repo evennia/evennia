@@ -18,6 +18,9 @@ MSSP = b'\x46'
 MSSP_VAR = b'\x01'
 MSSP_VAL = b'\x02'
 
+# try to get the customized mssp info, if it exists.
+MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
+
 
 class Mssp(object):
     """
@@ -109,7 +112,8 @@ class Mssp(object):
         }
 
         # update the static table with the custom one
-        self.mssp_table.update(settings.MSSP_TABLE)
+        if MSSPTable_CUSTOM:
+            self.mssp_table.update(MSSPTable_CUSTOM)
 
         varlist = ''
         for variable, value in self.mssp_table.items():

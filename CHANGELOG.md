@@ -35,6 +35,13 @@
 
 - Change webclient from old txws version to use more supported/feature-rich Autobahn websocket library
 
+#### Evennia game index 
+
+- Made Evennia game index client a part of core - now configured from settings file (old configs
+  need to be moved)
+- The `evennia connections` command starts a wizard that helps you connect your game to the game index.
+- The game index now accepts games with no public telnet/webclient info (for early prototypes). 
+
 #### New golden-layout based Webclient UI (@friarzen)
 - Features
   - Much slicker behavior and more professional look

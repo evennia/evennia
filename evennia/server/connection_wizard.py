@@ -3,9 +3,10 @@ Link Evennia to external resources (wizard plugin for evennia_launcher)
 
 """
 import sys
+from os import path
 import pprint
 from django.conf import settings
-from evennia.utils.utils import list_to_string
+from evennia.utils.utils import list_to_string, mod_import
 
 class ConnectionWizard(object):
 
@@ -33,7 +34,7 @@ class ConnectionWizard(object):
         """
 
         opt_txt = "\n".join(f" {key}: {desc}" for key, (desc, _, _) in options.items())
-        self.display(opt_txt)
+        self.display(opt_txt + "\n")
 
         while True:
             resp = input(prompt).strip()
@@ -78,7 +79,7 @@ class ConnectionWizard(object):
             elif resp.lower() in ("quit", "q"):
                 sys.exit()
 
-    def ask_choice(self, prompt="> ", options=None, default=None):
+    def ask_choice(self, prompt=" > ", options=None, default=None):
         """
         Ask multiple-choice question, get response inline.
 
@@ -91,7 +92,7 @@ class ConnectionWizard(object):
 
         """
         opt_txt = "\n".join(f" {ind + 1}: {desc}" for ind, desc in enumerate(options))
-        self.display(opt_txt)
+        self.display(opt_txt + "\n")
 
         while True:
             resp = input(prompt).strip()
@@ -109,13 +110,16 @@ class ConnectionWizard(object):
                     return selection
             self.display(" Select one of the given options.")
 
-    def ask_input(self, prompt="> ", default=None, verify=True, max_len=None):
+    def ask_input(self, prompt=" > ", default=None, validator=None):
         """
         Get arbitrary input inline.
 
         Kwargs:
             prompt (str): The display prompt.
-            default (str, optional): If empty input, use this.
+            default (str): If empty input, use this.
+            validator (callable): If given, the input will be passed
+                into this callable. It should return True unless validation
+                fails (and is expected to echo why if so).
 
         Returns:
             inp (str): The input given, or default.
@@ -123,11 +127,19 @@ class ConnectionWizard(object):
         """
         while True:
             resp = input(prompt).strip()
+
             if not resp and default:
                 resp = str(default)
 
+            if resp.lower() in ('q', 'quit'):
+                sys.exit()
+
             if resp.lower() == 'none':
                 resp = ''
+
+                if validator and not validator(resp):
+                    continue
+
                 ok = input("\n Leave blank? [Y]/N: ")
                 if ok.lower() in ('n', 'no'):
                     continue
@@ -135,18 +147,15 @@ class ConnectionWizard(object):
                     sys.exit()
                 return resp
 
-            if verify:
-                self.display(resp)
-                if max_len:
-                    nlen = len(resp)
-                    if nlen > max_len:
-                        self.display(f" This text is {nlen} characters long. Max is {max_len}.")
-                        continue
-                ok = input("\n Is the above looking correct? [Y]/N: ")
-                if ok.lower() in ("n", "no"):
-                    continue
-                elif ok.lower() in ('q', 'quit'):
-                    sys.exit()
+            if validator and not validator(resp):
+                continue
+
+            self.display(resp)
+            ok = input("\n Is this correct? [Y]/N: ")
+            if ok.lower() in ("n", "no"):
+                continue
+            elif ok.lower() in ('q', 'quit'):
+                sys.exit()
             return resp
 
 
@@ -155,10 +164,12 @@ def node_start(wizard):
     This wizard helps activate external networks with Evennia. It will create
     a config that will be attached to the bottom of the game settings file.
 
-    Use `quit` at any time to abort and throw away any changes.
+    Make sure you have at least started the game once before continuing!
+
+    Use `quit` at any time to abort and throw away unsaved changes.
     """
     options = {
-        "1": ("Add game to Evennia game index (also for closed dev games)",
+        "1": ("Add game to Evennia game index (also for closed-dev games)",
               node_game_index_start, {}),
         "2": ("Add MSSP information (for mud-list crawlers)",
               node_mssp_start, {}),
@@ -231,9 +242,18 @@ def node_game_index_fields(wizard, status=None):
     {sdesc_default}
     """
 
+    def sdesc_validator(inp):
+        tmax = 255
+        tlen = len(inp)
+        if tlen > 255:
+            print(f"The short desc must be shorter than {tmax} characters (was {tlen}).")
+            wizard.ask_continue()
+            return False
+        return True
+
     wizard.display(text)
     wizard.game_index_listing['short_description'] = \
-        wizard.ask_input(default=sdesc_default, max_len=255)
+        wizard.ask_input(default=sdesc_default, validator=sdesc_validator)
 
     # long desc
 
@@ -265,9 +285,16 @@ def node_game_index_fields(wizard, status=None):
     {listing_default}
     """
 
+    def contact_validator(inp):
+        if not inp or "@" not in inp:
+            print("This should be an email and cannot be blank.")
+            wizard.ask_continue()
+            return False
+        return True
+
     wizard.display(text)
     wizard.game_index_listing['listing_contact'] = \
-        wizard.ask_input(default=listing_default)
+        wizard.ask_input(default=listing_default, validator=contact_validator)
 
     # telnet hostname
 
@@ -359,17 +386,29 @@ def node_game_index_fields(wizard, status=None):
 
 def node_mssp_start(wizard):
 
+    mssp_module = mod_import(settings.MSSP_META_MODULE)
+    filename = mssp_module.__file__
+
     text = f"""
     MSSP (Mud Server Status Protocol) allows online MUD-listing sites/crawlers
     to continuously monitor your game and list information about it. Some of
     this, like active player-count, Evennia will automatically add for you,
-    whereas many fields is info about your game.
+    whereas many fields are manually added info about your game.
 
     To use MSSP you should generally have a publicly open game that external
-    players can connect to.
+    players can connect to. You also need to register at a MUD listing site to
+    tell them to list your game.
+
+    MSSP has a large number of configuration options and we found it was simply
+    a lot easier to set them in a file rather than using this wizard. So to
+    configure MSSP, edit the empty template listing found here:
+
+        '{filename}'
     """
 
-    wizard.mssp_table
+    wizard.display(text)
+    wizard.ask_continue()
+    node_start(wizard)
 
 
 # Admin
@@ -378,7 +417,30 @@ def _save_changes(wizard):
     """
     Perform the save
     """
-    print("saving!")
+
+    # add import statement to settings file
+    import_stanza = "from .connection_settings import *"
+    setting_module = mod_import("server.conf.settings")
+    with open(setting_module.__file__, 'r+') as f:
+        txt = f.read()  # moves pointer to end of file
+        if import_stanza not in txt:
+            # add to the end of the file
+            f.write("\n\n"
+                    "try:\n"
+                    "    # Created by the `evennia connections` wizard\n"
+                    f"    {import_stanza}\n"
+                    "except ImportError:\n"
+                    "    pass")
+
+    connect_settings_file = path.join(settings.GAME_DIR,
+                                      "server", "conf", "connection_settings.py")
+    with open(connect_settings_file, 'w') as f:
+        f.write("# This file is auto-generated by the `evennia connections` wizard.\n"
+                "# Don't edit manually, your changes will be overwritten.\n\n")
+
+        f.write(wizard.save_output)
+        wizard.display(f"saving to {connect_settings_file} ...")
+
 
 def node_view_and_apply_settings(wizard):
     """
@@ -393,18 +455,22 @@ def node_view_and_apply_settings(wizard):
         if wizard.game_index_listing != settings.GAME_INDEX_LISTING:
             game_index_txt = "No changes to save for Game Index."
         else:
-            game_index_txt = pp.pformat(wizard.game_index_listing)
+            game_index_txt = ("GAME_INDEX_ENABLED = True\n"
+                              "GAME_INDEX_LISTING = \\\n" +
+                              pp.pformat(wizard.game_index_listing))
             saves = True
 
     text = game_index_txt
 
-    print("- Game index:\n" + text)
+    wizard.display(f"Settings to save:\n\n{text}")
 
     if saves:
         if wizard.ask_yesno("Do you want to save these settings?") == 'yes':
+            wizard.save_output = text
             _save_changes(wizard)
+            wizard.display("... saved!")
         else:
-            print("Cancelled. Returning ...")
+            wizard.display("... cancelled.")
     wizard.ask_continue()
     node_start(wizard)
 
