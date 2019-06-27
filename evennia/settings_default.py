@@ -343,9 +343,6 @@ SERVER_SERVICES_PLUGIN_MODULES = ["server.conf.server_services_plugins"]
 # main Evennia Portal application when the Portal is initiated.
 # It will be called last in the startup sequence.
 PORTAL_SERVICES_PLUGIN_MODULES = ["server.conf.portal_services_plugins"]
-# Module holding MSSP meta data. This is used by MUD-crawlers to determine
-# what type of game you are running, how many accounts you have etc.
-MSSP_META_MODULE = "server.conf.mssp"
 # Module for web plugins.
 WEB_PLUGINS_MODULE = "server.conf.web_plugins"
 # Tuple of modules implementing lock functions. All callable functions
@@ -682,6 +679,10 @@ DEFAULT_CHANNELS = [
 # While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
 CHANNEL_CONNECTINFO = None
 
+######################################################################
+# External Connections
+######################################################################
+
 # The Evennia Game Index is a dynamic listing of Evennia games. You can add your game
 # to this list also if it is in closed pre-alpha development.
 GAME_INDEX_ENABLED = False
@@ -692,15 +693,50 @@ GAME_INDEX_LISTING = {
     'long_description': '',
     'listing_contact': '',        # email
     'telnet_hostname': '',        # mygame.com
-    'telnet_port': 1234,
+    'telnet_port': '',            # 1234
     'game_website': '',           # http://mygame.com
     'web_client_url': ''          # http://mygame.com/webclient
 }
 
+# MSSP (Mud Server Status Protocol) is used by MUD-crawlers to determine
+# what type of game you are running, how many players you have etc. Some of
+# this (like server name and current number of players) is handled by Evennia
+# automatically, other fields are set by you.
+MSSP_TABLE = {
+    "HOSTNAME": "", "PORT": "",  # telnet host/port
+    "CONTACT": "", "CREATED": "",  # email, year of game creation
+    "IP": "", "ICON": "",  # ip address; url to icon 32x32or larger; <32kb.
+    "LANGUAGE": "English", "LOCATION": "",  # server country location, like "Sweden"
+    "MINIMUM AGE": "0",  # set to 0 if not applicable
+    "WEBSITE": "www.evennia.com",
+    "GENRE": "None",   # Adult, Fantasy, Historical, Horror, Modern, None, or Science Fiction
+    "GAMEPLAY": "None",   # Adventure, Educational, Hack and Slash, None,
+                          # Player versus Player, Player versus Environment,
+                          # Roleplaying, Simulation, Social or Strategy
+    "STATUS": "Alpha",  # Alpha, Closed Beta, Open Beta, Live
+    "GAMESYSTEM": "Custom",  # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
+    "SUBGENRE": "None",   # Freeform, like LASG, Medieval Fantasy, World War II, Frankenstein,
+                          # Cyberpunk, Dragonlance, etc. Or None if not available.
+    # use 0 if not applicable or off
+    "AREAS": "0", "HELPFILES": "0", "MOBILES": "0", "OBJECTS": "0",
+    "ROOMS": "0", "CLASSES": "0",  "LEVELS": "0",  "RACES": "0",  "SKILLS": "0",
 
-######################################################################
-# External Channel connections
-######################################################################
+    "PAY TO PLAY": "0", "PAY FOR PERKS": "0",
+    "HIRING BUILDERS": "0", "HIRING CODERS": "0",
+
+    "DBSIZE": "0", "EXITS": "0", "EXTRA DESCRIPTIONS": "0",
+    "MUDPROGS": "0", "MUDTRIGS": "0", "RESETS": "0",
+
+    "ADULT MATERIAL": "0", "MULTICLASSING": "0", "NEWBIE FRIENDLY": "0", "PLAYER CITIES": "0",
+    "PLAYER CLANS": "0", "PLAYER CRAFTING": "0", "PLAYER GUILDS": "0",
+    "EQUIPMENT SYSTEM": "None",  # "None", "Level", "Skill", "Both"
+    "MULTIPLAYING": "None",  # "None", "Restricted", "Full"
+    "PLAYERKILLING": "None",  # "None", "Restricted", "Full"
+    "QUEST SYSTEM": "None",  # "None", "Immortal Run", "Automated", "Integrated"
+    "ROLEPLAYING": "None",  # "None", "Accepted", "Encouraged", "Enforced"
+    "TRAINING SYSTEM": "None",  # "None", "Level", "Skill", "Both"
+    "WORLD ORIGINALITY": "None",  # "All Stock", "Mostly Stock", "Mostly Original", "All Original"
+}
 
 # Note: You do *not* have to make your MUD open to
 # the public to use the external connections, they
