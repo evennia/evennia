@@ -8,6 +8,7 @@ import pprint
 from django.conf import settings
 from evennia.utils.utils import list_to_string, mod_import
 
+
 class ConnectionWizard(object):
 
     def __init__(self):
@@ -169,11 +170,13 @@ def node_start(wizard):
     Use `quit` at any time to abort and throw away unsaved changes.
     """
     options = {
-        "1": ("Add game to Evennia game index (also for closed-dev games)",
+        "1": ("Add your game to the Evennia game index (also for closed-dev games)",
               node_game_index_start, {}),
-        "2": ("Add MSSP information (for mud-list crawlers)",
-              node_mssp_start, {}),
-        "3": ("View and Save created settings",
+        # "2": ("Add MSSP information (for mud-list crawlers)",
+        #       node_mssp_start, {}),
+        # "3": ("Add Grapevine listing",
+        #       node_grapevine_start, {}),
+        "2": ("View and Save created settings",
               node_view_and_apply_settings, {}),
                }
 
@@ -202,6 +205,7 @@ def node_game_index_start(wizard, **kwargs):
         node_game_index_fields(wizard)
     else:
         node_start(wizard)
+
 
 def node_game_index_fields(wizard, status=None):
 
@@ -473,4 +477,3 @@ def node_view_and_apply_settings(wizard):
             wizard.display("... cancelled.")
     wizard.ask_continue()
     node_start(wizard)
-
