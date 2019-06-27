@@ -169,6 +169,8 @@
 
 - Evscaperoom - a full puzzle engine for making multiplayer escape rooms in Evennia. Used to make 
   the entry for the MUD-Coder's Guild's 2019 Game Jam with the theme "One Room", where it ranked #1. 
+- Evennia game-index client no longer a contrib - moved into server core and configured with new 
+  setting `GAME_INDEX_ENABLED`.
 - The `extended_room` contrib saw some backwards-incompatible refactoring:
   + All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
      it's `CmdExtendedRoomLook` etc.

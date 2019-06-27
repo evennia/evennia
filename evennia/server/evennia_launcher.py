@@ -1823,6 +1823,16 @@ def run_dummyrunner(number_of_dummies):
         pass
 
 
+def run_connect_wizard():
+    """
+    Run the linking wizard, for adding new external connections.
+
+    """
+    from .connection_wizard import ConnectionWizard, node_start
+    wizard = ConnectionWizard()
+    node_start(wizard)
+
+
 def list_settings(keys):
     """
     Display the server settings. We only display the Evennia specific
@@ -2082,7 +2092,7 @@ def main():
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
     elif option in ('status', 'info', 'start', 'istart', 'ipstart', 'reload', 'restart', 'reboot',
-                    'reset', 'stop', 'sstop', 'kill', 'skill', 'sstart'):
+                    'reset', 'stop', 'sstop', 'kill', 'skill', 'sstart', 'connections'):
         # operate the server directly
         if not SERVER_LOGFILE:
             init_game_directory(CURRENT_DIR, check_db=True)
@@ -2120,6 +2130,9 @@ def main():
                 print("This option is not supported on Windows.")
             else:
                 kill(SERVER_PIDFILE, 'Server')
+        elif option == 'connections':
+            run_connect_wizard()
+
     elif option != "noop":
         # pass-through to django manager, but set things up first
         check_db = False
