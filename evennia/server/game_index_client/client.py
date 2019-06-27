@@ -66,6 +66,7 @@ class EvenniaGameIndexClient(object):
             'Failed to send game details to Evennia Game Index. HTTP '
             'status code was %s. Message was: %s' % (status_code, response_body)
         )
+
         if status_code == 400 and self._on_bad_request:
             # Improperly formed request. Defer to the callback as far as what
             # to do. Probably not a great idea to continue attempting to send
