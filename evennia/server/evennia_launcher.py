@@ -473,19 +473,20 @@ SERVER_INFO = \
 
 ARG_OPTIONS = \
     """Actions on installed server. One of:
- start   - launch server+portal if not running
- reload  - restart server in 'reload' mode
- stop    - shutdown server+portal
- reboot  - shutdown server+portal, then start again
- reset   - restart server in 'shutdown' mode
- istart  - start server in foreground (until reload)
- ipstart - start portal in foreground
- sstop   - stop only server
- kill    - send kill signal to portal+server (force)
- skill   - send kill signal only to server
- status  - show server and portal run state
- info    - show server and portal port info
- menu    - show a menu of options
+ start       - launch server+portal if not running
+ reload      - restart server in 'reload' mode
+ stop        - shutdown server+portal
+ reboot      - shutdown server+portal, then start again
+ reset       - restart server in 'shutdown' mode
+ istart      - start server in foreground (until reload)
+ ipstart     - start portal in foreground
+ sstop       - stop only server
+ kill        - send kill signal to portal+server (force)
+ skill       - send kill signal only to server
+ status      - show server and portal run state
+ info        - show server and portal port info
+ menu        - show a menu of options
+ connections - show connection wizard
 Others, like migrate, test and shell is passed on to Django."""
 
 # ------------------------------------------------------------
@@ -2101,9 +2102,12 @@ def main():
         elif option == "info":
             query_info()
         elif option == "start":
+            init_game_directory(CURRENT_DIR, check_db=True)
             error_check_python_modules()
             start_evennia(args.profiler, args.profiler)
         elif option == "istart":
+            init_game_directory(CURRENT_DIR, check_db=True)
+            error_check_python_modules()
             start_server_interactive()
         elif option == "ipstart":
             start_portal_interactive()
