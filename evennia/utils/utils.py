@@ -18,12 +18,13 @@ import textwrap
 import random
 import inspect
 from twisted.internet.task import deferLater
+from twisted.internet.defer import returnValue  # noqa - used as import target
 from os.path import join as osjoin
 from importlib import import_module
 from importlib.util import find_spec
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
-from twisted.internet import threads, reactor, task
+from twisted.internet import threads, reactor
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _
