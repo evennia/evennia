@@ -23,7 +23,8 @@
   that are calculated on the fly.
 - `@py` command now defaults to escaping html tags in its output when viewing in the webclient.
   Use new `/clientraw` switch to get old behavior (issue #1369).
-- Shorter and more informative, dynamic, listing of on-command vars if not setting func() in child command class.
+- Shorter and more informative, dynamic, listing of on-command vars if not
+  setting func() in child command class.
 - New Command helper methods
   - `.client_width()` returns client width of the session running the command.
   - `.styled_table(*args, **kwargs)` returns a formatted evtable styled by user's options
@@ -130,9 +131,10 @@
 
 ### Server
 
-- Convert ServerConf model to store its values as a Picklefield (same as Attributes) instead of using a custom solution.
+- Convert ServerConf model to store its values as a Picklefield (same as
+    Attributes) instead of using a custom solution.
 - OOB: Add support for MSDP LIST, REPORT, UNREPORT commands (re-mapped to `msdp_list`,
-  `msdp_report`, `msdp_unreport` inlinefuncs_)
+  `msdp_report`, `msdp_unreport`, inlinefuncs)
 - Added `evennia.ANSIString` to flat API.
 - Server/Portal log files now cycle to names on the form `server_.log_19_03_08_` instead of `server.log___19.3.8`, retaining
   unix file sorting order.
