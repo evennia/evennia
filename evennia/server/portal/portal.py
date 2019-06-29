@@ -11,6 +11,7 @@ from builtins import object
 
 import sys
 import os
+import time
 
 from os.path import dirname, abspath
 from twisted.application import internet, service
@@ -104,7 +105,8 @@ class Portal(object):
         sys.path.append('.')
 
         # create a store of services
-        self.services = service.IServiceCollection(application)
+        self.services = service.MultiService()
+        self.services.setServiceParent(application)
         self.amp_protocol = None  # set by amp factory
         self.sessions = PORTAL_SESSIONS
         self.sessions.portal = self
@@ -113,6 +115,8 @@ class Portal(object):
         self.server_process_id = None
         self.server_restart_mode = "shutdown"
         self.server_info_dict = {}
+
+        self.start_time = time.time()
 
         # in non-interactive portal mode, this gets overwritten by
         # cmdline sent by the evennia launcher
@@ -318,14 +322,14 @@ if WEBSERVER_ENABLED:
 
                 ajax_webclient = webclient_ajax.AjaxWebClient()
                 ajax_webclient.sessionhandler = PORTAL_SESSIONS
-                web_root.putChild("webclientdata", ajax_webclient)
+                web_root.putChild(b"webclientdata", ajax_webclient)
                 webclientstr = "webclient (ajax only)"
 
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
                     # we only support one websocket client
                     from evennia.server.portal import webclient
-                    from evennia.utils.txws import WebSocketFactory
+                    from autobahn.twisted.websocket import WebSocketServerFactory
 
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
                     w_ifacestr = ''
@@ -333,7 +337,7 @@ if WEBSERVER_ENABLED:
                         w_ifacestr = "-%s" % interface
                     port = WEBSOCKET_CLIENT_PORT
 
-                    class Websocket(protocol.ServerFactory):
+                    class Websocket(WebSocketServerFactory):
                         "Only here for better naming in logs"
                         pass
 
@@ -341,8 +345,7 @@ if WEBSERVER_ENABLED:
                     factory.noisy = False
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
-                    websocket_service = internet.TCPServer(port, WebSocketFactory(factory),
-                                                           interface=w_interface)
+                    websocket_service = internet.TCPServer(port, factory, interface=w_interface)
                     websocket_service.setName('EvenniaWebSocket%s:%s' % (w_ifacestr, port))
                     PORTAL.services.addService(websocket_service)
                     websocket_started = True

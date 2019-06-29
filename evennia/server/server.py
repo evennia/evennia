@@ -72,7 +72,9 @@ GUEST_ENABLED = settings.GUEST_ENABLED
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
 IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
+GRAPEVINE_ENABLED = settings.GRAPEVINE_ENABLED
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
+GAME_INDEX_ENABLED = settings.GAME_INDEX_ENABLED
 
 INFO_DICT = {"servername": SERVERNAME, "version": VERSION,
              "amp": "", "errors": "", "info": "", "webserver": "", "irc_rss": ""}
@@ -143,8 +145,6 @@ def _server_maintenance():
                     session.account.access(session.account, "noidletimeout", default=False):
                 SESSIONS.disconnect(session, reason=reason)
 
-maintenance_task = LoopingCall(_server_maintenance)
-maintenance_task.start(60, now=True)  # call every minute
 
 #------------------------------------------------------------
 # Evennia Main Server object
@@ -199,6 +199,7 @@ class Evennia(object):
             reactor.callLater(1, d.callback, None)
         reactor.sigInt = _wrap_sigint_handler
 
+
     # Server startup methods
 
     def sqlite3_prep(self):
@@ -234,8 +235,8 @@ class Evennia(object):
                           "BASE_EXIT_TYPECLASS", "BASE_SCRIPT_TYPECLASS",
                           "BASE_CHANNEL_TYPECLASS")
         # get previous and current settings so they can be compared
-        settings_compare = zip([ServerConfig.objects.conf(name) for name in settings_names],
-                               [settings.__getattr__(name) for name in settings_names])
+        settings_compare = list(zip([ServerConfig.objects.conf(name) for name in settings_names],
+                               [settings.__getattr__(name) for name in settings_names]))
         mismatches = [i for i, tup in enumerate(settings_compare) if tup[0] and tup[1] and tup[0] != tup[1]]
         if len(mismatches):  # can't use any() since mismatches may be [0] which reads as False for any()
             # we have a changed default. Import relevant objects and
@@ -303,6 +304,10 @@ class Evennia(object):
         """
         from evennia.objects.models import ObjectDB
 
+        # start server time and maintenance task
+        self.maintenance_task = LoopingCall(_server_maintenance)
+        self.maintenance_task.start(60, now=True)  # call every minute
+
         # update eventual changed defaults
         self.update_defaults()
 
@@ -322,6 +327,7 @@ class Evennia(object):
             # clear eventual lingering session storages
             ObjectDB.objects.clear_all_sessids()
             logger.log_msg("Evennia Server successfully started.")
+
         # always call this regardless of start type
         self.at_server_start()
 
@@ -549,9 +555,9 @@ if WEBSERVER_ENABLED:
 
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
-    web_root.putChild("media", static.File(settings.MEDIA_ROOT))
+    web_root.putChild(b"media", static.File(settings.MEDIA_ROOT))
     # point our static resources to url /static
-    web_root.putChild("static", static.File(settings.STATIC_ROOT))
+    web_root.putChild(b"static", static.File(settings.STATIC_ROOT))
     EVENNIA.web_root = web_root
 
     if WEB_PLUGINS_MODULE:
@@ -578,6 +584,15 @@ if IRC_ENABLED:
 if RSS_ENABLED:
     # RSS feed channel connections
     ENABLED.append('rss')
+
+if GRAPEVINE_ENABLED:
+    # Grapevine channel connections
+    ENABLED.append('grapevine')
+
+if GAME_INDEX_ENABLED:
+    from evennia.server.game_index_client.service import EvenniaGameIndexService
+    egi_service = EvenniaGameIndexService()
+    EVENNIA.services.addService(egi_service)
 
 if ENABLED:
     INFO_DICT["irc_rss"] = ", ".join(ENABLED) + " enabled."

@@ -42,7 +42,7 @@ class TaskHandler(object):
         """
         to_save = False
         value = ServerConfig.objects.conf("delayed_tasks", default={})
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             tasks = dbunserialize(value)
         else:
             tasks = value
@@ -112,7 +112,7 @@ class TaskHandler(object):
             # Choose a free task_id
             safe_args = []
             safe_kwargs = {}
-            used_ids = self.tasks.keys()
+            used_ids = list(self.tasks.keys())
             task_id = 1
             while task_id in used_ids:
                 task_id += 1

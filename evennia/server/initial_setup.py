@@ -5,7 +5,7 @@ other things.
 
 Everything starts at handle_setup()
 """
-from __future__ import print_function
+
 
 import time
 from django.conf import settings

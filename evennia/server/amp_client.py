@@ -40,7 +40,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
 
     def startedConnecting(self, connector):
         """
-        Called when starting to try to connect to the MUD server.
+        Called when starting to try to connect to the Portal AMP server.
 
         Args:
             connector (Connector): Twisted Connector instance representing
@@ -102,6 +102,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         Called when a new connection is established.
 
         """
+        # print("AMPClient new connection {}".format(self))
         info_dict = self.factory.server.get_info_dict()
         super(AMPServerClientProtocol, self).connectionMade()
         # first thing we do is to request the Portal to sync all sessions
@@ -128,6 +129,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             (sessid, kwargs).
 
         """
+        # print("server data_to_portal: {}, {}, {}".format(command, sessid, kwargs))
         return self.callRemote(command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
                 self.errback, command.key)
 
@@ -198,47 +200,46 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         operation = kwargs.pop("operation", "")
         server_sessionhandler = self.factory.server.sessions
 
-        try:
-            if operation == amp.PCONN:  # portal_session_connect
-                # create a new session and sync it
-                server_sessionhandler.portal_connect(kwargs.get("sessiondata"))
+        if operation == amp.PCONN:  # portal_session_connect
+            # create a new session and sync it
+            server_sessionhandler.portal_connect(kwargs.get("sessiondata"))
 
-            elif operation == amp.PCONNSYNC:  # portal_session_sync
-                server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
+        elif operation == amp.PCONNSYNC:  # portal_session_sync
+            server_sessionhandler.portal_session_sync(kwargs.get("sessiondata"))
 
-            elif operation == amp.PDISCONN:  # portal_session_disconnect
-                # session closed from portal sid
-                session = server_sessionhandler.get(sessid)
-                if session:
-                    server_sessionhandler.portal_disconnect(session)
+        elif operation == amp.PDISCONN:  # portal_session_disconnect
+            # session closed from portal sid
+            session = server_sessionhandler.get(sessid)
+            if session:
+                server_sessionhandler.portal_disconnect(session)
 
-            elif operation == amp.PDISCONNALL:  # portal_disconnect_all
-                # portal orders all sessions to close
-                server_sessionhandler.portal_disconnect_all()
+        elif operation == amp.PDISCONNALL:  # portal_disconnect_all
+            # portal orders all sessions to close
+            server_sessionhandler.portal_disconnect_all()
 
-            elif operation == amp.PSYNC:  # portal_session_sync
-                # force a resync of sessions from the portal side. This happens on
-                # first server-connect.
-                server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
-                self.factory.server.run_init_hooks(server_restart_mode)
-                server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
+        elif operation == amp.PSYNC:  # portal_session_sync
+            # force a resync of sessions from the portal side. This happens on
+            # first server-connect.
+            server_restart_mode = kwargs.get("server_restart_mode", "shutdown")
+            self.factory.server.run_init_hooks(server_restart_mode)
+            server_sessionhandler.portal_sessions_sync(kwargs.get("sessiondata"))
+            server_sessionhandler.portal_start_time = kwargs.get("portal_start_time")
 
-            elif operation == amp.SRELOAD:  # server reload
-                # shut down in reload mode
-                server_sessionhandler.all_sessions_portal_sync()
-                server_sessionhandler.server.shutdown(mode='reload')
+        elif operation == amp.SRELOAD:  # server reload
+            # shut down in reload mode
+            server_sessionhandler.all_sessions_portal_sync()
+            server_sessionhandler.server.shutdown(mode='reload')
 
-            elif operation == amp.SRESET:
-                # shut down in reset mode
-                server_sessionhandler.all_sessions_portal_sync()
-                server_sessionhandler.server.shutdown(mode='reset')
+        elif operation == amp.SRESET:
+            # shut down in reset mode
+            server_sessionhandler.all_sessions_portal_sync()
+            server_sessionhandler.server.shutdown(mode='reset')
 
-            elif operation == amp.SSHUTD:  # server shutdown
-                # shutdown in stop mode
-                server_sessionhandler.server.shutdown(mode='shutdown')
+        elif operation == amp.SSHUTD:  # server shutdown
+            # shutdown in stop mode
+            server_sessionhandler.server.shutdown(mode='shutdown')
 
-            else:
-                raise Exception("operation %(op)s not recognized." % {'op': operation})
-        except Exception:
-            logger.log_trace()
+        else:
+            raise Exception("operation %(op)s not recognized." % {'op': operation})
+
         return {}

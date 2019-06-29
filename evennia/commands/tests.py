@@ -14,7 +14,7 @@ class _CmdA(Command):
     key = "A"
 
     def __init__(self, cmdset, *args, **kwargs):
-        super(_CmdA, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.from_cmdset = cmdset
 
 
@@ -22,7 +22,7 @@ class _CmdB(Command):
     key = "B"
 
     def __init__(self, cmdset, *args, **kwargs):
-        super(_CmdB, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.from_cmdset = cmdset
 
 
@@ -30,7 +30,7 @@ class _CmdC(Command):
     key = "C"
 
     def __init__(self, cmdset, *args, **kwargs):
-        super(_CmdC, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.from_cmdset = cmdset
 
 
@@ -38,7 +38,7 @@ class _CmdD(Command):
     key = "D"
 
     def __init__(self, cmdset, *args, **kwargs):
-        super(_CmdD, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.from_cmdset = cmdset
 
 
@@ -85,7 +85,7 @@ class TestCmdSetMergers(TestCase):
     "Test merging of cmdsets"
 
     def setUp(self):
-        super(TestCmdSetMergers, self).setUp()
+        super().setUp()
         self.cmdset_a = _CmdSetA()
         self.cmdset_b = _CmdSetB()
         self.cmdset_c = _CmdSetC()
@@ -278,7 +278,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
 
     def setUp(self):
         self.patch(sys.modules['evennia.server.sessionhandler'], 'delay', _mockdelay)
-        super(TestGetAndMergeCmdSets, self).setUp()
+        super().setUp()
         self.cmdset_a = _CmdSetA()
         self.cmdset_b = _CmdSetB()
         self.cmdset_c = _CmdSetC()

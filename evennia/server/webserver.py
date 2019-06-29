@@ -1,18 +1,19 @@
 """
-This implements resources for twisted webservers using the wsgi
-interface of django. This alleviates the need of running e.g. an
-apache server to serve Evennia's web presence (although you could do
+This implements resources for Twisted webservers using the WSGI
+interface of Django. This alleviates the need of running e.g. an
+Apache server to serve Evennia's web presence (although you could do
 that too if desired).
 
 The actual servers are started inside server.py as part of the Evennia
 application.
 
-(Lots of thanks to http://githup.com/clemensha/twisted-wsgi-django for
+(Lots of thanks to http://github.com/clemesha/twisted-wsgi-django for
 a great example/aid on how to do this.)
 
+
 """
-import urlparse
-from urllib import quote as urlquote
+import urllib.parse
+from urllib.parse import quote as urlquote
 from twisted.web import resource, http, server
 from twisted.internet import reactor
 from twisted.application import internet
@@ -23,7 +24,8 @@ from twisted.internet import defer
 
 from twisted.web.wsgi import WSGIResource
 from django.conf import settings
-from django.core.handlers.wsgi import WSGIHandler
+from django.core.wsgi import get_wsgi_application
+
 
 from evennia.utils import logger
 
@@ -117,11 +119,12 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         # RFC 2616 tells us that we can omit the port if it's the default port,
         # but we have to provide it otherwise
         request.content.seek(0, 0)
-        qs = urlparse.urlparse(request.uri)[4]
+        qs = urllib.parse.urlparse(request.uri)[4]
         if qs:
-            rest = self.path + '?' + qs
+            rest = self.path + '?' + qs.decode()
         else:
             rest = self.path
+        rest = rest.encode()
         clientFactory = self.proxyClientFactoryClass(
             request.method, rest, request.clientproto,
             request.getAllHeaders(), request.content.read(), request)
@@ -156,8 +159,8 @@ class DjangoWebRoot(resource.Resource):
         self.pool = pool
         self._echo_log = True
         self._pending_requests = {}
-        resource.Resource.__init__(self)
-        self.wsgi_resource = WSGIResource(reactor, pool, WSGIHandler())
+        super().__init__()
+        self.wsgi_resource = WSGIResource(reactor, pool, get_wsgi_application())
 
     def empty_threadpool(self):
         """
@@ -248,14 +251,14 @@ class WSGIWebServer(internet.TCPServer):
 
         """
         self.pool = pool
-        internet.TCPServer.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def startService(self):
         """
         Start the pool after the service starts.
 
         """
-        internet.TCPServer.startService(self)
+        super().startService()
         self.pool.start()
 
     def stopService(self):
@@ -263,5 +266,5 @@ class WSGIWebServer(internet.TCPServer):
         Safely stop the pool after the service stops.
 
         """
-        internet.TCPServer.stopService(self)
+        super().stopService()
         self.pool.stop()

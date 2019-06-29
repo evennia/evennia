@@ -127,6 +127,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         Args:
             command (AMP Command): A protocol send command.
             sessid (int): A unique Session id.
+            kwargs (any): Data to send. This will be pickled.
 
         Returns:
             deferred (deferred or None): A deferred with an errback.
@@ -136,6 +137,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             (sessid, kwargs).
 
         """
+        # print("portal data_to_server: {}, {}, {}".format(command, sessid, kwargs))
         if self.factory.server_connection:
             return self.factory.server_connection.callRemote(
                         command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
@@ -154,6 +156,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # start the Server
+        print("Portal starting server ... {}".format(server_twistd_cmd))
         process = None
         with open(settings.SERVER_LOG_FILE, 'a') as logfile:
             # we link stdout to a file in order to catch
@@ -225,6 +228,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         Send a status stanza to the launcher.
 
         """
+        # print("send status to launcher")
+        # print("self.get_status(): {}".format(self.get_status()))
         if self.factory.launcher_connection:
             self.factory.launcher_connection.callRemote(
                     amp.MsgStatus,
@@ -275,6 +280,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 (portal_running, server_running, portal_pid, server_pid).
 
         """
+        # print('Received PSTATUS request')
         return {"status": amp.dumps(self.get_status())}
 
     @amp.MsgLauncher2Portal.responder
@@ -296,11 +302,14 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             launcher. It can obviously only accessed when the Portal is already up and running.
 
         """
+        # Since the launcher command uses amp.String() we need to convert from byte here.
+        operation = str(operation, 'utf-8')
         self.factory.launcher_connection = self
-
         _, server_connected, _, _, _, _ = self.get_status()
 
-        # logger.log_msg("Evennia Launcher->Portal operation %s received" % (ord(operation)))
+        # logger.log_msg("Evennia Launcher->Portal operation %s:%s received" % (ord(operation), arguments))
+
+        # logger.log_msg("operation == amp.SSTART: {}: {}".format(operation == amp.SSTART, amp.loads(arguments)))
 
         if operation == amp.SSTART:   # portal start  #15
             # first, check if server is already running
@@ -341,6 +350,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 self.factory.portal.shutdown()
 
         else:
+            logger.log_err("Operation {} not recognized".format(operation))
             raise Exception("operation %(op)s not recognized." % {'op': operation})
 
         return {}
@@ -380,6 +390,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         self.factory.server_connection = self
 
         sessid, kwargs = self.data_in(packed_data)
+
+        # logger.log_msg("Evennia Server->Portal admin data %s:%s received" % (sessid, kwargs))
+
         operation = kwargs.pop("operation")
         portal_sessionhandler = self.factory.portal.sessions
 
@@ -428,7 +441,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             self.send_AdminPortal2Server(amp.DUMMYSESSION,
                                          amp.PSYNC,
                                          server_restart_mode=server_restart_mode,
-                                         sessiondata=sessdata)
+                                         sessiondata=sessdata,
+                                         portal_start_time=self.factory.portal.start_time)
             self.factory.portal.sessions.at_server_connection()
 
             if self.factory.server_connection:

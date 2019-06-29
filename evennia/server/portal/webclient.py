@@ -2,8 +2,8 @@
 Webclient based on websockets.
 
 This implements a webclient with WebSockets (http://en.wikipedia.org/wiki/WebSocket)
-by use of the txws implementation (https://github.com/MostAwesomeDude/txWS). It is
-used together with evennia/web/media/javascript/evennia_websocket_webclient.js.
+by use of the autobahn-python package's implementation (https://github.com/crossbario/autobahn-python).
+It is used together with evennia/web/media/javascript/evennia_websocket_webclient.js.
 
 All data coming into the webclient is in the form of valid JSON on the form
 
@@ -16,34 +16,29 @@ from the command line and interprets it as an Evennia Command: `["text", ["look"
 """
 import re
 import json
+import html
 from twisted.internet.protocol import Protocol
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.utils.utils import to_str, mod_import
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
+from autobahn.twisted.websocket import WebSocketServerProtocol
 
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
 _CLIENT_SESSIONS = mod_import(settings.SESSION_ENGINE).SessionStore
 
 
-class WebSocketClient(Protocol, Session):
+CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
+
+
+class WebSocketClient(WebSocketServerProtocol, Session):
     """
     Implements the server-side of the Websocket connection.
     """
     def __init__(self, *args, **kwargs):
-        super(WebSocketClient, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.protocol_key = "webclient/websocket"
-
-    def connectionMade(self):
-        """
-        This is called when the connection is first established.
-
-        """
-        self.transport.validationMade = self.validationMade
-        client_address = self.transport.client
-        client_address = client_address[0] if client_address else None
-        self.init_session("websocket", client_address, self.factory.sessionhandler)
 
     def get_client_session(self):
         """
@@ -55,27 +50,43 @@ class WebSocketClient(Protocol, Session):
 
         """
         try:
-            self.csessid = self.transport.location.split("?", 1)[1]
+            self.csessid = self.http_request_uri.split("?", 1)[1]
         except IndexError:
             # this may happen for custom webclients not caring for the
             # browser session.
             self.csessid = None
             return None
+        except AttributeError:
+            from evennia.utils import logger
+            self.csessid = None
+            logger.log_trace(str(self))
+            return None
         if self.csessid:
             return _CLIENT_SESSIONS(session_key=self.csessid)
 
-    def validationMade(self):
+    def onOpen(self):
         """
-        This is called from the (modified) txws websocket library when
-        the ws handshake and validation has completed fully.
+        This is called when the WebSocket connection is fully established.
 
         """
-        csession = self.get_client_session()
+        client_address = self.transport.client
+        client_address = client_address[0] if client_address else None
+        self.init_session("websocket", client_address, self.factory.sessionhandler)
+
+        csession = self.get_client_session()  # this sets self.csessid
+        csessid = self.csessid
         uid = csession and csession.get("webclient_authenticated_uid", None)
         if uid:
             # the client session is already logged in.
             self.uid = uid
             self.logged_in = True
+
+            for old_session in self.sessionhandler.sessions_from_csessid(csessid):
+                if (hasattr(old_session, "websocket_close_code") and
+                        old_session.websocket_close_code != CLOSE_NORMAL):
+                    # if we have old sessions with the same csession, they are remnants
+                    self.sessid = old_session.sessid
+                    self.sessionhandler.disconnect(old_session)
 
         # watch for dead links
         self.transport.setTcpKeepAlive(1)
@@ -88,43 +99,51 @@ class WebSocketClient(Protocol, Session):
         disconnect this protocol.
 
         Args:
-            reason (str): Motivation for the disconnection.
+            reason (str or None): Motivation for the disconnection.
 
         """
-        self.data_out(text=((reason or "",), {}))
-
         csession = self.get_client_session()
 
         if csession:
             csession["webclient_authenticated_uid"] = None
             csession.save()
             self.logged_in = False
-        self.connectionLost(reason)
 
-    def connectionLost(self, reason):
+        self.sessionhandler.disconnect(self)
+        # autobahn-python: 1000 for a normal close, 3000-4999 for app. specific,
+        # in case anyone wants to expose this functionality later.
+        #
+        # sendClose() under autobahn/websocket/interfaces.py
+        self.sendClose(CLOSE_NORMAL, reason)
+
+    def onClose(self, wasClean, code=None, reason=None):
         """
         This is executed when the connection is lost for whatever
         reason. it can also be called directly, from the disconnect
         method.
 
         Args:
-            reason (str): Motivation for the lost connection.
+            wasClean (bool): ``True`` if the WebSocket was closed cleanly.
+            code (int or None): Close status as sent by the WebSocket peer.
+            reason (str or None): Close reason as sent by the WebSocket peer.
 
         """
-        print("In connectionLost of webclient")
-        self.sessionhandler.disconnect(self)
-        self.transport.close()
+        if code == CLOSE_NORMAL:
+            self.disconnect(reason)
+        else:
+            self.websocket_close_code = code
 
-    def dataReceived(self, string):
+    def onMessage(self, payload, isBinary):
         """
-        Method called when data is coming in over the websocket
-        connection. This is always a JSON object on the following
-        form:
-            [cmdname, [args], {kwargs}]
+        Callback fired when a complete WebSocket message was received.
 
+        Args:
+            payload (bytes): The WebSocket message received.
+            isBinary (bool): Flag indicating whether payload is binary or
+                             UTF-8 encoded text.
 
         """
-        cmdarray = json.loads(string)
+        cmdarray = json.loads(str(payload, 'utf-8'))
         if cmdarray:
             self.data_in(**{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
 
@@ -136,7 +155,7 @@ class WebSocketClient(Protocol, Session):
             line (str): Text to send.
 
         """
-        return self.transport.write(line)
+        return self.sendMessage(line.encode())
 
     def at_login(self):
         csession = self.get_client_session()
@@ -148,7 +167,7 @@ class WebSocketClient(Protocol, Session):
         """
         Data User > Evennia.
 
-        Args::
+        Args:
             text (str): Incoming text.
             kwargs (any): Options from protocol.
 
@@ -165,21 +184,11 @@ class WebSocketClient(Protocol, Session):
             this point.
 
         """
-
         if "websocket_close" in kwargs:
             self.disconnect()
             return
 
         self.sessionhandler.data_in(self, **kwargs)
-
-    def data_out(self, **kwargs):
-        """
-        Data Evennia->User.
-
-        Kwargs:
-            kwargs (any): Options ot the protocol
-        """
-        self.sessionhandler.data_out(self, **kwargs)
 
     def send_text(self, *args, **kwargs):
         """
@@ -206,10 +215,10 @@ class WebSocketClient(Protocol, Session):
             return
 
         flags = self.protocol_flags
-        text = to_str(text, force_string=True)
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))
+        client_raw = options.get("client_raw", False)
         nocolor = options.get("nocolor", flags.get("NOCOLOR", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
@@ -220,7 +229,10 @@ class WebSocketClient(Protocol, Session):
             text = _RE_SCREENREADER_REGEX.sub("", text)
         cmd = "prompt" if prompt else "text"
         if raw:
-            args[0] = text
+            if client_raw:
+                args[0] = text
+            else:
+                args[0] = html.escape(text)  # escape html!
         else:
             args[0] = parse_html(text, strip_ansi=nocolor)
 

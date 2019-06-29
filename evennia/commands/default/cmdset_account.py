@@ -38,6 +38,7 @@ class AccountCmdSet(CmdSet):
         self.add(account.CmdPassword())
         self.add(account.CmdColorTest())
         self.add(account.CmdQuell())
+        self.add(account.CmdStyle())
 
         # nicks
         self.add(general.CmdNick())
@@ -55,7 +56,6 @@ class AccountCmdSet(CmdSet):
         self.add(system.CmdPy())
 
         # Admin commands
-        self.add(admin.CmdDelAccount())
         self.add(admin.CmdNewPassword())
 
         # Comm commands
@@ -74,3 +74,4 @@ class AccountCmdSet(CmdSet):
         self.add(comms.CmdIRC2Chan())
         self.add(comms.CmdIRCStatus())
         self.add(comms.CmdRSS2Chan())
+        self.add(comms.CmdGrapevine2Chan())

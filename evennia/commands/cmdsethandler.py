@@ -422,13 +422,13 @@ class CmdSetHandler(object):
           it's a 'quirk' that has to be documented.
 
         """
-        if not (isinstance(cmdset, basestring) or utils.inherits_from(cmdset, CmdSet)):
+        if not (isinstance(cmdset, str) or utils.inherits_from(cmdset, CmdSet)):
             string = _("Only CmdSets can be added to the cmdsethandler!")
             raise Exception(string)
 
         if callable(cmdset):
             cmdset = cmdset(self.obj)
-        elif isinstance(cmdset, basestring):
+        elif isinstance(cmdset, str):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
         if cmdset and cmdset.key != '_CMDSET_ERROR':

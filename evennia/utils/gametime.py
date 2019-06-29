@@ -5,7 +5,7 @@ It also supplies some useful methods to convert between
 in-mud time and real-world time as well allows to get the
 total runtime of the server and the current uptime.
 """
-from __future__ import division
+
 import time
 from calendar import monthrange
 from datetime import datetime, timedelta
@@ -107,6 +107,17 @@ def uptime():
     return time.time() - SERVER_START_TIME
 
 
+def portal_uptime():
+    """
+    Get the current uptime of the portal.
+
+    Returns:
+        time (float): The uptime of the portal.
+    """
+    from evennia.server.sessionhandler import SESSIONS
+    return time.time() - SESSIONS.portal_start_time
+
+
 def game_epoch():
     """
     Get the game epoch.
@@ -178,12 +189,13 @@ def real_seconds_until(sec=None, min=None, hour=None,
 
     if projected <= current:
         # We increase one unit of time depending on parameters
-        days_in_month = monthrange(s_year, s_month)[1]
-        days_in_year = sum(monthrange(s_year, m + 1)[1] for m in range(12))
         if month is not None:
-            projected += timedelta(days=days_in_year)
+            projected = projected.replace(year=s_year+1)
         elif day is not None:
-            projected += timedelta(days=days_in_month)
+            try:
+                projected = projected.replace(month=s_month+1)
+            except ValueError:
+                projected = projected.replace(month=1)
         elif hour is not None:
             projected += timedelta(days=1)
         elif min is not None:

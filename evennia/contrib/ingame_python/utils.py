@@ -50,7 +50,7 @@ def register_events(path_or_typeclass):
         temporary storage, waiting for the script to be initialized.
 
     """
-    if isinstance(path_or_typeclass, basestring):
+    if isinstance(path_or_typeclass, str):
         typeclass = class_from_module(path_or_typeclass)
     else:
         typeclass = path_or_typeclass

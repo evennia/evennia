@@ -10,7 +10,7 @@ from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
 from evennia.utils import create, utils, search
-from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses
+from evennia.utils.utils import inherits_from, class_from_module, get_all_typeclasses, variable_from_module
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
@@ -27,10 +27,10 @@ __all__ = ("ObjManipCommand", "CmdSetObjAlias", "CmdCopy",
            "CmdLock", "CmdExamine", "CmdFind", "CmdTeleport",
            "CmdScript", "CmdTag", "CmdSpawn")
 
-# used by @set
+# used by set
 from ast import literal_eval as _LITERAL_EVAL
 
-# used by @find
+# used by find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 ROOM_TYPECLASS = settings.BASE_ROOM_TYPECLASS
 EXIT_TYPECLASS = settings.BASE_EXIT_TYPECLASS
@@ -68,7 +68,7 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
         the cases, see the module doc.
         """
         # get all the normal parsing done (switches etc)
-        super(ObjManipCommand, self).parse()
+        super().parse()
 
         obj_defs = ([], [])    # stores left- and right-hand side of '='
         obj_attrs = ([], [])  # "
@@ -101,9 +101,9 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     adding permanent aliases for object
 
     Usage:
-      @alias <obj> [= [alias[,alias,alias,...]]]
-      @alias <obj> =
-      @alias/category <obj> = [alias[,alias,...]:<category>
+      alias <obj> [= [alias[,alias,alias,...]]]
+      alias <obj> =
+      alias/category <obj> = [alias[,alias,...]:<category>
 
     Switches:
       category - requires ending input with :category, to store the
@@ -114,13 +114,13 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     assigning a category, all aliases given will be using this category.
 
     Observe that this is not the same thing as personal aliases
-    created with the 'nick' command! Aliases set with @alias are
+    created with the 'nick' command! Aliases set with alias are
     changing the object in question, making those aliases usable
     by everyone.
     """
 
-    key = "@alias"
-    aliases = "@setobjalias"
+    key = "alias"
+    aliases = "setobjalias"
     switch_options = ("category",)
     locks = "cmd:perm(setobjalias) or perm(Builder)"
     help_category = "Building"
@@ -131,7 +131,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.lhs:
-            string = "Usage: @alias <obj> [= [alias[,alias ...]]]"
+            string = "Usage: alias <obj> [= [alias[,alias ...]]]"
             self.caller.msg(string)
             return
         objname = self.lhs
@@ -203,7 +203,7 @@ class CmdCopy(ObjManipCommand):
     copy an object and its properties
 
     Usage:
-      @copy[/reset] <original obj> [= <new_name>][;alias;alias..]
+      copy[/reset] <original obj> [= <new_name>][;alias;alias..]
       [:<new_location>] [,<new_name2> ...]
 
     switch:
@@ -215,7 +215,7 @@ class CmdCopy(ObjManipCommand):
     one exact copy of the original object will be created with the name *_copy.
     """
 
-    key = "@copy"
+    key = "copy"
     switch_options = ("reset",)
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
@@ -226,7 +226,7 @@ class CmdCopy(ObjManipCommand):
         caller = self.caller
         args = self.args
         if not args:
-            caller.msg("Usage: @copy <obj> [=<new_name>[;alias;alias..]]"
+            caller.msg("Usage: copy <obj> [=<new_name>[;alias;alias..]]"
                        "[:<new_location>] [, <new_name2>...]")
             return
 
@@ -280,16 +280,16 @@ class CmdCpAttr(ObjManipCommand):
     copy attributes between objects
 
     Usage:
-      @cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-      @cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
+      cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
 
     Switches:
       move - delete the attribute from the source object after copying.
 
     Example:
-      @cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety
+      cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety
       ->
       copies the coolness attribute (defined on yourself), to attributes
       on Anna and Tom.
@@ -297,7 +297,7 @@ class CmdCpAttr(ObjManipCommand):
     Copy the attribute one object to one or more attributes on another object.
     If you don't supply a source object, yourself is used.
     """
-    key = "@cpattr"
+    key = "cpattr"
     switch_options = ("move",)
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
@@ -348,10 +348,10 @@ class CmdCpAttr(ObjManipCommand):
 
         if not self.rhs:
             string = """Usage:
-            @cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-            @cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-            @cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-            @cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
+            cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+            cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+            cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+            cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
             caller.msg(string)
             return
 
@@ -428,10 +428,10 @@ class CmdMvAttr(ObjManipCommand):
     move attributes between objects
 
     Usage:
-      @mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-      @mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
+      mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
 
     Switches:
       copy - Don't delete the original after moving.
@@ -439,7 +439,7 @@ class CmdMvAttr(ObjManipCommand):
     Move an attribute from one object to one or more attributes on another
     object. If you don't supply a source object, yourself is used.
     """
-    key = "@mvattr"
+    key = "mvattr"
     switch_options = ("copy",)
     locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
@@ -450,18 +450,18 @@ class CmdMvAttr(ObjManipCommand):
         """
         if not self.rhs:
             string = """Usage:
-      @mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-      @mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
-      @mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
+      mvattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      mvattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
+      mvattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      mvattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
             self.caller.msg(string)
             return
 
-        # simply use @cpattr for all the functionality
+        # simply use cpattr for all the functionality
         if "copy" in self.switches:
-            self.execute_cmd("@cpattr %s" % self.args)
+            self.execute_cmd("cpattr %s" % self.args)
         else:
-            self.execute_cmd("@cpattr/move %s" % self.args)
+            self.execute_cmd("cpattr/move %s" % self.args)
 
 
 class CmdCreate(ObjManipCommand):
@@ -469,7 +469,7 @@ class CmdCreate(ObjManipCommand):
     create new objects
 
     Usage:
-      @create[/drop] <objname>[;alias;alias...][:typeclass], <objname>...
+      create[/drop] <objname>[;alias;alias...][:typeclass], <objname>...
 
     switch:
        drop - automatically drop the new object into your current
@@ -484,11 +484,11 @@ class CmdCreate(ObjManipCommand):
     types/examples/red_button.py, you could create a new
     object of this type like this:
 
-       @create/drop button;red : examples.red_button.RedButton
+       create/drop button;red : examples.red_button.RedButton
 
     """
 
-    key = "@create"
+    key = "create"
     switch_options = ("drop",)
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
@@ -505,7 +505,7 @@ class CmdCreate(ObjManipCommand):
         caller = self.caller
 
         if not self.args:
-            string = "Usage: @create[/drop] <newname>[;alias;alias...] [:typeclass.path]"
+            string = "Usage: create[/drop] <newname>[;alias;alias...] [:typeclass.path]"
             caller.msg(string)
             return
 
@@ -565,7 +565,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     describe an object or the current room.
 
     Usage:
-      @desc [<obj> =] <description>
+      desc [<obj> =] <description>
 
     Switches:
       edit - Open up a line editor for more advanced editing.
@@ -573,8 +573,8 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     Sets the "desc" attribute on an object. If an object is not given,
     describe the current room.
     """
-    key = "@desc"
-    aliases = "@describe"
+    key = "desc"
+    aliases = "describe"
     switch_options = ("edit",)
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
@@ -605,7 +605,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         if not self.args and 'edit' not in self.switches:
-            caller.msg("Usage: @desc [<obj> =] <description>")
+            caller.msg("Usage: desc [<obj> =] <description>")
             return
 
         if 'edit' in self.switches:
@@ -635,16 +635,16 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     permanently delete objects
 
     Usage:
-       @destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
+       destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]
 
     Switches:
-       override - The @destroy command will usually avoid accidentally
+       override - The destroy command will usually avoid accidentally
                   destroying account objects. This switch overrides this safety.
        force - destroy without confirmation.
     Examples:
-       @destroy house, roof, door, 44-78
-       @destroy 5-10, flower, 45
-       @destroy/force north
+       destroy house, roof, door, 44-78
+       destroy 5-10, flower, 45
+       destroy/force north
 
     Destroys one or many objects. If dbrefs are used, a range to delete can be
     given, e.g. 4-10. Also the end points will be deleted. This command
@@ -652,8 +652,8 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     You can specify the /force switch to bypass this confirmation.
     """
 
-    key = "@destroy"
-    aliases = ["@delete", "@del"]
+    key = "destroy"
+    aliases = ["delete", "del"]
     switch_options = ("override", "force")
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
@@ -668,7 +668,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
         delete = True
 
         if not self.args or not self.lhslist:
-            caller.msg("Usage: @destroy[/switches] [obj, obj2, obj3, [dbref-dbref],...]")
+            caller.msg("Usage: destroy[/switches] [obj, obj2, obj3, [dbref-dbref],...]")
             delete = False
 
         def delobj(obj):
@@ -737,12 +737,11 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 confirm += ", ".join(["#{}".format(obj.id) for obj in objs])
             confirm += " [yes]/no?" if self.default_confirm == 'yes' else " yes/[no]"
             answer = ""
-            while answer.strip().lower() not in ("y", "yes", "n", "no"):
-                answer = yield(confirm)
-                answer = self.default_confirm if answer == '' else answer
+            answer = yield(confirm)
+            answer = self.default_confirm if answer == '' else answer
 
             if answer.strip().lower() in ("n", "no"):
-                caller.msg("Cancelled: no object was destroyed.")
+                caller.msg("Canceled: no object was destroyed.")
                 delete = False
 
         if delete:
@@ -759,7 +758,7 @@ class CmdDig(ObjManipCommand):
     build new rooms and connect them to the current location
 
     Usage:
-      @dig[/switches] <roomname>[;alias;alias...][:typeclass]
+      dig[/switches] <roomname>[;alias;alias...][:typeclass]
             [= <exit_to_there>[;alias][:typeclass]]
                [, <exit_to_here>[;alias][:typeclass]]
 
@@ -767,9 +766,9 @@ class CmdDig(ObjManipCommand):
        tel or teleport - move yourself to the new room
 
     Examples:
-       @dig kitchen = north;n, south;s
-       @dig house:myrooms.MyHouseTypeclass
-       @dig sheer cliff;cliff;sheer = climb up, climb down
+       dig kitchen = north;n, south;s
+       dig house:myrooms.MyHouseTypeclass
+       dig sheer cliff;cliff;sheer = climb up, climb down
 
     This command is a convenient way to build rooms quickly; it creates the
     new room and you can optionally set up exits back and forth between your
@@ -777,7 +776,7 @@ class CmdDig(ObjManipCommand):
     like to the name of the room and the exits in question; an example
     would be 'north;no;n'.
     """
-    key = "@dig"
+    key = "dig"
     switch_options = ("teleport",)
     locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
@@ -794,7 +793,7 @@ class CmdDig(ObjManipCommand):
         caller = self.caller
 
         if not self.lhs:
-            string = "Usage: @dig[/teleport] <roomname>[;alias;alias...]" \
+            string = "Usage: dig[/teleport] <roomname>[;alias;alias...]" \
                      "[:parent] [= <exit_there>"
             string += "[;alias;alias..][:parent]] "
             string += "[, <exit_back_here>[;alias;alias..][:parent]]"
@@ -897,15 +896,15 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
     create new rooms in cardinal directions only
 
     Usage:
-      @tunnel[/switch] <direction>[:typeclass] [= <roomname>[;alias;alias;...][:typeclass]]
+      tunnel[/switch] <direction>[:typeclass] [= <roomname>[;alias;alias;...][:typeclass]]
 
     Switches:
       oneway - do not create an exit back to the current location
       tel - teleport to the newly created room
 
     Example:
-      @tunnel n
-      @tunnel n = house;mike's place;green building
+      tunnel n
+      tunnel n = house;mike's place;green building
 
     This is a simple way to build using pre-defined directions:
      |wn,ne,e,se,s,sw,w,nw|n (north, northeast etc)
@@ -916,11 +915,11 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
     exit will always be able to be used with both "north" as well as
     "n" for example). Opposite directions will automatically be
     created back from the new room unless the /oneway switch is given.
-    For more flexibility and power in creating rooms, use @dig.
+    For more flexibility and power in creating rooms, use dig.
     """
 
-    key = "@tunnel"
-    aliases = ["@tun"]
+    key = "tunnel"
+    aliases = ["tun"]
     switch_options = ("oneway", "tel")
     locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
@@ -943,7 +942,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         """Implements the tunnel command"""
 
         if not self.args or not self.lhs:
-            string = "Usage: @tunnel[/switch] <direction>[:typeclass] [= <roomname>" \
+            string = "Usage: tunnel[/switch] <direction>[:typeclass] [= <roomname>" \
                      "[;alias;alias;...][:typeclass]]"
             self.caller.msg(string)
             return
@@ -952,9 +951,9 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         exitshort = self.lhs.split(":")[0]
 
         if exitshort not in self.directions:
-            string = "@tunnel can only understand the following directions: %s." % ",".join(
+            string = "tunnel can only understand the following directions: %s." % ",".join(
                     sorted(self.directions.keys()))
-            string += "\n(use @dig for more freedom)"
+            string += "\n(use dig for more freedom)"
             self.caller.msg(string)
             return
 
@@ -982,8 +981,8 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         if "oneway" not in self.switches:
             backstring = ", %s;%s" % (backname, backshort)
 
-        # build the string we will use to call @dig
-        digstring = "@dig%s %s = %s;%s%s" % (telswitch, roomname,
+        # build the string we will use to call dig
+        digstring = "dig%s %s = %s;%s%s" % (telswitch, roomname,
                                              exitname, exitshort, backstring)
         self.execute_cmd(digstring)
 
@@ -993,9 +992,9 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
     link existing rooms together with exits
 
     Usage:
-      @link[/switches] <object> = <target>
-      @link[/switches] <object> =
-      @link[/switches] <object>
+      link[/switches] <object> = <target>
+      link[/switches] <object> =
+      link[/switches] <object>
 
     Switch:
       twoway - connect two exits. For this to work, BOTH <object>
@@ -1005,11 +1004,11 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
     instead sets the destination to the *locations* of the respective given
     arguments.
     The second form (a lone =) sets the destination to None (same as
-    the @unlink command) and the third form (without =) just shows the
+    the unlink command) and the third form (without =) just shows the
     currently set destination.
     """
 
-    key = "@link"
+    key = "link"
     locks = "cmd:perm(link) or perm(Builder)"
     help_category = "Building"
 
@@ -1018,21 +1017,33 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage: @link[/twoway] <object> = <target>")
+            caller.msg("Usage: link[/twoway] <object> = <target>")
             return
 
         object_name = self.lhs
 
-        # get object
-        obj = caller.search(object_name, global_search=True)
-        if not obj:
-            return
+        # try to search locally first
+        results = caller.search(object_name, quiet=True)
+        if len(results) > 1:  # local results was a multimatch. Inform them to be more specific
+            _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+            return _AT_SEARCH_RESULT(results, caller, query=object_name)
+        elif len(results) == 1:  # A unique local match
+            obj = results[0]
+        else:  # No matches. Search globally
+            obj = caller.search(object_name, global_search=True)
+            if not obj:
+                return
 
         if self.rhs:
             # this means a target name was given
             target = caller.search(self.rhs, global_search=True)
             if not target:
                 return
+
+            if target == obj:
+                self.caller.msg("Cannot link an object to itself.")
+                return
+
 
             string = ""
             note = "Note: %s(%s) did not have a destination set before. Make sure you linked the right thing."
@@ -1065,7 +1076,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                 string = "%s is not an exit. Its home location is %s." % (obj.name, obj.home)
 
         else:
-            # We gave the command @link 'obj = ' which means we want to
+            # We gave the command link 'obj = ' which means we want to
             # clear destination.
             if obj.destination:
                 obj.destination = None
@@ -1081,14 +1092,14 @@ class CmdUnLink(CmdLink):
     remove exit-connections between rooms
 
     Usage:
-      @unlink <Object>
+      unlink <Object>
 
     Unlinks an object, for example an exit, disconnecting
     it from whatever it was connected to.
     """
     # this is just a child of CmdLink
 
-    key = "@unlink"
+    key = "unlink"
     locks = "cmd:perm(unlink) or perm(Builder)"
     help_key = "Building"
 
@@ -1101,14 +1112,14 @@ class CmdUnLink(CmdLink):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage: @unlink <object>")
+            caller.msg("Usage: unlink <object>")
             return
 
-        # This mimics '@link <obj> = ' which is the same as @unlink
+        # This mimics 'link <obj> = ' which is the same as unlink
         self.rhs = ""
 
-        # call the @link functionality
-        super(CmdUnLink, self).func()
+        # call the link functionality
+        super().func()
 
 
 class CmdSetHome(CmdLink):
@@ -1116,7 +1127,8 @@ class CmdSetHome(CmdLink):
     set an object's home location
 
     Usage:
-      @sethome <obj> [= <home_location>]
+      sethome <obj> [= <home_location>]
+      sethom <obj>
 
     The "home" location is a "safety" location for objects; they
     will be moved there if their current location ceases to exist. All
@@ -1126,14 +1138,14 @@ class CmdSetHome(CmdLink):
     If no location is given, just view the object's home location.
     """
 
-    key = "@sethome"
-    locks = "cmd:perm(@sethome) or perm(Builder)"
+    key = "sethome"
+    locks = "cmd:perm(sethome) or perm(Builder)"
     help_category = "Building"
 
     def func(self):
         """implement the command"""
         if not self.args:
-            string = "Usage: @sethome <obj> [= <home_location>]"
+            string = "Usage: sethome <obj> [= <home_location>]"
             self.caller.msg(string)
             return
 
@@ -1156,10 +1168,10 @@ class CmdSetHome(CmdLink):
             old_home = obj.home
             obj.home = new_home
             if old_home:
-                string = "%s's home location was changed from %s(%s) to %s(%s)." % (
+                string = "Home location of %s was changed from %s(%s) to %s(%s)." % (
                         obj, old_home, old_home.dbref, new_home, new_home.dbref)
             else:
-                string = "%s' home location was set to %s(%s)." % (obj, new_home, new_home.dbref)
+                string = "Home location of %s was set to %s(%s)." % (obj, new_home, new_home.dbref)
         self.caller.msg(string)
 
 
@@ -1168,13 +1180,13 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     list command sets defined on an object
 
     Usage:
-      @cmdsets <obj>
+      cmdsets <obj>
 
     This displays all cmdsets assigned
     to a user. Defaults to yourself.
     """
-    key = "@cmdsets"
-    aliases = "@listcmsets"
+    key = "cmdsets"
+    aliases = "listcmsets"
     locks = "cmd:perm(listcmdsets) or perm(Builder)"
     help_category = "Building"
 
@@ -1197,15 +1209,15 @@ class CmdName(ObjManipCommand):
     change the name and/or aliases of an object
 
     Usage:
-      @name <obj> = <newname>;alias1;alias2
+      name <obj> = <newname>;alias1;alias2
 
     Rename an object to something new. Use *obj to
     rename an account.
 
     """
 
-    key = "@name"
-    aliases = ["@rename"]
+    key = "name"
+    aliases = ["rename"]
     locks = "cmd:perm(rename) or perm(Builder)"
     help_category = "Building"
 
@@ -1214,7 +1226,7 @@ class CmdName(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            caller.msg("Usage: @name <obj> = <newname>[;alias;alias;...]")
+            caller.msg("Usage: name <obj> = <newname>[;alias;alias;...]")
             return
 
         obj = None
@@ -1272,7 +1284,7 @@ class CmdOpen(ObjManipCommand):
     open a new exit from the current room
 
     Usage:
-      @open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] = <destination>
+      open <new exit>[;alias;alias..][:typeclass] [,<return exit>[;alias;..][:typeclass]]] = <destination>
 
     Handles the creation of exits. If a destination is given, the exit
     will point there. The <return exit> argument sets up an exit at the
@@ -1281,7 +1293,7 @@ class CmdOpen(ObjManipCommand):
     unique.
 
     """
-    key = "@open"
+    key = "open"
     locks = "cmd:perm(open) or perm(Builder)"
     help_category = "Building"
 
@@ -1356,7 +1368,7 @@ class CmdOpen(ObjManipCommand):
         caller = self.caller
 
         if not self.args or not self.rhs:
-            string = "Usage: @open <new exit>[;alias...][:typeclass][,<return exit>[;alias..][:typeclass]]] "
+            string = "Usage: open <new exit>[;alias...][:typeclass][,<return exit>[;alias..][:typeclass]]] "
             string += "= <destination>"
             caller.msg(string)
             return
@@ -1409,7 +1421,7 @@ def _convert_from_string(cmd, strobj):
     Handles floats, ints, and limited nested lists and dicts
     (can't handle lists in a dict, for example, this is mainly due to
     the complexity of parsing this rather than any technical difficulty -
-    if there is a need for @set-ing such complex structures on the
+    if there is a need for set-ing such complex structures on the
     command line we might consider adding it).
      Python 2.6 and later:
     Supports all Python structures through literal_eval as long as they
@@ -1424,37 +1436,6 @@ def _convert_from_string(cmd, strobj):
     string this will always fail).
     """
 
-    def rec_convert(obj):
-        """
-        Helper function of recursive conversion calls. This is only
-        used for Python <=2.5. After that literal_eval is available.
-        """
-        # simple types
-        try:
-            return int(obj)
-        except ValueError:
-            # obj cannot be converted to int - that's fine
-            pass
-        try:
-            return float(obj)
-        except ValueError:
-            # obj cannot be converted to float - that's fine
-            pass
-        # iterables
-        if obj.startswith('[') and obj.endswith(']'):
-            "A list. Traverse recursively."
-            return [rec_convert(val) for val in obj[1:-1].split(',')]
-        if obj.startswith('(') and obj.endswith(')'):
-            "A tuple. Traverse recursively."
-            return tuple([rec_convert(val) for val in obj[1:-1].split(',')])
-        if obj.startswith('{') and obj.endswith('}') and ':' in obj:
-            "A dict. Traverse recursively."
-            return dict([(rec_convert(pair.split(":", 1)[0]),
-                          rec_convert(pair.split(":", 1)[1]))
-                         for pair in obj[1:-1].split(',') if ":" in pair])
-        # if nothing matches, return as-is
-        return obj
-
     # Use literal_eval to parse python structure exactly.
     try:
         return _LITERAL_EVAL(strobj)
@@ -1465,10 +1446,9 @@ def _convert_from_string(cmd, strobj):
                  "Make sure this is acceptable." % strobj
         cmd.caller.msg(string)
         return strobj
-    else:
-        # fall back to old recursive solution (does not support
-        # nested lists/dicts)
-        return rec_convert(strobj.strip())
+    except Exception as err:
+        string = "|RUnknown error in evaluating Attribute: {}".format(err)
+        return string
 
 
 class CmdSetAttribute(ObjManipCommand):
@@ -1476,10 +1456,10 @@ class CmdSetAttribute(ObjManipCommand):
     set attribute on an object or account
 
     Usage:
-      @set <obj>/<attr> = <value>
-      @set <obj>/<attr> =
-      @set <obj>/<attr>
-      @set *<account>/attr = <value>
+      set <obj>/<attr> = <value>
+      set <obj>/<attr> =
+      set <obj>/<attr>
+      set *<account>/attr = <value>
 
     Switch:
         edit: Open the line editor (string values only)
@@ -1510,7 +1490,7 @@ class CmdSetAttribute(ObjManipCommand):
 
     """
 
-    key = "@set"
+    key = "set"
     locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
 
@@ -1576,7 +1556,7 @@ class CmdSetAttribute(ObjManipCommand):
         def load(caller):
             """Called for the editor to load the buffer"""
             old_value = obj.attributes.get(attr)
-            if old_value is not None and not isinstance(old_value, basestring):
+            if old_value is not None and not isinstance(old_value, str):
                 typ = type(old_value).__name__
                 self.caller.msg("|RWARNING! Saving this buffer will overwrite the "
                                 "current attribute (of type %s) with a string!|n" % typ)
@@ -1623,11 +1603,11 @@ class CmdSetAttribute(ObjManipCommand):
         return found_obj
 
     def func(self):
-        """Implement the set attribute - a limited form of @py."""
+        """Implement the set attribute - a limited form of py."""
 
         caller = self.caller
         if not self.args:
-            caller.msg("Usage: @set obj/attr = value. Use empty value to clear.")
+            caller.msg("Usage: set obj/attr = value. Use empty value to clear.")
             return
 
         # get values prepared by the parser
@@ -1695,12 +1675,12 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
     set or change an object's typeclass
 
     Usage:
-      @typeclass[/switch] <object> [= typeclass.path]
-      @type                     ''
-      @parent                   ''
-      @typeclass/list/show [typeclass.path]
-      @swap - this is a shorthand for using /force/reset flags.
-      @update - this is a shorthand for using the /force/reload flag.
+      typeclass[/switch] <object> [= typeclass.path]
+      type                     ''
+      parent                   ''
+      typeclass/list/show [typeclass.path]
+      swap - this is a shorthand for using /force/reset flags.
+      update - this is a shorthand for using the /force/reload flag.
 
     Switch:
       show, examine - display the current typeclass of object (default) or, if
@@ -1711,32 +1691,33 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
               object - basically making this a new clean object.
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
-      list - show available typeclasses.
-
+      list - show available typeclasses. Only typeclasses in modules actually
+             imported or used from somewhere in the code will show up here
+             (those typeclasses are still available if you know the path)
 
     Example:
-      @type button = examples.red_button.RedButton
+      type button = examples.red_button.RedButton
 
-    If the typeclass_path is not given, the current object's
-    typeclass is assumed.
+    If the typeclass_path is not given, the current object's typeclass is
+    assumed.
 
-    View or set an object's typeclass. If setting, the creation hooks
-    of the new typeclass will be run on the object. If you have
-    clashing properties on the old class, use /reset. By default you
-    are protected from changing to a typeclass of the same name as the
-    one you already have - use /force to override this protection.
+    View or set an object's typeclass. If setting, the creation hooks of the
+    new typeclass will be run on the object. If you have clashing properties on
+    the old class, use /reset. By default you are protected from changing to a
+    typeclass of the same name as the one you already have - use /force to
+    override this protection.
 
-    The given typeclass must be identified by its location using
-    python dot-notation pointing to the correct module and class. If
-    no typeclass is given (or a wrong typeclass is given). Errors in
-    the path or new typeclass will lead to the old typeclass being
-    kept. The location of the typeclass module is searched from the
-    default typeclass directory, as defined in the server settings.
+    The given typeclass must be identified by its location using python
+    dot-notation pointing to the correct module and class. If no typeclass is
+    given (or a wrong typeclass is given). Errors in the path or new typeclass
+    will lead to the old typeclass being kept. The location of the typeclass
+    module is searched from the default typeclass directory, as defined in the
+    server settings.
 
     """
 
-    key = "@typeclass"
-    aliases = ["@type", "@parent", "@swap", "@update"]
+    key = "typeclass"
+    aliases = ["type", "parent", "swap", "update"]
     switch_options = ("show", "examine", "update", "reset", "force", "list")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
@@ -1813,10 +1794,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
             return
 
-        if self.cmdstring == "@swap":
+        if self.cmdstring == "swap":
             self.switches.append("force")
             self.switches.append("reset")
-        elif self.cmdstring == "@update":
+        elif self.cmdstring == "update":
             self.switches.append("force")
             self.switches.append("update")
 
@@ -1864,16 +1845,16 @@ class CmdWipe(ObjManipCommand):
     clear all attributes from an object
 
     Usage:
-      @wipe <object>[/<attr>[/<attr>...]]
+      wipe <object>[/<attr>[/<attr>...]]
 
     Example:
-      @wipe box
-      @wipe box/colour
+      wipe box
+      wipe box/colour
 
     Wipes all of an object's attributes, or optionally only those
     matching the given attribute-wildcard search string.
     """
-    key = "@wipe"
+    key = "wipe"
     locks = "cmd:perm(wipe) or perm(Builder)"
     help_category = "Building"
 
@@ -1885,7 +1866,7 @@ class CmdWipe(ObjManipCommand):
         caller = self.caller
 
         if not self.args:
-            caller.msg("Usage: @wipe <object>[/<attr>/<attr>...]")
+            caller.msg("Usage: wipe <object>[/<attr>/<attr>...]")
             return
 
         # get the attributes set by our custom parser
@@ -1915,9 +1896,9 @@ class CmdLock(ObjManipCommand):
     assign a lock definition to an object
 
     Usage:
-      @lock <object or *account>[ = <lockstring>]
+      lock <object or *account>[ = <lockstring>]
       or
-      @lock[/switch] <object or *account>/<access_type>
+      lock[/switch] <object or *account>/<access_type>
 
     Switch:
       del - delete given access type
@@ -1941,8 +1922,8 @@ class CmdLock(ObjManipCommand):
     them by ';', i.e:
        'get:id(25); delete:perm(Builder)'
     """
-    key = "@lock"
-    aliases = ["@locks"]
+    key = "lock"
+    aliases = ["locks"]
     locks = "cmd: perm(locks) or perm(Builder)"
     help_category = "Building"
 
@@ -1951,13 +1932,13 @@ class CmdLock(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            string = "@lock <object>[ = <lockstring>] or @lock[/switch] " \
+            string = "Usage: lock <object>[ = <lockstring>] or lock[/switch] " \
                      "<object>/<access_type>"
             caller.msg(string)
             return
 
         if '/' in self.lhs:
-            # call of the form @lock obj/access_type
+            # call of the form lock obj/access_type
             objname, access_type = [p.strip() for p in self.lhs.split('/', 1)]
             obj = None
             if objname.startswith("*"):
@@ -1995,7 +1976,7 @@ class CmdLock(ObjManipCommand):
                 swi = ", ".join(self.switches)
                 caller.msg("Switch(es) |w%s|n can not be used with a "
                            "lock assignment. Use e.g. "
-                           "|w@lock/del objname/locktype|n instead." % swi)
+                           "|wlock/del objname/locktype|n instead." % swi)
                 return
 
             objname, lockdef = self.lhs, self.rhs
@@ -2057,25 +2038,26 @@ class CmdExamine(ObjManipCommand):
     Append a * before the search string to examine an account.
 
     """
-    key = "@examine"
-    aliases = ["@ex", "exam"]
+    key = "examine"
+    aliases = ["ex", "exam"]
     locks = "cmd:perm(examine) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     account_mode = False
 
-    def list_attribute(self, crop, attr, value):
+    def list_attribute(self, crop, attr, category, value):
         """
         Formats a single attribute line.
         """
         if crop:
-            if not isinstance(value, basestring):
-                value = utils.to_str(value, force_string=True)
+            if not isinstance(value, str):
+                value = utils.to_str(value)
             value = utils.crop(value)
-            value = utils.to_unicode(value)
-
-        string = "\n %s = %s" % (attr, value)
+        if category:
+            string = '\n %s[%s] = %s' % (attr, category, value)
+        else:
+            string = "\n %s = %s" % (attr, value)
         string = raw(string)
         return string
 
@@ -2086,13 +2068,13 @@ class CmdExamine(ObjManipCommand):
         """
 
         if attrname:
-            db_attr = [(attrname, obj.attributes.get(attrname))]
+            db_attr = [(attrname, obj.attributes.get(attrname), None)]
             try:
                 ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
             except Exception:
                 ndb_attr = None
         else:
-            db_attr = [(attr.key, attr.value) for attr in obj.db_attributes.all()]
+            db_attr = [(attr.key, attr.value, attr.category) for attr in obj.db_attributes.all()]
             try:
                 ndb_attr = obj.nattributes.all(return_tuples=True)
             except Exception:
@@ -2100,12 +2082,12 @@ class CmdExamine(ObjManipCommand):
         string = ""
         if db_attr and db_attr[0]:
             string += "\n|wPersistent attributes|n:"
-            for attr, value in db_attr:
-                string += self.list_attribute(crop, attr, value)
+            for attr, value, category in db_attr:
+                string += self.list_attribute(crop, attr, category, value)
         if ndb_attr and ndb_attr[0]:
             string += "\n|wNon-Persistent attributes|n:"
             for attr, value in ndb_attr:
-                string += self.list_attribute(crop, attr, value)
+                string += self.list_attribute(crop, attr, None, value)
         return string
 
     def format_output(self, obj, avail_cmdset):
@@ -2317,8 +2299,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
     search the database for objects
 
     Usage:
-      @find[/switches] <name or dbref or *account> [= dbrefmin[-dbrefmax]]
-      @locate - this is a shorthand for using the /loc switch.
+      find[/switches] <name or dbref or *account> [= dbrefmin[-dbrefmax]]
+      locate - this is a shorthand for using the /loc switch.
 
     Switches:
       room       - only look for rooms (location=None)
@@ -2335,8 +2317,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
     one is given.
     """
 
-    key = "@find"
-    aliases = "@search, @locate"
+    key = "find"
+    aliases = "search, locate"
     switch_options = ("room", "exit", "char", "exact", "loc", "startswith")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
@@ -2347,10 +2329,10 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         switches = self.switches
 
         if not self.args:
-            caller.msg("Usage: @find <string> [= low [-high]]")
+            caller.msg("Usage: find <string> [= low [-high]]")
             return
 
-        if "locate" in self.cmdstring:  # Use option /loc as a default for @locate command alias
+        if "locate" in self.cmdstring:  # Use option /loc as a default for locate command alias
             switches.append('loc')
 
         searchstring = self.lhs
@@ -2458,12 +2440,12 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     teleport object to another location
 
     Usage:
-      @tel/switch [<object> to||=] <target location>
+      tel/switch [<object> to||=] <target location>
 
     Examples:
-      @tel Limbo
-      @tel/quiet box = Limbo
-      @tel/tonone box
+      tel Limbo
+      tel/quiet box = Limbo
+      tel/tonone box
 
     Switches:
       quiet  - don't echo leave/arrive messages to the source/target
@@ -2480,8 +2462,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
     Teleports an object somewhere. If no object is given, you yourself
     is teleported to the target location.
     """
-    key = "@tel"
-    aliases = "@teleport"
+    key = "tel"
+    aliases = "teleport"
     switch_options = ("quiet", "intoexit", "tonone", "loc")
     rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:perm(teleport) or perm(Builder)"
@@ -2574,7 +2556,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
     attach a script to an object
 
     Usage:
-      @script[/switch] <obj> [= script_path or <scriptkey>]
+      script[/switch] <obj> [= script_path or <scriptkey>]
 
     Switches:
       start - start all non-running scripts on object, or a given script only
@@ -2589,8 +2571,8 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
     the object.
     """
 
-    key = "@script"
-    aliases = "@addscript"
+    key = "script"
+    aliases = "addscript"
     switch_options = ("start", "stop")
     locks = "cmd:perm(script) or perm(Builder)"
     help_category = "Building"
@@ -2601,12 +2583,12 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         if not self.args:
-            string = "Usage: @script[/switch] <obj> [= script_path or <script key>]"
+            string = "Usage: script[/switch] <obj> [= script_path or <script key>]"
             caller.msg(string)
             return
 
         if not self.lhs:
-            caller.msg("To create a global script you need |w@scripts/add <typeclass>|n.")
+            caller.msg("To create a global script you need |wscripts/add <typeclass>|n.")
             return
 
         obj = caller.search(self.lhs)
@@ -2672,8 +2654,8 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
     handles the tags of an object
 
     Usage:
-      @tag[/del] <obj> [= <tag>[:<category>]]
-      @tag/search <tag>[:<category]
+      tag[/del] <obj> [= <tag>[:<category>]]
+      tag/search <tag>[:<category]
 
     Switches:
       search - return all objects with a given Tag
@@ -2689,18 +2671,18 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
     enough to for most grouping schemes.
     """
 
-    key = "@tag"
-    aliases = ["@tags"]
+    key = "tag"
+    aliases = ["tags"]
     options = ("search", "del")
     locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
-        """Implement the @tag functionality"""
+        """Implement the tag functionality"""
 
         if not self.args:
-            self.caller.msg("Usage: @tag[/switches] <obj> [= <tag>[:<category>]]")
+            self.caller.msg("Usage: tag[/switches] <obj> [= <tag>[:<category>]]")
             return
         if "search" in self.switches:
             # search by tag
@@ -2748,11 +2730,11 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                         obj)
             else:
                 # no tag specified, clear all tags
-                old_tags = ["%s%s" % (tag, " (category: %s" % category if category else "")
+                old_tags = ["%s%s" % (tag, " (category: %s)" % category if category else "")
                             for tag, category in obj.tags.all(return_key_and_category=True)]
                 if old_tags:
                     obj.tags.clear()
-                    string = "Cleared all tags from %s: %s" % (obj, ", ".join(old_tags))
+                    string = "Cleared all tags from %s: %s" % (obj, ", ".join(sorted(old_tags)))
                 else:
                     string = "No Tags to clear on %s." % obj
             self.caller.msg(string)
@@ -2783,8 +2765,9 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             tags = [tup[0] for tup in tagtuples]
             categories = [" (category: %s)" % tup[1] if tup[1] else "" for tup in tagtuples]
             if ntags:
-                string = "Tag%s on %s: %s" % ("s" if ntags > 1 else "", obj,
-                                              ", ".join("'%s'%s" % (tags[i], categories[i]) for i in range(ntags)))
+                string = "Tag%s on %s: %s" % (
+                    "s" if ntags > 1 else "", obj,
+                    ", ".join(sorted("'%s'%s" % (tags[i], categories[i]) for i in range(ntags))))
             else:
                 string = "No tags attached to %s." % obj
             self.caller.msg(string)
@@ -2795,17 +2778,17 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
     spawn objects from prototype
 
     Usage:
-      @spawn[/noloc] <prototype_key>
-      @spawn[/noloc] <prototype_dict>
+      spawn[/noloc] <prototype_key>
+      spawn[/noloc] <prototype_dict>
 
-      @spawn/search [prototype_keykey][;tag[,tag]]
-      @spawn/list [tag, tag, ...]
-      @spawn/show [<prototype_key>]
-      @spawn/update <prototype_key>
+      spawn/search [prototype_keykey][;tag[,tag]]
+      spawn/list [tag, tag, ...]
+      spawn/show [<prototype_key>]
+      spawn/update <prototype_key>
 
-      @spawn/save <prototype_dict>
-      @spawn/edit [<prototype_key>]
-      @olc     - equivalent to @spawn/edit
+      spawn/save <prototype_dict>
+      spawn/edit [<prototype_key>]
+      olc     - equivalent to spawn/edit
 
     Switches:
       noloc - allow location to be None if not specified explicitly. Otherwise,
@@ -2822,10 +2805,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       edit, olc - create/manipulate prototype in a menu interface.
 
     Example:
-      @spawn GOBLIN
-      @spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
-      @spawn/save {"key": "grunt", prototype: "goblin"};;mobs;edit:all()
-
+      spawn GOBLIN
+      spawn {"key":"goblin", "typeclass":"monster.Monster", "location":"#2"}
+      spawn/save {"key": "grunt", prototype: "goblin"};;mobs;edit:all()
+    \f
     Dictionary keys:
       |wprototype_parent  |n - name of parent prototype to use. Required if typeclass is
                         not set. Can be a path or a list for multiple inheritance (inherits
@@ -2849,12 +2832,12 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       any other keywords are interpreted as Attributes and their values.
 
     The available prototypes are defined globally in modules set in
-    settings.PROTOTYPE_MODULES. If @spawn is used without arguments it
+    settings.PROTOTYPE_MODULES. If spawn is used without arguments it
     displays a list of available prototypes.
 
     """
 
-    key = "@spawn"
+    key = "spawn"
     aliases = ["olc"]
     switch_options = ("noloc", "search", "list", "show", "examine", "save", "delete", "menu", "olc", "update", "edit")
     locks = "cmd:perm(spawn) or perm(Builder)"
@@ -2937,7 +2920,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 if ';' in self.args:
                     key, tags = (part.strip().lower() for part in self.args.split(";", 1))
                     tags = [tag.strip() for tag in tags.split(",")] if tags else None
-                EvMore(caller, unicode(protlib.list_prototypes(caller, key=key, tags=tags)),
+                EvMore(caller, str(protlib.list_prototypes(caller, key=key, tags=tags)),
                        exit_on_lastpage=True)
                 return
 
@@ -2957,7 +2940,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # for list, all optional arguments are tags
             # import pudb; pudb.set_trace()
 
-            EvMore(caller, unicode(protlib.list_prototypes(caller,
+            EvMore(caller, str(protlib.list_prototypes(caller,
                    tags=self.lhslist)), exit_on_lastpage=True)
             return
 
@@ -2965,7 +2948,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # store a prototype to the database store
             if not self.args:
                 caller.msg(
-                  "Usage: @spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
+                  "Usage: spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>")
                 return
 
             # handle rhs:
@@ -2997,7 +2980,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             # all seems ok. Try to save.
             try:
-                prot = protlib.save_prototype(**prototype)
+                prot = protlib.save_prototype(prototype)
                 if not prot:
                     caller.msg("|rError saving:|R {}.|n".format(prototype_key))
                     return
@@ -3018,7 +3001,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     answer = yield(string)
                     if answer.lower() in ["n", "no"]:
                         caller.msg("|rNo update was done of existing objects. "
-                                   "Use @spawn/update <key> to apply later as needed.|n")
+                                   "Use spawn/update <key> to apply later as needed.|n")
                         return
                 n_updated = spawner.batch_update_objects_with_prototype(existing_objects, key)
                 caller.msg("{} objects were updated.".format(n_updated))
@@ -3026,7 +3009,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         if not self.args:
             ncount = len(protlib.search_prototype())
-            caller.msg("Usage: @spawn <prototype-key> or {{key: value, ...}}"
+            caller.msg("Usage: spawn <prototype-key> or {{key: value, ...}}"
                        "\n ({} existing prototypes. Use /list to inspect)".format(ncount))
             return
 
@@ -3070,13 +3053,13 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         # A direct creation of an object from a given prototype
 
         prototype = _parse_prototype(
-                self.args, expect=dict if self.args.strip().startswith("{") else basestring)
+                self.args, expect=dict if self.args.strip().startswith("{") else str)
         if not prototype:
             # this will only let through dicts or strings
             return
 
         key = '<unnamed>'
-        if isinstance(prototype, basestring):
+        if isinstance(prototype, str):
             # A prototype key we are looking to apply
             key = prototype
             prototypes = protlib.search_prototype(prototype)

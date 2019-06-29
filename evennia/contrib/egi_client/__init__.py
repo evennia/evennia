@@ -1,1 +1,0 @@
-from evennia.contrib.egi_client.service import EvenniaGameIndexService

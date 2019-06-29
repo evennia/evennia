@@ -92,7 +92,7 @@ class GenderCharacter(DefaultCharacter):
         """
         Called once when the object is created.
         """
-        super(GenderCharacter, self).at_object_creation()
+        super().at_object_creation()
         self.db.gender = "ambiguous"
 
     def _get_pronoun(self, regex_match):
@@ -139,4 +139,4 @@ class GenderCharacter(DefaultCharacter):
             text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
         except TypeError:
             pass
-        super(GenderCharacter, self).msg(text, from_obj=from_obj, session=session, **kwargs)
+        super().msg(text, from_obj=from_obj, session=session, **kwargs)

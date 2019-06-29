@@ -83,7 +83,7 @@ index b27c75c..6e40252 100644
 -        migrations.AddField(
 -            model_name='objectdb',
 -            name='db_account',
--            field=models.ForeignKey(help_text=b'an Account connected to this object, if any.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.AccountDB', verbose_name=b'account'),
+-            field=models.ForeignKey(help_text='an Account connected to this object, if any.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.AccountDB', verbose_name='account'),
 -        ),
 -    ]
 +    db_cursor = connection.cursor()
@@ -95,7 +95,7 @@ index b27c75c..6e40252 100644
 +            migrations.AddField(
 +                model_name='objectdb',
 +                name='db_account',
-+                field=models.ForeignKey(help_text=b'an Account connected to this object, if any.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.AccountDB', verbose_name=b'account'),
++                field=models.ForeignKey(help_text='an Account connected to this object, if any.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.AccountDB', verbose_name='account'),
 +            ),
 +        ]
 diff --git a/evennia/objects/migrations/0009_remove_objectdb_db_player.py b/evennia/objects/migrations/0009_remove_objectdb_db_player.py
@@ -167,7 +167,7 @@ index 99baf70..23f6df9 100644
 -        migrations.AddField(
 -            model_name='scriptdb',
 -            name='db_account',
--            field=models.ForeignKey(blank=True, help_text=b'the account to store this script on (should not be set if db_obj is set)', null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.AccountDB', verbose_name=b'scripted account'),
+-            field=models.ForeignKey(blank=True, help_text='the account to store this script on (should not be set if db_obj is set)', null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.AccountDB', verbose_name='scripted account'),
 -        ),
 -    ]
 +    db_cursor = connection.cursor()
@@ -179,7 +179,7 @@ index 99baf70..23f6df9 100644
 +            migrations.AddField(
 +                model_name='scriptdb',
 +                name='db_account',
-+                field=models.ForeignKey(blank=True, help_text=b'the account to store this script on (should not be set if db_obj is set)', null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.AccountDB', verbose_name=b'scripted account'),
++                field=models.ForeignKey(blank=True, help_text='the account to store this script on (should not be set if db_obj is set)', null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.AccountDB', verbose_name='scripted account'),
 +            ),
 +        ]
 diff --git a/evennia/scripts/migrations/0011_remove_scriptdb_db_player.py b/evennia/scripts/migrations/0011_remove_scriptdb_db_player.py

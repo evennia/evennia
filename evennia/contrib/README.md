@@ -29,6 +29,7 @@ things you want from here into your game folder and change them there.
 * Dice (Griatch 2012) - A fully featured dice rolling system.
 * Email-login (Griatch 2012) - A variant of the standard login system
   that requires an email to login rather then just name+password.
+* Evscaperoom (Griatch 2019) - A full engine for making escaperoom puzzles
 * Extended Room (Griatch 2012) - An expanded Room typeclass with
   multiple descriptions for time and season as well as details.
 * Field Fill (FlutterSprite 2018) - A simple system for creating an
@@ -38,13 +39,14 @@ things you want from here into your game folder and change them there.
   on a character and access it in an emote with a custom marker.
 * Health Bar (Tim Ashley Jenkins 2017) - Tool to create colorful bars/meters.
 * Mail (grungies1138 2016) - An in-game mail system for communication.
-* Menu login (Griatch 2011) - A login system using menus asking
+* Menu login (Griatch 2011, 2019, Vincent-lg 2016) - A login system using menus asking
   for name/password rather than giving them as one command.
 * Map Builder (CloudKeeper 2016) - Build a game area based on a 2D
   "graphical" unicode map. Supports assymmetric exits.
 * Menu Login (Vincent-lg 2016) - Alternate login system using EvMenu.
 * Multidescer (Griatch 2016) - Advanced descriptions combined from
   many separate description components, inspired by MUSH.
+* Puzzles (Hendher 2019) - Combine objects to create new items, adventure-game style
 * Random String Generator (Vincent Le Goff 2017) - Simple pseudo-random
   generator of strings with rules, avoiding repetitions.
 * RPLanguage (Griatch 2015) - Dynamic obfuscation of emotes when

@@ -16,9 +16,6 @@ to launch such a shell (using python or ipython depending on your install).
 See www.evennia.com for full documentation.
 
 """
-from __future__ import print_function
-from __future__ import absolute_import
-from builtins import object
 
 # docstring header
 
@@ -104,6 +101,7 @@ EvTable = None
 EvForm = None
 EvEditor = None
 EvMore = None
+ANSIString = None
 
 # Handlers
 SESSION_HANDLER = None
@@ -111,6 +109,20 @@ TASK_HANDLER = None
 TICKER_HANDLER = None
 MONITOR_HANDLER = None
 CHANNEL_HANDLER = None
+
+# Containers
+GLOBAL_SCRIPTS = None
+OPTION_CLASSES = None
+
+# typeclasses
+BASE_ACCOUNT_TYPECLASS = None
+BASE_OBJECT_TYPECLASS = None
+BASE_CHARACTER_TYPECLASS = None
+BASE_ROOM_TYPECLASS = None
+BASE_EXIT_TYPECLASS = None
+BASE_CHANNEL_TYPECLASS = None
+BASE_SCRIPT_TYPECLASS = None
+BASE_GUEST_TYPECLASS = None
 
 
 def _create_version():
@@ -128,7 +140,10 @@ def _create_version():
     except IOError as err:
         print(err)
     try:
-        version = "%s (rev %s)" % (version, check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT).strip())
+        rev = check_output(
+            "git rev-parse --short HEAD",
+            shell=True, cwd=root, stderr=STDOUT).strip().decode()
+        version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError, OSError):
         # ignore if we cannot get to git
         pass
@@ -137,6 +152,7 @@ def _create_version():
 
 __version__ = _create_version()
 del _create_version
+
 
 def _init():
     """
@@ -148,11 +164,20 @@ def _init():
     global DefaultRoom, DefaultExit, DefaultChannel, DefaultScript
     global ObjectDB, AccountDB, ScriptDB, ChannelDB, Msg
     global Command, CmdSet, default_cmds, syscmdkeys, InterruptCommand
-    global search_object, search_script, search_account, search_channel, search_help, search_tag, search_message
-    global create_object, create_script, create_account, create_channel, create_message, create_help_entry
+    global search_object, search_script, search_account, search_channel
+    global search_help, search_tag, search_message
+    global create_object, create_script, create_account, create_channel
+    global create_message, create_help_entry
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
-    global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER, CHANNEL_HANDLER, TASK_HANDLER
+    global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER
+    global CHANNEL_HANDLER, TASK_HANDLER
+    global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
+    global ANSIString
+
+    global BASE_ACCOUNT_TYPECLASS, BASE_OBJECT_TYPECLASS, BASE_CHARACTER_TYPECLASS
+    global BASE_ROOM_TYPECLASS, BASE_EXIT_TYPECLASS, BASE_CHANNEL_TYPECLASS
+    global BASE_SCRIPT_TYPECLASS, BASE_GUEST_TYPECLASS
 
     from .accounts.accounts import DefaultAccount
     from .accounts.accounts import DefaultGuest
@@ -203,6 +228,7 @@ def _init():
     from .utils.evtable import EvTable
     from .utils.evform import EvForm
     from .utils.eveditor import EvEditor
+    from .utils.ansi import ANSIString
 
     # handlers
     from .scripts.tickerhandler import TICKER_HANDLER
@@ -210,6 +236,10 @@ def _init():
     from .server.sessionhandler import SESSION_HANDLER
     from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
+
+    # containers
+    from .utils.containers import GLOBAL_SCRIPTS
+    from .utils.containers import OPTION_CLASSES
 
     # initialize the doc string
     global __doc__
@@ -344,23 +374,30 @@ def _init():
     del SystemCmds
     del _EvContainer
 
+    # typeclases
+    from .utils.utils import class_from_module
+    BASE_ACCOUNT_TYPECLASS = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+    BASE_OBJECT_TYPECLASS = class_from_module(settings.BASE_OBJECT_TYPECLASS)
+    BASE_CHARACTER_TYPECLASS = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+    BASE_ROOM_TYPECLASS = class_from_module(settings.BASE_ROOM_TYPECLASS)
+    BASE_EXIT_TYPECLASS = class_from_module(settings.BASE_EXIT_TYPECLASS)
+    BASE_CHANNEL_TYPECLASS = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
+    BASE_SCRIPT_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
+    BASE_GUEST_TYPECLASS = class_from_module(settings.BASE_GUEST_TYPECLASS)
+    del class_from_module
 
-del object
-del absolute_import
-del print_function
 
-
-def set_trace(debugger="auto", term_size=(140, 40)):
+def set_trace(term_size=(140, 40), debugger="auto"):
     """
     Helper function for running a debugger inside the Evennia event loop.
 
     Args:
+        term_size (tuple, optional): Only used for Pudb and defines the size of the terminal
+            (width, height) in number of characters.
         debugger (str, optional): One of 'auto', 'pdb' or 'pudb'. Pdb is the standard debugger. Pudb
             is an external package with a different, more 'graphical', ncurses-based UI. With
             'auto', will use pudb if possible, otherwise fall back to pdb. Pudb is available through
             `pip install pudb`.
-        term_size (tuple, optional): Only used for Pudb and defines the size of the terminal
-            (width, height) in number of characters.
 
     Notes:
         To use:
@@ -379,14 +416,12 @@ def set_trace(debugger="auto", term_size=(140, 40)):
     """
     import sys
     dbg = None
-    pudb_mode = False
 
     if debugger in ('auto', 'pudb'):
         try:
             from pudb import debugger
             dbg = debugger.Debugger(stdout=sys.__stdout__,
                                     term_size=term_size)
-            pudb_mode = True
         except ImportError:
             if debugger == 'pudb':
                 raise
@@ -395,13 +430,11 @@ def set_trace(debugger="auto", term_size=(140, 40)):
     if not dbg:
         import pdb
         dbg = pdb.Pdb(stdout=sys.__stdout__)
-        pudb_mode = False
 
-    if pudb_mode:
-        # Stopped at breakpoint. Press 'n' to continue into the code.
-        dbg.set_trace()
-    else:
+    try:
         # Start debugger, forcing it up one stack frame (otherwise `set_trace` will start debugger
         # this point, not the actual code location)
         dbg.set_trace(sys._getframe().f_back)
-
+    except Exception:
+        # Stopped at breakpoint. Press 'n' to continue into the code.
+        dbg.set_trace()

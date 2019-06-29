@@ -1,13 +1,15 @@
 # Evennia dependencies, for Linux/Mac platforms
 
 # general
-django > 1.11, < 2.0
-twisted >= 18.0.0, < 19.0.0
+django >= 2.1, < 2.2
+twisted >= 19.2.1, < 20.0.0
 pillow == 5.2.0
 pytz
 future >= 0.15.2
 django-sekizai
 inflect
+autobahn >= 17.9.3
+model_mommy
 
 # testing
 mock >= 1.0.1

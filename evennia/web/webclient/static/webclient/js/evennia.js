@@ -102,7 +102,7 @@ An "emitter" object must have a function
                 return;
             }
             this.connection.connect();
-            log('Evenna reconnecting.')
+            log('Evennia reconnecting.')
         },
 
         // Returns true if the connection is open.
@@ -329,7 +329,7 @@ An "emitter" object must have a function
 
         // Send Client -> Evennia. Called by Evennia.msg
         var msg = function(data, inmode) {
-            log("ajax.msg:", data, JSON.stringify(data));
+            // log("ajax.msg:", data, JSON.stringify(data));
             $.ajax({type: "POST", url: "/webclientdata",
                    async: true, cache: false, timeout: 30000,
                    dataType: "json",

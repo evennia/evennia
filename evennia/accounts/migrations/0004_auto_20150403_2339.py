@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import evennia.accounts.manager
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='accountdb',
             managers=[
-                (b'objects', evennia.accounts.manager.AccountDBManager()),
+                ('objects', evennia.accounts.manager.AccountDBManager()),
             ],
         ),
         migrations.AlterField(

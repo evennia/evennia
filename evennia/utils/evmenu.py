@@ -163,7 +163,7 @@ your default cmdset. Run it with this module, like `testmenu
 evennia.utils.evmenu`.
 
 """
-from __future__ import print_function
+
 import random
 import inspect
 from builtins import object, range
@@ -318,6 +318,9 @@ class EvMenu(object):
 
     """
 
+    # convenient helpers for easy overloading
+    node_border_char = "_"
+
     def __init__(self, caller, menudata, startnode="start",
                  cmdset_mergetype="Replace", cmdset_priority=1,
                  auto_quit=True, auto_look=True, auto_help=True,
@@ -455,10 +458,9 @@ class EvMenu(object):
                 "cmd_on_exit", "default", "nodetext", "helptext",
                 "options", "cmdset_mergetype", "auto_quit")).intersection(set(kwargs.keys())):
             raise RuntimeError("One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use.")
-        for key, val in kwargs.iteritems():
+        for key, val in kwargs.items():
             setattr(self, key, val)
 
-        #
         if self.caller.ndb._menutree:
             # an evmenu already exists - we try to close it cleanly. Note that this will
             # not fire the previous menu's end node.
@@ -680,7 +682,7 @@ class EvMenu(object):
             logger.log_trace(errmsg)
             return
 
-        if isinstance(ret, basestring):
+        if isinstance(ret, str):
             # only return a value if a string (a goto target), ignore all other returns
             if not ret:
                 # an empty string - rerun the same node
@@ -766,7 +768,7 @@ class EvMenu(object):
 
         # validation of the node return values
         helptext = ""
-        if hasattr(nodetext, "__iter__"):
+        if is_iter(nodetext):
             if len(nodetext) > 1:
                 nodetext, helptext = nodetext[:2]
             else:
@@ -992,19 +994,18 @@ class EvMenu(object):
         table_width_max = -1
         table = []
         for key, desc in optionlist:
-            if not (key or desc):
-                continue
-            desc_string = ": %s" % desc if desc else ""
-            table_width_max = max(table_width_max,
-                                  max(m_len(p) for p in key.split("\n")) +
-                                  max(m_len(p) for p in desc_string.split("\n")) + colsep)
-            raw_key = strip_ansi(key)
-            if raw_key != key:
-                # already decorations in key definition
-                table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
-            else:
-                # add a default white color to key
-                table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
+            if key or desc:
+                desc_string = ": %s" % desc if desc else ""
+                table_width_max = max(table_width_max,
+                                      max(m_len(p) for p in key.split("\n")) +
+                                      max(m_len(p) for p in desc_string.split("\n")) + colsep)
+                raw_key = strip_ansi(key)
+                if raw_key != key:
+                    # already decorations in key definition
+                    table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
+                else:
+                    # add a default white color to key
+                    table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
         ncols = (_MAX_TEXT_WIDTH // table_width_max)  # number of ncols
 
         if ncols < 0:
@@ -1034,7 +1035,7 @@ class EvMenu(object):
             table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
 
         # format the table into columns
-        return unicode(EvTable(table=table, border="none"))
+        return str(EvTable(table=table, border="none"))
 
     def node_formatter(self, nodetext, optionstext):
         """
@@ -1049,6 +1050,8 @@ class EvMenu(object):
             node (str): The formatted node to display.
 
         """
+        sep = self.node_border_char
+
         if self._session:
             screen_width = self._session.protocol_flags.get(
                     "SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
@@ -1058,8 +1061,8 @@ class EvMenu(object):
         nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
         options_width_max = max(m_len(line) for line in optionstext.split("\n"))
         total_width = min(screen_width, max(options_width_max, nodetext_width_max))
-        separator1 = "_" * total_width + "\n\n" if nodetext_width_max else ""
-        separator2 = "\n" + "_" * total_width + "\n\n" if total_width else ""
+        separator1 = sep * total_width + "\n\n" if nodetext_width_max else ""
+        separator2 = "\n" + sep * total_width + "\n\n" if total_width else ""
         return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
 
 
@@ -1080,10 +1083,12 @@ def list_node(option_generator, select=None, pagesize=10):
             that is called as option_generator(caller) to produce such a list.
         select (callable or str, optional): Node to redirect a selection to. Its `**kwargs` will
             contain the `available_choices` list and `selection` will hold one of the elements in
-            that list.  If a callable, it will be called as select(caller, menuchoice) where
-            menuchoice is the chosen option as a string. Should return the target node to goto after
-            this selection (or None to repeat the list-node). Note that if this is not given, the
-            decorated node must itself provide a way to continue from the node!
+            that list.  If a callable, it will be called as
+                select(caller, menuchoice, **kwargs) where menuchoice is the chosen option as a
+            string and `available_choices` is a kwarg mapping the option keys to the choices
+            offered by the option_generator. The callable whould return the name of the target node
+            to goto after this selection (or None to repeat the list-node). Note that if this is not
+            given, the decorated node must itself provide a way to continue from the node!
         pagesize (int): How many options to show per page.
 
     Example:

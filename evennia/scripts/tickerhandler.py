@@ -113,7 +113,7 @@ class Ticker(object):
         self._to_add = []
         self._to_remove = []
         self._is_ticking = True
-        for store_key, (args, kwargs) in self.subscriptions.iteritems():
+        for store_key, (args, kwargs) in self.subscriptions.items():
             callback = yield kwargs.pop("_callback", "at_tick")
             obj = yield kwargs.pop("_obj", None)
             try:
@@ -332,10 +332,10 @@ class TickerHandler(object):
         outobj, outpath, outcallfunc = None, None, None
         if callable(callback):
             if inspect.ismethod(callback):
-                outobj = callback.im_self
-                outcallfunc = callback.im_func.func_name
+                outobj = callback.__self__
+                outcallfunc = callback.__func__.__name__
             elif inspect.isfunction(callback):
-                outpath = "%s.%s" % (callback.__module__, callback.func_name)
+                outpath = "%s.%s" % (callback.__module__, callback.__name__)
                 outcallfunc = callback
         else:
             raise TypeError("%s is not a callable function or method." % callback)
@@ -371,8 +371,8 @@ class TickerHandler(object):
         interval = int(interval)
         persistent = bool(persistent)
         packed_obj = pack_dbobj(obj)
-        methodname = callfunc if callfunc and isinstance(callfunc, basestring) else None
-        outpath = path if path and isinstance(path, basestring) else None
+        methodname = callfunc if callfunc and isinstance(callfunc, str) else None
+        outpath = path if path and isinstance(path, str) else None
         return (packed_obj, methodname, outpath, interval, idstring, persistent)
 
     def save(self):
@@ -423,7 +423,7 @@ class TickerHandler(object):
 
             restored_tickers = dbunserialize(restored_tickers)
             self.ticker_storage = {}
-            for store_key, (args, kwargs) in restored_tickers.iteritems():
+            for store_key, (args, kwargs) in restored_tickers.items():
                 try:
                     # at this point obj is the actual object (or None) due to how
                     # the dbunserialize works
@@ -431,7 +431,7 @@ class TickerHandler(object):
                     if not persistent and not server_reload:
                         # this ticker will not be restarted
                         continue
-                    if isinstance(callfunc, basestring) and not obj:
+                    if isinstance(callfunc, str) and not obj:
                         # methods must have an existing object
                         continue
                     # we must rebuild the store_key here since obj must not be
@@ -562,7 +562,7 @@ class TickerHandler(object):
         if interval is None:
             # return dict of all, ordered by interval
             return dict((interval, ticker.subscriptions)
-                        for interval, ticker in self.ticker_pool.tickers.iteritems())
+                        for interval, ticker in self.ticker_pool.tickers.items())
         else:
             # get individual interval
             ticker = self.ticker_pool.tickers.get(interval, None)
@@ -579,8 +579,8 @@ class TickerHandler(object):
 
         """
         store_keys = []
-        for ticker in self.ticker_pool.tickers.itervalues():
-            for (objtup, callfunc, path, interval, idstring, persistent), (args, kwargs) in ticker.subscriptions.iteritems():
+        for ticker in self.ticker_pool.tickers.values():
+            for (objtup, callfunc, path, interval, idstring, persistent), (args, kwargs) in ticker.subscriptions.items():
                 store_keys.append((kwargs.get("_obj", None), callfunc, path, interval, idstring, persistent))
         return store_keys
 

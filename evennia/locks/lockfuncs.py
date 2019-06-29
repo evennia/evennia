@@ -87,7 +87,7 @@ DefaultLock:   Exits:          controls who may traverse the exit to
                                           Dark/light script
 ```
 """
-from __future__ import print_function
+
 
 from ast import literal_eval
 from django.conf import settings

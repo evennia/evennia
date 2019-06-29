@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.db.models.fields import exceptions
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
-from evennia.utils.utils import to_unicode, is_iter, make_iter, string_partial_matching
+from evennia.utils.utils import is_iter, make_iter, string_partial_matching
 from builtins import int
 
 __all__ = ("ObjectManager",)
@@ -69,15 +69,15 @@ class ObjectDBManager(TypedObjectManager):
                 object candidates.
 
         Return:
-            match (Object or list): One or more matching results.
+            match (query): Matching query.
 
         """
-        ostring = to_unicode(ostring).lstrip('*')
+        ostring = str(ostring).lstrip('*')
         # simplest case - search by dbref
         dbref = self.dbref(ostring)
         if dbref:
             try:
-                return self.get(id=dbref)
+                return self.get(db_account__id=dbref)
             except self.model.DoesNotExist:
                 pass
 
@@ -85,15 +85,15 @@ class ObjectDBManager(TypedObjectManager):
         cand_restriction = candidates is not None and Q(
                 pk__in=[_GA(obj, "id") for obj in make_iter(candidates) if obj]) or Q()
         if exact:
-            return self.filter(cand_restriction & Q(db_account__username__iexact=ostring))
+            return self.filter(cand_restriction & Q(db_account__username__iexact=ostring)).order_by("id")
         else:  # fuzzy matching
-            ply_cands = self.filter(cand_restriction & Q(accountdb__username__istartswith=ostring)
-                                    ).values_list("db_key", flat=True)
-            if candidates:
-                index_matches = string_partial_matching(ply_cands, ostring, ret_index=True)
-                return [obj for ind, obj in enumerate(make_iter(candidates)) if ind in index_matches]
-            else:
-                return string_partial_matching(ply_cands, ostring, ret_index=False)
+            obj_cands = self.select_related().filter(cand_restriction & Q(db_account__username__istartswith=ostring))
+            acct_cands = [obj.account for obj in obj_cands]
+
+            if obj_cands:
+                index_matches = string_partial_matching([acct.key for acct in acct_cands], ostring, ret_index=True)
+                acct_cands = [acct_cands[i].id for i in index_matches]
+                return obj_cands.filter(db_account__id__in=acct_cands).order_by("id")
 
     def get_objs_with_key_and_typeclass(self, oname, otypeclass_path, candidates=None):
         """
@@ -105,11 +105,12 @@ class ObjectDBManager(TypedObjectManager):
             candidates (list, optional): Only match among the given list of candidates.
 
         Returns:
-            matches (list): The matching objects.
+            matches (query): The matching objects.
         """
         cand_restriction = candidates is not None and Q(pk__in=[_GA(obj, "id") for obj in make_iter(candidates)
                                                                 if obj]) or Q()
-        return self.filter(cand_restriction & Q(db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path))
+        return self.filter(cand_restriction & Q(
+            db_key__iexact=oname, db_typeclass_path__exact=otypeclass_path)).order_by('id')
 
     # attr/property related
 
@@ -119,18 +120,19 @@ class ObjectDBManager(TypedObjectManager):
 
         Args:
             attribute_name (str): Attribute name to search for.
-            candidates (list, optional): Only match among the given list of candidates.
+            candidates (list, optional): Only match among the given list of object
+                candidates.
 
         Returns:
-            matches (list):  All objects having the given attribute_name defined at all.
+            matches (query):  All objects having the given attribute_name defined at all.
 
         """
-        cand_restriction = candidates is not None and Q(db_attributes__db_obj__pk__in=[_GA(obj, "id") for obj
-                                                                                       in make_iter(candidates)
-                                                                                       if obj]) or Q()
-        return list(self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name)))
+        cand_restriction = \
+            candidates is not None and Q(id__in=[obj.id for obj in candidates]) or Q()
+        return self.filter(cand_restriction & Q(db_attributes__db_key=attribute_name)).order_by('id')
 
-    def get_objs_with_attr_value(self, attribute_name, attribute_value, candidates=None, typeclasses=None):
+    def get_objs_with_attr_value(self, attribute_name, attribute_value,
+                                 candidates=None, typeclasses=None):
         """
         Get all objects having the given attrname set to the given value.
 
@@ -141,7 +143,8 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list, optional): Python pats to restrict matches with.
 
         Returns:
-            matches (list): Objects fullfilling both the `attribute_name` and `attribute_value` criterions.
+            matches (list): Objects fullfilling both the `attribute_name` and
+            `attribute_value` criterions.
 
         Notes:
             This uses the Attribute's PickledField to transparently search the database by matching
@@ -155,17 +158,17 @@ class ObjectDBManager(TypedObjectManager):
 
         # This doesn't work if attribute_value is an object. Workaround below
 
-        if isinstance(attribute_value, (basestring, int, float, bool)):
-            return self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name,
-                                                                       db_attributes__db_value=attribute_value))
+        if isinstance(attribute_value, (str, int, float, bool)):
+            return self.filter(cand_restriction & type_restriction & Q(
+                db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value)).order_by('id')
         else:
             # We must loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
             global _ATTR
             if not _ATTR:
                 from evennia.typeclasses.models import Attribute as _ATTR
             cands = list(self.filter(cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)))
-            results = [attr.objectdb_set.all() for attr in _ATTR.objects.filter(objectdb__in=cands,
-                                                                                db_value=attribute_value)]
+            results = [attr.objectdb_set.all() for attr in _ATTR.objects.filter(
+                objectdb__in=cands, db_value=attribute_value).order_by('id')]
             return chain(*results)
 
     def get_objs_with_db_property(self, property_name, candidates=None):
@@ -185,7 +188,7 @@ class ObjectDBManager(TypedObjectManager):
                                                                 if obj]) or Q()
         querykwargs = {property_name: None}
         try:
-            return list(self.filter(cand_restriction).exclude(Q(**querykwargs)))
+            return list(self.filter(cand_restriction).exclude(Q(**querykwargs)).order_by('id'))
         except exceptions.FieldError:
             return []
 
@@ -200,9 +203,7 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list, optional): List of typeclass-path strings to restrict matches with
 
         """
-        if isinstance(property_value, basestring):
-            property_value = to_unicode(property_value)
-        if isinstance(property_name, basestring):
+        if isinstance(property_name, str):
             if not property_name.startswith('db_'):
                 property_name = "db_%s" % property_name
         querykwargs = {property_name: property_value}
@@ -210,7 +211,7 @@ class ObjectDBManager(TypedObjectManager):
                                                                 if obj]) or Q()
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         try:
-            return list(self.filter(cand_restriction & type_restriction & Q(**querykwargs)))
+            return list(self.filter(cand_restriction & type_restriction & Q(**querykwargs)).order_by('id'))
         except exceptions.FieldError:
             return []
         except ValueError:
@@ -232,7 +233,7 @@ class ObjectDBManager(TypedObjectManager):
             contents (list): Matching contents, without excludeobj, if given.
         """
         exclude_restriction = Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
-        return self.filter(db_location=location).exclude(exclude_restriction)
+        return self.filter(db_location=location).exclude(exclude_restriction).order_by('id')
 
     def get_objs_with_key_or_alias(self, ostring, exact=True,
                                    candidates=None, typeclasses=None):
@@ -248,7 +249,7 @@ class ObjectDBManager(TypedObjectManager):
         Returns:
             matches (list): A list of matches of length 0, 1 or more.
         """
-        if not isinstance(ostring, basestring):
+        if not isinstance(ostring, str):
             if hasattr(ostring, "key"):
                 ostring = ostring.key
             else:
@@ -264,15 +265,16 @@ class ObjectDBManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         if exact:
             # exact match - do direct search
-            return self.filter(cand_restriction & type_restriction & (Q(db_key__iexact=ostring) |
-                                                                      Q(db_tags__db_key__iexact=ostring) & Q(db_tags__db_tagtype__iexact="alias"))).distinct()
+            return (self.filter(cand_restriction & type_restriction & (
+                Q(db_key__iexact=ostring) | Q(db_tags__db_key__iexact=ostring) & Q(
+                    db_tags__db_tagtype__iexact="alias")))).distinct().order_by('id')
         elif candidates:
             # fuzzy with candidates
-            search_candidates = self.filter(cand_restriction & type_restriction)
+            search_candidates = self.filter(cand_restriction & type_restriction).distinct().order_by('id')
         else:
             # fuzzy without supplied candidates - we select our own candidates
             search_candidates = self.filter(type_restriction & (Q(db_key__istartswith=ostring) |
-                                                                Q(db_tags__db_key__istartswith=ostring))).distinct()
+                                                                Q(db_tags__db_key__istartswith=ostring))).distinct().order_by('id')
         # fuzzy matching
         key_strings = search_candidates.values_list("db_key", flat=True).order_by("id")
 
@@ -283,7 +285,7 @@ class ObjectDBManager(TypedObjectManager):
         else:
             # match by alias rather than by key
             search_candidates = search_candidates.filter(db_tags__db_tagtype__iexact="alias",
-                                                         db_tags__db_key__icontains=ostring)
+                                                         db_tags__db_key__icontains=ostring).distinct()
             alias_strings = []
             alias_candidates = []
             # TODO create the alias_strings and alias_candidates lists more efficiently?
@@ -293,7 +295,8 @@ class ObjectDBManager(TypedObjectManager):
                     alias_candidates.append(candidate)
             index_matches = string_partial_matching(alias_strings, ostring, ret_index=True)
             if index_matches:
-                return [alias_candidates[ind] for ind in index_matches]
+                # it's possible to have multiple matches to the same Object, we must weed those out
+                return list({alias_candidates[ind] for ind in index_matches})
             return []
 
     # main search methods and helper functions
@@ -369,9 +372,9 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses = make_iter(typeclass)
             for i, typeclass in enumerate(make_iter(typeclasses)):
                 if callable(typeclass):
-                    typeclasses[i] = u"%s.%s" % (typeclass.__module__, typeclass.__name__)
+                    typeclasses[i] = "%s.%s" % (typeclass.__module__, typeclass.__name__)
                 else:
-                    typeclasses[i] = u"%s" % typeclass
+                    typeclasses[i] = "%s" % typeclass
             typeclass = typeclasses
 
         if candidates is not None:
@@ -402,7 +405,7 @@ class ObjectDBManager(TypedObjectManager):
         if not matches:
             # no matches found - check if we are dealing with N-keyword
             # query - if so, strip it.
-            match = _MULTIMATCH_REGEX.match(searchdata)
+            match = _MULTIMATCH_REGEX.match(str(searchdata))
             match_number = None
             if match:
                 # strips the number
@@ -505,7 +508,7 @@ class ObjectDBManager(TypedObjectManager):
         # copy over all tags, if any
         for tag in original_object.tags.get(return_tagobj=True, return_list=True):
             new_object.tags.add(tag=tag.key, category=tag.category, data=tag.data)
-    
+
         return new_object
 
     def clear_all_sessids(self):

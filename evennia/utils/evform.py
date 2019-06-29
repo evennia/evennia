@@ -12,11 +12,6 @@ has markers in it to denounce fields to fill. The markers map the
 absolute size of the field and will be filled with an `evtable.EvCell`
 object when displaying the form.
 
-Note, when printing examples with ANSI color, you need to wrap
-the output in `unicode()`, such as `print unicode(form)`. This is
-due to a bug in the Python parser and the `print` statement.
-
-
 Example of input file `testform.py`:
 
 ```python
@@ -91,8 +86,7 @@ Use as follows:
     form.map(tables={"A": tableA,
                      "B": tableB})
 
-    # unicode is required since the example contains non-ascii characters
-    print unicode(form)
+    print(form)
 ```
 
 This produces the following result:
@@ -134,13 +128,13 @@ into (when including its borders and at least one line of text), the
 form will raise an error.
 
 """
-from __future__ import print_function
+
 from builtins import object, range
 
 import re
 import copy
 from evennia.utils.evtable import EvCell, EvTable
-from evennia.utils.utils import all_from_module, to_str, to_unicode
+from evennia.utils.utils import all_from_module, to_str, is_iter
 from evennia.utils.ansi import ANSIString
 
 # non-valid form-identifying characters (which can thus be
@@ -171,16 +165,16 @@ def _to_rect(lines):
 
 def _to_ansi(obj, regexable=False):
     "convert to ANSIString"
-    if isinstance(obj, basestring):
+    if isinstance(obj, str):
         # since ansi will be parsed twice (here and in the normal ansi send), we have to
         # escape the |-structure twice.
         obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
         return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
-    elif hasattr(obj, "__iter__"):
+    elif is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(to_unicode(obj), regexable=regexable)
+        return ANSIString(obj, regexable=regexable)
 
 
 class EvForm(object):
@@ -212,8 +206,8 @@ class EvForm(object):
         self.filename = filename
         self.input_form_dict = form
 
-        self.cells_mapping = dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells else {}
-        self.tables_mapping = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
+        self.cells_mapping = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
+        self.tables_mapping = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
 
         self.cellchar = "x"
         self.tablechar = "c"
@@ -276,7 +270,6 @@ class EvForm(object):
 
         # get rectangles and assign EvCells
         for key, (iy, leftix, rightix) in cell_coords.items():
-
             # scan up to find top of rectangle
             dy_up = 0
             if iy > 0:
@@ -384,8 +377,8 @@ class EvForm(object):
         kwargs.pop("width", None)
         kwargs.pop("height", None)
 
-        new_cells = dict((to_str(key, force_string=True), value) for key, value in cells.items()) if cells else {}
-        new_tables = dict((to_str(key, force_string=True), value) for key, value in tables.items()) if tables else {}
+        new_cells = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
+        new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
 
         self.cells_mapping.update(new_cells)
         self.tables_mapping.update(new_tables)
@@ -424,7 +417,7 @@ class EvForm(object):
         self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
 
         # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        raw_form = _to_ansi(to_unicode(datadict.get("FORM", "")).split("\n"))
+        raw_form = _to_ansi(datadict.get("FORM", "").split("\n"))
         self.raw_form = _to_rect(raw_form)
 
         # strip first line
@@ -438,11 +431,7 @@ class EvForm(object):
 
     def __str__(self):
         "Prints the form"
-        return ANSIString("\n").join([line for line in self.form])
-
-    def __unicode__(self):
-        "prints the form"
-        return unicode(ANSIString("\n").join([line for line in self.form]))
+        return str(ANSIString("\n").join([line for line in self.form]))
 
 
 def _test():
@@ -471,5 +460,4 @@ def _test():
     # add the tables to the proper ids in the form
     form.map(tables={"A": tableA,
                      "B": tableB})
-    # unicode is required since the example contains non-ascii characters
-    return unicode(form)
+    return str(form)

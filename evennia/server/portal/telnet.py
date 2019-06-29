@@ -18,13 +18,13 @@ from evennia.server.portal import ttype, mssp, telnet_oob, naws, suppress_ga
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
-from evennia.utils.utils import to_str
+from evennia.utils.utils import to_bytes
 
 _RE_N = re.compile(r"\|n$")
-_RE_LEND = re.compile(r"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
-_RE_LINEBREAK = re.compile(r"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
+_RE_LEND = re.compile(br"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
+_RE_LINEBREAK = re.compile(br"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
-_IDLE_COMMAND = settings.IDLE_COMMAND + "\n"
+_IDLE_COMMAND = str.encode(settings.IDLE_COMMAND + "\n")
 
 
 class TelnetServerFactory(protocol.ServerFactory):
@@ -43,8 +43,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     """
 
     def __init__(self, *args, **kwargs):
-        super(TelnetProtocol, self).__init__(*args, **kwargs)
         self.protocol_key = "telnet"
+        super().__init__(*args, **kwargs)
 
     def connectionMade(self):
         """
@@ -52,7 +52,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         # initialize the session
-        self.line_buffer = ""
+        self.line_buffer = b""
         client_address = self.transport.client
         client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
@@ -182,7 +182,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.mccp.no_mccp(option)
             return True
         else:
-            return super(TelnetProtocol, self).disableLocal(option)
+            return super().disableLocal(option)
 
     def connectionLost(self, reason):
         """
@@ -221,19 +221,19 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             if self.line_buffer and len(data) > 1:
                 # buffer exists, it is terminated by the first line feed
                 data[0] = self.line_buffer + data[0]
-                self.line_buffer = ""
+                self.line_buffer = b""
             # if the last data split is empty, it means all splits have
             # line breaks, if not, it is unterminated and must be
             # buffered.
             self.line_buffer += data.pop()
         # send all data chunks
         for dat in data:
-            self.data_in(text=dat + "\n")
+            self.data_in(text=dat + b"\n")
 
     def _write(self, data):
         """hook overloading the one used in plain telnet"""
-        data = data.replace('\n', '\r\n').replace('\r\r\n', '\r\n')
-        super(TelnetProtocol, self)._write(mccp_compress(self, data))
+        data = data.replace(b'\n', b'\r\n').replace(b'\r\r\n', b'\r\n')
+        super()._write(mccp_compress(self, data))
 
     def sendLine(self, line):
         """
@@ -243,11 +243,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             line (str): Line to send.
 
         """
+        line = to_bytes(line, self)
         # escape IAC in line mode, and correctly add \r\n (the TELNET end-of-line)
         line = line.replace(IAC, IAC + IAC)
-        line = line.replace('\n', '\r\n')
-        if not line.endswith("\r\n") and self.protocol_flags.get("FORCEDENDLINE", True):
-            line += "\r\n"
+        line = line.replace(b'\n', b'\r\n')
+        if not line.endswith(b"\r\n") and self.protocol_flags.get("FORCEDENDLINE", True):
+            line += b"\r\n"
         if not self.protocol_flags.get("NOGOAHEAD", True):
             line += IAC + GA
         return self.transport.write(mccp_compress(self, line))
@@ -315,7 +316,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         text = args[0] if args else ""
         if text is None:
             return
-        text = to_str(text, force_string=True)
 
         # handle arguments
         options = kwargs.get("options", {})
@@ -342,7 +342,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                                          strip_ansi=nocolor, xterm256=xterm256)
                 if mxp:
                     prompt = mxp_parse(prompt)
-            prompt = prompt.replace(IAC, IAC + IAC).replace('\n', '\r\n')
+            prompt = to_bytes(prompt, self)
+            prompt = prompt.replace(IAC, IAC + IAC).replace(b'\n', b'\r\n')
             prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
         else:

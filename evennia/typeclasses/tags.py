@@ -66,8 +66,9 @@ class Tag(models.Model):
         unique_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
         index_together = (('db_key', 'db_category', 'db_tagtype', 'db_model'),)
 
-    def __unicode__(self):
-        return u"<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
+    def __lt__(self, other):
+        return str(self) < str(other)
+
 
     def __str__(self):
         return str("<Tag: %s%s>" % (self.db_key, "(category:%s)" % self.db_category if self.db_category else ""))
@@ -299,17 +300,25 @@ class TagHandler(object):
             return ret if ret else [default] if default is not None else []
         return ret[0] if len(ret) == 1 else (ret if ret else default)
 
-    def remove(self, key, category=None):
+    def remove(self, key=None, category=None):
         """
-        Remove a tag from the handler based ond key and category.
+        Remove a tag from the handler based ond key and/or category.
 
         Args:
-            key (str or list): The tag or tags to retrieve.
+            key (str or list, optional): The tag or tags to retrieve.
             category (str, optional): The Tag category to limit the
                 request to. Note that `None` is the valid, default
-                category.
+                category
+        Notes:
+            If neither key nor category is specified, this acts
+            as .clear().
 
         """
+        if not key:
+            # only category
+            self.clear(category=category)
+            return
+
         for key in make_iter(key):
             if not (key or key.strip()):  # we don't allow empty tags
                 continue
@@ -319,8 +328,10 @@ class TagHandler(object):
             # This does not delete the tag object itself. Maybe it should do
             # that when no objects reference the tag anymore (but how to check)?
             # For now, tags are never deleted, only their connection to objects.
-            tagobj = getattr(self.obj, self._m2m_fieldname).filter(db_key=tagstr, db_category=category,
-                                                                   db_model=self._model, db_tagtype=self._tagtype)
+            tagobj = getattr(self.obj, self._m2m_fieldname).filter(
+                db_key=tagstr, db_category=category,
+                db_model=self._model,
+                db_tagtype=self._tagtype)
             if tagobj:
                 getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])
             self._delcache(key, category)
@@ -337,7 +348,9 @@ class TagHandler(object):
         """
         if not self._cache_complete:
             self._fullcache()
-        query = {"%s__id" % self._model: self._objid, "tag__db_model": self._model, "tag__db_tagtype": self._tagtype}
+        query = {"%s__id" % self._model: self._objid,
+                 "tag__db_model": self._model,
+                 "tag__db_tagtype": self._tagtype}
         if category:
             query["tag__db_category"] = category.strip().lower()
         getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query).delete()
@@ -365,7 +378,7 @@ class TagHandler(object):
         tags = sorted(self._cache.values())
         if return_key_and_category:
                 # return tuple (key, category)
-            return [(to_str(tag.db_key), to_str(tag.db_category)) for tag in tags]
+            return [(to_str(tag.db_key), tag.db_category) for tag in tags]
         elif return_objs:
             return tags
         else:
@@ -398,14 +411,11 @@ class TagHandler(object):
             else:
                 keys[tup[1]].append(tup[0])
                 data[tup[1]] = tup[2]  # overwrite previous
-        for category, key in keys.iteritems():
+        for category, key in keys.items():
             self.add(tag=key, category=category, data=data.get(category, None))
 
     def __str__(self):
         return ",".join(self.all())
-
-    def __unicode(self):
-        return u",".join(self.all())
 
 
 class AliasHandler(TagHandler):

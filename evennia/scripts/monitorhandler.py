@@ -50,8 +50,8 @@ class MonitorHandler(object):
         if self.monitors:
             for obj in self.monitors:
                 for fieldname in self.monitors[obj]:
-                    for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].iteritems():
-                        path = "%s.%s" % (callback.__module__, callback.func_name)
+                    for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].items():
+                        path = "%s.%s" % (callback.__module__, callback.__name__)
                         savedata.append((obj, fieldname, idstring, path, persistent, kwargs))
             savedata = dbserialize(savedata)
             ServerConfig.objects.conf(key=self.savekey, value=savedata)
@@ -97,7 +97,7 @@ class MonitorHandler(object):
         """
         to_delete = []
         if obj in self.monitors and fieldname in self.monitors[obj]:
-            for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].iteritems():
+            for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].items():
                 try:
                     callback(obj=obj, fieldname=fieldname, **kwargs)
                 except Exception:
@@ -172,18 +172,23 @@ class MonitorHandler(object):
         """
         self.monitors = defaultdict(lambda: defaultdict(dict))
 
-    def all(self):
+    def all(self, obj=None):
         """
-        List all monitors.
+        List all monitors or all monitors of a given object.
+
+        Args:
+            obj (Object): The object on which to list all monitors.
 
         Returns:
             monitors (list): The handled monitors.
 
         """
         output = []
-        for obj in self.monitors:
+        objs = [obj] if obj else self.monitors
+
+        for obj in objs:
             for fieldname in self.monitors[obj]:
-                for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].iteritems():
+                for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].items():
                     output.append((obj, fieldname, idstring, persistent, kwargs))
         return output
 

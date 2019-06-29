@@ -21,11 +21,12 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
+from evennia.utils import create
 from evennia.utils import search
 from evennia.utils import logger
 from evennia.utils import ansi
 from evennia.utils.utils import (variable_from_module, lazy_property,
-                                 make_iter, to_unicode, is_iter, list_to_string,
+                                 make_iter, is_iter, list_to_string,
                                  to_str)
 from django.utils.translation import ugettext as _
 
@@ -191,6 +192,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     without `obj.save()` having to be called explicitly.
 
     """
+    # lockstring of newly created objects, for easy overloading.
+    # Will be formatted with the appropriate attributes.
+    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
+
     objects = ObjectManager()
 
     # on-object properties
@@ -214,7 +219,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     @property
     def is_connected(self):
         # we get an error for objects subscribed to channels without this
-        if self.account: # seems sane to pass on the account
+        if self.account:  # seems sane to pass on the account
             return self.account.is_connected
         else:
             return False
@@ -257,7 +262,13 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         con = self.contents_cache.get(exclude=exclude)
         # print "contents_get:", self, con, id(self), calledby()  # DEBUG
         return con
-    contents = property(contents_get)
+
+    def contents_set(self, *args):
+        "You cannot replace this property"
+        raise AttributeError("{}.contents is read-only. Use obj.move_to or "
+                             "obj.location to move an object here.".format(self.__class__))
+
+    contents = property(contents_get, contents_set, contents_set)
 
     @property
     def exits(self):
@@ -405,7 +416,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             messaging is assumed to be handled by the caller.
 
         """
-        is_string = isinstance(searchdata, basestring)
+        is_string = isinstance(searchdata, str)
 
 
         if is_string:
@@ -428,6 +439,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # or unique #dbrefs
             exact = True
             candidates = None
+
         elif candidates is None:
             # no custom candidates given - get them automatically
             if location:
@@ -454,6 +466,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                                                  candidates=candidates,
                                                  exact=exact,
                                                  use_dbref=use_dbref)
+
         if quiet:
             return results
         return _AT_SEARCH_RESULT(results, self, query=searchdata,
@@ -483,7 +496,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       matching Accounts.
 
         """
-        if isinstance(searchdata, basestring):
+        if isinstance(searchdata, str):
             # searchdata is a string; wrap some common self-references
             if searchdata.lower() in ("me", "self",):
                 return [self.account] if quiet else self.account
@@ -526,7 +539,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         # nick replacement - we require full-word matching.
         # do text encoding conversion
-        raw_string = to_unicode(raw_string)
         raw_string = self.nicks.nickreplace(raw_string, categories=("inputline", "channel"), include_account=True)
         return cmdhandler.cmdhandler(self, raw_string, callertype="object", session=session, **kwargs)
 
@@ -575,10 +587,10 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             logger.log_trace()
 
         if text is not None:
-            if not (isinstance(text, basestring) or isinstance(text, tuple)):
+            if not (isinstance(text, str) or isinstance(text, tuple)):
                 # sanitize text before sending across the wire
                 try:
-                    text = to_str(text, force_string=True)
+                    text = to_str(text)
                 except Exception:
                     text = repr(text)
             kwargs['text'] = text
@@ -861,7 +873,68 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                     obj.msg(_(string))
             obj.move_to(home)
 
-    def copy(self, new_key=None):
+    @classmethod
+    def create(cls, key, account=None, **kwargs):
+        """
+        Creates a basic object with default parameters, unless otherwise
+        specified or extended.
+
+        Provides a friendlier interface to the utils.create_object() function.
+
+        Args:
+            key (str): Name of the new object.
+            account (Account): Account to attribute this object to.
+
+        Kwargs:
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
+
+        Returns:
+            object (Object): A newly created object of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+
+        """
+        errors = []
+        obj = None
+
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip', '')
+
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+
+        # Get a supplied description, if any
+        description = kwargs.pop('description', '')
+
+        # Create a sane lockstring if one wasn't supplied
+        lockstring = kwargs.get('locks')
+        if account and not lockstring:
+            lockstring = cls.lockstring.format(account_id=account.id)
+            kwargs['locks'] = lockstring
+
+        # Create object
+        try:
+            obj = create.create_object(**kwargs)
+
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+
+            # Set description if there is none, or update it if provided
+            if description or not obj.db.desc:
+                desc = description if description else "You see nothing special."
+                obj.db.desc = desc
+
+        except Exception as e:
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
+
+        return obj, errors
+
+    def copy(self, new_key=None, **kwargs):
         """
         Makes an identical copy of this object, identical except for a
         new dbref in the database. If you want to customize the copy
@@ -887,7 +960,22 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                       if obj.key.startswith(key) and obj.key.lstrip(key).isdigit())
             return "%s%03i" % (key, num)
         new_key = new_key or find_clone_key()
-        return ObjectDB.objects.copy_object(self, new_key=new_key)
+        new_obj = ObjectDB.objects.copy_object(self, new_key=new_key, **kwargs)
+        self.at_object_post_copy(new_obj, **kwargs)
+        return new_obj
+
+    def at_object_post_copy(self, new_obj, **kwargs):
+        """
+        Called by DefaultObject.copy(). Meant to be overloaded. In case there's extra data not covered by
+        .copy(), this can be used to deal with it.
+
+        Args:
+            new_obj (Object): The new Copy of this object.
+
+        Returns:
+            None
+        """
+        pass
 
     def delete(self):
         """
@@ -916,8 +1004,12 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
         if self.account:
+            # Remove the object from playable characters list
+            if self in self.account.db._playable_characters:
+                self.account.db._playable_characters = [x for x in self.account.db._playable_characters if x != self]
             for session in self.sessions.all():
                 self.account.unpuppet_object(session)
+
         self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
@@ -933,7 +1025,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         self.location = None  # this updates contents_cache for our location
 
         # Perform the deletion of the object
-        super(DefaultObject, self).delete()
+        super().delete()
         return True
 
     def access(self, accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs):
@@ -952,7 +1044,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
           Passed on to the at_access hook along with the result of the access check.
 
         """
-        result = super(DefaultObject, self).access(accessing_obj, access_type=access_type,
+        result = super().access(accessing_obj, access_type=access_type,
                                                    default=default, no_superuser_bypass=no_superuser_bypass)
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
@@ -1509,7 +1601,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         if users or things:
             # handle pluralization of things (never pluralize users)
             thing_strings = []
-            for key, itemlist in sorted(things.iteritems()):
+            for key, itemlist in sorted(things.items()):
                 nitem = len(itemlist)
                 if nitem == 1:
                     key, _ = itemlist[0].get_numbered_name(nitem, looker, key=key)
@@ -1532,7 +1624,9 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
                 commonly an object or the current location. It will
                 be checked for the "view" type access.
             **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
+                overriding the call. This will be passed into
+                return_appearance, get_display_name and at_desc but is not used
+                by default.
 
         Returns:
             lookstring (str): A ready-processed look string
@@ -1541,15 +1635,15 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
         """
         if not target.access(self, "view"):
             try:
-                return "Could not view '%s'." % target.get_display_name(self)
+                return "Could not view '%s'." % target.get_display_name(self, **kwargs)
             except AttributeError:
                 return "Could not view '%s'." % target.key
 
-        description = target.return_appearance(self)
+        description = target.return_appearance(self, **kwargs)
 
         # the target's at_desc() method.
         # this must be the last reference to target so it may delete itself when acted on.
-        target.at_desc(looker=self)
+        target.at_desc(looker=self, **kwargs)
 
         return description
 
@@ -1824,6 +1918,91 @@ class DefaultCharacter(DefaultObject):
     a character avatar controlled by an account.
 
     """
+    # lockstring of newly created rooms, for easy overloading.
+    # Will be formatted with the appropriate attributes.
+    lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);delete:id({account_id}) or perm(Admin)"
+
+    @classmethod
+    def create(cls, key, account, **kwargs):
+        """
+        Creates a basic Character with default parameters, unless otherwise
+        specified or extended.
+
+        Provides a friendlier interface to the utils.create_character() function.
+
+        Args:
+            key (str): Name of the new Character.
+            account (obj): Account to associate this Character with. Required as
+                an argument, but one can fake it out by supplying None-- it will
+                change the default lockset and skip creator attribution.
+
+        Kwargs:
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
+
+        Returns:
+            character (Object): A newly created Character of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+
+        """
+        errors = []
+        obj = None
+
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip', '')
+
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+
+        # Get home for character
+        kwargs['home'] = ObjectDB.objects.get_id(kwargs.get('home', settings.DEFAULT_HOME))
+
+        # Get permissions
+        kwargs['permissions'] = kwargs.get('permissions', settings.PERMISSION_ACCOUNT_DEFAULT)
+
+        # Get description if provided
+        description = kwargs.pop('description', '')
+
+        # Get locks if provided
+        locks = kwargs.pop('locks', '')
+
+        try:
+            # Check to make sure account does not have too many chars
+            if len(account.characters) >= settings.MAX_NR_CHARACTERS:
+                errors.append("There are too many characters associated with this account.")
+                return obj, errors
+
+            # Create the Character
+            obj = create.create_object(**kwargs)
+
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account:
+                obj.db.creator_id = account.id
+                if obj not in account.characters:
+                    account.db._playable_characters.append(obj)
+
+            # Add locks
+            if not locks and account:
+                # Allow only the character itself and the creator account to puppet this character (and Developers).
+                locks = cls.lockstring.format(**{'character_id': obj.id, 'account_id': account.id})
+            elif not locks and not account:
+                locks = cls.lockstring.format(**{'character_id': obj.id, 'account_id': -1})
+
+            obj.locks.add(locks)
+
+            # If no description is set, set a default description
+            if description or not obj.db.desc:
+                obj.db.desc = description if description else "This is a character."
+
+        except Exception as e:
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
+
+        return obj, errors
 
     def basetype_setup(self):
         """
@@ -1835,7 +2014,7 @@ class DefaultCharacter(DefaultObject):
         Character object works).
 
         """
-        super(DefaultCharacter, self).basetype_setup()
+        super().basetype_setup()
         self.locks.add(";".join(["get:false()",  # noone can pick up the character
                                  "call:false()"]))  # no commands can be called on character from outside
         # add the default cmdset
@@ -1941,6 +2120,72 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
+    # lockstring of newly created rooms, for easy overloading.
+    # Will be formatted with the {id} of the creating object.
+    lockstring = "control:id({id}) or perm(Admin); " \
+                 "delete:id({id}) or perm(Admin); " \
+                 "edit:id({id}) or perm(Admin)"
+
+    @classmethod
+    def create(cls, key, account, **kwargs):
+        """
+        Creates a basic Room with default parameters, unless otherwise
+        specified or extended.
+
+        Provides a friendlier interface to the utils.create_object() function.
+
+        Args:
+            key (str): Name of the new Room.
+            account (obj): Account to associate this Room with.
+
+        Kwargs:
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
+
+        Returns:
+            room (Object): A newly created Room of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+
+        """
+        errors = []
+        obj = None
+
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip', '')
+
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+
+        # Get who to send errors to
+        kwargs['report_to'] = kwargs.pop('report_to', account)
+
+        # Get description, if provided
+        description = kwargs.pop('description', '')
+
+        try:
+            # Create the Room
+            obj = create.create_object(**kwargs)
+
+            # Set appropriate locks
+            lockstring = kwargs.get('locks', cls.lockstring.format(id=account.id))
+            obj.locks.add(lockstring)
+
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+
+            # If no description is set, set a default description
+            if description or not obj.db.desc:
+                obj.db.desc = description if description else "This is a room."
+
+        except Exception as e:
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
+
+        return obj, errors
 
     def basetype_setup(self):
         """
@@ -1949,7 +2194,7 @@ class DefaultRoom(DefaultObject):
 
         """
 
-        super(DefaultRoom, self).basetype_setup()
+        super().basetype_setup()
         self.locks.add(";".join(["get:false()",
                                  "puppet:false()"]))  # would be weird to puppet a room ...
         self.location = None
@@ -2019,6 +2264,13 @@ class DefaultExit(DefaultObject):
 
     exit_command = ExitCommand
     priority = 101
+
+    # lockstring of newly created exits, for easy overloading.
+    # Will be formatted with the {id} of the creating object.
+    lockstring = "control:id({id}) or perm(Admin); " \
+                 "delete:id({id}) or perm(Admin); " \
+                 "edit:id({id}) or perm(Admin)"
+
     # Helper classes and methods to implement the Exit. These need not
     # be overloaded unless one want to change the foundation for how
     # Exits work. See the end of the class for hook methods to overload.
@@ -2057,6 +2309,73 @@ class DefaultExit(DefaultObject):
 
     # Command hooks
 
+    @classmethod
+    def create(cls, key, account, source, dest, **kwargs):
+        """
+        Creates a basic Exit with default parameters, unless otherwise
+        specified or extended.
+
+        Provides a friendlier interface to the utils.create_object() function.
+
+        Args:
+            key (str): Name of the new Exit, as it should appear from the
+                source room.
+            account (obj): Account to associate this Exit with.
+            source (Room): The room to create this exit in.
+            dest (Room): The room to which this exit should go.
+
+        Kwargs:
+            description (str): Brief description for this object.
+            ip (str): IP address of creator (for object auditing).
+
+        Returns:
+            exit (Object): A newly created Room of the given typeclass.
+            errors (list): A list of errors in string form, if any.
+
+        """
+        errors = []
+        obj = None
+
+        # Get IP address of creator, if available
+        ip = kwargs.pop('ip', '')
+
+        # If no typeclass supplied, use this class
+        kwargs['typeclass'] = kwargs.pop('typeclass', cls)
+
+        # Set the supplied key as the name of the intended object
+        kwargs['key'] = key
+
+        # Get who to send errors to
+        kwargs['report_to'] = kwargs.pop('report_to', account)
+
+        # Set to/from rooms
+        kwargs['location'] = source
+        kwargs['destination'] = dest
+
+        description = kwargs.pop('description', '')
+
+        try:
+            # Create the Exit
+            obj = create.create_object(**kwargs)
+
+            # Set appropriate locks
+            lockstring = kwargs.get('locks', cls.lockstring.format(id=account.id))
+            obj.locks.add(lockstring)
+
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+
+            # If no description is set, set a default description
+            if description or not obj.db.desc:
+                obj.db.desc = description if description else "This is an exit."
+
+        except Exception as e:
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(e)
+
+        return obj, errors
+
     def basetype_setup(self):
         """
         Setup exit-security
@@ -2065,7 +2384,7 @@ class DefaultExit(DefaultObject):
         sure you include all the functionality in this method.
 
         """
-        super(DefaultExit, self).basetype_setup()
+        super().basetype_setup()
 
         # setting default locks (overload these in at_object_creation()
         self.locks.add(";".join(["puppet:false()",  # would be weird to puppet an exit ...

@@ -6,7 +6,7 @@ leave caching unexpectedly (no use of WeakRefs).
 
 Also adds `cache_size()` for monitoring the size of the cache.
 """
-from __future__ import absolute_import, division
+
 from builtins import object
 from future.utils import listitems, listvalues, with_metaclass
 
@@ -20,6 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.db.models.signals import post_save
 from django.db.models.base import Model, ModelBase
 from django.db.models.signals import pre_delete, post_migrate
+from django.db.utils import DatabaseError
 from evennia.utils import logger
 from evennia.utils.utils import dbref, get_evennia_pids, to_str
 
@@ -85,7 +86,7 @@ class SharedMemoryModelBase(ModelBase):
         if not hasattr(dbmodel, "__instance_cache__"):
             # we store __instance_cache__ only on the dbmodel base
             dbmodel.__instance_cache__ = {}
-        super(SharedMemoryModelBase, cls)._prepare()
+        super()._prepare()
 
     def __new__(cls, name, bases, attrs):
         """
@@ -141,8 +142,8 @@ class SharedMemoryModelBase(ModelBase):
                 "Setter only used on foreign key relations, allows setting with #dbref"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
-                if isinstance(value, (basestring, int)):
-                    value = to_str(value, force_string=True)
+                if isinstance(value, (str, int)):
+                    value = to_str(value)
                     if (value.isdigit() or value.startswith("#")):
                         # we also allow setting using dbrefs, if so we try to load the matching object.
                         # (we assume the object is of the same type as the class holding the field, if
@@ -194,7 +195,8 @@ class SharedMemoryModelBase(ModelBase):
         # exclude some models that should not auto-create wrapper fields
         if cls.__name__ in ("ServerConfig", "TypeNick"):
             return
-        # dynamically create the wrapper properties for all fields not already handled (manytomanyfields are always handlers)
+        # dynamically create the wrapper properties for all fields not already handled
+        # (manytomanyfields are always handlers)
         for fieldname, field in ((fname, field) for fname, field in listitems(attrs)
                                  if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
             foreignkey = type(field).__name__ == "ForeignKey"
@@ -203,7 +205,7 @@ class SharedMemoryModelBase(ModelBase):
                 # makes sure not to overload manually created wrappers on the model
                 create_wrapper(cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey)
 
-        return super(SharedMemoryModelBase, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
@@ -364,7 +366,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         """
         self.flush_from_cache()
         self._is_deleted = True
-        super(SharedMemoryModel, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         """
@@ -390,11 +392,20 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
 
         if _IS_MAIN_THREAD:
             # in main thread - normal operation
-            super(SharedMemoryModel, self).save(*args, **kwargs)
+            try:
+                super().save(*args, **kwargs)
+            except DatabaseError:
+                # we handle the 'update_fields did not update any rows' error that 
+                # may happen due to timing issues with attributes
+                ufields_removed = kwargs.pop('update_fields', None)
+                if ufields_removed:
+                    super().save(*args, **kwargs)
+                else:
+                    raise
         else:
             # in another thread; make sure to save in reactor thread
             def _save_callback(cls, *args, **kwargs):
-                super(SharedMemoryModel, cls).save(*args, **kwargs)
+                super().save(*args, **kwargs)
             callFromThread(_save_callback, self, *args, **kwargs)
 
         if not self.pk:
@@ -435,7 +446,7 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
 
     """
     def _prepare(cls):
-        super(WeakSharedMemoryModelBase, cls)._prepare()
+        super()._prepare()
         cls.__dbclass__.__instance_cache__ = WeakValueDictionary()
 
 

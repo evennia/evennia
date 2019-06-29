@@ -89,7 +89,7 @@ def homogenize_prototype(prototype, custom_keys=None):
     if "prototype_key" not in prototype:
         # assign a random hash as key
         homogenized["prototype_key"] = "prototype-{}".format(
-            hashlib.md5(str(time.time())).hexdigest()[:7])
+            hashlib.md5(bytes(str(time.time()), 'utf-8')).hexdigest()[:7])
 
     if "typeclass" not in prototype and "prototype_parent" not in prototype:
         homogenized["typeclass"] = settings.BASE_OBJECT_TYPECLASS
@@ -147,13 +147,13 @@ class DbPrototype(DefaultScript):
 # Prototype manager functions
 
 
-def save_prototype(**kwargs):
+def save_prototype(prototype):
     """
     Create/Store a prototype persistently.
 
-    Kwargs:
-        prototype_key (str): This is required for any storage.
-        All other kwargs are considered part of the new prototype dict.
+    Args:
+        prototype (dict): The prototype to save. A `prototype_key` key is
+            required.
 
     Returns:
         prototype (dict or None): The prototype stored using the given kwargs, None if deleting.
@@ -166,8 +166,8 @@ def save_prototype(**kwargs):
         is expected to have valid permissions.
 
     """
-
-    kwargs = homogenize_prototype(kwargs)
+    in_prototype = prototype
+    in_prototype = homogenize_prototype(in_prototype)
 
     def _to_batchtuple(inp, *args):
         "build tuple suitable for batch-creation"
@@ -176,7 +176,7 @@ def save_prototype(**kwargs):
             return inp
         return (inp, ) + args
 
-    prototype_key = kwargs.get("prototype_key")
+    prototype_key = in_prototype.get("prototype_key")
     if not prototype_key:
         raise ValidationError("Prototype requires a prototype_key")
 
@@ -192,21 +192,21 @@ def save_prototype(**kwargs):
     stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
     prototype = stored_prototype[0].prototype if stored_prototype else {}
 
-    kwargs['prototype_desc'] = kwargs.get("prototype_desc", prototype.get("prototype_desc", ""))
-    prototype_locks = kwargs.get(
+    in_prototype['prototype_desc'] = in_prototype.get("prototype_desc", prototype.get("prototype_desc", ""))
+    prototype_locks = in_prototype.get(
         "prototype_locks", prototype.get('prototype_locks', "spawn:all();edit:perm(Admin)"))
     is_valid, err = validate_lockstring(prototype_locks)
     if not is_valid:
         raise ValidationError("Lock error: {}".format(err))
-    kwargs['prototype_locks'] = prototype_locks
+    in_prototype['prototype_locks'] = prototype_locks
 
     prototype_tags = [
         _to_batchtuple(tag, _PROTOTYPE_TAG_META_CATEGORY)
-        for tag in make_iter(kwargs.get("prototype_tags",
+        for tag in make_iter(in_prototype.get("prototype_tags",
                              prototype.get('prototype_tags', [])))]
-    kwargs["prototype_tags"] = prototype_tags
+    in_prototype["prototype_tags"] = prototype_tags
 
-    prototype.update(kwargs)
+    prototype.update(in_prototype)
 
     if stored_prototype:
         # edit existing prototype
@@ -261,7 +261,7 @@ def delete_prototype(prototype_key, caller=None):
     return True
 
 
-def search_prototype(key=None, tags=None):
+def search_prototype(key=None, tags=None, require_single=False):
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
@@ -270,10 +270,16 @@ def search_prototype(key=None, tags=None):
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'db_protototype'
             tag category.
+        require_single (bool): If set, raise KeyError if the result
+            was not found or if there are multiple matches.
 
     Return:
-        matches (list): All found prototype dicts. If no keys
-            or tags are given, all available prototypes will be returned.
+        matches (list): All found prototype dicts. Empty list if
+            no match was found. Note that if neither `key` nor `tags`
+            were given, *all* available prototypes will be returned.
+
+    Raises:
+        KeyError: If `require_single` is True and there are 0 or >1 matches.
 
     Note:
         The available prototypes is a combination of those supplied in
@@ -313,10 +319,11 @@ def search_prototype(key=None, tags=None):
         tag_categories = ["db_prototype" for _ in tags]
         db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
     else:
-        db_matches = DbPrototype.objects.all()
+        db_matches = DbPrototype.objects.all().order_by("id")
     if key:
         # exact or partial match on key
-        db_matches = db_matches.filter(db_key=key) or db_matches.filter(db_key__icontains=key)
+        db_matches = (db_matches.filter(db_key=key) or
+                      db_matches.filter(db_key__icontains=key)).order_by("id")
         # return prototype
     db_prototypes = [dbprot.prototype for dbprot in db_matches]
 
@@ -329,6 +336,10 @@ def search_prototype(key=None, tags=None):
                           if mta.get('prototype_key') and mta['prototype_key'] == key]
         if filter_matches and len(filter_matches) < nmatches:
             matches = filter_matches
+
+    nmatches = len(matches)
+    if nmatches != 1 and require_single:
+        raise KeyError("Found {} matching prototypes.".format(nmatches))
 
     return matches
 
@@ -565,7 +576,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             eventual object #dbrefs in the output from the protfunc.
 
     """
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         return value
 
     available_functions = PROT_FUNCS if available_functions is None else available_functions
@@ -579,8 +590,8 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
         result = literal_eval(result)
     except ValueError:
         pass
-    except Exception as err:
-        err = str(err)
+    except Exception as exc:
+        err = str(exc)
     if testing:
         return err, result
     return result
@@ -728,7 +739,7 @@ def init_spawn_value(value, validator=None):
     validator = validator if validator else lambda o: o
     if callable(value):
         value = validator(value())
-    elif value and is_iter(value) and callable(value[0]):
+    elif value and isinstance(value, (list, tuple)) and callable(value[0]):
         # a structure (callable, (args, ))
         args = value[1:]
         value = validator(value[0](*make_iter(args)))

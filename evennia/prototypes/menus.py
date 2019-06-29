@@ -106,7 +106,7 @@ def _format_option_value(prop, required=False, prototype=None, cropper=None):
     if utils.is_iter(prop):
         out = ", ".join(str(pr) for pr in prop)
     if not out and required:
-        out = "|rrequired"
+        out = "|runset"
     if out:
         return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
     return ""
@@ -231,11 +231,11 @@ def _validate_prototype(prototype):
     try:
         # validate, don't spawn
         spawner.spawn(prototype, only_validate=True)
-    except RuntimeError as err:
-        errors = "\n\n|r{}|n".format(err)
+    except RuntimeError as exc:
+        errors = "\n\n|r{}|n".format(exc)
         err = True
-    except RuntimeWarning as err:
-        errors = "\n\n|y{}|n".format(err)
+    except RuntimeWarning as exc:
+        errors = "\n\n|y{}|n".format(exc)
         err = True
 
     text = (txt + errors)
@@ -496,7 +496,7 @@ def _object_search_actions(caller, raw_inp, **kwargs):
         else:
             # load prototype
 
-            if not obj.access(caller, 'control'):
+            if not obj.access(caller, 'edit'):
                 caller.msg("|rYou don't have access to do this with this object.|n")
                 del caller.ndb._menutree.olc_search_object_term
                 return "node_search_object"
@@ -627,7 +627,8 @@ def node_index(caller):
         if key == 'Typeclass':
             cropper = _path_cropper
         options.append(
-            {"desc": "|w{}|n{}".format(
+            {"desc": "{}{}|n{}".format(
+                "|W" if key == "Prototype_Parent" else "|w",
                 key.replace("_", "-"),
                 _format_option_value(key, required, prototype, cropper=cropper)),
              "goto": "node_{}".format(key.lower())})
@@ -684,6 +685,8 @@ def node_prototype_key(caller):
     text = """
         The |cPrototype-Key|n uniquely identifies the prototype and is |wmandatory|n. It is used to
         find and use the prototype to spawn new entities. It is not case sensitive.
+
+        (To set a new value, just write it and press enter)
 
         {current}""".format(current=_get_current_value(caller, "prototype_key"))
 
@@ -1039,7 +1042,7 @@ def node_aliases(caller):
 
 def _caller_attrs(caller):
     prototype = _get_menu_prototype(caller)
-    attrs = ["{}={}".format(tup[0], utils.crop(utils.to_str(tup[1], force_string=True), width=10))
+    attrs = ["{}={}".format(tup[0], utils.crop(utils.to_str(tup[1]), width=10))
              for tup in prototype.get("attrs", [])]
     return attrs
 
@@ -2016,7 +2019,8 @@ def _format_diff_text_and_options(diff, **kwargs):
                                                            ("diff", diff)), **kwargs))})
                 optnum += 1
         else:
-            for key, subdiffpart in diffpart.items():
+            for key in sorted(list(diffpart.keys())):
+                subdiffpart = diffpart[key]
                 text, option, optnum = _parse_diffpart(
                         subdiffpart, optnum, *(args + (key, )))
                 texts.extend(text)
@@ -2138,7 +2142,13 @@ def node_prototype_save(caller, **kwargs):
         # we already validated and accepted the save, so this node acts as a goto callback and
         # should now only return the next node
         prototype_key = prototype.get("prototype_key")
-        protlib.save_prototype(**prototype)
+        try:
+            protlib.save_prototype(prototype)
+        except Exception as exc:
+            text = "|rCould not save:|n {}\n(press Return to continue)".format(exc)
+            options = {"key": "_default",
+                       "goto": "node_index"}
+            return text, options
 
         spawned_objects = protlib.search_objects_with_prototype(prototype_key)
         nspawned = spawned_objects.count()

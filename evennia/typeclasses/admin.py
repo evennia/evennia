@@ -1,9 +1,10 @@
+import traceback
+from datetime import datetime
 from django.contrib import admin
 from evennia.typeclasses.models import Tag
 from django import forms
 from evennia.utils.picklefield import PickledFormField
 from evennia.utils.dbserialize import from_pickle, _SaverSet
-import traceback
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -48,7 +49,7 @@ class TagForm(forms.ModelForm):
          the corresponding tag fields. The initial data of the form fields will similarly be
          populated.
         """
-        super(TagForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         tagkey = None
         tagcategory = None
         tagtype = None
@@ -75,7 +76,7 @@ class TagForm(forms.ModelForm):
         we'll try to make sure that empty form fields will be None, rather than ''.
         """
         # we are spoofing a tag for the Handler that will be called
-        # instance = super(TagForm, self).save(commit=False)
+        # instance = super().save(commit=False)
         instance = self.instance
         instance.tag_key = self.cleaned_data['tag_key']
         instance.tag_category = self.cleaned_data['tag_category'] or None
@@ -109,7 +110,7 @@ class TagFormSet(forms.BaseInlineFormSet):
             else:
                 handler_name = "tags"
             return getattr(related, handler_name)
-        instances = super(TagFormSet, self).save(commit=False)
+        instances = super().save(commit=False)
         # self.deleted_objects is a list created when super of save is called, we'll remove those
         for obj in self.deleted_objects:
             handler = get_handler(obj)
@@ -143,7 +144,7 @@ class TagInline(admin.TabularInline):
         a proxy isn't threadsafe, since it'd be the base class and would change if multiple
         people used the admin at the same time
         """
-        formset = super(TagInline, self).get_formset(request, obj, **kwargs)
+        formset = super().get_formset(request, obj, **kwargs)
 
         class ProxyFormset(formset):
             pass
@@ -170,54 +171,48 @@ class AttributeForm(forms.ModelForm):
                                 help_text="Internal use. Either unset (normal Attribute) or \"nick\"",
                                 required=False,
                                 max_length=16)
-    attr_strvalue = forms.CharField(label="String Value",
-                                    help_text="Only set when using the Attribute as a string-only store",
-                                    required=False,
-                                    widget=forms.Textarea(attrs={"rows": 1, "cols": 6}))
     attr_lockstring = forms.CharField(label="Locks",
                                       required=False,
                                       help_text="Lock string on the form locktype:lockdef;lockfunc:lockdef;...",
                                       widget=forms.Textarea(attrs={"rows": 1, "cols": 8}))
 
     class Meta:
-        fields = ("attr_key", "attr_value", "attr_category", "attr_strvalue", "attr_lockstring", "attr_type")
+        fields = ("attr_key", "attr_value", "attr_category", "attr_lockstring", "attr_type")
 
     def __init__(self, *args, **kwargs):
         """
          If we have an Attribute, then we'll prepopulate our instance with the fields we'd expect it
-         to have based on the Attribute. attr_key, attr_category, attr_value, attr_strvalue, attr_type,
+         to have based on the Attribute. attr_key, attr_category, attr_value, attr_type,
          and attr_lockstring all refer to the corresponding Attribute fields. The initial data of the form fields will
          similarly be populated.
 
         """
-        super(AttributeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         attr_key = None
         attr_category = None
         attr_value = None
-        attr_strvalue = None
         attr_type = None
         attr_lockstring = None
         if hasattr(self.instance, 'attribute'):
             attr_key = self.instance.attribute.db_key
             attr_category = self.instance.attribute.db_category
             attr_value = self.instance.attribute.db_value
-            attr_strvalue = self.instance.attribute.db_strvalue
             attr_type = self.instance.attribute.db_attrtype
             attr_lockstring = self.instance.attribute.db_lock_storage
             self.fields['attr_key'].initial = attr_key
             self.fields['attr_category'].initial = attr_category
             self.fields['attr_type'].initial = attr_type
             self.fields['attr_value'].initial = attr_value
-            self.fields['attr_strvalue'].initial = attr_strvalue
             self.fields['attr_lockstring'].initial = attr_lockstring
         self.instance.attr_key = attr_key
         self.instance.attr_category = attr_category
         self.instance.attr_value = attr_value
-        # prevent set from being transformed to unicode
-        if isinstance(attr_value, set) or isinstance(attr_value, _SaverSet):
+
+        # prevent from being transformed to str
+        if isinstance(attr_value, (set, _SaverSet)):
             self.fields['attr_value'].disabled = True
+
         self.instance.deserialized_value = from_pickle(attr_value)
-        self.instance.attr_strvalue = attr_strvalue
         self.instance.attr_type = attr_type
         self.instance.attr_lockstring = attr_lockstring
 
@@ -232,22 +227,22 @@ class AttributeForm(forms.ModelForm):
         instance = self.instance
         instance.attr_key = self.cleaned_data['attr_key'] or "no_name_entered_for_attribute"
         instance.attr_category = self.cleaned_data['attr_category'] or None
-        instance.attr_value = self.cleaned_data['attr_value'] or None
+        instance.attr_value = self.cleaned_data['attr_value']
         # convert the serialized string value into an object, if necessary, for AttributeHandler
         instance.attr_value = from_pickle(instance.attr_value)
-        instance.attr_strvalue = self.cleaned_data['attr_strvalue'] or None
         instance.attr_type = self.cleaned_data['attr_type'] or None
         instance.attr_lockstring = self.cleaned_data['attr_lockstring']
         return instance
 
     def clean_attr_value(self):
         """
-        Prevent Sets from being cleaned due to literal_eval failing on them. Otherwise they will be turned into
-        unicode.
+        Prevent certain data-types from being cleaned due to literal_eval
+        failing on them. Otherwise they will be turned into str.
+
         """
         data = self.cleaned_data['attr_value']
         initial = self.instance.attr_value
-        if isinstance(initial, set) or isinstance(initial, _SaverSet):
+        if isinstance(initial, (set, _SaverSet, datetime)):
             return initial
         return data
 
@@ -269,17 +264,20 @@ class AttributeFormSet(forms.BaseInlineFormSet):
             else:
                 handler_name = "attributes"
             return getattr(related, handler_name)
-        instances = super(AttributeFormSet, self).save(commit=False)
-        # self.deleted_objects is a list created when super of save is called, we'll remove those
+        instances = super().save(commit=False)
         for obj in self.deleted_objects:
+            # self.deleted_objects is a list created when super of save is called, we'll remove those
             handler = get_handler(obj)
             handler.remove(obj.attr_key, category=obj.attr_category)
+
         for instance in instances:
             handler = get_handler(instance)
-            strattr = True if instance.attr_strvalue else False
-            value = instance.attr_value or instance.attr_strvalue
+
+            value = instance.attr_value
+
             try:
-                handler.add(instance.attr_key, value, category=instance.attr_category, strattr=strattr,
+                handler.add(instance.attr_key, value,
+                            category=instance.attr_category, strattr=False,
                             lockstring=instance.attr_lockstring)
             except (TypeError, ValueError):
                 # catch errors in nick templates and continue
@@ -311,7 +309,7 @@ class AttributeInline(admin.TabularInline):
         a proxy isn't threadsafe, since it'd be the base class and would change if multiple
         people used the admin at the same time
         """
-        formset = super(AttributeInline, self).get_formset(request, obj, **kwargs)
+        formset = super().get_formset(request, obj, **kwargs)
 
         class ProxyFormset(formset):
             pass

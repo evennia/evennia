@@ -67,7 +67,18 @@ def general_context(request):
     Returns common Evennia-related context stuff, which
     is automatically added to context of all views.
     """
+    account = None
+    if request.user.is_authenticated:
+        account = request.user
+
+    puppet = None
+    if account and request.session.get('puppet'):
+        pk = int(request.session.get('puppet'))
+        puppet = next((x for x in account.characters if x.pk == pk), None)
+
     return {
+        'account': account,
+        'puppet': puppet,
         'game_name': GAME_NAME,
         'game_slogan': GAME_SLOGAN,
         'evennia_userapps': ACCOUNT_RELATED,

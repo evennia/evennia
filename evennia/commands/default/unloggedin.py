@@ -2,19 +2,13 @@
 Commands that are available from the connect screen.
 """
 import re
-import time
 import datetime
-from random import getrandbits
+from codecs import lookup as codecs_lookup
 from django.conf import settings
-from django.contrib.auth import authenticate
-from evennia.accounts.models import AccountDB
-from evennia.objects.models import ObjectDB
-from evennia.server.models import ServerConfig
-from evennia.server.throttle import Throttle
 from evennia.comms.models import ChannelDB
 from evennia.server.sessionhandler import SESSIONS
 
-from evennia.utils import create, logger, utils, gametime
+from evennia.utils import class_from_module, create, logger, utils, gametime
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -25,11 +19,6 @@ __all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
-
-# Create throttles for too many connections, account-creations and login attempts
-CONNECTION_THROTTLE = Throttle(limit=5, timeout=1 * 60)
-CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
-LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
 
 
 def create_guest_account(session):
@@ -44,49 +33,20 @@ def create_guest_account(session):
             the boolean is whether guest accounts are enabled at all.
             the Account which was created from an available guest name.
     """
-    # check if guests are enabled.
-    if not settings.GUEST_ENABLED:
-        return False, None
+    enabled = settings.GUEST_ENABLED
+    address = session.address
 
-    # Check IP bans.
-    bans = ServerConfig.objects.conf("server_bans")
-    if bans and any(tup[2].match(session.address) for tup in bans if tup[2]):
-        # this is a banned IP!
-        string = "|rYou have been banned and cannot continue from here." \
-                 "\nIf you feel this ban is in error, please email an admin.|x"
-        session.msg(string)
-        session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
-        return True, None
+    # Get account class
+    Guest = class_from_module(settings.BASE_GUEST_TYPECLASS)
 
-    try:
-        # Find an available guest name.
-        accountname = None
-        for name in settings.GUEST_LIST:
-            if not AccountDB.objects.filter(username__iexact=accountname).count():
-                accountname = name
-                break
-        if not accountname:
-            session.msg("All guest accounts are in use. Please try again later.")
-            return True, None
-        else:
-            # build a new account with the found guest accountname
-            password = "%016x" % getrandbits(64)
-            home = ObjectDB.objects.get_id(settings.GUEST_HOME)
-            permissions = settings.PERMISSION_GUEST_DEFAULT
-            typeclass = settings.BASE_CHARACTER_TYPECLASS
-            ptypeclass = settings.BASE_GUEST_TYPECLASS
-            new_account = _create_account(session, accountname, password, permissions, ptypeclass)
-            if new_account:
-                _create_character(session, new_account, typeclass, home, permissions)
-            return True, new_account
-
-    except Exception:
-        # We are in the middle between logged in and -not, so we have
-        # to handle tracebacks ourselves at this point. If we don't,
-        # we won't see any errors at all.
-        session.msg("An error occurred. Please e-mail an admin if the problem persists.")
-        logger.log_trace()
-        raise
+    # Get an available guest account
+    # authenticate() handles its own throttling
+    account, errors = Guest.authenticate(ip=address)
+    if account:
+        return enabled, account
+    else:
+        session.msg("|R%s|n" % '\n'.join(errors))
+        return enabled, None
 
 
 def create_normal_account(session, name, password):
@@ -101,38 +61,17 @@ def create_normal_account(session, name, password):
     Returns:
         account (Account): the account which was created from the name and password.
     """
-    # check for too many login errors too quick.
-    address = session.address
-    if isinstance(address, tuple):
-        address = address[0]
+    # Get account class
+    Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 
-    if LOGIN_THROTTLE.check(address):
-        session.msg("|RYou made too many connection attempts. Try again in a few minutes.|n")
-        return None
+    address = session.address
 
     # Match account name and check password
-    account = authenticate(username=name, password=password)
-
+    # authenticate() handles all its own throttling
+    account, errors = Account.authenticate(username=name, password=password, ip=address, session=session)
     if not account:
         # No accountname or password match
-        session.msg("Incorrect login information given.")
-        # this just updates the throttle
-        LOGIN_THROTTLE.update(address)
-        # calls account hook for a failed login if possible.
-        account = AccountDB.objects.get_account_from_name(name)
-        if account:
-            account.at_failed_login(session)
-        return None
-
-    # Check IP and/or name bans
-    bans = ServerConfig.objects.conf("server_bans")
-    if bans and (any(tup[0] == account.name.lower() for tup in bans) or
-                 any(tup[2].match(session.address) for tup in bans if tup[2])):
-        # this is a banned IP or name!
-        string = "|rYou have been banned and cannot continue from here." \
-                 "\nIf you feel this ban is in error, please email an admin.|x"
-        session.msg(string)
-        session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
+        session.msg("|R%s|n" % '\n'.join(errors))
         return None
 
     return account
@@ -164,15 +103,7 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         there is no object yet before the account has logged in)
         """
         session = self.caller
-
-        # check for too many login errors too quick.
         address = session.address
-        if isinstance(address, tuple):
-            address = address[0]
-        if CONNECTION_THROTTLE.check(address):
-            # timeout is 5 minutes.
-            session.msg("|RYou made too many connection attempts. Try again in a few minutes.|n")
-            return
 
         args = self.args
         # extract double quote parts
@@ -180,23 +111,33 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         if len(parts) == 1:
             # this was (hopefully) due to no double quotes being found, or a guest login
             parts = parts[0].split(None, 1)
+
             # Guest login
             if len(parts) == 1 and parts[0].lower() == "guest":
-                enabled, new_account = create_guest_account(session)
-                if new_account:
-                    session.sessionhandler.login(session, new_account)
-                if enabled:
+                # Get Guest typeclass
+                Guest = class_from_module(settings.BASE_GUEST_TYPECLASS)
+
+                account, errors = Guest.authenticate(ip=address)
+                if account:
+                    session.sessionhandler.login(session, account)
+                    return
+                else:
+                    session.msg("|R%s|n" % '\n'.join(errors))
                     return
 
         if len(parts) != 2:
             session.msg("\n\r Usage (without <>): connect <name> <password>")
             return
 
-        CONNECTION_THROTTLE.update(address)
+        # Get account class
+        Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+
         name, password = parts
-        account = create_normal_account(session, name, password)
+        account, errors = Account.authenticate(username=name, password=password, ip=address, session=session)
         if account:
             session.sessionhandler.login(session, account)
+        else:
+            session.msg("|R%s|n" % '\n'.join(errors))
 
 
 class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
@@ -222,14 +163,10 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
         session = self.caller
         args = self.args.strip()
 
-        # Rate-limit account creation.
         address = session.address
 
-        if isinstance(address, tuple):
-            address = address[0]
-        if CREATION_THROTTLE.check(address):
-            session.msg("|RYou are creating too many accounts. Try again in a few minutes.|n")
-            return
+        # Get account class
+        Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 
         # extract double quoted parts
         parts = [part.strip() for part in re.split(r"\"", args) if part.strip()]
@@ -241,77 +178,21 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
                      "\nIf <name> or <password> contains spaces, enclose it in double quotes."
             session.msg(string)
             return
-        accountname, password = parts
 
-        # sanity checks
-        if not re.findall(r"^[\w. @+\-']+$", accountname) or not (0 < len(accountname) <= 30):
-            # this echoes the restrictions made by django's auth
-            # module (except not allowing spaces, for convenience of
-            # logging in).
-            string = "\n\r Accountname can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_/' only."
-            session.msg(string)
-            return
-        # strip excessive spaces in accountname
-        accountname = re.sub(r"\s+", " ", accountname).strip()
-        if AccountDB.objects.filter(username__iexact=accountname):
-            # account already exists (we also ignore capitalization here)
-            session.msg("Sorry, there is already an account with the name '%s'." % accountname)
-            return
-        # Reserve accountnames found in GUEST_LIST
-        if settings.GUEST_LIST and accountname.lower() in (guest.lower() for guest in settings.GUEST_LIST):
-            string = "\n\r That name is reserved. Please choose another Accountname."
-            session.msg(string)
-            return
-
-        # Validate password
-        Account = utils.class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
-        # Have to create a dummy Account object to check username similarity
-        valid, error = Account.validate_password(password, account=Account(username=accountname))
-        if error:
-            errors = [e for suberror in error.messages for e in error.messages]
-            string = "\n".join(errors)
-            session.msg(string)
-            return
-
-        # Check IP and/or name bans
-        bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0] == accountname.lower() for tup in bans) or
-
-                     any(tup[2].match(session.address) for tup in bans if tup[2])):
-            # this is a banned IP or name!
-            string = "|rYou have been banned and cannot continue from here." \
-                     "\nIf you feel this ban is in error, please email an admin.|x"
-            session.msg(string)
-            session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
-            return
+        username, password = parts
 
         # everything's ok. Create the new account account.
-        try:
-            permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-            typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_account = _create_account(session, accountname, password, permissions)
-            if new_account:
-                if MULTISESSION_MODE < 2:
-                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-                    _create_character(session, new_account, typeclass, default_home, permissions)
-
-                # Update the throttle to indicate a new account was created from this IP
-                CREATION_THROTTLE.update(address)
-
-                # tell the caller everything went well.
-                string = "A new account '%s' was created. Welcome!"
-                if " " in accountname:
-                    string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
-                else:
-                    string += "\n\nYou can now log with the command 'connect %s <your password>'."
-                session.msg(string % (accountname, accountname))
-
-        except Exception:
-            # We are in the middle between logged in and -not, so we have
-            # to handle tracebacks ourselves at this point. If we don't,
-            # we won't see any errors at all.
-            session.msg("An error occurred. Please e-mail an admin if the problem persists.")
-            logger.log_trace()
+        account, errors = Account.create(username=username, password=password, ip=address, session=session)
+        if account:
+            # tell the caller everything went well.
+            string = "A new account '%s' was created. Welcome!"
+            if " " in username:
+                string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
+            else:
+                string += "\n\nYou can now log with the command 'connect %s <your password>'."
+            session.msg(string % (username, username))
+        else:
+            session.msg("|R%s|n" % '\n'.join(errors))
 
 
 class CmdUnconnectedQuit(COMMAND_DEFAULT_CLASS):
@@ -353,9 +234,14 @@ class CmdUnconnectedLook(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         """Show the connect screen."""
-        connection_screen = utils.random_string_from_module(CONNECTION_SCREEN_MODULE)
-        if not connection_screen:
-            connection_screen = "No connection screen found. Please contact an admin."
+
+        callables = utils.callables_from_module(CONNECTION_SCREEN_MODULE)
+        if "connection_screen" in callables:
+            connection_screen = callables['connection_screen']()
+        else:
+            connection_screen = utils.random_string_from_module(CONNECTION_SCREEN_MODULE)
+            if not connection_screen:
+                connection_screen = "No connection screen found. Please contact an admin."
         self.caller.msg(connection_screen)
 
 
@@ -395,6 +281,9 @@ Next you can connect to the game: |wconnect Anna c67jHL8p|n
 You can use the |wlook|n command if you want to see the connect screen again.
 
 """
+
+        if settings.STAFF_CONTACT_EMAIL:
+            string += 'For support, please contact: %s' % settings.STAFF_CONTACT_EMAIL
         self.caller.msg(string)
 
 
@@ -422,7 +311,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
   """
 
     key = "encoding"
-    aliases = ("@encoding", "@encode")
+    aliases = ("encode")
     locks = "cmd:all()"
 
     def func(self):
@@ -448,7 +337,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
             pencoding = self.session.protocol_flags.get("ENCODING", None)
             string = ""
             if pencoding:
-                string += "Default encoding: |g%s|n (change with |w@encoding <encoding>|n)" % pencoding
+                string += "Default encoding: |g%s|n (change with |wencoding <encoding>|n)" % pencoding
             encodings = settings.ENCODINGS
             if encodings:
                 string += "\nServer's alternative encodings (tested in this order):\n   |g%s|n" % ", ".join(encodings)
@@ -459,7 +348,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
             old_encoding = self.session.protocol_flags.get("ENCODING", None)
             encoding = self.args
             try:
-                utils.to_str(utils.to_unicode("test-string"), encoding=encoding)
+                codecs_lookup(encoding)
             except LookupError:
                 string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n"\
                          % (encoding, old_encoding)
@@ -480,10 +369,9 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
         screenreader
 
     Used to flip screenreader mode on and off before logging in (when
-    logged in, use @option screenreader on).
+    logged in, use option screenreader on).
     """
     key = "screenreader"
-    aliases = "@screenreader"
 
     def func(self):
         """Flips screenreader setting."""
@@ -554,7 +442,7 @@ def _create_character(session, new_account, typeclass, home, permissions):
         # If no description is set, set a default description
         if not new_character.db.desc:
             new_character.db.desc = "This is a character."
-        # We need to set this to have @ic auto-connect to this character
+        # We need to set this to have ic auto-connect to this character
         new_account.db._last_puppet = new_character
     except Exception as e:
         session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)

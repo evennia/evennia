@@ -1,8 +1,8 @@
 """
 Sessionhandler for portal sessions
 """
-from __future__ import print_function
-from __future__ import division
+
+
 
 import time
 from collections import deque, namedtuple
@@ -53,7 +53,7 @@ class PortalSessionHandler(SessionHandler):
         Init the handler
 
         """
-        super(PortalSessionHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.portal = None
         self.latest_sessid = 0
         self.uptime = time.time()
@@ -90,8 +90,11 @@ class PortalSessionHandler(SessionHandler):
 
         if session:
             # assign if we are first-connectors
-            self.latest_sessid += 1
-            session.sessid = self.latest_sessid
+            if not session.sessid:
+                # if the session already has a sessid (e.g. being inherited in the
+                # case of a webclient auto-reconnect), keep it
+                self.latest_sessid += 1
+                session.sessid = self.latest_sessid
             session.server_connected = False
             _CONNECTION_QUEUE.appendleft(session)
             if len(_CONNECTION_QUEUE) > 1:
@@ -253,7 +256,7 @@ class PortalSessionHandler(SessionHandler):
             reason (str, optional): Motivation for disconnect.
 
         """
-        for session in self.values():
+        for session in list(self.values()):
             session.disconnect(reason)
             del session
         self.clear()
@@ -418,7 +421,7 @@ class PortalSessionHandler(SessionHandler):
 
         # distribute outgoing data to the correct session methods.
         if session:
-            for cmdname, (cmdargs, cmdkwargs) in kwargs.iteritems():
+            for cmdname, (cmdargs, cmdkwargs) in kwargs.items():
                 funcname = "send_%s" % cmdname.strip().lower()
                 if hasattr(session, funcname):
                     # better to use hassattr here over try..except

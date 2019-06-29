@@ -229,7 +229,7 @@ class EventCharacter(DefaultCharacter):
         if not string:
             return
 
-        super(EventCharacter, self).announce_move_from(destination, msg=string, mapping=mapping)
+        super().announce_move_from(destination, msg=string, mapping=mapping)
 
     def announce_move_to(self, source_location, msg=None, mapping=None):
         """
@@ -284,7 +284,7 @@ class EventCharacter(DefaultCharacter):
         if not string:
             return
 
-        super(EventCharacter, self).announce_move_to(source_location, msg=string, mapping=mapping)
+        super().announce_move_to(source_location, msg=string, mapping=mapping)
 
     def at_before_move(self, destination):
         """
@@ -334,7 +334,7 @@ class EventCharacter(DefaultCharacter):
             source_location (Object): Wwhere we came from. This may be `None`.
 
         """
-        super(EventCharacter, self).at_after_move(source_location)
+        super().at_after_move(source_location)
 
         origin = source_location
         destination = self.location
@@ -373,7 +373,7 @@ class EventCharacter(DefaultCharacter):
             puppeting this Object.
 
         """
-        super(EventCharacter, self).at_post_puppet()
+        super().at_post_puppet()
 
         self.callbacks.call("puppeted", self)
 
@@ -401,7 +401,7 @@ class EventCharacter(DefaultCharacter):
         if location and isinstance(location, DefaultRoom):
             location.callbacks.call("unpuppeted_in", self, location)
 
-        super(EventCharacter, self).at_pre_unpuppet()
+        super().at_pre_unpuppet()
 
     def at_before_say(self, message, **kwargs):
         """
@@ -488,7 +488,7 @@ class EventCharacter(DefaultCharacter):
 
         """
 
-        super(EventCharacter, self).at_say(message, **kwargs)
+        super().at_say(message, **kwargs)
         location = getattr(self, "location", None)
         location = location if location and inherits_from(location, "evennia.objects.objects.DefaultRoom") else None
 
@@ -635,7 +635,7 @@ class EventExit(DefaultExit):
             if not allow:
                 return
 
-        super(EventExit, self).at_traverse(traversing_object, target_location)
+        super().at_traverse(traversing_object, target_location)
 
         # After traversing
         if is_character:
@@ -714,7 +714,7 @@ class EventObject(DefaultObject):
             permissions for that.
 
         """
-        super(EventObject, self).at_get(getter)
+        super().at_get(getter)
         self.callbacks.call("get", getter, self)
 
     def at_drop(self, dropper):
@@ -730,7 +730,7 @@ class EventObject(DefaultObject):
             permissions from that.
 
         """
-        super(EventObject, self).at_drop(dropper)
+        super().at_drop(dropper)
         self.callbacks.call("drop", dropper, self)
 
 
