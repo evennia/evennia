@@ -48,7 +48,7 @@ SERVER_RESTART = os.path.join(settings.GAME_DIR, "server", 'server.restart')
 SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
 
 # modules containing plugin services
-SERVER_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)]
+SERVER_SERVICES_PLUGIN_MODULES = make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)
 
 
 # ------------------------------------------------------------
@@ -598,11 +598,9 @@ if ENABLED:
     INFO_DICT["irc_rss"] = ", ".join(ENABLED) + " enabled."
 
 for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
-    # external plugin protocols
-    try:
-        plugin_module.start_plugin_services(EVENNIA)
-    except AttributeError as err:
-        raise AttributeError(f"Error loading plugin module {plugin_module}: {err}")
+    # external plugin protocols - load here
+    plugin_module = mod_import(plugin_module)
+    plugin_module.start_plugin_services(EVENNIA)
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)
