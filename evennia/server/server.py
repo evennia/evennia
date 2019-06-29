@@ -600,7 +600,10 @@ if ENABLED:
 for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
     # external plugin protocols - load here
     plugin_module = mod_import(plugin_module)
-    plugin_module.start_plugin_services(EVENNIA)
+    if plugin_module:
+        plugin_module.start_plugin_services(EVENNIA)
+    else:
+        print(f"Could not load plugin module {plugin_module}")
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)
