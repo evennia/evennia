@@ -89,7 +89,7 @@ class EvenniaGameIndexClient(object):
         try:
             values = {
                 # Game listing stuff
-                'game_name': settings.SERVERNAME,
+                'game_name': egi_config.get('game_name', settings.SERVERNAME),
                 'game_status': egi_config['game_status'],
                 'game_website': egi_config.get('game_website', ''),
                 'short_description': egi_config['short_description'],
