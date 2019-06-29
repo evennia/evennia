@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block titleblock %}
+{{ view.page_title }}
+{% endblock %}
+
+{% block content %}
+
+{% load addclass %}
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title">{{ view.page_title }}</h1>
+        <hr />
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'help' %}">Compendium</a></li>
+        </ol>
+        <hr />
+        <div class="row">
+          {% regroup object_list by help_category as category_list %}
+          
+          {% if category_list %}
+          <!-- left column -->
+          <div class="col-lg-9 col-sm-12">
+            
+            <!-- intro -->
+            <div class="card border-light">
+              <div class="card-body">
+                <p>This section of the site is a guide to understanding the mechanics behind {{ game_name }}.</p>
+                <p>It is organized first by category, then by topic. The box to the right will let you skip to particular categories.</p>
+              </div>
+            </div>
+            <hr />
+            <!-- end intro -->
+            
+            <!-- index list -->
+            <div class="mx-3">
+              {% for help_category in category_list %}
+              <h5><a id="{{ help_category.grouper }}"></a>{{ help_category.grouper|title }}</h5>
+              <ul>
+                  {% for object in help_category.list %}
+                  <li><a href="{{ object.web_get_detail_url }}">{{ object|title }}</a></li>
+                  {% endfor %}
+              </ul>
+              {% endfor %}
+              <!-- end index list -->
+            </div>
+            
+          </div>
+          <!-- end left column -->
+          
+          <!-- right column (index) -->
+          <div class="col-lg-3 col-sm-12">
+            {% if user.is_staff %}
+            <!-- admin button -->
+            <a class="btn btn-info btn-block mb-3" href="/admin/help/helpentry/">Admin</a>
+            <!-- end admin button -->
+            <hr />
+            {% endif %}
+            
+            <div class="card mb-3">
+              <div class="card-header">Category Index</div>
+              
+              <ul class="list-group list-group-flush">
+                {% for category in category_list %}
+                <a href="#{{ category.grouper }}" class="list-group-item">{{ category.grouper|title }}</a>
+                {% endfor %}
+              </ul>
+              
+            </div>
+          </div>
+          <!-- end right column -->
+          {% else %}
+          {% if user.is_staff %}
+          <div class="col-lg-12 col-sm-12">
+            <div class="alert alert-warning" role="alert">
+              <h4 class="alert-heading">Hey, staff member {{ user.get_username }}!</h4>
+              <hr />
+              <p><strong>Your Help section is currently blank!</strong></p>
+              <p>You're missing out on an opportunity to attract visitors (and potentially new players) to {{ game_name }}!</p>
+              <p>Use Evennia's <a href="https://github.com/evennia/evennia/wiki/Help-System#database-help-entries" class="alert-link" target="_blank">Help System</a> to tell the world about the universe you've created, its lore and legends, its people and creatures, and their customs and conflicts!</p>
+              <p>You don't even need coding skills-- writing Help Entries is no more complicated than writing an email or blog post. Once you publish your first entry, these ugly boxes go away and this page will turn into an index of everything you've written about {{ game_name }}.</p>
+              <p>The documentation you write is eventually picked up by search engines, so the more you write about how {{ game_name }} works, the larger your web presence will be-- and the more traffic you'll attract. 
+              <p>Everything you write can be viewed either on this site or within the game itself, using the in-game help commands.</p>
+              <hr>
+              <p class="mb-0"><a href="/admin/help/helpentry/add/" class="alert-link">Click here</a> to start writing about {{ game_name }}!</p>
+            </div>
+          </div>
+          {% endif %}
+          
+          <div class="col-lg-12 col-sm-12">
+            <div class="alert alert-secondary" role="alert">
+              <h4 class="alert-heading">Under Construction!</h4>
+              <p>Thanks for your interest, but we're still working on developing and documenting the {{ game_name }} universe!</p>
+              <p>Check back later for more information as we publish it.</p>
+              <hr>
+              <p class="mb-0"><a href="{% url 'index' %}" class="alert-link">Click here</a> to go back to the main page.</p>
+            </div>
+          </div>
+          {% endif %}
+          
+        </div>
+        <hr />
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

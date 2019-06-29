@@ -6,8 +6,6 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
-from __future__ import division, print_function
-from builtins import object, range
 from future.utils import viewkeys, raise_
 
 import os
@@ -18,11 +16,15 @@ import math
 import re
 import textwrap
 import random
+import inspect
+from twisted.internet.task import deferLater
+from twisted.internet.defer import returnValue  # noqa - used as import target
 from os.path import join as osjoin
 from importlib import import_module
+from importlib.util import find_spec
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
-from twisted.internet import threads, reactor, task
+from twisted.internet import threads, reactor
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -34,10 +36,11 @@ _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
 
 
+# ModuleNotFoundError only in py3.6, handle both
 try:
-    import cPickle as pickle
+    from builtins import ModuleNotFoundError
 except ImportError:
-    import pickle
+    ModuleNotFoundError = ImportError
 
 ENCODINGS = settings.ENCODINGS
 _GA = object.__getattribute__
@@ -45,15 +48,15 @@ _SA = object.__setattr__
 _DA = object.__delattr__
 
 
-def is_iter(iterable):
+def is_iter(obj):
     """
     Checks if an object behaves iterably.
 
     Args:
-        iterable (any): Entity to check for iterability.
+        obj (any): Entity to check for iterability.
 
     Returns:
-        is_iterable (bool): If `iterable` is iterable or not.
+        is_iterable (bool): If `obj` is iterable or not.
 
     Notes:
         Strings are *not* accepted as iterable (although they are
@@ -61,7 +64,13 @@ def is_iter(iterable):
         what we want to do with a string.
 
     """
-    return hasattr(iterable, '__iter__')
+    if isinstance(obj, (str, bytes )):
+        return False
+
+    try:
+        return iter(obj) and True
+    except TypeError:
+        return False
 
 
 def make_iter(obj):
@@ -76,7 +85,7 @@ def make_iter(obj):
             passed-through or made iterable.
 
     """
-    return not hasattr(obj, '__iter__') and [obj] or obj
+    return not is_iter(obj) and [obj] or obj
 
 
 def wrap(text, width=None, indent=0):
@@ -95,7 +104,6 @@ def wrap(text, width=None, indent=0):
     width = width if width else settings.CLIENT_DEFAULT_WIDTH
     if not text:
         return ""
-    text = to_unicode(text)
     indent = " " * indent
     return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 
@@ -149,14 +157,13 @@ def crop(text, width=None, suffix="[...]"):
 
     """
     width = width if width else settings.CLIENT_DEFAULT_WIDTH
-    utext = to_unicode(text)
-    ltext = len(utext)
+    ltext = len(text)
     if ltext <= width:
         return text
     else:
         lsuffix = len(suffix)
-        utext = utext[:width] if lsuffix >= width else "%s%s" % (utext[:width - lsuffix], suffix)
-        return to_str(utext)
+        text = text[:width] if lsuffix >= width else "%s%s" % (text[:width - lsuffix], suffix)
+        return to_str(text)
 
 
 def dedent(text, baseline_index=None):
@@ -250,7 +257,7 @@ def justify(text, width=None, align="f", indent=0):
     words = []
     for ip, paragraph in enumerate(paragraphs):
         if ip > 0:
-            words.append(("\n\n", 0))
+            words.append(("\n", 0))
         words.extend((word, len(word)) for word in paragraph.split())
     ngaps, wlen, line = 0, 0, []
 
@@ -565,22 +572,20 @@ def datetime_format(dtobj):
 
     """
 
-    year, month, day = dtobj.year, dtobj.month, dtobj.day
-    hour, minute, second = dtobj.hour, dtobj.minute, dtobj.second
     now = timezone.now()
 
-    if year < now.year:
-        # another year
-        timestring = str(dtobj.date())
+    if dtobj.year < now.year:
+        # another year (Apr 5, 2019)
+        timestring = dtobj.strftime("%b %-d, %Y")
     elif dtobj.date() < now.date():
-        # another date, same year
-        timestring = "%02i-%02i" % (day, month)
-    elif hour < now.hour - 1:
-        # same day, more than 1 hour ago
-        timestring = "%02i:%02i" % (hour, minute)
+        # another date, same year  (Apr 5)
+        timestring = dtobj.strftime("%b %-d")
+    elif dtobj.hour < now.hour - 1:
+        # same day, more than 1 hour ago (10:45)
+        timestring = dtobj.strftime("%H:%M")
     else:
-        # same day, less than 1 hour ago
-        timestring = "%02i:%02i:%02i" % (hour, minute, second)
+        # same day, less than 1 hour ago (10:45:33)
+        timestring = dtobj.strftime("%H:%M:%S")
     return timestring
 
 
@@ -599,16 +604,29 @@ def host_os_is(osname):
     return os.name == osname
 
 
-def get_evennia_version():
+def get_evennia_version(mode="long"):
     """
     Helper method for getting the current evennia version.
+
+    Args:
+        mode (str, optional): One of:
+            - long: 0.9.0 rev342453534
+            - short: 0.9.0
+            - pretty: Evennia 0.9.0
 
     Returns:
         version (str): The version string.
 
     """
     import evennia
-    return evennia.__version__
+    vers = evennia.__version__
+    if mode == "short":
+        return vers.split()[0].strip()
+    elif mode == "pretty":
+        vers = vers.split()[0].strip()
+        return f"Evennia {vers}"
+    else:  # mode "long":
+        return vers
 
 
 def pypath_to_realpath(python_path, file_ending='.py', pypath_prefixes=None):
@@ -674,12 +692,12 @@ def dbref(inp, reqhash=True):
 
     """
     if reqhash:
-        num = (int(inp.lstrip('#')) if (isinstance(inp, basestring) and
+        num = (int(inp.lstrip('#')) if (isinstance(inp, str) and
                                         inp.startswith("#") and
                                         inp.lstrip('#').isdigit())
                else None)
-        return num if num > 0 else None
-    elif isinstance(inp, basestring):
+        return num if isinstance(num, int) and num > 0 else None
+    elif isinstance(inp, str):
         inp = inp.lstrip('#')
         return int(inp) if inp.isdigit() and int(inp) > 0 else None
     else:
@@ -733,16 +751,21 @@ _UNICODE_MAP = {"EM DASH": "-", "FIGURE DASH": "-", "EN DASH": "-", "HORIZONTAL 
                 "HORIZONTAL ELLIPSIS": "...", "RIGHT SINGLE QUOTATION MARK": "'"}
 
 
-def latinify(unicode_string, default='?', pure_ascii=False):
+def latinify(string, default='?', pure_ascii=False):
     """
     Convert a unicode string to "safe" ascii/latin-1 characters.
-    This is used as a last resort when normal decoding does not work.
+    This is used as a last resort when normal encoding does not work.
 
     Arguments:
-        unicode_string (unicode): A string to convert to an ascii
-            or latin-1 string.
+        string (str): A string to convert to 'safe characters' convertable
+            to an latin-1 bytestring later.
         default (str, optional): Characters resisting mapping will be replaced
-            with this character or string.
+            with this character or string. The intent is to apply an encode operation
+            on the string soon after.
+
+    Returns:
+        string (str): A 'latinified' string where each unicode character has been
+            replaced with a 'safe' equivalent available in the ascii/latin-1 charset.
     Notes:
         This is inspired by the gist by Ricardo Murri:
             https://gist.github.com/riccardomurri/3c3ccec30f037be174d3
@@ -752,7 +775,7 @@ def latinify(unicode_string, default='?', pure_ascii=False):
     from unicodedata import name
 
     converted = []
-    for unich in iter(unicode_string):
+    for unich in iter(string):
         try:
             ch = unich.decode('ascii')
         except UnicodeDecodeError:
@@ -779,101 +802,86 @@ def latinify(unicode_string, default='?', pure_ascii=False):
     return ''.join(converted)
 
 
-def to_unicode(obj, encoding='utf-8', force_string=False):
+def to_bytes(text, session=None):
     """
-    This decodes a suitable object to the unicode format.
+    Try to encode the given text to bytes, using encodings from settings or from Session. Will
+    always return a bytes, even if given something that is not str or bytes.
 
     Args:
-        obj (any): Object to decode to unicode.
-        encoding (str, optional): The encoding type to use for the
-            dedoding.
-        force_string (bool, optional): Always convert to string, no
-            matter what type `obj` is initially.
+        text (any): The text to encode to bytes. If bytes, return unchanged. If not a str, convert
+            to str before converting.
+        session (Session, optional): A Session to get encoding info from. Will try this before
+            falling back to settings.ENCODINGS.
 
     Returns:
-        result (unicode or any): Will return a unicode object if input
-            was a string. If input was not a string, the original will be
-            returned unchanged unless `force_string` is also set.
+        encoded_text (bytes): the encoded text following the session's protocol flag followed by the
+            encodings specified in settings.ENCODINGS.  If all attempt fail, log the error and send
+            the text with "?" in place of problematic characters.  If the specified encoding cannot
+            be found, the protocol flag is reset to utf-8.  In any case, returns bytes.
 
-    Notes:
-        One needs to encode the obj back to utf-8 before writing to disk
-        or printing. That non-string objects are let through without
-        conversion is important for e.g. Attributes.
+    Note:
+        If `text` is already bytes, return it as is.
 
     """
-
-    if force_string and not isinstance(obj, basestring):
-        # some sort of other object. Try to
-        # convert it to a string representation.
-        if hasattr(obj, '__str__'):
-            obj = obj.__str__()
-        elif hasattr(obj, '__unicode__'):
-            obj = obj.__unicode__()
-        else:
-            # last resort
-            obj = str(obj)
-
-    if isinstance(obj, basestring) and not isinstance(obj, unicode):
+    if isinstance(text, bytes):
+        return text
+    if not isinstance(text, str):
+        # convert to a str representation before encoding
         try:
-            obj = unicode(obj, encoding)
-            return obj
-        except UnicodeDecodeError:
-            for alt_encoding in ENCODINGS:
-                try:
-                    obj = unicode(obj, alt_encoding)
-                    return obj
-                except UnicodeDecodeError:
-                    # if we still have an error, give up
-                    pass
-        raise Exception("Error: '%s' contains invalid character(s) not in %s." % (obj, encoding))
-    return obj
+            text = str(text)
+        except Exception:
+            text = repr(text)
+
+    default_encoding = session.protocol_flags.get("ENCODING", 'utf-8') if session else 'utf-8'
+    try:
+        return text.encode(default_encoding)
+    except (LookupError, UnicodeEncodeError):
+        for encoding in settings.ENCODINGS:
+            try:
+                return text.encode(encoding)
+            except (LookupError, UnicodeEncodeError):
+                pass
+        # no valid encoding found. Replace unconvertable parts with ?
+        return text.encode(default_encoding, errors="replace")
 
 
-def to_str(obj, encoding='utf-8', force_string=False):
+def to_str(text, session=None):
     """
-    This encodes a unicode string back to byte-representation,
-    for printing, writing to disk etc.
+    Try to decode a bytestream to a python str, using encoding schemas from settings
+    or from Session. Will always return a str(), also if not given a str/bytes.
 
     Args:
-        obj (any): Object to encode to bytecode.
-        encoding (str, optional): The encoding type to use for the
-            encoding.
-        force_string (bool, optional): Always convert to string, no
-            matter what type `obj` is initially.
+        text (any): The text to encode to bytes. If a str, return it. If also not bytes, convert
+            to str using str() or repr() as a fallback.
+        session (Session, optional): A Session to get encoding info from. Will try this before
+            falling back to settings.ENCODINGS.
 
-    Notes:
-        Non-string objects are let through without modification - this
-        is required e.g. for Attributes. Use `force_string` to force
-        conversion of objects to strings.
+    Returns:
+        decoded_text (str): The decoded text.
 
+    Note:
+        If `text` is already str, return it as is.
     """
-    if force_string and not isinstance(obj, basestring):
-        # some sort of other object. Try to
-        # convert it to a string representation.
+    if isinstance(text, str):
+        return text
+    if not isinstance(text, bytes):
+        # not a byte, convert directly to str
         try:
-            obj = str(obj)
+            return str(text)
         except Exception:
-            obj = unicode(obj)
+            return repr(text)
 
-    if isinstance(obj, basestring) and isinstance(obj, unicode):
-        try:
-            obj = obj.encode(encoding)
-            return obj
-        except UnicodeEncodeError:
-            for alt_encoding in ENCODINGS:
-                try:
-                    obj = obj.encode(alt_encoding)
-                    return obj
-                except UnicodeEncodeError:
-                    # if we still have an error, give up
-                    pass
-
-        # if we get to this point we have not found any way to convert this string. Try to parse it manually,
-        try:
-            return latinify(obj, '?')
-        except Exception as err:
-            raise Exception("%s, Error: Unicode could not encode unicode string '%s'(%s) to a bytestring. " % (err, obj, encoding))
-    return obj
+    default_encoding = session.protocol_flags.get("ENCODING", 'utf-8') if session else 'utf-8'
+    try:
+        return text.decode(default_encoding)
+    except (LookupError, UnicodeDecodeError):
+        for encoding in settings.ENCODINGS:
+            try:
+                return text.decode(encoding)
+            except (LookupError, UnicodeDecodeError):
+                pass
+        # no valid encoding found. Replace unconvertable parts with ?
+        return text.decode(default_encoding, errors="replace")
 
 
 def validate_email_address(emailaddress):
@@ -951,7 +959,7 @@ def inherits_from(obj, parent):
     else:
         obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()]
 
-    if isinstance(parent, basestring):
+    if isinstance(parent, str):
         # a given string path, for direct matching
         parent_path = parent
     elif callable(parent):
@@ -1235,7 +1243,7 @@ def mod_import(module):
             # check just where the ImportError happened (it could have been
             # an erroneous import inside the module as well). This is the
             # trivial way to do it ...
-            if str(ex) != "Import by filename is not supported.":
+            if not str(ex).startswith("No module named "):
                 raise
 
             # error in this module. Try absolute path import instead
@@ -1377,7 +1385,7 @@ def string_from_module(module, variable=None, default=None):
         if variable:
             return val
         else:
-            result = [v for v in make_iter(val) if isinstance(v, basestring)]
+            result = [v for v in make_iter(val) if isinstance(v, str)]
             return result if result else default
     return default
 
@@ -1434,7 +1442,7 @@ def class_from_module(path, defaultpaths=None):
 
     Args:
         path (str): Full Python dot-path to module.
-        defaultpaths (iterable, optional): If a direc import from `path` fails,
+        defaultpaths (iterable, optional): If a direct import from `path` fails,
             try subsequent imports by prepending those paths to `path`.
 
     Returns:
@@ -1455,17 +1463,18 @@ def class_from_module(path, defaultpaths=None):
             testpath, clsname = testpath.rsplit(".", 1)
         else:
             raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
+
         try:
-            mod = import_module(testpath, package="evennia")
-        except ImportError:
-            if len(trace()) > 2:
-                # this means the error happened within the called module and
-                # we must not hide it.
-                exc = sys.exc_info()
-                raise_(exc[1], None, exc[2])
-            else:
-                # otherwise, try the next suggested path
+            if not find_spec(testpath, package='evennia'):
                 continue
+        except ModuleNotFoundError:
+            continue
+
+        try:
+            mod = import_module(testpath, package='evennia')
+        except ModuleNotFoundError:
+            break
+
         try:
             cls = getattr(mod, clsname)
             break
@@ -1762,7 +1771,7 @@ class lazy_property(object):
 
 
 _STRIP_ANSI = None
-_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([unichr(c) for c in range(0, 32)])))  # + range(127,160)])))
+_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([chr(c) for c in range(0, 32)])))  # + range(127,160)])))
 
 
 def strip_control_sequences(string):
@@ -1821,7 +1830,7 @@ def m_len(target):
     """
     # Would create circular import if in module root.
     from evennia.utils.ansi import ANSI_PARSER
-    if inherits_from(target, basestring) and "|lt" in target:
+    if inherits_from(target, str) and "|lt" in target:
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
 
@@ -1857,7 +1866,9 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
     Returns:
         processed_result (Object or None): This is always a single result
             or `None`. If `None`, any error reporting/handling should
-            already have happened.
+            already have happened. The returned object is of the type we are
+            checking multimatches for (e.g. Objects or Commands)
+
     """
 
     error = ""
@@ -1910,13 +1921,13 @@ class LimitedSizeOrderedDict(OrderedDict):
                 in FIFO order. If `False`, remove in FILO order.
 
         """
-        super(LimitedSizeOrderedDict, self).__init__()
+        super().__init__()
         self.size_limit = kwargs.get("size_limit", None)
         self.filo = not kwargs.get("fifo", True)  # FIFO inverse of FILO
         self._check_size()
 
     def __eq__(self, other):
-        ret = super(LimitedSizeOrderedDict, self).__eq__(other)
+        ret = super().__eq__(other)
         if ret:
             return (ret and
                     hasattr(other, 'size_limit') and self.size_limit == other.size_limit and
@@ -1933,11 +1944,11 @@ class LimitedSizeOrderedDict(OrderedDict):
                 self.popitem(last=filo)
 
     def __setitem__(self, key, value):
-        super(LimitedSizeOrderedDict, self).__setitem__(key, value)
+        super().__setitem__(key, value)
         self._check_size()
 
     def update(self, *args, **kwargs):
-        super(LimitedSizeOrderedDict, self).update(*args, **kwargs)
+        super().update(*args, **kwargs)
         self._check_size()
 
 
@@ -1985,3 +1996,67 @@ def get_all_typeclasses(parent=None):
         typeclasses = {name: typeclass for name, typeclass in typeclasses.items()
                        if inherits_from(typeclass, parent)}
     return typeclasses
+
+
+def interactive(func):
+    """
+    Decorator to make a method pausable with yield(seconds)
+    and able to ask for user-input with response=yield(question).
+    For the question-asking to work, 'caller' must the name
+    of an argument or kwarg to the decorated function.
+
+    Note that this turns the method into a generator.
+
+    Example usage:
+
+    @interactive
+    def myfunc(caller):
+        caller.msg("This is a test")
+        # wait five seconds
+        yield(5)
+        # ask user (caller) a question
+        response = yield("Do you want to continue waiting?")
+        if response == "yes":
+            yield(5)
+        else:
+            # ...
+
+    """
+    from evennia.utils.evmenu import get_input
+    def _process_input(caller, prompt, result, generator):
+        deferLater(reactor, 0, _iterate, generator, caller, response=result)
+        return False
+
+    def _iterate(generator, caller=None, response=None):
+        try:
+            if response is None:
+                value = next(generator)
+            else:
+                value = generator.send(response)
+        except StopIteration:
+            pass
+        else:
+            if isinstance(value, (int, float)):
+                delay(value, _iterate, generator, caller=caller)
+            elif isinstance(value, str):
+                if not caller:
+                    raise ValueError("To retrieve input from a @pausable method, that method "
+                                     "must be called with a 'caller' argument)")
+                get_input(caller, value, _process_input, generator=generator)
+            else:
+                raise ValueError("yield(val) in a @pausable method must have an int/float as arg.")
+
+    def decorator(*args, **kwargs):
+        argnames = inspect.getfullargspec(func).args
+        caller = None
+        if 'caller' in argnames:
+            # we assume this is an object
+            caller = args[argnames.index('caller')]
+
+        ret = func(*args, **kwargs)
+        if isinstance(ret, types.GeneratorType):
+            _iterate(ret, caller)
+        else:
+            return ret
+
+    return decorator

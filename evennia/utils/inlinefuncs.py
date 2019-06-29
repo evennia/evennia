@@ -246,14 +246,14 @@ class ParseStack(list):
     """
 
     def __init__(self, *args, **kwargs):
-        super(ParseStack, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # always start stack with the empty string
         list.append(self, "")
         # indicates if the top of the stack is a string or not
         self._string_last = True
 
     def __eq__(self, other):
-        return (super(ParseStack).__eq__(other) and
+        return (super().__eq__(other) and
                 hasattr(other, "_string_last") and self._string_last == other._string_last)
 
     def __ne__(self, other):
@@ -263,7 +263,7 @@ class ParseStack(list):
         """
         The stack will merge strings, add other things as normal
         """
-        if isinstance(item, basestring):
+        if isinstance(item, str):
             if self._string_last:
                 self[-1] += item
             else:
@@ -421,7 +421,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
                 # execute the inlinefunc at this point or strip it.
                 kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
-        return utils.to_str(retval, force_string=True)
+        return utils.to_str(retval)
     retval = "".join(_run_stack(item) for item in stack)
     if stacktrace:
         out = "STACK: \n{} => {}\n".format(stack, retval)
@@ -463,7 +463,6 @@ Custom arg markers
    $N      argument position (1-99)
 
 """
-
 _RE_NICK_ARG = re.compile(r"\\(\$)([1-9][0-9]?)")
 _RE_NICK_TEMPLATE_ARG = re.compile(r"(\$)([1-9][0-9]?)")
 _RE_NICK_SPACE = re.compile(r"\\ ")

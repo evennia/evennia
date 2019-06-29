@@ -114,7 +114,7 @@ _VOWELS = "eaoiuy"
 # vowel phoneme defined above)
 _GRAMMAR = "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv"
 
-_RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
+_RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.DOTALL + re.UNICODE
 _RE_GRAMMAR = re.compile(r"vv|cc|v|c", _RE_FLAGS)
 _RE_WORD = re.compile(r'\w+', _RE_FLAGS)
 _RE_EXTRA_CHARS = re.compile(r'\s+(?=\W)|[,.?;](?=[,.?;]|\s+[,.?;])', _RE_FLAGS)
@@ -255,7 +255,7 @@ class LanguageHandler(DefaultScript):
         translation = {}
 
         if auto_translations:
-            if isinstance(auto_translations, basestring):
+            if isinstance(auto_translations, str):
                 # path to a file rather than a list
                 with open(auto_translations, 'r') as f:
                     auto_translations = f.readlines()
@@ -333,7 +333,7 @@ class LanguageHandler(DefaultScript):
                         new_word = ''
                     else:
                         # use random word length
-                        wlen = choice(grammar.keys())
+                        wlen = choice(list(grammar.keys()))
 
                 if wlen:
                     structure = choice(grammar[wlen])
@@ -516,4 +516,7 @@ def obfuscate_whisper(whisper, level=0.0):
     """
     level = min(max(0.0, level), 1.0)
     olevel = int(13.0 * level)
-    return _RE_WHISPER_OBSCURE[olevel].sub('...' if olevel == 13.0 else '-', whisper)
+    if olevel == 13:
+        return "..."
+    else:
+        return _RE_WHISPER_OBSCURE[olevel].sub('-', whisper)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='attribute',
             name='db_model',
-            field=models.CharField(max_length=32, blank=True, help_text=b"Which model of object this attribute is attached to (A natural key like 'objects.objectdb'). You should not change this value unless you know what you are doing.", null=True, verbose_name=b'model', db_index=True),
+            field=models.CharField(max_length=32, blank=True, help_text="Which model of object this attribute is attached to (A natural key like 'objects.objectdb'). You should not change this value unless you know what you are doing.", null=True, verbose_name='model', db_index=True),
         ),
     ]

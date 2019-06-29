@@ -10,27 +10,23 @@ to the Portal, through which the Server is also controlled. This pprogram
 Run the script with the -h flag to see usage information.
 
 """
-from __future__ import print_function
-from builtins import input, range
 
 import os
 import sys
+import re
 import signal
 import shutil
 import importlib
+import pickle
 from distutils.version import LooseVersion
 from argparse import ArgumentParser
 import argparse
 from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
 from twisted.protocols import amp
 from twisted.internet import reactor, endpoints
 import django
+from django.core.management import execute_from_command_line
 
 # Signal processing
 SIG = signal.SIGINT
@@ -93,10 +89,10 @@ PSTATUS = chr(18)      # ping server or portal status
 SRESET = chr(19)       # shutdown server in reset mode
 
 # requirements
-PYTHON_MIN = '2.7'
+PYTHON_MIN = '3.7'
 TWISTED_MIN = '18.0.0'
-DJANGO_MIN = '1.11'
-DJANGO_REC = '1.11'
+DJANGO_MIN = '2.1'
+DJANGO_REC = '2.1'
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -126,12 +122,14 @@ CREATED_NEW_GAMEDIR = \
 
        evennia start
 
-    Make sure to create a superuser when asked for it (the email can
-    be blank if you want). You should now be able to (by default)
-    connect to your server on 'localhost', port 4000 using a
-    telnet/mud client or http://localhost:4001 using your web browser.
-    If things don't work, check so those ports are open.
+    Make sure to create a superuser when asked for it (the email is optional)
+    You should now be able to connect to your server on 'localhost', port 4000
+    using a telnet/mud client or http://localhost:4001 using your web browser.
+    If things don't work, check the log with `evennia --log`. Also make sure
+    ports are open.
 
+    (Finally, why not run `evennia connections` and make the world aware of
+    your new Evennia project!)
     """
 
 ERROR_INPUT = \
@@ -380,7 +378,7 @@ ERROR_LOGDIR_MISSING = \
 ERROR_PYTHON_VERSION = \
     """
     ERROR: Python {pversion} used. Evennia requires version
-    {python_min} or higher (but not 3.x).
+    {python_min} or higher.
     """
 
 ERROR_TWISTED_VERSION = \
@@ -399,6 +397,7 @@ ERROR_DJANGO_MIN = \
     ERROR: Django {dversion} found. Evennia requires version {django_min}
     or higher.
 
+    TE_TEST
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
     in a virtualenv you can install django with for example `pip install --upgrade django`
@@ -434,16 +433,15 @@ NOTE_KEYBOARDINTERRUPT = \
 NOTE_TEST_DEFAULT = \
     """
     TESTING: Using Evennia's default settings file (evennia.settings_default).
-    (use 'evennia --settings settings.py test .' to run tests on the game dir)
+    (use 'evennia test --settings settings.py .' to run only your custom game tests)
     """
 
 NOTE_TEST_CUSTOM = \
     """
     TESTING: Using specified settings file '{settings_dotpath}'.
 
-    (Obs: Evennia's full test suite may not pass if the settings are very
-    different from the default. Use 'test .' as arguments to run only tests
-    on the game dir.)
+    OBS: Evennia's full test suite may not pass if the settings are very
+    different from the default (use 'evennia test evennia' to run core tests)
     """
 
 PROCESS_ERROR = \
@@ -477,19 +475,20 @@ SERVER_INFO = \
 
 ARG_OPTIONS = \
     """Actions on installed server. One of:
- start   - launch server+portal if not running
- reload  - restart server in 'reload' mode
- stop    - shutdown server+portal
- reboot  - shutdown server+portal, then start again
- reset   - restart server in 'shutdown' mode
- istart  - start server in foreground (until reload)
- ipstart - start portal in foreground
- sstop   - stop only server
- kill    - send kill signal to portal+server (force)
- skill   - send kill signal only to server
- status  - show server and portal run state
- info    - show server and portal port info
- menu    - show a menu of options
+ start       - launch server+portal if not running
+ reload      - restart server in 'reload' mode
+ stop        - shutdown server+portal
+ reboot      - shutdown server+portal, then start again
+ reset       - restart server in 'shutdown' mode
+ istart      - start server in foreground (until reload)
+ ipstart     - start portal in foreground
+ sstop       - stop only server
+ kill        - send kill signal to portal+server (force)
+ skill       - send kill signal only to server
+ status      - show server and portal run state
+ info        - show server and portal port info
+ menu        - show a menu of options
+ connections - show connection wizard
 Others, like migrate, test and shell is passed on to Django."""
 
 # ------------------------------------------------------------
@@ -523,9 +522,9 @@ def _print_info(portal_info_dict, server_info_dict):
 
     def _prepare_dict(dct):
         out = {}
-        for key, value in dct.iteritems():
+        for key, value in dct.items():
             if isinstance(value, list):
-                value = "\n{}".format(ind).join(value)
+                value = "\n{}".format(ind).join(str(val) for val in value)
             out[key] = value
         return out
 
@@ -598,9 +597,9 @@ class MsgStatus(amp.Command):
 
     """
     key = "MsgStatus"
-    arguments = [('status', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
-    response = [('status', amp.String())]
+    arguments = [(b'status', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
+    response = [(b'status', amp.String())]
 
 
 class MsgLauncher2Portal(amp.Command):
@@ -609,9 +608,9 @@ class MsgLauncher2Portal(amp.Command):
 
     """
     key = "MsgLauncher2Portal"
-    arguments = [('operation', amp.String()),
-                 ('arguments', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'operation', amp.String()),
+                 (b'arguments', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -644,7 +643,7 @@ class AMPLauncherProtocol(amp.AMP):
         else:
             status = pickle.loads(status)
             callback(status)
-        return {"status": ""}
+        return {"status": pickle.dumps(b"")}
 
 
 def send_instruction(operation, arguments, callback=None, errback=None):
@@ -682,23 +681,24 @@ def send_instruction(operation, arguments, callback=None, errback=None):
 
     def _send():
         if operation == PSTATUS:
-            return AMP_CONNECTION.callRemote(MsgStatus, status="").addCallbacks(_callback, _errback)
+            return AMP_CONNECTION.callRemote(MsgStatus, status=b"").addCallbacks(_callback, _errback)
         else:
             return AMP_CONNECTION.callRemote(
                 MsgLauncher2Portal,
-                operation=operation,
+                operation=bytes(operation, 'utf-8'),
                 arguments=pickle.dumps(arguments, pickle.HIGHEST_PROTOCOL)).addCallbacks(
                     _callback, _errback)
 
     if AMP_CONNECTION:
         # already connected - send right away
-        _send()
+        return _send()
     else:
         # we must connect first, send once connected
         point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
         deferred = endpoints.connectProtocol(point, AMPLauncherProtocol())
         deferred.addCallbacks(_on_connect, _on_connect_fail)
         REACTOR_RUN = True
+        return deferred
 
 
 def query_status(callback=None):
@@ -808,6 +808,12 @@ def wait_for_status(portal_running=True, server_running=True, callback=None, err
 #
 # ------------------------------------------------------------
 
+
+def collectstatic():
+    "Run the collectstatic django command"
+    django.core.management.call_command("collectstatic", interactive=False, verbosity=0)
+
+
 def start_evennia(pprofiler=False, sprofiler=False):
     """
     This will start Evennia anew by launching the Evennia Portal (which in turn
@@ -858,6 +864,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
             _reactor_stop()
         wait_for_status(True, None, _portal_started)
 
+    collectstatic()
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
@@ -898,6 +905,7 @@ def reload_evennia(sprofiler=False, reset=False):
         print("Evennia not running. Starting up ...")
         start_evennia()
 
+    collectstatic()
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
 
 
@@ -969,7 +977,18 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
         print("Evennia not running. Starting up ...")
         start_evennia()
 
+    collectstatic()
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
+
+
+def start_only_server():
+    """
+    Tell portal to start server (debug)
+    """
+    portal_cmd, server_cmd = _get_twistd_cmdline(False, False)
+    print("launcher: Sending to portal: SSTART + {}".format(server_cmd))
+    collectstatic()
+    send_instruction(SSTART, server_cmd)
 
 
 def start_server_interactive():
@@ -987,6 +1006,8 @@ def start_server_interactive():
             print("... Stopped Server with Ctrl-C.")
         else:
             print("... Server stopped (leaving interactive mode).")
+
+    collectstatic()
     stop_server_only(when_stopped=_iserver, interactive=True)
 
 
@@ -1112,7 +1133,10 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
 
     def _file_changed(filename, prev_size):
         "Get size of file in bytes, get diff compared with previous size"
-        new_size = os.path.getsize(filename)
+        try:
+            new_size = os.path.getsize(filename)
+        except FileNotFoundError:
+            return False, 0
         return new_size != prev_size, new_size
 
     def _get_new_lines(filehandle, old_linecount):
@@ -1215,7 +1239,7 @@ def evennia_version():
     try:
         rev = check_output(
             "git rev-parse --short HEAD",
-            shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip()
+            shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT).strip().decode()
         version = "%s (rev %s)" % (version, rev)
     except (IOError, CalledProcessError, OSError):
         # move on if git is not answering
@@ -1274,18 +1298,6 @@ def check_main_evennia_dependencies():
     if error:
         sys.exit()
 
-    # fix a common zope issue with a missing __init__ file
-    zope_interface = importlib.import_module("zope.interface")
-    expected_init_path = os.path.join(
-        os.path.dirname(os.path.dirname(zope_interface.__file__)), "__init__.py")
-    if not os.path.exists(expected_init_path):
-        # add an empty missing __init__.py file to fix the problem
-        with open(expected_init_path, 'w') as zope_init_file:
-            zope_init_file.write("")
-        print("Note: zope_interface.__init__.py not found. This is a known issue with that package."
-              "\nEvennia auto-created it at {}.".format(
-                    expected_init_path))
-
     # return True/False if error was reported or not
     return not error
 
@@ -1320,7 +1332,7 @@ def create_secret_key():
     """
     import random
     import string
-    secret_key = list((string.letters +
+    secret_key = list((string.ascii_letters +
                        string.digits + string.punctuation).replace("\\", "")
                       .replace("'", '"').replace("{", "_").replace("}", "-"))
     random.shuffle(secret_key)
@@ -1353,7 +1365,7 @@ def create_settings_file(init=True, secret_settings=False):
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = input("%s already exists. Do you want to reset it? y/[N]> " % settings_path)
+            inp = eval(input("%s already exists. Do you want to reset it? y/[N]> " % settings_path))
             if not inp.lower() == 'y':
                 print("Aborted.")
                 return
@@ -1408,7 +1420,7 @@ def create_superuser():
     """
     print(
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
-        "account of the server.\n")
+        "account of the server. Email is optional and can be empty.\n")
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
@@ -1422,9 +1434,9 @@ def check_database():
     # Check so a database exists and is accessible
     from django.db import connection
     tables = connection.introspection.get_table_list(connection.cursor())
-    if not tables or not isinstance(tables[0], basestring):  # django 1.8+
+    if not tables or not isinstance(tables[0], str):  # django 1.8+
         tables = [tableinfo.name for tableinfo in tables]
-    if tables and u'accounts_accountdb' in tables:
+    if tables and 'accounts_accountdb' in tables:
         # database exists and seems set up. Initialize evennia.
         evennia._init()
     # Try to get Account#1
@@ -1453,7 +1465,7 @@ def check_database():
             res = ""
             while res.upper() != "Y":
                 # ask for permission
-                res = input("Continue [Y]/N: ")
+                res = eval(input("Continue [Y]/N: "))
                 if res.upper() == "N":
                     sys.exit()
                 elif not res:
@@ -1666,7 +1678,8 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     Args:
         path (str): Path to new game directory, including its name.
         check_db (bool, optional): Check if the databae exists.
-        need_gamedir (bool, optional): set to False if Evennia doesn't require to be run in a valid game directory.
+        need_gamedir (bool, optional): set to False if Evennia doesn't require to
+            be run in a valid game directory.
 
     """
     # set the GAMEDIR path
@@ -1813,6 +1826,16 @@ def run_dummyrunner(number_of_dummies):
         pass
 
 
+def run_connect_wizard():
+    """
+    Run the linking wizard, for adding new external connections.
+
+    """
+    from .connection_wizard import ConnectionWizard, node_start
+    wizard = ConnectionWizard()
+    node_start(wizard)
+
+
 def list_settings(keys):
     """
     Display the server settings. We only display the Evennia specific
@@ -1863,11 +1886,11 @@ def run_menu():
             return
         elif inp.lower() == 'h':
             print(HELP_ENTRY)
-            input("press <return> to continue ...")
+            eval(input("press <return> to continue ..."))
             continue
         elif inp.lower() in ('v', 'i', 'a'):
             print(show_version_info(about=True))
-            input("press <return> to continue ...")
+            eval(input("press <return> to continue ..."))
             continue
 
         # options
@@ -2072,7 +2095,7 @@ def main():
         init_game_directory(CURRENT_DIR, check_db=True)
         run_menu()
     elif option in ('status', 'info', 'start', 'istart', 'ipstart', 'reload', 'restart', 'reboot',
-                    'reset', 'stop', 'sstop', 'kill', 'skill'):
+                    'reset', 'stop', 'sstop', 'kill', 'skill', 'sstart', 'connections'):
         # operate the server directly
         if not SERVER_LOGFILE:
             init_game_directory(CURRENT_DIR, check_db=True)
@@ -2081,8 +2104,12 @@ def main():
         elif option == "info":
             query_info()
         elif option == "start":
+            init_game_directory(CURRENT_DIR, check_db=True)
+            error_check_python_modules()
             start_evennia(args.profiler, args.profiler)
         elif option == "istart":
+            init_game_directory(CURRENT_DIR, check_db=True)
+            error_check_python_modules()
             start_server_interactive()
         elif option == "ipstart":
             start_portal_interactive()
@@ -2096,6 +2123,8 @@ def main():
             stop_evennia()
         elif option == 'sstop':
             stop_server_only()
+        elif option == 'sstart':
+            start_only_server()
         elif option == 'kill':
             if _is_windows():
                 print("This option is not supported on Windows.")
@@ -2107,8 +2136,11 @@ def main():
                 print("This option is not supported on Windows.")
             else:
                 kill(SERVER_PIDFILE, 'Server')
+        elif option == 'connections':
+            run_connect_wizard()
+
     elif option != "noop":
-        # pass-through to django manager
+        # pass-through to django manager, but set things up first
         check_db = False
         need_gamedir = True
         # some commands don't require the presence of a game directory to work
@@ -2128,32 +2160,16 @@ def main():
 
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
-        # pass on to the manager
-        args = [option]
-        kwargs = {}
-        if unknown_args:
-            for arg in unknown_args:
-                if arg.startswith("--"):
-                    if "=" in arg:
-                        arg, value = [p.strip() for p in arg.split("=", 1)]
-                    else:
-                        value = True
-                    kwargs[arg.lstrip("--")] = value
-                else:
-                    args.append(arg)
-
-        # makemessages needs a special syntax to not conflict with the -l option
-        if len(args) > 1 and args[0] == "makemessages":
-            args.insert(1, "-l")
-
-        try:
-            print("calling django admin with: {} {}".format(
-                " ".join(args),  " ".join(unknown_args)))
-            django.core.management.call_command(*args, **kwargs)
-        except django.core.management.base.CommandError as exc:
-            args = ", ".join(args)
-            kwargs = ", ".join(["--%s" % kw for kw in kwargs])
-            print(ERROR_INPUT.format(traceback=exc, args=args, kwargs=kwargs))
+        if option in ("migrate", "makemigrations"):
+            # we have to launch migrate within the program to make sure migrations
+            # run within the scope of the launcher (otherwise missing a db will cause errors)
+            django.core.management.call_command(*([option] + unknown_args))
+        else:
+            # pass on to the core django manager - re-parse the entire input line
+            # but keep 'evennia' as the name instead of django-admin. This is
+            # an exit condition.
+            sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+            sys.exit(execute_from_command_line())
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)

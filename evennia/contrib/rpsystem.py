@@ -76,7 +76,7 @@ Verbose Installation Instructions:
            Change "class Character(DefaultCharacter):" to
            `class Character(ContribRPCharacter):`
        If you have any overriden calls in `at_object_creation(self)`:
-           Add `super(Character,self).at_object_creation()` as the top line.
+           Add `super().at_object_creation()` as the top line.
     2. In `typeclasses/rooms.py`:
            Import the `ContribRPRoom` class:
            `from evennia.contrib.rpsystem import ContribRPRoom`
@@ -238,7 +238,7 @@ def ordered_permutation_regex(sentence):
             solution.append(_PREFIX + r"[0-9]*%s*%s(?=\W|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\")))
 
     # combine into a match regex, first matching the longest down to the shortest components
-    regex = r"|".join(sorted(set(solution), key=len, reverse=True))
+    regex = r"|".join(sorted(set(solution), key=lambda item: (-len(item), item)))
     return regex
 
 
@@ -511,7 +511,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
             process_language = receiver.process_language
         except AttributeError:
             process_language = _dummy_process
-        for key, (langname, saytext) in language_mapping.iteritems():
+        for key, (langname, saytext) in language_mapping.items():
             # color says
             receiver_lang_mapping[key] = process_language(saytext, sender, langname)
         # map the language {##num} markers. This will convert the escaped sdesc markers on
@@ -984,7 +984,7 @@ class CmdPose(RPCommand):  # set current pose and default pose
             # set the pose. We do one-time ref->sdesc mapping here.
             parsed, mapping = parse_sdescs_and_recogs(caller, caller.location.contents, pose)
             mapping = dict((ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
-                           for ref, obj in mapping.iteritems())
+                           for ref, obj in mapping.items())
             pose = parsed.format(**mapping)
 
             if len(target_name) + len(pose) > 60:
@@ -1142,7 +1142,7 @@ class ContribRPObject(DefaultObject):
         """
         Called at initial creation.
         """
-        super(ContribRPObject, self).at_object_creation
+        super().at_object_creation()
 
         # emoting/recog data
         self.db.pose = ""
@@ -1226,7 +1226,7 @@ class ContribRPObject(DefaultObject):
             messaging is assumed to be handled by the caller.
 
         """
-        is_string = isinstance(searchdata, basestring)
+        is_string = isinstance(searchdata, str)
 
         if is_string:
             # searchdata is a string; wrap some common self-references
@@ -1268,16 +1268,19 @@ class ContribRPObject(DefaultObject):
         is_builder = self.locks.check_lockstring(self, "perm(Builder)")
         use_dbref = is_builder if use_dbref is None else use_dbref
 
-        def search_obj(string): return ObjectDB.objects.object_search(string,
-                                                                      attribute_name=attribute_name,
-                                                                      typeclass=typeclass,
-                                                                      candidates=candidates,
-                                                                      exact=exact,
-                                                                      use_dbref=use_dbref)
+        def search_obj(string):
+            "helper wrapper for searching"
+            return ObjectDB.objects.object_search(string,
+                                                  attribute_name=attribute_name,
+                                                  typeclass=typeclass,
+                                                  candidates=candidates,
+                                                  exact=exact,
+                                                  use_dbref=use_dbref)
 
         if candidates:
             candidates = parse_sdescs_and_recogs(self, candidates,
-                                                 _PREFIX + searchdata, search_mode=True)
+                                                 _PREFIX + searchdata,
+                                                 search_mode=True)
             results = []
             for candidate in candidates:
                 # we search by candidate keys here; this allows full error
@@ -1285,7 +1288,8 @@ class ContribRPObject(DefaultObject):
                 # in eventual error reporting later (not their keys). Doing
                 # it like this e.g. allows for use of the typeclass kwarg
                 # limiter.
-                results.extend(search_obj(candidate.key))
+                results.extend([obj for obj in search_obj(candidate.key)
+                                if obj not in results])
 
             if not results and is_builder:
                 # builders get a chance to search only by key+alias
@@ -1299,7 +1303,8 @@ class ContribRPObject(DefaultObject):
         if quiet:
             return results
         return _AT_SEARCH_RESULT(results, self, query=searchdata,
-                                 nofound_string=nofound_string, multimatch_string=multimatch_string)
+                                 nofound_string=nofound_string,
+                                 multimatch_string=multimatch_string)
 
     def get_display_name(self, looker, **kwargs):
         """
@@ -1426,7 +1431,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         """
         Called at initial creation.
         """
-        super(ContribRPCharacter, self).at_object_creation()
+        super().at_object_creation()
 
         self.db._sdesc = ""
         self.db._sdesc_regex = ""
@@ -1497,5 +1502,3 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         """
         return "%s|w%s|n" % ("|W(%s)" % language if language else "", text)
 
-        #from evennia.contrib import rplanguage
-        # return "|w%s|n" % rplanguage.obfuscate_language(text, level=1.0)

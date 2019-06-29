@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='channeldb',
             name='db_object_subscriptions',
-            field=models.ManyToManyField(related_name='object_subscription_set', null=True, verbose_name=b'subscriptions', to='objects.ObjectDB', db_index=True),
+            field=models.ManyToManyField(related_name='object_subscription_set', null=True, verbose_name='subscriptions', to='objects.ObjectDB', db_index=True),
             preserve_default=True,
         ),
     ]

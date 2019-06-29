@@ -1,9 +1,13 @@
+"""
+Service for integrating the Evennia Game Index client into Evennia.
+
+"""
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.application.service import Service
 
-from evennia.contrib.egi_client.client import EvenniaGameIndexClient
 from evennia.utils import logger
+from .client import EvenniaGameIndexClient
 
 # How many seconds to wait before triggering the first EGI check-in.
 _FIRST_UPDATE_DELAY = 10
@@ -13,8 +17,9 @@ _CLIENT_UPDATE_RATE = 60 * 30
 
 class EvenniaGameIndexService(Service):
     """
-    Twisted Service that contains a LoopingCall for sending details on a
-    game to the Evennia Game Index.
+    Twisted Service that contains a LoopingCall for regularly sending game details
+    to the Evennia Game Index.
+
     """
     # We didn't stick the Evennia prefix on here because it'd get marked as
     # a core system service.
@@ -26,8 +31,8 @@ class EvenniaGameIndexService(Service):
         self.loop = LoopingCall(self.client.send_game_details)
 
     def startService(self):
-        super(EvenniaGameIndexService, self).startService()
-        # TODO: Check to make sure that the client is configured.
+        super().startService()
+        # Check to make sure that the client is configured.
         # Start the loop, but only after a short delay. This allows the
         # portal and the server time to sync up as far as total player counts.
         # Prevents always reporting a count of 0.
@@ -36,9 +41,9 @@ class EvenniaGameIndexService(Service):
 
     def stopService(self):
         if self.running == 0:
-            # @reload errors if we've stopped this service.
+            # reload errors if we've stopped this service.
             return
-        super(EvenniaGameIndexService, self).stopService()
+        super().stopService()
         if self.loop.running:
             self.loop.stop()
 

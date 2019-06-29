@@ -30,7 +30,7 @@ class TestEventHandler(EvenniaTest):
 
     def setUp(self):
         """Create the event handler."""
-        super(TestEventHandler, self).setUp()
+        super().setUp()
         self.handler = create_script(
             "evennia.contrib.ingame_python.scripts.EventHandler")
 
@@ -51,7 +51,7 @@ class TestEventHandler(EvenniaTest):
         OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         CallbackHandler.script = None
-        super(TestEventHandler, self).tearDown()
+        super().tearDown()
 
     def test_start(self):
         """Simply make sure the handler runs with proper initial values."""
@@ -224,13 +224,13 @@ class TestEventHandler(EvenniaTest):
         self.assertEqual(callback.code, "pass")
         self.assertEqual(callback.author, self.char1)
         self.assertEqual(callback.valid, True)
-        self.assertIn([callback], self.room1.callbacks.all().values())
+        self.assertIn([callback], list(self.room1.callbacks.all().values()))
 
         # Edit this very callback
         new = self.room1.callbacks.edit("dummy", 0, "character.db.say = True",
                                         author=self.char1, valid=True)
-        self.assertIn([new], self.room1.callbacks.all().values())
-        self.assertNotIn([callback], self.room1.callbacks.all().values())
+        self.assertIn([new], list(self.room1.callbacks.all().values()))
+        self.assertNotIn([callback], list(self.room1.callbacks.all().values()))
 
         # Try to call this callback
         self.assertTrue(self.room1.callbacks.call("dummy",
@@ -248,7 +248,7 @@ class TestCmdCallback(CommandTest):
 
     def setUp(self):
         """Create the callback handler."""
-        super(TestCmdCallback, self).setUp()
+        super().setUp()
         self.handler = create_script(
             "evennia.contrib.ingame_python.scripts.EventHandler")
 
@@ -273,7 +273,7 @@ class TestCmdCallback(CommandTest):
             script.stop()
 
         CallbackHandler.script = None
-        super(TestCmdCallback, self).tearDown()
+        super().tearDown()
 
     def test_list(self):
         """Test listing callbacks with different rights."""
@@ -413,7 +413,7 @@ class TestDefaultCallbacks(CommandTest):
 
     def setUp(self):
         """Create the callback handler."""
-        super(TestDefaultCallbacks, self).setUp()
+        super().setUp()
         self.handler = create_script(
             "evennia.contrib.ingame_python.scripts.EventHandler")
 
@@ -434,7 +434,7 @@ class TestDefaultCallbacks(CommandTest):
         OLD_EVENTS.update(self.handler.ndb.events)
         self.handler.stop()
         CallbackHandler.script = None
-        super(TestDefaultCallbacks, self).tearDown()
+        super().tearDown()
 
     def test_exit(self):
         """Test the callbacks of an exit."""
@@ -486,7 +486,7 @@ class TestDefaultCallbacks(CommandTest):
         try:
             self.char2.msg = Mock()
             self.call(ExitCommand(), "", obj=self.exit)
-            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                           for name, args, kwargs in self.char2.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
@@ -507,7 +507,7 @@ class TestDefaultCallbacks(CommandTest):
         try:
             self.char2.msg = Mock()
             self.call(ExitCommand(), "", obj=back)
-            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+            stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                           for name, args, kwargs in self.char2.msg.mock_calls]
             # Get the first element of a tuple if msg received a tuple instead of a string
             stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]

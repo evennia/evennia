@@ -91,11 +91,9 @@ class ChannelAdmin(admin.ModelAdmin):
         obj.at_init()
 
     def response_add(self, request, obj, post_url_continue=None):
-        if '_continue' in request.POST:
-            from django.http import HttpResponseRedirect
-            from django.core.urlresolvers import reverse
-            return HttpResponseRedirect(reverse("admin:comms_channeldb_change", args=[obj.id]))
-        return super(ChannelAdmin, self).response_add(request, obj, post_url_continue)
+        from django.http import HttpResponseRedirect
+        from django.urls import reverse
+        return HttpResponseRedirect(reverse("admin:comms_channeldb_change", args=[obj.id]))
 
 
 admin.site.register(ChannelDB, ChannelAdmin)

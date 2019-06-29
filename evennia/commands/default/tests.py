@@ -11,19 +11,23 @@ main test suite started with
  > python game/manage.py test.
 
 """
-
 import re
 import types
 import datetime
+from anything import Anything
 
 from django.conf import settings
 from mock import Mock, mock
 
+from evennia import DefaultRoom, DefaultExit
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
-from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin
+from evennia.commands.default import help, general, system, admin, account, building, batchprocess, comms, unloggedin, syscommands
+from evennia.commands.cmdparser import build_matches
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.command import Command, InterruptCommand
+from evennia.commands import cmdparser
+from evennia.commands.cmdset import CmdSet
 from evennia.utils import ansi, utils, gametime
 from evennia.server.sessionhandler import SESSIONS
 from evennia import search_object
@@ -46,7 +50,7 @@ class CommandTest(EvenniaTest):
     Tests a command
     """
     def call(self, cmdobj, args, msg=None, cmdset=None, noansi=True, caller=None,
-             receiver=None, cmdstring=None, obj=None, inputs=None):
+             receiver=None, cmdstring=None, obj=None, inputs=None, raw_string=None):
         """
         Test a command by assigning all the needed
         properties to cmdobj and  running
@@ -71,7 +75,7 @@ class CommandTest(EvenniaTest):
         cmdobj.cmdset = cmdset
         cmdobj.session = SESSIONS.session_from_sessid(1)
         cmdobj.account = self.account
-        cmdobj.raw_string = cmdobj.key + " " + args
+        cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + args
         cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
@@ -93,10 +97,10 @@ class CommandTest(EvenniaTest):
                             try:
                                 ret.send(inp)
                             except TypeError:
-                                ret.next()
+                                next(ret)
                                 ret = ret.send(inp)
                         else:
-                            ret.next()
+                            next(ret)
                     except StopIteration:
                         break
 
@@ -107,7 +111,7 @@ class CommandTest(EvenniaTest):
             pass
 
         # clean out evtable sugar. We only operate on text-type
-        stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs, force_string=True))
+        stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                       for name, args, kwargs in receiver.msg.mock_calls]
         # Get the first element of a tuple if msg received a tuple instead of a string
         stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
@@ -137,7 +141,8 @@ class CommandTest(EvenniaTest):
 
 class TestGeneral(CommandTest):
     def test_look(self):
-        self.call(general.CmdLook(), "here", "Room(#1)\nroom_desc")
+        rid = self.room1.id
+        self.call(general.CmdLook(), "here", "Room(#{})\nroom_desc".format(rid))
 
     def test_home(self):
         self.call(general.CmdHome(), "", "You are already home")
@@ -155,10 +160,10 @@ class TestGeneral(CommandTest):
                 "Account-nick 'testalias' mapped to 'testaliasedstring2'.")
         self.call(general.CmdNick(), "/object testalias = testaliasedstring3",
                 "Object-nick 'testalias' mapped to 'testaliasedstring3'.")
-        self.assertEqual(u"testaliasedstring1", self.char1.nicks.get("testalias"))
-        self.assertEqual(u"testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
+        self.assertEqual("testaliasedstring1", self.char1.nicks.get("testalias"))
+        self.assertEqual("testaliasedstring2", self.char1.nicks.get("testalias", category="account"))
         self.assertEqual(None, self.char1.account.nicks.get("testalias", category="account"))
-        self.assertEqual(u"testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
+        self.assertEqual("testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
 
     def test_get_and_drop(self):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")
@@ -215,6 +220,7 @@ class TestSystem(CommandTest):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
         self.call(system.CmdPy(), "1+2", ">>> 1+2|3")
+        self.call(system.CmdPy(), "/clientraw 1+2", ">>> 1+2|3")
 
     def test_scripts(self):
         self.call(system.CmdScripts(), "", "dbref ")
@@ -242,6 +248,11 @@ class TestAdmin(CommandTest):
 
     def test_ban(self):
         self.call(admin.CmdBan(), "Char", "Name-Ban char was added.")
+
+    def test_force(self):
+        cid = self.char2.id
+        self.call(admin.CmdForce(), "Char2=say test", 
+                  'Char2(#{}) says, "test"|You have forced Char2 to: say test'.format(cid))
 
 
 class TestAccount(CommandTest):
@@ -279,7 +290,33 @@ class TestAccount(CommandTest):
 
     def test_char_create(self):
         self.call(account.CmdCharCreate(), "Test1=Test char",
-                  "Created new character Test1. Use @ic Test1 to enter the game", caller=self.account)
+                  "Created new character Test1. Use ic Test1 to enter the game", caller=self.account)
+
+    def test_char_delete(self):
+        # Chardelete requires user input; this test is mainly to confirm
+        # whether permissions are being checked
+
+        # Add char to account playable characters
+        self.account.db._playable_characters.append(self.char1)
+
+        # Try deleting as Developer
+        self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
+
+        # Downgrade permissions on account
+        self.account.permissions.add('Player')
+        self.account.permissions.remove('Developer')
+
+        # Set lock on character object to prevent deletion
+        self.char1.locks.add('delete:none()')
+
+        # Try deleting as Player
+        self.call(account.CmdCharDelete(), "Char", "You do not have permission to delete this character.", caller=self.account)
+
+        # Set lock on character object to allow self-delete
+        self.char1.locks.add('delete:pid(%i)' % self.account.id)
+
+        # Try deleting as Player again
+        self.call(account.CmdCharDelete(), "Char", "This will permanently destroy 'Char'. This cannot be undone. Continue yes/[no]?", caller=self.account)
 
     def test_quell(self):
         self.call(account.CmdQuell(), "", "Quelling to current puppet's permissions (developer).", caller=self.account)
@@ -290,107 +327,322 @@ class TestBuilding(CommandTest):
         name = settings.BASE_OBJECT_TYPECLASS.rsplit('.', 1)[1]
         self.call(building.CmdCreate(), "/d TestObj1",   # /d switch is abbreviated form of /drop
                   "You create a new %s: TestObj1." % name)
+        self.call(building.CmdCreate(), "", "Usage: ")
+        self.call(building.CmdCreate(), "TestObj1;foo;bar",
+                  "You create a new %s: TestObj1 (aliases: foo, bar)." % name)
 
     def test_examine(self):
+        self.call(building.CmdExamine(), "", "Name/key: Room")
         self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
+        self.call(building.CmdExamine(), "Obj", "Name/key: Obj")
+        self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
+
+        self.char1.db.test = "testval"
+        self.call(building.CmdExamine(), "self/test", "Persistent attributes:\n test = testval")
+        self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
+        self.call(building.CmdExamine(), "out", "Name/key: out")
+
+        self.room1.scripts.add(self.script.__class__)
+        self.call(building.CmdExamine(), "")
+        self.account.scripts.add(self.script.__class__)
+        self.call(building.CmdExamine(), "*TestAccount")
 
     def test_set_obj_alias(self):
-        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj(#4)")
-        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b", "Alias(es) for 'Obj(#4)' set to 'testobj1b'.")
+        oid = self.obj1.id
+        self.call(building.CmdSetObjAlias(), "Obj =", "Cleared aliases from Obj")
+        self.call(building.CmdSetObjAlias(), "Obj = TestObj1b",
+                  "Alias(es) for 'Obj(#{})' set to 'testobj1b'.".format(oid))
+        self.call(building.CmdSetObjAlias(), "", "Usage: ")
+        self.call(building.CmdSetObjAlias(), "NotFound =", "Could not find 'NotFound'.")
+
+        self.call(building.CmdSetObjAlias(), "Obj",
+                  "Aliases for Obj(#{}): 'testobj1b'".format(oid))
+        self.call(building.CmdSetObjAlias(), "Obj2 =", "Cleared aliases from Obj2")
+        self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
 
     def test_copy(self):
         self.call(building.CmdCopy(), "Obj = TestObj2;TestObj2b, TestObj3;TestObj3b",
                   "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']")
+        self.call(building.CmdCopy(), "", "Usage: ")
+        self.call(building.CmdCopy(), "Obj", "Identical copy of Obj, named 'Obj_copy' was created.")
+        self.call(building.CmdCopy(), "NotFound = Foo", "Could not find 'NotFound'.")
 
     def test_attribute_commands(self):
+        self.call(building.CmdSetAttribute(), "", "Usage: ")
         self.call(building.CmdSetAttribute(), "Obj/test1=\"value1\"", "Created attribute Obj/test1 = 'value1'")
         self.call(building.CmdSetAttribute(), "Obj2/test2=\"value2\"", "Created attribute Obj2/test2 = 'value2'")
+        self.call(building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2")
+        self.call(building.CmdSetAttribute(), "Obj2/NotFound", "Obj2 has no attribute 'notfound'.")
+
+        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+            self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
+            mock_ed.assert_called_with(self.char1, Anything, Anything, key='Obj2/test3')
+
+        self.call(building.CmdSetAttribute(), "Obj2/test3=\"value3\"", "Created attribute Obj2/test3 = 'value3'")
+        self.call(building.CmdSetAttribute(), "Obj2/test3 = ", "Deleted attribute 'test3' (= True) from Obj2.")
+
+        self.call(building.CmdCpAttr(), "/copy Obj2/test2 = Obj2/test3",
+                  "cpattr: Extra switch \"/copy\" ignored.|\nCopied Obj2.test2 -> Obj2.test3. "
+                  "(value: 'value2')")
+        self.call(building.CmdMvAttr(), "", "Usage: ")
         self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
+        self.call(building.CmdCpAttr(), "", "Usage: ")
         self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 -> Obj2.test3")
+
+        self.call(building.CmdWipe(), "", "Usage: ")
         self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
+        self.call(building.CmdWipe(), "Obj2", "Wiped all attributes on Obj2.")
 
     def test_name(self):
+        self.call(building.CmdName(), "", "Usage: ")
         self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
+        self.call(building.CmdName(), "*TestAccount=TestAccountRenamed",
+                  "Account's name changed to 'TestAccountRenamed'.")
+        self.call(building.CmdName(), "*NotFound=TestAccountRenamed",
+                  "Could not find '*NotFound'")
+        self.call(building.CmdName(), "Obj3=Obj4;foo;bar",
+                  "Object's name changed to 'Obj4' (foo, bar).")
+        self.call(building.CmdName(), "Obj4=", "No names or aliases defined!")
 
     def test_desc(self):
-        self.call(building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#5).")
+        oid = self.obj2.id
+        self.call(building.CmdDesc(), "Obj2=TestDesc", 
+                  "The description was set on Obj2(#{}).".format(oid))
+        self.call(building.CmdDesc(), "", "Usage: ")
+
+        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+            self.call(building.CmdDesc(), "/edit")
+            mock_ed.assert_called_with(self.char1, key='desc',
+                                       loadfunc=building._desc_load,
+                                       quitfunc=building._desc_quit,
+                                       savefunc=building._desc_save,
+                                       persistent=True)
 
     def test_empty_desc(self):
         """
         empty desc sets desc as ''
         """
+        oid = self.obj2.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#5).")
+        self.call(building.CmdDesc(), "Obj2=",
+                  "The description was set on Obj2(#{}).".format(oid))
         assert self.obj2.db.desc == '' and self.obj2.db.desc != o2d
         assert self.room1.db.desc == r1d
 
     def test_desc_default_to_room(self):
         """no rhs changes room's desc"""
+        rid = self.room1.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#1).")
+        self.call(building.CmdDesc(), "Obj2",
+                  "The description was set on Room(#{}).".format(rid))
         assert self.obj2.db.desc == o2d
         assert self.room1.db.desc == 'Obj2' and self.room1.db.desc != r1d
 
-    def test_wipe(self):
+    def test_destroy(self):
         confirm = building.CmdDestroy.confirm
         building.CmdDestroy.confirm = False
+        self.call(building.CmdDestroy(), "", "Usage: ")
         self.call(building.CmdDestroy(), "Obj", "Obj was destroyed.")
+        self.call(building.CmdDestroy(), "Obj", "Obj2 was destroyed.")
+        self.call(building.CmdDestroy(), "Obj", "Could not find 'Obj'.| (Objects to destroy "
+                  "must either be local or specified with a unique #dbref.)")
+        self.call(building.CmdDestroy(), settings.DEFAULT_HOME,
+                  "You are trying to delete")  # DEFAULT_HOME should not be deleted
+        self.char2.location = self.room2
+        charid = self.char2.id
+        room1id = self.room1.id
+        room2id = self.room2.id
+        self.call(building.CmdDestroy(), self.room2.dbref,
+                  "Char2(#{}) arrives to Room(#{}) from Room2(#{}).|Room2 was destroyed.".format(
+                    charid, room1id, room2id))
         building.CmdDestroy.confirm = confirm
+
+    def test_destroy_sequence(self):
+        confirm = building.CmdDestroy.confirm
+        building.CmdDestroy.confirm = False
+        self.call(building.CmdDestroy(),
+                  "{}-{}".format(self.obj1.dbref, self.obj2.dbref),
+                  "Obj was destroyed.\nObj2 was destroyed.")
 
     def test_dig(self):
         self.call(building.CmdDig(), "TestRoom1=testroom;tr,back;b", "Created room TestRoom1")
+        self.call(building.CmdDig(), "", "Usage: ")
 
     def test_tunnel(self):
         self.call(building.CmdTunnel(), "n = TestRoom2;test2", "Created room TestRoom2")
+        self.call(building.CmdTunnel(), "", "Usage: ")
+        self.call(building.CmdTunnel(), "foo = TestRoom2;test2", "tunnel can only understand the")
+        self.call(building.CmdTunnel(), "/tel e = TestRoom3;test3", "Created room TestRoom3")
+        DefaultRoom.objects.get_family(db_key="TestRoom3")
+        exits = DefaultExit.objects.filter_family(db_key__in=("east", "west"))
+        self.assertEqual(len(exits), 2)
 
     def test_tunnel_exit_typeclass(self):
-        self.call(building.CmdTunnel(), "n:evennia.objects.objects.DefaultExit = TestRoom3", "Created room TestRoom3")
+        self.call(building.CmdTunnel(), "n:evennia.objects.objects.DefaultExit = TestRoom3",
+                  "Created room TestRoom3")
 
     def test_exit_commands(self):
         self.call(building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2")
         self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
+        self.call(building.CmdUnLink(), "", "Usage: ")
+        self.call(building.CmdLink(), "NotFound", "Could not find 'NotFound'.")
+        self.call(building.CmdLink(), "TestExit", "TestExit1 is an exit to Room.")
+        self.call(building.CmdLink(), "Obj", "Obj is not an exit. Its home location is Room.")
         self.call(building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere.")
 
+        self.char1.location = self.room2
+        self.call(building.CmdOpen(), "TestExit2=Room", "Created new Exit 'TestExit2' from Room2 to Room.")
+        self.call(building.CmdOpen(), "TestExit2=Room", "Exit TestExit2 already exists. It already points to the correct place.")
+
+
+        # ensure it matches locally first
+        self.call(building.CmdLink(), "TestExit=Room2", "Link created TestExit2 -> Room2 (one way).")
+        self.call(building.CmdLink(), "/twoway TestExit={}".format(self.exit.dbref),
+                  "Link created TestExit2 (in Room2) <-> out (in Room) (two-way).")
+        self.call(building.CmdLink(), "/twoway TestExit={}".format(self.room1.dbref),
+                  "To create a two-way link, TestExit2 and Room must both have a location ")
+        self.call(building.CmdLink(), "/twoway {}={}".format(self.exit.dbref, self.exit.dbref),
+                  "Cannot link an object to itself.")
+        self.call(building.CmdLink(), "", "Usage: ")
+        # ensure can still match globally when not a local name
+        self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1")
+        self.call(building.CmdLink(), "TestExit1=", "Former exit TestExit1 no longer links anywhere.")
+
     def test_set_home(self):
-        self.call(building.CmdSetHome(), "Obj = Room2", "Obj's home location was changed from Room")
+        self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was changed from Room")
+        self.call(building.CmdSetHome(), "", "Usage: ")
+        self.call(building.CmdSetHome(), "self", "Char's current home is Room")
+        self.call(building.CmdSetHome(), "Obj", "Obj's current home is Room2")
+        self.obj1.home = None
+        self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was set to Room")
 
     def test_list_cmdsets(self):
         self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
+        self.call(building.CmdListCmdSets(), "NotFound", "Could not find 'NotFound'")
 
     def test_typeclass(self):
+        self.call(building.CmdTypeclass(), "", "Usage: ")
         self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
                   "Obj changed typeclass from evennia.objects.objects.DefaultObject "
                   "to evennia.objects.objects.DefaultExit.")
+        self.call(building.CmdTypeclass(), "Obj2 = evennia.objects.objects.DefaultExit",
+                  "Obj2 changed typeclass from evennia.objects.objects.DefaultObject "
+                  "to evennia.objects.objects.DefaultExit.", cmdstring="swap")
+        self.call(building.CmdTypeclass(), "/list Obj", "Core typeclasses")
+        self.call(building.CmdTypeclass(), "/show Obj", "Obj's current typeclass is 'evennia.objects.objects.DefaultExit'")
+        self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultExit",
+                  "Obj already has the typeclass 'evennia.objects.objects.DefaultExit'. Use /force to override.")
+        self.call(building.CmdTypeclass(), "/force Obj = evennia.objects.objects.DefaultExit",
+                  "Obj updated its existing typeclass ")
+        self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultObject")
+        self.call(building.CmdTypeclass(), "/show Obj", "Obj's current typeclass is 'evennia.objects.objects.DefaultObject'")
+        self.call(building.CmdTypeclass(), "Obj",
+                  "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
+                  "Only the at_object_creation hook was run (update mode). Attributes set before swap were not removed.",
+                  cmdstring="update")
+        self.call(building.CmdTypeclass(), "/reset/force Obj=evennia.objects.objects.DefaultObject",
+                  "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
+                  "All object creation hooks were run. All old attributes where deleted before the swap.")
 
     def test_lock(self):
-        self.call(building.CmdLock(), "Obj = test:perm(Developer)", "Added lock 'test:perm(Developer)' to Obj.")
+        self.call(building.CmdLock(), "", "Usage: ")
+        self.call(building.CmdLock(), "Obj = test:all()", "Added lock 'test:all()' to Obj.")
+        self.call(building.CmdLock(), "*TestAccount = test:all()", "Added lock 'test:all()' to TestAccount")
+        self.call(building.CmdLock(), "Obj/notfound", "Obj has no lock of access type 'notfound'.")
+        self.call(building.CmdLock(), "Obj/test", "test:all()")
+        self.call(building.CmdLock(), "/view Obj = edit:false()",
+                  "Switch(es) view can not be used with a lock assignment. "
+                  "Use e.g. lock/del objname/locktype instead.")
+        self.call(building.CmdLock(), "Obj = control:false()")
+        self.call(building.CmdLock(), "Obj = edit:false()")
+        self.call(building.CmdLock(), "Obj/test", "You are not allowed to do that.")
+        self.obj1.locks.add("control:true()")
+        self.call(building.CmdLock(), "Obj", "call:true()")  # etc
+        self.call(building.CmdLock(), "*TestAccount", "boot:perm(Admin)")  # etc
 
     def test_find(self):
+        rid2 = self.room2.id
+        rmax = rid2 + 100
+        self.call(building.CmdFind(), "", "Usage: ")
         self.call(building.CmdFind(), "oom2", "One Match")
-        expect = "One Match(#1-#7, loc):\n   " +\
-                 "Char2(#7) - evennia.objects.objects.DefaultCharacter (location: Room(#1))"
-        self.call(building.CmdFind(), "Char2", expect, cmdstring="locate")
+        self.call(building.CmdFind(), "oom2 = 1-{}".format(rmax), "One Match")
+        self.call(building.CmdFind(), "oom2 = 1 {}".format(rmax), "One Match")  # space works too
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="locate")
         self.call(building.CmdFind(), "/ex Char2",  # /ex is an ambiguous switch
-                  "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|" + expect,
+                  "locate: Ambiguous switch supplied: Did you mean /exit or /exact?|",
                   cmdstring="locate")
-        self.call(building.CmdFind(), "Char2", expect, cmdstring="@locate")
-        self.call(building.CmdFind(), "/l Char2", expect, cmdstring="find")  # /l switch is abbreviated form of /loc
-        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="@find")
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="locate")
+        self.call(building.CmdFind(), "/l Char2", "One Match", cmdstring="find")  # /l switch is abbreviated form of /loc
+        self.call(building.CmdFind(), "Char2", "One Match", cmdstring="find")
         self.call(building.CmdFind(), "/startswith Room2", "One Match")
 
+        self.call(building.CmdFind(), self.char1.dbref, "Exact dbref match")
+        self.call(building.CmdFind(), "*TestAccount", "Match")
+
+        self.call(building.CmdFind(), "/char Obj")
+        self.call(building.CmdFind(), "/room Obj")
+        self.call(building.CmdFind(), "/exit Obj")
+        self.call(building.CmdFind(), "/exact Obj", "One Match")
+
     def test_script(self):
+        self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
         self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
+        self.call(building.CmdScript(), "", "Usage: ")
+        self.call(building.CmdScript(), "= Obj", "To create a global script you need scripts/add <typeclass>.")
+        self.call(building.CmdScript(), "Obj = ", "dbref obj")
+
+        self.call(building.CmdScript(), "/start Obj", "0 scripts started on Obj")  # because it's already started
+        self.call(building.CmdScript(), "/stop Obj", "Stopping script")
+
+        self.call(building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added")
+        self.call(building.CmdScript(), "/start Obj = scripts.Script", "Script scripts.Script could not be (re)started.")
+        self.call(building.CmdScript(), "/stop Obj = scripts.Script", "Script stopped and removed from object.")
 
     def test_teleport(self):
-        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#2)\n|Teleported to Room2.")
+        oid = self.obj1.id
+        rid = self.room1.id
+        rid2 = self.room2.id
+        self.call(building.CmdTeleport(), "", "Usage: ")
+        self.call(building.CmdTeleport(), "Obj = Room", "Obj is already at Room.")
+        self.call(building.CmdTeleport(), "Obj = NotFound", "Could not find 'NotFound'.|Destination not found.")
+        self.call(building.CmdTeleport(),
+                  "Obj = Room2", "Obj(#{}) is leaving Room(#{}), heading for Room2(#{}).|Teleported Obj -> Room2.".format(
+                  oid, rid, rid2))
+        self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
+        self.call(building.CmdTeleport(), "Obj = Obj", "You can't teleport an object inside of itself!")
+
+        self.call(building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location.")
+        self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#{})".format(rid2))
         self.call(building.CmdTeleport(), "/t",  # /t switch is abbreviated form of /tonone
-                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount(account 1)) to a None-location.")
+                  "Cannot teleport a puppeted object (Char, puppeted by TestAccount")
         self.call(building.CmdTeleport(), "/l Room2",  # /l switch is abbreviated form of /loc
                   "Destination has no location.")
         self.call(building.CmdTeleport(), "/q me to Room2",  # /q switch is abbreviated form of /quiet
                   "Char is already at Room2.")
+
+    def test_tag(self):
+        self.call(building.CmdTag(), "", "Usage: ")
+
+        self.call(building.CmdTag(), "Obj = testtag")
+        self.call(building.CmdTag(), "Obj = testtag2")
+        self.call(building.CmdTag(), "Obj = testtag2:category1")
+        self.call(building.CmdTag(), "Obj = testtag3")
+
+        self.call(building.CmdTag(), "Obj", "Tags on Obj: 'testtag', 'testtag2', "
+                  "'testtag2' (category: category1), 'testtag3'")
+
+        self.call(building.CmdTag(), "/search NotFound", "No objects found with tag 'NotFound'.")
+        self.call(building.CmdTag(), "/search testtag", "Found 1 object with tag 'testtag':")
+        self.call(building.CmdTag(), "/search testtag2", "Found 1 object with tag 'testtag2':")
+        self.call(building.CmdTag(), "/search testtag2:category1",
+                  "Found 1 object with tag 'testtag2' (category: 'category1'):")
+
+
+        self.call(building.CmdTag(), "/del Obj = testtag3", "Removed tag 'testtag3' from Obj.")
+        self.call(building.CmdTag(), "/del Obj",
+            "Cleared all tags from Obj: testtag, testtag2, testtag2 (category: category1)")
 
     def test_spawn(self):
         def getObject(commandTest, objKeyStr):
@@ -403,15 +655,23 @@ class TestBuilding(CommandTest):
             commandTest.assertIsNotNone(obj)
             return obj
 
-        # Tests "@spawn" without any arguments.
-        self.call(building.CmdSpawn(), " ", "Usage: @spawn")
+        # Tests "spawn" without any arguments.
+        self.call(building.CmdSpawn(), " ", "Usage: spawn")
 
-        # Tests "@spawn <prototype_dictionary>" without specifying location.
+        # Tests "spawn <prototype_dictionary>" without specifying location.
 
         self.call(building.CmdSpawn(),
                   "/save {'prototype_key': 'testprot', 'key':'Test Char', "
                   "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
                   "Saved prototype: testprot", inputs=['y'])
+
+        self.call(building.CmdSpawn(), "/search ", "Key ")
+        self.call(building.CmdSpawn(), "/search test;test2", "")
+
+        self.call(building.CmdSpawn(),
+                  "/save {'key':'Test Char', "
+                  "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+                  "To save a prototype it must have the 'prototype_key' set.")
 
         self.call(building.CmdSpawn(), "/list", "Key ")
 
@@ -422,7 +682,7 @@ class TestBuilding(CommandTest):
         self.assertEqual(testchar.location, self.char1.location)
         testchar.delete()
 
-        # Test "@spawn <prototype_dictionary>" with a location other than the character's.
+        # Test "spawn <prototype_dictionary>" with a location other than the character's.
         spawnLoc = self.room2
         if spawnLoc == self.char1.location:
             # Just to make sure we use a different location, in case someone changes
@@ -440,11 +700,11 @@ class TestBuilding(CommandTest):
         goblin.delete()
 
         # create prototype
-        protlib.create_prototype(**{'key': 'Ball',
-                                    'typeclass': 'evennia.objects.objects.DefaultCharacter',
-                                    'prototype_key': 'testball'})
+        protlib.create_prototype({'key': 'Ball',
+                                  'typeclass': 'evennia.objects.objects.DefaultCharacter',
+                                  'prototype_key': 'testball'})
 
-        # Tests "@spawn <prototype_name>"
+        # Tests "spawn <prototype_name>"
         self.call(building.CmdSpawn(), "testball", "Spawned Ball")
 
         ball = getObject(self, "Ball")
@@ -452,7 +712,7 @@ class TestBuilding(CommandTest):
         self.assertIsInstance(ball, DefaultObject)
         ball.delete()
 
-        # Tests "@spawn/n ..." without specifying a location.
+        # Tests "spawn/n ..." without specifying a location.
         # Location should be "None".
         self.call(building.CmdSpawn(), "/n 'BALL'", "Spawned Ball")   # /n switch is abbreviated form of /noloc
         ball = getObject(self, "Ball")
@@ -463,7 +723,7 @@ class TestBuilding(CommandTest):
                 "/noloc {'prototype_parent':'TESTBALL', 'prototype_key': 'testball', 'location':'%s'}"
                 % spawnLoc.dbref, "Error: Prototype testball tries to parent itself.")
 
-        # Tests "@spawn/noloc ...", but DO specify a location.
+        # Tests "spawn/noloc ...", but DO specify a location.
         # Location should be the specified location.
         self.call(building.CmdSpawn(),
                 "/noloc {'prototype_parent':'TESTBALL', 'key': 'Ball', 'prototype_key': 'foo', 'location':'%s'}"
@@ -478,14 +738,14 @@ class TestBuilding(CommandTest):
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
 
-        # @spawn/edit (missing prototype)
+        # spawn/edit (missing prototype)
         # brings up olc menu
         msg = self.call(
             building.CmdSpawn(),
             '/edit')
         assert 'Prototype wizard' in msg
 
-        # @spawn/edit with valid prototype
+        # spawn/edit with valid prototype
         # brings up olc menu loaded with prototype
         msg = self.call(
             building.CmdSpawn(),
@@ -499,34 +759,34 @@ class TestBuilding(CommandTest):
                 and 'Ball' == self.char1.ndb._menutree.olc_prototype['key']
         assert 'Ball' in msg and 'testball' in msg
 
-        # @spawn/edit with valid prototype (synomym)
+        # spawn/edit with valid prototype (synomym)
         msg = self.call(
             building.CmdSpawn(),
             '/edit BALL')
         assert 'Prototype wizard' in msg
         assert 'Ball' in msg and 'testball' in msg
 
-        # @spawn/edit with invalid prototype
+        # spawn/edit with invalid prototype
         msg = self.call(
             building.CmdSpawn(),
             '/edit NO_EXISTS',
             "No prototype 'NO_EXISTS' was found.")
 
-        # @spawn/examine (missing prototype)
+        # spawn/examine (missing prototype)
         # lists all prototypes that exist
         msg = self.call(
             building.CmdSpawn(),
             '/examine')
         assert 'testball' in msg and 'testprot' in msg
 
-        # @spawn/examine with valid prototype
+        # spawn/examine with valid prototype
         # prints the prototype
         msg = self.call(
             building.CmdSpawn(),
             '/examine BALL')
         assert 'Ball' in msg and 'testball' in msg
 
-        # @spawn/examine with invalid prototype
+        # spawn/examine with invalid prototype
         # shows error
         self.call(
             building.CmdSpawn(),
@@ -576,7 +836,7 @@ class TestComms(CommandTest):
 
     def test_cboot(self):
         # No one else connected to boot
-        self.call(comms.CmdCBoot(), "", "Usage: @cboot[/quiet] <channel> = <account> [:reason]", receiver=self.account)
+        self.call(comms.CmdCBoot(), "", "Usage: cboot[/quiet] <channel> = <account> [:reason]", receiver=self.account)
 
     def test_cdestroy(self):
         self.call(comms.CmdCdestroy(), "testchan",
@@ -615,8 +875,41 @@ class TestInterruptCommand(CommandTest):
 
 class TestUnconnectedCommand(CommandTest):
     def test_info_command(self):
+        # instead of using SERVER_START_TIME (0), we use 86400 because Windows won't let us use anything lower
+        gametime.SERVER_START_TIME = 86400
         expected = "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
                         settings.SERVERNAME,
                         datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
                         SESSIONS.account_count(), utils.get_evennia_version())
         self.call(unloggedin.CmdUnconnectedInfo(), "", expected)
+        del gametime.SERVER_START_TIME
+
+
+# Test syscommands
+
+class TestSystemCommands(CommandTest):
+
+    def test_simple_defaults(self):
+        self.call(syscommands.SystemNoInput(), "")
+        self.call(syscommands.SystemNoMatch(), "Huh?")
+
+    def test_multimatch(self):
+        # set up fake matches and store on command instance
+        cmdset = CmdSet()
+        cmdset.add(general.CmdLook())
+        cmdset.add(general.CmdLook())
+        matches = cmdparser.build_matches("look", cmdset)
+
+        multimatch = syscommands.SystemMultimatch()
+        multimatch.matches = matches
+
+        self.call(multimatch, "look", "")
+
+    @mock.patch("evennia.commands.default.syscommands.ChannelDB")
+    def test_channelcommand(self, mock_channeldb):
+        channel = mock.MagicMock()
+        channel.msg = mock.MagicMock()
+        mock_channeldb.objects.get_channel = mock.MagicMock(return_value=channel)
+
+        self.call(syscommands.SystemSendToChannel(), "public:Hello")
+        channel.msg.assert_called()

@@ -1,5 +1,203 @@
 # Changelog
 
+## Evennia 0.9 (2018-2019)
+
+### Distribution
+
+- New requirement: Python 3.7 (py2.7 support removed)
+- Django 2.1
+- Twisted 19.2.1
+- Autobahn websockets (removed old tmwx)
+- Docker image updated
+
+### Commands
+
+- Remove `@`-prefix from all default commands (prefixes still work, optional)
+- Removed default `@delaccount` command, incorporating as `@account/delete` instead. Added confirmation
+  question.
+- Add new `@force` command to have another object perform a command.
+- Add the Portal uptime to the `@time` command.
+- Make the `@link` command first make a local search before a global search.
+- Have the default Unloggedin-look command look for optional `connection_screen()` callable in
+  `mygame/server/conf/connection_screen.py`. This allows for more flexible welcome screens
+  that are calculated on the fly.
+- `@py` command now defaults to escaping html tags in its output when viewing in the webclient.
+  Use new `/clientraw` switch to get old behavior (issue #1369).
+- Shorter and more informative, dynamic, listing of on-command vars if not
+  setting func() in child command class.
+- New Command helper methods
+  - `.client_width()` returns client width of the session running the command.
+  - `.styled_table(*args, **kwargs)` returns a formatted evtable styled by user's options
+  - `.style_header(*args, **kwargs)` creates styled header entry
+  - `.style_separator(*args, **kwargs)`      "             separator
+  - `.style_footer(*args, **kwargs)`         "             footer
+
+### Web
+
+- Change webclient from old txws version to use more supported/feature-rich Autobahn websocket library
+
+#### Evennia game index 
+
+- Made Evennia game index client a part of core - now configured from settings file (old configs
+  need to be moved)
+- The `evennia connections` command starts a wizard that helps you connect your game to the game index.
+- The game index now accepts games with no public telnet/webclient info (for early prototypes). 
+
+#### New golden-layout based Webclient UI (@friarzen)
+- Features
+  - Much slicker behavior and more professional look
+  - Allows tabbing as well as click and drag of panes in any grid position
+  - Renaming tabs, assignments of data tags and output types are simple per-pane menus now
+  - Any number of input panes, with separate histories
+  - Button UI (disabled in JS by default)
+
+#### Web/Django standard initiative (@strikaco)
+- Features
+  - Adds a series of web-based forms and generic class-based views
+    - Accounts
+      - Register - Enhances registration; allows optional collection of email address
+      - Form - Adds a generic Django form for creating Accounts from the web
+    - Characters
+      - Create - Authenticated users can create new characters from the website (requires associated form)
+      - Detail - Authenticated and authorized users can view select details about characters
+      - List - Authenticated and authorized users can browse a list of all characters
+      - Manage - Authenticated users can edit or delete owned characters from the web
+      - Form - Adds a generic Django form for creating characters from the web
+    - Channels
+      - Detail - Authorized users can view channel logs from the web
+      - List - Authorized users can browse a list of all channels
+    - Help Entries
+      - Detail - Authorized users can view help entries from the web
+      - List - Authorized users can browse a list of all help entries from the web
+  - Navbar changes
+    - Characters - Link to character list
+    - Channels - Link to channel list
+    - Help - Link to help entry list
+    - Puppeting
+      - Users can puppet their own characters within the context of the website
+    - Dropdown
+      - Link to create characters
+      - Link to manage characters
+      - Link to quick-select puppets
+      - Link to password change workflow
+- Functions
+  - Updates Bootstrap to v4 stable
+  - Enables use of Django Messages framework to communicate with users in browser
+  - Implements webclient/website `_shared_login` functionality as Django middleware
+  - 'account' and 'puppet' are added to all request contexts for authenticated users
+  - Adds unit tests for all web views
+- Cosmetic
+  - Prettifies Django 'forgot password' workflow (requires SMTP to actually function)
+  - Prettifies Django 'change password' workflow
+- Bugfixes
+  - Fixes bug on login page where error messages were not being displayed
+  - Remove strvalue field from admin; it made no sense to have here, being an optimization field
+    for internal use.
+
+### Prototypes
+
+- `evennia.prototypes.save_prototype` now takes the prototype as a normal
+  argument (`prototype`) instead of having to give it as `**prototype`.
+- `evennia.prototypes.search_prototype` has a new kwarg `require_single=False` that
+  raises a KeyError exception if query gave 0 or >1 results.
+- `evennia.prototypes.spawner` can now spawn by passing a `prototype_key`
+
+### Typeclasses
+
+- Add new methods on all typeclasses, useful specifically for object handling from the website/admin:
+  + `web_get_admin_url()`: Returns the path to the object detail page in the Admin backend.
+  + `web_get_create_url()`: Returns the path to the typeclass' creation page on the website, if implemented.
+  + `web_get_absolute_url()`: Returns the path to the object's detail page on the website, if implemented.
+  + `web_get_update_url()`: Returns the path to the object's update page on the website, if implemented.
+  + `web_get_delete_url()`: Returns the path to the object's delete page on the website, if implemented.
+- All typeclasses have new helper class method `create`, which encompasses useful functionality
+  that used to be embedded for example in the respective `@create` or `@connect` commands.
+- DefaultAccount now has new class methods implementing many things that used to be in unloggedin
+  commands (these can now be customized on the class instead):
+  + `is_banned()`: Checks if a given username or IP is banned.
+  + `get_username_validators`: Return list of validators for username validation (see
+    `settings.AUTH_USERNAME_VALIDATORS`)
+  + `authenticate`: Method to check given username/password.
+  + `normalize_username`: Normalizes names so (for Unicode environments) users cannot mimic existing usernames by replacing select characters with visually-similar Unicode chars.
+  + `validate_username`: Mechanism for validating a username based on predefined Django validators.
+  + `validate_password`: Mechanism for validating a password based on predefined Django validators.
+  + `set_password`: Apply password to account, using validation checks.
+- `AttributeHandler.remove` and `TagHandler.remove` can now be used to delete by-category. If neither
+     key nor category is given, they now work the same as .clear().
+
+### Protocols
+
+- Support for `Grapevine` MUD-chat network ("channels" supported)
+
+### Server
+
+- Convert ServerConf model to store its values as a Picklefield (same as
+    Attributes) instead of using a custom solution.
+- OOB: Add support for MSDP LIST, REPORT, UNREPORT commands (re-mapped to `msdp_list`,
+  `msdp_report`, `msdp_unreport`, inlinefuncs)
+- Added `evennia.ANSIString` to flat API.
+- Server/Portal log files now cycle to names on the form `server_.log_19_03_08_` instead of `server.log___19.3.8`, retaining
+  unix file sorting order.
+- Django signals fire for important events: Puppet/Unpuppet, Object create/rename, Login,
+  Logout, Login fail Disconnect, Account create/rename
+
+### Settings
+
+- `GLOBAL_SCRIPTS` - dict defining typeclasses of global scripts to store on the new
+  `evennia.GLOBAL_SCRIPTS` container. These will auto-start when Evennia start and will always
+  exist.
+- `OPTIONS_ACCOUNTS_DEFAULT` - option dict with option defaults and Option classes
+- `OPTION_CLASS_MODULES` - classes representing an on-Account Option, on special form
+- `VALIDATOR_FUNC_MODULES` - (general) text validator functions, for verifying an input
+  is on a specific form.
+
+### Utils
+
+- `evennia` launcher now fully handles all django-admin commands, like running tests in parallel.
+- `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
+- `evennia.utils.interactive` decorator can now allow you to use yield(secs) to pause operation
+  in any function, not just in Command.func. Likewise, response = yield(question) will work
+  if the decorated function has an argument or kwarg `caller`.
+- Added many more unit tests.
+- Swap argument order of `evennia.set_trace` to `set_trace(term_size=(140, 40), debugger='auto')`
+  since the size is more likely to be changed on the command line.
+- `utils.to_str(text, session=None)` now acts as the old `utils.to_unicode` (which was removed).
+  This converts to the str() type (not to a byte-string as in Evennia 0.8), trying different
+  encodings. This function will also force-convert any object passed to it into a string (so
+  `force_string` flag was removed and assumed always set).
+- `utils.to_bytes(text, session=None)` replaces the old `utils.to_str()` functionality and converts
+  str to bytes.
+- `evennia.MONITOR_HANDLER.all` now takes keyword argument `obj` to only retrieve monitors from that specific
+  Object (rather than all monitors in the entire handler).
+- Support adding `\f` in command doc strings to force where EvMore puts page breaks.
+- Validation Functions now added with standard API to homogenize user input validation.
+- Option Classes added to make storing user-options easier and smoother.
+- `evennia.VALIDATOR_CONTAINER` and `evennia.OPTION_CONTAINER` added to load these.
+
+### Contribs
+
+- Evscaperoom - a full puzzle engine for making multiplayer escape rooms in Evennia. Used to make 
+  the entry for the MUD-Coder's Guild's 2019 Game Jam with the theme "One Room", where it ranked #1. 
+- Evennia game-index client no longer a contrib - moved into server core and configured with new 
+  setting `GAME_INDEX_ENABLED`.
+- The `extended_room` contrib saw some backwards-incompatible refactoring:
+  + All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
+     it's `CmdExtendedRoomLook` etc.
+  + The `detail` command was broken out of the `desc` command and is now a new, stand-alone command
+     `CmdExtendedRoomDetail`.  This was done to make things easier to extend and to mimic how the detail
+     command works in the tutorial-world.
+  + The `detail` command now also supports deleting details (like the tutorial-world version).
+  + The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
+     to install the extended-room contrib.
+- Reworked `menu_login` contrib to use latest EvMenu standards. Now also supports guest logins.
+- Mail contrib was refactored to have optional Command classes `CmdMail` for OOC+IC mail (added
+    to the CharacterCmdSet and `CmdMailCharacter` for IC-only mailing between chars (added to CharacterCmdSet)
+
+### Translations
+
+- Simplified chinese, courtesy of user MaxAlex.
+
+
 ## Evennia 0.8 (2018)
 
 ### Requirements
@@ -19,7 +217,7 @@
   to terminal and can be stopped with Ctrl-C. Using `evennia reload`, or reloading in-game, will
   return Server to normal daemon operation.
 - For validating passwords, use safe Django password-validation backend instead of custom Evennia one.
-- Alias `evennia restart` to mean the same as `evennia reload`. 
+- Alias `evennia restart` to mean the same as `evennia reload`.
 
 ### Prototype changes
 
@@ -111,7 +309,21 @@
  - `tb_items` - Extends `tb_equip` with item use with conditions/status effects.
  - `tb_magic` - Extends `tb_equip` with spellcasting.
  - `tb_range` - Adds system for abstract positioning and movement.
+ - The `extended_room` contrib saw some backwards-incompatible refactoring:
+   - All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now
+     it's `CmdExtendedRoomLook` etc.
+   - The `detail` command was broken out of the `desc` command and is now a new, stand-alone command
+     `CmdExtendedRoomDetail`.  This was done to make things easier to extend and to mimic how the detail
+     command works in the tutorial-world.
+   - The `detail` command now also supports deleting details (like the tutorial-world version).
+   - The new `ExtendedRoomCmdSet` includes all the extended-room commands and is now the recommended way
+     to install the extended-room contrib.
 - Updates and some cleanup of existing contribs.
+
+
+### Internationalization
+
+- Polish translation by user ogotai
 
 # Overviews
 

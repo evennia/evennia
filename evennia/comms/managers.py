@@ -3,7 +3,7 @@ These managers define helper methods for accessing the database from
 Comm system components.
 
 """
-from __future__ import print_function
+
 
 from django.db.models import Q
 from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager)
@@ -43,9 +43,9 @@ def dbref(inp, reqhash=True):
             dbref, otherwise `None`.
 
     """
-    if reqhash and not (isinstance(inp, basestring) and inp.startswith("#")):
+    if reqhash and not (isinstance(inp, str) and inp.startswith("#")):
         return None
-    if isinstance(inp, basestring):
+    if isinstance(inp, str):
         inp = inp.lstrip('#')
     try:
         if int(inp) < 0:
@@ -77,7 +77,7 @@ def identify_object(inp):
             return inp, "object"
         elif clsname == "ChannelDB":
             return inp, "channel"
-    if isinstance(inp, basestring):
+    if isinstance(inp, str):
         return inp, "string"
     elif dbref(inp):
         return dbref(inp), "dbref"

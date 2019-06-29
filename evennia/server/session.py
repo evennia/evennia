@@ -4,12 +4,14 @@ This module defines a generic session class. All connection instances
 
 """
 from builtins import object
+from django.conf import settings
 
 import time
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Server Session
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
 
 class Session(object):
     """

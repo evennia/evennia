@@ -8,7 +8,7 @@ login procedure of the game, tracks sessions etc.
 Using standard ssh client,
 
 """
-from __future__ import print_function
+
 from builtins import object
 import os
 import re
@@ -290,7 +290,7 @@ class SshProtocol(Manhole, session.Session):
         text = args[0] if args else ""
         if text is None:
             return
-        text = to_str(text, force_string=True)
+        text = to_str(text)
 
         # handle arguments
         options = kwargs.get("options", {})
@@ -366,7 +366,7 @@ class AccountDBPasswordChecker(object):
 
         """
         self.factory = factory
-        super(AccountDBPasswordChecker, self).__init__()
+        super().__init__()
 
     def requestAvatarId(self, c):
         """

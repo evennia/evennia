@@ -13,6 +13,8 @@ always be sure of what you have changed and what is default behaviour.
 
 """
 from builtins import range
+from django.contrib.messages import constants as messages
+from django.urls import reverse_lazy
 
 import os
 import sys
@@ -23,6 +25,9 @@ import sys
 
 # This is the name of your game. Make it catchy!
 SERVERNAME = "Evennia"
+# Short one-sentence blurb describing your game. Shown under the title
+# on the website and could be used in online listings of your game etc.
+GAME_SLOGAN = "Python MU* creation system"
 # Lockdown mode will cut off the game from any external connections
 # and only allow connections from localhost. Requires a cold reboot.
 LOCKDOWN_MODE = False
@@ -221,7 +226,8 @@ COMMAND_RATE_WARNING = "You entered commands too fast. Wait a moment and try aga
 # 0 or less.
 MAX_CHAR_LIMIT = 6000
 # The warning to echo back to users if they enter a very large string
-MAX_CHAR_LIMIT_WARNING = "You entered a string that was too long. Please break it up into multiple parts."
+MAX_CHAR_LIMIT_WARNING = ("You entered a string that was too long. "
+                          "Please break it up into multiple parts.")
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
 # debugging. OBS: Showing full tracebacks to regular users could be a
@@ -265,8 +271,8 @@ CONN_MAX_AGE = 3600 * 7
 # not be checked for models specified here. If new_natural_key does not exist,
 # `None` will be returned and stored back as if no replacement was set.
 ATTRIBUTE_STORED_MODEL_RENAME = [
-        ((u"players", u"playerdb"), (u"accounts", u"accountdb")),
-        ((u"typeclasses", u"defaultplayer"), (u"typeclasses", u"defaultaccount"))]
+        (("players", "playerdb"), ("accounts", "accountdb")),
+        (("typeclasses", "defaultplayer"), ("typeclasses", "defaultaccount"))]
 
 
 ######################################################################
@@ -409,12 +415,14 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "contribs"]
-# Fallbacks for cmdset paths that fail to load. Note that if you change the path for your default cmdsets,
-# you will also need to copy CMDSET_FALLBACKS after your change in your settings file for it to detect the change.
-CMDSET_FALLBACKS = {CMDSET_CHARACTER: 'evennia.commands.default.cmdset_character.CharacterCmdSet',
-                    CMDSET_ACCOUNT: 'evennia.commands.default.cmdset_account.AccountCmdSet',
-                    CMDSET_SESSION: 'evennia.commands.default.cmdset_session.SessionCmdSet',
-                    CMDSET_UNLOGGEDIN: 'evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet'}
+# Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
+# default cmdsets, you will also need to copy CMDSET_FALLBACKS after your change in your
+# settings file for it to detect the change.
+CMDSET_FALLBACKS = {
+    CMDSET_CHARACTER: 'evennia.commands.default.cmdset_character.CharacterCmdSet',
+    CMDSET_ACCOUNT: 'evennia.commands.default.cmdset_account.AccountCmdSet',
+    CMDSET_SESSION: 'evennia.commands.default.cmdset_session.SessionCmdSet',
+    CMDSET_UNLOGGEDIN: 'evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet'}
 # Parent class for all default commands. Changing this class will
 # modify all default commands, so do so carefully.
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
@@ -485,6 +493,41 @@ START_LOCATION = "#2"
 TYPECLASS_AGGRESSIVE_CACHE = True
 
 ######################################################################
+# Options and validators
+######################################################################
+
+# Options available on Accounts. Each such option is described by a
+# class available from evennia.OPTION_CLASSES, in turn making use
+# of validators from evennia.VALIDATOR_FUNCS to validate input when
+# the user changes an option. The options are accessed through the
+# `Account.options` handler.
+
+# ("Description", 'Option Class name in evennia.OPTION_CLASS_MODULES', 'Default Value')
+
+OPTIONS_ACCOUNT_DEFAULT = {
+    'border_color': ('Headers, footers, table borders, etc.', 'Color', 'n'),
+    'header_star_color': ('* inside Header lines.', 'Color', 'n'),
+    'header_text_color': ('Text inside Header lines.', 'Color', 'w'),
+    'footer_text_color': ('Text inside Footer Lines.', 'Color', 'n'),
+    'column_names_color': ('Table column header text.', 'Color', 'w'),
+    'header_fill': ('Fill for Header lines.', 'Text', '='),
+    'separator_fill': ('Fill for Separator Lines.', 'Text', '-'),
+    'footer_fill': ('Fill for Footer Lines.', 'Text', '='),
+    'help_category_color': ('Help category names.', 'Color', 'n'),
+    'help_entry_color': ('Help entry names.', 'Color', 'n'),
+    'timezone': ('Timezone for dates. @tz for a list.', 'Timezone', 'UTC')
+}
+# Modules holding Option classes, responsible for serializing the option and
+# calling validator functions on it. Same-named functions in modules added
+# later in this list will override those added earlier.
+OPTION_CLASS_MODULES = ['evennia.utils.optionclasses', ]
+# Module holding validator functions. These are used as a resource for
+# validating options, but can also be used as input validators in general.
+# Same-named functions in modules added later in this list will override those
+# added earlier.
+VALIDATOR_FUNC_MODULES = ['evennia.utils.validatorfuncs', ]
+
+######################################################################
 # Batch processors
 ######################################################################
 
@@ -516,7 +559,7 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc & PrototypeFuncs
+# Inlinefunc, PrototypeFuncs
 ######################################################################
 # Evennia supports inline function preprocessing. This allows users
 # to supply inline calls on the form $func(arg, arg, ...) to do
@@ -532,6 +575,22 @@ INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs",
 # functional code in prototypes
 PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs",
                          "server.conf.prototypefuncs"]
+
+######################################################################
+# Global Scripts
+######################################################################
+
+# Global scripts started here will be available through
+# 'evennia.GLOBAL_SCRIPTS.key'. The scripts will survive a reload and be
+# recreated automatically if deleted. Each entry must have the script keys,
+# whereas all other fields in the specification are optional. If 'typeclass' is
+# not given, BASE_SCRIPT_TYPECLASS will be assumed.  Note that if you change
+# typeclass for the same key, a new Script will replace the old one on
+# `evennia.GLOBAL_SCRIPTS`.
+GLOBAL_SCRIPTS = {
+    # 'key': {'typeclass': 'typeclass.path.here',
+    #         'repeats': -1, 'interval': 50, 'desc': 'Example script'},
+}
 
 ######################################################################
 # Default Account setup and access
@@ -627,19 +686,34 @@ DEFAULT_CHANNELS = [
 CHANNEL_CONNECTINFO = None
 
 ######################################################################
-# External Channel connections
+# External Connections
 ######################################################################
 
 # Note: You do *not* have to make your MUD open to
 # the public to use the external connections, they
 # operate as long as you have an internet connection,
-# just like stand-alone chat clients. IRC requires
-# that you have twisted.words installed.
+# just like stand-alone chat clients.
 
+# The Evennia Game Index is a dynamic listing of Evennia games. You can add your game
+# to this list also if it is in closed pre-alpha development.
+GAME_INDEX_ENABLED = False
+# This dict
+GAME_INDEX_LISTING = {
+    'game_name': SERVERNAME,
+    'game_status': 'pre-alpha',   # pre-alpha, alpha, beta or launched
+    'short_description': GAME_SLOGAN,
+    'long_description': '',
+    'listing_contact': '',        # email
+    'telnet_hostname': '',        # mygame.com
+    'telnet_port': '',            # 1234
+    'game_website': '',           # http://mygame.com
+    'web_client_url': ''          # http://mygame.com/webclient
+}
 # Evennia can connect to external IRC channels and
 # echo what is said on the channel to IRC and vice
 # versa. Obs - make sure the IRC network allows bots.
 # When enabled, command @irc2chan will be available in-game
+# IRC requires that you have twisted.words installed.
 IRC_ENABLED = False
 # RSS allows to connect RSS feeds (from forum updates, blogs etc) to
 # an in-game channel. The channel will be updated when the rss feed
@@ -649,6 +723,21 @@ IRC_ENABLED = False
 # http://code.google.com/p/feedparser/)
 RSS_ENABLED = False
 RSS_UPDATE_INTERVAL = 60 * 10  # 10 minutes
+# Grapevine (grapevine.haus) is a network for listing MUDs as well as allow
+# users of said MUDs to communicate with each other on shared channels. To use,
+# your game must first be registered by logging in and creating a game entry at
+# https://grapevine.haus. Evennia links grapevine channels to in-game channels
+# with the @grapevine2chan command, available once this flag is set
+# Grapevine requires installing the pyopenssl library (pip install pyopenssl)
+GRAPEVINE_ENABLED = False
+# Grapevine channels to allow connection to. See https://grapevine.haus/chat
+# for the available channels. Only channels in this list can be linked to in-game
+# channels later.
+GRAPEVINE_CHANNELS = ["gossip", "testing"]
+# Grapevine authentication. Register your game at https://grapevine.haus to get
+# them. These are secret and should thus be overridden in secret_settings file
+GRAPEVINE_CLIENT_ID = ""
+GRAPEVINE_CLIENT_SECRET = ""
 
 ######################################################################
 # Django web features
@@ -665,6 +754,9 @@ DEBUG = False
 ADMINS = ()  # 'Your Name', 'your_email@domain.com'),)
 # These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.
 MANAGERS = ADMINS
+# This is a public point of contact for players or the public to contact
+# a staff member or administrator of the site. It is publicly posted.
+STAFF_CONTACT_EMAIL = None
 # Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
@@ -697,9 +789,9 @@ ROOT_URLCONF = 'web.urls'
 # Where users are redirected after logging in via contrib.auth.login.
 LOGIN_REDIRECT_URL = '/'
 # Where to redirect users when using the @login_required decorator.
-LOGIN_URL = '/accounts/login'
+LOGIN_URL = reverse_lazy('login')
 # Where to redirect users who wish to logout.
-LOGOUT_URL = '/accounts/login'
+LOGOUT_URL = reverse_lazy('logout')
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
 MEDIA_URL = '/media/'
@@ -751,6 +843,7 @@ TEMPLATES = [{
             'django.contrib.auth.context_processors.auth',
             'django.template.context_processors.media',
             'django.template.context_processors.debug',
+            'django.contrib.messages.context_processors.messages',
             'sekizai.context_processors.sekizai',
             'evennia.web.utils.general_context.general_context'],
         # While true, show "pretty" error messages for template syntax errors.
@@ -761,14 +854,15 @@ TEMPLATES = [{
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',  # 1.4?
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',)
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'evennia.web.utils.middleware.SharedLoginMiddleware',)
 
 ######################################################################
 # Evennia components
@@ -785,6 +879,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django.contrib.messages',
     'sekizai',
     'evennia.utils.idmapper',
     'evennia.server',
@@ -810,8 +905,23 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
     {'NAME': 'evennia.server.validators.EvenniaPasswordValidator'}]
 
+# Username validation plugins
+AUTH_USERNAME_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.validators.ASCIIUsernameValidator'},
+    {'NAME': 'django.core.validators.MinLengthValidator',
+        'OPTIONS': {'limit_value': 3}},
+    {'NAME': 'django.core.validators.MaxLengthValidator',
+        'OPTIONS': {'limit_value': 30}},
+    {'NAME': 'evennia.server.validators.EvenniaUsernameAvailabilityValidator'}]
+
 # Use a custom test runner that just tests Evennia-specific apps.
-TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
+TEST_RUNNER = 'evennia.server.tests.testrunner.EvenniaTestSuiteRunner'
+
+# Messages and Bootstrap don't classify events the same way; this setting maps
+# messages.error() to Bootstrap 'danger' classes.
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
 
 ######################################################################
 # Django extensions
@@ -820,7 +930,7 @@ TEST_RUNNER = 'evennia.server.tests.EvenniaTestSuiteRunner'
 # Django extesions are useful third-party tools that are not
 # always included in the default django distro.
 try:
-    import django_extensions
+    import django_extensions   # noqa
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 except ImportError:
     # Django extensions are not installed in all distros.

@@ -66,9 +66,15 @@ def check_errors(settings):
                             "and manipulate these time units, the tools from utils.gametime "
                             "are now found in contrib/convert_gametime.py instead.")
     if any(hasattr(settings, value) for value in ("TIME_SEC_PER_MIN", "TIME_MIN_PER_HOUR",
-                                                  "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK", "TIME_WEEK_PER_MONTH",
+                                                  "TIME_HOUR_PER_DAY", "TIME_DAY_PER_WEEK",
+                                                  "TIME_WEEK_PER_MONTH",
                                                   "TIME_MONTH_PER_YEAR")):
         raise DeprecationWarning(gametime_deprecation)
+
+    game_directory_deprecation = ("The setting GAME_DIRECTORY_LISTING was removed. It must be "
+                                  "renamed to GAME_INDEX_LISTING instead.")
+    if hasattr(settings, "GAME_DIRECTORY_LISTING"):
+        raise DeprecationWarning(game_directory_deprecation)
 
 
 def check_warnings(settings):

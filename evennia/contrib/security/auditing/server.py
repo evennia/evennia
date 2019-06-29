@@ -155,9 +155,9 @@ class AuditedServerSession(ServerSession):
 
         # Remove any keys with blank values
         if AUDIT_ALLOW_SPARSE is False:
-            log['data'] = {k: v for k, v in log['data'].iteritems() if v}
-            log['objects'] = {k: v for k, v in log['objects'].iteritems() if v}
-            log = {k: v for k, v in log.iteritems() if v}
+            log['data'] = {k: v for k, v in log['data'].items() if v}
+            log['objects'] = {k: v for k, v in log['objects'].items() if v}
+            log = {k: v for k, v in log.items() if v}
 
         return log
 
@@ -183,7 +183,7 @@ class AuditedServerSession(ServerSession):
             is_embedded = True
 
         for mask in AUDIT_MASKS:
-            for command, regex in mask.iteritems():
+            for command, regex in mask.items():
                 try:
                     match = re.match(regex, msg, flags=re.IGNORECASE)
                 except Exception as e:

@@ -76,7 +76,7 @@ from evennia import prototypes
 
 goblin = {"prototype_key": "goblin:, ... }
 
-prototype = prototypes.save_prototype(caller, **goblin)
+prototype = prototypes.save_prototype(goblin)
 
 ```
 

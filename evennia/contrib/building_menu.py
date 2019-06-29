@@ -595,7 +595,7 @@ class BuildingMenu(object):
                     if choice_key == self.joker_key:
                         continue
 
-                    if not isinstance(menu_key, basestring) or menu_key != choice_key:
+                    if not isinstance(menu_key, str) or menu_key != choice_key:
                         common = False
                         break
 
@@ -631,7 +631,7 @@ class BuildingMenu(object):
                     if choice_key == self.joker_key:
                         continue
 
-                    if not isinstance(menu_key, basestring) or menu_key != choice_key:
+                    if not isinstance(menu_key, str) or menu_key != choice_key:
                         common = False
                         break
 

@@ -1,0 +1,333 @@
+# The Simplified Chinese translation for the Evennia server.
+# Copyright (C) 2019 MaxAlex
+# This file is distributed under the same license as the Evennia package.
+# FIRST AUTHOR: MaxAlex , 2018-
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-03 17:04+0800\n"
+"PO-Revision-Date: 2019-05-03 17:04+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh-hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\accounts\accounts.py:440
+msgid "Account being deleted."
+msgstr "用户已删除。"
+
+#: .\commands\cmdhandler.py:681
+msgid "There were multiple matches."
+msgstr "发现多个匹配项。"
+
+#: .\commands\cmdhandler.py:704
+#, python-format
+msgid "Command '%s' is not available."
+msgstr "命令 '%s' 不可用。"
+
+#: .\commands\cmdhandler.py:709
+#, python-format
+msgid " Maybe you meant %s?"
+msgstr " 您指的是 %s 吗？"
+
+#: .\commands\cmdhandler.py:709
+msgid "or"
+msgstr "或"
+
+#: .\commands\cmdhandler.py:711
+msgid " Type \"help\" for help."
+msgstr " 键入 \"help\" 获得帮助。"
+
+#: .\commands\cmdsethandler.py:89
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"读取CmdSet '{path}' 时发生错误 \n"
+"(已记录 Traceback {timestamp})"
+
+#: .\commands\cmdsethandler.py:94
+#, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"读取 CmdSet 时发生错误：在 '{path}' 处未找到 CmdSet '{classname}' 。\n"
+"(已记录 Traceback {timestamp})"
+
+#: .\commands\cmdsethandler.py:98
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"读取在 '{path}' 处的 CmdSet 时发生 语法 错误。\n"
+"(已记录 Traceback {timestamp})"
+
+#: .\commands\cmdsethandler.py:103
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"读取在 '{path}' 处的 CmdSet 时发生 编译/运行 错误。\"，\n"
+"(已记录 Traceback {timestamp})"
+
+#: .\commands\cmdsethandler.py:108
+#, python-brace-format
+msgid ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+"\n"
+"读取在 '{path}' 处的 CmdSet 时发生错误。\n"
+"使用备选路径 '{fallback_path}' 。\n"
+
+#: .\commands\cmdsethandler.py:114
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "在备选路径 '{fallback_path}' 处创建 CmdSet 失败。"
+
+#: .\commands\cmdsethandler.py:182 .\commands\cmdsethandler.py:192
+#, python-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '%s')."
+msgstr ""
+"\n"
+"（尝试 '%s' 失败）。"
+
+#: .\commands\cmdsethandler.py:311
+#, python-brace-format
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "CmdSet '{cmdset}' 的自定义 {mergetype}"
+
+#: .\commands\cmdsethandler.py:314
+#, python-brace-format
+msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+msgstr "<合并 {mergelist} {mergetype}，优先级 {prio}>： {current}"
+
+#: .\commands\cmdsethandler.py:322
+#, python-brace-format
+msgid ""
+" <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
+" {keylist}"
+msgstr ""
+" <{key} ({mergetype}, 优先级 {prio}, {permstring})>:\n"
+" {keylist}"
+
+#: .\commands\cmdsethandler.py:426
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "只有 CmdSet 可以被添加给 cmdsethandler！"
+
+#: .\comms\channelhandler.py:100
+msgid "Say what?"
+msgstr "您想说？"
+
+#: .\comms\channelhandler.py:105
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "未找到频道 '%s' 。"
+
+#: .\comms\channelhandler.py:108
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "未连接至频道 '%s' 。"
+
+#: .\comms\channelhandler.py:112
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "您未被允许在频道 '%s' 发送信息。"
+
+#: .\comms\channelhandler.py:155
+msgid " (channel)"
+msgstr " （频道）"
+
+#: .\locks\lockhandler.py:236
+#, python-format
+msgid "Lock: lock-function '%s' is not available."
+msgstr "Lock：Lock函数 '%s' 不可用。"
+
+#: .\locks\lockhandler.py:249
+#, python-format
+msgid "Lock: definition '%s' has syntax errors."
+msgstr "Lock：定义 '%s' 发生语法错误。"
+
+#: .\locks\lockhandler.py:253
+#, python-format
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+"%(obj)s 上的 LockHandler: 访问类型 '%(access_type)s' 由 "
+"'%(source)s' 改变为 '%(goal)s' "
+
+#: .\locks\lockhandler.py:320
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "Lock：'{lockdef}' 缺少英文冒号 (:) 。"
+
+#: .\locks\lockhandler.py:328
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr "Lock: '{lockdef}' 无访问类型（冒号左侧缺少数据）。"
+
+#: .\locks\lockhandler.py:336
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "Lock: '{lockdef}' 英文括号不匹配。"
+
+#: .\locks\lockhandler.py:343
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "Lock: '{lockdef}' 缺少合法Lock函数。"
+
+#: .\objects\objects.py:732
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "无法做出行动 （'%s'）。请联系管理员。"
+
+#: .\objects\objects.py:742
+msgid "The destination doesn't exist."
+msgstr "目的地不存在。"
+
+#: .\objects\objects.py:833
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "无法定位默认寓所 '(#%d)' 。"
+
+#: .\objects\objects.py:849
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr "出现错误！您进入了错误的地点。请联系管理员。"
+
+#: .\objects\objects.py:915
+#, python-format
+msgid "Your character %s has been destroyed."
+msgstr "您的角色 %s 被摧毁了。"
+
+#: .\scripts\scripthandler.py:53
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+
+#: .\scripts\scripts.py:205
+#, python-format
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+"'%(cname)s' 的脚本 %(key)s(#%(dbid)s)： at_repeat() 出现 '%(err)s' 错误。"
+
+#: .\server\initial_setup.py:28
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Account #1 you can create a demo/tutorial area with |w@batchcommand "
+"tutorial_world.build|n.\n"
+"    "
+msgstr ""
+"\n"
+"欢迎进入您的基于 |wEvennia|n 的游戏! 如果需要帮助、想要做些贡献、报告错误的话，"
+"请访问 http://www.evennia.com 。\n"
+"\n"
+"作为管理员，你可以使用 |w@batchcommand "
+"tutorial_world.build|n 来创建一个演示/教程区域。\n"
+"    "
+
+#: .\server\initial_setup.py:92
+msgid "This is User #1."
+msgstr "这是管理员。"
+
+#: .\server\initial_setup.py:105
+msgid "Limbo"
+msgstr "边境"
+
+#: .\server\server.py:139
+msgid "idle timeout exceeded"
+msgstr "连接超时"
+
+#: .\server\sessionhandler.py:386
+msgid " ... Server restarted."
+msgstr " ... 服务器已启动。"
+
+#: .\server\sessionhandler.py:606
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "异地登录。已断线。"
+
+#: .\server\sessionhandler.py:634
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "连接超时。已断线。"
+
+#: .\server\validators.py:50
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"（%s） 在命令行客户端中，您可以使用英文引号将输入内容扩起，"
+"来使用包含空格的词组。"
+
+#: .\utils\evmenu.py:192
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice."
+msgstr ""
+"菜单节点 '{nodename}' 未实现或发生错误。"
+"请尝试其他选项。"
+
+#: .\utils\evmenu.py:194
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "菜单节点 '{nodename}' 发生错误。"
+
+#: .\utils\evmenu.py:195
+msgid "No description."
+msgstr "无描述。"
+
+#: .\utils\evmenu.py:196
+msgid "Commands: <menu option>, help, quit"
+msgstr "命令：<menu option>, help, quit"
+
+#: .\utils\evmenu.py:197
+msgid "Commands: <menu option>, help"
+msgstr "命令： <menu option>, help"
+
+#: .\utils\evmenu.py:198
+msgid "Commands: help, quit"
+msgstr "命令： help, quit"
+
+#: .\utils\evmenu.py:199
+msgid "Commands: help"
+msgstr "命令： help"
+
+#: .\utils\evmenu.py:200
+msgid "进行选择或者尝试键入 'help'。"
+msgstr ""
+
+#: .\utils\utils.py:1866
+#, python-format
+msgid "Could not find '%s'."
+msgstr "无法找到 '%s'"
+
+#: .\utils\utils.py:1873
+#, python-format
+msgid "More than one match for '%s' (please narrow target):\n"
+msgstr "发现多个符合 '%s' 的匹配项 （请缩小范围）：\n"

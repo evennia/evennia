@@ -50,7 +50,7 @@ class TutorialObject(DefaultObject):
 
     def at_object_creation(self):
         """Called when the object is first created."""
-        super(TutorialObject, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "No tutorial info is available for this object."
 
     def reset(self):
@@ -123,7 +123,7 @@ class Readable(TutorialObject):
         Called when object is created. We make sure to set the needed
         Attribute and add the readable cmdset.
         """
-        super(Readable, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "This is an object with a 'read' command defined in a command set on itself."
         self.db.readable_text = "There is no text written on %s." % self.key
         # define a command on the object.
@@ -221,7 +221,7 @@ class Obelisk(TutorialObject):
 
     def at_object_creation(self):
         """Called when object is created."""
-        super(Obelisk, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "This object changes its desc randomly, and makes sure to remember which one you saw."
         self.db.puzzle_descs = ["You see a normal stone slab"]
         # make sure this can never be picked up
@@ -245,7 +245,7 @@ class Obelisk(TutorialObject):
         caller.db.puzzle_clue = clueindex
         # call the parent function as normal (this will use
         # the new desc Attribute we just set)
-        return super(Obelisk, self).return_appearance(caller)
+        return super().return_appearance(caller)
 
 
 # -------------------------------------------------------------
@@ -319,7 +319,7 @@ class LightSource(TutorialObject):
 
     def at_object_creation(self):
         """Called when object is first created."""
-        super(LightSource, self).at_object_creation()
+        super().at_object_creation()
         self.db.tutorial_info = "This object can be lit to create light. It has a timeout for how long it burns."
         self.db.is_giving_light = False
         self.db.burntime = 60 * 3  # 3 minutes
@@ -564,7 +564,8 @@ class CmdPressButton(Command):
                  "decisive push. First nothing happens, then there is a rumble and a hidden " \
                  "|wpassage|n opens, dust and pebbles rumbling as part of the wall moves aside."
         self.caller.location.msg_contents(string % self.caller.key, exclude=self.caller)
-        self.obj.open_wall()
+        if not self.obj.open_wall():
+            self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
 
 
 class CmdSetCrumblingWall(CmdSet):
@@ -601,7 +602,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
 
     def at_object_creation(self):
         """called when the object is first created."""
-        super(CrumblingWall, self).at_object_creation()
+        super().at_object_creation()
 
         self.aliases.add(["secret passage", "passage",
                           "crack", "opening", "secret door"])
@@ -638,7 +639,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # this will make it into a proper exit (this returns a list)
         eloc = search.search_object(self.db.destination)
         if not eloc:
-            self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
+            return False
         else:
             self.destination = eloc[0]
         self.db.exit_open = True
@@ -693,7 +694,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         self.db.desc = "".join(result)
 
         # call the parent to continue execution (will use the desc we just set)
-        return super(CrumblingWall, self).return_appearance(caller)
+        return super().return_appearance(caller)
 
     def at_after_traverse(self, traverser, source_location):
         """
@@ -862,7 +863,7 @@ class Weapon(TutorialObject):
 
     def at_object_creation(self):
         """Called at first creation of the object"""
-        super(Weapon, self).at_object_creation()
+        super().at_object_creation()
         self.db.hit = 0.4    # hit chance
         self.db.parry = 0.8  # parry chance
         self.db.damage = 1.0

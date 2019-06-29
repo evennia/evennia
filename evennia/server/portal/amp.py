@@ -4,18 +4,15 @@ The AMP (Asynchronous Message Protocol)-communication commands and constants use
 This module acts as a central place for AMP-servers and -clients to get commands to use.
 
 """
-from __future__ import print_function
+
 from functools import wraps
 import time
 from twisted.protocols import amp
 from collections import defaultdict, namedtuple
-from cStringIO import StringIO
+from io import BytesIO
 from itertools import count
 import zlib  # Used in Compressed class
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 from twisted.internet.defer import DeferredList, Deferred
 from evennia.utils.utils import to_str, variable_from_module
@@ -44,8 +41,8 @@ SSHUTD = chr(17)       # server shutdown
 PSTATUS = chr(18)      # ping server or portal status
 SRESET = chr(19)       # server shutdown in reset mode
 
-NUL = b'\0'
-NULNUL = '\0\0'
+NUL = b'\x00'
+NULNUL = b'\x00\x00'
 
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
 
@@ -58,7 +55,7 @@ _MSGBUFFER = defaultdict(list)
 DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
 
 
-_HTTP_WARNING = """
+_HTTP_WARNING = bytes("""
 HTTP/1.1 200 OK
 Content-Type: text/html
 
@@ -70,17 +67,17 @@ Content-Type: text/html
         <h3>This port should NOT be publicly visible.</h3>
     </p>
   </body>
-</html>""".strip()
+</html>""".strip(), 'utf-8')
 
 
 # Helper functions for pickling.
 
 def dumps(data):
-    return to_str(pickle.dumps(to_str(data), pickle.HIGHEST_PROTOCOL))
+    return pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
 
 
 def loads(data):
-    return pickle.loads(to_str(data))
+    return pickle.loads(data)
 
 
 def _get_logger():
@@ -121,15 +118,16 @@ class Compressed(amp.String):
         put it back together here.
 
         """
-        value = StringIO()
+
+        value = BytesIO()
         value.write(self.fromStringProto(strings.get(name), proto))
         for counter in count(2):
             # count from 2 upwards
-            chunk = strings.get("%s.%d" % (name, counter))
+            chunk = strings.get(b"%s.%d" % (name, counter))
             if chunk is None:
                 break
             value.write(self.fromStringProto(chunk, proto))
-        objects[name] = value.getvalue()
+        objects[str(name, 'utf-8')] = value.getvalue()
 
     def toBox(self, name, strings, objects, proto):
         """
@@ -137,23 +135,33 @@ class Compressed(amp.String):
         we break up too-long data snippets into multiple batches here.
 
         """
-        value = StringIO(objects[name])
+
+        # print("toBox: name={}, strings={}, objects={}, proto{}".format(name, strings, objects, proto))
+
+        value = BytesIO(objects[str(name, 'utf-8')])
         strings[name] = self.toStringProto(value.read(AMP_MAXLEN), proto)
+
+        # print("toBox strings[name] = {}".format(strings[name]))
+
         for counter in count(2):
             chunk = value.read(AMP_MAXLEN)
             if not chunk:
                 break
-            strings["%s.%d" % (name, counter)] = self.toStringProto(chunk, proto)
+            strings[b"%s.%d" % (name, counter)] = self.toStringProto(chunk, proto)
 
     def toString(self, inObject):
         """
-        Convert to send as a string on the wire, with compression.
+        Convert to send as a bytestring on the wire, with compression.
+
+        Note: In Py3 this is really a byte stream.
+
         """
         return zlib.compress(super(Compressed, self).toString(inObject), 9)
 
     def fromString(self, inString):
         """
         Convert (decompress) from the string-representation on the wire to Python.
+
         """
         return super(Compressed, self).fromString(zlib.decompress(inString))
 
@@ -164,9 +172,9 @@ class MsgLauncher2Portal(amp.Command):
 
     """
     key = "MsgLauncher2Portal"
-    arguments = [('operation', amp.String()),
-                 ('arguments', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'operation', amp.String()),
+                 (b'arguments', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -175,9 +183,9 @@ class MsgPortal2Server(amp.Command):
     Message Portal -> Server
 
     """
-    key = "MsgPortal2Server"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    key = b"MsgPortal2Server"
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -187,8 +195,8 @@ class MsgServer2Portal(amp.Command):
 
     """
     key = "MsgServer2Portal"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -201,8 +209,8 @@ class AdminPortal2Server(amp.Command):
 
     """
     key = "AdminPortal2Server"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -215,8 +223,8 @@ class AdminServer2Portal(amp.Command):
 
     """
     key = "AdminServer2Portal"
-    arguments = [('packed_data', Compressed())]
-    errors = {Exception: 'EXCEPTION'}
+    arguments = [(b'packed_data', Compressed())]
+    errors = {Exception: b'EXCEPTION'}
     response = []
 
 
@@ -226,9 +234,9 @@ class MsgStatus(amp.Command):
 
     """
     key = "MsgStatus"
-    arguments = [('status', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
-    response = [('status', amp.String())]
+    arguments = [(b'status', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
+    response = [(b'status', amp.String())]
 
 
 class FunctionCall(amp.Command):
@@ -240,12 +248,12 @@ class FunctionCall(amp.Command):
 
     """
     key = "FunctionCall"
-    arguments = [('module', amp.String()),
-                 ('function', amp.String()),
-                 ('args', amp.String()),
-                 ('kwargs', amp.String())]
-    errors = {Exception: 'EXCEPTION'}
-    response = [('result', amp.String())]
+    arguments = [(b'module', amp.String()),
+                 (b'function', amp.String()),
+                 (b'args', amp.String()),
+                 (b'kwargs', amp.String())]
+    errors = {Exception: b'EXCEPTION'}
+    response = [(b'result', amp.String())]
 
 
 # -------------------------------------------------------------
@@ -274,12 +282,15 @@ class AMPMultiConnectionProtocol(amp.AMP):
         self.send_mode = True
         self.send_task = None
         self.multibatches = 0
+        # later twisted amp has its own __init__
+        super(AMPMultiConnectionProtocol, self).__init__(*args, **kwargs)
 
     def dataReceived(self, data):
         """
         Handle non-AMP messages, such as HTTP communication.
         """
-        if data[0] == NUL:
+        # print("dataReceived: {}".format(data))
+        if data[:1] == NUL:
             # an AMP communication
             if data[-2:] != NULNUL:
                 # an incomplete AMP box means more batches are forthcoming.
@@ -301,7 +312,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
             # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
             self.transport.loseConnection()
-            print("HTML received: %s" % data)
+            print("HTTP received (the AMP port should not receive http, only AMP!) %s" % data)
 
     def makeConnection(self, transport):
         """
@@ -321,6 +332,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         This is called when an AMP connection is (re-)established. AMP calls it on both sides.
 
         """
+        # print("connectionMade: {}".format(self))
         self.factory.broadcasts.append(self)
 
     def connectionLost(self, reason):
@@ -333,6 +345,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         portal will continuously try to reconnect, showing the problem
         that way.
         """
+        # print("ConnectionLost: {}: {}".format(self, reason))
         try:
             self.factory.broadcasts.remove(self)
         except ValueError:
@@ -351,20 +364,21 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         e.trap(Exception)
-        _get_logger().log_err("AMP Error for %(info)s: %(e)s" % {'info': info,
-                                                                 'e': e.getErrorMessage()})
+        _get_logger().log_err("AMP Error for {info}: {trcbck} {err}".format(
+            info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()))
 
     def data_in(self, packed_data):
         """
         Process incoming packed data.
 
         Args:
-            packed_data (bytes): Zip-packed data.
+            packed_data (bytes): Pickled data.
         Returns:
-            unpaced_data (any): Unpacked package
+            unpaced_data (any): Unpickled package
 
         """
-        return loads(packed_data)
+        msg = loads(packed_data)
+        return msg
 
     def broadcast(self, command, sessid, **kwargs):
         """
@@ -383,6 +397,8 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         deferreds = []
+        # print("broadcast: {} {}: {}".format(command, sessid, kwargs))
+
         for protcl in self.factory.broadcasts:
             deferreds.append(protcl.callRemote(command, **kwargs).addErrback(
                 self.errback, command.key))

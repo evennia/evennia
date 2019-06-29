@@ -2,10 +2,14 @@
 Base typeclass for in-game Channels.
 
 """
+from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
+from django.utils.text import slugify
+
 from evennia.typeclasses.models import TypeclassBase
 from evennia.comms.models import TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
-from evennia.utils import logger
+from evennia.utils import create, logger
 from evennia.utils.utils import make_iter
 from future.utils import with_metaclass
 _CHANNEL_HANDLER = None
@@ -220,6 +224,51 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         return self.locks.check(accessing_obj, access_type=access_type,
                                 default=default, no_superuser_bypass=no_superuser_bypass)
 
+    @classmethod
+    def create(cls, key, account=None, *args, **kwargs):
+        """
+        Creates a basic Channel with default parameters, unless otherwise
+        specified or extended.
+
+        Provides a friendlier interface to the utils.create_channel() function.
+
+        Args:
+            key (str): This must be unique.
+            account (Account): Account to attribute this object to.
+
+        Kwargs:
+            aliases (list of str): List of alternative (likely shorter) keynames.
+            description (str): A description of the channel, for use in listings.
+            locks (str): Lockstring.
+            keep_log (bool): Log channel throughput.
+            typeclass (str or class): The typeclass of the Channel (not
+                often used).
+            ip (str): IP address of creator (for object auditing).
+
+        Returns:
+            channel (Channel): A newly created Channel.
+            errors (list): A list of errors in string form, if any.
+
+        """
+        errors = []
+        obj = None
+        ip = kwargs.pop('ip', '')
+
+        try:
+            kwargs['desc'] = kwargs.pop('description', '')
+            kwargs['typeclass'] = kwargs.get('typeclass', cls)
+            obj = create.create_channel(key, *args, **kwargs)
+
+            # Record creator id and creation IP
+            if ip: obj.db.creator_ip = ip
+            if account: obj.db.creator_id = account.id
+
+        except Exception as exc:
+            errors.append("An error occurred while creating this '%s' object." % key)
+            logger.log_err(exc)
+
+        return obj, errors
+
     def delete(self):
         """
         Deletes channel while also cleaning up channelhandler.
@@ -227,7 +276,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
         """
         self.attributes.clear()
         self.aliases.clear()
-        super(DefaultChannel, self).delete()
+        super().delete()
         from evennia.comms.channelhandler import CHANNELHANDLER
         CHANNELHANDLER.update()
 
@@ -332,7 +381,7 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         """
         senders = make_iter(senders) if senders else []
-        if isinstance(msgobj, basestring):
+        if isinstance(msgobj, str):
             # given msgobj is a string - convert to msgobject (always TempMsg)
             msgobj = TempMsg(senders=senders, header=header, message=msgobj, channels=[self])
         # we store the logging setting for use in distribute_message()
@@ -578,3 +627,151 @@ class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
 
         """
         pass
+
+    #
+    # Web/Django methods
+    #
+
+    def web_get_admin_url(self):
+        """
+        Returns the URI path for the Django Admin page for this object.
+
+        ex. Account#1 = '/admin/accounts/accountdb/1/change/'
+
+        Returns:
+            path (str): URI path to Django Admin page for object.
+
+        """
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        return reverse("admin:%s_%s_change" % (content_type.app_label,
+                                               content_type.model), args=(self.id,))
+
+    @classmethod
+    def web_get_create_url(cls):
+        """
+        Returns the URI path for a View that allows users to create new
+        instances of this object.
+
+        ex. Chargen = '/characters/create/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'channel-create' would be referenced by this method.
+
+        ex.
+        url(r'channels/create/', ChannelCreateView.as_view(), name='channel-create')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can create new objects is the
+        developer's responsibility.
+
+        Returns:
+            path (str): URI path to object creation page, if defined.
+
+        """
+        try:
+            return reverse('%s-create' % slugify(cls._meta.verbose_name))
+        except:
+            return '#'
+
+    def web_get_detail_url(self):
+        """
+        Returns the URI path for a View that allows users to view details for
+        this object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'channel-detail' would be referenced by this method.
+
+        ex.
+        url(r'channels/(?P<slug>[\w\d\-]+)/$',
+            ChannelDetailView.as_view(), name='channel-detail')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can view this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object detail page, if defined.
+
+        """
+        try:
+            return reverse('%s-detail' % slugify(self._meta.verbose_name),
+               kwargs={'slug': slugify(self.db_key)})
+        except:
+            return '#'
+
+
+    def web_get_update_url(self):
+        """
+        Returns the URI path for a View that allows users to update this
+        object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/change/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'channel-update' would be referenced by this method.
+
+        ex.
+        url(r'channels/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
+            ChannelUpdateView.as_view(), name='channel-update')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can modify objects is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object update page, if defined.
+
+        """
+        try:
+            return reverse('%s-update' % slugify(self._meta.verbose_name),
+               kwargs={'slug': slugify(self.db_key)})
+        except:
+            return '#'
+
+    def web_get_delete_url(self):
+        """
+        Returns the URI path for a View that allows users to delete this object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/delete/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'channel-delete' would be referenced by this method.
+
+        ex.
+        url(r'channels/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/delete/$',
+            ChannelDeleteView.as_view(), name='channel-delete')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can delete this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object deletion page, if defined.
+
+        """
+        try:
+            return reverse('%s-delete' % slugify(self._meta.verbose_name),
+               kwargs={'slug': slugify(self.db_key)})
+        except:
+            return '#'
+
+    # Used by Django Sites/Admin
+    get_absolute_url = web_get_detail_url

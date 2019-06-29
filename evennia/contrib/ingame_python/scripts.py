@@ -3,7 +3,7 @@ Scripts for the in-game Python system.
 """
 
 from datetime import datetime, timedelta
-from Queue import Queue
+from queue import Queue
 import re
 import sys
 import traceback
@@ -362,7 +362,7 @@ class EventHandler(DefaultScript):
                     self.db.locked[i] = (t_obj, t_callback_name, t_number - 1)
 
         # Delete time-related callbacks associated with this object
-        for script in list(obj.scripts.all()):
+        for script in obj.scripts.all():
             if isinstance(script, TimecallbackScript):
                 if script.obj is obj and script.db.callback_name == callback_name:
                     if script.db.number == number:

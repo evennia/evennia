@@ -46,7 +46,7 @@ from django.conf import settings
 from evennia.commands.command import InterruptCommand
 from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import logger, utils
-from evennia.utils.utils import string_suggestions, to_unicode
+from evennia.utils.utils import string_suggestions
 
 from django.utils.translation import ugettext as _
 
@@ -190,7 +190,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
 
     try:
         if response is None:
-            value = generator.next()
+            value = next(generator)
         else:
             value = generator.send(response)
     except StopIteration:
@@ -198,7 +198,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
     else:
         if isinstance(value, (int, float)):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
         else:
             raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
@@ -211,8 +211,8 @@ def _process_input(caller, prompt, result, cmd, generator):
 
     Args:
         caller (Character, Account or Session): the caller.
-        prompt (basestring): The sent prompt.
-        result (basestring): The unprocessed answer.
+        prompt (str): The sent prompt.
+        result (str): The unprocessed answer.
         cmd (Command): The command itself.
         generator (GeneratorType): The generator.
 
@@ -443,7 +443,7 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                         tempmergers[prio] = cmdset
 
                 # sort cmdsets after reverse priority (highest prio are merged in last)
-                cmdsets = yield sorted(tempmergers.values(), key=lambda x: x.priority)
+                cmdsets = yield sorted(list(tempmergers.values()), key=lambda x: x.priority)
 
                 # Merge all command sets into one, beginning with the lowest-prio one
                 cmdset = cmdsets[0]
@@ -618,8 +618,6 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
         finally:
             _COMMAND_NESTING[called_by] -= 1
 
-    raw_string = to_unicode(raw_string, force_string=True)
-
     session, account, obj = session, None, None
     if callertype == "session":
         session = called_by
@@ -649,6 +647,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                 args = raw_string
                 unformatted_raw_string = "%s%s" % (cmdname, args)
                 cmdset = None
+                raw_cmdname = cmdname
                 # session = session
                 # account = account
 

@@ -13,7 +13,7 @@ log_typemsg(). This is for historical, back-compatible reasons.
 
 """
 
-from __future__ import division
+
 
 import os
 import time
@@ -72,7 +72,7 @@ def timeformat(when=None):
 
 class WeeklyLogFile(logfile.DailyLogFile):
     """
-    Log file that rotates once per week
+    Log file that rotates once per week. Overrides key methods to change format
 
     """
     day_rotation = 7
@@ -83,6 +83,16 @@ class WeeklyLogFile(logfile.DailyLogFile):
         now = self.toDate()
         then = self.lastDate
         return now[0] > then[0] or now[1] > then[1] or now[2] > (then[2] + self.day_rotation)
+
+    def suffix(self, tupledate):
+        """Return the suffix given a (year, month, day) tuple or unixtime.
+        Format changed to have 03 for march instead of 3 etc (retaining unix file order)  
+        """
+        try:
+            return '_'.join(["{:02d}".format(part) for part in tupledate])
+        except Exception:
+            # try taking a float unixtime
+            return '_'.join(["{:02d}".format(part) for part in self.toDate(tupledate)])
 
     def write(self, data):
         "Write data to log file"

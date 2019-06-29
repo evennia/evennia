@@ -140,7 +140,7 @@ class RSSBotFactory(object):
 
     def start(self):
         """
-        Called by portalsessionhandler. Starts te bot.
+        Called by portalsessionhandler. Starts the bot.
         """
         def errback(fail):
             logger.log_err(fail.value)

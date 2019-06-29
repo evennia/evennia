@@ -54,7 +54,7 @@ class _CmdSetMeta(type):
         if not isinstance(cls.key_mergetypes, dict):
             cls.key_mergetypes = {}
 
-        super(_CmdSetMeta, cls).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class CmdSet(with_metaclass(_CmdSetMeta, object)):
