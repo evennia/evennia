@@ -599,7 +599,10 @@ if ENABLED:
 
 for plugin_module in SERVER_SERVICES_PLUGIN_MODULES:
     # external plugin protocols
-    plugin_module.start_plugin_services(EVENNIA)
+    try:
+        plugin_module.start_plugin_services(EVENNIA)
+    except AttributeError as err:
+        raise AttributeError(f"Error loading plugin module {plugin_module}: {err}")
 
 # clear server startup mode
 ServerConfig.objects.conf("server_starting_mode", delete=True)
