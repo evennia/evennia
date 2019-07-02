@@ -25,6 +25,7 @@ from django.conf import settings
 from django.db import IntegrityError
 from django.utils import timezone
 from evennia.utils import logger
+from evennia.server import signals
 from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
 
 # delayed imports
@@ -135,6 +136,9 @@ def create_object(typeclass=None, key=None, location=None, home=None,
     # at_first_save hook on the typeclass, where the _createdict can be
     # used.
     new_object.save()
+
+    signals.SIGNAL_OBJECT_POST_CREATE.send(sender=new_object)
+
     return new_object
 
 
@@ -235,6 +239,8 @@ def create_script(typeclass=None, key=None, obj=None, account=None, locks=None,
         # `start_delay=False` - the script will run once and immediately stop before save is over.
         return None
 
+    signals.SIGNAL_SCRIPT_POST_CREATE.send(sender=new_script)
+
     return new_script
 
 
@@ -287,6 +293,8 @@ def create_help_entry(key, entrytext, category="General", locks=None, aliases=No
     except Exception:
         logger.log_trace()
         return None
+
+    signals.SIGNAL_HELPENTRY_POST_CREATE.send(sender=new_help)
 
 
 # alias
@@ -387,6 +395,9 @@ def create_channel(key, aliases=None, desc=None,
     # at_first_save hook on the typeclass, where the _createdict can be
     # used.
     new_channel.save()
+
+    signals.SIGNAL_CHANNEL_POST_CREATE.send(sender=new_channel)
+
     return new_channel
 
 
@@ -483,6 +494,10 @@ def create_account(key, email, password,
     # at_first_save hook on the typeclass, where the _createdict
     # can be used.
     new_account.save()
+
+    # note that we don't send a signal here, that is sent from the Account.create helper method
+    # instead.
+
     return new_account
 
 

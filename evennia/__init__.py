@@ -102,6 +102,7 @@ EvForm = None
 EvEditor = None
 EvMore = None
 ANSIString = None
+signals = None
 
 # Handlers
 SESSION_HANDLER = None
@@ -168,6 +169,7 @@ def _init():
     global search_help, search_tag, search_message
     global create_object, create_script, create_account, create_channel
     global create_message, create_help_entry
+    global signals
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER
     global CHANNEL_HANDLER, TASK_HANDLER
@@ -179,6 +181,7 @@ def _init():
     global BASE_ROOM_TYPECLASS, BASE_EXIT_TYPECLASS, BASE_CHANNEL_TYPECLASS
     global BASE_SCRIPT_TYPECLASS, BASE_GUEST_TYPECLASS
 
+    # Parent typeclasses
     from .accounts.accounts import DefaultAccount
     from .accounts.accounts import DefaultGuest
     from .objects.objects import DefaultObject
@@ -229,6 +232,7 @@ def _init():
     from .utils.evform import EvForm
     from .utils.eveditor import EvEditor
     from .utils.ansi import ANSIString
+    from .server import signals
 
     # handlers
     from .scripts.tickerhandler import TICKER_HANDLER

@@ -22,7 +22,7 @@ from evennia.utils.logger import log_trace
 from evennia.utils.utils import (variable_from_module, is_iter,
                                  make_iter, delay, callables_from_module)
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
-from evennia.server.signals import SIGNAL_ACCOUNT_POST_CONNECT, SIGNAL_ACCOUNT_POST_DISCONNECT
+from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
 from evennia.utils.inlinefuncs import parse_inlinefunc
 from codecs import decode as codecs_decode
 
@@ -520,8 +520,8 @@ class ServerSessionHandler(SessionHandler):
                                                                           "uid": session.uid})
         account.at_post_login(session=session)
         if nsess < 2:
-            SIGNAL_ACCOUNT_POST_LOGIN.send(sender=account, session=session)
-        SIGNAL_ACCOUNT_POST_CONNECT.send(sender=account, session=session)
+            SIGNAL_ACCOUNT_POST_FIRST_LOGIN.send(sender=account, session=session)
+        SIGNAL_ACCOUNT_POST_LOGIN.send(sender=account, session=session)
 
     def disconnect(self, session, reason="", sync_portal=True):
         """
@@ -550,10 +550,10 @@ class ServerSessionHandler(SessionHandler):
             session.log(string)
 
             if nsess == 0:
-                SIGNAL_ACCOUNT_POST_LOGOUT.send(sender=session.account, session=session)
+                SIGNAL_ACCOUNT_POST_LAST_LOGOUT.send(sender=session.account, session=session)
 
         session.at_disconnect(reason)
-        SIGNAL_ACCOUNT_POST_DISCONNECT.send(sender=session.account, session=session)
+        SIGNAL_ACCOUNT_POST_LOGOUT.send(sender=session.account, session=session)
         sessid = session.sessid
         if sessid in self and not hasattr(self, "_disconnect_all"):
             del self[sessid]
