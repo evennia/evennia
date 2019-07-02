@@ -206,7 +206,6 @@ Command {self} has no defined `func()` - showing on-command variables: No child 
 {variables}
         """
         self.caller.msg(string)
-        return
         # a simple test command to show the available properties
         string = "-" * 50
         string += "\n|w%s|n - Command variables from evennia:\n" % self.key
