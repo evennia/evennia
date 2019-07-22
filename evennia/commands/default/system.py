@@ -5,6 +5,7 @@ System commands
 """
 
 
+import code
 import traceback
 import os
 import io
@@ -167,17 +168,7 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
     if hasattr(caller, "sessions"):
         sessions = caller.sessions.all()
 
-    # import useful variables
-    import evennia
-    available_vars = {
-        'self': caller,
-        'me': caller,
-        'here': getattr(caller, "location", None),
-        'evennia': evennia,
-        'ev': evennia,
-        'inherits_from': utils.inherits_from,
-    }
-
+    available_vars = evennia_local_vars(caller)
     if show_input:
         for session in sessions:
             try:
@@ -219,6 +210,49 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
         except TypeError:
             caller.msg(ret, options={"raw": True,
                                      "client_raw": client_raw})
+def evennia_local_vars(caller):
+    """Return Evennia local variables usable in the py command as a dictionary."""
+    import evennia
+    return {
+        'self': caller,
+        'me': caller,
+        'here': getattr(caller, "location", None),
+        'evennia': evennia,
+        'ev': evennia,
+        'inherits_from': utils.inherits_from,
+    }
+
+
+class EvenniaPythonConsole(code.InteractiveConsole):
+
+    """Evennia wrapper around a Python interactive console."""
+
+    def __init__(self, caller):
+        super().__init__(evennia_local_vars(caller))
+        self.caller = caller
+
+    def write(self, string):
+        """Don't send to stderr, send to self.caller."""
+        self.caller.msg(string)
+
+    def push(self, line):
+        """Push some code, whether complete or not."""
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        class FakeStd:
+            def __init__(self, caller):
+                self.caller = caller
+
+            def write(self, string):
+                self.caller.msg(string)
+
+        fake_std = FakeStd(self.caller)
+        sys.stdout = fake_std
+        sys.stderr = fake_std
+        result = super().push(line)
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+        return result
 
 
 class CmdPy(COMMAND_DEFAULT_CLASS):
@@ -226,8 +260,10 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
     execute a snippet of python code
 
     Usage:
-      py <cmd>
+      py [cmd]
       py/edit
+      py/time <cmd>
+      py/clientraw <cmd>
 
     Switches:
       time - output an approximate execution time for <cmd>
@@ -236,7 +272,19 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         lead to different output depending on prototocol (such as angular brackets
         being parsed as HTML in the webclient but not in telnet clients)
 
-    Separate multiple commands by ';' or open the editor using the
+    Without argument, this command opens a Python console in your client,
+    in which you can enter several lines of code.  This console is similar
+    to the standard Python console (the one that opens when typing
+    'python' or 'python3.7' in your console).  This Python console is not
+    blocking so other operations can happen at the same time.  You can enter
+    one or more Python instructions, including conditions and loops (just
+    be sure to include the proper level of indentation).  The variables
+    you create in the console will be kept while the console is running.
+    Type the 'exit' command to quit this console without stopping Evennia.
+    If Evennia is reloaded, this console will be closed.
+
+    Alternatively, enter a line of instruction after the 'py' command to
+    execute it.  Separate multiple commands by ';' or open the editor using the
     /edit switch.  A few variables are made available for convenience
     in order to offer access to the system (you can import more at
     execution time).
@@ -277,8 +325,17 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
             return
 
         if not pycode:
-            string = "Usage: py <code>"
-            self.msg(string)
+            # Run in interactive mode
+            console = EvenniaPythonConsole(self.caller)
+            banner = f"Python {sys.version} on {sys.platform}"
+            banner += "\nType 'exit' to quit this console."
+            self.msg(banner)
+            line = ""
+            prompt = ">>>"
+            while line.lower() not in ("exit", "exit()"):
+                line = yield(prompt)
+                prompt = "..." if console.push(line) else ">>>"
+            self.msg("Closing the Python console.")
             return
 
         _run_code_snippet(caller, self.args, measure_time="time" in self.switches,

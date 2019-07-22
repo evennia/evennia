@@ -1263,7 +1263,7 @@ class CmdGetInput(Command):
             prompt = caller.ndb._getinput._prompt
             args = caller.ndb._getinput._args
             kwargs = caller.ndb._getinput._kwargs
-            result = self.raw_string.strip()  # we strip the ending line break caused by sending
+            result = self.raw_string.rstrip()  # we strip the ending line break caused by sending
 
             ok = not callback(caller, prompt, result, *args, **kwargs)
             if ok:
