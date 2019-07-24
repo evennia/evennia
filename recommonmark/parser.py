@@ -241,6 +241,9 @@ class CommonMarkParser(parsers.Parser):
     def visit_thematic_break(self, _):
         self.current_node.append(nodes.transition())
 
+    def depart_document(self, _):
+        self._level_to_elem = {}
+
     # Section handling
     def setup_sections(self):
         self._level_to_elem = {0: self.document}
