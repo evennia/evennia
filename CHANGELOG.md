@@ -1,5 +1,13 @@
 # Changelog
 
+## Evennia 1.0 (2019-) (WIP)
+
+### Already in master 
+
+- `py` command now reroutes stdout to output results in-game client. `py`
+without arguments starts a full interactive Python console. 
+
+
 ## Evennia 0.9 (2018-2019)
 
 ### Distribution
