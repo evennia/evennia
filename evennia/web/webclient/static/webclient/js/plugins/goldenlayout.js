@@ -53,7 +53,11 @@ let goldenlayout = (function () {
         $(".content").each( function () {
             let types = $(this).attr("types");
             if ( typeof types !== "undefined" ) {
-               untagged = filter( types.split(" "), untagged );
+                let typesArray = types.split(" ");
+                // add our types to known types so that the onText function don't add them to untagged later
+                knownTypes = Array.from(new Set([...knownTypes, ...typesArray]));
+                // remove our types from the untagged array                
+                untagged = filter( typesArray, untagged );
             }
         });
     }
@@ -446,6 +450,9 @@ let goldenlayout = (function () {
     var postInit = function () {
         // finish the setup and actually start GoldenLayout
         myLayout.init();
+
+        // work out which types are untagged based on our pre-configured layout
+        calculateUntaggedTypes();
 
         // Set the Event handler for when the client window changes size
         $(window).bind("resize", scrollAll);
