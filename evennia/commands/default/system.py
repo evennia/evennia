@@ -169,6 +169,7 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
         sessions = caller.sessions.all()
 
     available_vars = evennia_local_vars(caller)
+
     if show_input:
         for session in sessions:
             try:
@@ -177,7 +178,25 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
             except TypeError:
                 caller.msg(">>> %s" % pycode, options={"raw": True})
 
+
+
+
     try:
+        # reroute standard output to game client console
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+
+        class FakeStd:
+            def __init__(self, caller):
+                self.caller = caller
+
+            def write(self, string):
+                self.caller.msg(string.rsplit("\n", 1)[0])
+
+        fake_std = FakeStd(caller)
+        sys.stdout = fake_std
+        sys.stderr = fake_std
+
         try:
             pycode_compiled = compile(pycode, "", mode)
         except Exception:
@@ -190,18 +209,22 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
             ret = eval(pycode_compiled, {}, available_vars)
             t1 = time.time()
             duration = " (runtime ~ %.4f ms)" % ((t1 - t0) * 1000)
+            caller.msg(duration)
         else:
             ret = eval(pycode_compiled, {}, available_vars)
 
-        if mode == "eval":
-            ret = "%s%s" % (str(ret), duration)
-        else:
-            ret = " Done (use self.msg() if you want to catch output)%s" % duration
     except Exception:
         errlist = traceback.format_exc().split('\n')
         if len(errlist) > 4:
             errlist = errlist[4:]
         ret = "\n".join("%s" % line for line in errlist if line)
+    finally:
+        # return to old stdout
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+
+    if not ret:
+        return
 
     for session in sessions:
         try:
@@ -221,6 +244,8 @@ def evennia_local_vars(caller):
         'ev': evennia,
         'inherits_from': utils.inherits_from,
     }
+
+
 
 
 class EvenniaPythonConsole(code.InteractiveConsole):
@@ -244,7 +269,7 @@ class EvenniaPythonConsole(code.InteractiveConsole):
                 self.caller = caller
 
             def write(self, string):
-                self.caller.msg(string)
+                self.caller.msg(string.split("\n", 1)[0])
 
         fake_std = FakeStd(self.caller)
         sys.stdout = fake_std
@@ -272,27 +297,22 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         lead to different output depending on prototocol (such as angular brackets
         being parsed as HTML in the webclient but not in telnet clients)
 
-    Without argument, this command opens a Python console in your client,
-    in which you can enter several lines of code.  This console is similar
-    to the standard Python console (the one that opens when typing
-    'python' or 'python3.7' in your console).  This Python console is not
-    blocking so other operations can happen at the same time.  You can enter
-    one or more Python instructions, including conditions and loops (just
-    be sure to include the proper level of indentation).  The variables
-    you create in the console will be kept while the console is running.
-    Type the 'exit' command to quit this console without stopping Evennia.
-    If Evennia is reloaded, this console will be closed.
+    Without argument, open a Python console in-game. This is a full console,
+    accepting multi-line Python code for testing and debugging. Type `exit` to
+    return to the game. If Evennia is reloaded, thek console will be closed.
 
-    Alternatively, enter a line of instruction after the 'py' command to
-    execute it.  Separate multiple commands by ';' or open the editor using the
-    /edit switch.  A few variables are made available for convenience
-    in order to offer access to the system (you can import more at
-    execution time).
+    Enter a line of instruction after the 'py' command to execute it
+    immediately.  Separate multiple commands by ';' or open the code editor
+    using the /edit switch (all lines added in editor will be executed
+    immediately when closing or using the execute command in the editor).
+
+    A few variables are made available for convenience in order to offer access
+    to the system (you can import more at execution time).
 
     Available variables in py environment:
       self, me                   : caller
       here                       : caller.location
-      ev                         : the evennia API
+      evennia                    : the evennia API
       inherits_from(obj, parent) : check object inheritance
 
     You can explore The evennia API from inside the game by calling
@@ -300,8 +320,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         py evennia.__doc__
         py evennia.managers.__doc__
 
-    |rNote: In the wrong hands this command is a severe security risk.
-    It should only be accessible by trusted server admins/superusers.|n
+    |rNote: In the wrong hands this command is a severe security risk.  It
+    should only be accessible by trusted server admins/superusers.|n
 
     """
     key = "py"
@@ -327,15 +347,15 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         if not pycode:
             # Run in interactive mode
             console = EvenniaPythonConsole(self.caller)
-            banner = f"Python {sys.version} on {sys.platform}"
-            banner += "\nType 'exit' to quit this console."
+            banner = (f"|gPython {sys.version} on {sys.platform}\n"
+                      "Evennia interactive console mode - type 'exit()' to leave.|n")
             self.msg(banner)
             line = ""
             prompt = ">>>"
             while line.lower() not in ("exit", "exit()"):
                 line = yield(prompt)
                 prompt = "..." if console.push(line) else ">>>"
-            self.msg("Closing the Python console.")
+            self.msg("|gClosing the Python console.|n")
             return
 
         _run_code_snippet(caller, self.args, measure_time="time" in self.switches,
