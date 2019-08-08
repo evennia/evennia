@@ -558,7 +558,7 @@ Command {self} has no defined `func()` - showing on-command variables:
         colors['headertext'] = self.account.options.get('%s_text_color' % mode)
         colors['headerstar'] = self.account.options.get('%s_star_color' % mode)
 
-        width = width or self.width()
+        width = width or self.client_width()
         if edge_character:
             width -= 2
 
