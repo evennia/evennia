@@ -92,7 +92,7 @@ SRESET = chr(19)       # shutdown server in reset mode
 PYTHON_MIN = '3.7'
 TWISTED_MIN = '18.0.0'
 DJANGO_MIN = '2.1'
-DJANGO_REC = '2.1'
+DJANGO_REC = '2.2.4'
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -397,7 +397,6 @@ ERROR_DJANGO_MIN = \
     ERROR: Django {dversion} found. Evennia requires version {django_min}
     or higher.
 
-    TE_TEST
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
     in a virtualenv you can install django with for example `pip install --upgrade django`
@@ -409,14 +408,14 @@ ERROR_DJANGO_MIN = \
 
 NOTE_DJANGO_MIN = \
     """
-    NOTE: Django {dversion} found. This will work, but v{django_rec}
-    is recommended for production.
+    NOTE: Django {dversion} found. This will work, but Django {django_rec} is
+    recommended for production.
     """
 
 NOTE_DJANGO_NEW = \
     """
     NOTE: Django {dversion} found. This is newer than Evennia's
-    recommended version (v{django_rec}). It might work, but may be new
+    recommended version ({django_rec}). It might work, but may be new
     enough to not be fully tested yet. Report any issues.
     """
 
@@ -1281,7 +1280,7 @@ def check_main_evennia_dependencies():
     try:
         dversion = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
         # only the main version (1.5, not 1.5.4.0)
-        dversion_main = ".".join(dversion.split(".")[:2])
+        dversion_main = ".".join(dversion.split(".")[:3])
         if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
             print(ERROR_DJANGO_MIN.format(
                 dversion=dversion_main, django_min=DJANGO_MIN))

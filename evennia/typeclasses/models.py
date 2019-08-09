@@ -358,6 +358,10 @@ class TypedObject(SharedMemoryModel):
         except AttributeError:
             return False
 
+    def __hash__(self):
+        # this is required to maintain hashing
+        return super().__hash__()
+
     def __str__(self):
         return smart_str("%s" % self.db_key)
 
