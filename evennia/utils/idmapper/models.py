@@ -173,14 +173,14 @@ class SharedMemoryModelBase(ModelBase):
                 _GA(cls, "save")(update_fields=update_fields)
 
             # wrapper factories
-            def fget(cls): return _get(cls, fieldname)
             if not editable:
+                def fget(cls): return _get(cls, fieldname)
                 def fset(cls, val): return _set_nonedit(cls, fieldname, val)
             elif foreignkey:
                 def fget(cls): return _get_foreign(cls, fieldname)
-
                 def fset(cls, val): return _set_foreign(cls, fieldname, val)
             else:
+                def fget(cls): return _get(cls, fieldname)
                 def fset(cls, val): return _set(cls, fieldname, val)
 
             def fdel(cls): return _del(cls, fieldname) if editable else _del_nonedit(cls, fieldname)
@@ -336,6 +336,13 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
 
     # per-instance methods
 
+    def __eq__(self, other):
+        return super().__eq__(other)
+
+    def __hash__(self):
+        # this is required to maintain hashing
+        return super().__hash__()
+
     def at_idmapper_flush(self):
         """
         This is called when the idmapper cache is flushed and
@@ -395,7 +402,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             try:
                 super().save(*args, **kwargs)
             except DatabaseError:
-                # we handle the 'update_fields did not update any rows' error that 
+                # we handle the 'update_fields did not update any rows' error that
                 # may happen due to timing issues with attributes
                 ufields_removed = kwargs.pop('update_fields', None)
                 if ufields_removed:
