@@ -53,11 +53,7 @@ let goldenlayout = (function () {
         $(".content").each( function () {
             let types = $(this).attr("types");
             if ( typeof types !== "undefined" ) {
-                let typesArray = types.split(" ");
-                // add our types to known types so that the onText function don't add them to untagged later
-                knownTypes = Array.from(new Set([...knownTypes, ...typesArray]));
-                // remove our types from the untagged array                
-                untagged = filter( typesArray, untagged );
+               untagged = filter( types.split(" "), untagged );
             }
         });
     }
@@ -451,9 +447,6 @@ let goldenlayout = (function () {
         // finish the setup and actually start GoldenLayout
         myLayout.init();
 
-        // work out which types are untagged based on our pre-configured layout
-        calculateUntaggedTypes();
-
         // Set the Event handler for when the client window changes size
         $(window).bind("resize", scrollAll);
 
@@ -476,6 +469,7 @@ let goldenlayout = (function () {
 
         myLayout = new GoldenLayout( window.goldenlayout_config, mainsub );
 
+        $("#prompt").remove(); // remove the cluttered, HTML-defined input divs
         $("#inputcontrol").remove(); // remove the cluttered, HTML-defined input divs
 
         // register our component and replace the default messagewindow with the Main component
@@ -486,11 +480,16 @@ let goldenlayout = (function () {
 
         // register our new input component
         myLayout.registerComponent( "input", function (container, componentState) {
-            var inputfield = $("<textarea type='text' class='inputfield form-control'></textarea>");
+            var promptfield = $("<div class='prompt'></div>");
+            var formcontrol = $("<textarea type='text' class='inputfield'></textarea>");
             var button = $("<button type='button' class='inputsend'>&gt;</button>");
 
+            var inputfield = $("<div class='inputfieldwrapper'>")
+                          .append( button )
+                          .append( formcontrol )
+
             $("<div class='inputwrap'>")
-                .append( button )
+                .append( promptfield )
                 .append( inputfield )
                 .appendTo( container.getElement() );
 
