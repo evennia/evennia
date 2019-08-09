@@ -3,9 +3,11 @@ Unit testing for the Command system itself.
 
 """
 
+from django.test import override_settings
 from evennia.utils.test_resources import EvenniaTest, TestCase
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
+from evennia.commands import cmdparser
 
 
 # Testing-command sets
@@ -376,3 +378,87 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
             self.assertEqual(len(cmdset.commands), 9)
         deferred.addCallback(_callback)
         return deferred
+
+
+class AccessableCommand(Command):
+    def access(*args, **kwargs):
+        return True
+
+class _CmdTest1(AccessableCommand):
+    key = "test1"
+
+
+class _CmdTest2(AccessableCommand):
+    key = "another command"
+
+
+class _CmdTest3(AccessableCommand):
+    key = "&the third command"
+
+
+class _CmdTest4(AccessableCommand):
+    key = "test2"
+
+
+class _CmdSetTest(CmdSet):
+    key = "test_cmdset"
+    def at_cmdset_creation(self):
+        self.add(_CmdTest1)
+        self.add(_CmdTest2)
+        self.add(_CmdTest3)
+
+
+class TestCmdParser(TestCase):
+
+    def test_create_match(self):
+        class DummyCmd:
+            pass
+        dummy = DummyCmd()
+
+        self.assertEqual(
+            cmdparser.create_match("look at", "look at target", dummy, "look"),
+            ("look at", " target", dummy, 7, 0.5, "look"))
+
+    @override_settings(CMD_IGNORE_PREFIXES="@&/+")
+    def test_build_matches(self):
+        a_cmdset = _CmdSetTest()
+        bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "test1"][0]
+
+        # normal parsing
+        self.assertEqual(
+            cmdparser.build_matches("test1 rock", a_cmdset, include_prefixes=False),
+            [("test1", " rock", bcmd, 5, 0.5, 'test1')]
+            )
+
+        # test prefix exclusion
+        bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "another command"][0]
+        self.assertEqual(
+            cmdparser.build_matches("@another command smiles to me  ",
+                                    a_cmdset, include_prefixes=False),
+            [("another command", " smiles to me  ", bcmd, 15, 0.5, 'another command')]
+            )
+        # test prefix exclusion on the cmd class
+        bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "&the third command"][0]
+        self.assertEqual(
+            cmdparser.build_matches("the third command",
+                                    a_cmdset, include_prefixes=False),
+            [("the third command", "", bcmd, 17, 1.0, '&the third command')]
+            )
+
+    @override_settings(SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)")
+    def test_num_prefixes(self):
+        self.assertEqual(cmdparser.try_num_prefixes("look me"),
+                         (None, None))
+        self.assertEqual(cmdparser.try_num_prefixes("3-look me"),
+                         ('3', "look me"))
+        self.assertEqual(cmdparser.try_num_prefixes("567-look me"),
+                         ('567', "look me"))
+
+    @override_settings(SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)",
+                       CMD_IGNORE_PREFIXES="@&/+")
+    def test_cmdparser(self):
+        a_cmdset = _CmdSetTest()
+        bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "test1"][0]
+
+        self.assertEqual(cmdparser.cmdparser("test1hello", a_cmdset, None),
+                         [("test1", "hello", bcmd, 5, 0.5, 'test1')])
