@@ -6,6 +6,10 @@
 
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console. 
+- Webclient default to a single input pane instead of two. Default to no help-popup.
+- Webclient fix of prompt display
+- Webclient multimedia support for relaying images, video and sounds via `.msg(image=URL)`, `.msg(video=URL)` 
+  and `.msg(audio=URL)`
 
 
 ## Evennia 0.9 (2018-2019)
