@@ -476,6 +476,7 @@ let goldenlayout = (function () {
 
         myLayout = new GoldenLayout( window.goldenlayout_config, mainsub );
 
+        $("#prompt").remove();       // remove the HTML-defined prompt div
         $("#inputcontrol").remove(); // remove the cluttered, HTML-defined input divs
 
         // register our component and replace the default messagewindow with the Main component
@@ -486,11 +487,16 @@ let goldenlayout = (function () {
 
         // register our new input component
         myLayout.registerComponent( "input", function (container, componentState) {
-            var inputfield = $("<textarea type='text' class='inputfield form-control'></textarea>");
+            var promptfield = $("<div class='prompt'></div>");
+            var formcontrol = $("<textarea type='text' class='inputfield form-control'></textarea>");
             var button = $("<button type='button' class='inputsend'>&gt;</button>");
+ 
+            var inputfield = $("<div class='inputfieldwrapper'>")
+                                .append( button )
+                                .append( formcontrol );
 
             $("<div class='inputwrap'>")
-                .append( button )
+                .append( promptfield )
                 .append( inputfield )
                 .appendTo( container.getElement() );
 
