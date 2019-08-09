@@ -47,7 +47,10 @@ div {margin:0px;}
 .inp { color: #555 }
 
 /* Messages returned from the server (most messages) */
-.out { color: #aaa }
+.out { 
+  color: #aaa;
+  background-color: #000;
+}
 
 /* Error messages (red) */
 .err { color: #f00; }
