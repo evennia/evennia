@@ -59,11 +59,11 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
         matches (list) A list of match tuples created by `cmdparser.create_match`.
 
     """
-    l_raw_string = raw_string.lower()
     matches = []
     try:
         if include_prefixes:
             # use the cmdname as-is
+            l_raw_string = raw_string.lower()
             for cmd in cmdset:
                 matches.extend([create_match(cmdname, raw_string, cmd, cmdname)
                                 for cmdname in [cmd.key] + cmd.aliases
@@ -72,9 +72,13 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
                                     cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
         else:
             # strip prefixes set in settings
+            raw_string = (raw_string.lstrip(_CMD_IGNORE_PREFIXES)
+                          if len(raw_string) > 1 else l_raw_string)
+            l_raw_string = raw_string.lower()
             for cmd in cmdset:
                 for raw_cmdname in [cmd.key] + cmd.aliases:
-                    cmdname = raw_cmdname.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_cmdname) > 1 else raw_cmdname
+                    cmdname = (raw_cmdname.lstrip(_CMD_IGNORE_PREFIXES)
+                               if len(raw_cmdname) > 1 else raw_cmdname)
                     if cmdname and l_raw_string.startswith(cmdname.lower()) and \
                             (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname):])):
                         matches.append(create_match(cmdname, raw_string, cmd, raw_cmdname))
