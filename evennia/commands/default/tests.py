@@ -114,8 +114,9 @@ class CommandTest(EvenniaTest):
         stored_msg = [args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                       for name, args, kwargs in receiver.msg.mock_calls]
         # Get the first element of a tuple if msg received a tuple instead of a string
-        stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
+        stored_msg = [str(smsg[0]) if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg]
         if msg is not None:
+            msg = str(msg)  # to be safe, e.g. `py` command may return ints
             # set our separator for returned messages based on parsing ansi or not
             msg_sep = "|" if noansi else "||"
             # Have to strip ansi for each returned message for the regex to handle it correctly
@@ -219,7 +220,7 @@ class TestSystem(CommandTest):
     def test_py(self):
         # we are not testing CmdReload, CmdReset and CmdShutdown, CmdService or CmdTime
         # since the server is not running during these tests.
-        self.call(system.CmdPy(), "1+2", ">>> 1+2|3")
+        self.call(system.CmdPy(), "1+2", '>>> 1+2|3')
         self.call(system.CmdPy(), "/clientraw 1+2", ">>> 1+2|3")
 
     def test_scripts(self):
