@@ -152,19 +152,6 @@ class ScriptBase(with_metaclass(TypeclassBase, ScriptDB)):
     """
     objects = ScriptManager()
 
-    def __eq__(self, other):
-        """
-        Compares two Scripts. Compares dbids.
-
-        Args:
-            other (Script): A script to compare with.
-
-        """
-        try:
-            return other.dbid == self.dbid
-        except Exception:
-            return False
-
     def __str__(self):
         return "<{cls} {key}>".format(cls=self.__class__.__name__, key=self.key)
 
