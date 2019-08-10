@@ -47,7 +47,7 @@ div {margin:0px;}
 .inp { color: #555 }
 
 /* Messages returned from the server (most messages) */
-.out { 
+.out {
   color: #aaa;
   background-color: #000;
 }
@@ -329,6 +329,13 @@ div {margin:0px;}
     height: 100%;
     float: left;
 }
+
+
+/* MXP links */
+#mxplink {
+  text-decoration: underline;
+}
+
 
 /* XTERM256 colors */
 
