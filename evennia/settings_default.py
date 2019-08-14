@@ -763,8 +763,8 @@ STAFF_CONTACT_EMAIL = None
 # Absolute path to the directory that holds file uploads from web apps.
 # Example: "/home/media/media.lawrence.com"
 MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
-# It's safe to dis-regard this, as it's a Django feature we only half use as a
-# dependency, not actually what it's primarily meant for.
+# If using Sites/Pages from the web admin, this value must be set to the
+# database-id of the Site (domain) we want to use with this game's Pages.
 SITE_ID = 1
 # The age for sessions.
 # Default: 1209600 (2 weeks, in seconds)
