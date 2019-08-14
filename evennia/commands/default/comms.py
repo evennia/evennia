@@ -19,6 +19,8 @@ from evennia.utils import create, logger, utils, evtable
 from evennia.utils.utils import make_iter, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
+CHANNEL_DEFAULT_TYPECLASS = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
+
 
 # limit symbol import for API
 __all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
@@ -33,10 +35,10 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
     Helper function for searching for a single channel with
     some error handling.
     """
-    channels = ChannelDB.objects.channel_search(channelname)
+    channels = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channelname)
     if not channels:
         if not noaliases:
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
+            channels = [chan for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
                         if channelname in chan.aliases.all()]
         if channels:
             return channels[0]
@@ -198,9 +200,9 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
     Usage:
       allcom [on | off | who | destroy]
 
-    Allows the user to universally turn off or on all channels they are on,
-    as well as perform a 'who' for all channels they are on. Destroy deletes
-    all channels that you control.
+    Allows the user to universally turn off or on all channels they are on, as
+    well as perform a 'who' for all channels they are on. Destroy deletes all
+    channels that you control.
 
     Without argument, works like comlist.
     """
@@ -225,25 +227,25 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
         if args == "on":
             # get names of all channels available to listen to
             # and activate them all
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
+            channels = [chan for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
                         if chan.access(caller, 'listen')]
             for channel in channels:
                 self.execute_cmd("addcom %s" % channel.key)
         elif args == "off":
             # get names all subscribed channels and disconnect from them all
-            channels = ChannelDB.objects.get_subscriptions(caller)
+            channels = CHANNEL_DEFAULT_TYPECLASS.objects.get_subscriptions(caller)
             for channel in channels:
                 self.execute_cmd("delcom %s" % channel.key)
         elif args == "destroy":
             # destroy all channels you control
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
+            channels = [chan for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
                         if chan.access(caller, 'control')]
             for channel in channels:
                 self.execute_cmd("cdestroy %s" % channel.key)
         elif args == "who":
             # run a who, listing the subscribers on visible channels.
             string = "\n|CChannel subscriptions|n"
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
+            channels = [chan for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
                         if chan.access(caller, 'listen')]
             if not channels:
                 string += "No channels."
@@ -282,13 +284,13 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         # all channels we have available to listen to
-        channels = [chan for chan in ChannelDB.objects.get_all_channels()
+        channels = [chan for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
                     if chan.access(caller, 'listen')]
         if not channels:
             self.msg("No channels available.")
             return
         # all channel we are already subscribed to
-        subs = ChannelDB.objects.get_subscriptions(caller)
+        subs = CHANNEL_DEFAULT_TYPECLASS.objects.get_subscriptions(caller)
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
@@ -561,7 +563,7 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
         if ';' in lhs:
             channame, aliases = lhs.split(';', 1)
             aliases = [alias.strip().lower() for alias in aliases.split(';')]
-        channel = ChannelDB.objects.channel_search(channame)
+        channel = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channame)
         if channel:
             self.msg("A channel with that name already exists.")
             return
