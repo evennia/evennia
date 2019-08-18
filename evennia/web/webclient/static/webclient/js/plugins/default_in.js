@@ -34,8 +34,18 @@ let defaultin_plugin = (function () {
                     }
                     inputfield.val(""); // Clear this inputfield
                     event.preventDefault();
-                }
-                inputfield.blur();
+
+                    // enter key by itself should toggle focus
+                    if( inputfield.length < 1 ) {
+                        inputfield = $(".inputfield:last");
+                        inputfield.focus();
+                        if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
+                            $("#inputfield").focus();
+                        }
+                    } else {
+                        inputfield.blur();
+                    }
+                } // else allow building a multi-line input command
                 break;
 
             // Anything else, focus() a textarea if needed, and allow the default event
