@@ -137,7 +137,7 @@ let options_plugin = (function () {
         // is helppopup set? and if so, does this Text have type 'help'?
         if ('helppopup' in options && options['helppopup'] ) {
             if (kwargs && ('type' in kwargs) && (kwargs['type'] == 'help') ) {
-                $('#helpdialogcontent').append('<div>'+ args + '</div>');
+                $('#helpdialogcontent').prepend('<div>'+ args + '</div>');
                 plugins['popups'].togglePopup("#helpdialog");
                 return true;
             }
