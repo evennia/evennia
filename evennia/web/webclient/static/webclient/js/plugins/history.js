@@ -63,6 +63,9 @@ let history = (function () {
             // Doing a history navigation; replace the text in the input and
             // move the cursor to the end of the new value
             var inputfield = $(".inputfield:focus");
+            if( inputfield.length < 1 ) { // focus the default (last), if nothing focused
+                inputfield = $(".inputfield:last");
+            }
             if( inputfield.length < 1 ) { // pre-goldenlayout backwards compatibility
                 inputfield = $("#inputfield");
             }
