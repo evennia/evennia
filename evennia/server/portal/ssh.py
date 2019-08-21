@@ -490,8 +490,8 @@ def makeFactory(configdict):
     try:
         # create/get RSA keypair
         publicKey, privateKey = getKeyPair(_PUBLIC_KEY_FILE, _PRIVATE_KEY_FILE)
-        factory.publicKeys = {'ssh-rsa': publicKey}
-        factory.privateKeys = {'ssh-rsa': privateKey}
+        factory.publicKeys = {b'ssh-rsa': publicKey}
+        factory.privateKeys = {b'ssh-rsa': privateKey}
     except Exception as err:
         print(_NO_AUTOGEN.format(err=err))
 
