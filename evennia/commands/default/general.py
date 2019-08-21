@@ -574,7 +574,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
 
         receivers = [recv.strip() for recv in self.lhs.split(",")]
 
-        receivers = [caller.search(receiver) for receiver in receivers]
+        receivers = [caller.search(receiver) for receiver in set(receivers)]
         receivers = [recv for recv in receivers if recv]
 
         speech = self.rhs
