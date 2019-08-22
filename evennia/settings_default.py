@@ -12,7 +12,6 @@ value - which may change as Evennia is developed. This way you can
 always be sure of what you have changed and what is default behaviour.
 
 """
-from builtins import range
 from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
 
