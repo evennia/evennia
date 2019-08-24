@@ -702,7 +702,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             errors.append(string)
             return None, errors
 
-        # everything's ok. Create the new account account.
+        # everything's ok. Create the new account.
         try:
             try:
                 account = create.create_account(username, email, password, permissions=permissions, typeclass=typeclass)

@@ -9,8 +9,8 @@ Objects:
 
 TutorialObject
 
-Readable
-Climbable
+TutorialReadable
+TutorialClimbable
 Obelisk
 LightSource
 CrumblingWall
@@ -113,7 +113,7 @@ class CmdSetReadable(CmdSet):
         self.add(CmdRead())
 
 
-class Readable(TutorialObject):
+class TutorialReadable(TutorialObject):
     """
     This simple object defines some attributes and
     """
@@ -183,7 +183,7 @@ class CmdSetClimbable(CmdSet):
         self.add(CmdClimb())
 
 
-class Climbable(TutorialObject):
+class TutorialClimbable(TutorialObject):
     """
     A climbable object. All that is special about it is that it has
     the "climb" command available on it.

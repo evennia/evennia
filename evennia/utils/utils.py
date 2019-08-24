@@ -17,6 +17,7 @@ import re
 import textwrap
 import random
 import inspect
+import traceback
 from twisted.internet.task import deferLater
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from os.path import join as osjoin
@@ -1453,8 +1454,10 @@ def class_from_module(path, defaultpaths=None):
 
     """
     cls = None
+    err = ""
     if defaultpaths:
-        paths = [path] + ["%s.%s" % (dpath, path) for dpath in make_iter(defaultpaths)] if defaultpaths else []
+        paths = [path] + ["%s.%s" % (dpath, path)
+                          for dpath in make_iter(defaultpaths)] if defaultpaths else []
     else:
         paths = [path]
 
@@ -1473,6 +1476,7 @@ def class_from_module(path, defaultpaths=None):
         try:
             mod = import_module(testpath, package='evennia')
         except ModuleNotFoundError:
+            err = traceback.format_exc(30)
             break
 
         try:
@@ -1481,10 +1485,11 @@ def class_from_module(path, defaultpaths=None):
         except AttributeError:
             if len(trace()) > 2:
                 # AttributeError within the module, don't hide it
-                exc = sys.exc_info()
-                raise_(exc[1], None, exc[2])
+                err = traceback.format_exc(30)
+                break
     if not cls:
-        err = "Could not load typeclass '%s'" % path
+        err = "\nCould not load typeclass '{}'{}".format(
+            path, " with the following traceback:\n" + err if err else "")
         if defaultpaths:
             err += "\nPaths searched:\n    %s" % "\n    ".join(paths)
         else:
