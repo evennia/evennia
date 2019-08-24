@@ -253,7 +253,7 @@ class TestExtendedRoom(CommandTest):
 
     def test_cmdextendedlook(self):
         rid = self.room1.id
-        self.call(extended_room.CmdExtendedRoomLook(), "here", 
+        self.call(extended_room.CmdExtendedRoomLook(), "here",
                   "Room(#{})\n{}".format(rid, self.SPRING_DESC))
         self.call(extended_room.CmdExtendedRoomLook(), "testdetail", self.DETAIL_DESC)
         self.call(extended_room.CmdExtendedRoomLook(), "nonexistent", "Could not find 'nonexistent'.")
@@ -726,7 +726,7 @@ class TestMail(CommandTest):
         self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account)
         self.call(mail.CmdMail(), "test", "'test' is not a valid mail id.", caller=self.account)
         self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.account)
-        self.call(mail.CmdMailCharacter(), "Char=Message 1", 
+        self.call(mail.CmdMailCharacter(), "Char=Message 1",
                   "You have received a new @mail from Char|You sent your message.", caller=self.char1)
         self.call(mail.CmdMailCharacter(), "Char=Message 2", "You sent your message.", caller=self.char2)
         self.call(mail.CmdMail(), "TestAccount2=Message 2",
@@ -881,13 +881,13 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         self.assertEqual(obj1.location, obj1.home)
 
     def test_readable(self):
-        readable = create_object(tutobjects.Readable, key="book", location=self.room1)
+        readable = create_object(tutobjects.TutorialReadable, key="book", location=self.room1)
         readable.db.readable_text = "Text to read"
         self.call(tutobjects.CmdRead(), "book", "You read book:\n  Text to read", obj=readable)
 
 
     def test_climbable(self):
-        climbable = create_object(tutobjects.Climbable, key="tree", location=self.room1)
+        climbable = create_object(tutobjects.TutorialClimbable, key="tree", location=self.room1)
         self.call(tutobjects.CmdClimb(), "tree", "You climb tree. Having looked around, you climb down again.", obj=climbable)
         self.assertEqual(self.char1.tags.get("tutorial_climbed_tree", category="tutorial_world"), "tutorial_climbed_tree")
 
@@ -923,7 +923,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         # we patch out the delay, so these are closed immediately
         self.assertFalse(wall.db.button_exposed)
         self.assertFalse(wall.db.exit_open)
- 
+
     def test_weapon(self):
         weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
         self.call(tutobjects.CmdAttack(), "Char", "You stab with sword.", obj=weapon, cmdstring="stab")
@@ -1759,15 +1759,15 @@ class TestPuzzles(CommandTest):
         super(TestPuzzles, self).setUp()
         self.steel = create_object(
                 self.object_typeclass,
-                key='steel', 
+                key='steel',
                 location=self.char1.location)
         self.flint = create_object(
                 self.object_typeclass,
-                key='flint', 
+                key='flint',
                 location=self.char1.location)
         self.fire = create_object(
                 self.object_typeclass,
-                key='fire', 
+                key='fire',
                 location=self.char1.location)
         self.steel.tags.add('tag-steel')
         self.steel.tags.add('tag-steel', category='tagcat')
@@ -2045,7 +2045,7 @@ class TestPuzzles(CommandTest):
         _puzzleedit('', '1', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', '', '', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit('', recipe_dbref, 'dummy', "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
-        _puzzleedit('', self.script.dbref, '', 
+        _puzzleedit('', self.script.dbref, '',
                     'Script(#{}) is not a puzzle'.format(sid))
 
         # edit use_success_message and use_success_location_message
