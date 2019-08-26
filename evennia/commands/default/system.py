@@ -528,7 +528,7 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
         totaltable.align = 'l'
         totaltable.add_row("Characters", "(BASE_CHARACTER_TYPECLASS + children)",
                            nchars, "%.2f" % ((float(nchars) / nobjs) * 100))
-        totaltable.add_row("Rooms", "(BASE_ROOM_TYPECKLASS + children)",
+        totaltable.add_row("Rooms", "(BASE_ROOM_TYPECLASS + children)",
                            nrooms, "%.2f" % ((float(nrooms) / nobjs) * 100))
         totaltable.add_row("Exits", "(BASE_EXIT_TYPECLASS + children)",
                            nexits, "%.2f" % ((float(nexits) / nobjs) * 100))
