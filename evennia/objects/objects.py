@@ -1846,7 +1846,6 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             # whisper mode
             msg_type = 'whisper'
             msg_self = '{self} whisper to {all_receivers}, "{speech}"' if msg_self is True else msg_self
-            msg_receivers = '{object} whispers: "{speech}"'
             msg_receivers = msg_receivers or '{object} whispers: "{speech}"'
             msg_location = None
         else:
