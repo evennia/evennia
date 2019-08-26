@@ -34,7 +34,7 @@ _MULTISESSION_MODE = settings.MULTISESSION_MODE
 # limit symbol import for API
 __all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
            "CmdCharCreate", "CmdOption", "CmdSessions", "CmdWho",
-           "CmdColorTest", "CmdQuell")
+           "CmdColorTest", "CmdQuell", "CmdCharDelete", "CmdStyle")
 
 
 class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
