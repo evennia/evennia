@@ -87,7 +87,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
 
     def parse(self):
         """
-        Add convenience check to know if caller is an Account or not since this cmd 
+        Add convenience check to know if caller is an Account or not since this cmd
         will be able to add to either Object- or Account level.
 
         """
@@ -276,7 +276,9 @@ class CmdMail(default_cmds.MuxAccountCommand):
                     if message:
                         messageForm.append(_HEAD_CHAR * _WIDTH)
                         messageForm.append("|wFrom:|n %s" % (message.senders[0].get_display_name(self.caller)))
-                        messageForm.append("|wSent:|n %s" % message.db_date_created.strftime("%b %-d, %Y - %H:%M:%S"))
+                        # note that we cannot use %-d format here since Windows does not support it
+                        day = message.db_date_created.day
+                        messageForm.append("|wSent:|n %s" % message.db_date_created.strftime(f"%b {day}, %Y - %H:%M:%S"))
                         messageForm.append("|wSubject:|n %s" % message.header)
                         messageForm.append(_SUB_HEAD_CHAR * _WIDTH)
                         messageForm.append(message.message)
@@ -286,7 +288,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
                     message.tags.add("-", category="mail")
 
         else:
-            # list messages 
+            # list messages
             messages = self.get_all_mail()
 
             if messages:
@@ -300,7 +302,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
                     if status == "NEW":
                         status = "|gNEW|n"
 
-                    table.add_row(index, message.senders[0].get_display_name(self.caller), 
+                    table.add_row(index, message.senders[0].get_display_name(self.caller),
                                   message.header,
                                   datetime_format(message.db_date_created),
                                   status)

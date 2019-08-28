@@ -577,10 +577,10 @@ def datetime_format(dtobj):
 
     if dtobj.year < now.year:
         # another year (Apr 5, 2019)
-        timestring = dtobj.strftime("%b %-d, %Y")
+        timestring = dtobj.strftime(f"%b {dtobj.day}, %Y")
     elif dtobj.date() < now.date():
         # another date, same year  (Apr 5)
-        timestring = dtobj.strftime("%b %-d")
+        timestring = dtobj.strftime(f"%b {dtobj.day}")
     elif dtobj.hour < now.hour - 1:
         # same day, more than 1 hour ago (10:45)
         timestring = dtobj.strftime("%H:%M")
