@@ -5,7 +5,9 @@ TODO: Not nearly all utilities are covered yet.
 
 """
 
+import mock
 from django.test import TestCase
+from datetime import datetime
 
 from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
@@ -186,3 +188,18 @@ class TestTimeformat(TestCase):
         """Test that unknown formats raise exceptions."""
         self.assertRaises(ValueError, utils.time_format, 0, 5)
         self.assertRaises(ValueError, utils.time_format, 0, "u")
+
+
+@mock.patch("evennia.utils.utils.timezone.now",
+            new=mock.MagicMock(return_value=datetime(2019, 8, 28, 21, 56)))
+class TestDateTimeFormat(TestCase):
+
+    def test_datetimes(self):
+        dtobj = datetime(2017, 7, 26, 22, 54)
+        self.assertEqual(utils.datetime_format(dtobj), "Jul 26, 2017")
+        dtobj = datetime(2019, 7, 26, 22, 54)
+        self.assertEqual(utils.datetime_format(dtobj), "Jul 26")
+        dtobj = datetime(2019, 8, 28, 19, 54)
+        self.assertEqual(utils.datetime_format(dtobj), "19:54")
+        dtobj = datetime(2019, 8, 28, 21, 32)
+        self.assertEqual(utils.datetime_format(dtobj), "21:32:00")
