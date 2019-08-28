@@ -382,7 +382,8 @@ class Evennia(object):
                 yield [(p.unpuppet_all(), p.at_server_shutdown())
                        for p in AccountDB.get_all_cached_instances()]
                 yield ObjectDB.objects.clear_all_sessids()
-            yield [(s.pause(manual_pause=False), s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
+            yield [(s.pause(manual_pause=s.attributes.get("_manual_pause", False)),
+                    s.at_server_shutdown()) for s in ScriptDB.get_all_cached_instances()]
             ServerConfig.objects.conf("server_restart_mode", "reset")
             self.at_server_cold_stop()
 
