@@ -72,9 +72,9 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
                                     cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
         else:
             # strip prefixes set in settings
-            l_raw_string = raw_string.lower()
             raw_string = (raw_string.lstrip(_CMD_IGNORE_PREFIXES)
-                          if len(raw_string) > 1 else l_raw_string)
+                          if len(raw_string) > 1 else raw_string)
+            l_raw_string = raw_string.lower()
             for cmd in cmdset:
                 for raw_cmdname in [cmd.key] + cmd.aliases:
                     cmdname = (raw_cmdname.lstrip(_CMD_IGNORE_PREFIXES)
