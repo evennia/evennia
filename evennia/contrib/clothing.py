@@ -368,7 +368,7 @@ class CmdWear(MuxCommand):
         wearstyle = True
         if not clothing:
             return
-        if not clothing.is_typeclass("evennia.contrib.clothing.Clothing"):
+        if not clothing.is_typeclass("evennia.contrib.clothing.Clothing", exact=False):
             self.caller.msg("That's not clothes!")
             return
 
@@ -460,10 +460,10 @@ class CmdCover(MuxCommand):
         cover_with = self.caller.search(self.arglist[1], candidates=self.caller.contents)
         if not to_cover or not cover_with:
             return
-        if not to_cover.is_typeclass("evennia.contrib.clothing.Clothing"):
+        if not to_cover.is_typeclass("evennia.contrib.clothing.Clothing", exact=False):
             self.caller.msg("%s isn't clothes!" % to_cover.name)
             return
-        if not cover_with.is_typeclass("evennia.contrib.clothing.Clothing"):
+        if not cover_with.is_typeclass("evennia.contrib.clothing.Clothing", exact=False):
             self.caller.msg("%s isn't clothes!" % cover_with.name)
             return
         if cover_with.db.clothing_type:
