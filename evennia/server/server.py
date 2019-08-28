@@ -546,7 +546,7 @@ if WEBSERVER_ENABLED:
 
     # Start a django-compatible webserver.
 
-    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website, LockableThreadPool
+    from evennia.server.webserver import DjangoWebRoot, WSGIWebServer, Website, LockableThreadPool, PrivateStaticRoot
 
     # start a thread pool and define the root url (/) as a wsgi resource
     # recognized by Django
@@ -555,9 +555,9 @@ if WEBSERVER_ENABLED:
 
     web_root = DjangoWebRoot(threads)
     # point our media resources to url /media
-    web_root.putChild(b"media", static.File(settings.MEDIA_ROOT))
+    web_root.putChild(b"media", PrivateStaticRoot(settings.MEDIA_ROOT))
     # point our static resources to url /static
-    web_root.putChild(b"static", static.File(settings.STATIC_ROOT))
+    web_root.putChild(b"static", PrivateStaticRoot(settings.STATIC_ROOT))
     EVENNIA.web_root = web_root
 
     if WEB_PLUGINS_MODULE:
