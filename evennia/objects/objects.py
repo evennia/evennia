@@ -2438,7 +2438,7 @@ class DefaultExit(DefaultObject):
         else:
             if self.db.err_traverse:
                 # if exit has a better error message, let's use it.
-                self.caller.msg(self.db.err_traverse)
+                traversing_object.msg(self.db.err_traverse)
             else:
                 # No shorthand error message. Call hook.
                 self.at_failed_traverse(traversing_object)
