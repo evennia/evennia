@@ -14,7 +14,7 @@ a great example/aid on how to do this.)
 """
 import urllib.parse
 from urllib.parse import quote as urlquote
-from twisted.web import resource, http, server
+from twisted.web import resource, http, server, static
 from twisted.internet import reactor
 from twisted.application import internet
 from twisted.web.proxy import ReverseProxyResource
@@ -268,3 +268,14 @@ class WSGIWebServer(internet.TCPServer):
         """
         super().stopService()
         self.pool.stop()
+
+
+class PrivateStaticRoot(static.File):
+    """
+    This overrides the default static file resource so as to not make the
+    directory listings public (that is, if you go to /media or /static you
+    won't see an index of all static/media files on the server).
+
+    """
+    def directoryListing(self):
+        return resource.ForbiddenResource()
