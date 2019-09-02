@@ -37,7 +37,6 @@ class Object(DefaultObject):
      aliases (list of strings) - aliases to the object. Will be saved to
                            database as AliasDB entries but returned as strings.
      dbref (int, read-only) - unique #id-number. Also "id" can be used.
-                                  back to this class
      date_created (string) - time stamp of object creation
      permissions (list of strings) - list of permission strings
 
