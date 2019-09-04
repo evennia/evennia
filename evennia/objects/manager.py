@@ -507,7 +507,7 @@ class ObjectDBManager(TypedObjectManager):
 
         # copy over all tags, if any
         for tag in original_object.tags.get(return_tagobj=True, return_list=True):
-            new_object.tags.add(tag=tag.key, category=tag.category, data=tag.data)
+            new_object.tags.add(tag=tag.db_key, category=tag.db_category, data=tag.db_data)
 
         return new_object
 
