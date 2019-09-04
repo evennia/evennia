@@ -147,7 +147,7 @@ ERROR_NO_ALT_GAMEDIR = \
 ERROR_NO_GAMEDIR = \
     """
     ERROR: No Evennia settings file was found. Evennia looks for the
-    file in your game directory as server/conf/settings.py.
+    file in your game directory as ./server/conf/settings.py.
 
     You must run this command from somewhere inside a valid game
     directory first created with
@@ -238,10 +238,11 @@ RECREATED_MISSING = \
 
 ERROR_DATABASE = \
     """
-    ERROR: Your database does not seem to be set up correctly.
+    ERROR: Your database does not exist or is not set up correctly.
     (error was '{traceback}')
 
-    Standing in your game directory, run
+    If you think your database should work, make sure you are running your
+    commands from inside your game directory. If this error persists, run 
 
        evennia migrate
 
@@ -2052,16 +2053,24 @@ def main():
         sys.exit()
 
     if args.initmissing:
+        created = False
         try:
             log_path = os.path.join(SERVERDIR, "logs")
             if not os.path.exists(log_path):
                 os.makedirs(log_path)
+                print(f"    ... Created missing log dir {log_path}.")
+                created = True
 
             settings_path = os.path.join(CONFDIR, "secret_settings.py")
             if not os.path.exists(settings_path):
                 create_settings_file(init=False, secret_settings=True)
+                print(f"    ... Created missing secret_settings.py file as {settings_path}.")
+                created = True
 
-            print(RECREATED_MISSING)
+            if created:
+                print(RECREATED_MISSING)
+            else:
+                print("    ... No missing resources to create/init. You are good to go.")
         except IOError:
             print(ERROR_INITMISSING)
         sys.exit()
