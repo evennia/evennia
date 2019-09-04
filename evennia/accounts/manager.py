@@ -169,9 +169,16 @@ class AccountDBManager(TypedObjectManager, UserManager):
                 typeclass = "%s" % typeclass
             query["db_typeclass_path"] = typeclass
         if exact:
-            return self.filter(**query)
+            matches = self.filter(**query)
         else:
-            return self.filter(**query)
+            matches = self.filter(**query)
+        if not matches:
+            # try alias match
+            matches = self.filter(
+                db_tags__db_tagtype__iexact="alias",
+                **{"db_tags__db_key__iexact" if exact else "db_tags__db_key__icontains": ostring})
+        return matches
+
     # back-compatibility alias
     account_search = search_account
 
