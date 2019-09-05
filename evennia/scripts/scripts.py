@@ -163,7 +163,8 @@ class ScriptBase(with_metaclass(TypeclassBase, ScriptDB)):
         Start task runner.
 
         """
-
+        if self.ndb._task:
+            return
         self.ndb._task = ExtendedLoopingCall(self._step_task)
 
         if self.db._paused_time:
@@ -429,7 +430,8 @@ class DefaultScript(ScriptBase):
 
         """
         if self.is_active and not force_restart:
-            # The script is already running, but make sure we have a _task if this is after a cache flush
+            # The script is already running, but make sure we have a _task if
+            # this is after a cache flush
             if not self.ndb._task and self.db_interval >= 0:
                 self.ndb._task = ExtendedLoopingCall(self._step_task)
                 try:
@@ -440,7 +442,9 @@ class DefaultScript(ScriptBase):
                     now = not self.db_start_delay
                     start_delay = None
                     callcount = 0
-                self.ndb._task.start(self.db_interval, now=now, start_delay=start_delay, count_start=callcount)
+                self.ndb._task.start(self.db_interval, now=now,
+                                     start_delay=start_delay,
+                                     count_start=callcount)
             return 0
 
         obj = self.obj
