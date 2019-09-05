@@ -363,7 +363,7 @@ class Evennia(object):
             yield [o.at_server_reload() for o in ObjectDB.get_all_cached_instances()]
             yield [p.at_server_reload() for p in AccountDB.get_all_cached_instances()]
             yield [(s.pause(manual_pause=False), s.at_server_reload())
-                   for s in ScriptDB.get_all_cached_instances() if s.is_active]
+                   for s in ScriptDB.get_all_cached_instances() if s.is_active or s.attributes.has("_manual_pause")]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
             # only save monitor state on reload, not on shutdown/reset
