@@ -51,18 +51,25 @@ inherit from ClothedCharacter in your game's characters.py file:
 
     class Character(ClothedCharacter):
 
-And do the same with the ClothedCharacterCmdSet in your game's
-default_cmdsets.py:
+And then add ClothedCharacterCmdSet in your character set in your
+game's commands/default_cmdsets.py:
 
     from evennia.contrib.clothing import ClothedCharacterCmdSet
 
     class CharacterCmdSet(default_cmds.CharacterCmdSet):
+         ...
+         at_cmdset_creation(self):
+
+             super().at_cmdset_creation()
+             ...
+             self.add(ClothedCharacterCmdSet)    # <-- add this
 
 From here, you can use the default builder commands to create clothes
 with which to test the system:
 
     @create a pretty shirt : evennia.contrib.clothing.Clothing
     @set shirt/clothing_type = 'top'
+    wear shirt
 
 """
 
@@ -367,6 +374,7 @@ class CmdWear(MuxCommand):
         clothing = self.caller.search(self.arglist[0], candidates=self.caller.contents)
         wearstyle = True
         if not clothing:
+            self.caller.msg("Thing to wear must be in your inventory.")
             return
         if not clothing.is_typeclass("evennia.contrib.clothing.Clothing", exact=False):
             self.caller.msg("That's not clothes!")
@@ -420,6 +428,7 @@ class CmdRemove(MuxCommand):
         """
         clothing = self.caller.search(self.args, candidates=self.caller.contents)
         if not clothing:
+            self.caller.msg("Thing to remove must be carried or worn.")
             return
         if not clothing.db.worn:
             self.caller.msg("You're not wearing that!")
