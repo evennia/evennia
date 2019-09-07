@@ -6,11 +6,16 @@
 
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console. 
-- Webclient default to a single input pane instead of two. Default to no help-popup.
+- Webclient default to a single input pane instead of two. Now defaults to no help-popup.
 - Webclient fix of prompt display
-- Webclient multimedia support for relaying images, video and sounds via `.msg(image=URL)`, `.msg(video=URL)` 
+- Webclient multimedia support for relaying images, video and sounds via
+  `.msg(image=URL)`, `.msg(video=URL)` 
   and `.msg(audio=URL)`
 - Add Spanish translation (fermuch)
+- Expand `GLOBAL_SCRIPTS` container to always start scripts and to include all
+  global scripts regardless of how they were created.
+- Change settings to always use lists instead of tuples, to make mutable
+  settings easier to add to. (#1912)
 
 
 ## Evennia 0.9 (2018-2019)

@@ -154,8 +154,8 @@ TIME_ZONE = 'UTC'
 # Activate time zone in datetimes
 USE_TZ = True
 # Authentication backends. This is the code used to authenticate a user.
-AUTHENTICATION_BACKENDS = (
-    'evennia.web.utils.backends.CaseInsensitiveModelBackend',)
+AUTHENTICATION_BACKENDS = [
+    'evennia.web.utils.backends.CaseInsensitiveModelBackend']
 # Language code for this installation. All choices can be found here:
 # http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
 LANGUAGE_CODE = 'en-us'
@@ -806,11 +806,11 @@ STATIC_ROOT = os.path.join(GAME_DIR, "web", "static")
 
 # Location of static data to overload the defaults from
 # evennia/web/webclient and evennia/web/website's static/ dirs.
-STATICFILES_DIRS = (
-    os.path.join(GAME_DIR, "web", "static_overrides"),)
+STATICFILES_DIRS = [
+    os.path.join(GAME_DIR, "web", "static_overrides")]
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
-STATICFILES_IGNORE_PATTERNS = ('README.md',)
+STATICFILES_IGNORE_PATTERNS = ['README.md']
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = 'website'
@@ -856,7 +856,7 @@ TEMPLATES = [{
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
-MIDDLEWARE = (
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',  # 1.4?
@@ -864,7 +864,7 @@ MIDDLEWARE = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    'evennia.web.utils.middleware.SharedLoginMiddleware',)
+    'evennia.web.utils.middleware.SharedLoginMiddleware']
 
 ######################################################################
 # Evennia components
@@ -872,7 +872,7 @@ MIDDLEWARE = (
 
 # Global and Evennia-specific apps. This ties everything together so we can
 # refer to app models and perform DB syncs.
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -892,7 +892,7 @@ INSTALLED_APPS = (
     'evennia.help',
     'evennia.scripts',
     'evennia.web.website',
-    'evennia.web.webclient')
+    'evennia.web.webclient']
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
 AUTH_USER_MODEL = "accounts.AccountDB"
@@ -933,7 +933,7 @@ MESSAGE_TAGS = {
 # always included in the default django distro.
 try:
     import django_extensions   # noqa
-    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
+    INSTALLED_APPS = INSTALLED_APPS.append('django_extensions')
 except ImportError:
     # Django extensions are not installed in all distros.
     pass
