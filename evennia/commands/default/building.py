@@ -2941,7 +2941,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # import pudb; pudb.set_trace()
 
             EvMore(caller, str(protlib.list_prototypes(caller,
-                   tags=self.lhslist)), exit_on_lastpage=True)
+                   tags=self.lhslist)), exit_on_lastpage=True,
+                   justify_kwargs=False)
             return
 
         if 'save' in self.switches:

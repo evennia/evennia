@@ -137,7 +137,8 @@ class EvMore(object):
                 to determine the screen width and will receive all output.
             justify_kwargs (dict, bool or None, optional): If given, this should
                 be valid keyword arguments to the utils.justify() function. If False,
-                no justification will be done.
+                no justification will be done (especially important for handling
+                fixed-width text content, like tables!).
             exit_on_lastpage (bool, optional): If reaching the last page without the
                 page being completely filled, exit pager immediately. If unset,
                 another move forward is required to exit. If set, the pager
