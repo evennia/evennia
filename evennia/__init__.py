@@ -390,6 +390,9 @@ def _init():
     BASE_GUEST_TYPECLASS = class_from_module(settings.BASE_GUEST_TYPECLASS)
     del class_from_module
 
+    # delayed starts
+    GLOBAL_SCRIPTS.start()
+
 
 def set_trace(term_size=(140, 40), debugger="auto"):
     """
