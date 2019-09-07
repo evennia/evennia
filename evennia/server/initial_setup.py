@@ -124,6 +124,17 @@ def create_channels():
     logger.log_info("Initial setup: Creating default channels ...")
 
     goduser = get_god_account()
+
+    channel_mudinfo = settings.CHANNEL_MUDINFO
+    if not channel_mudinfo:
+        raise RuntimeError("settings.CHANNEL_MUDINFO must be defined.")
+    channel = create.create_channel(**channel_mudinfo)
+    channel.connect(goduser)
+
+    channel_connectinfo = settings.CHANNEL_CONNECTINFO
+    if channel_connectinfo:
+        channel = create.create_channel(**channel_connectinfo)
+
     for channeldict in settings.DEFAULT_CHANNELS:
         channel = create.create_channel(**channeldict)
         channel.connect(goduser)

@@ -459,6 +459,30 @@ class Evennia(object):
         TASK_HANDLER.load()
         TASK_HANDLER.create_delays()
 
+        # check so default channels exist
+        from evennia.comms.models import ChannelDB
+        from evennia.accounts.models import AccountDB
+        from evennia.utils.create import create_channel
+
+        god_account = AccountDB.objects.get(id=1)
+        # mudinfo
+        mudinfo_chan = settings.CHANNEL_MUDINFO
+        if not mudinfo_chan:
+            raise RuntimeError("settings.CHANNEL_MUDINFO must be defined.")
+        if not ChannelDB.objects.filter(db_key=mudinfo_chan['key']):
+            channel = create_channel(**mudinfo_chan)
+            channel.connect(god_account)
+        # connectinfo
+        connectinfo_chan = settings.CHANNEL_MUDINFO
+        if connectinfo_chan:
+            if not ChannelDB.objects.filter(db_key=mudinfo_chan['key']):
+                channel = create_channel(**connectinfo_chan)
+        # default channels
+        for chan_info in settings.DEFAULT_CHANNELS:
+            if not ChannelDB.objects.filter(db_key=chan_info['key']):
+                channel = create_channel(**chan_info)
+                channel.connect(god_account)
+
         # delete the temporary setting
         ServerConfig.objects.conf("server_restart_mode", delete=True)
 

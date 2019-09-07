@@ -661,30 +661,32 @@ GUEST_LIST = ["Guest" + str(s + 1) for s in range(9)]
 # In-game Channels created from server start
 ######################################################################
 
-# This is a list of global channels created by the
-# initialization script the first time Evennia starts.
-# The superuser (user #1) will be automatically subscribed
-# to all channels in this list. Each channel is described by
-# a dictionary keyed with the same keys valid as arguments
-# to the evennia.create.create_channel() function.
-# Note: Evennia will treat the first channel in this list as
-# the general "public" channel and the second as the
-# general "mud info" channel. Other channels beyond that
-# are up to the admin to design and call appropriately.
+# The mudinfo channel must always exist; it is used by Evennia itself to
+# relay status messages, connection info etc to staff. The superuser will be
+# automatically subscribed to this channel and it will be recreated on a
+# reload if deleted. This is a dict specifying the kwargs needed to create
+# the channel .
+CHANNEL_MUDINFO = {
+    "key": "MudInfo",
+    "aliases": "",
+    "desc": "Connection log",
+    "locks": "control:perm(Developer);listen:perm(Admin);send:false()"}
+# These are additional channels to offer. Usually, at least 'public'
+# should exist. The superuser will automatically be subscribed to all channels
+# in this list. New entries will be created on the next reload. But
+# removing or updating a same-key channel from this list will NOT automatically
+# change/remove it in the game, that needs to be done manually.
 DEFAULT_CHANNELS = [
     # public channel
     {"key": "Public",
-     "aliases": ('ooc', 'pub'),
+     "aliases": ('pub'),
      "desc": "Public discussion",
      "locks": "control:perm(Admin);listen:all();send:all()"},
-    # connection/mud info
-    {"key": "MudInfo",
-     "aliases": "",
-     "desc": "Connection log",
-     "locks": "control:perm(Developer);listen:perm(Admin);send:false()"}
 ]
-# Extra optional channel for receiving connection messages ("<account> has (dis)connected").
-# While the MudInfo channel will also receieve this, this channel is meant for non-staffers.
+# Optional channel info (same form as CHANNEL_MUDINFO) for the channel to
+# receive connection messages ("<account> has (dis)connected").  While the
+# MudInfo channel will also receieve this info, this channel is meant for
+# non-staffers.
 CHANNEL_CONNECTINFO = None
 
 ######################################################################
