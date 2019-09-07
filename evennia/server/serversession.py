@@ -304,7 +304,7 @@ class ServerSession(Session):
         cchan = channel and settings.CHANNEL_CONNECTINFO
         if cchan:
             try:
-                cchan = ChannelDB.objects.get_channel(cchan[0])
+                cchan = ChannelDB.objects.get_channel(cchan['key'])
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:
                 logger.log_trace()

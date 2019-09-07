@@ -16,6 +16,9 @@ without arguments starts a full interactive Python console.
   global scripts regardless of how they were created.
 - Change settings to always use lists instead of tuples, to make mutable
   settings easier to add to. (#1912)
+- Make new `CHANNEL_MUDINFO` setting for specifying the mudinfo channel
+- Make `CHANNEL_CONNECTINFO` take full channel definition
+- Make `DEFAULT_CHANNELS` list auto-create channels missing at reload
 
 
 ## Evennia 0.9 (2018-2019)

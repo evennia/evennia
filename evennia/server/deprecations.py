@@ -76,6 +76,12 @@ def check_errors(settings):
     if hasattr(settings, "GAME_DIRECTORY_LISTING"):
         raise DeprecationWarning(game_directory_deprecation)
 
+    chan_connectinfo = settings.CHANNEL_CONNECTINFO
+    if chan_connectinfo is not None and not isinstance(chan_connectinfo, dict):
+        raise DeprecationWarning("settings.CHANNEL_CONNECTINFO has changed. It "
+                                 "must now be either None or a dict "
+                                 "specifying the properties of the channel to create.")
+
 
 def check_warnings(settings):
     """
