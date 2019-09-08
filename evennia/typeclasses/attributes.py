@@ -420,25 +420,17 @@ class AttributeHandler(object):
             return_list (bool, optional):
 
         Returns:
-            result (any or list): One or more matches for keys and/or categories. Each match will be
-                the value of the found Attribute(s) unless `return_obj` is True, at which point it
-                will be the attribute object itself or None. If `return_list` is True, this will
-                always be a list, regardless of the number of elements.
+            result (any or list): One or more matches for keys and/or
+                categories. Each match will be the value of the found Attribute(s)
+                unless `return_obj` is True, at which point it will be the
+                attribute object itself or None. If `return_list` is True, this
+                will always be a list, regardless of the number of elements.
 
         Raises:
             AttributeError: If `raise_exception` is set and no matching Attribute
                 was found matching `key`.
 
         """
-
-        class RetDefault(object):
-            """Holds default values"""
-
-            def __init__(self):
-                self.key = None
-                self.value = default
-                self.category = None
-                self.strvalue = str(default) if default is not None else None
 
         ret = []
         for keystr in make_iter(key):
@@ -450,13 +442,12 @@ class AttributeHandler(object):
                 raise AttributeError
             elif return_obj:
                 ret.append(None)
-            else:
-                ret.append(RetDefault())
 
         if accessing_obj:
             # check 'attrread' locks
             ret = [attr for attr in ret if attr.access(accessing_obj,
-                                                       self._attrread, default=default_access)]
+                                                       self._attrread,
+                                                       default=default_access)]
         if strattr:
             ret = ret if return_obj else [attr.strvalue for attr in ret if attr]
         else:
@@ -464,9 +455,7 @@ class AttributeHandler(object):
 
         if return_list:
             return ret if ret else [default] if default is not None else []
-        elif not ret:
-            return ret if len(key) > 1 else default
-        return ret[0] if len(ret) == 1 else ret
+        return ret[0] if ret and len(ret) == 1 else ret or default
 
     def add(self, key, value, category=None, lockstring="",
             strattr=False, accessing_obj=None, default_access=True):
