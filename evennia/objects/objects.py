@@ -1138,7 +1138,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             "edit:perm(Admin)",         # edit properties/attributes
             "delete:perm(Admin)",       # delete object
             "get:all()",                # pick up object
-            "drop:holds()"              # drop only that which you hold
+            "drop:holds()",             # drop only that which you hold
             "call:true()",              # allow to call commands on this object
             "tell:perm(Admin)",         # allow emits to this object
             "puppet:pperm(Developer)"]))  # lock down puppeting only to staff by default
