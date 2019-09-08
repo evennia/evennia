@@ -223,7 +223,7 @@ def _run_code_snippet(caller, pycode, mode="eval", measure_time=False,
         sys.stdout = old_stdout
         sys.stderr = old_stderr
 
-    if not ret:
+    if ret is None:
         return
 
     for session in sessions:
