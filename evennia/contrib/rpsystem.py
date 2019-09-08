@@ -487,7 +487,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         emote, language_mapping = parse_language(sender, emote)
     except (EmoteError, LanguageError) as err:
         # handle all error messages, don't hide actual coding errors
-        sender.msg(err.message)
+        sender.msg(str(err))
         return
     # we escape the object mappings since we'll do the language ones first
     # (the text could have nested object mappings).
