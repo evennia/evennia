@@ -2,6 +2,9 @@
 
 ## Evennia 1.0 (2019-) (WIP)
 
+- new `drop:holds()` lock default to limit dropping nonsensical things. Access check
+  defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+
 ### Already in master
 
 - `py` command now reroutes stdout to output results in-game client. `py`
