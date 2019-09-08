@@ -194,7 +194,8 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
     """
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
+    lockstring = ("control:id({account_id}) or perm(Admin);"
+                  "delete:id({account_id}) or perm(Admin)")
 
     objects = ObjectManager()
 
@@ -1132,13 +1133,14 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
 
         self.locks.add(";".join([
             "control:perm(Developer)",  # edit locks/permissions, delete
-            "examine:perm(Builder)",   # examine properties
+            "examine:perm(Builder)",    # examine properties
             "view:all()",               # look at object (visibility)
-            "edit:perm(Admin)",       # edit properties/attributes
-            "delete:perm(Admin)",     # delete object
+            "edit:perm(Admin)",         # edit properties/attributes
+            "delete:perm(Admin)",       # delete object
             "get:all()",                # pick up object
+            "drop:holds()"              # drop only that which you hold
             "call:true()",              # allow to call commands on this object
-            "tell:perm(Admin)",        # allow emits to this object
+            "tell:perm(Admin)",         # allow emits to this object
             "puppet:pperm(Developer)"]))  # lock down puppeting only to staff by default
 
     def basetype_posthook_setup(self):
@@ -1752,6 +1754,12 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             before it is even started.
 
         """
+        if not self.locks.get("drop"):
+            # TODO: This if-statment will be removed in Evennia 1.0
+            return True
+        if not self.access(dropper, 'drop', default=False):
+            dropper.msg(f"You cannot drop {self.get_display_name(dropper)}")
+            return False
         return True
 
     def at_drop(self, dropper, **kwargs):
