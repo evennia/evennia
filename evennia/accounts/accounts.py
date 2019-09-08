@@ -48,7 +48,7 @@ _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
-_CONNECT_CHANNEL = None
+_MUDINFO_CHANNEL = None
 
 # Create throttles for too many account-creations and login attempts
 CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
@@ -1145,17 +1145,18 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
             message (str): A message to send to the connect channel.
 
         """
-        global _CONNECT_CHANNEL
-        if not _CONNECT_CHANNEL:
+        global _MUDINFO_CHANNEL
+        if not _MUDINFO_CHANNEL:
             try:
-                _CONNECT_CHANNEL = ChannelDB.objects.filter(db_key=settings.DEFAULT_CHANNELS[1]["key"])[0]
+                _MUDINFO_CHANNEL = ChannelDB.objects.filter(
+                    db_key=settings.CHANNEL_MUDINFO["key"])[0]
             except Exception:
                 logger.log_trace()
         now = timezone.now()
         now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month,
                                              now.day, now.hour, now.minute)
-        if _CONNECT_CHANNEL:
-            _CONNECT_CHANNEL.tempmsg("[%s, %s]: %s" % (_CONNECT_CHANNEL.key, now, message))
+        if _MUDINFO_CHANNEL:
+            _MUDINFO_CHANNEL.tempmsg("[%s, %s]: %s" % (_MUDINFO_CHANNEL.key, now, message))
         else:
             logger.log_info("[%s]: %s" % (now, message))
 

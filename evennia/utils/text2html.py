@@ -80,12 +80,18 @@ class TextToHTMLparser(object):
     bg_colormap = dict((code, clr) for clr, code in colorback)
 
     # create stop markers
-    fgstop = "(?:\033\[1m|\033\[22m)*\033\[3[0-8].*?m|\033\[0m|$"
-    bgstop = "(?:\033\[1m|\033\[22m)*\033\[4[0-8].*?m|\033\[0m|$"
+    fgstop = "(?:\033\[1m|\033\[22m){0,1}\033\[3[0-8].*?m|\033\[0m|$"
+    bgstop = "(?:\033\[1m|\033\[22m){0,1}\033\[4[0-8].*?m|\033\[0m|$"
+    bgfgstop = bgstop[:-2] + r"(\s*)" + fgstop
+
+    fgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[3[0-8].*?m)"
+    bgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[4[0-8].*?m)"
+    bgfgstart = bgstart + r"(\s*)" + "((?:\033\[1m|\033\[22m){0,1}\033\[[3-4][0-8].*?m){0,1}"
 
     # extract color markers, tagging the start marker and the text marked
-    re_fgs = re.compile("((?:\033\[1m|\033\[22m)*\033\[3[0-8].*?m)(.*?)(?=" + fgstop + ")")
-    re_bgs = re.compile("((?:\033\[1m|\033\[22m)*\033\[4[0-8].*?m)(.*?)(?=" + bgstop + ")")
+    re_fgs = re.compile(fgstart + "(.*?)(?=" + fgstop + ")")
+    re_bgs = re.compile(bgstart + "(.*?)(?=" + bgstop + ")")
+    re_bgfg = re.compile(bgfgstart + "(.*?)(?=" + bgfgstop + ")")
 
     re_normal = re.compile(normal.replace("[", r"\["))
     re_hilite = re.compile("(?:%s)(.*)(?=%s|%s)" % (hilite.replace("[", r"\["), fgstop, bgstop))
@@ -96,6 +102,24 @@ class TextToHTMLparser(object):
     re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space> [ \t]+)|(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)', re.S | re.M | re.I)
     re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
     re_mxplink = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
+
+    def _sub_bgfg(self, colormatch):
+        # print("colormatch.groups()", colormatch.groups())
+        bgcode, prespace, fgcode, text, postspace = colormatch.groups()
+        if not fgcode:
+            ret = r'''<span class="%s">%s%s%s</span>''' % (
+                self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
+                prespace and "&nbsp;" * len(prespace) or "",
+                postspace and "&nbsp;" * len(postspace) or "",
+                text)
+        else:
+            ret = r'''<span class="%s"><span class="%s">%s%s%s</span></span>''' % (
+                    self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
+                    self.fg_colormap.get(fgcode, self.bg_colormap.get(fgcode, "err")),
+                    prespace and "&nbsp;" * len(prespace) or "",
+                    postspace and "&nbsp;" * len(postspace) or "",
+                    text)
+        return ret
 
     def _sub_fg(self, colormatch):
         code, text = colormatch.groups()
@@ -117,6 +141,7 @@ class TextToHTMLparser(object):
             text (str): Re-colored text.
 
         """
+        text = self.re_bgfg.sub(self._sub_bgfg, text)
         text = self.re_fgs.sub(self._sub_fg, text)
         text = self.re_bgs.sub(self._sub_bg, text)
         text = self.re_normal.sub("", text)
