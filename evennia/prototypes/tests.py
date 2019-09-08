@@ -87,6 +87,7 @@ class TestUtils(EvenniaTest):
                        'call:true()',
                        'control:perm(Developer)',
                        'delete:perm(Admin)',
+                       'drop:holds()',
                        'edit:perm(Admin)',
                        'examine:perm(Builder)',
                        'get:all()',
@@ -137,6 +138,7 @@ class TestUtils(EvenniaTest):
                           'home': Something,
                           'location': Something,
                           'locks': 'call:true();control:perm(Developer);delete:perm(Admin);'
+                                   'drop:holds();'
                                    'edit:perm(Admin);examine:perm(Builder);get:all();'
                                    'puppet:pperm(Developer);tell:perm(Admin);view:all()',
                           'prototype_desc': 'Built from Obj',
@@ -153,6 +155,7 @@ class TestUtils(EvenniaTest):
                           'key': 'Obj',
                           'location': Something,
                           'locks': 'call:true();control:perm(Developer);delete:perm(Admin);'
+                                   'drop:holds();'
                                    'edit:perm(Admin);examine:perm(Builder);get:all();'
                                    'puppet:pperm(Developer);tell:perm(Admin);view:all()',
                           'new': 'new_val',
@@ -172,9 +175,9 @@ class TestUtils(EvenniaTest):
               'prototype_key': (Something, Something, 'UPDATE'),
               'location': (Something, Something, 'KEEP'),
               'locks': ('call:true();control:perm(Developer);delete:perm(Admin);'
-                        'edit:perm(Admin);examine:perm(Builder);get:all();'
-                        'puppet:pperm(Developer);tell:perm(Admin);view:all()',
-                        'call:true();control:perm(Developer);delete:perm(Admin);'
+                        'drop:holds();edit:perm(Admin);examine:perm(Builder);'
+                        'get:all();puppet:pperm(Developer);tell:perm(Admin);view:all()',
+                        'call:true();control:perm(Developer);delete:perm(Admin);drop:holds();'
                         'edit:perm(Admin);examine:perm(Builder);get:all();'
                         'puppet:pperm(Developer);tell:perm(Admin);view:all()', 'KEEP'),
               'prototype_tags': {},
@@ -232,6 +235,7 @@ class TestUtils(EvenniaTest):
                                     'call:true()',
                                     'control:perm(Developer)',
                                     'delete:perm(Admin)',
+                                    'drop:holds()',
                                     'edit:perm(Admin)',
                                     'examine:perm(Builder)',
                                     'get:all()',
@@ -253,7 +257,7 @@ class TestProtLib(EvenniaTest):
         super(TestProtLib, self).setUp()
         self.obj1.attributes.add("testattr", "testval")
         self.prot = spawner.prototype_from_object(self.obj1)
-        
+
 
     def test_prototype_to_str(self):
         prstr = protlib.prototype_to_str(self.prot)
