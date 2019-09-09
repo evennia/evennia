@@ -334,7 +334,7 @@ class EvenniaLogFile(logfile.LogFile):
         Returns:
             lines (list): lines from our _file attribute.
         """
-        return self._file.readlines(*args, **kwargs)
+        return [line.decode('utf-8') for line in self._file.readlines(*args, **kwargs)]
 
 
 _LOG_FILE_HANDLES = {}  # holds open log handles
