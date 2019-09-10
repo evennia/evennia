@@ -20,7 +20,7 @@ class TestAccountSessionHandler(TestCase):
 
     def setUp(self):
         self.account = create.create_account(
-            "TestAccount%s" % randint(0, 999999), email="test@test.com",
+            f"TestAccount{randint(0, 999999)}", email="test@test.com",
             password="testpassword", typeclass=DefaultAccount)
         self.handler = AccountSessionHandler(self.account)
 
@@ -118,7 +118,7 @@ class TestDefaultAccountAuth(EvenniaTest):
 
         self.password = "testpassword"
         self.account.delete()
-        self.account = create.create_account("TestAccount%s" % randint(100000, 999999), email="test@test.com", password=self.password, typeclass=DefaultAccount)
+        self.account = create.create_account(f"TestAccount{randint(100000, 999999)}", email="test@test.com", password=self.password, typeclass=DefaultAccount)
 
     def test_authentication(self):
         "Confirm Account authentication method is authenticating/denying users."
@@ -170,7 +170,7 @@ class TestDefaultAccountAuth(EvenniaTest):
     def test_password_validation(self):
         "Check password validators deny bad passwords"
 
-        account = create.create_account("TestAccount%s" % randint(100000, 999999),
+        account = create.create_account(f"TestAccount{randint(100000, 999999)}",
                 email="test@test.com", password="testpassword", typeclass=DefaultAccount)
         for bad in ('', '123', 'password', 'TestAccount', '#', 'xyzzy'):
             self.assertFalse(account.validate_password(bad, account=self.account)[0])
@@ -182,7 +182,7 @@ class TestDefaultAccountAuth(EvenniaTest):
 
     def test_password_change(self):
         "Check password setting and validation is working as expected"
-        account = create.create_account("TestAccount%s" % randint(100000, 999999),
+        account = create.create_account(f"TestAccount{randint(100000, 999999)}",
                 email="test@test.com", password="testpassword", typeclass=DefaultAccount)
 
         from django.core.exceptions import ValidationError
@@ -228,7 +228,7 @@ class TestDefaultAccount(TestCase):
         import evennia.server.sessionhandler
 
         account = create.create_account(
-            "TestAccount%s" % randint(0, 999999), email="test@test.com",
+            f"TestAccount{randint(0, 999999)}", email="test@test.com",
             password="testpassword", typeclass=DefaultAccount)
         self.s1.uid = account.uid
         evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
@@ -247,7 +247,7 @@ class TestDefaultAccount(TestCase):
 
         import evennia.server.sessionhandler
 
-        account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        account = create.create_account(f"TestAccount{randint(0, 999999)}", email="test@test.com", password="testpassword", typeclass=DefaultAccount)
         self.s1.uid = account.uid
         evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
 
@@ -266,7 +266,7 @@ class TestDefaultAccount(TestCase):
 
         import evennia.server.sessionhandler
 
-        account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        account = create.create_account(f"TestAccount{randint(0, 999999)}", email="test@test.com", password="testpassword", typeclass=DefaultAccount)
         self.s1.uid = account.uid
         evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
 
@@ -289,7 +289,7 @@ class TestDefaultAccount(TestCase):
 
         import evennia.server.sessionhandler
 
-        account = create.create_account("TestAccount%s" % randint(0, 999999), email="test@test.com", password="testpassword", typeclass=DefaultAccount)
+        account = create.create_account(f"TestAccount{randint(0, 999999)}", email="test@test.com", password="testpassword", typeclass=DefaultAccount)
         self.account = account
         self.s1.uid = account.uid
         evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
@@ -325,7 +325,7 @@ class TestAccountPuppetDeletion(EvenniaTest):
         self.char1.delete()
         # Playable char list should be empty.
         self.assertFalse(self.account.db._playable_characters,
-                         'Playable character list is not empty! %s' % self.account.db._playable_characters)
+                         f'Playable character list is not empty! {self.account.db._playable_characters}')
 
 
 class TestDefaultAccountEv(EvenniaTest):
