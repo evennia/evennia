@@ -104,7 +104,7 @@ class Bot(DefaultAccount):
                      "boot:perm(Admin);msg:false();noidletimeout:true()"
         self.locks.add(lockstring)
         # set the basics of being a bot
-        script_key = f"{self.key}"
+        script_key = f"{str(self.key)}"
         self.scripts.add(BotStarter, key=script_key)
         self.is_bot = True
 
