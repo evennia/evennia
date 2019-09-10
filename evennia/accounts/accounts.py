@@ -1235,7 +1235,7 @@ class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
 
 
         """
-        reason = f" ({reason if reason else ''})" 
+        reason = f" ({reason if reason else ''})"
         self._send_to_connect_channel(f"|R{self.key} disconnected{reason}|n")
 
     def at_post_disconnect(self, **kwargs):
