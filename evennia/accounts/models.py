@@ -137,10 +137,10 @@ class AccountDB(TypedObject, AbstractUser):
     #
 
     def __str__(self):
-        return smart_str("%s(account %s)" % (self.name, self.dbid))
+        return smart_str(f"{self.name}(account {self.dbid})")
 
     def __repr__(self):
-        return "%s(account#%s)" % (self.name, self.dbid)
+        return f"{self.name}(account#{self.dbid})"
 
     #@property
     def __username_get(self):
