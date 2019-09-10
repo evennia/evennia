@@ -267,7 +267,8 @@ class CmdHelp(Command):
             return
 
         # no exact matches found. Just give suggestions.
-        self.msg((self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions), {"type": "help"}))
+        self.msg(self.format_help_entry("", f"No help entry found for '{query}'",
+                                        None, suggested=suggestions), options={"type": "help"})
 
 
 def _loadhelp(caller):
