@@ -17,7 +17,7 @@ body {
     color: #ccc;
     font-size: .9em;
     font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
-    line-height: 1.1em;
+    line-height: 1.4em;
     overflow: hidden;
 }
 @media screen and (max-width: 480px) {

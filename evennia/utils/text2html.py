@@ -99,7 +99,8 @@ class TextToHTMLparser(object):
     re_uline = re.compile("(?:%s)(.*?)(?=%s|%s)" % (underline.replace("[", r"\["), fgstop, bgstop))
     re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
     re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
-    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<space> [ \t]+)|(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)', re.S | re.M | re.I)
+    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S)\s+)|(?P<space>\s[ \t]+)|'
+                           r'(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)', re.S | re.M | re.I)
     re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
     re_mxplink = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 
@@ -291,11 +292,11 @@ class TextToHTMLparser(object):
         cdict = match.groupdict()
         if cdict['htmlchars']:
             return cgi.escape(cdict['htmlchars'])
-        if cdict['lineend']:
+        elif cdict['lineend']:
             return '<br>'
         elif cdict['space'] == '\t':
             return ' ' * self.tabstop
-        elif cdict['space'] or cdict["spacestart"]:
+        elif cdict['space'] or cdict["spacestart"] or cdict['firstspace']:
             text = match.group().replace('\t', '&nbsp;' * self.tabstop)
             text = text.replace(' ', '&nbsp;')
             return text
@@ -328,7 +329,7 @@ class TextToHTMLparser(object):
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
         # clean out eventual ansi that was missed
-        #result = parse_ansi(result, strip_ansi=True)
+        # result = parse_ansi(result, strip_ansi=True)
 
         return result
 
