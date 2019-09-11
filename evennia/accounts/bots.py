@@ -104,7 +104,7 @@ class Bot(DefaultAccount):
                      "boot:perm(Admin);msg:false();noidletimeout:true()"
         self.locks.add(lockstring)
         # set the basics of being a bot
-        script_key = "%s" % self.key
+        script_key = str(self.key)
         self.scripts.add(BotStarter, key=script_key)
         self.is_bot = True
 
@@ -187,7 +187,7 @@ class IRCBot(Bot):
             # connect to Evennia channel
             channel = search.channel_search(ev_channel)
             if not channel:
-                raise RuntimeError("Evennia Channel '%s' not found." % ev_channel)
+                raise RuntimeError(f"Evennia Channel '{ev_channel}' not found.")
             channel = channel[0]
             channel.connect(self)
             self.db.ev_channel = channel
@@ -307,19 +307,19 @@ class IRCBot(Bot):
         if kwargs["type"] == "nicklist":
             # the return of a nicklist request
             if hasattr(self, "_nicklist_callers") and self._nicklist_callers:
-                chstr = "%s (%s:%s)" % (self.db.irc_channel, self.db.irc_network, self.db.irc_port)
+                chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 nicklist = ", ".join(sorted(kwargs["nicklist"], key=lambda n: n.lower()))
                 for obj in self._nicklist_callers:
-                    obj.msg("Nicks at %s:\n %s" % (chstr, nicklist))
+                    obj.msg(f"Nicks at {chstr}:\n {nicklist}")
                 self._nicklist_callers = []
             return
 
         elif kwargs["type"] == "ping":
             # the return of a ping
             if hasattr(self, "_ping_callers") and self._ping_callers:
-                chstr = "%s (%s:%s)" % (self.db.irc_channel, self.db.irc_network, self.db.irc_port)
+                chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 for obj in self._ping_callers:
-                    obj.msg("IRC ping return from %s took %ss." % (chstr, kwargs["timing"]))
+                    obj.msg(f"IRC ping return from {chstr} took {kwargs['timing']}s.")
                 self._ping_callers = []
             return
 
@@ -341,10 +341,10 @@ class IRCBot(Bot):
                     whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % account.name, width=25),
                                                 utils.time_format(delta_conn, 0),
                                                 utils.time_format(delta_cmd, 1)))
-                text = "Who list (online/idle): %s" % ", ".join(sorted(whos, key=lambda w: w.lower()))
+                text = f"Who list (online/idle): {', '.join(sorted(whos, key=lambda w: w.lower()))}"
             elif txt.lower().startswith("about"):
                 # some bot info
-                text = "This is an Evennia IRC bot connecting from '%s'." % settings.SERVERNAME
+                text = f"This is an Evennia IRC bot connecting from '{settings.SERVERNAME}'."
             else:
                 text = "I understand 'who' and 'about'."
             super().msg(privmsg=((text,), {"user": user}))
@@ -352,10 +352,10 @@ class IRCBot(Bot):
             # something to send to the main channel
             if kwargs["type"] == "action":
                 # An action (irc pose)
-                text = "%s@%s %s" % (kwargs["user"], kwargs["channel"], txt)
+                text = f"{kwargs['user']}@{kwargs['channel']} {txt}"
             else:
                 # msg - A normal channel message
-                text = "%s@%s: %s" % (kwargs["user"], kwargs["channel"], txt)
+                text = f"{kwargs['user']}@{kwargs['channel']}: {txt}"
 
             if not self.ndb.ev_channel and self.db.ev_channel:
                 # cache channel lookup
@@ -401,7 +401,7 @@ class RSSBot(Bot):
             # connect to Evennia channel
             channel = search.channel_search(ev_channel)
             if not channel:
-                raise RuntimeError("Evennia Channel '%s' not found." % ev_channel)
+                raise RuntimeError(f"Evennia Channel '{ev_channel}' not found.")
             channel = channel[0]
             self.db.ev_channel = channel
         if rss_url:
@@ -463,7 +463,7 @@ class GrapevineBot(Bot):
             # connect to Evennia channel
             channel = search.channel_search(ev_channel)
             if not channel:
-                raise RuntimeError("Evennia Channel '%s' not found." % ev_channel)
+                raise RuntimeError(f"Evennia Channel '{ev_channel}' not found.")
             channel = channel[0]
             channel.connect(self)
             self.db.ev_channel = channel
