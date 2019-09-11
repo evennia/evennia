@@ -164,9 +164,9 @@ class AccountDBManager(TypedObjectManager, UserManager):
         if typeclass:
             # we accept both strings and actual typeclasses
             if callable(typeclass):
-                typeclass = "%s.%s" % (typeclass.__module__, typeclass.__name__)
+                typeclass = f"{typeclass.__module__}.{typeclass.__name__}"
             else:
-                typeclass = "%s" % typeclass
+                typeclass = str(typeclass)
             query["db_typeclass_path"] = typeclass
         if exact:
             matches = self.filter(**query)
