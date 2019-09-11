@@ -99,7 +99,7 @@ class TextToHTMLparser(object):
     re_uline = re.compile("(?:%s)(.*?)(?=%s|%s)" % (underline.replace("[", r"\["), fgstop, bgstop))
     re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
     re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
-    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S) +)|(?P<space> [ \t]+)|'
+    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S) {2,})|(?P<space> [ \t]+)|'
                            r'(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)', re.S | re.M | re.I)
     re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
     re_mxplink = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
@@ -294,6 +294,9 @@ class TextToHTMLparser(object):
             return cgi.escape(cdict['htmlchars'])
         elif cdict['lineend']:
             return '<br>'
+        elif cdict['firstspace']:
+            return ' &nbsp;'
+        
         elif cdict['space'] == '\t':
             return ' ' * self.tabstop
         elif cdict['space'] or cdict["spacestart"] or cdict['firstspace']:
