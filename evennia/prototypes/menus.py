@@ -1748,6 +1748,7 @@ def node_prototype_desc(caller):
 def _caller_prototype_tags(caller):
     prototype = _get_menu_prototype(caller)
     tags = prototype.get("prototype_tags", [])
+    tags = [tag[0] if isinstance(tag, tuple) else tag for tag in tags]
     return tags
 
 
@@ -1771,8 +1772,7 @@ def _add_prototype_tag(caller, tag_string, **kwargs):
     tag = tag_string.strip().lower()
 
     if tag:
-        prot = _get_menu_prototype(caller)
-        tags = prot.get('prototype_tags', [])
+        tags = _caller_prototype_tags(caller)
         exists = tag in tags
 
         if 'delete' in kwargs:
