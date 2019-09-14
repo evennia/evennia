@@ -99,8 +99,9 @@ class TextToHTMLparser(object):
     re_uline = re.compile("(?:%s)(.*?)(?=%s|%s)" % (underline.replace("[", r"\["), fgstop, bgstop))
     re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
     re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
-    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S) {2,})|(?P<space> [ \t]+)|'
+    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S)  )|(?P<space> [ \t]+)|'
                            r'(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)', re.S | re.M | re.I)
+    re_dblspace = re.compile(r' {2,}', re.M)
     re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
     re_mxplink = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 
@@ -259,6 +260,13 @@ class TextToHTMLparser(object):
         # change pages (and losing our webclient session).
         return self.re_url.sub(r'<a href="\1" target="_blank">\1</a>\2', text)
 
+    def re_double_space(self, text):
+        """
+        HTML will swallow any normal space after the first, so if any slipped
+        through we must make sure to replace them with " &nbsp;"
+        """
+        return self.re_dblspace.sub(self.sub_dblspace, text)
+
     def sub_mxp_links(self, match):
         """
         Helper method to be passed to re.sub,
@@ -296,14 +304,18 @@ class TextToHTMLparser(object):
             return '<br>'
         elif cdict['firstspace']:
             return ' &nbsp;'
-        
         elif cdict['space'] == '\t':
-            return ' ' * self.tabstop
-        elif cdict['space'] or cdict["spacestart"] or cdict['firstspace']:
+            text = match.group()
+            return ' ' if tabstop == 1 else ' ' + "&nbsp;" * tabstop
+        elif cdict['space'] or cdict["spacestart"]:
             text = match.group().replace('\t', '&nbsp;' * self.tabstop)
             text = text.replace(' ', '&nbsp;')
             return text
         return None
+
+    def sub_dblspace(self, match):
+        "clean up double-spaces"
+        return ' ' + '&nbsp;' * (len(match.group()) - 1)
 
     def parse(self, text, strip_ansi=False):
         """
@@ -331,6 +343,7 @@ class TextToHTMLparser(object):
         result = self.convert_linebreaks(result)
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
+        result = self.re_double_space(result)
         # clean out eventual ansi that was missed
         # result = parse_ansi(result, strip_ansi=True)
 
