@@ -1946,6 +1946,7 @@ class DefaultCharacter(DefaultObject):
         Kwargs:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
+            All other kwargs will be passed into the create_object call.
 
         Returns:
             character (Object): A newly created Character of the given typeclass.
@@ -1953,8 +1954,7 @@ class DefaultCharacter(DefaultObject):
 
         """
         errors = []
-        obj = None
-
+        obj = Noneo
         # Get IP address of creator, if available
         ip = kwargs.pop('ip', '')
 
