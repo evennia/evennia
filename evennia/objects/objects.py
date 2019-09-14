@@ -1227,6 +1227,7 @@ class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
             puppeting this Object.
 
         """
+        self.msg(f"You become |w{self.key}|n.")
         self.account.db._last_puppet = self
 
     def at_pre_unpuppet(self, **kwargs):
