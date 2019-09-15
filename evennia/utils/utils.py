@@ -7,6 +7,7 @@ be of use when designing your own game.
 
 """
 import os
+import gc
 import sys
 import imp
 import types
@@ -1644,10 +1645,6 @@ def get_evennia_pids():
     return None, None
 
 
-from gc import get_referents
-from sys import getsizeof
-
-
 def deepsize(obj, max_depth=4):
     """
     Get not only size of the given object, but also the size of
@@ -1673,14 +1670,14 @@ def deepsize(obj, max_depth=4):
     def _recurse(o, dct, depth):
         if 0 <= max_depth < depth:
             return
-        for ref in get_referents(o):
+        for ref in gc.get_referents(o):
             idr = id(ref)
             if idr not in dct:
-                dct[idr] = (ref, getsizeof(ref, default=0))
+                dct[idr] = (ref, sys.getsizeof(ref, default=0))
                 _recurse(ref, dct, depth + 1)
     sizedict = {}
     _recurse(obj, sizedict, 0)
-    size = getsizeof(obj) + sum([p[1] for p in sizedict.values()])
+    size = sys.getsizeof(obj) + sum([p[1] for p in sizedict.values()])
     return size
 
 
