@@ -37,7 +37,6 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.utils.optionhandler import OptionHandler
 
 from django.utils.translation import ugettext as _
-from future.utils import with_metaclass
 from random import getrandbits
 
 __all__ = ("DefaultAccount",)
@@ -113,7 +112,7 @@ class AccountSessionHandler(object):
         return len(self.get())
 
 
-class DefaultAccount(with_metaclass(TypeclassBase, AccountDB)):
+class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     """
     This is the base Typeclass for all Accounts. Accounts represent
     the person playing the game and tracks account info, password

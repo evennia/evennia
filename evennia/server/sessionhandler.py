@@ -14,7 +14,6 @@ There are two similar but separate stores of sessions:
 """
 import time
 from builtins import object
-from future.utils import listvalues
 
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART
@@ -148,7 +147,7 @@ class SessionHandler(dict):
 
         """
         if include_unloggedin:
-            return listvalues(self)
+            return list(self.values())
         else:
             return [session for session in self.values() if session.logged_in]
 
