@@ -8,7 +8,6 @@ django >= 2.2.4, < 2.3
 twisted >= 19.2.1, < 20.0.0
 pillow == 5.2.0
 pytz
-future >= 0.15.2
 django-sekizai
 autobahn >= 17.9.3
 inflect

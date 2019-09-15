@@ -16,8 +16,6 @@ from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
 
-from future.utils import with_metaclass
-
 
 def _init_command(cls, **kwargs):
     """
@@ -99,7 +97,7 @@ class CommandMeta(type):
 #    parsing errors.
 
 
-class Command(with_metaclass(CommandMeta, object)):
+class Command(object, metaclass=CommandMeta):
     """
     Base command
 

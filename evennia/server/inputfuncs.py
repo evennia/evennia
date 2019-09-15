@@ -19,7 +19,6 @@ Evennia knows which modules to use for inputfuncs by
 settings.INPUT_FUNC_MODULES.
 
 """
-from future.utils import viewkeys
 
 import importlib
 from codecs import lookup as codecs_lookup

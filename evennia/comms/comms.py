@@ -11,11 +11,11 @@ from evennia.comms.models import TempMsg, ChannelDB
 from evennia.comms.managers import ChannelManager
 from evennia.utils import create, logger
 from evennia.utils.utils import make_iter
-from future.utils import with_metaclass
+
 _CHANNEL_HANDLER = None
 
 
-class DefaultChannel(with_metaclass(TypeclassBase, ChannelDB)):
+class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     """
     This is the base class for all Channel Comms. Inherit from this to
     create different types of communication channels.

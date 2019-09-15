@@ -25,7 +25,6 @@ from evennia.utils import utils
 from evennia.utils import logger
 
 from evennia.utils.utils import to_str
-from future.utils import with_metaclass
 
 
 # ANSI definitions
@@ -631,7 +630,7 @@ class ANSIMeta(type):
         super().__init__(*args, **kwargs)
 
 
-class ANSIString(with_metaclass(ANSIMeta, str)):
+class ANSIString(str, metaclass=ANSIMeta):
     """
     Unicode-like object that is aware of ANSI codes.
 
