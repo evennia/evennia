@@ -1,4 +1,4 @@
-# Evennia dependencies, for Linux/Mac platforms
+# Evennia dependencies
 
 # general
 django >= 2.2.5, < 2.3
@@ -13,3 +13,6 @@ model_mommy
 # testing
 mock >= 1.0.1
 anything
+
+# windows-specific
+pypiwin32;platform_system=="Windows"
