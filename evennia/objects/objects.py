@@ -1955,7 +1955,7 @@ class DefaultCharacter(DefaultObject):
 
         """
         errors = []
-        obj = Noneo
+        obj = None
         # Get IP address of creator, if available
         ip = kwargs.pop('ip', '')
 
