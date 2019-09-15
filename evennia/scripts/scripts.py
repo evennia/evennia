@@ -13,7 +13,6 @@ from evennia.typeclasses.models import TypeclassBase
 from evennia.scripts.models import ScriptDB
 from evennia.scripts.manager import ScriptManager
 from evennia.utils import create, logger
-from future.utils import with_metaclass
 
 __all__ = ["DefaultScript", "DoNothing", "Store"]
 
@@ -144,7 +143,7 @@ class ExtendedLoopingCall(LoopingCall):
         return None
 
 
-class ScriptBase(with_metaclass(TypeclassBase, ScriptDB)):
+class ScriptBase(ScriptDB, metaclass=TypeclassBase):
     """
     Base class for scripts. Don't inherit from this, inherit from the
     class `DefaultScript` below instead.

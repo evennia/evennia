@@ -3,7 +3,6 @@ This connects to an IRC network/channel and launches an 'bot' onto it.
 The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
-from future.utils import viewkeys, viewvalues, viewitems
 
 import re
 from twisted.application import internet
@@ -90,15 +89,15 @@ IRC_COLOR_MAP = dict((
 ))
 # ansi->irc
 RE_ANSI_COLOR = re.compile(r"|".join(
-    [re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
+    [re.escape(key) for key in IRC_COLOR_MAP.keys()]), re.DOTALL)
 RE_MXP = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
 # irc->ansi
 _CLR_LIST = [re.escape(val)
-             for val in sorted(viewvalues(IRC_COLOR_MAP), key=len, reverse=True) if val.strip()]
+             for val in sorted(IRC_COLOR_MAP.values(), key=len, reverse=True) if val.strip()]
 _CLR_LIST = _CLR_LIST[-2:] + _CLR_LIST[:-2]
 RE_IRC_COLOR = re.compile(r"|".join(_CLR_LIST), re.DOTALL)
-ANSI_COLOR_MAP = dict((tup[1], tup[0]) for tup in viewitems(IRC_COLOR_MAP) if tup[1].strip())
+ANSI_COLOR_MAP = dict((tup[1], tup[0]) for tup in IRC_COLOR_MAP.items() if tup[1].strip())
 
 
 def parse_ansi_to_irc(string):
