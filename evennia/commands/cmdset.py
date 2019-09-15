@@ -26,8 +26,6 @@ Set theory.
     to affect the low-priority cmdset.  Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5
 
 """
-from future.utils import listvalues, with_metaclass
-
 from weakref import WeakKeyDictionary
 from django.utils.translation import ugettext as _
 from evennia.utils.utils import inherits_from, is_iter
@@ -57,7 +55,7 @@ class _CmdSetMeta(type):
         super().__init__(*args, **kwargs)
 
 
-class CmdSet(with_metaclass(_CmdSetMeta, object)):
+class CmdSet(object, metaclass=_CmdSetMeta):
     """
     This class describes a unique cmdset that understands priorities.
     CmdSets can be merged and made to perform various set operations
@@ -585,7 +583,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                     unique[cmd.key] = cmd
             else:
                 unique[cmd.key] = cmd
-        self.commands = listvalues(unique)
+        self.commands = list(unique.values())
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """

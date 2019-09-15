@@ -8,7 +8,6 @@ Also adds `cache_size()` for monitoring the size of the cache.
 """
 
 from builtins import object
-from future.utils import listitems, listvalues, with_metaclass
 
 import os
 import threading
@@ -197,7 +196,7 @@ class SharedMemoryModelBase(ModelBase):
             return
         # dynamically create the wrapper properties for all fields not already handled
         # (manytomanyfields are always handlers)
-        for fieldname, field in ((fname, field) for fname, field in listitems(attrs)
+        for fieldname, field in ((fname, field) for fname, field in list(attrs.items())
                                  if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
             foreignkey = type(field).__name__ == "ForeignKey"
             wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
@@ -208,7 +207,7 @@ class SharedMemoryModelBase(ModelBase):
         return super().__new__(cls, name, bases, attrs)
 
 
-class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
+class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
     """
     Base class for idmapped objects. Inherit from `this`.
     """
@@ -291,7 +290,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         Return the objects so far cached by idmapper for this class.
 
         """
-        return listvalues(cls.__dbclass__.__instance_cache__)
+        return list(cls.__dbclass__.__instance_cache__.values())
 
     @classmethod
     def _flush_cached_by_key(cls, key, force=True):
@@ -457,7 +456,7 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
         cls.__dbclass__.__instance_cache__ = WeakValueDictionary()
 
 
-class WeakSharedMemoryModel(with_metaclass(WeakSharedMemoryModelBase, SharedMemoryModel)):
+class WeakSharedMemoryModel(SharedMemoryModel, metaclass=WeakSharedMemoryModelBase):
     """
     Uses a WeakValue dictionary for caching instead of a regular one
 

@@ -8,7 +8,6 @@ entities.
 import time
 import inflect
 from builtins import object
-from future.utils import with_metaclass
 from collections import defaultdict
 
 from django.conf import settings
@@ -179,7 +178,7 @@ class ObjectSessionHandler(object):
 # Base class to inherit from.
 
 
-class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
+class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     """
     This is the root typeclass object, representing all entities that
     have an actual presence in-game. DefaultObjects generally have a

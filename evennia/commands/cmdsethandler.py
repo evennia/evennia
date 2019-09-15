@@ -64,7 +64,6 @@ example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
 """
 from builtins import object
-from future.utils import raise_
 import sys
 from traceback import format_exc
 from importlib import import_module
@@ -172,22 +171,22 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             if not cmdsetclass:
                 try:
                     module = import_module(modpath, package="evennia")
-                except ImportError:
+                except ImportError as exc:
                     if len(trace()) > 2:
                         # error in module, make sure to not hide it.
-                        exc = sys.exc_info()
-                        raise_(exc[1], None, exc[2])
+                        _, _, tb = sys.exc_info()
+                        raise exc.with_traceback(tb)
                     else:
                         # try next suggested path
                         errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
                         continue
                 try:
                     cmdsetclass = getattr(module, classname)
-                except AttributeError:
+                except AttributeError as exc:
                     if len(trace()) > 2:
                         # Attribute error within module, don't hide it
-                        exc = sys.exc_info()
-                        raise_(exc[1], None, exc[2])
+                        _, _, tb = sys.exc_info()
+                        raise exc.with_traceback(tb)
                     else:
                         errstring += _("\n(Unsuccessfully tried '%s')." % python_path)
                         continue
