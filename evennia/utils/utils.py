@@ -6,8 +6,6 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
-from future.utils import viewkeys, raise_
-
 import os
 import sys
 import imp
@@ -1050,45 +1048,6 @@ def delay(timedelay, callback, *args, **kwargs):
     if _TASK_HANDLER is None:
         from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
     return _TASK_HANDLER.add(timedelay, callback, *args, **kwargs)
-
-
-_TYPECLASSMODELS = None
-_OBJECTMODELS = None
-
-
-def clean_object_caches(obj):
-    """
-    Clean all object caches on the given object.
-
-    Args:
-        obj (Object instace): An object whose caches to clean.
-
-    Notes:
-        This is only the contents cache these days.
-
-    """
-    global _TYPECLASSMODELS, _OBJECTMODELS
-    if not _TYPECLASSMODELS:
-        from evennia.typeclasses import models as _TYPECLASSMODELS
-
-    if not obj:
-        return
-    # contents cache
-    try:
-        _SA(obj, "_contents_cache", None)
-    except AttributeError:
-        # if the cache cannot be reached, move on anyway
-        pass
-
-    # on-object property cache
-    [_DA(obj, cname) for cname in viewkeys(obj.__dict__)
-     if cname.startswith("_cached_db_")]
-    try:
-        hashid = _GA(obj, "hashid")
-        _TYPECLASSMODELS._ATTRIBUTE_CACHE[hashid] = {}
-    except AttributeError:
-        # skip caching
-        pass
 
 
 _PPOOL = None
