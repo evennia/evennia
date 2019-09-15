@@ -541,3 +541,13 @@ def msdp_unreport(session, *args, **kwargs):
 
     """
     unmonitor(session, *args, **kwargs)
+
+
+# client specific
+
+def external_discord_hello(session, *args, **kwargs):
+    """
+    Sent by Mudlet as a greeting; added here to avoid
+    logging a missing inputfunc for it.
+    """
+    pass

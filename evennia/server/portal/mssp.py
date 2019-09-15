@@ -115,7 +115,7 @@ class Mssp(object):
         if MSSPTable_CUSTOM:
             self.mssp_table.update(MSSPTable_CUSTOM)
 
-        varlist = ''
+        varlist = b''
         for variable, value in self.mssp_table.items():
             if callable(value):
                 value = value()
