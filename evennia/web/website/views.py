@@ -341,7 +341,7 @@ class ObjectDetailView(EvenniaDetailView):
         # Check if this object was requested in a valid manner
         if slugify(obj.name) != self.kwargs.get(self.slug_url_kwarg):
             raise HttpResponseBadRequest(
-                u"No %(verbose_name)s found matching the query" %
+                "No %(verbose_name)s found matching the query" %
                 {'verbose_name': queryset.model._meta.verbose_name})
 
         # Check if the requestor account has permissions to access object
@@ -937,7 +937,7 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
         # Check if this object was requested in a valid manner
         if not obj:
             raise HttpResponseBadRequest(
-                u"No %(verbose_name)s found matching the query" %
+                "No %(verbose_name)s found matching the query" %
                 {'verbose_name': queryset.model._meta.verbose_name})
 
         return obj
@@ -1082,7 +1082,7 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
         # Check if this object was requested in a valid manner
         if not obj:
             raise HttpResponseBadRequest(
-                u"No %(verbose_name)s found matching the query" %
+                "No %(verbose_name)s found matching the query" %
                 {'verbose_name': queryset.model._meta.verbose_name})
 
         return obj
