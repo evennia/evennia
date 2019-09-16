@@ -5,6 +5,8 @@ TODO: Not nearly all utilities are covered yet.
 
 """
 
+import os.path
+
 import mock
 from django.test import TestCase
 from datetime import datetime
@@ -203,3 +205,27 @@ class TestDateTimeFormat(TestCase):
         self.assertEqual(utils.datetime_format(dtobj), "19:54")
         dtobj = datetime(2019, 8, 28, 21, 32)
         self.assertEqual(utils.datetime_format(dtobj), "21:32:00")
+
+
+class TestImportFunctions(TestCase):
+    def _t_dir_file(self, filename):
+        testdir = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(testdir, filename)
+
+    def test_mod_import(self):
+        loaded_mod = utils.mod_import('evennia.utils.ansi')
+        self.assertIsNotNone(loaded_mod)
+
+    def test_mod_import_invalid(self):
+        loaded_mod = utils.mod_import('evennia.utils.invalid_module')
+        self.assertIsNone(loaded_mod)
+
+    def test_mod_import_from_path(self):
+        test_path = self._t_dir_file('test_eveditor.py')
+        loaded_mod = utils.mod_import_from_path(test_path)
+        self.assertIsNotNone(loaded_mod)
+
+    def test_mod_import_from_path_invalid(self):
+        test_path = self._t_dir_file('invalid_filename.py')
+        loaded_mod = utils.mod_import_from_path(test_path)
+        self.assertIsNone(loaded_mod)
