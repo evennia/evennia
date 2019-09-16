@@ -13,7 +13,6 @@ There are two similar but separate stores of sessions:
 
 """
 import time
-from builtins import object
 
 from django.conf import settings
 from evennia.commands.cmdhandler import CMD_LOGINSTART

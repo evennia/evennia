@@ -28,7 +28,6 @@ Pickle field implementation for Django.
 Modified for Evennia by Griatch and the Evennia community.
 
 """
-from builtins import object
 from ast import literal_eval
 from datetime import datetime
 

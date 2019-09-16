@@ -15,8 +15,6 @@ persistently store attributes of its own. This is ideal for extra
 account info and OOC account configuration variables etc.
 
 """
-from builtins import object
-
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser

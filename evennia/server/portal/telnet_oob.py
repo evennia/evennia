@@ -25,7 +25,6 @@ client supports MSDP and if not, we fallback to GMCP with a MSDP
 header where applicable.
 
 """
-from builtins import object
 import re
 import json
 from evennia.utils.utils import is_iter

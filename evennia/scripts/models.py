@@ -24,8 +24,6 @@ Common examples of uses of Scripts:
 - Give the account/object a time-limited bonus/effect
 
 """
-from builtins import object
-
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist

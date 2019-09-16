@@ -94,8 +94,6 @@ Verbose Installation Instructions:
            @type/reset/force me = typeclasses.characters.Character
 
 """
-from builtins import object
-
 import re
 from re import escape as re_escape
 import itertools

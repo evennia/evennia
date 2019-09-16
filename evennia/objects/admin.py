@@ -2,8 +2,6 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
-from builtins import object
-
 from django import forms
 from django.conf import settings
 from django.contrib import admin

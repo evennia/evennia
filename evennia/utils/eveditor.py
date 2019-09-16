@@ -42,8 +42,6 @@ In addition, the EvEditor can be used to enter Python source code,
 and offers basic handling of indentation.
 
 """
-from builtins import object
-
 import re
 
 from django.conf import settings

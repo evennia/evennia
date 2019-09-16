@@ -7,7 +7,6 @@ entities.
 """
 import time
 import inflect
-from builtins import object
 from collections import defaultdict
 
 from django.conf import settings
