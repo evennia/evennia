@@ -29,8 +29,6 @@ at_cmdset_creation():
 After a reload the dice (or roll) command will be available in-game.
 
 """
-from builtins import range
-
 import re
 from random import randint
 from evennia import default_cmds, CmdSet

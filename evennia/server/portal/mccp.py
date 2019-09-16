@@ -14,7 +14,6 @@ terribly slow connection.
 This protocol is implemented by the telnet protocol importing
 mccp_compress and calling it from its write methods.
 """
-from builtins import object
 import zlib
 
 # negotiations for v1 and v2 of the protocol

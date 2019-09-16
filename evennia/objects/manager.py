@@ -8,7 +8,6 @@ from django.conf import settings
 from django.db.models.fields import exceptions
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
 from evennia.utils.utils import is_iter, make_iter, string_partial_matching
-from builtins import int
 
 __all__ = ("ObjectManager",)
 _GA = object.__getattribute__

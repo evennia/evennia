@@ -129,8 +129,6 @@ form will raise an error.
 
 """
 
-from builtins import object, range
-
 import re
 import copy
 from evennia.utils.evtable import EvCell, EvTable

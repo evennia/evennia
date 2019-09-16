@@ -104,8 +104,6 @@ to any other identifier you can use.
 
 """
 
-from builtins import object
-
 import re
 from django.conf import settings
 from evennia.utils import logger, utils

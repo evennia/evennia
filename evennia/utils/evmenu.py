@@ -166,7 +166,6 @@ evennia.utils.evmenu`.
 
 import random
 import inspect
-from builtins import object, range
 
 from inspect import isfunction, getargspec
 from django.conf import settings

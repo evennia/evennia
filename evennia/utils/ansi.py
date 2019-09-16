@@ -14,7 +14,6 @@ the ansi mapping.
 
 """
 import functools
-from builtins import object, range
 
 import re
 from collections import OrderedDict

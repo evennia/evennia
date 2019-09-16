@@ -4,8 +4,6 @@ The base Command class.
 All commands in Evennia inherit from the 'Command' class in this module.
 
 """
-from builtins import range
-
 import re
 import math
 

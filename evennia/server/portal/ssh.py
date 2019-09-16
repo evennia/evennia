@@ -9,7 +9,6 @@ Using standard ssh client,
 
 """
 
-from builtins import object
 import os
 import re
 

@@ -32,8 +32,6 @@ for instructions on how to define this module.
 """
 
 
-from builtins import range
-
 import sys
 import time
 import random

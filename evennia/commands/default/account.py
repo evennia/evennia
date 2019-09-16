@@ -18,8 +18,6 @@ self.msg() and similar methods to reroute returns to the correct
 method. Otherwise all text will be returned to all connected sessions.
 
 """
-from builtins import range
-
 import time
 from codecs import lookup as codecs_lookup
 from django.conf import settings

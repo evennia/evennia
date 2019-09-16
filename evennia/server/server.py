@@ -7,7 +7,6 @@ sets up all the networking features.  (this is done automatically
 by evennia/server/server_runner.py).
 
 """
-from builtins import object
 import time
 import sys
 import os
