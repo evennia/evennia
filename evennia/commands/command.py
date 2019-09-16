@@ -39,12 +39,10 @@ def _init_command(cls, **kwargs):
     cls.key = cls.key.lower()
     if cls.aliases and not is_iter(cls.aliases):
         try:
-            cls.aliases = [str(alias).strip().lower()
-                           for alias in cls.aliases.split(',')]
+            cls.aliases = [str(alias).strip().lower() for alias in cls.aliases.split(",")]
         except Exception:
             cls.aliases = []
-    cls.aliases = list(set(alias for alias in cls.aliases
-                           if alias and alias != cls.key))
+    cls.aliases = list(set(alias for alias in cls.aliases if alias and alias != cls.key))
 
     # optimization - a set is much faster to match against than a list
     cls._matchset = set([cls.key] + cls.aliases)
@@ -57,24 +55,24 @@ def _init_command(cls, **kwargs):
 
     # pre-process locks as defined in class definition
     temp = []
-    if hasattr(cls, 'permissions'):
+    if hasattr(cls, "permissions"):
         cls.locks = cls.permissions
-    if not hasattr(cls, 'locks'):
+    if not hasattr(cls, "locks"):
         # default if one forgets to define completely
         cls.locks = "cmd:all()"
     if "cmd:" not in cls.locks:
         cls.locks = "cmd:all();" + cls.locks
-    for lockstring in cls.locks.split(';'):
-        if lockstring and ':' not in lockstring:
+    for lockstring in cls.locks.split(";"):
+        if lockstring and ":" not in lockstring:
             lockstring = "cmd:%s" % lockstring
         temp.append(lockstring)
     cls.lock_storage = ";".join(temp)
 
-    if hasattr(cls, 'arg_regex') and isinstance(cls.arg_regex, str):
+    if hasattr(cls, "arg_regex") and isinstance(cls.arg_regex, str):
         cls.arg_regex = re.compile(r"%s" % cls.arg_regex, re.I + re.UNICODE)
     if not hasattr(cls, "auto_help"):
         cls.auto_help = True
-    if not hasattr(cls, 'is_exit'):
+    if not hasattr(cls, "is_exit"):
         cls.is_exit = False
     if not hasattr(cls, "help_category"):
         cls.help_category = "general"
@@ -85,9 +83,11 @@ class CommandMeta(type):
     """
     The metaclass cleans up all properties on the class
     """
+
     def __init__(cls, *args, **kwargs):
         _init_command(cls, **kwargs)
         super().__init__(*args, **kwargs)
+
 
 #    The Command class is the basic unit of an Evennia command; when
 #    defining new commands, the admin subclass this class and
@@ -217,7 +217,7 @@ class Command(object, metaclass=CommandMeta):
         str, too.
 
         """
-        return hash('\n'.join(self._matchset))
+        return hash("\n".join(self._matchset))
 
     def __ne__(self, cmd):
         """
@@ -285,7 +285,7 @@ class Command(object, metaclass=CommandMeta):
 
         """
         if isinstance(new_aliases, str):
-            new_aliases = new_aliases.split(';')
+            new_aliases = new_aliases.split(";")
         aliases = (str(alias).strip().lower() for alias in make_iter(new_aliases))
         self.aliases = list(set(alias for alias in aliases if alias != self.key))
         self._optimize()
@@ -321,8 +321,7 @@ class Command(object, metaclass=CommandMeta):
         """
         return self.lockhandler.check(srcobj, access_type, default=default)
 
-    def msg(self, text=None, to_obj=None, from_obj=None,
-            session=None, **kwargs):
+    def msg(self, text=None, to_obj=None, from_obj=None, session=None, **kwargs):
         """
         This is a shortcut instead of calling msg() directly on an
         object - it will detect if caller is an Object or an Account and
@@ -412,7 +411,9 @@ class Command(object, metaclass=CommandMeta):
         set in self.parse())
 
         """
-        variables = '\n'.join(" |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items())
+        variables = "\n".join(
+            " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
+        )
         string = f"""
 Command {self} has no defined `func()` - showing on-command variables:
 {variables}
@@ -432,8 +433,10 @@ Command {self} has no defined `func()` - showing on-command variables:
         string += "object storing cmdset (self.obj): |w%s|n\n" % self.obj
         string += "command string given (self.cmdstring): |w%s|n\n" % self.cmdstring
         # show cmdset.key instead of cmdset to shorten output
-        string += fill("current cmdset (self.cmdset): |w%s|n\n" %
-                       (self.cmdset.key if self.cmdset.key else self.cmdset.__class__))
+        string += fill(
+            "current cmdset (self.cmdset): |w%s|n\n"
+            % (self.cmdset.key if self.cmdset.key else self.cmdset.__class__)
+        )
 
         self.caller.msg(string)
 
@@ -455,7 +458,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             object, conventionally with a preceding space.
 
         """
-        if hasattr(self, 'obj') and self.obj and self.obj != caller:
+        if hasattr(self, "obj") and self.obj and self.obj != caller:
             return " (%s)" % self.obj.get_display_name(caller).strip()
         return ""
 
@@ -488,7 +491,7 @@ Command {self} has no defined `func()` - showing on-command variables:
 
         """
         if self.session:
-            return self.session.protocol_flags['SCREENWIDTH'][0]
+            return self.session.protocol_flags["SCREENWIDTH"][0]
 
     def styled_table(self, *args, **kwargs):
         """
@@ -505,35 +508,48 @@ Command {self} has no defined `func()` - showing on-command variables:
                 or incomplete and ready for use with `.add_row` or `.add_collumn`.
 
         """
-        border_color = self.account.options.get('border_color')
-        column_color = self.account.options.get('column_names_color')
+        border_color = self.account.options.get("border_color")
+        column_color = self.account.options.get("column_names_color")
 
-        colornames = ['|%s%s|n' % (column_color, col) for col in args]
+        colornames = ["|%s%s|n" % (column_color, col) for col in args]
 
-        h_line_char = kwargs.pop('header_line_char', '~')
-        header_line_char = ANSIString(f'|{border_color}{h_line_char}|n')
-        c_char = kwargs.pop('corner_char', '+')
-        corner_char = ANSIString(f'|{border_color}{c_char}|n')
+        h_line_char = kwargs.pop("header_line_char", "~")
+        header_line_char = ANSIString(f"|{border_color}{h_line_char}|n")
+        c_char = kwargs.pop("corner_char", "+")
+        corner_char = ANSIString(f"|{border_color}{c_char}|n")
 
-        b_left_char = kwargs.pop('border_left_char', '||')
-        border_left_char = ANSIString(f'|{border_color}{b_left_char}|n')
+        b_left_char = kwargs.pop("border_left_char", "||")
+        border_left_char = ANSIString(f"|{border_color}{b_left_char}|n")
 
-        b_right_char = kwargs.pop('border_right_char', '||')
-        border_right_char = ANSIString(f'|{border_color}{b_right_char}|n')
+        b_right_char = kwargs.pop("border_right_char", "||")
+        border_right_char = ANSIString(f"|{border_color}{b_right_char}|n")
 
-        b_bottom_char = kwargs.pop('border_bottom_char', '-')
-        border_bottom_char = ANSIString(f'|{border_color}{b_bottom_char}|n')
+        b_bottom_char = kwargs.pop("border_bottom_char", "-")
+        border_bottom_char = ANSIString(f"|{border_color}{b_bottom_char}|n")
 
-        b_top_char = kwargs.pop('border_top_char', '-')
-        border_top_char = ANSIString(f'|{border_color}{b_top_char}|n')
+        b_top_char = kwargs.pop("border_top_char", "-")
+        border_top_char = ANSIString(f"|{border_color}{b_top_char}|n")
 
-        table = EvTable(*colornames, header_line_char=header_line_char, corner_char=corner_char,
-                        border_left_char=border_left_char, border_right_char=border_right_char,
-                        border_top_char=border_top_char, **kwargs)
+        table = EvTable(
+            *colornames,
+            header_line_char=header_line_char,
+            corner_char=corner_char,
+            border_left_char=border_left_char,
+            border_right_char=border_right_char,
+            border_top_char=border_top_char,
+            **kwargs,
+        )
         return table
 
-    def _render_decoration(self, header_text=None, fill_character=None, edge_character=None,
-                      mode='header', color_header=True, width=None):
+    def _render_decoration(
+        self,
+        header_text=None,
+        fill_character=None,
+        edge_character=None,
+        mode="header",
+        color_header=True,
+        width=None,
+    ):
         """
         Helper for formatting a string into a pretty display, for a header, separator or footer.
 
@@ -552,9 +568,9 @@ Command {self} has no defined `func()` - showing on-command variables:
         """
 
         colors = dict()
-        colors['border'] = self.account.options.get('border_color')
-        colors['headertext'] = self.account.options.get('%s_text_color' % mode)
-        colors['headerstar'] = self.account.options.get('%s_star_color' % mode)
+        colors["border"] = self.account.options.get("border_color")
+        colors["headertext"] = self.account.options.get("%s_text_color" % mode)
+        colors["headerstar"] = self.account.options.get("%s_star_color" % mode)
 
         width = width or self.client_width()
         if edge_character:
@@ -563,17 +579,19 @@ Command {self} has no defined `func()` - showing on-command variables:
         if header_text:
             if color_header:
                 header_text = ANSIString(header_text).clean()
-                header_text = ANSIString('|n|%s%s|n' % (colors['headertext'], header_text))
-            if mode == 'header':
-                begin_center = ANSIString("|n|%s<|%s* |n" % (colors['border'], colors['headerstar']))
-                end_center = ANSIString("|n |%s*|%s>|n" % (colors['headerstar'], colors['border']))
+                header_text = ANSIString("|n|%s%s|n" % (colors["headertext"], header_text))
+            if mode == "header":
+                begin_center = ANSIString(
+                    "|n|%s<|%s* |n" % (colors["border"], colors["headerstar"])
+                )
+                end_center = ANSIString("|n |%s*|%s>|n" % (colors["headerstar"], colors["border"]))
                 center_string = ANSIString(begin_center + header_text + end_center)
             else:
-                center_string = ANSIString('|n |%s%s |n' % (colors['headertext'], header_text))
+                center_string = ANSIString("|n |%s%s |n" % (colors["headertext"], header_text))
         else:
-            center_string = ''
+            center_string = ""
 
-        fill_character = self.account.options.get('%s_fill' % mode)
+        fill_character = self.account.options.get("%s_fill" % mode)
 
         remain_fill = width - len(center_string)
         if remain_fill % 2 == 0:
@@ -583,13 +601,15 @@ Command {self} has no defined `func()` - showing on-command variables:
             right_width = math.floor(remain_fill / 2)
             left_width = math.ceil(remain_fill / 2)
 
-        right_fill = ANSIString('|n|%s%s|n' % (colors['border'], fill_character * int(right_width)))
-        left_fill = ANSIString('|n|%s%s|n' % (colors['border'], fill_character * int(left_width)))
+        right_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(right_width)))
+        left_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(left_width)))
 
         if edge_character:
-            edge_fill = ANSIString('|n|%s%s|n' % (colors['border'], edge_character))
+            edge_fill = ANSIString("|n|%s%s|n" % (colors["border"], edge_character))
             main_string = ANSIString(center_string)
-            final_send = ANSIString(edge_fill) + left_fill + main_string + right_fill + ANSIString(edge_fill)
+            final_send = (
+                ANSIString(edge_fill) + left_fill + main_string + right_fill + ANSIString(edge_fill)
+            )
         else:
             final_send = left_fill + ANSIString(center_string) + right_fill
         return final_send
@@ -599,8 +619,8 @@ Command {self} has no defined `func()` - showing on-command variables:
         Create a pretty header.
         """
 
-        if 'mode' not in kwargs:
-            kwargs['mode'] = 'header'
+        if "mode" not in kwargs:
+            kwargs["mode"] = "header"
         return self._render_decoration(*args, **kwargs)
 
     def styled_separator(self, *args, **kwargs):
@@ -608,8 +628,8 @@ Command {self} has no defined `func()` - showing on-command variables:
         Create a separator.
 
         """
-        if 'mode' not in kwargs:
-            kwargs['mode'] = 'separator'
+        if "mode" not in kwargs:
+            kwargs["mode"] = "separator"
         return self._render_decoration(*args, **kwargs)
 
     def styled_footer(self, *args, **kwargs):
@@ -617,8 +637,8 @@ Command {self} has no defined `func()` - showing on-command variables:
         Create a pretty footer.
 
         """
-        if 'mode' not in kwargs:
-            kwargs['mode'] = 'footer'
+        if "mode" not in kwargs:
+            kwargs["mode"] = "footer"
         return self._render_decoration(*args, **kwargs)
 
 

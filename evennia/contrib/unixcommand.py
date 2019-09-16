@@ -111,8 +111,8 @@ class UnixCommandParser(argparse.ArgumentParser):
         """
         prog = prog or command.key
         super().__init__(
-            prog=prog, description=description,
-            conflict_handler='resolve', add_help=False, **kwargs)
+            prog=prog, description=description, conflict_handler="resolve", add_help=False, **kwargs
+        )
         self.command = command
         self.post_help = epilog
 
@@ -122,8 +122,9 @@ class UnixCommandParser(argparse.ArgumentParser):
         self.exit = n_exit
 
         # Replace the -h/--help
-        self.add_argument("-h", "--hel", nargs=0, action=HelpAction,
-                          help="display the command help")
+        self.add_argument(
+            "-h", "--hel", nargs=0, action=HelpAction, help="display the command help"
+        )
 
     def format_usage(self):
         """Return the usage line.

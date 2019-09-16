@@ -33,25 +33,26 @@ from django.utils.translation import ugettext as _
 class NDbHolder(object):
     """Holder for allowing property access of attributes"""
 
-    def __init__(self, obj, name, manager_name='attributes'):
+    def __init__(self, obj, name, manager_name="attributes"):
         _SA(self, name, _GA(obj, manager_name))
-        _SA(self, 'name', name)
+        _SA(self, "name", name)
 
     def __getattribute__(self, attrname):
-        if attrname == 'all':
+        if attrname == "all":
             # we allow to overload our default .all
-            attr = _GA(self, _GA(self, 'name')).get("all")
+            attr = _GA(self, _GA(self, "name")).get("all")
             return attr if attr else _GA(self, "all")
-        return _GA(self, _GA(self, 'name')).get(attrname)
+        return _GA(self, _GA(self, "name")).get(attrname)
 
     def __setattr__(self, attrname, value):
-        _GA(self, _GA(self, 'name')).add(attrname, value)
+        _GA(self, _GA(self, "name")).add(attrname, value)
 
     def __delattr__(self, attrname):
-        _GA(self, _GA(self, 'name')).remove(attrname)
+        _GA(self, _GA(self, "name")).remove(attrname)
 
     def get_all(self):
-        return _GA(self, _GA(self, 'name')).all()
+        return _GA(self, _GA(self, "name")).all()
+
     all = property(get_all)
 
 
@@ -149,6 +150,7 @@ class NAttributeHandler(object):
 # Server Session
 # -------------------------------------------------------------
 
+
 class ServerSession(Session):
     """
     This class represents an account's session and is a template for
@@ -168,10 +170,11 @@ class ServerSession(Session):
         self.cmdset = CmdSetHandler(self, True)
 
     def __cmdset_storage_get(self):
-        return [path.strip() for path in self.cmdset_storage_string.split(',')]
+        return [path.strip() for path in self.cmdset_storage_string.split(",")]
 
     def __cmdset_storage_set(self, value):
         self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
+
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
 
     def at_sync(self):
@@ -254,8 +257,7 @@ class ServerSession(Session):
             account.at_post_disconnect()
             # remove any webclient settings monitors associated with this
             # session
-            MONITOR_HANDLER.remove(account, "_saved_webclient_options",
-                                   self.sessid)
+            MONITOR_HANDLER.remove(account, "_saved_webclient_options", self.sessid)
 
     def get_account(self):
         """
@@ -276,6 +278,7 @@ class ServerSession(Session):
 
         """
         return self.logged_in and self.puppet
+
     get_character = get_puppet
 
     def get_puppet_or_account(self):
@@ -304,7 +307,7 @@ class ServerSession(Session):
         cchan = channel and settings.CHANNEL_CONNECTINFO
         if cchan:
             try:
-                cchan = ChannelDB.objects.get_channel(cchan['key'])
+                cchan = ChannelDB.objects.get_channel(cchan["key"])
                 cchan.msg("[%s]: %s" % (cchan.key, message))
             except Exception:
                 logger.log_trace()
@@ -318,8 +321,8 @@ class ServerSession(Session):
 
         """
         flags = self.protocol_flags
-        width = flags.get('SCREENWIDTH', {}).get(0, settings.CLIENT_DEFAULT_WIDTH)
-        height = flags.get('SCREENHEIGHT', {}).get(0, settings.CLIENT_DEFAULT_HEIGHT)
+        width = flags.get("SCREENWIDTH", {}).get(0, settings.CLIENT_DEFAULT_WIDTH)
+        height = flags.get("SCREENHEIGHT", {}).get(0, settings.CLIENT_DEFAULT_HEIGHT)
         return width, height
 
     def update_session_counters(self, idle=False):
@@ -463,7 +466,7 @@ class ServerSession(Session):
         if self.logged_in and hasattr(self, "account") and self.account:
             symbol = "(#%s)" % self.account.id
         try:
-            if hasattr(self.address, '__iter__'):
+            if hasattr(self.address, "__iter__"):
                 address = ":".join([str(part) for part in self.address])
             else:
                 address = self.address
@@ -527,6 +530,7 @@ class ServerSession(Session):
     def ndb_del(self):
         """Stop accidental deletion."""
         raise Exception("Cannot delete the ndb object!")
+
     ndb = property(ndb_get, ndb_set, ndb_del)
     db = property(ndb_get, ndb_set, ndb_del)
 

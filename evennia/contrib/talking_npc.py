@@ -25,13 +25,14 @@ from evennia.utils.evmenu import EvMenu
 
 # Menu implementing the dialogue tree
 
+
 def menu_start_node(caller):
     text = "'Hello there, how can I help you?'"
 
-    options = ({"desc": "Hey, do you know what this 'Evennia' thing is all about?",
-                "goto": "info1"},
-               {"desc": "What's your name, little NPC?",
-                "goto": "info2"})
+    options = (
+        {"desc": "Hey, do you know what this 'Evennia' thing is all about?", "goto": "info1"},
+        {"desc": "What's your name, little NPC?", "goto": "info2"},
+    )
 
     return text, options
 
@@ -39,12 +40,11 @@ def menu_start_node(caller):
 def info1(caller):
     text = "'Oh, Evennia is where you are right now! Don't you feel the power?'"
 
-    options = ({"desc": "Sure, *I* do, not sure how you do though. You are just an NPC.",
-                "goto": "info3"},
-               {"desc": "Sure I do. What's yer name, NPC?",
-                "goto": "info2"},
-               {"desc": "Ok, bye for now then.",
-                "goto": "END"})
+    options = (
+        {"desc": "Sure, *I* do, not sure how you do though. You are just an NPC.", "goto": "info3"},
+        {"desc": "Sure I do. What's yer name, NPC?", "goto": "info2"},
+        {"desc": "Ok, bye for now then.", "goto": "END"},
+    )
 
     return text, options
 
@@ -52,10 +52,10 @@ def info1(caller):
 def info2(caller):
     text = "'My name is not really important ... I'm just an NPC after all.'"
 
-    options = ({"desc": "I didn't really want to know it anyhow.",
-                "goto": "info3"},
-               {"desc": "Okay then, so what's this 'Evennia' thing about?",
-                "goto": "info1"})
+    options = (
+        {"desc": "I didn't really want to know it anyhow.", "goto": "info3"},
+        {"desc": "Okay then, so what's this 'Evennia' thing about?", "goto": "info1"},
+    )
 
     return text, options
 
@@ -63,10 +63,10 @@ def info2(caller):
 def info3(caller):
     text = "'Well ... I'm sort of busy so, have to go. NPC business. Important stuff. You wouldn't understand.'"
 
-    options = ({"desc": "Oookay ... I won't keep you. Bye.",
-                "goto": "END"},
-               {"desc": "Wait, why don't you tell me your name first?",
-                "goto": "info2"})
+    options = (
+        {"desc": "Oookay ... I won't keep you. Bye.", "goto": "END"},
+        {"desc": "Wait, why don't you tell me your name first?", "goto": "info2"},
+    )
 
     return text, options
 
@@ -77,6 +77,7 @@ def END(caller):
     options = ()
 
     return text, options
+
 
 #
 # The talk command (sits on the NPC)
@@ -94,6 +95,7 @@ class CmdTalk(default_cmds.MuxCommand):
    (NPC) is actually present. It will strike up a conversation with
    that NPC and give you options on what to talk about.
    """
+
     key = "talk"
     locks = "cmd:all()"
     help_category = "General"
@@ -106,8 +108,7 @@ class CmdTalk(default_cmds.MuxCommand):
 
         # Initiate the menu. Change this if you are putting this on
         # some other custom NPC class.
-        EvMenu(self.caller, "evennia.contrib.talking_npc",
-               startnode="menu_start_node")
+        EvMenu(self.caller, "evennia.contrib.talking_npc", startnode="menu_start_node")
 
 
 class TalkingCmdSet(CmdSet):

@@ -166,9 +166,18 @@ class FieldEvMenu(evmenu.EvMenu):
         return nodetext
 
 
-def init_fill_field(formtemplate, caller, formcallback, pretext="", posttext="",
-                    submitcmd="submit", borderstyle="cells", formhelptext=None,
-                    persistent=False, initial_formdata=None):
+def init_fill_field(
+    formtemplate,
+    caller,
+    formcallback,
+    pretext="",
+    posttext="",
+    submitcmd="submit",
+    borderstyle="cells",
+    formhelptext=None,
+    persistent=False,
+    initial_formdata=None,
+):
     """
     Initializes a menu presenting a player with a fillable form - once the form
     is submitted, the data will be passed as a dictionary to your chosen
@@ -201,13 +210,14 @@ def init_fill_field(formtemplate, caller, formcallback, pretext="", posttext="",
     # Provide default help text if none given
     if formhelptext is None:
         formhelptext = (
-             "Available commands:|/"
-             "|w<field> = <new value>:|n Set given field to new value, replacing the old value|/"
-             "|wclear <field>:|n Clear the value in the given field, making it blank|/"
-             "|wlook|n: Show the form's current values|/"
-             "|whelp|n: Display this help screen|/"
-             "|wquit|n: Quit the form menu without submitting|/"
-             "|w%s|n: Submit this form and quit the menu" % submitcmd)
+            "Available commands:|/"
+            "|w<field> = <new value>:|n Set given field to new value, replacing the old value|/"
+            "|wclear <field>:|n Clear the value in the given field, making it blank|/"
+            "|wlook|n: Show the form's current values|/"
+            "|whelp|n: Display this help screen|/"
+            "|wquit|n: Quit the form menu without submitting|/"
+            "|w%s|n: Submit this form and quit the menu" % submitcmd
+        )
 
     # Pass kwargs to store data needed in the menu
     kwargs = {
@@ -218,12 +228,18 @@ def init_fill_field(formtemplate, caller, formcallback, pretext="", posttext="",
         "posttext": posttext,
         "submitcmd": submitcmd,
         "borderstyle": borderstyle,
-        "formhelptext": formhelptext
+        "formhelptext": formhelptext,
     }
 
     # Initialize menu of selections
-    FieldEvMenu(caller, "evennia.contrib.fieldfill", startnode="menunode_fieldfill",
-                auto_look=False, persistent=persistent, **kwargs)
+    FieldEvMenu(
+        caller,
+        "evennia.contrib.fieldfill",
+        startnode="menunode_fieldfill",
+        auto_look=False,
+        persistent=persistent,
+        **kwargs,
+    )
 
 
 def menunode_fieldfill(caller, raw_string, **kwargs):
@@ -254,13 +270,19 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
         formhelptext = caller.db._menutree.formhelptext
 
     # Syntax error
-    syntax_err = "Syntax: <field> = <new value>|/Or: clear <field>, help, look, quit|/'%s' to submit form" % submitcmd
+    syntax_err = (
+        "Syntax: <field> = <new value>|/Or: clear <field>, help, look, quit|/'%s' to submit form"
+        % submitcmd
+    )
 
     # Display current form data
-    text = (display_formdata(formtemplate, formdata, pretext=pretext,
-            posttext=posttext, borderstyle=borderstyle), formhelptext)
-    options = ({"key": "_default",
-               "goto": "menunode_fieldfill"})
+    text = (
+        display_formdata(
+            formtemplate, formdata, pretext=pretext, posttext=posttext, borderstyle=borderstyle
+        ),
+        formhelptext,
+    )
+    options = {"key": "_default", "goto": "menunode_fieldfill"}
 
     if raw_string:
         # Test for given 'submit' command
@@ -275,7 +297,10 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                         blank_and_required.append(field["fieldname"])
             if len(blank_and_required) > 0:
                 # List the required fields left empty to the player
-                caller.msg("The following blank fields require a value: %s" % list_to_string(blank_and_required))
+                caller.msg(
+                    "The following blank fields require a value: %s"
+                    % list_to_string(blank_and_required)
+                )
                 text = (None, formhelptext)
                 return text, options
 
@@ -377,12 +402,18 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
             # Test for max/min
             if max_value is not None:
                 if len(newvalue) > max_value:
-                    caller.msg("Field '%s' has a maximum length of %i characters." % (matched_field, max_value))
+                    caller.msg(
+                        "Field '%s' has a maximum length of %i characters."
+                        % (matched_field, max_value)
+                    )
                     text = (None, formhelptext)
                     return text, options
             if min_value is not None:
                 if len(newvalue) < min_value:
-                    caller.msg("Field '%s' reqiures a minimum length of %i characters." % (matched_field, min_value))
+                    caller.msg(
+                        "Field '%s' reqiures a minimum length of %i characters."
+                        % (matched_field, min_value)
+                    )
                     text = (None, formhelptext)
                     return text, options
 
@@ -402,14 +433,18 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
                     return text, options
             if min_value is not None:
                 if newvalue < min_value:
-                    caller.msg("Field '%s' reqiures a minimum value of %i." % (matched_field, min_value))
+                    caller.msg(
+                        "Field '%s' reqiures a minimum value of %i." % (matched_field, min_value)
+                    )
                     text = (None, formhelptext)
                     return text, options
 
         # Field type bool verification
         if fieldtype == "bool":
             if newvalue.lower() != truestr.lower() and newvalue.lower() != falsestr.lower():
-                caller.msg("Please enter '%s' or '%s' for field '%s'." % (truestr, falsestr, matched_field))
+                caller.msg(
+                    "Please enter '%s' or '%s' for field '%s'." % (truestr, falsestr, matched_field)
+                )
                 text = (None, formhelptext)
                 return text, options
             if newvalue.lower() == truestr.lower():
@@ -474,8 +509,7 @@ def form_template_to_dict(formtemplate):
     return formdata
 
 
-def display_formdata(formtemplate, formdata,
-                     pretext="", posttext="", borderstyle="cells"):
+def display_formdata(formtemplate, formdata, pretext="", posttext="", borderstyle="cells"):
     """
     Displays a form's current data as a table. Used in the form menu.
 
@@ -568,35 +602,40 @@ def verify_online_player(caller, value):
     # besides strings and integers in the 'formdata' dictionary this way!
     return matched_character
 
+
 # Form template for the example 'delayed message' form
 SAMPLE_FORM = [
-    {"fieldname": "Character",
-     "fieldtype": "text",
-     "max": 30,
-     "blankmsg": "(Name of an online player)",
-     "required": True,
-     "verifyfunc": verify_online_player
-     },
-    {"fieldname": "Delay",
-     "fieldtype": "number",
-     "min": 3,
-     "max": 30,
-     "default": 10,
-     "cantclear": True
-     },
-    {"fieldname": "Message",
-     "fieldtype": "text",
-     "min": 3,
-     "max": 200,
-     "blankmsg": "(Message up to 200 characters)"
-     },
-    {"fieldname": "Anonymous",
-     "fieldtype": "bool",
-     "truestr": "Yes",
-     "falsestr": "No",
-     "default": False
-     }
-    ]
+    {
+        "fieldname": "Character",
+        "fieldtype": "text",
+        "max": 30,
+        "blankmsg": "(Name of an online player)",
+        "required": True,
+        "verifyfunc": verify_online_player,
+    },
+    {
+        "fieldname": "Delay",
+        "fieldtype": "number",
+        "min": 3,
+        "max": 30,
+        "default": 10,
+        "cantclear": True,
+    },
+    {
+        "fieldname": "Message",
+        "fieldtype": "text",
+        "min": 3,
+        "max": 200,
+        "blankmsg": "(Message up to 200 characters)",
+    },
+    {
+        "fieldname": "Anonymous",
+        "fieldtype": "bool",
+        "truestr": "Yes",
+        "falsestr": "No",
+        "default": False,
+    },
+]
 
 
 class CmdTestMenu(Command):
@@ -621,15 +660,25 @@ class CmdTestMenu(Command):
         """
         This performs the actual command.
         """
-        pretext = "|cSend a delayed message to another player ---------------------------------------|n"
-        posttext = ("|c--------------------------------------------------------------------------------|n|/"
-                    "Syntax: type |c<field> = <new value>|n to change the values of the form. Given|/"
-                    "player must be currently logged in, delay is given in seconds. When you are|/"
-                    "finished, type '|csend|n' to send the message.|/")
+        pretext = (
+            "|cSend a delayed message to another player ---------------------------------------|n"
+        )
+        posttext = (
+            "|c--------------------------------------------------------------------------------|n|/"
+            "Syntax: type |c<field> = <new value>|n to change the values of the form. Given|/"
+            "player must be currently logged in, delay is given in seconds. When you are|/"
+            "finished, type '|csend|n' to send the message.|/"
+        )
 
-        init_fill_field(SAMPLE_FORM, self.caller, init_delayed_message,
-                        pretext=pretext, posttext=posttext,
-                        submitcmd="send", borderstyle="none")
+        init_fill_field(
+            SAMPLE_FORM,
+            self.caller,
+            init_delayed_message,
+            pretext=pretext,
+            posttext=posttext,
+            submitcmd="send",
+            borderstyle="none",
+        )
 
 
 def sendmessage(obj, text):

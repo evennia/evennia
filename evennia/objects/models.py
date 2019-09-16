@@ -23,7 +23,7 @@ from django.core.validators import validate_comma_separated_integer_list
 from evennia.typeclasses.models import TypedObject
 from evennia.objects.manager import ObjectDBManager
 from evennia.utils import logger
-from evennia.utils.utils import (make_iter, dbref, lazy_property)
+from evennia.utils.utils import make_iter, dbref, lazy_property
 
 
 class ContentsHandler(object):
@@ -53,7 +53,9 @@ class ContentsHandler(object):
         Re-initialize the content cache
 
         """
-        self._pkcache.update(dict((obj.pk, None) for obj in ObjectDB.objects.filter(db_location=self.obj) if obj.pk))
+        self._pkcache.update(
+            dict((obj.pk, None) for obj in ObjectDB.objects.filter(db_location=self.obj) if obj.pk)
+        )
 
     def get(self, exclude=None):
         """
@@ -111,6 +113,7 @@ class ContentsHandler(object):
         self._pkcache = {}
         self.init()
 
+
 # -------------------------------------------------------------
 #
 # ObjectDB
@@ -156,6 +159,7 @@ class ObjectDB(TypedObject):
       - exits - exits from this object
 
     """
+
     #
     # ObjectDB Database model setup
     #
@@ -171,29 +175,62 @@ class ObjectDB(TypedObject):
     # will automatically save and cache the data more efficiently.
 
     # If this is a character object, the account is connected here.
-    db_account = models.ForeignKey("accounts.AccountDB", null=True, verbose_name='account', on_delete=models.SET_NULL,
-                                   help_text='an Account connected to this object, if any.')
+    db_account = models.ForeignKey(
+        "accounts.AccountDB",
+        null=True,
+        verbose_name="account",
+        on_delete=models.SET_NULL,
+        help_text="an Account connected to this object, if any.",
+    )
 
     # the session id associated with this account, if any
-    db_sessid = models.CharField(null=True, max_length=32, validators=[validate_comma_separated_integer_list],
-                                 verbose_name="session id",
-                                 help_text="csv list of session ids of connected Account, if any.")
+    db_sessid = models.CharField(
+        null=True,
+        max_length=32,
+        validators=[validate_comma_separated_integer_list],
+        verbose_name="session id",
+        help_text="csv list of session ids of connected Account, if any.",
+    )
     # The location in the game world. Since this one is likely
     # to change often, we set this with the 'location' property
     # to transparently handle Typeclassing.
-    db_location = models.ForeignKey('self', related_name="locations_set", db_index=True, on_delete=models.SET_NULL,
-                                    blank=True, null=True, verbose_name='game location')
+    db_location = models.ForeignKey(
+        "self",
+        related_name="locations_set",
+        db_index=True,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="game location",
+    )
     # a safety location, this usually don't change much.
-    db_home = models.ForeignKey('self', related_name="homes_set", on_delete=models.SET_NULL,
-                                blank=True, null=True, verbose_name='home location')
+    db_home = models.ForeignKey(
+        "self",
+        related_name="homes_set",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="home location",
+    )
     # destination of this object - primarily used by exits.
-    db_destination = models.ForeignKey('self', related_name="destinations_set",
-                                       db_index=True, on_delete=models.SET_NULL,
-                                       blank=True, null=True, verbose_name='destination',
-                                       help_text='a destination, used only by exit objects.')
+    db_destination = models.ForeignKey(
+        "self",
+        related_name="destinations_set",
+        db_index=True,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="destination",
+        help_text="a destination, used only by exit objects.",
+    )
     # database storage of persistant cmdsets.
-    db_cmdset_storage = models.CharField('cmdset', max_length=255, null=True, blank=True,
-                                         help_text="optional python path to a cmdset class.")
+    db_cmdset_storage = models.CharField(
+        "cmdset",
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="optional python path to a cmdset class.",
+    )
 
     # Database manager
     objects = ObjectDBManager()
@@ -211,7 +248,7 @@ class ObjectDB(TypedObject):
     def __cmdset_storage_get(self):
         """getter"""
         storage = self.db_cmdset_storage
-        return [path.strip() for path in storage.split(',')] if storage else []
+        return [path.strip() for path in storage.split(",")] if storage else []
 
     def __cmdset_storage_set(self, value):
         """setter"""
@@ -222,6 +259,7 @@ class ObjectDB(TypedObject):
         """deleter"""
         self.db_cmdset_storage = None
         self.save(update_fields=["db_cmdset_storage"])
+
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
 
     # location getsetter
@@ -241,6 +279,7 @@ class ObjectDB(TypedObject):
                     # maybe it is just a name that happens to look like a dbid
                     pass
         try:
+
             def is_loc_loop(loc, depth=0):
                 """Recursively traverse target location, trying to catch a loop."""
                 if depth > 10:
@@ -250,6 +289,7 @@ class ObjectDB(TypedObject):
                 elif loc is None:
                     raise RuntimeWarning
                 return is_loc_loop(loc.db_location, depth + 1)
+
             try:
                 is_loc_loop(location)
             except RuntimeWarning:
@@ -289,6 +329,7 @@ class ObjectDB(TypedObject):
         """Cleanly delete the location reference"""
         self.db_location = None
         self.save(update_fields=["db_location"])
+
     location = property(__location_get, __location_set, __location_del)
 
     def at_db_location_postsave(self, new):
@@ -312,10 +353,13 @@ class ObjectDB(TypedObject):
             else:
                 # Since we cannot know at this point was old_location was, we
                 # trigger a full-on contents_cache update here.
-                logger.log_warn("db_location direct save triggered contents_cache.init() for all objects!")
+                logger.log_warn(
+                    "db_location direct save triggered contents_cache.init() for all objects!"
+                )
                 [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
 
     class Meta(object):
         """Define Django meta options"""
+
         verbose_name = "Object"
         verbose_name_plural = "Objects"

@@ -91,6 +91,7 @@ class Account(DefaultAccount):
      at_server_shutdown()
 
     """
+
     pass
 
 
@@ -99,4 +100,5 @@ class Guest(DefaultGuest):
     This class is used for guest logins. Unlike Accounts, Guests and their
     characters are deleted after disconnection.
     """
+
     pass

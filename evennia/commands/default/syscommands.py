@@ -31,6 +31,7 @@ from evennia.commands.cmdhandler import CMD_CHANNEL
 from evennia.utils import utils
 
 from django.conf import settings
+
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # Command called when there is no input at line
@@ -41,6 +42,7 @@ class SystemNoInput(COMMAND_DEFAULT_CLASS):
     """
     This is called when there is no input given
     """
+
     key = CMD_NOINPUT
     locks = "cmd:all()"
 
@@ -57,6 +59,7 @@ class SystemNoMatch(COMMAND_DEFAULT_CLASS):
     """
     No command was found matching the given input.
     """
+
     key = CMD_NOMATCH
     locks = "cmd:all()"
 
@@ -86,6 +89,7 @@ class SystemMultimatch(COMMAND_DEFAULT_CLASS):
     the `raw_cmdname` is the cmdname unmodified by eventual prefix-stripping.
 
     """
+
     key = CMD_MULTIMATCH
     locks = "cmd:all()"
 
@@ -99,14 +103,14 @@ class SystemMultimatch(COMMAND_DEFAULT_CLASS):
         # evennia.commands.cmdparse.create_match for more details.
         matches = self.matches
         # at_search_result will itself msg the multimatch options to the caller.
-        at_search_result(
-                    [match[2] for match in matches], self.caller, query=matches[0][0])
+        at_search_result([match[2] for match in matches], self.caller, query=matches[0][0])
 
 
 # Command called when the command given at the command line
 # was identified as a channel name, like there existing a
 # channel named 'ooc' and the user wrote
 #  > ooc Hello!
+
 
 class SystemSendToChannel(COMMAND_DEFAULT_CLASS):
     """
@@ -119,7 +123,7 @@ class SystemSendToChannel(COMMAND_DEFAULT_CLASS):
     locks = "cmd:all()"
 
     def parse(self):
-        channelname, msg = self.args.split(':', 1)
+        channelname, msg = self.args.split(":", 1)
         self.args = channelname.strip(), msg.strip()
 
     def func(self):
@@ -140,7 +144,7 @@ class SystemSendToChannel(COMMAND_DEFAULT_CLASS):
             string = "You are not connected to channel '%s'."
             caller.msg(string % channelkey)
             return
-        if not channel.access(caller, 'send'):
+        if not channel.access(caller, "send"):
             string = "You are not permitted to send to channel '%s'."
             caller.msg(string % channelkey)
             return

@@ -8,26 +8,22 @@ from django.db import migrations
 def forwards(apps, schema_editor):
 
     try:
-        apps.get_model('accounts', 'AccountDB')
+        apps.get_model("accounts", "AccountDB")
     except LookupError:
         return
-    AccountDB = apps.get_model('accounts', 'AccountDB')
-    ObjectDB = apps.get_model('objects', 'ObjectDB')
+    AccountDB = apps.get_model("accounts", "AccountDB")
+    ObjectDB = apps.get_model("objects", "ObjectDB")
 
     for object in ObjectDB.objects.all():
         account = object.db_account
         if account:
             account = AccountDB.objects.get(id=account.id)
             object.db_account = account
-            object.save(update_fields=['db_account'])
+            object.save(update_fields=["db_account"])
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('objects', '0007_objectdb_db_account'),
-    ]
+    dependencies = [("objects", "0007_objectdb_db_account")]
 
-    operations = [
-        migrations.RunPython(forwards)
-    ]
+    operations = [migrations.RunPython(forwards)]

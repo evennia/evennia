@@ -25,7 +25,9 @@ from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 from autobahn.twisted.websocket import WebSocketServerProtocol
 
-_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
+_RE_SCREENREADER_REGEX = re.compile(
+    r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
+)
 _CLIENT_SESSIONS = mod_import(settings.SESSION_ENGINE).SessionStore
 
 
@@ -36,6 +38,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
     """
     Implements the server-side of the Websocket connection.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol_key = "webclient/websocket"
@@ -58,6 +61,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             return None
         except AttributeError:
             from evennia.utils import logger
+
             self.csessid = None
             logger.log_trace(str(self))
             return None
@@ -82,8 +86,10 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             self.logged_in = True
 
             for old_session in self.sessionhandler.sessions_from_csessid(csessid):
-                if (hasattr(old_session, "websocket_close_code") and
-                        old_session.websocket_close_code != CLOSE_NORMAL):
+                if (
+                    hasattr(old_session, "websocket_close_code")
+                    and old_session.websocket_close_code != CLOSE_NORMAL
+                ):
                     # if we have old sessions with the same csession, they are remnants
                     self.sessid = old_session.sessid
                     self.sessionhandler.disconnect(old_session)
@@ -143,7 +149,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                              UTF-8 encoded text.
 
         """
-        cmdarray = json.loads(str(payload, 'utf-8'))
+        cmdarray = json.loads(str(payload, "utf-8"))
         if cmdarray:
             self.data_in(**{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
 

@@ -23,28 +23,28 @@ _LOGGER = None
 # communication bits
 # (chr(9) and chr(10) are \t and \n, so skipping them)
 
-PCONN = chr(1)         # portal session connect
-PDISCONN = chr(2)      # portal session disconnect
-PSYNC = chr(3)         # portal session sync
-SLOGIN = chr(4)        # server session login
-SDISCONN = chr(5)      # server session disconnect
-SDISCONNALL = chr(6)   # server session disconnect all
-SSHUTD = chr(7)        # server shutdown
-SSYNC = chr(8)         # server session sync
-SCONN = chr(11)        # server creating new connection (for irc bots and etc)
-PCONNSYNC = chr(12)    # portal post-syncing a session
+PCONN = chr(1)  # portal session connect
+PDISCONN = chr(2)  # portal session disconnect
+PSYNC = chr(3)  # portal session sync
+SLOGIN = chr(4)  # server session login
+SDISCONN = chr(5)  # server session disconnect
+SDISCONNALL = chr(6)  # server session disconnect all
+SSHUTD = chr(7)  # server shutdown
+SSYNC = chr(8)  # server session sync
+SCONN = chr(11)  # server creating new connection (for irc bots and etc)
+PCONNSYNC = chr(12)  # portal post-syncing a session
 PDISCONNALL = chr(13)  # portal session disconnect all
-SRELOAD = chr(14)      # server shutdown in reload mode
-SSTART = chr(15)       # server start (portal must already be running anyway)
-PSHUTD = chr(16)       # portal (+server) shutdown
-SSHUTD = chr(17)       # server shutdown
-PSTATUS = chr(18)      # ping server or portal status
-SRESET = chr(19)       # server shutdown in reset mode
+SRELOAD = chr(14)  # server shutdown in reload mode
+SSTART = chr(15)  # server start (portal must already be running anyway)
+PSHUTD = chr(16)  # portal (+server) shutdown
+SSHUTD = chr(17)  # server shutdown
+PSTATUS = chr(18)  # ping server or portal status
+SRESET = chr(19)  # server shutdown in reset mode
 
-NUL = b'\x00'
-NULNUL = b'\x00\x00'
+NUL = b"\x00"
+NULNUL = b"\x00\x00"
 
-AMP_MAXLEN = amp.MAX_VALUE_LENGTH    # max allowed data length in AMP protocol (cannot be changed)
+AMP_MAXLEN = amp.MAX_VALUE_LENGTH  # max allowed data length in AMP protocol (cannot be changed)
 
 # buffers
 _SENDBATCH = defaultdict(list)
@@ -52,10 +52,11 @@ _MSGBUFFER = defaultdict(list)
 
 # resources
 
-DUMMYSESSION = namedtuple('DummySession', ['sessid'])(0)
+DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 
 
-_HTTP_WARNING = bytes("""
+_HTTP_WARNING = bytes(
+    """
 HTTP/1.1 200 OK
 Content-Type: text/html
 
@@ -67,10 +68,13 @@ Content-Type: text/html
         <h3>This port should NOT be publicly visible.</h3>
     </p>
   </body>
-</html>""".strip(), 'utf-8')
+</html>""".strip(),
+    "utf-8",
+)
 
 
 # Helper functions for pickling.
+
 
 def dumps(data):
     return pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
@@ -91,6 +95,7 @@ def _get_logger():
 @wraps
 def catch_traceback(func):
     "Helper decorator"
+
     def decorator(*args, **kwargs):
         try:
             func(*args, **kwargs)
@@ -98,10 +103,12 @@ def catch_traceback(func):
             _get_logger().log_trace()
             raise  # make sure the error is visible on the other side of the connection too
             print(err)
+
     return decorator
 
 
 # AMP Communication Command types
+
 
 class Compressed(amp.String):
     """
@@ -127,7 +134,7 @@ class Compressed(amp.String):
             if chunk is None:
                 break
             value.write(self.fromStringProto(chunk, proto))
-        objects[str(name, 'utf-8')] = value.getvalue()
+        objects[str(name, "utf-8")] = value.getvalue()
 
     def toBox(self, name, strings, objects, proto):
         """
@@ -138,7 +145,7 @@ class Compressed(amp.String):
 
         # print("toBox: name={}, strings={}, objects={}, proto{}".format(name, strings, objects, proto))
 
-        value = BytesIO(objects[str(name, 'utf-8')])
+        value = BytesIO(objects[str(name, "utf-8")])
         strings[name] = self.toStringProto(value.read(AMP_MAXLEN), proto)
 
         # print("toBox strings[name] = {}".format(strings[name]))
@@ -171,10 +178,10 @@ class MsgLauncher2Portal(amp.Command):
     Message Launcher -> Portal
 
     """
+
     key = "MsgLauncher2Portal"
-    arguments = [(b'operation', amp.String()),
-                 (b'arguments', amp.String())]
-    errors = {Exception: b'EXCEPTION'}
+    arguments = [(b"operation", amp.String()), (b"arguments", amp.String())]
+    errors = {Exception: b"EXCEPTION"}
     response = []
 
 
@@ -183,9 +190,10 @@ class MsgPortal2Server(amp.Command):
     Message Portal -> Server
 
     """
+
     key = b"MsgPortal2Server"
-    arguments = [(b'packed_data', Compressed())]
-    errors = {Exception: b'EXCEPTION'}
+    arguments = [(b"packed_data", Compressed())]
+    errors = {Exception: b"EXCEPTION"}
     response = []
 
 
@@ -194,9 +202,10 @@ class MsgServer2Portal(amp.Command):
     Message Server -> Portal
 
     """
+
     key = "MsgServer2Portal"
-    arguments = [(b'packed_data', Compressed())]
-    errors = {Exception: b'EXCEPTION'}
+    arguments = [(b"packed_data", Compressed())]
+    errors = {Exception: b"EXCEPTION"}
     response = []
 
 
@@ -208,9 +217,10 @@ class AdminPortal2Server(amp.Command):
     server, such as when a new session connects or resyncs
 
     """
+
     key = "AdminPortal2Server"
-    arguments = [(b'packed_data', Compressed())]
-    errors = {Exception: b'EXCEPTION'}
+    arguments = [(b"packed_data", Compressed())]
+    errors = {Exception: b"EXCEPTION"}
     response = []
 
 
@@ -222,9 +232,10 @@ class AdminServer2Portal(amp.Command):
     portal.
 
     """
+
     key = "AdminServer2Portal"
-    arguments = [(b'packed_data', Compressed())]
-    errors = {Exception: b'EXCEPTION'}
+    arguments = [(b"packed_data", Compressed())]
+    errors = {Exception: b"EXCEPTION"}
     response = []
 
 
@@ -233,10 +244,11 @@ class MsgStatus(amp.Command):
     Check Status between AMP services
 
     """
+
     key = "MsgStatus"
-    arguments = [(b'status', amp.String())]
-    errors = {Exception: b'EXCEPTION'}
-    response = [(b'status', amp.String())]
+    arguments = [(b"status", amp.String())]
+    errors = {Exception: b"EXCEPTION"}
+    response = [(b"status", amp.String())]
 
 
 class FunctionCall(amp.Command):
@@ -247,18 +259,22 @@ class FunctionCall(amp.Command):
     the other. This does not use the batch-send functionality.
 
     """
+
     key = "FunctionCall"
-    arguments = [(b'module', amp.String()),
-                 (b'function', amp.String()),
-                 (b'args', amp.String()),
-                 (b'kwargs', amp.String())]
-    errors = {Exception: b'EXCEPTION'}
-    response = [(b'result', amp.String())]
+    arguments = [
+        (b"module", amp.String()),
+        (b"function", amp.String()),
+        (b"args", amp.String()),
+        (b"kwargs", amp.String()),
+    ]
+    errors = {Exception: b"EXCEPTION"}
+    response = [(b"result", amp.String())]
 
 
 # -------------------------------------------------------------
 # Core AMP protocol for communication Server <-> Portal
 # -------------------------------------------------------------
+
 
 class AMPMultiConnectionProtocol(amp.AMP):
     """
@@ -364,8 +380,11 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         """
         e.trap(Exception)
-        _get_logger().log_err("AMP Error for {info}: {trcbck} {err}".format(
-            info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()))
+        _get_logger().log_err(
+            "AMP Error for {info}: {trcbck} {err}".format(
+                info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()
+            )
+        )
 
     def data_in(self, packed_data):
         """
@@ -400,8 +419,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
         # print("broadcast: {} {}: {}".format(command, sessid, kwargs))
 
         for protcl in self.factory.broadcasts:
-            deferreds.append(protcl.callRemote(command, **kwargs).addErrback(
-                self.errback, command.key))
+            deferreds.append(
+                protcl.callRemote(command, **kwargs).addErrback(self.errback, command.key)
+            )
 
         return DeferredList(deferreds)
 
@@ -423,12 +443,17 @@ class AMPMultiConnectionProtocol(amp.AMP):
             function call
 
         """
-        return self.callRemote(FunctionCall,
-                               module=modulepath,
-                               function=functionname,
-                               args=dumps(args),
-                               kwargs=dumps(kwargs)).addCallback(
-            lambda r: loads(r["result"])).addErrback(self.errback, "FunctionCall")
+        return (
+            self.callRemote(
+                FunctionCall,
+                module=modulepath,
+                function=functionname,
+                args=dumps(args),
+                kwargs=dumps(kwargs),
+            )
+            .addCallback(lambda r: loads(r["result"]))
+            .addErrback(self.errback, "FunctionCall")
+        )
 
     @FunctionCall.responder
     @catch_traceback
@@ -459,4 +484,4 @@ class AMPMultiConnectionProtocol(amp.AMP):
             result.addCallback(lambda r: {"result": dumps(r)})
             return result
         else:
-            return {'result': dumps(result)}
+            return {"result": dumps(result)}

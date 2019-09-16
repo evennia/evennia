@@ -121,38 +121,46 @@ class MuxCommand(Command):
             switches = args[1:].split(None, 1)
             if len(switches) > 1:
                 switches, args = switches
-                switches = switches.split('/')
+                switches = switches.split("/")
             else:
                 args = ""
-                switches = switches[0].split('/')
+                switches = switches[0].split("/")
             # If user-provides switches, parse them with parser switch options.
             if switches and self.switch_options:
                 valid_switches, unused_switches, extra_switches = [], [], []
                 for element in switches:
                     option_check = [opt for opt in self.switch_options if opt == element]
                     if not option_check:
-                        option_check = [opt for opt in self.switch_options if opt.startswith(element)]
+                        option_check = [
+                            opt for opt in self.switch_options if opt.startswith(element)
+                        ]
                     match_count = len(option_check)
                     if match_count > 1:
-                        extra_switches.extend(option_check)  # Either the option provided is ambiguous,
+                        extra_switches.extend(
+                            option_check
+                        )  # Either the option provided is ambiguous,
                     elif match_count == 1:
                         valid_switches.extend(option_check)  # or it is a valid option abbreviation,
                     elif match_count == 0:
                         unused_switches.append(element)  # or an extraneous option to be ignored.
                 if extra_switches:  # User provided switches
-                    self.msg('|g%s|n: |wAmbiguous switch supplied: Did you mean /|C%s|w?' %
-                             (self.cmdstring, ' |nor /|C'.join(extra_switches)))
+                    self.msg(
+                        "|g%s|n: |wAmbiguous switch supplied: Did you mean /|C%s|w?"
+                        % (self.cmdstring, " |nor /|C".join(extra_switches))
+                    )
                 if unused_switches:
-                    plural = '' if len(unused_switches) == 1 else 'es'
-                    self.msg('|g%s|n: |wExtra switch%s "/|C%s|w" ignored.' %
-                             (self.cmdstring, plural, '|n, /|C'.join(unused_switches)))
+                    plural = "" if len(unused_switches) == 1 else "es"
+                    self.msg(
+                        '|g%s|n: |wExtra switch%s "/|C%s|w" ignored.'
+                        % (self.cmdstring, plural, "|n, /|C".join(unused_switches))
+                    )
                 switches = valid_switches  # Only include valid_switches in command function call
         arglist = [arg.strip() for arg in args.split()]
 
         # check for arg1, arg2, ... = argA, argB, ... constructs
         lhs, rhs = args.strip(), None
         if lhs:
-            if delimiters and hasattr(delimiters, '__iter__'):  # If delimiter is iterable,
+            if delimiters and hasattr(delimiters, "__iter__"):  # If delimiter is iterable,
                 best_split = delimiters[0]  # (default to first delimiter)
                 for this_split in delimiters:  # try each delimiter
                     if this_split in lhs:  # to find first successful split
@@ -167,8 +175,8 @@ class MuxCommand(Command):
         rhs = rhs.strip() if rhs is not None else None
         lhs = lhs.strip()
         # Further split left/right sides by comma delimiter
-        lhslist = [arg.strip() for arg in lhs.split(',')] if lhs is not None else ""
-        rhslist = [arg.strip() for arg in rhs.split(',')] if rhs is not None else ""
+        lhslist = [arg.strip() for arg in lhs.split(",")] if lhs is not None else ""
+        rhslist = [arg.strip() for arg in rhs.split(",")] if rhs is not None else ""
         # save to object properties:
         self.raw = raw
         self.switches = switches
@@ -200,7 +208,9 @@ class MuxCommand(Command):
          by the cmdhandler right after self.parser() finishes, and so has access
          to all the variables defined therein.
         """
-        variables = '\n'.join(" |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items())
+        variables = "\n".join(
+            " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
+        )
         string = f"""
 Command {self} has no defined `func()` - showing on-command variables: No child func() defined for {self} - available variables:
 {variables}

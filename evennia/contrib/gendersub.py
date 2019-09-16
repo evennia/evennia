@@ -33,24 +33,13 @@ from evennia import Command
 
 # gender maps
 
-_GENDER_PRONOUN_MAP = {"male": {"s": "he",
-                                "o": "him",
-                                "p": "his",
-                                "a": "his"},
-                       "female": {"s": "she",
-                                  "o": "her",
-                                  "p": "her",
-                                  "a": "hers"},
-                       "neutral": {"s": "it",
-                                   "o": "it",
-                                   "p": "its",
-                                   "a": "its"},
-                       "ambiguous": {"s": "they",
-                                     "o": "them",
-                                     "p": "their",
-                                     "a": "theirs"}
-                       }
-_RE_GENDER_PRONOUN = re.compile(r'(?<!\|)\|(?!\|)[sSoOpPaA]')
+_GENDER_PRONOUN_MAP = {
+    "male": {"s": "he", "o": "him", "p": "his", "a": "his"},
+    "female": {"s": "she", "o": "her", "p": "her", "a": "hers"},
+    "neutral": {"s": "it", "o": "it", "p": "its", "a": "its"},
+    "ambiguous": {"s": "they", "o": "them", "p": "their", "a": "theirs"},
+}
+_RE_GENDER_PRONOUN = re.compile(r"(?<!\|)\|(?!\|)[sSoOpPaA]")
 
 # in-game command for setting the gender
 
@@ -63,6 +52,7 @@ class SetGender(Command):
       @gender male||female||neutral||ambiguous
 
     """
+
     key = "@gender"
     aliases = "@sex"
     locks = "call:all()"
@@ -81,6 +71,7 @@ class SetGender(Command):
 
 
 # Gender-aware character class
+
 
 class GenderCharacter(DefaultCharacter):
     """

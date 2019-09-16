@@ -12,8 +12,8 @@ from evennia.utils.test_resources import EvenniaTest
 
 class TestAttributes(EvenniaTest):
     def test_attrhandler(self):
-        key = 'testattr'
-        value = 'test attr value '
+        key = "testattr"
+        value = "test attr value "
         self.obj1.attributes.add(key, value)
         self.assertEqual(self.obj1.attributes.get(key), value)
         self.obj1.db.testattr = value
@@ -22,11 +22,11 @@ class TestAttributes(EvenniaTest):
     def test_weird_text_save(self):
         "test 'weird' text type (different in py2 vs py3)"
         from django.utils.safestring import SafeText
-        key = 'test attr 2'
-        value = SafeText('test attr value 2')
+
+        key = "test attr 2"
+        value = SafeText("test attr value 2")
         self.obj1.attributes.add(key, value)
         self.assertEqual(self.obj1.attributes.get(key), value)
-
 
 
 class TestTypedObjectManager(EvenniaTest):
@@ -53,7 +53,7 @@ class TestTypedObjectManager(EvenniaTest):
 
     def test_get_by_tag_and_category(self):
         self.obj1.tags.add("tag5", "category1")
-        self.obj1.tags.add("tag6", )
+        self.obj1.tags.add("tag6")
         self.obj1.tags.add("tag7", "category1")
         self.obj1.tags.add("tag6", "category3")
         self.obj1.tags.add("tag7", "category4")
@@ -65,14 +65,19 @@ class TestTypedObjectManager(EvenniaTest):
         self.assertEqual(self._manager("get_by_tag", "tag5", "category1"), [self.obj1, self.obj2])
         self.assertEqual(self._manager("get_by_tag", "tag6", "category1"), [])
         self.assertEqual(self._manager("get_by_tag", "tag6", "category3"), [self.obj1, self.obj2])
-        self.assertEqual(self._manager("get_by_tag", ["tag5", "tag6"],
-                                        ["category1", "category3"]), [self.obj1, self.obj2])
-        self.assertEqual(self._manager("get_by_tag", ["tag5", "tag7"],
-                                        "category1"), [self.obj1, self.obj2])
+        self.assertEqual(
+            self._manager("get_by_tag", ["tag5", "tag6"], ["category1", "category3"]),
+            [self.obj1, self.obj2],
+        )
+        self.assertEqual(
+            self._manager("get_by_tag", ["tag5", "tag7"], "category1"), [self.obj1, self.obj2]
+        )
         self.assertEqual(self._manager("get_by_tag", category="category1"), [self.obj1, self.obj2])
         self.assertEqual(self._manager("get_by_tag", category="category2"), [self.obj2])
-        self.assertEqual(self._manager("get_by_tag", category=["category1", "category3"]),
-                          [self.obj1, self.obj2])
-        self.assertEqual(self._manager("get_by_tag", category=["category1", "category2"]),
-                          [self.obj2])
+        self.assertEqual(
+            self._manager("get_by_tag", category=["category1", "category3"]), [self.obj1, self.obj2]
+        )
+        self.assertEqual(
+            self._manager("get_by_tag", category=["category1", "category2"]), [self.obj2]
+        )
         self.assertEqual(self._manager("get_by_tag", category=["category5", "category4"]), [])

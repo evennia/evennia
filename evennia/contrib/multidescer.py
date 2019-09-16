@@ -38,6 +38,7 @@ _RE_KEYS = re.compile(r"([\w\s]+)(?:\+*?)", re.U + re.I)
 
 # Helper functions for the Command
 
+
 class DescValidateError(ValueError):
     "Used for tracebacks from desc systems"
     pass
@@ -95,6 +96,7 @@ def _update_store(caller, key=None, desc=None, delete=False, swapkey=None):
         else:
             raise DescValidateError("No description was set.")
 
+
 # eveditor save/load/quit functions
 
 
@@ -123,6 +125,7 @@ def _quit_editor(caller):
 
 # The actual command class
 
+
 class CmdMultiDesc(default_cmds.MuxCommand):
     """
     Manage multiple descriptions
@@ -144,6 +147,7 @@ class CmdMultiDesc(default_cmds.MuxCommand):
         paragraph and + + or ansi space ||_ to add extra whitespace.
 
     """
+
     key = "+desc"
     aliases = ["desc"]
     locks = "cmd:all()"
@@ -166,11 +170,14 @@ class CmdMultiDesc(default_cmds.MuxCommand):
                 _update_store(caller)
                 do_crop = "full" not in switches
                 if do_crop:
-                    outtext = ["|w%s:|n %s" % (key, crop(desc))
-                               for key, desc in caller.db.multidesc]
+                    outtext = [
+                        "|w%s:|n %s" % (key, crop(desc)) for key, desc in caller.db.multidesc
+                    ]
                 else:
-                    outtext = ["\n|w%s:|n|n\n%s\n%s" % (key, "-" * (len(key) + 1), desc)
-                               for key, desc in caller.db.multidesc]
+                    outtext = [
+                        "\n|w%s:|n|n\n%s\n%s" % (key, "-" * (len(key) + 1), desc)
+                        for key, desc in caller.db.multidesc
+                    ]
 
                 caller.msg("|wStored descs:|n\n" + "\n".join(outtext))
                 return
@@ -184,8 +191,14 @@ class CmdMultiDesc(default_cmds.MuxCommand):
                 # this is used by the editor to know what to edit; it's deleted automatically
                 caller.db._multidesc_editkey = args
                 # start the editor
-                EvEditor(caller, loadfunc=_load_editor, savefunc=_save_editor,
-                         quitfunc=_quit_editor, key="multidesc editor", persistent=True)
+                EvEditor(
+                    caller,
+                    loadfunc=_load_editor,
+                    savefunc=_save_editor,
+                    quitfunc=_quit_editor,
+                    key="multidesc editor",
+                    persistent=True,
+                )
 
             elif "delete" in switches or "del" in switches:
                 # delete a multidesc entry.

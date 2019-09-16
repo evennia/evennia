@@ -13,8 +13,8 @@ from codecs import encode as codecs_encode
 from builtins import object
 from django.conf import settings
 
-NAWS = b'\x1f'
-IS = b'\x00'
+NAWS = b"\x1f"
+IS = b"\x00"
 # default taken from telnet specification
 DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 DEFAULT_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
@@ -40,8 +40,10 @@ class Naws(object):
         """
         self.naws_step = 0
         self.protocol = protocol
-        self.protocol.protocol_flags['SCREENWIDTH'] = {0: DEFAULT_WIDTH}  # windowID (0 is root):width
-        self.protocol.protocol_flags['SCREENHEIGHT'] = {0: DEFAULT_HEIGHT}  # windowID:width
+        self.protocol.protocol_flags["SCREENWIDTH"] = {
+            0: DEFAULT_WIDTH
+        }  # windowID (0 is root):width
+        self.protocol.protocol_flags["SCREENHEIGHT"] = {0: DEFAULT_HEIGHT}  # windowID:width
         self.protocol.negotiationMap[NAWS] = self.negotiate_sizes
         self.protocol.do(NAWS).addCallbacks(self.do_naws, self.no_naws)
 
@@ -77,6 +79,6 @@ class Naws(object):
         if len(options) == 4:
             # NAWS is negotiated with 16bit words
             width = options[0] + options[1]
-            self.protocol.protocol_flags['SCREENWIDTH'][0] = int(codecs_encode(width, 'hex'), 16)
+            self.protocol.protocol_flags["SCREENWIDTH"][0] = int(codecs_encode(width, "hex"), 16)
             height = options[2] + options[3]
-            self.protocol.protocol_flags['SCREENHEIGHT'][0] = int(codecs_encode(height, 'hex'), 16)
+            self.protocol.protocol_flags["SCREENHEIGHT"][0] = int(codecs_encode(height, "hex"), 16)

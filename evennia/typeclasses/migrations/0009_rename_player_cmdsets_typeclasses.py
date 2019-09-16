@@ -22,6 +22,7 @@ def _case_sensitive_replace(string, old, new):
             `old` has been replaced with `new`, retaining case.
 
     """
+
     def repl(match):
         current = match.group()
         # treat multi-word sentences word-by-word
@@ -41,12 +42,12 @@ def _case_sensitive_replace(string, old, new):
                     all_upper = False
             # special cases - keep remaing case)
             if new_word.lower() in CASE_WORD_EXCEPTIONS:
-                result.append(new_word[ind + 1:])
+                result.append(new_word[ind + 1 :])
             # append any remaining characters from new
             elif all_upper:
-                result.append(new_word[ind + 1:].upper())
+                result.append(new_word[ind + 1 :].upper())
             else:
-                result.append(new_word[ind + 1:].lower())
+                result.append(new_word[ind + 1 :].lower())
             out.append("".join(result))
         # if we have more new words than old ones, just add them verbatim
         out.extend([new_word for ind, new_word in enumerate(new_words) if ind >= len(old_words)])
@@ -61,45 +62,41 @@ def _case_sensitive_replace(string, old, new):
 
 def update_typeclasses(apps, schema_editor):
 
-    ObjectDB = apps.get_model('objects', 'ObjectDB')
-    AccountDB = apps.get_model('accounts', 'AccountDB')
-    ScriptDB = apps.get_model('scripts', 'ScriptDB')
-    ChannelDB = apps.get_model('comms', 'ChannelDB')
-    Attributes = apps.get_model('typeclasses', 'Attribute')
-    Tags = apps.get_model('typeclasses', 'Tag')
+    ObjectDB = apps.get_model("objects", "ObjectDB")
+    AccountDB = apps.get_model("accounts", "AccountDB")
+    ScriptDB = apps.get_model("scripts", "ScriptDB")
+    ChannelDB = apps.get_model("comms", "ChannelDB")
+    Attributes = apps.get_model("typeclasses", "Attribute")
+    Tags = apps.get_model("typeclasses", "Tag")
 
     for obj in ObjectDB.objects.all():
-        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, 'player', 'account')
-        obj.db_cmdset_storage = _case_sensitive_replace(obj.db_cmdset_storage, 'player', 'account')
-        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, 'player', 'account')
-        obj.save(update_fields=['db_typeclass_path', 'db_cmdset_storage', 'db_lock_storage'])
+        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, "player", "account")
+        obj.db_cmdset_storage = _case_sensitive_replace(obj.db_cmdset_storage, "player", "account")
+        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, "player", "account")
+        obj.save(update_fields=["db_typeclass_path", "db_cmdset_storage", "db_lock_storage"])
     for obj in AccountDB.objects.all():
-        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, 'player', 'account')
-        obj.db_cmdset_storage = _case_sensitive_replace(obj.db_cmdset_storage, 'player', 'account')
-        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, 'player', 'account')
-        obj.save(update_fields=['db_typeclass_path', 'db_cmdset_storage', 'db_lock_storage'])
+        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, "player", "account")
+        obj.db_cmdset_storage = _case_sensitive_replace(obj.db_cmdset_storage, "player", "account")
+        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, "player", "account")
+        obj.save(update_fields=["db_typeclass_path", "db_cmdset_storage", "db_lock_storage"])
     for obj in ScriptDB.objects.all():
-        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, 'player', 'account')
-        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, 'player', 'account')
-        obj.save(update_fields=['db_typeclass_path', 'db_lock_storage'])
+        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, "player", "account")
+        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, "player", "account")
+        obj.save(update_fields=["db_typeclass_path", "db_lock_storage"])
     for obj in ChannelDB.objects.all():
-        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, 'player', 'account')
-        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, 'player', 'account')
-        obj.save(update_fields=['db_typeclass_path', 'db_lock_storage'])
-    for obj in Attributes.objects.filter(db_model='playerdb'):
-        obj.db_model = 'accountdb'
-        obj.save(update_fields=['db_model'])
-    for obj in Tags.objects.filter(db_model='playerdb'):
-        obj.db_model = 'accountdb'
-        obj.save(update_fields=['db_model'])
+        obj.db_typeclass_path = _case_sensitive_replace(obj.db_typeclass_path, "player", "account")
+        obj.db_lock_storage = _case_sensitive_replace(obj.db_lock_storage, "player", "account")
+        obj.save(update_fields=["db_typeclass_path", "db_lock_storage"])
+    for obj in Attributes.objects.filter(db_model="playerdb"):
+        obj.db_model = "accountdb"
+        obj.save(update_fields=["db_model"])
+    for obj in Tags.objects.filter(db_model="playerdb"):
+        obj.db_model = "accountdb"
+        obj.save(update_fields=["db_model"])
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('typeclasses', '0008_lock_and_perm_rename'),
-    ]
+    dependencies = [("typeclasses", "0008_lock_and_perm_rename")]
 
-    operations = [
-        migrations.RunPython(update_typeclasses),
-    ]
+    operations = [migrations.RunPython(update_typeclasses)]

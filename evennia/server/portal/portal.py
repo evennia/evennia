@@ -19,10 +19,12 @@ from twisted.internet import protocol, reactor
 from twisted.python.log import ILogObserver
 
 import django
+
 django.setup()
 from django.conf import settings
 
 import evennia
+
 evennia._init()
 
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
@@ -38,7 +40,9 @@ try:
 except Exception:
     pass
 
-PORTAL_SERVICES_PLUGIN_MODULES = [mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)]
+PORTAL_SERVICES_PLUGIN_MODULES = [
+    mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)
+]
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE
 
 # -------------------------------------------------------------
@@ -49,7 +53,7 @@ VERSION = get_evennia_version()
 
 SERVERNAME = settings.SERVERNAME
 
-PORTAL_RESTART = os.path.join(settings.GAME_DIR, "server", 'portal.restart')
+PORTAL_RESTART = os.path.join(settings.GAME_DIR, "server", "portal.restart")
 
 TELNET_PORTS = settings.TELNET_PORTS
 SSL_PORTS = settings.SSL_PORTS
@@ -57,11 +61,11 @@ SSH_PORTS = settings.SSH_PORTS
 WEBSERVER_PORTS = settings.WEBSERVER_PORTS
 WEBSOCKET_CLIENT_PORT = settings.WEBSOCKET_CLIENT_PORT
 
-TELNET_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.TELNET_INTERFACES
-SSL_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.SSL_INTERFACES
-SSH_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.SSH_INTERFACES
-WEBSERVER_INTERFACES = ['127.0.0.1'] if LOCKDOWN_MODE else settings.WEBSERVER_INTERFACES
-WEBSOCKET_CLIENT_INTERFACE = '127.0.0.1' if LOCKDOWN_MODE else settings.WEBSOCKET_CLIENT_INTERFACE
+TELNET_INTERFACES = ["127.0.0.1"] if LOCKDOWN_MODE else settings.TELNET_INTERFACES
+SSL_INTERFACES = ["127.0.0.1"] if LOCKDOWN_MODE else settings.SSL_INTERFACES
+SSH_INTERFACES = ["127.0.0.1"] if LOCKDOWN_MODE else settings.SSH_INTERFACES
+WEBSERVER_INTERFACES = ["127.0.0.1"] if LOCKDOWN_MODE else settings.WEBSERVER_INTERFACES
+WEBSOCKET_CLIENT_INTERFACE = "127.0.0.1" if LOCKDOWN_MODE else settings.WEBSOCKET_CLIENT_INTERFACE
 WEBSOCKET_CLIENT_URL = settings.WEBSOCKET_CLIENT_URL
 
 TELNET_ENABLED = settings.TELNET_ENABLED and TELNET_PORTS and TELNET_INTERFACES
@@ -69,16 +73,29 @@ SSL_ENABLED = settings.SSL_ENABLED and SSL_PORTS and SSL_INTERFACES
 SSH_ENABLED = settings.SSH_ENABLED and SSH_PORTS and SSH_INTERFACES
 WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
 WEBCLIENT_ENABLED = settings.WEBCLIENT_ENABLED
-WEBSOCKET_CLIENT_ENABLED = settings.WEBSOCKET_CLIENT_ENABLED and WEBSOCKET_CLIENT_PORT and WEBSOCKET_CLIENT_INTERFACE
+WEBSOCKET_CLIENT_ENABLED = (
+    settings.WEBSOCKET_CLIENT_ENABLED and WEBSOCKET_CLIENT_PORT and WEBSOCKET_CLIENT_INTERFACE
+)
 
 AMP_HOST = settings.AMP_HOST
 AMP_PORT = settings.AMP_PORT
 AMP_INTERFACE = settings.AMP_INTERFACE
 AMP_ENABLED = AMP_HOST and AMP_PORT and AMP_INTERFACE
 
-INFO_DICT = {"servername": SERVERNAME, "version": VERSION, "errors": "", "info": "",
-             "lockdown_mode": "", "amp": "", "telnet": [], "telnet_ssl": [], "ssh": [],
-             "webclient": [], "webserver_proxy": [], "webserver_internal": []}
+INFO_DICT = {
+    "servername": SERVERNAME,
+    "version": VERSION,
+    "errors": "",
+    "info": "",
+    "lockdown_mode": "",
+    "amp": "",
+    "telnet": [],
+    "telnet_ssl": [],
+    "ssh": [],
+    "webclient": [],
+    "webserver_proxy": [],
+    "webserver_internal": [],
+}
 
 # -------------------------------------------------------------
 # Portal Service object
@@ -102,7 +119,7 @@ class Portal(object):
             application (Application): An instantiated Twisted application
 
         """
-        sys.path.append('.')
+        sys.path.append(".")
 
         # create a store of services
         self.services = service.MultiService()
@@ -124,8 +141,9 @@ class Portal(object):
 
         # set a callback if the server is killed abruptly,
         # by Ctrl-C, reboot etc.
-        reactor.addSystemEventTrigger('before', 'shutdown',
-                                      self.shutdown, _reactor_stopping=True, _stop_server=True)
+        reactor.addSystemEventTrigger(
+            "before", "shutdown", self.shutdown, _reactor_stopping=True, _stop_server=True
+        )
 
     def _get_backup_server_twistd_cmd(self):
         """
@@ -137,11 +155,13 @@ class Portal(object):
         """
         server_twistd_cmd = [
             "twistd",
-            "--python={}".format(os.path.join(dirname(dirname(abspath(__file__))), "server.py"))]
-        if os.name != 'nt':
+            "--python={}".format(os.path.join(dirname(dirname(abspath(__file__))), "server.py")),
+        ]
+        if os.name != "nt":
             gamedir = os.getcwd()
-            server_twistd_cmd.append("--pidfile={}".format(
-                os.path.join(gamedir, "server", "server.pid")))
+            server_twistd_cmd.append(
+                "--pidfile={}".format(os.path.join(gamedir, "server", "server.pid"))
+            )
         return server_twistd_cmd
 
     def get_info_dict(self):
@@ -171,13 +191,14 @@ class Portal(object):
 
         self.sessions.disconnect_all()
         if _stop_server:
-            self.amp_protocol.stop_server(mode='shutdown')
+            self.amp_protocol.stop_server(mode="shutdown")
 
         if not _reactor_stopping:
             # shutting down the reactor will trigger another signal. We set
             # a flag to avoid loops.
             self.shutdown_complete = True
             reactor.callLater(0, reactor.stop)
+
 
 # -------------------------------------------------------------
 #
@@ -188,13 +209,14 @@ class Portal(object):
 
 # twistd requires us to define the variable 'application' so it knows
 # what to execute from.
-application = service.Application('Portal')
+application = service.Application("Portal")
 
 # custom logging
 
 if "--nodaemon" not in sys.argv:
-    logfile = logger.WeeklyLogFile(os.path.basename(settings.PORTAL_LOG_FILE),
-                                   os.path.dirname(settings.PORTAL_LOG_FILE))
+    logfile = logger.WeeklyLogFile(
+        os.path.basename(settings.PORTAL_LOG_FILE), os.path.dirname(settings.PORTAL_LOG_FILE)
+    )
     application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
 
 # The main Portal server program. This sets up the database
@@ -203,7 +225,7 @@ PORTAL = Portal(application)
 
 if LOCKDOWN_MODE:
 
-    INFO_DICT["lockdown_mode"] = '  LOCKDOWN_MODE active: Only local connections.'
+    INFO_DICT["lockdown_mode"] = "  LOCKDOWN_MODE active: Only local connections."
 
 if AMP_ENABLED:
 
@@ -213,7 +235,7 @@ if AMP_ENABLED:
 
     from evennia.server.portal import amp_server
 
-    INFO_DICT["amp"] = 'amp: %s' % AMP_PORT
+    INFO_DICT["amp"] = "amp: %s" % AMP_PORT
 
     factory = amp_server.AMPServerFactory(PORTAL)
     amp_service = internet.TCPServer(AMP_PORT, factory, interface=AMP_INTERFACE)
@@ -232,7 +254,7 @@ if TELNET_ENABLED:
 
     for interface in TELNET_INTERFACES:
         ifacestr = ""
-        if interface not in ('0.0.0.0', '::') or len(TELNET_INTERFACES) > 1:
+        if interface not in ("0.0.0.0", "::") or len(TELNET_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for port in TELNET_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
@@ -241,10 +263,10 @@ if TELNET_ENABLED:
             factory.protocol = telnet.TelnetProtocol
             factory.sessionhandler = PORTAL_SESSIONS
             telnet_service = internet.TCPServer(port, factory, interface=interface)
-            telnet_service.setName('EvenniaTelnet%s' % pstring)
+            telnet_service.setName("EvenniaTelnet%s" % pstring)
             PORTAL.services.addService(telnet_service)
 
-            INFO_DICT["telnet"].append('telnet%s: %s' % (ifacestr, port))
+            INFO_DICT["telnet"].append("telnet%s: %s" % (ifacestr, port))
 
 
 if SSL_ENABLED:
@@ -255,7 +277,7 @@ if SSL_ENABLED:
 
     for interface in SSL_INTERFACES:
         ifacestr = ""
-        if interface not in ('0.0.0.0', '::') or len(SSL_INTERFACES) > 1:
+        if interface not in ("0.0.0.0", "::") or len(SSL_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for port in SSL_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
@@ -266,17 +288,17 @@ if SSL_ENABLED:
 
             ssl_context = telnet_ssl.getSSLContext()
             if ssl_context:
-                ssl_service = internet.SSLServer(port,
-                                                 factory,
-                                                 telnet_ssl.getSSLContext(),
-                                                 interface=interface)
-                ssl_service.setName('EvenniaSSL%s' % pstring)
+                ssl_service = internet.SSLServer(
+                    port, factory, telnet_ssl.getSSLContext(), interface=interface
+                )
+                ssl_service.setName("EvenniaSSL%s" % pstring)
                 PORTAL.services.addService(ssl_service)
 
                 INFO_DICT["telnet_ssl"].append("telnet+ssl%s: %s" % (ifacestr, port))
             else:
                 INFO_DICT["telnet_ssl"].append(
-                        "telnet+ssl%s: %s (deactivated - keys/cert unset)" % (ifacestr, port))
+                    "telnet+ssl%s: %s (deactivated - keys/cert unset)" % (ifacestr, port)
+                )
 
 
 if SSH_ENABLED:
@@ -288,16 +310,20 @@ if SSH_ENABLED:
 
     for interface in SSH_INTERFACES:
         ifacestr = ""
-        if interface not in ('0.0.0.0', '::') or len(SSH_INTERFACES) > 1:
+        if interface not in ("0.0.0.0", "::") or len(SSH_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for port in SSH_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
-            factory = ssh.makeFactory({'protocolFactory': ssh.SshProtocol,
-                                       'protocolArgs': (),
-                                       'sessions': PORTAL_SESSIONS})
+            factory = ssh.makeFactory(
+                {
+                    "protocolFactory": ssh.SshProtocol,
+                    "protocolArgs": (),
+                    "sessions": PORTAL_SESSIONS,
+                }
+            )
             factory.noisy = False
             ssh_service = internet.TCPServer(port, factory, interface=interface)
-            ssh_service.setName('EvenniaSSH%s' % pstring)
+            ssh_service.setName("EvenniaSSH%s" % pstring)
             PORTAL.services.addService(ssh_service)
 
             INFO_DICT["ssh"].append("ssh%s: %s" % (ifacestr, port))
@@ -311,10 +337,10 @@ if WEBSERVER_ENABLED:
     websocket_started = False
     for interface in WEBSERVER_INTERFACES:
         ifacestr = ""
-        if interface not in ('0.0.0.0', '::') or len(WEBSERVER_INTERFACES) > 1:
+        if interface not in ("0.0.0.0", "::") or len(WEBSERVER_INTERFACES) > 1:
             ifacestr = "-%s" % interface
         for proxyport, serverport in WEBSERVER_PORTS:
-            web_root = EvenniaReverseProxyResource('127.0.0.1', serverport, '')
+            web_root = EvenniaReverseProxyResource("127.0.0.1", serverport, "")
             webclientstr = ""
             if WEBCLIENT_ENABLED:
                 # create ajax client processes at /webclientdata
@@ -332,8 +358,8 @@ if WEBSERVER_ENABLED:
                     from autobahn.twisted.websocket import WebSocketServerFactory
 
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
-                    w_ifacestr = ''
-                    if w_interface not in ('0.0.0.0', '::') or len(WEBSERVER_INTERFACES) > 1:
+                    w_ifacestr = ""
+                    if w_interface not in ("0.0.0.0", "::") or len(WEBSERVER_INTERFACES) > 1:
                         w_ifacestr = "-%s" % interface
                     port = WEBSOCKET_CLIENT_PORT
 
@@ -346,7 +372,7 @@ if WEBSERVER_ENABLED:
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
                     websocket_service = internet.TCPServer(port, factory, interface=w_interface)
-                    websocket_service.setName('EvenniaWebSocket%s:%s' % (w_ifacestr, port))
+                    websocket_service.setName("EvenniaWebSocket%s:%s" % (w_ifacestr, port))
                     PORTAL.services.addService(websocket_service)
                     websocket_started = True
                     webclientstr = "webclient-websocket%s: %s" % (w_ifacestr, port)
@@ -354,10 +380,8 @@ if WEBSERVER_ENABLED:
 
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             web_root.is_portal = True
-            proxy_service = internet.TCPServer(proxyport,
-                                               web_root,
-                                               interface=interface)
-            proxy_service.setName('EvenniaWebProxy%s:%s' % (ifacestr, proxyport))
+            proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)
+            proxy_service.setName("EvenniaWebProxy%s:%s" % (ifacestr, proxyport))
             PORTAL.services.addService(proxy_service)
             INFO_DICT["webserver_proxy"].append("webserver-proxy%s: %s" % (ifacestr, proxyport))
             INFO_DICT["webserver_internal"].append("webserver: %s" % serverport)

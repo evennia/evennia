@@ -9,9 +9,20 @@ from evennia.typeclasses.attributes import NickTemplateInvalid
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
-__all__ = ("CmdHome", "CmdLook", "CmdNick",
-           "CmdInventory", "CmdSetDesc", "CmdGet", "CmdDrop", "CmdGive",
-           "CmdSay", "CmdWhisper", "CmdPose", "CmdAccess")
+__all__ = (
+    "CmdHome",
+    "CmdLook",
+    "CmdNick",
+    "CmdInventory",
+    "CmdSetDesc",
+    "CmdGet",
+    "CmdDrop",
+    "CmdGive",
+    "CmdSay",
+    "CmdWhisper",
+    "CmdPose",
+    "CmdAccess",
+)
 
 
 class CmdHome(COMMAND_DEFAULT_CLASS):
@@ -52,6 +63,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
 
     Observes your location or objects in your vicinity.
     """
+
     key = "look"
     aliases = ["l", "ls"]
     locks = "cmd:all()"
@@ -71,7 +83,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
             target = caller.search(self.args)
             if not target:
                 return
-        self.msg((caller.at_look(target), {'type': 'look'}), options=None)
+        self.msg((caller.at_look(target), {"type": "look"}), options=None)
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
@@ -116,6 +128,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
     for everyone to use, you need build privileges and the alias command.
 
     """
+
     key = "nick"
     switch_options = ("inputline", "object", "account", "list", "delete", "clearall")
     aliases = ["nickname", "nicks"]
@@ -148,11 +161,13 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         specified_nicktype = bool(nicktypes)
         nicktypes = nicktypes if specified_nicktype else ["inputline"]
 
-        nicklist = (utils.make_iter(caller.nicks.get(category="inputline", return_obj=True) or []) +
-                    utils.make_iter(caller.nicks.get(category="object", return_obj=True) or []) +
-                    utils.make_iter(caller.nicks.get(category="account", return_obj=True) or []))
+        nicklist = (
+            utils.make_iter(caller.nicks.get(category="inputline", return_obj=True) or [])
+            + utils.make_iter(caller.nicks.get(category="object", return_obj=True) or [])
+            + utils.make_iter(caller.nicks.get(category="account", return_obj=True) or [])
+        )
 
-        if 'list' in switches or self.cmdstring in ("nicks",):
+        if "list" in switches or self.cmdstring in ("nicks",):
 
             if not nicklist:
                 string = "|wNo nicks defined.|n"
@@ -160,18 +175,20 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 table = self.styled_table("#", "Type", "Nick match", "Replacement")
                 for inum, nickobj in enumerate(nicklist):
                     _, _, nickvalue, replacement = nickobj.value
-                    table.add_row(str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement))
+                    table.add_row(
+                        str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement)
+                    )
                 string = "|wDefined Nicks:|n\n%s" % table
             caller.msg(string)
             return
 
-        if 'clearall' in switches:
+        if "clearall" in switches:
             caller.nicks.clear()
             caller.account.nicks.clear()
             caller.msg("Cleared all nicks.")
             return
 
-        if 'delete' in switches or 'del' in switches:
+        if "delete" in switches or "del" in switches:
             if not self.args or not self.lhs:
                 caller.msg("usage nick/delete <nick> or <#num> ('nicks' for list)")
                 return
@@ -199,8 +216,10 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     nicktypestr = "%s-nick" % nicktype.capitalize()
                     _, _, old_nickstring, old_replstring = oldnick.value
                     caller.nicks.remove(old_nickstring, category=nicktype)
-                    caller.msg("%s removed: '|w%s|n' -> |w%s|n." % (
-                               nicktypestr, old_nickstring, old_replstring))
+                    caller.msg(
+                        "%s removed: '|w%s|n' -> |w%s|n."
+                        % (nicktypestr, old_nickstring, old_replstring)
+                    )
             else:
                 caller.msg("No matching nicks to remove.")
             return
@@ -211,14 +230,19 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             if not specified_nicktype:
                 nicktypes = ("object", "account", "inputline")
             for nicktype in nicktypes:
-                nicks = [nick for nick in
-                         utils.make_iter(caller.nicks.get(category=nicktype, return_obj=True))
-                         if nick]
+                nicks = [
+                    nick
+                    for nick in utils.make_iter(
+                        caller.nicks.get(category=nicktype, return_obj=True)
+                    )
+                    if nick
+                ]
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append("{}-nick: '{}' -> '{}'".format(
-                            nicktype.capitalize(), nick, repl))
+                        strings.append(
+                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
+                        )
             if strings:
                 caller.msg("\n".join(strings))
             else:
@@ -239,8 +263,9 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append("{}-nick: '{}' -> '{}'".format(
-                            nicktype.capitalize(), nick, repl))
+                        strings.append(
+                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
+                        )
             if strings:
                 caller.msg("\n".join(strings))
             else:
@@ -261,8 +286,9 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append("{}-nick: '{}' -> '{}'".format(
-                            nicktype.capitalize(), nick, repl))
+                        strings.append(
+                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
+                        )
             if strings:
                 caller.msg("\n".join(strings))
             else:
@@ -301,17 +327,30 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                         string += "\nIdentical %s already set." % nicktypestr.lower()
                     else:
                         string += "\n%s '|w%s|n' updated to map to '|w%s|n'." % (
-                                nicktypestr, old_nickstring, replstring)
+                            nicktypestr,
+                            old_nickstring,
+                            replstring,
+                        )
                 else:
-                    string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (nicktypestr, nickstring, replstring)
+                    string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (
+                        nicktypestr,
+                        nickstring,
+                        replstring,
+                    )
                 try:
                     caller.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
-                    caller.msg("You must use the same $-markers both in the nick and in the replacement.")
+                    caller.msg(
+                        "You must use the same $-markers both in the nick and in the replacement."
+                    )
                     return
             elif old_nickstring and old_replstring:
                 # just looking at the nick
-                string += "\n%s '|w%s|n' maps to '|w%s|n'." % (nicktypestr, old_nickstring, old_replstring)
+                string += "\n%s '|w%s|n' maps to '|w%s|n'." % (
+                    nicktypestr,
+                    old_nickstring,
+                    old_replstring,
+                )
                 errstring = ""
         string = errstring if errstring else string
         caller.msg(_cy(string))
@@ -327,6 +366,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
 
     Shows your inventory.
     """
+
     key = "inventory"
     aliases = ["inv", "i"]
     locks = "cmd:all()"
@@ -355,6 +395,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
     Picks up an object from your location and puts it in
     your inventory.
     """
+
     key = "get"
     aliases = "grab"
     locks = "cmd:all()"
@@ -374,7 +415,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
         if caller == obj:
             caller.msg("You can't get yourself.")
             return
-        if not obj.access(caller, 'get'):
+        if not obj.access(caller, "get"):
             if obj.db.get_err_msg:
                 caller.msg(obj.db.get_err_msg)
             else:
@@ -387,10 +428,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
 
         obj.move_to(caller, quiet=True)
         caller.msg("You pick up %s." % obj.name)
-        caller.location.msg_contents("%s picks up %s." %
-                                     (caller.name,
-                                      obj.name),
-                                     exclude=caller)
+        caller.location.msg_contents("%s picks up %s." % (caller.name, obj.name), exclude=caller)
         # calling at_get hook method
         obj.at_get(caller)
 
@@ -420,9 +458,12 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
 
         # Because the DROP command by definition looks for items
         # in inventory, call the search function using location = caller
-        obj = caller.search(self.args, location=caller,
-                            nofound_string="You aren't carrying %s." % self.args,
-                            multimatch_string="You carry more than one %s:" % self.args)
+        obj = caller.search(
+            self.args,
+            location=caller,
+            nofound_string="You aren't carrying %s." % self.args,
+            multimatch_string="You carry more than one %s:" % self.args,
+        )
         if not obj:
             return
 
@@ -432,9 +473,7 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
 
         obj.move_to(caller.location, quiet=True)
         caller.msg("You drop %s." % (obj.name,))
-        caller.location.msg_contents("%s drops %s." %
-                                     (caller.name, obj.name),
-                                     exclude=caller)
+        caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
         # Call the object script's at_drop() method.
         obj.at_drop(caller)
 
@@ -449,6 +488,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     Gives an items from your inventory to another character,
     placing it in their inventory.
     """
+
     key = "give"
     rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:all()"
@@ -461,9 +501,12 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         if not self.args or not self.rhs:
             caller.msg("Usage: give <inventory object> = <target>")
             return
-        to_give = caller.search(self.lhs, location=caller,
-                                nofound_string="You aren't carrying %s." % self.lhs,
-                                multimatch_string="You carry more than one %s:" % self.lhs)
+        to_give = caller.search(
+            self.lhs,
+            location=caller,
+            nofound_string="You aren't carrying %s." % self.lhs,
+            multimatch_string="You carry more than one %s:" % self.lhs,
+        )
         target = caller.search(self.rhs)
         if not (to_give and target):
             return
@@ -497,6 +540,7 @@ class CmdSetDesc(COMMAND_DEFAULT_CLASS):
     will be visible to people when they
     look at you.
     """
+
     key = "setdesc"
     locks = "cmd:all()"
     arg_regex = r"\s|$"
@@ -606,6 +650,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     Describe an action being taken. The pose text will
     automatically begin with your name.
     """
+
     key = "pose"
     aliases = [":", "emote"]
     locks = "cmd:all()"
@@ -630,8 +675,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-            self.caller.location.msg_contents(text=(msg, {"type": "pose"}),
-                                              from_obj=self.caller)
+            self.caller.location.msg_contents(text=(msg, {"type": "pose"}), from_obj=self.caller)
 
 
 class CmdAccess(COMMAND_DEFAULT_CLASS):
@@ -644,6 +688,7 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
     This command shows you the permission hierarchy and
     which permission groups you are a member of.
     """
+
     key = "access"
     aliases = ["groups", "hierarchy"]
     locks = "cmd:all()"
@@ -665,6 +710,6 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
 
         string += "\n|wYour access|n:"
         string += "\nCharacter |c%s|n: %s" % (caller.key, cperms)
-        if hasattr(caller, 'account'):
+        if hasattr(caller, "account"):
             string += "\nAccount |c%s|n: %s" % (caller.account.key, pperms)
         caller.msg(string)

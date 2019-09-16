@@ -23,6 +23,7 @@ _SESSIONS = None
 
 # Bot helper utilities
 
+
 class BotStarter(DefaultScript):
     """
     This non-repeating script has the
@@ -80,6 +81,7 @@ class BotStarter(DefaultScript):
         """
         self.db.started = False
 
+
 #
 # Bot base class
 
@@ -100,8 +102,10 @@ class Bot(DefaultAccount):
         # the text encoding to use.
         self.db.encoding = "utf-8"
         # A basic security setup (also avoid idle disconnects)
-        lockstring = "examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);" \
-                     "boot:perm(Admin);msg:false();noidletimeout:true()"
+        lockstring = (
+            "examine:perm(Admin);edit:perm(Admin);delete:perm(Admin);"
+            "boot:perm(Admin);msg:false();noidletimeout:true()"
+        )
         self.locks.add(lockstring)
         # set the basics of being a bot
         script_key = str(self.key)
@@ -143,16 +147,25 @@ class Bot(DefaultAccount):
 
 # IRC
 
+
 class IRCBot(Bot):
     """
     Bot for handling IRC connections.
 
     """
+
     # override this on a child class to use custom factory
     factory_path = "evennia.server.portal.irc.IRCBotFactory"
 
-    def start(self, ev_channel=None, irc_botname=None, irc_channel=None,
-              irc_network=None, irc_port=None, irc_ssl=None):
+    def start(
+        self,
+        ev_channel=None,
+        irc_botname=None,
+        irc_channel=None,
+        irc_network=None,
+        irc_port=None,
+        irc_ssl=None,
+    ):
         """
         Start by telling the portal to start a new session.
 
@@ -202,12 +215,14 @@ class IRCBot(Bot):
 
         # instruct the server and portal to create a new session with
         # the stored configuration
-        configdict = {"uid": self.dbid,
-                      "botname": self.db.irc_botname,
-                      "channel": self.db.irc_channel,
-                      "network": self.db.irc_network,
-                      "port": self.db.irc_port,
-                      "ssl": self.db.irc_ssl}
+        configdict = {
+            "uid": self.dbid,
+            "botname": self.db.irc_botname,
+            "channel": self.db.irc_channel,
+            "network": self.db.irc_network,
+            "port": self.db.irc_port,
+            "ssl": self.db.irc_ssl,
+        }
         _SESSIONS.start_bot_session(self.factory_path, configdict)
 
     def at_msg_send(self, **kwargs):
@@ -275,8 +290,11 @@ class IRCBot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
 
-        if ("from_channel" in options and text and
-                self.ndb.ev_channel.dbid == options["from_channel"]):
+        if (
+            "from_channel" in options
+            and text
+            and self.ndb.ev_channel.dbid == options["from_channel"]
+        ):
             if not from_obj or from_obj != [self]:
                 super().msg(channel=text)
 
@@ -338,9 +356,14 @@ class IRCBot(Bot):
                     delta_cmd = t0 - sess.cmd_last_visible
                     delta_conn = t0 - session.conn_time
                     account = sess.get_account()
-                    whos.append("%s (%s/%s)" % (utils.crop("|w%s|n" % account.name, width=25),
-                                                utils.time_format(delta_conn, 0),
-                                                utils.time_format(delta_cmd, 1)))
+                    whos.append(
+                        "%s (%s/%s)"
+                        % (
+                            utils.crop("|w%s|n" % account.name, width=25),
+                            utils.time_format(delta_conn, 0),
+                            utils.time_format(delta_cmd, 1),
+                        )
+                    )
                 text = f"Who list (online/idle): {', '.join(sorted(whos, key=lambda w: w.lower()))}"
             elif txt.lower().startswith("about"):
                 # some bot info
@@ -363,6 +386,7 @@ class IRCBot(Bot):
 
             if self.ndb.ev_channel:
                 self.ndb.ev_channel.msg(text, senders=self)
+
 
 #
 # RSS
@@ -410,9 +434,7 @@ class RSSBot(Bot):
             self.db.rss_rate = rss_rate
         # instruct the server and portal to create a new session with
         # the stored configuration
-        configdict = {"uid": self.dbid,
-                      "url": self.db.rss_url,
-                      "rate": self.db.rss_rate}
+        configdict = {"uid": self.dbid, "url": self.db.rss_url, "rate": self.db.rss_rate}
         _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
 
     def execute_cmd(self, txt=None, session=None, **kwargs):
@@ -437,12 +459,14 @@ class RSSBot(Bot):
 
 # Grapevine bot
 
+
 class GrapevineBot(Bot):
     """
     g Grapevine (https://grapevine.haus) relayer. The channel to connect to is the first
     name in the settings.GRAPEVINE_CHANNELS list.
 
     """
+
     factory_path = "evennia.server.portal.grapevine.RestartingWebsocketServerFactory"
 
     def start(self, ev_channel=None, grapevine_channel=None):
@@ -472,8 +496,7 @@ class GrapevineBot(Bot):
             self.db.grapevine_channel = grapevine_channel
 
         # these will be made available as properties on the protocol factory
-        configdict = {"uid": self.dbid,
-                      "grapevine_channel": self.db.grapevine_channel}
+        configdict = {"uid": self.dbid, "grapevine_channel": self.db.grapevine_channel}
 
         _SESSIONS.start_bot_session(self.factory_path, configdict)
 
@@ -501,8 +524,11 @@ class GrapevineBot(Bot):
             # cache channel lookup
             self.ndb.ev_channel = self.db.ev_channel
 
-        if ("from_channel" in options and text and
-                self.ndb.ev_channel.dbid == options["from_channel"]):
+        if (
+            "from_channel" in options
+            and text
+            and self.ndb.ev_channel.dbid == options["from_channel"]
+        ):
             if not from_obj or from_obj != [self]:
                 # send outputfunc channel(msg, chan, sender)
 
@@ -511,11 +537,25 @@ class GrapevineBot(Bot):
                 # prefix since we pass that explicitly anyway
                 prefix, text = text.split(":", 1)
 
-                super().msg(channel=(text.strip(), self.db.grapevine_channel,
-                                     ", ".join(obj.key for obj in from_obj), {}))
+                super().msg(
+                    channel=(
+                        text.strip(),
+                        self.db.grapevine_channel,
+                        ", ".join(obj.key for obj in from_obj),
+                        {},
+                    )
+                )
 
-    def execute_cmd(self, txt=None, session=None, event=None, grapevine_channel=None,
-                    sender=None, game=None, **kwargs):
+    def execute_cmd(
+        self,
+        txt=None,
+        session=None,
+        event=None,
+        grapevine_channel=None,
+        sender=None,
+        game=None,
+        **kwargs,
+    ):
         """
         Take incoming data from protocol and send it to connected channel. This is
         triggered by the bot_data_in Inputfunc.

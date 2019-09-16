@@ -50,7 +50,9 @@ class MonitorHandler(object):
         if self.monitors:
             for obj in self.monitors:
                 for fieldname in self.monitors[obj]:
-                    for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].items():
+                    for idstring, (callback, persistent, kwargs) in self.monitors[obj][
+                        fieldname
+                    ].items():
                         path = "%s.%s" % (callback.__module__, callback.__name__)
                         savedata.append((obj, fieldname, idstring, path, persistent, kwargs))
             savedata = dbserialize(savedata)
@@ -145,9 +147,14 @@ class MonitorHandler(object):
                 raise TypeError("callback is not a function.")
             dbserialize((obj, fieldname, callback, idstring, persistent, kwargs))
         except Exception:
-            err = "Invalid monitor definition: \n" \
-                  " (%s, %s, %s, %s, %s, %s)" % (obj, fieldname, callback, idstring,
-                                                 persistent, kwargs)
+            err = "Invalid monitor definition: \n" " (%s, %s, %s, %s, %s, %s)" % (
+                obj,
+                fieldname,
+                callback,
+                idstring,
+                persistent,
+                kwargs,
+            )
             logger.log_trace(err)
         else:
             self.monitors[obj][fieldname][idstring] = (callback, persistent, kwargs)
@@ -188,7 +195,9 @@ class MonitorHandler(object):
 
         for obj in objs:
             for fieldname in self.monitors[obj]:
-                for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].items():
+                for idstring, (callback, persistent, kwargs) in self.monitors[obj][
+                    fieldname
+                ].items():
                     output.append((obj, fieldname, idstring, persistent, kwargs))
         return output
 

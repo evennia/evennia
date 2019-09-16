@@ -27,6 +27,7 @@ class CmdMobOnOff(Command):
     building to  activate the mob once it's
     prepared.
     """
+
     key = "mobon"
     aliases = "moboff"
     locks = "cmd:superuser()"
@@ -151,7 +152,9 @@ class Mob(tut_objects.TutorialObject):
         # text to echo to the defeated foe.
         self.db.defeat_msg = "You fall to the ground."
         self.db.defeat_msg_room = "%s falls to the ground."
-        self.db.weapon_ineffective_msg = "Your weapon just passes through your enemy, causing almost no effect!"
+        self.db.weapon_ineffective_msg = (
+            "Your weapon just passes through your enemy, causing almost no effect!"
+        )
 
         self.db.death_msg = "After the last hit %s evaporates." % self.key
         self.db.hit_msg = "%s wails, shudders and writhes." % self.key
@@ -187,15 +190,17 @@ class Mob(tut_objects.TutorialObject):
         last_interval = self.db.last_ticker_interval
         last_hook_key = self.db.last_hook_key
         if last_interval and last_hook_key:
-             # we have a previous subscription, kill this first.
-            TICKER_HANDLER.remove(interval=last_interval,
-                                  callback=getattr(self, last_hook_key), idstring=idstring)
+            # we have a previous subscription, kill this first.
+            TICKER_HANDLER.remove(
+                interval=last_interval, callback=getattr(self, last_hook_key), idstring=idstring
+            )
         self.db.last_ticker_interval = interval
         self.db.last_hook_key = hook_key
         if not stop:
             # set the new ticker
-            TICKER_HANDLER.add(interval=interval,
-                               callback=getattr(self, hook_key), idstring=idstring)
+            TICKER_HANDLER.add(
+                interval=interval, callback=getattr(self, hook_key), idstring=idstring
+            )
 
     def _find_target(self, location):
         """
@@ -209,8 +214,11 @@ class Mob(tut_objects.TutorialObject):
             The first suitable target found.
 
         """
-        targets = [obj for obj in location.contents_get(exclude=self)
-                   if obj.has_account and not obj.is_superuser]
+        targets = [
+            obj
+            for obj in location.contents_get(exclude=self)
+            if obj.has_account and not obj.is_superuser
+        ]
         return targets[0] if targets else None
 
     def set_alive(self, *args, **kwargs):
@@ -307,8 +315,7 @@ class Mob(tut_objects.TutorialObject):
                 self.start_attacking()
                 return
         # no target found, look for an exit.
-        exits = [exi for exi in self.location.exits
-                 if exi.access(self, "traverse")]
+        exits = [exi for exi in self.location.exits if exi.access(self, "traverse")]
         if exits:
             # randomly pick an exit
             exit = random.choice(exits)
@@ -333,8 +340,7 @@ class Mob(tut_objects.TutorialObject):
                 self.start_attacking()
                 return
         # no targets found, scan surrounding rooms
-        exits = [exi for exi in self.location.exits
-                 if exi.access(self, "traverse")]
+        exits = [exi for exi in self.location.exits if exi.access(self, "traverse")]
         if exits:
             # scan the exits destination for targets
             for exit in exits:
@@ -381,7 +387,9 @@ class Mob(tut_objects.TutorialObject):
             if send_defeated_to:
                 target.move_to(send_defeated_to[0], quiet=True)
             else:
-                logger.log_err("Mob: mob.db.send_defeated_to not found: %s" % self.db.send_defeated_to)
+                logger.log_err(
+                    "Mob: mob.db.send_defeated_to not found: %s" % self.db.send_defeated_to
+                )
 
     # response methods - called by other objects
 

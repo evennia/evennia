@@ -39,11 +39,12 @@ _DA = object.__delattr__
 _CHANNELHANDLER = None
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 #
 # Msg
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
 
 class Msg(SharedMemoryModel):
     """
@@ -70,6 +71,7 @@ class Msg(SharedMemoryModel):
     - db_lock_storage: Internal storage of lock strings.
 
     """
+
     #
     # Msg database model setup
     #
@@ -80,48 +82,94 @@ class Msg(SharedMemoryModel):
     # Sender is either an account, an object or an external sender, like
     # an IRC channel; normally there is only one, but if co-modification of
     # a message is allowed, there may be more than one "author"
-    db_sender_accounts = models.ManyToManyField("accounts.AccountDB", related_name='sender_account_set',
-                                                blank=True, verbose_name='sender(account)', db_index=True)
+    db_sender_accounts = models.ManyToManyField(
+        "accounts.AccountDB",
+        related_name="sender_account_set",
+        blank=True,
+        verbose_name="sender(account)",
+        db_index=True,
+    )
 
-    db_sender_objects = models.ManyToManyField("objects.ObjectDB", related_name='sender_object_set',
-                                               blank=True, verbose_name='sender(object)', db_index=True)
-    db_sender_scripts = models.ManyToManyField("scripts.ScriptDB", related_name='sender_script_set',
-                                               blank=True, verbose_name='sender(script)', db_index=True)
-    db_sender_external = models.CharField('external sender', max_length=255, null=True, blank=True, db_index=True,
-                                          help_text="identifier for external sender, for example a sender over an "
-                                          "IRC connection (i.e. someone who doesn't have an exixtence in-game).")
+    db_sender_objects = models.ManyToManyField(
+        "objects.ObjectDB",
+        related_name="sender_object_set",
+        blank=True,
+        verbose_name="sender(object)",
+        db_index=True,
+    )
+    db_sender_scripts = models.ManyToManyField(
+        "scripts.ScriptDB",
+        related_name="sender_script_set",
+        blank=True,
+        verbose_name="sender(script)",
+        db_index=True,
+    )
+    db_sender_external = models.CharField(
+        "external sender",
+        max_length=255,
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="identifier for external sender, for example a sender over an "
+        "IRC connection (i.e. someone who doesn't have an exixtence in-game).",
+    )
     # The destination objects of this message. Stored as a
     # comma-separated string of object dbrefs. Can be defined along
     # with channels below.
-    db_receivers_accounts = models.ManyToManyField('accounts.AccountDB', related_name='receiver_account_set',
-                                                   blank=True, help_text="account receivers")
+    db_receivers_accounts = models.ManyToManyField(
+        "accounts.AccountDB",
+        related_name="receiver_account_set",
+        blank=True,
+        help_text="account receivers",
+    )
 
-    db_receivers_objects = models.ManyToManyField('objects.ObjectDB', related_name='receiver_object_set',
-                                                  blank=True, help_text="object receivers")
-    db_receivers_scripts = models.ManyToManyField('scripts.ScriptDB', related_name='receiver_script_set',
-                                                  blank=True, help_text="script_receivers")
-    db_receivers_channels = models.ManyToManyField("ChannelDB", related_name='channel_set',
-                                                   blank=True, help_text="channel recievers")
+    db_receivers_objects = models.ManyToManyField(
+        "objects.ObjectDB",
+        related_name="receiver_object_set",
+        blank=True,
+        help_text="object receivers",
+    )
+    db_receivers_scripts = models.ManyToManyField(
+        "scripts.ScriptDB",
+        related_name="receiver_script_set",
+        blank=True,
+        help_text="script_receivers",
+    )
+    db_receivers_channels = models.ManyToManyField(
+        "ChannelDB", related_name="channel_set", blank=True, help_text="channel recievers"
+    )
 
     # header could be used for meta-info about the message if your system needs
     # it, or as a separate store for the mail subject line maybe.
-    db_header = models.TextField('header', null=True, blank=True)
+    db_header = models.TextField("header", null=True, blank=True)
     # the message body itself
-    db_message = models.TextField('message')
+    db_message = models.TextField("message")
     # send date
-    db_date_created = models.DateTimeField('date sent', editable=False, auto_now_add=True, db_index=True)
+    db_date_created = models.DateTimeField(
+        "date sent", editable=False, auto_now_add=True, db_index=True
+    )
     # lock storage
-    db_lock_storage = models.TextField('locks', blank=True,
-                                       help_text='access locks on this message.')
+    db_lock_storage = models.TextField(
+        "locks", blank=True, help_text="access locks on this message."
+    )
 
     # these can be used to filter/hide a given message from supplied objects/accounts/channels
-    db_hide_from_accounts = models.ManyToManyField("accounts.AccountDB", related_name='hide_from_accounts_set', blank=True)
+    db_hide_from_accounts = models.ManyToManyField(
+        "accounts.AccountDB", related_name="hide_from_accounts_set", blank=True
+    )
 
-    db_hide_from_objects = models.ManyToManyField("objects.ObjectDB", related_name='hide_from_objects_set', blank=True)
-    db_hide_from_channels = models.ManyToManyField("ChannelDB", related_name='hide_from_channels_set', blank=True)
+    db_hide_from_objects = models.ManyToManyField(
+        "objects.ObjectDB", related_name="hide_from_objects_set", blank=True
+    )
+    db_hide_from_channels = models.ManyToManyField(
+        "ChannelDB", related_name="hide_from_channels_set", blank=True
+    )
 
-    db_tags = models.ManyToManyField(Tag, blank=True,
-                                     help_text='tags on this message. Tags are simple string markers to identify, group and alias messages.')
+    db_tags = models.ManyToManyField(
+        Tag,
+        blank=True,
+        help_text="tags on this message. Tags are simple string markers to identify, group and alias messages.",
+    )
 
     # Database manager
     objects = managers.MsgManager()
@@ -152,15 +200,17 @@ class Msg(SharedMemoryModel):
     # is the object in question).
 
     # sender property (wraps db_sender_*)
-    #@property
+    # @property
     def __senders_get(self):
         "Getter. Allows for value = self.sender"
-        return list(self.db_sender_accounts.all()) + \
-            list(self.db_sender_objects.all()) + \
-            list(self.db_sender_scripts.all()) + \
-            self.extra_senders
+        return (
+            list(self.db_sender_accounts.all())
+            + list(self.db_sender_objects.all())
+            + list(self.db_sender_scripts.all())
+            + self.extra_senders
+        )
 
-    #@sender.setter
+    # @sender.setter
     def __senders_set(self, senders):
         "Setter. Allows for self.sender = value"
         for sender in make_iter(senders):
@@ -181,7 +231,7 @@ class Msg(SharedMemoryModel):
             elif clsname == "ScriptDB":
                 self.db_sender_scripts.add(sender)
 
-    #@sender.deleter
+    # @sender.deleter
     def __senders_del(self):
         "Deleter. Clears all senders"
         self.db_sender_accounts.clear()
@@ -190,6 +240,7 @@ class Msg(SharedMemoryModel):
         self.db_sender_external = ""
         self.extra_senders = []
         self.save()
+
     senders = property(__senders_get, __senders_set, __senders_del)
 
     def remove_sender(self, senders):
@@ -217,18 +268,20 @@ class Msg(SharedMemoryModel):
                 self.db_sender_accounts.remove(sender)
 
     # receivers property
-    #@property
+    # @property
     def __receivers_get(self):
         """
         Getter. Allows for value = self.receivers.
         Returns four lists of receivers: accounts, objects, scripts and channels.
         """
-        return list(self.db_receivers_accounts.all()) + \
-            list(self.db_receivers_objects.all()) + \
-            list(self.db_receivers_scripts.all()) + \
-            list(self.db_receivers_channels.all())
+        return (
+            list(self.db_receivers_accounts.all())
+            + list(self.db_receivers_objects.all())
+            + list(self.db_receivers_scripts.all())
+            + list(self.db_receivers_channels.all())
+        )
 
-    #@receivers.setter
+    # @receivers.setter
     def __receivers_set(self, receivers):
         """
         Setter. Allows for self.receivers = value.
@@ -249,7 +302,7 @@ class Msg(SharedMemoryModel):
             elif clsname == "ChannelDB":
                 self.db_receivers_channels.add(receiver)
 
-    #@receivers.deleter
+    # @receivers.deleter
     def __receivers_del(self):
         "Deleter. Clears all receivers"
         self.db_receivers_accounts.clear()
@@ -257,6 +310,7 @@ class Msg(SharedMemoryModel):
         self.db_receivers_scripts.clear()
         self.db_receivers_channels.clear()
         self.save()
+
     receivers = property(__receivers_get, __receivers_set, __receivers_del)
 
     def remove_receiver(self, receivers):
@@ -283,12 +337,12 @@ class Msg(SharedMemoryModel):
                 self.db_receivers_channels.remove(receiver)
 
     # channels property
-    #@property
+    # @property
     def __channels_get(self):
         "Getter. Allows for value = self.channels. Returns a list of channels."
         return self.db_receivers_channels.all()
 
-    #@channels.setter
+    # @channels.setter
     def __channels_set(self, value):
         """
         Setter. Allows for self.channels = value.
@@ -297,11 +351,12 @@ class Msg(SharedMemoryModel):
         for val in (v for v in make_iter(value) if v):
             self.db_receivers_channels.add(val)
 
-    #@channels.deleter
+    # @channels.deleter
     def __channels_del(self):
         "Deleter. Allows for del self.channels"
         self.db_receivers_channels.clear()
         self.save()
+
     channels = property(__channels_get, __channels_set, __channels_del)
 
     def __hide_from_get(self):
@@ -309,9 +364,13 @@ class Msg(SharedMemoryModel):
         Getter. Allows for value = self.hide_from.
         Returns 3 lists of accounts, objects and channels
         """
-        return self.db_hide_from_accounts.all(), self.db_hide_from_objects.all(), self.db_hide_from_channels.all()
+        return (
+            self.db_hide_from_accounts.all(),
+            self.db_hide_from_objects.all(),
+            self.db_hide_from_channels.all(),
+        )
 
-    #@hide_from_sender.setter
+    # @hide_from_sender.setter
     def __hide_from_set(self, hiders):
         "Setter. Allows for self.hide_from = value. Will append to hiders"
         for hider in make_iter(hiders):
@@ -327,13 +386,14 @@ class Msg(SharedMemoryModel):
             elif clsname == "ChannelDB":
                 self.db_hide_from_channels.add(hider.__dbclass__)
 
-    #@hide_from_sender.deleter
+    # @hide_from_sender.deleter
     def __hide_from_del(self):
         "Deleter. Allows for del self.hide_from_senders"
         self.db_hide_from_accounts.clear()
         self.db_hide_from_objects.clear()
         self.db_hide_from_channels.clear()
         self.save()
+
     hide_from = property(__hide_from_get, __hide_from_set, __hide_from_del)
 
     #
@@ -343,10 +403,12 @@ class Msg(SharedMemoryModel):
     def __str__(self):
         "This handles what is shown when e.g. printing the message"
         senders = ",".join(obj.key for obj in self.senders)
-        receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
+        receivers = ",".join(
+            ["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers]
+        )
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
 
-    def access(self, accessing_obj, access_type='read', default=False):
+    def access(self, accessing_obj, access_type="read", default=False):
         """
         Checks lock access.
 
@@ -359,14 +421,14 @@ class Msg(SharedMemoryModel):
             result (bool): If access was granted or not.
 
         """
-        return self.locks.check(accessing_obj,
-                                access_type=access_type, default=default)
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
-#------------------------------------------------------------
+
+# ------------------------------------------------------------
 #
 # TempMsg
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 class TempMsg(object):
@@ -377,7 +439,17 @@ class TempMsg(object):
 
     """
 
-    def __init__(self, senders=None, receivers=None, channels=None, message="", header="", type="", lockstring="", hide_from=None):
+    def __init__(
+        self,
+        senders=None,
+        receivers=None,
+        channels=None,
+        message="",
+        header="",
+        type="",
+        lockstring="",
+        hide_from=None,
+    ):
         """
         Creates the temp message.
 
@@ -411,7 +483,9 @@ class TempMsg(object):
         This handles what is shown when e.g. printing the message.
         """
         senders = ",".join(obj.key for obj in self.senders)
-        receivers = ",".join(["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers])
+        receivers = ",".join(
+            ["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers]
+        )
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
 
     def remove_sender(self, sender):
@@ -442,7 +516,7 @@ class TempMsg(object):
             except ValueError:
                 pass  # nothing to remove
 
-    def access(self, accessing_obj, access_type='read', default=False):
+    def access(self, accessing_obj, access_type="read", default=False):
         """
         Checks lock access.
 
@@ -455,15 +529,15 @@ class TempMsg(object):
             result (bool): If access was granted or not.
 
         """
-        return self.locks.check(accessing_obj,
-                                access_type=access_type, default=default)
+        return self.locks.check(accessing_obj, access_type=access_type, default=default)
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 #
 # Channel
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
 
 class SubscriptionHandler(object):
     """
@@ -484,10 +558,18 @@ class SubscriptionHandler(object):
         self._cache = None
 
     def _recache(self):
-        self._cache = {account: True for account in self.obj.db_account_subscriptions.all()
-                       if hasattr(account, 'pk') and account.pk}
-        self._cache.update({obj: True for obj in self.obj.db_object_subscriptions.all()
-                            if hasattr(obj, 'pk') and obj.pk})
+        self._cache = {
+            account: True
+            for account in self.obj.db_account_subscriptions.all()
+            if hasattr(account, "pk") and account.pk
+        }
+        self._cache.update(
+            {
+                obj: True
+                for obj in self.obj.db_object_subscriptions.all()
+                if hasattr(obj, "pk") and obj.pk
+            }
+        )
 
     def has(self, entity):
         """
@@ -570,6 +652,7 @@ class SubscriptionHandler(object):
         if self._cache is None:
             self._recache()
         return self._cache
+
     get = all  # alias
 
     def online(self):
@@ -583,8 +666,9 @@ class SubscriptionHandler(object):
         recache_needed = False
         for obj in self.all():
             from django.core.exceptions import ObjectDoesNotExist
+
             try:
-                if hasattr(obj, 'account') and obj.account:
+                if hasattr(obj, "account") and obj.account:
                     obj = obj.account
                 if not obj.is_connected:
                     continue
@@ -619,11 +703,22 @@ class ChannelDB(TypedObject):
       - db_object_subscriptions: The Object subscriptions.
 
     """
-    db_account_subscriptions = models.ManyToManyField("accounts.AccountDB",
-                                                      related_name="account_subscription_set", blank=True, verbose_name='account subscriptions', db_index=True)
 
-    db_object_subscriptions = models.ManyToManyField("objects.ObjectDB",
-                                                     related_name="object_subscription_set", blank=True, verbose_name='object subscriptions', db_index=True)
+    db_account_subscriptions = models.ManyToManyField(
+        "accounts.AccountDB",
+        related_name="account_subscription_set",
+        blank=True,
+        verbose_name="account subscriptions",
+        db_index=True,
+    )
+
+    db_object_subscriptions = models.ManyToManyField(
+        "objects.ObjectDB",
+        related_name="object_subscription_set",
+        blank=True,
+        verbose_name="object subscriptions",
+        db_index=True,
+    )
 
     # Database manager
     objects = managers.ChannelDBManager()

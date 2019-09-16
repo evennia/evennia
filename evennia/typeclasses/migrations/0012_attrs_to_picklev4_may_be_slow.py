@@ -9,7 +9,7 @@ from evennia.utils.utils import to_bytes
 
 
 def forwards(apps, schema_editor):
-    Attribute = apps.get_model('typeclasses', 'Attribute')
+    Attribute = apps.get_model("typeclasses", "Attribute")
     for attr in Attribute.objects.all():
         # we need to re-assign the Attribute it's own value to make sure pickle switches from v2 to v4,
         # otherwise we will not be able to search db by-value.
@@ -19,10 +19,6 @@ def forwards(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('typeclasses', '0011_auto_20190128_1820'),
-    ]
+    dependencies = [("typeclasses", "0011_auto_20190128_1820")]
 
-    operations = [
-        migrations.RunPython(forwards, migrations.RunPython.noop),
-    ]
+    operations = [migrations.RunPython(forwards, migrations.RunPython.noop)]

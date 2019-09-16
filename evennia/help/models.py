@@ -21,14 +21,16 @@ from evennia.help.manager import HelpEntryManager
 from evennia.typeclasses.models import Tag, TagHandler, AliasHandler
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import lazy_property
+
 __all__ = ("HelpEntry",)
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 #
 # HelpEntry
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
 
 class HelpEntry(SharedMemoryModel):
     """
@@ -53,17 +55,28 @@ class HelpEntry(SharedMemoryModel):
     # named same as the field, but withtout the db_* prefix.
 
     # title of the help entry
-    db_key = models.CharField('help key', max_length=255, unique=True, help_text='key to search for')
+    db_key = models.CharField(
+        "help key", max_length=255, unique=True, help_text="key to search for"
+    )
     # help category
-    db_help_category = models.CharField("help category", max_length=255, default="General",
-                                        help_text='organizes help entries in lists')
+    db_help_category = models.CharField(
+        "help category",
+        max_length=255,
+        default="General",
+        help_text="organizes help entries in lists",
+    )
     # the actual help entry text, in any formatting.
-    db_entrytext = models.TextField('help entry', blank=True, help_text='the main body of help text')
+    db_entrytext = models.TextField(
+        "help entry", blank=True, help_text="the main body of help text"
+    )
     # lock string storage
-    db_lock_storage = models.TextField('locks', blank=True, help_text='normally view:all().')
+    db_lock_storage = models.TextField("locks", blank=True, help_text="normally view:all().")
     # tags are primarily used for permissions
-    db_tags = models.ManyToManyField(Tag, blank=True,
-                                     help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.')
+    db_tags = models.ManyToManyField(
+        Tag,
+        blank=True,
+        help_text="tags on this object. Tags are simple string markers to identify, group and alias objects.",
+    )
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore.
     db_staff_only = models.BooleanField(default=False)
@@ -101,9 +114,9 @@ class HelpEntry(SharedMemoryModel):
         return self.key
 
     def __repr__(self):
-        return '%s' % self.key
+        return "%s" % self.key
 
-    def access(self, accessing_obj, access_type='read', default=False):
+    def access(self, accessing_obj, access_type="read", default=False):
         """
         Determines if another object has permission to access.
         accessing_obj - object trying to access this one
@@ -127,8 +140,9 @@ class HelpEntry(SharedMemoryModel):
 
         """
         content_type = ContentType.objects.get_for_model(self.__class__)
-        return reverse("admin:%s_%s_change" % (content_type.app_label,
-                                               content_type.model), args=(self.id,))
+        return reverse(
+            "admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,)
+        )
 
     @classmethod
     def web_get_create_url(cls):
@@ -157,9 +171,9 @@ class HelpEntry(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-create' % slugify(cls._meta.verbose_name))
+            return reverse("%s-create" % slugify(cls._meta.verbose_name))
         except:
-            return '#'
+            return "#"
 
     def web_get_detail_url(self):
         """
@@ -188,14 +202,13 @@ class HelpEntry(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-detail' % slugify(self._meta.verbose_name),
-               kwargs={
-                   'category': slugify(self.db_help_category),
-                   'topic': slugify(self.db_key)})
+            return reverse(
+                "%s-detail" % slugify(self._meta.verbose_name),
+                kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
+            )
         except Exception as e:
             print(e)
-            return '#'
-
+            return "#"
 
     def web_get_update_url(self):
         """
@@ -224,12 +237,12 @@ class HelpEntry(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-update' % slugify(self._meta.verbose_name),
-               kwargs={
-                   'category': slugify(self.db_help_category),
-                   'topic': slugify(self.db_key)})
+            return reverse(
+                "%s-update" % slugify(self._meta.verbose_name),
+                kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
+            )
         except:
-            return '#'
+            return "#"
 
     def web_get_delete_url(self):
         """
@@ -257,12 +270,12 @@ class HelpEntry(SharedMemoryModel):
 
         """
         try:
-            return reverse('%s-delete' % slugify(self._meta.verbose_name),
-               kwargs={
-                   'category': slugify(self.db_help_category),
-                   'topic': slugify(self.db_key)})
+            return reverse(
+                "%s-delete" % slugify(self._meta.verbose_name),
+                kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
+            )
         except:
-            return '#'
+            return "#"
 
     # Used by Django Sites/Admin
     get_absolute_url = web_get_detail_url

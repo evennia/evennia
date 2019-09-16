@@ -24,26 +24,28 @@ class EvenniaUsernameAvailabilityValidator:
         """
 
         # Check guest list
-        if (settings.GUEST_LIST and username.lower() in (guest.lower() for guest in settings.GUEST_LIST)):
+        if settings.GUEST_LIST and username.lower() in (
+            guest.lower() for guest in settings.GUEST_LIST
+        ):
             raise ValidationError(
-                _('Sorry, that username is reserved.'),
-                code='evennia_username_reserved',
+                _("Sorry, that username is reserved."), code="evennia_username_reserved"
             )
 
         # Check database
         exists = AccountDB.objects.filter(username__iexact=username).exists()
         if exists:
             raise ValidationError(
-                _('Sorry, that username is already taken.'),
-                code='evennia_username_taken',
+                _("Sorry, that username is already taken."), code="evennia_username_taken"
             )
 
 
 class EvenniaPasswordValidator:
-
-    def __init__(self, regex=r"^[\w. @+\-',]+$",
-                 policy="Password should contain a mix of letters, "
-                        "spaces, digits and @/./+/-/_/'/, only."):
+    def __init__(
+        self,
+        regex=r"^[\w. @+\-',]+$",
+        policy="Password should contain a mix of letters, "
+        "spaces, digits and @/./+/-/_/'/, only.",
+    ):
         """
         Constructs a standard Django password validator.
 
@@ -71,10 +73,7 @@ class EvenniaPasswordValidator:
         """
         # Check complexity
         if not re.findall(self.regex, password):
-            raise ValidationError(
-                _(self.policy),
-                code='evennia_password_policy',
-            )
+            raise ValidationError(_(self.policy), code="evennia_password_policy")
 
     def get_help_text(self):
         """

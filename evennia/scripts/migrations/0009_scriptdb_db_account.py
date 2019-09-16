@@ -14,8 +14,8 @@ def _table_exists(db_cursor, tablename):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0007_copy_player_to_account'),
-        ('scripts', '0008_auto_20170606_1731'),
+        ("accounts", "0007_copy_player_to_account"),
+        ("scripts", "0008_auto_20170606_1731"),
     ]
 
     db_cursor = connection.cursor()
@@ -25,8 +25,15 @@ class Migration(migrations.Migration):
         # here we are not starting from scratch.
         operations = [
             migrations.AddField(
-                model_name='scriptdb',
-                name='db_account',
-                field=models.ForeignKey(blank=True, help_text='the account to store this script on (should not be set if db_obj is set)', null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.AccountDB', verbose_name='scripted account'),
-            ),
+                model_name="scriptdb",
+                name="db_account",
+                field=models.ForeignKey(
+                    blank=True,
+                    help_text="the account to store this script on (should not be set if db_obj is set)",
+                    null=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to="accounts.AccountDB",
+                    verbose_name="scripted account",
+                ),
+            )
         ]

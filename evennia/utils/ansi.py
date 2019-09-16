@@ -91,57 +91,50 @@ class ANSIParser(object):
     # Mapping using {r {n etc
 
     ansi_map = [
-
         # alternative |-format
-
-        (r'|n', ANSI_NORMAL),          # reset
-        (r'|/', ANSI_RETURN),          # line break
-        (r'|-', ANSI_TAB),             # tab
-        (r'|_', ANSI_SPACE),           # space
-        (r'|*', ANSI_INVERSE),         # invert
-        (r'|^', ANSI_BLINK),           # blinking text (very annoying and not supported by all clients)
-        (r'|u', ANSI_UNDERLINE),       # underline
-
-        (r'|r', ANSI_HILITE + ANSI_RED),
-        (r'|g', ANSI_HILITE + ANSI_GREEN),
-        (r'|y', ANSI_HILITE + ANSI_YELLOW),
-        (r'|b', ANSI_HILITE + ANSI_BLUE),
-        (r'|m', ANSI_HILITE + ANSI_MAGENTA),
-        (r'|c', ANSI_HILITE + ANSI_CYAN),
-        (r'|w', ANSI_HILITE + ANSI_WHITE),  # pure white
-        (r'|x', ANSI_HILITE + ANSI_BLACK),  # dark grey
-
-        (r'|R', ANSI_UNHILITE + ANSI_RED),
-        (r'|G', ANSI_UNHILITE + ANSI_GREEN),
-        (r'|Y', ANSI_UNHILITE + ANSI_YELLOW),
-        (r'|B', ANSI_UNHILITE + ANSI_BLUE),
-        (r'|M', ANSI_UNHILITE + ANSI_MAGENTA),
-        (r'|C', ANSI_UNHILITE + ANSI_CYAN),
-        (r'|W', ANSI_UNHILITE + ANSI_WHITE),  # light grey
-        (r'|X', ANSI_UNHILITE + ANSI_BLACK),  # pure black
-
+        (r"|n", ANSI_NORMAL),  # reset
+        (r"|/", ANSI_RETURN),  # line break
+        (r"|-", ANSI_TAB),  # tab
+        (r"|_", ANSI_SPACE),  # space
+        (r"|*", ANSI_INVERSE),  # invert
+        (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
+        (r"|u", ANSI_UNDERLINE),  # underline
+        (r"|r", ANSI_HILITE + ANSI_RED),
+        (r"|g", ANSI_HILITE + ANSI_GREEN),
+        (r"|y", ANSI_HILITE + ANSI_YELLOW),
+        (r"|b", ANSI_HILITE + ANSI_BLUE),
+        (r"|m", ANSI_HILITE + ANSI_MAGENTA),
+        (r"|c", ANSI_HILITE + ANSI_CYAN),
+        (r"|w", ANSI_HILITE + ANSI_WHITE),  # pure white
+        (r"|x", ANSI_HILITE + ANSI_BLACK),  # dark grey
+        (r"|R", ANSI_UNHILITE + ANSI_RED),
+        (r"|G", ANSI_UNHILITE + ANSI_GREEN),
+        (r"|Y", ANSI_UNHILITE + ANSI_YELLOW),
+        (r"|B", ANSI_UNHILITE + ANSI_BLUE),
+        (r"|M", ANSI_UNHILITE + ANSI_MAGENTA),
+        (r"|C", ANSI_UNHILITE + ANSI_CYAN),
+        (r"|W", ANSI_UNHILITE + ANSI_WHITE),  # light grey
+        (r"|X", ANSI_UNHILITE + ANSI_BLACK),  # pure black
         # hilight-able colors
-        (r'|h', ANSI_HILITE),
-        (r'|H', ANSI_UNHILITE),
-
-        (r'|!R', ANSI_RED),
-        (r'|!G', ANSI_GREEN),
-        (r'|!Y', ANSI_YELLOW),
-        (r'|!B', ANSI_BLUE),
-        (r'|!M', ANSI_MAGENTA),
-        (r'|!C', ANSI_CYAN),
-        (r'|!W', ANSI_WHITE),  # light grey
-        (r'|!X', ANSI_BLACK),  # pure black
-
+        (r"|h", ANSI_HILITE),
+        (r"|H", ANSI_UNHILITE),
+        (r"|!R", ANSI_RED),
+        (r"|!G", ANSI_GREEN),
+        (r"|!Y", ANSI_YELLOW),
+        (r"|!B", ANSI_BLUE),
+        (r"|!M", ANSI_MAGENTA),
+        (r"|!C", ANSI_CYAN),
+        (r"|!W", ANSI_WHITE),  # light grey
+        (r"|!X", ANSI_BLACK),  # pure black
         # normal ANSI backgrounds
-        (r'|[R', ANSI_BACK_RED),
-        (r'|[G', ANSI_BACK_GREEN),
-        (r'|[Y', ANSI_BACK_YELLOW),
-        (r'|[B', ANSI_BACK_BLUE),
-        (r'|[M', ANSI_BACK_MAGENTA),
-        (r'|[C', ANSI_BACK_CYAN),
-        (r'|[W', ANSI_BACK_WHITE),    # light grey background
-        (r'|[X', ANSI_BACK_BLACK)     # pure black background
+        (r"|[R", ANSI_BACK_RED),
+        (r"|[G", ANSI_BACK_GREEN),
+        (r"|[Y", ANSI_BACK_YELLOW),
+        (r"|[B", ANSI_BACK_BLUE),
+        (r"|[M", ANSI_BACK_MAGENTA),
+        (r"|[C", ANSI_BACK_CYAN),
+        (r"|[W", ANSI_BACK_WHITE),  # light grey background
+        (r"|[X", ANSI_BACK_BLACK),  # pure black background
     ]
 
     ansi_xterm256_bright_bg_map = [
@@ -149,16 +142,16 @@ class ANSIParser(object):
         # standard does not support it (will
         # fallback to dark ANSI background colors if xterm256
         # is not supported by client)
-
         # |-style variations
-        (r'|[r', r'|[500'),
-        (r'|[g', r'|[050'),
-        (r'|[y', r'|[550'),
-        (r'|[b', r'|[005'),
-        (r'|[m', r'|[505'),
-        (r'|[c', r'|[055'),
-        (r'|[w', r'|[555'),     # white background
-        (r'|[x', r'|[222')]     # dark grey background
+        (r"|[r", r"|[500"),
+        (r"|[g", r"|[050"),
+        (r"|[y", r"|[550"),
+        (r"|[b", r"|[005"),
+        (r"|[m", r"|[505"),
+        (r"|[c", r"|[055"),
+        (r"|[w", r"|[555"),  # white background
+        (r"|[x", r"|[222"),
+    ]  # dark grey background
 
     # xterm256. These are replaced directly by
     # the sub_xterm256 method
@@ -171,10 +164,10 @@ class ANSIParser(object):
         xterm256_gbg = settings.COLOR_XTERM256_EXTRA_GBG
         ansi_xterm256_bright_bg_map = settings.COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
     else:
-        xterm256_fg = [r'\|([0-5])([0-5])([0-5])']     # |123 - foreground colour
-        xterm256_bg = [r'\|\[([0-5])([0-5])([0-5])']   # |[123 - background colour
-        xterm256_gfg = [r'\|=([a-z])']      # |=a - greyscale foreground
-        xterm256_gbg = [r'\|\[=([a-z])']      # |[=a - greyscale background
+        xterm256_fg = [r"\|([0-5])([0-5])([0-5])"]  # |123 - foreground colour
+        xterm256_bg = [r"\|\[([0-5])([0-5])([0-5])"]  # |[123 - background colour
+        xterm256_gfg = [r"\|=([a-z])"]  # |=a - greyscale foreground
+        xterm256_gbg = [r"\|\[=([a-z])"]  # |[=a - greyscale background
         ansi_map += settings.COLOR_ANSI_EXTRA_MAP
         xterm256_fg += settings.COLOR_XTERM256_EXTRA_FG
         xterm256_bg += settings.COLOR_XTERM256_EXTRA_BG
@@ -182,11 +175,13 @@ class ANSIParser(object):
         xterm256_gbg += settings.COLOR_XTERM256_EXTRA_GBG
         ansi_xterm256_bright_bg_map += settings.COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
-    mxp_re = r'\|lc(.*?)\|lt(.*?)\|le'
+    mxp_re = r"\|lc(.*?)\|lt(.*?)\|le"
 
     # prepare regex matching
-    brightbg_sub = re.compile(r"|".join([r"(?<!\|)%s" % re.escape(tup[0])
-                                         for tup in ansi_xterm256_bright_bg_map]), re.DOTALL)
+    brightbg_sub = re.compile(
+        r"|".join([r"(?<!\|)%s" % re.escape(tup[0]) for tup in ansi_xterm256_bright_bg_map]),
+        re.DOTALL,
+    )
     xterm256_fg_sub = re.compile(r"|".join(xterm256_fg), re.DOTALL)
     xterm256_bg_sub = re.compile(r"|".join(xterm256_bg), re.DOTALL)
     xterm256_gfg_sub = re.compile(r"|".join(xterm256_gfg), re.DOTALL)
@@ -257,7 +252,7 @@ class ANSIParser(object):
             return ""
 
         # get tag, stripping the initial marker
-        #rgbtag = rgbmatch.group()[1:]
+        # rgbtag = rgbmatch.group()[1:]
 
         background = color_type in ("bg", "gbg")
         grayscale = color_type in ("gfg", "gbg")
@@ -277,10 +272,10 @@ class ANSIParser(object):
                 logger.log_trace()
                 return rgbmatch.group(0)
 
-            if letter == 'a':
-                colval = 16     # pure black @ index 16 (first color cube entry)
-            elif letter == 'z':
-                colval = 231    # pure white @ index 231 (last color cube entry)
+            if letter == "a":
+                colval = 16  # pure black @ index 16 (first color cube entry)
+            elif letter == "z":
+                colval = 231  # pure white @ index 231 (last color cube entry)
             else:
                 # letter in range [b..y] (exactly 24 values!)
                 colval = 134 + ord(letter)
@@ -349,7 +344,7 @@ class ANSIParser(object):
                     return ANSI_HILITE + ANSI_CYAN
                 else:
                     return ANSI_NORMAL + ANSI_CYAN
-            else:    # mostly blue
+            else:  # mostly blue
                 if background:
                     return ANSI_BACK_BLUE
                 elif blue >= 3:
@@ -381,7 +376,7 @@ class ANSIParser(object):
             string (str): The processed string.
 
         """
-        return self.mxp_sub.sub(r'\2', string)
+        return self.mxp_sub.sub(r"\2", string)
 
     def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
         """
@@ -399,14 +394,14 @@ class ANSIParser(object):
             string (str): The parsed string.
 
         """
-        if hasattr(string, '_raw_string'):
+        if hasattr(string, "_raw_string"):
             if strip_ansi:
                 return string.clean()
             else:
                 return string.raw()
 
         if not string:
-            return ''
+            return ""
 
         # check cached parsings
         global _PARSE_CACHE
@@ -465,6 +460,7 @@ ANSI_PARSER = ANSIParser()
 #
 # Access function
 #
+
 
 def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False):
     """
@@ -525,7 +521,7 @@ def raw(string):
         string (str): The raw, escaped string.
 
     """
-    return string.replace('{', '{{').replace('|', '||')
+    return string.replace("{", "{{").replace("|", "||")
 
 
 def _spacing_preflight(func):
@@ -534,6 +530,7 @@ def _spacing_preflight(func):
     functions used for padding ANSIStrings.
 
     """
+
     @functools.wraps(func)
     def wrapped(self, width=78, fillchar=None):
         if fillchar is None:
@@ -546,6 +543,7 @@ def _spacing_preflight(func):
         if _difference <= 0:
             return self
         return func(self, width, fillchar, _difference)
+
     return wrapped
 
 
@@ -555,8 +553,10 @@ def _query_super(func_name):
     of ANSIString.
 
     """
+
     def wrapped(self, *args, **kwargs):
         return getattr(self.clean(), func_name)(*args, **kwargs)
+
     return wrapped
 
 
@@ -565,11 +565,12 @@ def _on_raw(func_name):
     Like query_super, but makes the operation run on the raw string.
 
     """
+
     def wrapped(self, *args, **kwargs):
         args = list(args)
         try:
             string = args.pop(0)
-            if hasattr(string, '_raw_string'):
+            if hasattr(string, "_raw_string"):
                 args.insert(0, string.raw())
             else:
                 args.insert(0, string)
@@ -580,6 +581,7 @@ def _on_raw(func_name):
         if isinstance(result, str):
             return ANSIString(result, decoded=True)
         return result
+
     return wrapped
 
 
@@ -591,6 +593,7 @@ def _transform(func_name):
     with the resulting string.
 
     """
+
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
         to_string = []
@@ -602,9 +605,13 @@ def _transform(func_name):
                 to_string.append(replacement_string[char_counter])
                 char_counter += 1
         return ANSIString(
-            ''.join(to_string), decoded=True,
-            code_indexes=self._code_indexes, char_indexes=self._char_indexes,
-            clean_string=replacement_string)
+            "".join(to_string),
+            decoded=True,
+            code_indexes=self._code_indexes,
+            char_indexes=self._char_indexes,
+            clean_string=replacement_string,
+        )
+
     return wrapped
 
 
@@ -614,18 +621,29 @@ class ANSIMeta(type):
     base class. We apply them here, as part of the classes construction.
 
     """
+
     def __init__(cls, *args, **kwargs):
         for func_name in [
-                'count', 'startswith', 'endswith', 'find', 'index', 'isalnum',
-                'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper',
-                'rfind', 'rindex', '__len__']:
+            "count",
+            "startswith",
+            "endswith",
+            "find",
+            "index",
+            "isalnum",
+            "isalpha",
+            "isdigit",
+            "islower",
+            "isspace",
+            "istitle",
+            "isupper",
+            "rfind",
+            "rindex",
+            "__len__",
+        ]:
             setattr(cls, func_name, _query_super(func_name))
-        for func_name in [
-                '__mod__', 'expandtabs', 'decode', 'replace', 'format',
-                'encode']:
+        for func_name in ["__mod__", "expandtabs", "decode", "replace", "format", "encode"]:
             setattr(cls, func_name, _on_raw(func_name))
-        for func_name in [
-                'capitalize', 'translate', 'lower', 'upper', 'swapcase']:
+        for func_name in ["capitalize", "translate", "lower", "upper", "swapcase"]:
             setattr(cls, func_name, _transform(func_name))
         super().__init__(*args, **kwargs)
 
@@ -672,16 +690,18 @@ class ANSIString(str, metaclass=ANSIMeta):
         string = args[0]
         if not isinstance(string, str):
             string = to_str(string)
-        parser = kwargs.get('parser', ANSI_PARSER)
-        decoded = kwargs.get('decoded', False) or hasattr(string, '_raw_string')
-        code_indexes = kwargs.pop('code_indexes', None)
-        char_indexes = kwargs.pop('char_indexes', None)
-        clean_string = kwargs.pop('clean_string', None)
+        parser = kwargs.get("parser", ANSI_PARSER)
+        decoded = kwargs.get("decoded", False) or hasattr(string, "_raw_string")
+        code_indexes = kwargs.pop("code_indexes", None)
+        char_indexes = kwargs.pop("char_indexes", None)
+        clean_string = kwargs.pop("clean_string", None)
         # All True, or All False, not just one.
         checks = [x is None for x in [code_indexes, char_indexes, clean_string]]
         if not len(set(checks)) == 1:
-            raise ValueError("You must specify code_indexes, char_indexes, "
-                             "and clean_string together, or not at all.")
+            raise ValueError(
+                "You must specify code_indexes, char_indexes, "
+                "and clean_string together, or not at all."
+            )
         if not all(checks):
             decoded = True
         if not decoded:
@@ -691,7 +711,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         elif clean_string is not None:
             # We have an explicit clean string.
             pass
-        elif hasattr(string, '_clean_string'):
+        elif hasattr(string, "_clean_string"):
             # It's already an ANSIString
             clean_string = string._clean_string
             code_indexes = string._code_indexes
@@ -702,7 +722,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             clean_string = parser.strip_raw_codes(string)
 
         if not isinstance(string, str):
-            string = string.decode('utf-8')
+            string = string.decode("utf-8")
 
         ansi_string = super().__new__(ANSIString, to_str(clean_string))
         ansi_string._raw_string = string
@@ -742,7 +762,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         escapes, and which are for the readable text.
 
         """
-        self.parser = kwargs.pop('parser', ANSI_PARSER)
+        self.parser = kwargs.pop("parser", ANSI_PARSER)
         super().__init__()
         if self._code_indexes is None:
             self._code_indexes, self._char_indexes = self._get_indexes()
@@ -767,13 +787,14 @@ class ANSIString(str, metaclass=ANSIMeta):
         clean_string = first._clean_string + second._clean_string
         code_indexes = first._code_indexes[:]
         char_indexes = first._char_indexes[:]
-        code_indexes.extend(
-            cls._shifter(second._code_indexes, len(first._raw_string)))
-        char_indexes.extend(
-            cls._shifter(second._char_indexes, len(first._raw_string)))
-        return ANSIString(raw_string, code_indexes=code_indexes,
-                          char_indexes=char_indexes,
-                          clean_string=clean_string)
+        code_indexes.extend(cls._shifter(second._code_indexes, len(first._raw_string)))
+        char_indexes.extend(cls._shifter(second._char_indexes, len(first._raw_string)))
+        return ANSIString(
+            raw_string,
+            code_indexes=code_indexes,
+            char_indexes=char_indexes,
+            clean_string=clean_string,
+        )
 
     def __add__(self, other):
         """
@@ -826,11 +847,11 @@ class ANSIString(str, metaclass=ANSIMeta):
         slice_indexes = self._char_indexes[slc]
         # If it's the end of the string, we need to append final color codes.
         if not slice_indexes:
-            return ANSIString('')
+            return ANSIString("")
         try:
             string = self[slc.start or 0]._raw_string
         except IndexError:
-            return ANSIString('')
+            return ANSIString("")
         last_mark = slice_indexes[0]
         # Check between the slice intervals for escape sequences.
         i = None
@@ -847,7 +868,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         if i is not None:
             append_tail = self._get_interleving(self._char_indexes.index(i) + 1)
         else:
-            append_tail = ''
+            append_tail = ""
         return ANSIString(string + append_tail, decoded=True)
 
     def __getitem__(self, item):
@@ -869,11 +890,11 @@ class ANSIString(str, metaclass=ANSIMeta):
         if self._char_indexes[-1] == self._char_indexes[item]:
             append_tail = self._get_interleving(item + 1)
         else:
-            append_tail = ''
+            append_tail = ""
         item = self._char_indexes[item]
 
         clean = self._raw_string[item]
-        result = ''
+        result = ""
         # Get the character they're after, and replay all escape sequences
         # previous to it.
         for index in range(0, item + 1):
@@ -921,7 +942,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                    separator.
 
         """
-        if hasattr(sep, '_clean_string'):
+        if hasattr(sep, "_clean_string"):
             sep = sep.clean()
         if reverse:
             parent_result = self._clean_string.rpartition(sep)
@@ -930,7 +951,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         current_index = 0
         result = tuple()
         for section in parent_result:
-            result += (self[current_index:current_index + len(section)],)
+            result += (self[current_index : current_index + len(section)],)
             current_index += len(section)
         return result
 
@@ -972,8 +993,8 @@ class ANSIString(str, metaclass=ANSIMeta):
         try:
             index = self._char_indexes[index - 1]
         except IndexError:
-            return ''
-        s = ''
+            return ""
+        s = ""
         while True:
             index += 1
             if index in self._char_indexes:
@@ -996,13 +1017,14 @@ class ANSIString(str, metaclass=ANSIMeta):
         code_indexes = self._code_indexes[:]
         char_indexes = self._char_indexes[:]
         for i in range(1, other + 1):
-            code_indexes.extend(
-                self._shifter(self._code_indexes, i * len(self._raw_string)))
-            char_indexes.extend(
-                self._shifter(self._char_indexes, i * len(self._raw_string)))
+            code_indexes.extend(self._shifter(self._code_indexes, i * len(self._raw_string)))
+            char_indexes.extend(self._shifter(self._char_indexes, i * len(self._raw_string)))
         return ANSIString(
-            raw_string, code_indexes=code_indexes, char_indexes=char_indexes,
-            clean_string=clean_string)
+            raw_string,
+            code_indexes=code_indexes,
+            char_indexes=char_indexes,
+            clean_string=clean_string,
+        )
 
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -1047,9 +1069,9 @@ class ANSIString(str, metaclass=ANSIMeta):
             # Get character codes after the index as well.
             res.append(self[start:next])
             start = next + bylen
-            maxsplit -= 1   # NB. if it's already < 0, it stays < 0
+            maxsplit -= 1  # NB. if it's already < 0, it stays < 0
 
-        res.append(self[start:len(self)])
+        res.append(self[start : len(self)])
         if drop_spaces:
             return [part for part in res if part != ""]
         return res
@@ -1092,9 +1114,9 @@ class ANSIString(str, metaclass=ANSIMeta):
             if next < 0:
                 break
             # Get character codes after the index as well.
-            res.append(self[next + bylen:end])
+            res.append(self[next + bylen : end])
             end = next
-            maxsplit -= 1   # NB. if it's already < 0, it stays < 0
+            maxsplit -= 1  # NB. if it's already < 0, it stays < 0
 
         res.append(self[:end])
         res.reverse()
@@ -1146,7 +1168,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                 ic -= 1
             ir2 -= 1
         rstripped = rstripped[::-1]
-        return ANSIString(lstripped + raw[ir1:ir2 + 1] + rstripped)
+        return ANSIString(lstripped + raw[ir1 : ir2 + 1] + rstripped)
 
     def lstrip(self, chars=None):
         """
@@ -1209,7 +1231,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                 ic -= 1
             ir2 -= 1
         rstripped = rstripped[::-1]
-        return ANSIString(raw[:ir2 + 1] + rstripped)
+        return ANSIString(raw[: ir2 + 1] + rstripped)
 
     def join(self, iterable):
         """
@@ -1231,7 +1253,7 @@ class ANSIString(str, metaclass=ANSIMeta):
                     ANSIString('up, right, left, down')
 
         """
-        result = ANSIString('')
+        result = ANSIString("")
         last_item = None
         for item in iterable:
             if last_item is not None:
@@ -1251,15 +1273,18 @@ class ANSIString(str, metaclass=ANSIMeta):
         if not isinstance(char, ANSIString):
             line = char * amount
             return ANSIString(
-                char * amount, code_indexes=[], char_indexes=list(range(0, len(line))),
-                clean_string=char)
+                char * amount,
+                code_indexes=[],
+                char_indexes=list(range(0, len(line))),
+                clean_string=char,
+            )
         try:
             start = char._code_indexes[0]
         except IndexError:
             start = None
         end = char._char_indexes[0]
         prefix = char._raw_string[start:end]
-        postfix = char._raw_string[end + 1:]
+        postfix = char._raw_string[end + 1 :]
         line = char._clean_string * amount
         code_indexes = [i for i in range(0, len(prefix))]
         length = len(prefix) + len(line)
@@ -1267,8 +1292,8 @@ class ANSIString(str, metaclass=ANSIMeta):
         char_indexes = self._shifter(list(range(0, len(line))), len(prefix))
         raw_string = prefix + line + postfix
         return ANSIString(
-            raw_string, clean_string=line, char_indexes=char_indexes,
-            code_indexes=code_indexes)
+            raw_string, clean_string=line, char_indexes=char_indexes, code_indexes=code_indexes
+        )
 
     # The following methods should not be called with the '_difference' argument explicitly. This is
     # data provided by the wrapper _spacing_preflight.

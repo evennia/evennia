@@ -117,7 +117,6 @@ WARNING_LOG = settings.LOCKWARNING_LOG_FILE
 _LOCK_HANDLER = None
 
 
-
 #
 # Exception class. This will be raised
 # by errors in lock definitions.
@@ -128,6 +127,7 @@ class LockException(Exception):
     """
     Raised during an error in a lock.
     """
+
     pass
 
 
@@ -147,6 +147,7 @@ def _cache_lockfuncs():
     for modulepath in settings.LOCK_FUNC_MODULES:
         _LOCKFUNCS.update(utils.callables_from_module(modulepath))
 
+
 #
 # pre-compiled regular expressions
 #
@@ -162,6 +163,7 @@ _RE_OK = re.compile(r"%s|and|or|not")
 # Lock handler
 #
 #
+
 
 class LockHandler(object):
     """
@@ -213,12 +215,12 @@ class LockHandler(object):
         duplicates = 0
         elist = []  # errors
         wlist = []  # warnings
-        for raw_lockstring in storage_lockstring.split(';'):
+        for raw_lockstring in storage_lockstring.split(";"):
             if not raw_lockstring:
                 continue
             lock_funcs = []
             try:
-                access_type, rhs = (part.strip() for part in raw_lockstring.split(':', 1))
+                access_type, rhs = (part.strip() for part in raw_lockstring.split(":", 1))
             except ValueError:
                 logger.log_trace()
                 return locks
@@ -226,19 +228,19 @@ class LockHandler(object):
             # parse the lock functions and separators
             funclist = _RE_FUNCS.findall(rhs)
             evalstring = rhs
-            for pattern in ('AND', 'OR', 'NOT'):
+            for pattern in ("AND", "OR", "NOT"):
                 evalstring = re.sub(r"\b%s\b" % pattern, pattern.lower(), evalstring)
             nfuncs = len(funclist)
             for funcstring in funclist:
-                funcname, rest = (part.strip().strip(')') for part in funcstring.split('(', 1))
+                funcname, rest = (part.strip().strip(")") for part in funcstring.split("(", 1))
                 func = _LOCKFUNCS.get(funcname, None)
                 if not callable(func):
                     elist.append(_("Lock: lock-function '%s' is not available.") % funcstring)
                     continue
-                args = list(arg.strip() for arg in rest.split(',') if arg and '=' not in arg)
-                kwargs = dict([arg.split('=', 1) for arg in rest.split(',') if arg and '=' in arg])
+                args = list(arg.strip() for arg in rest.split(",") if arg and "=" not in arg)
+                kwargs = dict([arg.split("=", 1) for arg in rest.split(",") if arg and "=" in arg])
                 lock_funcs.append((func, args, kwargs))
-                evalstring = evalstring.replace(funcstring, '%s')
+                evalstring = evalstring.replace(funcstring, "%s")
             if len(lock_funcs) < nfuncs:
                 continue
             try:
@@ -250,8 +252,17 @@ class LockHandler(object):
                 continue
             if access_type in locks:
                 duplicates += 1
-                wlist.append(_("LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' " %
-                               {"obj": self.obj, "access_type": access_type, "source": locks[access_type][2], "goal": raw_lockstring}))
+                wlist.append(
+                    _(
+                        "LockHandler on %(obj)s: access type '%(access_type)s' changed from '%(source)s' to '%(goal)s' "
+                        % {
+                            "obj": self.obj,
+                            "access_type": access_type,
+                            "source": locks[access_type][2],
+                            "goal": raw_lockstring,
+                        }
+                    )
+                )
             locks[access_type] = (evalstring, tuple(lock_funcs), raw_lockstring)
         if wlist and WARNING_LOG:
             # a warning text was set, it's not an error, so only report
@@ -316,23 +327,24 @@ class LockHandler(object):
         err = ""
         # sanity checks
         for lockdef in lockdefs:
-            if ':' not in lockdef:
+            if ":" not in lockdef:
                 err = _("Lock: '{lockdef}' contains no colon (:).").format(lockdef=lockdef)
                 if validate_only:
                     return False, err
                 else:
                     self._log_error(err)
                     return False
-            access_type, rhs = [part.strip() for part in lockdef.split(':', 1)]
+            access_type, rhs = [part.strip() for part in lockdef.split(":", 1)]
             if not access_type:
-                err = _("Lock: '{lockdef}' has no access_type "
-                        "(left-side of colon is empty).").format(lockdef=lockdef)
+                err = _(
+                    "Lock: '{lockdef}' has no access_type " "(left-side of colon is empty)."
+                ).format(lockdef=lockdef)
                 if validate_only:
                     return False, err
                 else:
                     self._log_error(err)
                     return False
-            if rhs.count('(') != rhs.count(')'):
+            if rhs.count("(") != rhs.count(")"):
                 err = _("Lock: '{lockdef}' has mismatched parentheses.").format(lockdef=lockdef)
                 if validate_only:
                     return False, err
@@ -419,7 +431,7 @@ class LockHandler(object):
             lockstrings (list): All separate lockstrings
 
         """
-        return str(self).split(';')
+        return str(self).split(";")
 
     def remove(self, access_type):
         """
@@ -438,6 +450,7 @@ class LockHandler(object):
             self._save_locks()
             return True
         return False
+
     delete = remove  # alias for historical reasons
 
     def clear(self):
@@ -458,7 +471,7 @@ class LockHandler(object):
         self._cache_locks(self.obj.lock_storage)
         self.cache_lock_bypass(self.obj)
 
-    def append(self, access_type, lockstring, op='or'):
+    def append(self, access_type, lockstring, op="or"):
         """
         Append a lock definition to access_type if it doesn't already exist.
 
@@ -477,7 +490,8 @@ class LockHandler(object):
         old_lockstring = self.get(access_type)
         if not lockstring.strip().lower() in old_lockstring.lower():
             lockstring = "{old} {op} {new}".format(
-                old=old_lockstring, op=op, new=lockstring.strip())
+                old=old_lockstring, op=op, new=lockstring.strip()
+            )
             self.add(lockstring)
 
     def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
@@ -519,12 +533,19 @@ class LockHandler(object):
         except AttributeError:
             # happens before session is initiated.
             if not no_superuser_bypass and (
-                (hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
-                (hasattr(accessing_obj, 'account') and
-                    hasattr(accessing_obj.account, 'is_superuser') and
-                    accessing_obj.account.is_superuser) or
-                (hasattr(accessing_obj, 'get_account') and
-                    (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
+                (hasattr(accessing_obj, "is_superuser") and accessing_obj.is_superuser)
+                or (
+                    hasattr(accessing_obj, "account")
+                    and hasattr(accessing_obj.account, "is_superuser")
+                    and accessing_obj.account.is_superuser
+                )
+                or (
+                    hasattr(accessing_obj, "get_account")
+                    and (
+                        not accessing_obj.get_account() or accessing_obj.get_account().is_superuser
+                    )
+                )
+            ):
                 return True
 
         # no superuser or bypass -> normal lock operation
@@ -532,8 +553,9 @@ class LockHandler(object):
             # we have a lock, test it.
             evalstring, func_tup, raw_string = self.locks[access_type]
             # execute all lock funcs in the correct order, producing a tuple of True/False results.
-            true_false = tuple(bool(
-                tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup)
+            true_false = tuple(
+                bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup
+            )
             # the True/False tuple goes into evalstring, which combines them
             # with AND/OR/NOT in order to get the final result.
             return eval(evalstring % true_false)
@@ -551,12 +573,12 @@ class LockHandler(object):
 
         """
         evalstring, func_tup, raw_string = locks[access_type]
-        true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])
-                           for tup in func_tup)
+        true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup)
         return eval(evalstring % true_false)
 
-    def check_lockstring(self, accessing_obj, lockstring, no_superuser_bypass=False,
-                         default=False, access_type=None):
+    def check_lockstring(
+        self, accessing_obj, lockstring, no_superuser_bypass=False, default=False, access_type=None
+    ):
         """
         Do a direct check against a lockstring ('atype:func()..'),
         without any intermediary storage on the accessed object.
@@ -585,12 +607,19 @@ class LockHandler(object):
                 return True
         except AttributeError:
             if no_superuser_bypass and (
-                (hasattr(accessing_obj, 'is_superuser') and accessing_obj.is_superuser) or
-                (hasattr(accessing_obj, 'account') and
-                    hasattr(accessing_obj.account, 'is_superuser') and
-                    accessing_obj.account.is_superuser) or
-                (hasattr(accessing_obj, 'get_account') and
-                    (not accessing_obj.get_account() or accessing_obj.get_account().is_superuser))):
+                (hasattr(accessing_obj, "is_superuser") and accessing_obj.is_superuser)
+                or (
+                    hasattr(accessing_obj, "account")
+                    and hasattr(accessing_obj.account, "is_superuser")
+                    and accessing_obj.account.is_superuser
+                )
+                or (
+                    hasattr(accessing_obj, "get_account")
+                    and (
+                        not accessing_obj.get_account() or accessing_obj.get_account().is_superuser
+                    )
+                )
+            ):
                 return True
         if ":" not in lockstring:
             lockstring = "%s:%s" % ("_dummy", lockstring)
@@ -601,25 +630,27 @@ class LockHandler(object):
             if access_type not in locks:
                 return default
             else:
-                return self._eval_access_type(
-                    accessing_obj, locks, access_type)
+                return self._eval_access_type(accessing_obj, locks, access_type)
         else:
             # if no access types was given and multiple locks were
             # embedded in the lockstring we assume all must be true
-            return all(self._eval_access_type(
-                accessing_obj, locks, access_type) for access_type in locks)
+            return all(
+                self._eval_access_type(accessing_obj, locks, access_type) for access_type in locks
+            )
 
 
 # convenience access function
 
 # dummy to be able to call check_lockstring from the outside
 
+
 class _ObjDummy:
-    lock_storage = ''
+    lock_storage = ""
 
 
-def check_lockstring(accessing_obj, lockstring, no_superuser_bypass=False,
-                     default=False, access_type=None):
+def check_lockstring(
+    accessing_obj, lockstring, no_superuser_bypass=False, default=False, access_type=None
+):
     """
     Do a direct check against a lockstring ('atype:func()..'),
     without any intermediary storage on the accessed object.
@@ -647,8 +678,12 @@ def check_lockstring(accessing_obj, lockstring, no_superuser_bypass=False,
     if not _LOCK_HANDLER:
         _LOCK_HANDLER = LockHandler(_ObjDummy())
     return _LOCK_HANDLER.check_lockstring(
-        accessing_obj, lockstring, no_superuser_bypass=no_superuser_bypass,
-        default=default, access_type=access_type)
+        accessing_obj,
+        lockstring,
+        no_superuser_bypass=no_superuser_bypass,
+        default=default,
+        access_type=access_type,
+    )
 
 
 def validate_lockstring(lockstring):
@@ -690,11 +725,12 @@ def _test():
         pass
 
     import pdb
+
     obj1 = TestObj()
     obj2 = TestObj()
 
     # obj1.lock_storage = "owner:dbref(#4);edit:dbref(#5) or perm(Admin);examine:perm(Builder);delete:perm(Admin);get:all()"
-    #obj1.lock_storage = "cmd:all();admin:id(1);listen:all();send:all()"
+    # obj1.lock_storage = "cmd:all();admin:id(1);listen:all();send:all()"
     obj1.lock_storage = "listen:perm(Developer)"
 
     pdb.set_trace()
@@ -705,9 +741,9 @@ def _test():
     # obj1.locks.add("edit:attr(test)")
 
     print("comparing obj2.permissions (%s) vs obj1.locks (%s)" % (obj2.permissions, obj1.locks))
-    print(obj1.locks.check(obj2, 'owner'))
-    print(obj1.locks.check(obj2, 'edit'))
-    print(obj1.locks.check(obj2, 'examine'))
-    print(obj1.locks.check(obj2, 'delete'))
-    print(obj1.locks.check(obj2, 'get'))
-    print(obj1.locks.check(obj2, 'listen'))
+    print(obj1.locks.check(obj2, "owner"))
+    print(obj1.locks.check(obj2, "edit"))
+    print(obj1.locks.check(obj2, "examine"))
+    print(obj1.locks.check(obj2, "delete"))
+    print(obj1.locks.check(obj2, "get"))
+    print(obj1.locks.check(obj2, "listen"))

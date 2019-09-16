@@ -12,12 +12,13 @@ from evennia import create_object, search_object
 from evennia.utils import justify, inherits_from
 
 _BASE_TYPECLASS_PATH = "evscaperoom.objects."
-_RE_PERSPECTIVE = re.compile(r"~(\w+)", re.I+re.U+re.M)
-_RE_THING = re.compile(r"\*(\w+)", re.I+re.U+re.M)
+_RE_PERSPECTIVE = re.compile(r"~(\w+)", re.I + re.U + re.M)
+_RE_THING = re.compile(r"\*(\w+)", re.I + re.U + re.M)
 
 
-def create_evscaperoom_object(typeclass=None, key="testobj", location=None,
-                              delete_duplicates=True, **kwargs):
+def create_evscaperoom_object(
+    typeclass=None, key="testobj", location=None, delete_duplicates=True, **kwargs
+):
     """
     This is a convenience-wrapper for quickly building EvscapeRoom objects. This
     is called from the helper-method create_object on states, but is also useful
@@ -38,25 +39,29 @@ def create_evscaperoom_object(typeclass=None, key="testobj", location=None,
 
 
     """
-    if not (callable(typeclass) or
-            typeclass.startswith("evennia") or
-            typeclass.startswith("typeclasses") or
-            typeclass.startswith("evscaperoom")):
+    if not (
+        callable(typeclass)
+        or typeclass.startswith("evennia")
+        or typeclass.startswith("typeclasses")
+        or typeclass.startswith("evscaperoom")
+    ):
         # unless we specify a full typeclass path or the class itself,
         # auto-complete it
         typeclass = _BASE_TYPECLASS_PATH + typeclass
 
     if delete_duplicates:
-        old_objs = [obj for obj in search_object(key)
-                    if not inherits_from(obj, "evennia.objects.objects.DefaultCharacter")]
+        old_objs = [
+            obj
+            for obj in search_object(key)
+            if not inherits_from(obj, "evennia.objects.objects.DefaultCharacter")
+        ]
         if location:
             # delete only matching objects in the given location
             [obj.delete() for obj in old_objs if obj.location == location]
         else:
             [obj.delete() for obj in old_objs]
 
-    new_obj = create_object(typeclass=typeclass, key=key,
-                            location=location, **kwargs)
+    new_obj = create_object(typeclass=typeclass, key=key, location=location, **kwargs)
     return new_obj
 
 
@@ -74,9 +79,11 @@ def create_fantasy_word(length=5, capitalize=True):
     if not length:
         return ""
 
-    phonemes = ("ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua "
-                "uh uw a e i u y p b t d f v t dh "
-                "s z sh zh ch jh k ng g m n l r w").split()
+    phonemes = (
+        "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua "
+        "uh uw a e i u y p b t d f v t dh "
+        "s z sh zh ch jh k ng g m n l r w"
+    ).split()
     word = [choice(phonemes)]
     while len(word) < length:
         word.append(choice(phonemes))
@@ -113,6 +120,7 @@ def parse_for_perspectives(string, you=None):
         "~You ~open"
         ->  "You open", "Bob opens"
     """
+
     def _replace_third_person(match):
         match = match.group(1)
         lmatch = match.lower()
@@ -122,7 +130,7 @@ def parse_for_perspectives(string, you=None):
             if match[0].isupper():
                 return irregulars[lmatch].capitalize()
             return irregulars[lmatch]
-        elif lmatch[-1] == 's':
+        elif lmatch[-1] == "s":
             return match + "es"
         else:
             return match + "s"  # simple, most normal form
@@ -181,7 +189,7 @@ def msg_cinematic(text, borders=True):
 
     """
     text = text.strip()
-    text = justify(text, align='c', indent=1)
+    text = justify(text, align="c", indent=1)
     if borders:
         text = add_msg_borders(text)
     return text

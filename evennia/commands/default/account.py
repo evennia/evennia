@@ -32,9 +32,21 @@ _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 # limit symbol import for API
-__all__ = ("CmdOOCLook", "CmdIC", "CmdOOC", "CmdPassword", "CmdQuit",
-           "CmdCharCreate", "CmdOption", "CmdSessions", "CmdWho",
-           "CmdColorTest", "CmdQuell", "CmdCharDelete", "CmdStyle")
+__all__ = (
+    "CmdOOCLook",
+    "CmdIC",
+    "CmdOOC",
+    "CmdPassword",
+    "CmdQuit",
+    "CmdCharCreate",
+    "CmdOption",
+    "CmdSessions",
+    "CmdWho",
+    "CmdColorTest",
+    "CmdQuell",
+    "CmdCharDelete",
+    "CmdStyle",
+)
 
 
 class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
@@ -62,8 +74,9 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
                 self.account.db._playable_characters = playable
         # store playable property
         if self.args:
-            self.playable = dict((utils.to_str(char.key.lower()), char)
-                                 for char in playable).get(self.args.lower(), None)
+            self.playable = dict((utils.to_str(char.key.lower()), char) for char in playable).get(
+                self.args.lower(), None
+            )
         else:
             self.playable = playable
 
@@ -121,6 +134,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
     always be able to access your character using lower-case letters
     if you want.
     """
+
     key = "charcreate"
     locks = "cmd:pperm(Player)"
     help_category = "General"
@@ -139,12 +153,13 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
 
         charmax = _MAX_NR_CHARACTERS
 
-        if not account.is_superuser and \
-                (account.db._playable_characters and
-                 len(account.db._playable_characters) >= charmax):
+        if not account.is_superuser and (
+            account.db._playable_characters and len(account.db._playable_characters) >= charmax
+        ):
             self.msg("You may only create a maximum of %i characters." % charmax)
             return
         from evennia.objects.models import ObjectDB
+
         typeclass = settings.BASE_CHARACTER_TYPECLASS
 
         if ObjectDB.objects.filter(db_typeclass_path=typeclass, db_key__iexact=key):
@@ -158,21 +173,27 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
         permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-        new_character = create.create_object(typeclass, key=key,
-                                             location=start_location,
-                                             home=default_home,
-                                             permissions=permissions)
+        new_character = create.create_object(
+            typeclass, key=key, location=start_location, home=default_home, permissions=permissions
+        )
         # only allow creator (and developers) to puppet this char
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or perm(Admin)" %
-                                (new_character.id, account.id, account.id))
+        new_character.locks.add(
+            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or perm(Admin)"
+            % (new_character.id, account.id, account.id)
+        )
         account.db._playable_characters.append(new_character)
         if desc:
             new_character.db.desc = desc
         elif not new_character.db.desc:
             new_character.db.desc = "This is a character."
-        self.msg("Created new character %s. Use |wic %s|n to enter the game as this character."
-                 % (new_character.key, new_character.key))
-        logger.log_sec('Character Created: %s (Caller: %s, IP: %s).' % (new_character, account, self.session.address))
+        self.msg(
+            "Created new character %s. Use |wic %s|n to enter the game as this character."
+            % (new_character.key, new_character.key)
+        )
+        logger.log_sec(
+            "Character Created: %s (Caller: %s, IP: %s)."
+            % (new_character, account, self.session.address)
+        )
 
 
 class CmdCharDelete(COMMAND_DEFAULT_CLASS):
@@ -184,6 +205,7 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
 
     Permanently deletes one of your characters.
     """
+
     key = "chardelete"
     locks = "cmd:pperm(Player)"
     help_category = "General"
@@ -197,13 +219,18 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
             return
 
         # use the playable_characters list to search
-        match = [char for char in utils.make_iter(account.db._playable_characters)
-                 if char.key.lower() == self.args.lower()]
+        match = [
+            char
+            for char in utils.make_iter(account.db._playable_characters)
+            if char.key.lower() == self.args.lower()
+        ]
         if not match:
             self.msg("You have no such character to delete.")
             return
         elif len(match) > 1:
-            self.msg("Aborting - there are two characters with the same name. Ask an admin to delete the right one.")
+            self.msg(
+                "Aborting - there are two characters with the same name. Ask an admin to delete the right one."
+            )
             return
         else:  # one match
             from evennia.utils.evmenu import get_input
@@ -213,10 +240,15 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                     # only take action
                     delobj = caller.ndb._char_to_delete
                     key = delobj.key
-                    caller.db._playable_characters = [pc for pc in caller.db._playable_characters if pc != delobj]
+                    caller.db._playable_characters = [
+                        pc for pc in caller.db._playable_characters if pc != delobj
+                    ]
                     delobj.delete()
                     self.msg("Character '%s' was permanently deleted." % key)
-                    logger.log_sec('Character Deleted: %s (Caller: %s, IP: %s).' % (key, account, self.session.address))
+                    logger.log_sec(
+                        "Character Deleted: %s (Caller: %s, IP: %s)."
+                        % (key, account, self.session.address)
+                    )
                 else:
                     self.msg("Deletion was aborted.")
                 del caller.ndb._char_to_delete
@@ -225,11 +257,13 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
             account.ndb._char_to_delete = match
 
             # Return if caller has no permission to delete this
-            if not match.access(account, 'delete'):
+            if not match.access(account, "delete"):
                 self.msg("You do not have permission to delete this character.")
                 return
 
-            prompt = "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
+            prompt = (
+                "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
+            )
             get_input(account, prompt % match.key, _callback)
 
 
@@ -275,23 +309,33 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
                 return
         if not new_character:
             # search for a matching character
-            new_character = [char for char in search.object_search(self.args) if char.access(account, "puppet")]
+            new_character = [
+                char for char in search.object_search(self.args) if char.access(account, "puppet")
+            ]
             if not new_character:
                 self.msg("That is not a valid character choice.")
                 return
             if len(new_character) > 1:
-                self.msg("Multiple targets with the same name:\n %s"
-                         % ", ".join("%s(#%s)" % (obj.key, obj.id) for obj in new_character))
+                self.msg(
+                    "Multiple targets with the same name:\n %s"
+                    % ", ".join("%s(#%s)" % (obj.key, obj.id) for obj in new_character)
+                )
                 return
             else:
                 new_character = new_character[0]
         try:
             account.puppet_object(session, new_character)
             account.db._last_puppet = new_character
-            logger.log_sec('Puppet Success: (Caller: %s, Target: %s, IP: %s).' % (account, new_character, self.session.address))
+            logger.log_sec(
+                "Puppet Success: (Caller: %s, Target: %s, IP: %s)."
+                % (account, new_character, self.session.address)
+            )
         except RuntimeError as exc:
             self.msg("|rYou cannot become |C%s|n: %s" % (new_character.name, exc))
-            logger.log_sec('Puppet Failed: %s (Caller: %s, Target: %s, IP: %s).' % (exc, account, new_character, self.session.address))
+            logger.log_sec(
+                "Puppet Failed: %s (Caller: %s, Target: %s, IP: %s)."
+                % (exc, account, new_character, self.session.address)
+            )
 
 
 # note that this is inheriting from MuxAccountLookCommand,
@@ -356,6 +400,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
     Lists the sessions currently connected to your account.
 
     """
+
     key = "sessions"
     locks = "cmd:all()"
     help_category = "General"
@@ -367,17 +412,18 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
         """Implement function"""
         account = self.account
         sessions = account.sessions.all()
-        table = self.styled_table("|wsessid",
-                                 "|wprotocol",
-                                 "|whost",
-                                 "|wpuppet/character",
-                                 "|wlocation")
+        table = self.styled_table(
+            "|wsessid", "|wprotocol", "|whost", "|wpuppet/character", "|wlocation"
+        )
         for sess in sorted(sessions, key=lambda x: x.sessid):
             char = account.get_puppet(sess)
-            table.add_row(str(sess.sessid), str(sess.protocol_key),
-                          isinstance(sess.address, tuple) and sess.address[0] or sess.address,
-                          char and str(char) or "None",
-                          char and str(char.location) or "N/A")
+            table.add_row(
+                str(sess.sessid),
+                str(sess.protocol_key),
+                isinstance(sess.address, tuple) and sess.address[0] or sess.address,
+                char and str(char) or "None",
+                char and str(char.location) or "N/A",
+            )
             self.msg("|wYour current session(s):|n\n%s" % table)
 
 
@@ -413,19 +459,23 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         if self.cmdstring == "doing":
             show_session_data = False
         else:
-            show_session_data = account.check_permstring("Developer") or account.check_permstring("Admins")
+            show_session_data = account.check_permstring("Developer") or account.check_permstring(
+                "Admins"
+            )
 
         naccounts = SESSIONS.account_count()
         if show_session_data:
             # privileged info
-            table = self.styled_table("|wAccount Name",
-                                    "|wOn for",
-                                    "|wIdle",
-                                    "|wPuppeting",
-                                    "|wRoom",
-                                    "|wCmds",
-                                    "|wProtocol",
-                                    "|wHost")
+            table = self.styled_table(
+                "|wAccount Name",
+                "|wOn for",
+                "|wIdle",
+                "|wPuppeting",
+                "|wRoom",
+                "|wCmds",
+                "|wProtocol",
+                "|wHost",
+            )
             for session in session_list:
                 if not session.logged_in:
                     continue
@@ -434,14 +484,16 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                 account = session.get_account()
                 puppet = session.get_puppet()
                 location = puppet.location.key if puppet and puppet.location else "None"
-                table.add_row(utils.crop(account.get_display_name(account), width=25),
-                              utils.time_format(delta_conn, 0),
-                              utils.time_format(delta_cmd, 1),
-                              utils.crop(puppet.get_display_name(account) if puppet else "None", width=25),
-                              utils.crop(location, width=25),
-                              session.cmd_total,
-                              session.protocol_key,
-                              isinstance(session.address, tuple) and session.address[0] or session.address)
+                table.add_row(
+                    utils.crop(account.get_display_name(account), width=25),
+                    utils.time_format(delta_conn, 0),
+                    utils.time_format(delta_cmd, 1),
+                    utils.crop(puppet.get_display_name(account) if puppet else "None", width=25),
+                    utils.crop(location, width=25),
+                    session.cmd_total,
+                    session.protocol_key,
+                    isinstance(session.address, tuple) and session.address[0] or session.address,
+                )
         else:
             # unprivileged
             table = self.styled_table("|wAccount name", "|wOn for", "|wIdle")
@@ -451,12 +503,16 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                 delta_cmd = time.time() - session.cmd_last_visible
                 delta_conn = time.time() - session.conn_time
                 account = session.get_account()
-                table.add_row(utils.crop(account.get_display_name(account), width=25),
-                              utils.time_format(delta_conn, 0),
-                              utils.time_format(delta_cmd, 1))
+                table.add_row(
+                    utils.crop(account.get_display_name(account), width=25),
+                    utils.time_format(delta_conn, 0),
+                    utils.time_format(delta_cmd, 1),
+                )
         is_one = naccounts == 1
-        self.msg("|wAccounts:|n\n%s\n%s unique account%s logged in."
-                 % (table, "One" if is_one else naccounts, "" if is_one else "s"))
+        self.msg(
+            "|wAccounts:|n\n%s\n%s unique account%s logged in."
+            % (table, "One" if is_one else naccounts, "" if is_one else "s")
+        )
 
 
 class CmdOption(COMMAND_DEFAULT_CLASS):
@@ -476,6 +532,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
 
 
     """
+
     key = "option"
     aliases = "options"
     switch_options = ("save", "clear")
@@ -513,14 +570,18 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 if len(options["SCREENWIDTH"]) == 1:
                     options["SCREENWIDTH"] = options["SCREENWIDTH"][0]
                 else:
-                    options["SCREENWIDTH"] = "  \n".join("%s : %s" % (screenid, size)
-                                                         for screenid, size in options["SCREENWIDTH"].items())
+                    options["SCREENWIDTH"] = "  \n".join(
+                        "%s : %s" % (screenid, size)
+                        for screenid, size in options["SCREENWIDTH"].items()
+                    )
             if "SCREENHEIGHT" in options:
                 if len(options["SCREENHEIGHT"]) == 1:
                     options["SCREENHEIGHT"] = options["SCREENHEIGHT"][0]
                 else:
-                    options["SCREENHEIGHT"] = "  \n".join("%s : %s" % (screenid, size)
-                                                          for screenid, size in options["SCREENHEIGHT"].items())
+                    options["SCREENHEIGHT"] = "  \n".join(
+                        "%s : %s" % (screenid, size)
+                        for screenid, size in options["SCREENHEIGHT"].items()
+                    )
             options.pop("TTYPE", None)
 
             header = ("Name", "Value", "Saved") if saved_options else ("Name", "Value")
@@ -529,7 +590,9 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 row = [key, options[key]]
                 if saved_options:
                     saved = " |YYes|n" if key in saved_options else ""
-                    changed = "|y*|n" if key in saved_options and flags[key] != saved_options[key] else ""
+                    changed = (
+                        "|y*|n" if key in saved_options and flags[key] != saved_options[key] else ""
+                    )
                     row.append("%s%s" % (saved, changed))
                 table.add_row(*row)
             self.msg("|wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
@@ -565,30 +628,35 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     self.msg("Option |w%s|n was kept as '|w%s|n'." % (new_name, old_val))
                 else:
                     flags[new_name] = new_val
-                    self.msg("Option |w%s|n was changed from '|w%s|n' to '|w%s|n'." % (new_name, old_val, new_val))
+                    self.msg(
+                        "Option |w%s|n was changed from '|w%s|n' to '|w%s|n'."
+                        % (new_name, old_val, new_val)
+                    )
                 return {new_name: new_val}
             except Exception as err:
                 self.msg("|rCould not set option |w%s|r:|n %s" % (new_name, err))
                 return False
 
-        validators = {"ANSI": validate_bool,
-                      "CLIENTNAME": utils.to_str,
-                      "ENCODING": validate_encoding,
-                      "MCCP": validate_bool,
-                      "NOGOAHEAD": validate_bool,
-                      "MXP": validate_bool,
-                      "NOCOLOR": validate_bool,
-                      "NOPKEEPALIVE": validate_bool,
-                      "OOB": validate_bool,
-                      "RAW": validate_bool,
-                      "SCREENHEIGHT": validate_size,
-                      "SCREENWIDTH": validate_size,
-                      "SCREENREADER": validate_bool,
-                      "TERM": utils.to_str,
-                      "UTF-8": validate_bool,
-                      "XTERM256": validate_bool,
-                      "INPUTDEBUG": validate_bool,
-                      "FORCEDENDLINE": validate_bool}
+        validators = {
+            "ANSI": validate_bool,
+            "CLIENTNAME": utils.to_str,
+            "ENCODING": validate_encoding,
+            "MCCP": validate_bool,
+            "NOGOAHEAD": validate_bool,
+            "MXP": validate_bool,
+            "NOCOLOR": validate_bool,
+            "NOPKEEPALIVE": validate_bool,
+            "OOB": validate_bool,
+            "RAW": validate_bool,
+            "SCREENHEIGHT": validate_size,
+            "SCREENWIDTH": validate_size,
+            "SCREENREADER": validate_bool,
+            "TERM": utils.to_str,
+            "UTF-8": validate_bool,
+            "XTERM256": validate_bool,
+            "INPUTDEBUG": validate_bool,
+            "FORCEDENDLINE": validate_bool,
+        }
 
         name = self.lhs.upper()
         val = self.rhs.strip()
@@ -623,6 +691,7 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
 
     Changes your password. Make sure to pick a safe one.
     """
+
     key = "password"
     locks = "cmd:pperm(Player)"
 
@@ -652,7 +721,10 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
             account.set_password(newpass)
             account.save()
             self.msg("Password changed.")
-            logger.log_sec('Password Changed: %s (Caller: %s, IP: %s).' % (account, account, self.session.address))
+            logger.log_sec(
+                "Password Changed: %s (Caller: %s, IP: %s)."
+                % (account, account, self.session.address)
+            )
 
 
 class CmdQuit(COMMAND_DEFAULT_CLASS):
@@ -668,6 +740,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
     Gracefully disconnect your current session from the
     game. Use the /all switch to disconnect from all sessions.
     """
+
     key = "quit"
     switch_options = ("all",)
     locks = "cmd:all()"
@@ -679,8 +752,10 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
         """hook function"""
         account = self.account
 
-        if 'all' in self.switches:
-            account.msg("|RQuitting|n all sessions. Hope to see you soon again.", session=self.session)
+        if "all" in self.switches:
+            account.msg(
+                "|RQuitting|n all sessions. Hope to see you soon again.", session=self.session
+            )
             reason = "quit/all"
             for session in account.sessions.all():
                 account.disconnect_session_from_account(session, reason)
@@ -690,7 +765,10 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
             if nsess == 2:
                 account.msg("|RQuitting|n. One session is still connected.", session=self.session)
             elif nsess > 2:
-                account.msg("|RQuitting|n. %i sessions are still connected." % (nsess - 1), session=self.session)
+                account.msg(
+                    "|RQuitting|n. %i sessions are still connected." % (nsess - 1),
+                    session=self.session,
+                )
             else:
                 # we are quitting the last available session
                 account.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
@@ -710,6 +788,7 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     standard. No checking is done to determine your client supports
     color - if not you will see rubbish appear.
     """
+
     key = "color"
     locks = "cmd:all()"
     help_category = "General"
@@ -721,7 +800,7 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     # relevant color tags to display. Replace if using another schema.
     # This command can only show one set of markup.
     slice_bright_fg = slice(7, 15)  # from ANSI_PARSER.ansi_map
-    slice_dark_fg = slice(15, 23)   # from ANSI_PARSER.ansi_map
+    slice_dark_fg = slice(15, 23)  # from ANSI_PARSER.ansi_map
     slice_dark_bg = slice(-8, None)  # from ANSI_PARSER.ansi_map
     slice_bright_bg = slice(None, None)  # from ANSI_PARSER.ansi_xterm256_bright_bg_map
 
@@ -737,8 +816,12 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
         max_widths = [max([len(str(val)) for val in col]) for col in table]
         ftable = []
         for irow in range(len(table[0])):
-            ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " *
-                           extra_space for icol, col in enumerate(table)])
+            ftable.append(
+                [
+                    str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
+                    for icol, col in enumerate(table)
+                ]
+            )
         return ftable
 
     def func(self):
@@ -747,26 +830,37 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
         if self.args.startswith("a"):
             # show ansi 16-color table
             from evennia.utils import ansi
+
             ap = ansi.ANSI_PARSER
             # ansi colors
             # show all ansi color-related codes
-            bright_fg = ["%s%s|n" % (code, code.replace("|", "||"))
-                         for code, _ in ap.ansi_map[self.slice_bright_fg]]
-            dark_fg = ["%s%s|n" % (code, code.replace("|", "||"))
-                       for code, _ in ap.ansi_map[self.slice_dark_fg]]
-            dark_bg = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
-                       for code, _ in ap.ansi_map[self.slice_dark_bg]]
-            bright_bg = ["%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
-                         for code, _ in ap.ansi_xterm256_bright_bg_map[self.slice_bright_bg]]
+            bright_fg = [
+                "%s%s|n" % (code, code.replace("|", "||"))
+                for code, _ in ap.ansi_map[self.slice_bright_fg]
+            ]
+            dark_fg = [
+                "%s%s|n" % (code, code.replace("|", "||"))
+                for code, _ in ap.ansi_map[self.slice_dark_fg]
+            ]
+            dark_bg = [
+                "%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                for code, _ in ap.ansi_map[self.slice_dark_bg]
+            ]
+            bright_bg = [
+                "%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                for code, _ in ap.ansi_xterm256_bright_bg_map[self.slice_bright_bg]
+            ]
             dark_fg.extend(["" for _ in range(len(bright_fg) - len(dark_fg))])
             table = utils.format_table([bright_fg, dark_fg, bright_bg, dark_bg])
             string = "ANSI colors:"
             for row in table:
                 string += "\n " + " ".join(row)
             self.msg(string)
-            self.msg("||X : black. ||/ : return, ||- : tab, ||_ : space, ||* : invert, ||u : underline\n"
-                     "To combine background and foreground, add background marker last, e.g. ||r||[B.\n"
-                     "Note: bright backgrounds like ||[r requires your client handling Xterm256 colors.")
+            self.msg(
+                "||X : black. ||/ : return, ||- : tab, ||_ : space, ||* : invert, ||u : underline\n"
+                "To combine background and foreground, add background marker last, e.g. ||r||[B.\n"
+                "Note: bright backgrounds like ||[r requires your client handling Xterm256 colors."
+            )
 
         elif self.args.startswith("x"):
             # show xterm256 table
@@ -777,8 +871,10 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                         # foreground table
                         table[ir].append("|%i%i%i%s|n" % (ir, ig, ib, "||%i%i%i" % (ir, ig, ib)))
                         # background table
-                        table[6 + ir].append("|%i%i%i|[%i%i%i%s|n"
-                                             % (5 - ir, 5 - ig, 5 - ib, ir, ig, ib, "||[%i%i%i" % (ir, ig, ib)))
+                        table[6 + ir].append(
+                            "|%i%i%i|[%i%i%i%s|n"
+                            % (5 - ir, 5 - ig, 5 - ib, ir, ig, ib, "||[%i%i%i" % (ir, ig, ib))
+                        )
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
             string += "\n" + "\n".join("".join(row) for row in table)
@@ -847,24 +943,30 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Perform the command"""
         account = self.account
-        permstr = account.is_superuser and " (superuser)" or "(%s)" % (", ".join(account.permissions.all()))
-        if self.cmdstring in ('unquell', 'unquell'):
-            if not account.attributes.get('_quell'):
+        permstr = (
+            account.is_superuser
+            and " (superuser)"
+            or "(%s)" % (", ".join(account.permissions.all()))
+        )
+        if self.cmdstring in ("unquell", "unquell"):
+            if not account.attributes.get("_quell"):
                 self.msg("Already using normal Account permissions %s." % permstr)
             else:
-                account.attributes.remove('_quell')
+                account.attributes.remove("_quell")
                 self.msg("Account permissions %s restored." % permstr)
         else:
-            if account.attributes.get('_quell'):
+            if account.attributes.get("_quell"):
                 self.msg("Already quelling Account %s permissions." % permstr)
                 return
-            account.attributes.add('_quell', True)
+            account.attributes.add("_quell", True)
             puppet = self.session.puppet
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
                 cpermstr = "Quelling to current puppet's permissions %s." % cpermstr
-                cpermstr += "\n(Note: If this is higher than Account permissions %s," \
-                            " the lowest of the two will be used.)" % permstr
+                cpermstr += (
+                    "\n(Note: If this is higher than Account permissions %s,"
+                    " the lowest of the two will be used.)" % permstr
+                )
                 cpermstr += "\nUse unquell to return to normal permission usage."
                 self.msg(cpermstr)
             else:
@@ -886,7 +988,7 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
     """
 
     key = "style"
-    switch_options = ['clear']
+    switch_options = ["clear"]
 
     def func(self):
         if not self.args:
@@ -895,11 +997,12 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         self.set()
 
     def list_styles(self):
-        table = self.styled_table('Option', 'Description', 'Type', 'Value', width=78)
+        table = self.styled_table("Option", "Description", "Type", "Value", width=78)
         for op_key in self.account.options.options_dict.keys():
             op_found = self.account.options.get(op_key, return_obj=True)
-            table.add_row(op_key, op_found.description,
-                          op_found.__class__.__name__, op_found.display())
+            table.add_row(
+                op_key, op_found.description, op_found.__class__.__name__, op_found.display()
+            )
         self.msg(str(table))
 
     def set(self):
@@ -908,4 +1011,4 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         except ValueError as e:
             self.msg(str(e))
             return
-        self.msg('Style %s set to %s' % (self.lhs, result))
+        self.msg("Style %s set to %s" % (self.lhs, result))

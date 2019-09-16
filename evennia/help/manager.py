@@ -4,6 +4,7 @@ Custom manager for HelpEntry objects.
 from django.db import models
 from evennia.utils import logger, utils
 from evennia.typeclasses.managers import TypedObjectManager
+
 __all__ = ("HelpEntryManager",)
 
 
@@ -144,7 +145,6 @@ class HelpEntryManager(TypedObjectManager):
         """
         ostring = ostring.strip().lower()
         if help_category:
-            return self.filter(db_key__iexact=ostring,
-                               db_help_category__iexact=help_category)
+            return self.filter(db_key__iexact=ostring, db_help_category__iexact=help_category)
         else:
             return self.filter(db_key__iexact=ostring)

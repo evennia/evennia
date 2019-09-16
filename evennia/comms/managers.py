@@ -6,7 +6,7 @@ Comm system components.
 
 
 from django.db.models import Q
-from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager)
+from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
 from evennia.utils import logger
 
 _GA = object.__getattribute__
@@ -22,12 +22,14 @@ class CommError(Exception):
     """
     Raised by comm system, to allow feedback to player when caught.
     """
+
     pass
 
 
 #
 # helper functions
 #
+
 
 def dbref(inp, reqhash=True):
     """
@@ -46,7 +48,7 @@ def dbref(inp, reqhash=True):
     if reqhash and not (isinstance(inp, str) and inp.startswith("#")):
         return None
     if isinstance(inp, str):
-        inp = inp.lstrip('#')
+        inp = inp.lstrip("#")
     try:
         if int(inp) < 0:
             return None
@@ -85,7 +87,7 @@ def identify_object(inp):
         return inp, None
 
 
-def to_object(inp, objtype='account'):
+def to_object(inp, objtype="account"):
     """
     Locates the object related to the given accountname or channel key.
     If input was already the correct object, return it.
@@ -101,28 +103,28 @@ def to_object(inp, objtype='account'):
     obj, typ = identify_object(inp)
     if typ == objtype:
         return obj
-    if objtype == 'account':
-        if typ == 'object':
+    if objtype == "account":
+        if typ == "object":
             return obj.account
-        if typ == 'string':
+        if typ == "string":
             return _AccountDB.objects.get(user_username__iexact=obj)
-        if typ == 'dbref':
+        if typ == "dbref":
             return _AccountDB.objects.get(id=obj)
         logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
         raise CommError()
-    elif objtype == 'object':
-        if typ == 'account':
+    elif objtype == "object":
+        if typ == "account":
             return obj.obj
-        if typ == 'string':
+        if typ == "string":
             return _ObjectDB.objects.get(db_key__iexact=obj)
-        if typ == 'dbref':
+        if typ == "dbref":
             return _ObjectDB.objects.get(id=obj)
         logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
         raise CommError()
-    elif objtype == 'channel':
-        if typ == 'string':
+    elif objtype == "channel":
+        if typ == "string":
             return _ChannelDB.objects.get(db_key__iexact=obj)
-        if typ == 'dbref':
+        if typ == "dbref":
             return _ChannelDB.objects.get(id=obj)
         logger.log_err("%s %s %s %s %s" % (objtype, inp, obj, typ, type(inp)))
         raise CommError()
@@ -133,6 +135,7 @@ def to_object(inp, objtype='account'):
 #
 # Msg manager
 #
+
 
 class MsgManager(TypedObjectManager):
     """
@@ -200,19 +203,25 @@ class MsgManager(TypedObjectManager):
         obj, typ = identify_object(sender)
         if exclude_channel_messages:
             # explicitly exclude channel recipients
-            if typ == 'account':
-                return list(self.filter(db_sender_accounts=obj,
-                                        db_receivers_channels__isnull=True).exclude(db_hide_from_accounts=obj))
-            elif typ == 'object':
-                return list(self.filter(db_sender_objects=obj,
-                                        db_receivers_channels__isnull=True).exclude(db_hide_from_objects=obj))
+            if typ == "account":
+                return list(
+                    self.filter(db_sender_accounts=obj, db_receivers_channels__isnull=True).exclude(
+                        db_hide_from_accounts=obj
+                    )
+                )
+            elif typ == "object":
+                return list(
+                    self.filter(db_sender_objects=obj, db_receivers_channels__isnull=True).exclude(
+                        db_hide_from_objects=obj
+                    )
+                )
             else:
                 raise CommError
         else:
             # get everything, channel or not
-            if typ == 'account':
+            if typ == "account":
                 return list(self.filter(db_sender_accounts=obj).exclude(db_hide_from_accounts=obj))
-            elif typ == 'object':
+            elif typ == "object":
                 return list(self.filter(db_sender_objects=obj).exclude(db_hide_from_objects=obj))
             else:
                 raise CommError
@@ -232,11 +241,11 @@ class MsgManager(TypedObjectManager):
 
         """
         obj, typ = identify_object(recipient)
-        if typ == 'account':
+        if typ == "account":
             return list(self.filter(db_receivers_accounts=obj).exclude(db_hide_from_accounts=obj))
-        elif typ == 'object':
+        elif typ == "object":
             return list(self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj))
-        elif typ == 'channel':
+        elif typ == "channel":
             return list(self.filter(db_receivers_channels=obj).exclude(db_hide_from_channels=obj))
         else:
             raise CommError
@@ -287,20 +296,24 @@ class MsgManager(TypedObjectManager):
 
         # filter by sender
         sender, styp = identify_object(sender)
-        if styp == 'account':
+        if styp == "account":
             sender_restrict = Q(db_sender_accounts=sender) & ~Q(db_hide_from_accounts=sender)
-        elif styp == 'object':
+        elif styp == "object":
             sender_restrict = Q(db_sender_objects=sender) & ~Q(db_hide_from_objects=sender)
         else:
             sender_restrict = Q()
         # filter by receiver
         receiver, rtyp = identify_object(receiver)
-        if rtyp == 'account':
-            receiver_restrict = Q(db_receivers_accounts=receiver) & ~Q(db_hide_from_accounts=receiver)
-        elif rtyp == 'object':
+        if rtyp == "account":
+            receiver_restrict = Q(db_receivers_accounts=receiver) & ~Q(
+                db_hide_from_accounts=receiver
+            )
+        elif rtyp == "object":
             receiver_restrict = Q(db_receivers_objects=receiver) & ~Q(db_hide_from_objects=receiver)
-        elif rtyp == 'channel':
-            receiver_restrict = Q(db_receivers_channels=receiver) & ~Q(db_hide_from_channels=receiver)
+        elif rtyp == "channel":
+            receiver_restrict = Q(db_receivers_channels=receiver) & ~Q(
+                db_hide_from_channels=receiver
+            )
         else:
             receiver_restrict = Q()
         # filter by full text
@@ -310,6 +323,7 @@ class MsgManager(TypedObjectManager):
             fulltext_restrict = Q()
         # execute the query
         return list(self.filter(sender_restrict & receiver_restrict & fulltext_restrict))
+
     # back-compatibility alias
     message_search = search_message
 
@@ -317,6 +331,7 @@ class MsgManager(TypedObjectManager):
 #
 # Channel manager
 #
+
 
 class ChannelDBManager(TypedObjectManager):
     """
@@ -361,9 +376,10 @@ class ChannelDBManager(TypedObjectManager):
                 return self.get(id=dbref)
             except self.model.DoesNotExist:
                 pass
-        results = self.filter(Q(db_key__iexact=channelkey) |
-                              Q(db_tags__db_tagtype__iexact="alias",
-                                db_tags__db_key__iexact=channelkey)).distinct()
+        results = self.filter(
+            Q(db_key__iexact=channelkey)
+            | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__iexact=channelkey)
+        ).distinct()
         return results[0] if results else None
 
     def get_subscriptions(self, subscriber):
@@ -401,14 +417,17 @@ class ChannelDBManager(TypedObjectManager):
             except self.model.DoesNotExist:
                 pass
         if exact:
-            channels = self.filter(Q(db_key__iexact=ostring) |
-                                   Q(db_tags__db_tagtype__iexact="alias",
-                                     db_tags__db_key__iexact=ostring)).distinct()
+            channels = self.filter(
+                Q(db_key__iexact=ostring)
+                | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__iexact=ostring)
+            ).distinct()
         else:
-            channels = self.filter(Q(db_key__icontains=ostring) |
-                                   Q(db_tags__db_tagtype__iexact="alias",
-                                     db_tags__db_key__icontains=ostring)).distinct()
+            channels = self.filter(
+                Q(db_key__icontains=ostring)
+                | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__icontains=ostring)
+            ).distinct()
         return channels
+
     # back-compatibility alias
     channel_search = search_channel
 
@@ -417,4 +436,5 @@ class ChannelManager(ChannelDBManager, TypeclassManager):
     """
     Wrapper to group the typeclass manager to a consistent name.
     """
+
     pass

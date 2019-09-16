@@ -58,6 +58,7 @@ class LockableThreadPool(threadpool.ThreadPool):
 # X-Forwarded-For Handler
 #
 
+
 class HTTPChannelWithXForwardedFor(http.HTTPChannel):
     """
     HTTP xforward class
@@ -73,9 +74,9 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
         http.HTTPChannel.allHeadersReceived(self)
         req = self.requests[-1]
         client_ip, port = self.transport.client
-        proxy_chain = req.getHeader('X-FORWARDED-FOR')
+        proxy_chain = req.getHeader("X-FORWARDED-FOR")
         if proxy_chain and client_ip in _UPSTREAM_IPS:
-            forwarded = proxy_chain.split(', ', 1)[CLIENT]
+            forwarded = proxy_chain.split(", ", 1)[CLIENT]
             self.transport.client = (forwarded, port)
 
 
@@ -100,10 +101,11 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
 
         """
         request.notifyFinish().addErrback(
-                lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
+            lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f)
+        )
         return EvenniaReverseProxyResource(
-            self.host, self.port, self.path + '/' + urlquote(path, safe=""),
-            self.reactor)
+            self.host, self.port, self.path + "/" + urlquote(path, safe=""), self.reactor
+        )
 
     def render(self, request):
         """
@@ -121,18 +123,24 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
         request.content.seek(0, 0)
         qs = urllib.parse.urlparse(request.uri)[4]
         if qs:
-            rest = self.path + '?' + qs.decode()
+            rest = self.path + "?" + qs.decode()
         else:
             rest = self.path
         rest = rest.encode()
         clientFactory = self.proxyClientFactoryClass(
-            request.method, rest, request.clientproto,
-            request.getAllHeaders(), request.content.read(), request)
+            request.method,
+            rest,
+            request.clientproto,
+            request.getAllHeaders(),
+            request.content.read(),
+            request,
+        )
         clientFactory.noisy = False
         self.reactor.connectTCP(self.host, self.port, clientFactory)
         # don't trigger traceback if connection is lost before request finish.
         request.notifyFinish().addErrback(
-                lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f))
+            lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f)
+        )
         return NOT_DONE_YET
 
 
@@ -178,7 +186,7 @@ class DjangoWebRoot(resource.Resource):
         return defer.DeferredList(self._pending_requests, consumeErrors=True)
 
     def _decrement_requests(self, *args, **kwargs):
-        self._pending_requests.pop(kwargs.get('deferred', None), None)
+        self._pending_requests.pop(kwargs.get("deferred", None), None)
 
     def getChild(self, path, request):
         """
@@ -209,10 +217,12 @@ class DjangoWebRoot(resource.Resource):
 # Site with deactivateable logging
 #
 
+
 class Website(server.Site):
     """
     This class will only log http requests if settings.DEBUG is True.
     """
+
     noisy = False
 
     def logPrefix(self):
@@ -230,6 +240,7 @@ class Website(server.Site):
 #
 # Threaded Webserver
 #
+
 
 class WSGIWebServer(internet.TCPServer):
     """
@@ -277,5 +288,6 @@ class PrivateStaticRoot(static.File):
     won't see an index of all static/media files on the server).
 
     """
+
     def directoryListing(self):
         return resource.ForbiddenResource()

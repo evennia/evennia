@@ -183,15 +183,18 @@ _ENCODINGS = settings.ENCODINGS
 _RE_INSERT = re.compile(r"^\#INSERT (.*)$", re.MULTILINE)
 _RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
 _RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
-_RE_CODE_OR_HEADER = re.compile(r"((?:\A|^)#CODE|(?:/A|^)#HEADER|\A)(.*?)$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
-                                re.MULTILINE + re.DOTALL)
+_RE_CODE_OR_HEADER = re.compile(
+    r"((?:\A|^)#CODE|(?:/A|^)#HEADER|\A)(.*?)$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
+    re.MULTILINE + re.DOTALL,
+)
 
 
 # -------------------------------------------------------------
 # Helper function
 # -------------------------------------------------------------
 
-def read_batchfile(pythonpath, file_ending='.py'):
+
+def read_batchfile(pythonpath, file_ending=".py"):
     """
     This reads the contents of a batch-file.  Filename is considered
     to be a python path to a batch file relative the directory
@@ -224,7 +227,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
         for file_encoding in _ENCODINGS:
             # try different encodings, in order
             try:
-                with codecs.open(abspath, 'r', encoding=file_encoding) as fobj:
+                with codecs.open(abspath, "r", encoding=file_encoding) as fobj:
                     text = fobj.read()
             except (ValueError, UnicodeDecodeError) as e:
                 # this means an encoding error; try another encoding
@@ -242,6 +245,7 @@ def read_batchfile(pythonpath, file_ending='.py'):
 # Batch-command processor
 #
 # -------------------------------------------------------------
+
 
 class BatchCommandProcessor(object):
     """
@@ -269,7 +273,7 @@ class BatchCommandProcessor(object):
 
         """
 
-        text = "".join(read_batchfile(pythonpath, file_ending='.ev'))
+        text = "".join(read_batchfile(pythonpath, file_ending=".ev"))
 
         def replace_insert(match):
             """Map replace entries"""
@@ -281,7 +285,7 @@ class BatchCommandProcessor(object):
 
         text = _RE_INSERT.sub(replace_insert, text)
         commands = _RE_CMD_SPLIT.split(text)
-        commands = [c.strip('\r\n') for c in commands]
+        commands = [c.strip("\r\n") for c in commands]
         commands = [c for c in commands if c]
 
         return commands
@@ -292,6 +296,7 @@ class BatchCommandProcessor(object):
 # Batch-code processor
 #
 # -------------------------------------------------------------
+
 
 def tb_filename(tb):
     """Helper to get filename from traceback"""
@@ -338,7 +343,7 @@ class BatchCodeProcessor(object):
 
         """
 
-        text = "".join(read_batchfile(pythonpath, file_ending='.py'))
+        text = "".join(read_batchfile(pythonpath, file_ending=".py"))
 
         def replace_insert(match):
             """Run parse_file on the import before sub:ing it into this file"""
@@ -393,10 +398,12 @@ class BatchCodeProcessor(object):
             environdict[key] = value
 
         # initializing the django settings at the top of code
-        code = "# batchcode evennia initialization: \n" \
-               "try: settings_module.configure()\n" \
-               "except RuntimeError: pass\n" \
-               "finally: del settings_module\n\n%s" % code
+        code = (
+            "# batchcode evennia initialization: \n"
+            "try: settings_module.configure()\n"
+            "except RuntimeError: pass\n"
+            "finally: del settings_module\n\n%s" % code
+        )
 
         # execute the block
         try:

@@ -8,6 +8,7 @@ class SharedLoginMiddleware(object):
     Handle the shared login between website and webclient.
 
     """
+
     def __init__(self, get_response):
         # One-time configuration and initialization.
         self.get_response = get_response

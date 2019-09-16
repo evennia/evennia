@@ -20,9 +20,9 @@ class BaseOption(object):
         validator_key (str): The key of the Validator this uses.
 
     """
+
     def __str__(self):
-        return "<Option {key}: {value}>".format(
-            key=self.key, value=crop(str(self.value), width=10))
+        return "<Option {key}: {value}>".format(key=self.key, value=crop(str(self.value), width=10))
 
     def __repr__(self):
         return str(self)
@@ -99,7 +99,8 @@ class BaseOption(object):
 
         try:
             self.value_storage = self.deserialize(
-                loadfunc(self.key, default=self.default_value, **load_kwargs))
+                loadfunc(self.key, default=self.default_value, **load_kwargs)
+            )
         except Exception:
             logger.log_trace()
             return False
@@ -188,7 +189,6 @@ class BaseOption(object):
 
 
 class Text(BaseOption):
-
     def deserialize(self, save_data):
         got_data = str(save_data)
         if not got_data:
@@ -197,7 +197,6 @@ class Text(BaseOption):
 
 
 class Email(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.email(value, option_key=self.key, **kwargs)
 
@@ -209,14 +208,13 @@ class Email(BaseOption):
 
 
 class Boolean(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.boolean(value, option_key=self.key, **kwargs)
 
     def display(self, **kwargs):
         if self.value:
-            return '1 - On/True'
-        return '0 - Off/False'
+            return "1 - On/True"
+        return "0 - Off/False"
 
     def serialize(self):
         return self.value
@@ -228,21 +226,19 @@ class Boolean(BaseOption):
 
 
 class Color(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.color(value, option_key=self.key, **kwargs)
 
     def display(self, **kwargs):
-        return f'{self.value} - |{self.value}this|n'
+        return f"{self.value} - |{self.value}this|n"
 
     def deserialize(self, save_data):
-        if not save_data or len(strip_ansi(f'|{save_data}|n')) > 0:
+        if not save_data or len(strip_ansi(f"|{save_data}|n")) > 0:
             raise ValueError(f"{self.key} expected Color Code, got '{save_data}'")
         return save_data
 
 
 class Timezone(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.timezone(value, option_key=self.key, **kwargs)
 
@@ -260,7 +256,7 @@ class Timezone(BaseOption):
 
 
 class UnsignedInteger(BaseOption):
-    validator_key = 'unsigned_integer'
+    validator_key = "unsigned_integer"
 
     def validate(self, value, **kwargs):
         return validatorfuncs.unsigned_integer(value, option_key=self.key, **kwargs)
@@ -272,7 +268,6 @@ class UnsignedInteger(BaseOption):
 
 
 class SignedInteger(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.signed_integer(value, option_key=self.key, **kwargs)
 
@@ -283,7 +278,6 @@ class SignedInteger(BaseOption):
 
 
 class PositiveInteger(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.positive_integer(value, option_key=self.key, **kwargs)
 
@@ -294,7 +288,6 @@ class PositiveInteger(BaseOption):
 
 
 class Duration(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.duration(value, option_key=self.key, **kwargs)
 
@@ -308,7 +301,6 @@ class Duration(BaseOption):
 
 
 class Datetime(BaseOption):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.datetime(value, option_key=self.key, **kwargs)
 
@@ -318,16 +310,14 @@ class Datetime(BaseOption):
         raise ValueError(f"{self.key} expected UTC Datetime in EPOCH format, got '{save_data}'")
 
     def serialize(self):
-        return int(self.value_storage.strftime('%s'))
+        return int(self.value_storage.strftime("%s"))
 
 
 class Future(Datetime):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.future(value, option_key=self.key, **kwargs)
 
 
 class Lock(Text):
-
     def validate(self, value, **kwargs):
         return validatorfuncs.lock(value, option_key=self.key, **kwargs)

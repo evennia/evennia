@@ -22,11 +22,9 @@ def update_nicks(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('typeclasses', '0004_auto_20151101_1759'),
-        ('comms', '0010_auto_20161206_1912'),
-        ('help', '0001_initial')
+        ("typeclasses", "0004_auto_20151101_1759"),
+        ("comms", "0010_auto_20161206_1912"),
+        ("help", "0001_initial"),
     ]
 
-    operations = [
-        migrations.RunPython(update_nicks)
-    ]
+    operations = [migrations.RunPython(update_nicks)]
