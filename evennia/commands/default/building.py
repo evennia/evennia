@@ -1603,6 +1603,8 @@ class CmdSetAttribute(ObjManipCommand):
     key = "set"
     locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
+    nested_re = re.compile(r'\[.*?\]')
+    not_found = object()
 
     def check_obj(self, obj):
         """
@@ -1626,6 +1628,38 @@ class CmdSetAttribute(ObjManipCommand):
         attributes which are not permitted and letting the others through.
         """
         return attr_name
+
+    def split_nested_attr(self, attr):
+        """
+        Yields tuples of (possible attr name, nested keys on that attr).
+        For performance, this is biased to the deepest match, but allows compatability
+        with older attrs that might have been named with `[]`'s.
+
+        > list(split_nested_attr("nested['asdf'][0]"))
+        [
+            ('nested', ['asdf', 0]),
+            ("nested['asdf']", [0]),
+            ("nested['asdf'][0]", []),
+        ]
+        """
+        parts = self.nested_re.findall(attr)
+
+        base_attr = ''
+        if parts:
+            base_attr = attr[:attr.find(parts[0])]
+        for index, part in enumerate(parts):
+            yield (base_attr, [p.strip('"\'[]') for p in parts[index:]])
+            base_attr += part
+        yield (attr, [])
+
+    def do_nested_lookup(self, value, *keys):
+        result = value
+        for key in keys:
+            try:
+                result = result.__getitem__(key)
+            except (IndexError, KeyError, TypeError):
+                return self.not_found
+        return result
 
     def view_attr(self, obj, attr):
         """
