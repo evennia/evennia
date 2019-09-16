@@ -16,12 +16,12 @@ import textwrap
 import random
 import inspect
 import traceback
+import importlib
+import importlib.util
 import importlib.machinery
 from twisted.internet.task import deferLater
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from os.path import join as osjoin
-from importlib import import_module
-from importlib.util import find_spec
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
 from twisted.internet import threads, reactor
@@ -1216,7 +1216,7 @@ def mod_import(module):
         return mod_import_from_path(module)
 
     try:
-        return import_module(module)
+        return importlib.import_module(module)
     except ImportError:
         return None
 
@@ -1378,7 +1378,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
         try:
-            mod = import_module(modpath)
+            mod = importlib.import_module(modpath)
         except ImportError as ex:
             if not str(ex).startswith("No module named %s" % modpath):
                 # this means the module was found but it
@@ -1420,13 +1420,13 @@ def class_from_module(path, defaultpaths=None):
             raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
 
         try:
-            if not find_spec(testpath, package='evennia'):
+            if not importlib.util.find_spec(testpath, package='evennia'):
                 continue
         except ModuleNotFoundError:
             continue
 
         try:
-            mod = import_module(testpath, package='evennia')
+            mod = importlib.import_module(testpath, package='evennia')
         except ModuleNotFoundError:
             err = traceback.format_exc(30)
             break
