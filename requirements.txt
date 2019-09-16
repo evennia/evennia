@@ -9,9 +9,10 @@ inflect
 autobahn >= 17.9.3
 model_mommy
 
-# testing
+# testing and development
 mock >= 1.0.1
 anything
+black
 
 # windows-specific
 pypiwin32;platform_system=="Windows"
