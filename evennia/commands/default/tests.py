@@ -535,6 +535,42 @@ class TestBuilding(CommandTest):
         self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
         self.call(building.CmdWipe(), "Obj2", "Wiped all attributes on Obj2.")
 
+    def test_split_nested_attr(self):
+        split_nested_attr = building.CmdSetAttribute().split_nested_attr
+        test_cases = {
+            'test1': [('test1', [])],
+            'test2["dict"]': [('test2', ['dict']), ('test2["dict"]', [])],
+            # Quotes not actually required
+            'test3[dict]': [('test3', ['dict']), ('test3[dict]', [])],
+            # duplicate keys don't cause issues
+            'test4[0][0]': [('test4', ['0', '0']), ('test4[0]', ['0']), ('test4[0][0]', [])],
+        }
+
+        for attr, result in test_cases.items():
+            self.assertEqual(list(split_nested_attr(attr)), result)
+
+    def test_do_nested_lookup(self):
+        do_nested_lookup = building.CmdSetAttribute().do_nested_lookup
+        not_found = building.CmdSetAttribute.not_found
+
+        def do_test_single(value, key, result):
+            self.assertEqual(do_nested_lookup(value, key), result)
+
+        def do_test_multi(value, keys, result):
+            self.assertEqual(do_nested_lookup(value, *keys), result)
+
+        do_test_single([], 'test1', not_found)
+        do_test_single([1], 'test2', not_found)
+        do_test_single([], 0, not_found)
+        do_test_single([1], 2, not_found)
+        do_test_single([1], 0, 1)
+        do_test_single({}, 'test3', not_found)
+        do_test_single({}, 0, not_found)
+        do_test_single({'foo': 'bar'}, 'foo', 'bar')
+
+        do_test_multi({'one': [1, 2, 3]}, ('one', 0), 1)
+        do_test_multi([{}, {'two': 2}, 3], (1, 'two'), 2)
+
     def test_name(self):
         self.call(building.CmdName(), "", "Usage: ")
         self.call(building.CmdName(), "Obj2=Obj3", "Object's name changed to 'Obj3'.")
