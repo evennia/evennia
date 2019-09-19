@@ -1695,9 +1695,9 @@ class CmdSetAttribute(ObjManipCommand):
                 if nested_keys:
                     del_key = nested_keys[-1]
                     val = obj.attributes.get(key)
-                    val = self.do_nested_lookup(val, *nested_keys[:-1])
-                    if val is not self.not_found:
-                        del val[del_key]
+                    deep = self.do_nested_lookup(val, *nested_keys[:-1])
+                    if deep is not self.not_found:
+                        del deep[del_key]
                         obj.attributes.add(key, val)
                     return "\nDeleted attribute '%s' (= nested) from %s." % (attr, obj.name)
                 else:

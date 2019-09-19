@@ -566,6 +566,10 @@ class TestBuilding(CommandTest):
                   "Obj/test3=[{'one': 1}]", "Created attribute Obj/test3 = [{'one': 1}]")
         self.call(building.CmdSetAttribute(), "Obj/test3[0]['one']", "Attribute Obj/test3[0]['one'] = 1")
         self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {'one': 1}")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test3[0]['one'] =", "Deleted attribute 'test3[0]['one']' (= nested) from Obj.")
+        self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {}")
+        self.call(building.CmdSetAttribute(), "Obj/test3", "Attribute Obj/test3 = [{}]")
 
         # Naughty keys
         self.call(building.CmdSetAttribute(),
