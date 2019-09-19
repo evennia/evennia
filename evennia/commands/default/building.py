@@ -1642,13 +1642,25 @@ class CmdSetAttribute(ObjManipCommand):
             ("nested['asdf'][0]", []),
         ]
         """
+        quotes = '"\''
+
+        def clean_key(val):
+            val = val.strip('[]')
+            if val[0] in quotes:
+                return val.strip(quotes)
+
+            try:
+                return int(val)
+            except ValueError:
+                return val
+
         parts = self.nested_re.findall(attr)
 
         base_attr = ''
         if parts:
             base_attr = attr[:attr.find(parts[0])]
         for index, part in enumerate(parts):
-            yield (base_attr, [p.strip('"\'[]') for p in parts[index:]])
+            yield (base_attr, [clean_key(p) for p in parts[index:]])
             base_attr += part
         yield (attr, [])
 
@@ -1665,8 +1677,12 @@ class CmdSetAttribute(ObjManipCommand):
         """
         Look up the value of an attribute and return a string displaying it.
         """
-        if obj.attributes.has(attr):
-            return "\nAttribute %s/%s = %s" % (obj.name, attr, obj.attributes.get(attr))
+        for key, nested_keys in self.split_nested_attr(attr):
+            if obj.attributes.has(key):
+                val = obj.attributes.get(key)
+                val = self.do_nested_lookup(val, *nested_keys)
+                if val is not self.not_found:
+                    return "\nAttribute %s/%s = %s" % (obj.name, attr, val)
         else:
             return "\n%s has no attribute '%s'." % (obj.name, attr)
 
