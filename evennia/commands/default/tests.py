@@ -536,7 +536,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdWipe(), "Obj2", "Wiped all attributes on Obj2.")
 
     def test_nested_attribute_commands(self):
-        # adding white space proves real parsing
+        # list - adding white space proves real parsing
         self.call(building.CmdSetAttribute(), "Obj/test1=[1,2]", "Created attribute Obj/test1 = [1, 2]")
         self.call(building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 = [1, 2]")
         self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 1")
@@ -551,8 +551,13 @@ class TestBuilding(CommandTest):
         # Delete non-existent
         self.call(building.CmdSetAttribute(),
                   "Obj/test1[5] =", "Obj has no attribute 'test1[5]'.")
+        # Append
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[@] = 42", "Modified attribute Obj/test1 = [2, 42]")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[@0] = -1", "Modified attribute Obj/test1 = [-1, 2, 42]")
 
-        # removing white space proves real parsing
+        # dict - removing white space proves real parsing
         self.call(building.CmdSetAttribute(),
                   "Obj/test2={ 'one': 1, 'two': 2 }", "Created attribute Obj/test2 = {'one': 1, 'two': 2}")
         self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1, 'two': 2}")
@@ -572,6 +577,23 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj/test2[0]", "Obj has no attribute 'test2[0]'.")
         self.call(building.CmdSetAttribute(),
                   "Obj/test2['five'] =", "Obj has no attribute 'test2['five']'.")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2[@]=42", "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '@': 42}")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2[@1]=33",
+                  "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '@': 42, '@1': 33}")
+
+        # tuple
+        self.call(building.CmdSetAttribute(), "Obj/tup = (1,2)", "Created attribute Obj/tup = (1, 2)")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/tup[1] = 99", "'tuple' object does not support item assignment - (1, 2)")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/tup[@] = 99", "'tuple' object does not support item assignment - (1, 2)")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/tup[@1] = 99", "'tuple' object does not support item assignment - (1, 2)")
+        self.call(building.CmdSetAttribute(),
+                  # Special case for tuple, could have a better message
+                  "Obj/tup[1] = ", "Obj has no attribute 'tup[1]'.")
 
         # Deaper nesting
         self.call(building.CmdSetAttribute(),
