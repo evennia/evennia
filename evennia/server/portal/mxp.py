@@ -13,7 +13,6 @@ http://www.mushclient.com/mushclient/mxp.htm
 http://www.gammon.com.au/mushclient/addingservermxp.htm
 
 """
-from builtins import object
 import re
 
 LINKS_SUB = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)

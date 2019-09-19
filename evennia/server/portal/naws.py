@@ -10,7 +10,6 @@ client and update it when the size changes
 
 """
 from codecs import encode as codecs_encode
-from builtins import object
 from django.conf import settings
 
 NAWS = b'\x1f'

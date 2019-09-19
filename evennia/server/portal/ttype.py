@@ -10,7 +10,6 @@ etc. If the client does not support TTYPE, this will be ignored.
 All data will be stored on the protocol's protocol_flags dictionary,
 under the 'TTYPE' key.
 """
-from builtins import object
 
 # telnet option codes
 TTYPE = b'\x18'

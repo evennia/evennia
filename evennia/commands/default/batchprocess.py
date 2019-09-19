@@ -18,7 +18,6 @@ therefore always be limited to superusers only.
 
 """
 import re
-from builtins import range
 
 from django.conf import settings
 from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE

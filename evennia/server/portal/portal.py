@@ -7,8 +7,6 @@ sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
-from builtins import object
-
 import sys
 import os
 import time

@@ -23,8 +23,6 @@ update() on the channelhandler. Or use Channel.objects.delete() which
 does this for you.
 
 """
-from builtins import object
-
 from django.conf import settings
 from evennia.commands import cmdset, command
 from evennia.utils.logger import tail_log_file

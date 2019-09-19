@@ -11,7 +11,6 @@ functionality:
 
 """
 import inspect
-from builtins import object
 
 from collections import defaultdict
 from evennia.server.models import ServerConfig
