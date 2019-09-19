@@ -1697,15 +1697,17 @@ class CmdSetAttribute(ObjManipCommand):
                     val = obj.attributes.get(key)
                     deep = self.do_nested_lookup(val, *nested_keys[:-1])
                     if deep is not self.not_found:
-                        del deep[del_key]
+                        try:
+                            del deep[del_key]
+                        except (IndexError, KeyError, TypeError):
+                            continue
                         obj.attributes.add(key, val)
                     return "\nDeleted attribute '%s' (= nested) from %s." % (attr, obj.name)
                 else:
                     exists = obj.attributes.has(key)
                     obj.attributes.remove(attr)
                     return "\nDeleted attribute '%s' (= %s) from %s." % (attr, exists, obj.name)
-        else:
-            return "\n%s has no attribute '%s'." % (obj.name, attr)
+        return "\n%s has no attribute '%s'." % (obj.name, attr)
 
     def set_attr(self, obj, attr, value):
         for key, nested_keys in self.split_nested_attr(attr):
