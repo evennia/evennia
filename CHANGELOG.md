@@ -26,6 +26,7 @@ without arguments starts a full interactive Python console.
   to better make ANSI graphics look the same as for third-party clients
 - `AttributeHandler.get(return_list=True)` will return `[]` if there are no
   Attributes instead of `[None]`.
+- Remove `pillow` requirement (install especially if using imagefield)
 
 
 ## Evennia 0.9 (2018-2019)
