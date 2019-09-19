@@ -548,6 +548,9 @@ class TestBuilding(CommandTest):
                   "Obj/test1[0] =", "Deleted attribute 'test1[0]' (= nested) from Obj.")
         self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 2")
         self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Obj has no attribute 'test1[1]'.")
+        # Delete non-existent
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[5] =", "Obj has no attribute 'test1[5]'.")
 
         # removing white space proves real parsing
         self.call(building.CmdSetAttribute(),
@@ -567,6 +570,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Obj has no attribute 'test2['two']'.")
         self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 99, 'three': 3}")
         self.call(building.CmdSetAttribute(), "Obj/test2[0]", "Obj has no attribute 'test2[0]'.")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2['five'] =", "Obj has no attribute 'test2['five']'.")
 
         # Deaper nesting
         self.call(building.CmdSetAttribute(),
