@@ -9,7 +9,6 @@ be of use when designing your own game.
 import os
 import gc
 import sys
-import imp
 import types
 import math
 import re
@@ -17,11 +16,12 @@ import textwrap
 import random
 import inspect
 import traceback
+import importlib
+import importlib.util
+import importlib.machinery
 from twisted.internet.task import deferLater
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from os.path import join as osjoin
-from importlib import import_module
-from importlib.util import find_spec
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
 from twisted.internet import threads, reactor
@@ -1166,6 +1166,30 @@ def has_parent(basepath, obj):
         return False
 
 
+def mod_import_from_path(path):
+    """
+    Load a Python module at the specified path.
+
+    Args:
+        path (str): An absolute path to a Python module to load.
+
+    Returns:
+        (module or None): An imported module if the path was a valid
+        Python module. Returns `None` if the import failed.
+
+    """
+    if not os.path.isabs(path):
+        path = os.path.abspath(path)
+    dirpath, filename = path.rsplit(os.path.sep, 1)
+    modname = filename.rstrip('.py')
+
+    try:
+        return importlib.machinery.SourceFileLoader(modname, path).load_module()
+    except OSError:
+        logger.log_trace(f"Could not find module '{modname}' ({modname}.py) at path '{dirpath}'")
+        return None
+
+
 def mod_import(module):
     """
     A generic Python module loader.
@@ -1173,52 +1197,28 @@ def mod_import(module):
     Args:
         module (str, module): This can be either a Python path
             (dot-notation like `evennia.objects.models`), an absolute path
-            (e.g. `/home/eve/evennia/evennia/objects.models.py`) or an
+            (e.g. `/home/eve/evennia/evennia/objects/models.py`) or an
             already imported module object (e.g. `models`)
     Returns:
-        module (module or None): An imported module. If the input argument was
+        (module or None): An imported module. If the input argument was
         already a module, this is returned as-is, otherwise the path is
         parsed and imported. Returns `None` and logs error if import failed.
 
     """
-
     if not module:
         return None
 
     if isinstance(module, types.ModuleType):
         # if this is already a module, we are done
-        mod = module
-    else:
-        # first try to import as a python path
-        try:
-            mod = __import__(module, fromlist=["None"])
-        except ImportError as ex:
-            # check just where the ImportError happened (it could have been
-            # an erroneous import inside the module as well). This is the
-            # trivial way to do it ...
-            if not str(ex).startswith("No module named "):
-                raise
+        return module
 
-            # error in this module. Try absolute path import instead
+    if module.endswith('.py') and os.path.exists(module):
+        return mod_import_from_path(module)
 
-            if not os.path.isabs(module):
-                module = os.path.abspath(module)
-            path, filename = module.rsplit(os.path.sep, 1)
-            modname = re.sub(r"\.py$", "", filename)
-
-            try:
-                result = imp.find_module(modname, [path])
-            except ImportError:
-                logger.log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path))
-                return None
-            try:
-                mod = imp.load_module(modname, *result)
-            except ImportError:
-                logger.log_trace("Could not find or import module %s at path '%s'" % (modname, path))
-                mod = None
-            # we have to close the file handle manually
-            result[0].close()
-    return mod
+    try:
+        return importlib.import_module(module)
+    except ImportError:
+        return None
 
 
 def all_from_module(module):
@@ -1378,7 +1378,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
         try:
-            mod = import_module(modpath)
+            mod = importlib.import_module(modpath)
         except ImportError as ex:
             if not str(ex).startswith("No module named %s" % modpath):
                 # this means the module was found but it
@@ -1420,13 +1420,13 @@ def class_from_module(path, defaultpaths=None):
             raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
 
         try:
-            if not find_spec(testpath, package='evennia'):
+            if not importlib.util.find_spec(testpath, package='evennia'):
                 continue
         except ModuleNotFoundError:
             continue
 
         try:
-            mod = import_module(testpath, package='evennia')
+            mod = importlib.import_module(testpath, package='evennia')
         except ModuleNotFoundError:
             err = traceback.format_exc(30)
             break
