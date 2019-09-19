@@ -1701,7 +1701,6 @@ class CmdSetAttribute(ObjManipCommand):
                             del deep[del_key]
                         except (IndexError, KeyError, TypeError):
                             continue
-                        obj.attributes.add(key, val)
                     return "\nDeleted attribute '%s' (= nested) from %s." % (attr, obj.name)
                 else:
                     exists = obj.attributes.has(key)
@@ -1710,22 +1709,48 @@ class CmdSetAttribute(ObjManipCommand):
         return "\n%s has no attribute '%s'." % (obj.name, attr)
 
     def set_attr(self, obj, attr, value):
+        done = False
         for key, nested_keys in self.split_nested_attr(attr):
             if obj.attributes.has(key) and nested_keys:
                 acc_key = nested_keys[-1]
                 lookup_value = obj.attributes.get(key)
                 deep = self.do_nested_lookup(lookup_value, *nested_keys[:-1])
                 if deep is not self.not_found:
-                    # TODO - insert/append in lists
-                    deep[acc_key] = value
+                    # To support appending and inserting to lists
+                    # a key that starts with @ will insert a new item at that
+                    # location, and move the other elements down.
+                    # Just '@' will append to the list
+                    if isinstance(acc_key, str) and acc_key[0] == '@':
+                        try:
+                            if len(acc_key) > 1:
+                                where = int(acc_key[1:])
+                                deep.insert(where, value)
+                            else:
+                                deep.append(value)
+                        except AttributeError:
+                            pass
+                        else:
+                            value = lookup_value
+                            attr = key
+                            done = True
+                            break
+
+                    # List magic failed, just use like a key/index
+                    try:
+                        deep[acc_key] = value
+                    except TypeError as err:
+                        # Tuples can't be modified
+                        return "\n%s - %s" % (err, deep)
+
                     value = lookup_value
                     attr = key
+                    done = True
                     break
 
         verb = "Modified" if obj.attributes.has(attr) else "Created"
         try:
-
-            obj.attributes.add(attr, value)
+            if not done:
+                obj.attributes.add(attr, value)
             return "\n%s attribute %s/%s = %s" % (verb, obj.name, attr, repr(value))
         except SyntaxError:
             # this means literal_eval tried to parse a faulty string
