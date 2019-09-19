@@ -27,8 +27,6 @@ of the text. The remaining **kwargs will be passed on to the
 caller.msg() construct every time the page is updated.
 
 """
-from builtins import object, range
-
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler

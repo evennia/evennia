@@ -9,8 +9,6 @@ snippet #577349 on http://code.activestate.com.
 (extensively modified by Griatch 2010)
 """
 
-from builtins import object
-
 import re
 import cgi
 from .ansi import *

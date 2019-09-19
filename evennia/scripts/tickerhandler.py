@@ -66,7 +66,6 @@ call the handler's `save()` and `restore()` methods when the server reboots.
 
 """
 import inspect
-from builtins import object
 
 from twisted.internet.defer import inlineCallbacks
 from django.core.exceptions import ObjectDoesNotExist

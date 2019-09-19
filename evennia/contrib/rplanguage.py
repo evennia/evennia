@@ -90,8 +90,6 @@ Usage:
     that never change (if this is desired).
 
 """
-from builtins import range
-
 import re
 from random import choice, randint
 from collections import defaultdict

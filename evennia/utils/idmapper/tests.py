@@ -1,6 +1,4 @@
 
-from builtins import range
-
 from django.test import TestCase
 
 from .models import SharedMemoryModel

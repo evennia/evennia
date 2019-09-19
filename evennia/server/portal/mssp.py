@@ -10,7 +10,6 @@ active players and so on.
 
 
 """
-from builtins import object
 from django.conf import settings
 from evennia.utils import utils
 

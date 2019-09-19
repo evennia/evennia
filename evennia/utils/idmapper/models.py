@@ -7,8 +7,6 @@ leave caching unexpectedly (no use of WeakRefs).
 Also adds `cache_size()` for monitoring the size of the cache.
 """
 
-from builtins import object
-
 import os
 import threading
 import gc

@@ -25,8 +25,6 @@ This module also contains the Managers for the respective models; inherit from
 these to create custom managers.
 
 """
-from builtins import object
-
 from django.db.models import signals
 
 from django.db.models.base import ModelBase
