@@ -540,13 +540,25 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj/test1=[1,2]", "Created attribute Obj/test1 = [1, 2]")
         self.call(building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 = [1, 2]")
         self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 1")
+        self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Attribute Obj/test1[1] = 2")
+        # list delete
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[0] =", "Deleted attribute 'test1[0]' (= nested) from Obj.")
+        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 2")
+        self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Obj has no attribute 'test1[1]'.")
 
         # removing white space proves real parsing
         self.call(building.CmdSetAttribute(),
-                  "Obj/test2={ 'one': 1 }", "Created attribute Obj/test2 = {'one': 1}")
-        self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1}")
+                  "Obj/test2={ 'one': 1, 'two': 2 }", "Created attribute Obj/test2 = {'one': 1, 'two': 2}")
+        self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1, 'two': 2}")
         self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 1")
         self.call(building.CmdSetAttribute(), "Obj/test2['one]", "Attribute Obj/test2['one] = 1")
+        self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Attribute Obj/test2['two'] = 2")
+        # Dict delete
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2['two'] =", "Deleted attribute 'test2['two']' (= nested) from Obj.")
+        self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Obj has no attribute 'test2['two']'.")
+        self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1}")
         self.call(building.CmdSetAttribute(), "Obj/test2[0]", "Obj has no attribute 'test2[0]'.")
 
         # Deaper nesting
@@ -565,8 +577,8 @@ class TestBuilding(CommandTest):
         # Prefer nested items
         self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = {'one': 1}")
         self.call(building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1")
-        self.call(building.CmdWipe(), "Obj/test4", "Wiped attributes test4 on Obj.")
         # Restored access
+        self.call(building.CmdWipe(), "Obj/test4", "Wiped attributes test4 on Obj.")
         self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
         self.call(building.CmdSetAttribute(),
                   "Obj/test4[0]['one']", "Obj has no attribute 'test4[0]['one']'.")

@@ -1688,12 +1688,22 @@ class CmdSetAttribute(ObjManipCommand):
 
     def rm_attr(self, obj, attr):
         """
-        Remove an attribute from the object, and report back.
+        Remove an attribute from the object, or a nested data structure, and report back.
         """
-        if obj.attributes.has(attr):
-            val = obj.attributes.has(attr)
-            obj.attributes.remove(attr)
-            return "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)
+        for key, nested_keys in self.split_nested_attr(attr):
+            if obj.attributes.has(key):
+                if nested_keys:
+                    del_key = nested_keys[-1]
+                    val = obj.attributes.get(key)
+                    val = self.do_nested_lookup(val, *nested_keys[:-1])
+                    if val is not self.not_found:
+                        del val[del_key]
+                        obj.attributes.add(key, val)
+                    return "\nDeleted attribute '%s' (= nested) from %s." % (attr, obj.name)
+                else:
+                    exists = obj.attributes.has(key)
+                    obj.attributes.remove(attr)
+                    return "\nDeleted attribute '%s' (= %s) from %s." % (attr, exists, obj.name)
         else:
             return "\n%s has no attribute '%s'." % (obj.name, attr)
 
