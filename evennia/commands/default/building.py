@@ -1708,8 +1708,21 @@ class CmdSetAttribute(ObjManipCommand):
             return "\n%s has no attribute '%s'." % (obj.name, attr)
 
     def set_attr(self, obj, attr, value):
+        for key, nested_keys in self.split_nested_attr(attr):
+            if obj.attributes.has(key) and nested_keys:
+                acc_key = nested_keys[-1]
+                lookup_value = obj.attributes.get(key)
+                deep = self.do_nested_lookup(lookup_value, *nested_keys[:-1])
+                if deep is not self.not_found:
+                    # TODO - insert/append in lists
+                    deep[acc_key] = value
+                    value = lookup_value
+                    attr = key
+                    break
+
+        verb = "Modified" if obj.attributes.has(attr) else "Created"
         try:
-            verb = "Modified" if obj.attributes.has(attr) else "Created"
+
             obj.attributes.add(attr, value)
             return "\n%s attribute %s/%s = %s" % (verb, obj.name, attr, repr(value))
         except SyntaxError:

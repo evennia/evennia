@@ -541,6 +541,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 = [1, 2]")
         self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 1")
         self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Attribute Obj/test1[1] = 2")
+        self.call(building.CmdSetAttribute(), "Obj/test1[0] = 99", "Modified attribute Obj/test1 = [99, 2]")
+        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 99")
         # list delete
         self.call(building.CmdSetAttribute(),
                   "Obj/test1[0] =", "Deleted attribute 'test1[0]' (= nested) from Obj.")
@@ -553,12 +555,17 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1, 'two': 2}")
         self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 1")
         self.call(building.CmdSetAttribute(), "Obj/test2['one]", "Attribute Obj/test2['one] = 1")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2['one']=99", "Modified attribute Obj/test2 = {'one': 99, 'two': 2}")
+        self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 99")
         self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Attribute Obj/test2['two'] = 2")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2['three']=3", "Modified attribute Obj/test2 = {'one': 99, 'two': 2, 'three': 3}")
         # Dict delete
         self.call(building.CmdSetAttribute(),
                   "Obj/test2['two'] =", "Deleted attribute 'test2['two']' (= nested) from Obj.")
         self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Obj has no attribute 'test2['two']'.")
-        self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1}")
+        self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 99, 'three': 3}")
         self.call(building.CmdSetAttribute(), "Obj/test2[0]", "Obj has no attribute 'test2[0]'.")
 
         # Deaper nesting
