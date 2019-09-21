@@ -53,6 +53,7 @@ __all__ = (
 
 # used by set
 from ast import literal_eval as _LITERAL_EVAL
+LIST_APPEND_CHAR = '+'
 
 # used by find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
@@ -1648,7 +1649,9 @@ class CmdSetAttribute(ObjManipCommand):
             val = val.strip('[]')
             if val[0] in quotes:
                 return val.strip(quotes)
-
+            if val[0] == LIST_APPEND_CHAR:
+                # List insert/append syntax
+                return val
             try:
                 return int(val)
             except ValueError:
@@ -1720,7 +1723,7 @@ class CmdSetAttribute(ObjManipCommand):
                     # a key that starts with @ will insert a new item at that
                     # location, and move the other elements down.
                     # Just '@' will append to the list
-                    if isinstance(acc_key, str) and acc_key[0] == '@':
+                    if isinstance(acc_key, str) and acc_key[0] == LIST_APPEND_CHAR:
                         try:
                             if len(acc_key) > 1:
                                 where = int(acc_key[1:])
