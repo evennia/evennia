@@ -264,6 +264,7 @@ class EvenniaPythonConsole(code.InteractiveConsole):
         """Push some code, whether complete or not."""
         old_stdout = sys.stdout
         old_stderr = sys.stderr
+
         class FakeStd:
             def __init__(self, caller):
                 self.caller = caller
@@ -274,9 +275,14 @@ class EvenniaPythonConsole(code.InteractiveConsole):
         fake_std = FakeStd(self.caller)
         sys.stdout = fake_std
         sys.stderr = fake_std
-        result = super().push(line)
-        sys.stdout = old_stdout
-        sys.stderr = old_stderr
+        result = None
+        try:
+            result = super().push(line)
+        except SystemExit:
+            pass
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
         return result
 
 
