@@ -298,8 +298,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         being parsed as HTML in the webclient but not in telnet clients)
 
     Without argument, open a Python console in-game. This is a full console,
-    accepting multi-line Python code for testing and debugging. Type `exit` to
-    return to the game. If Evennia is reloaded, thek console will be closed.
+    accepting multi-line Python code for testing and debugging. Type `exit()` to
+    return to the game. If Evennia is reloaded, the console will be closed.
 
     Enter a line of instruction after the 'py' command to execute it
     immediately.  Separate multiple commands by ';' or open the code editor
