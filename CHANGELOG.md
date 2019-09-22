@@ -27,6 +27,7 @@ without arguments starts a full interactive Python console.
 - `AttributeHandler.get(return_list=True)` will return `[]` if there are no
   Attributes instead of `[None]`.
 - Remove `pillow` requirement (install especially if using imagefield)
+- Add Simplified Korean translation (user aceamro)
 
 
 ## Evennia 0.9 (2018-2019)
