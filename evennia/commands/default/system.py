@@ -768,8 +768,13 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
         """Display information about server or target"""
 
         string = """
-         |cEvennia|n {version}|n
-         MU* development system
+         |cEvennia|n MU* development system
+
+         |wEvennia version|n: {version}
+         |wOS|n: {os}
+         |wPython|n: {python}
+         |wTwisted|n: {twisted}
+         |wDjango|n: {django}
 
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wWeb|n http://www.evennia.com
@@ -778,10 +783,6 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
          |wMaintainer|n (2006-10) Greg Taylor
 
-         |wOS|n {os}
-         |wPython|n {python}
-         |wTwisted|n {twisted}
-         |wDjango|n {django}
         """.format(version=utils.get_evennia_version(),
                    os=os.name,
                    python=sys.version.split()[0],
