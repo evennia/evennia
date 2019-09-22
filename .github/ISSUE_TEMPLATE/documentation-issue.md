@@ -1,7 +1,7 @@
 ---
 name: Documentation issue
 about: Documentation problems and suggestions
-title: ''
+title: '[Documentation] Enter a brief description here'
 labels: documentation
 assignees: ''
 
