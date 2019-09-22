@@ -7,8 +7,8 @@ assignees: ''
 
 ---
 
-####Documentation issue
+#### Documentation issue
 Describe what the issue is and where it can/should be found.
 
-####Suggested change
+#### Suggested change
 The suggested change.
