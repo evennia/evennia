@@ -242,7 +242,7 @@ ERROR_DATABASE = \
     (error was '{traceback}')
 
     If you think your database should work, make sure you are running your
-    commands from inside your game directory. If this error persists, run 
+    commands from inside your game directory. If this error persists, run
 
        evennia migrate
 
@@ -1611,13 +1611,16 @@ def show_version_info(about=False):
         django=django.get_version())
 
 
-def error_check_python_modules():
+def error_check_python_modules(show_warnings=False):
     """
     Import settings modules in settings. This will raise exceptions on
     pure python-syntax issues which are hard to catch gracefully with
     exceptions in the engine (since they are formatting errors in the
     python source files themselves). Best they fail already here
     before we get any further.
+
+    Kwargs:
+        show_warnings (bool): If non-fatal warning messages should be shown.
 
     """
 
@@ -1634,10 +1637,12 @@ def error_check_python_modules():
     from evennia.server import deprecations
     try:
         deprecations.check_errors(settings)
-        deprecations.check_warnings(settings)
     except DeprecationWarning as err:
         print(err)
         sys.exit()
+
+    if show_warnings:
+        deprecations.check_warnings(settings)
 
     # core modules
     _imp(settings.COMMAND_PARSER)
@@ -2113,11 +2118,11 @@ def main():
             query_info()
         elif option == "start":
             init_game_directory(CURRENT_DIR, check_db=True)
-            error_check_python_modules()
+            error_check_python_modules(show_warnings=args.tail_log)
             start_evennia(args.profiler, args.profiler)
         elif option == "istart":
             init_game_directory(CURRENT_DIR, check_db=True)
-            error_check_python_modules()
+            error_check_python_modules(show_warnings=args.tail_log)
             start_server_interactive()
         elif option == "ipstart":
             start_portal_interactive()
