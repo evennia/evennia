@@ -351,6 +351,7 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
 
 
 message = create_message
+create_msg = create_message
 
 
 def create_channel(key, aliases=None, desc=None,
