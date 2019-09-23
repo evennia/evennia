@@ -28,6 +28,7 @@ without arguments starts a full interactive Python console.
   Attributes instead of `[None]`.
 - Remove `pillow` requirement (install especially if using imagefield)
 - Add Simplified Korean translation (user aceamro)
+- Show warning on `start -l` if settings contains values unsafe for production.
 
 
 ## Evennia 0.9 (2018-2019)
