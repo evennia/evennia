@@ -264,6 +264,7 @@ class EvenniaPythonConsole(code.InteractiveConsole):
         """Push some code, whether complete or not."""
         old_stdout = sys.stdout
         old_stderr = sys.stderr
+
         class FakeStd:
             def __init__(self, caller):
                 self.caller = caller
@@ -274,9 +275,14 @@ class EvenniaPythonConsole(code.InteractiveConsole):
         fake_std = FakeStd(self.caller)
         sys.stdout = fake_std
         sys.stderr = fake_std
-        result = super().push(line)
-        sys.stdout = old_stdout
-        sys.stderr = old_stderr
+        result = None
+        try:
+            result = super().push(line)
+        except SystemExit:
+            pass
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
         return result
 
 
@@ -298,8 +304,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         being parsed as HTML in the webclient but not in telnet clients)
 
     Without argument, open a Python console in-game. This is a full console,
-    accepting multi-line Python code for testing and debugging. Type `exit` to
-    return to the game. If Evennia is reloaded, thek console will be closed.
+    accepting multi-line Python code for testing and debugging. Type `exit()` to
+    return to the game. If Evennia is reloaded, the console will be closed.
 
     Enter a line of instruction after the 'py' command to execute it
     immediately.  Separate multiple commands by ';' or open the code editor
@@ -768,8 +774,13 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
         """Display information about server or target"""
 
         string = """
-         |cEvennia|n {version}|n
-         MU* development system
+         |cEvennia|n MU* development system
+
+         |wEvennia version|n: {version}
+         |wOS|n: {os}
+         |wPython|n: {python}
+         |wTwisted|n: {twisted}
+         |wDjango|n: {django}
 
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
          |wWeb|n http://www.evennia.com
@@ -778,10 +789,6 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
          |wMaintainer|n (2006-10) Greg Taylor
 
-         |wOS|n {os}
-         |wPython|n {python}
-         |wTwisted|n {twisted}
-         |wDjango|n {django}
         """.format(version=utils.get_evennia_version(),
                    os=os.name,
                    python=sys.version.split()[0],

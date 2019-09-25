@@ -1469,10 +1469,10 @@ class CmdSetAttribute(ObjManipCommand):
         char: Setting an attribute on a character (global search)
         character: Alias for char, as above.
 
-    Sets attributes on objects. The second form clears
-    a previously set attribute while the last form
-    inspects the current value of the attribute
-    (if any).
+    Sets attributes on objects. The second example form above clears a
+    previously set attribute while the third form inspects the current value of
+    the attribute (if any). The last one (with the star) is a shortcut for
+    operatin on a player Account rather than an Object.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,

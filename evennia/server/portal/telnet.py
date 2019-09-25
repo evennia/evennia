@@ -11,7 +11,8 @@ import re
 from twisted.internet import protocol
 from twisted.internet.task import LoopingCall
 from twisted.conch.telnet import Telnet, StatefulTelnetProtocol
-from twisted.conch.telnet import IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL
+from twisted.conch.telnet import (IAC, NOP, LINEMODE, GA, WILL, WONT, ECHO, NULL,
+                                  MODE, LINEMODE_EDIT, LINEMODE_TRAPSIG)
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws, suppress_ga
@@ -51,6 +52,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         This is called when the connection is first established.
 
         """
+        # important in order to work normally with standard telnet
+        self.do(LINEMODE)
         # initialize the session
         self.line_buffer = b""
         client_address = self.transport.client
@@ -146,12 +149,18 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             enable (bool): If this option should be enabled.
 
         """
-        return (option == LINEMODE or
-                option == ttype.TTYPE or
-                option == naws.NAWS or
-                option == MCCP or
-                option == mssp.MSSP or
-                option == suppress_ga.SUPPRESS_GA)
+        if option == LINEMODE:
+            # make sure to activate line mode with local editing for all clients
+            self.requestNegotiation(LINEMODE, MODE +
+                                    bytes(chr(ord(LINEMODE_EDIT) +
+                                              ord(LINEMODE_TRAPSIG)), 'ascii'))
+            return True
+        else:
+            return (option == ttype.TTYPE or
+                    option == naws.NAWS or
+                    option == MCCP or
+                    option == mssp.MSSP or
+                    option == suppress_ga.SUPPRESS_GA)
 
     def enableLocal(self, option):
         """
@@ -164,7 +173,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             enable (bool): If this option should be enabled.
 
         """
-        return (option == MCCP or
+        return (option == LINEMODE or
+                option == MCCP or
                 option == ECHO or
                 option == suppress_ga.SUPPRESS_GA)
 

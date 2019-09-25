@@ -1,0 +1,333 @@
+##The Simplified Korean translation for the Evennia server.
+##Copyright (C) 2019 Ethan Kwon
+##This file is distributed under the same license as the Evennia package.
+##FIRST AUTHOR: Ethan Kwon , 2019-
+##
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-21 05:00+0900\n"
+"PO-Revision-Date: 2019-09-21 05:00+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: korean\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\accounts\accounts.py:784
+msgid "Account being deleted."
+msgstr "계정이 삭제되었습니다."
+
+#: .\commands\cmdhandler.py:680
+msgid "There were multiple matches."
+msgstr "여러 개의 일치 항목을 찾았습니다."
+
+#: .\commands\cmdhandler.py:703
+#, python-format
+msgid "Command '%s' is not available."
+msgstr "'%s' 명령은 사용할 수 없습니다."
+
+#: .\commands\cmdhandler.py:708
+#, python-format
+msgid " Maybe you meant %s?"
+msgstr "'%s'이 맞습니까?"
+
+#: .\commands\cmdhandler.py:708
+msgid "or"
+msgstr "또는"
+
+#: .\commands\cmdhandler.py:710
+msgid " Type \"help\" for help."
+msgstr " 도음말은 \"help\"를 입력하세요."
+
+#: .\commands\cmdsethandler.py:89
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"Traceback was logged {timestamp})"
+
+#: .\commands\cmdsethandler.py:94
+#, python-brace-format
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
+
+#: .\commands\cmdsethandler.py:98
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+
+#: .\commands\cmdsethandler.py:103
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\",\n"
+"(Traceback was logged {timestamp})"
+
+#: .\commands\cmdsethandler.py:108
+#, python-brace-format
+msgid ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+msgstr ""
+"\n"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
+
+#: .\commands\cmdsethandler.py:114
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "Fallback path '{fallback_path}' failed to generate a cmdset."
+
+#: .\commands\cmdsethandler.py:182 .\commands\cmdsethandler.py:192
+#, python-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '%s')."
+msgstr ""
+"\n"
+"(Unsuccessfully tried '%s')."
+
+#: .\commands\cmdsethandler.py:311
+#, python-brace-format
+msgid "custom {mergetype} on cmdset '{cmdset}'"
+msgstr "custom {mergetype} on cmdset '{cmdset}'"
+
+#: .\commands\cmdsethandler.py:314
+#, python-brace-format
+msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+msgstr " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+
+#: .\commands\cmdsethandler.py:322
+#, python-brace-format
+msgid ""
+" <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
+" {keylist}"
+msgstr ""
+" <{key} ({mergetype}, prio {prio}, {permstring})>:\n"
+" {keylist}"
+
+#: .\commands\cmdsethandler.py:426
+msgid "Only CmdSets can be added to the cmdsethandler!"
+msgstr "Only CmdSets can be added to the cmdsethandler!"
+
+#: .\comms\channelhandler.py:100
+msgid "Say what?"
+msgstr "뭐라구요？"
+
+#: .\comms\channelhandler.py:105
+#, python-format
+msgid "Channel '%s' not found."
+msgstr "'%s' 채널을 찾을 수 없습니다."
+
+#: .\comms\channelhandler.py:108
+#, python-format
+msgid "You are not connected to channel '%s'."
+msgstr "'%s' 채널에 접속하고 있지 않습니다."
+
+#: .\comms\channelhandler.py:112
+#, python-format
+msgid "You are not permitted to send to channel '%s'."
+msgstr "'%s' 채널에 보낼 수 없습니다."
+
+#: .\comms\channelhandler.py:155
+msgid " (channel)"
+msgstr " (채널)"
+
+#: .\locks\lockhandler.py:236
+#, python-format
+msgid "Lock: lock-function '%s' is not available."
+msgstr "Lock: lock-function '%s' is not available."
+
+#: .\locks\lockhandler.py:249
+#, python-format
+msgid "Lock: definition '%s' has syntax errors."
+msgstr "Lock: definition '%s' has syntax errors."
+
+#: .\locks\lockhandler.py:253
+#, python-format
+msgid ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+msgstr ""
+"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
+"'%(source)s' to '%(goal)s' "
+
+#: .\locks\lockhandler.py:320
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "Lock: '{lockdef}' contains no colon (:)."
+
+#: .\locks\lockhandler.py:328
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+
+#: .\locks\lockhandler.py:336
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "Lock: '{lockdef}' has mismatched parentheses."
+
+#: .\locks\lockhandler.py:343
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "Lock: '{lockdef}' has no valid lock functions."
+
+#: .\objects\objects.py:745
+#, python-format
+msgid "Couldn't perform move ('%s'). Contact an admin."
+msgstr "Couldn't perform move ('%s'). 운영자에게 문의하세요."
+
+#: .\objects\objects.py:755
+msgid "The destination doesn't exist."
+msgstr "The destination doesn't exist."
+
+#: .\objects\objects.py:846
+#, python-format
+msgid "Could not find default home '(#%d)'."
+msgstr "Could not find default home '(#%d)'."
+
+#: .\objects\objects.py:862
+msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
+msgstr "Something went wrong! You are dumped into nowhere. 운영자에게 문의하세요."
+
+#: .\objects\objects.py:1004
+#, python-format
+msgid "Your character %s has been destroyed."
+msgstr "%s 캐릭터가 삭제되었습니다."
+
+#: .\scripts\scripthandler.py:53
+#, python-format
+msgid ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+msgstr ""
+"\n"
+" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+
+#: .\scripts\scripts.py:199
+#, python-format
+msgid ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+msgstr ""
+"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+
+#: .\server\initial_setup.py:28
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"As Account #1 you can create a demo/tutorial area with |w@batchcommand "
+"tutorial_world.build|n.\n"
+"    "
+msgstr ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+"you need\n"
+"help, want to contribute, report issues or just join the community.\n"
+"#1 유저(운영자)는 |w@batchcommand tutorial_world.build|n.명령을 사용하여\n"
+"데모겸 튜터리얼 월드를 생성할 수 있습니다.\n"
+"    "
+
+#: .\server\initial_setup.py:92
+msgid "This is User #1."
+msgstr "This is User #1."
+
+#: .\server\initial_setup.py:105
+msgid "Limbo"
+msgstr "림보"
+
+#: .\server\server.py:139
+msgid "idle timeout exceeded"
+msgstr "연결 시간 초과"
+
+#: .\server\sessionhandler.py:392
+msgid " ... Server restarted."
+msgstr " ... 서버가 재가동되었습니다."
+
+#: .\server\sessionhandler.py:620
+msgid "Logged in from elsewhere. Disconnecting."
+msgstr "어디에선가 로그인했습니다. 접속이 끊어집니다."
+
+#: .\server\sessionhandler.py:648
+msgid "Idle timeout exceeded, disconnecting."
+msgstr "연결 시간이 초과되었습니다. 접속이 끊어집니다."
+
+#: .\server\validators.py:50
+#, python-format
+msgid ""
+"%s From a terminal client, you can also use a phrase of multiple words if "
+"you enclose the password in double quotes."
+msgstr ""
+"%s 터미널 클라이언트에서 암호를 큰 따옴표로 묶으면 여러 단어로 된 암호를 사용할 수 있습니다."
+""
+
+#: .\utils\evmenu.py:192
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice."
+msgstr ""
+"Menu node '{nodename}'가 구현되지 않았거나 오류가 발생했습니다."
+"다른 선택을 해보세요."
+
+#: .\utils\evmenu.py:194
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "Menu node '{nodename}'에서 오류가 발생했습니다."
+
+#: .\utils\evmenu.py:195
+msgid "No description."
+msgstr "설명이 없습니다."
+
+#: .\utils\evmenu.py:196
+msgid "Commands: <menu option>, help, quit"
+msgstr "명령: <menu option>, help, quit"
+
+#: .\utils\evmenu.py:197
+msgid "Commands: <menu option>, help"
+msgstr "명령： <menu option>, help"
+
+#: .\utils\evmenu.py:198
+msgid "Commands: help, quit"
+msgstr "명령： help, quit"
+
+#: .\utils\evmenu.py:199
+msgid "Commands: help"
+msgstr "명령： help"
+
+#: .\utils\evmenu.py:200
+msgid "Choose an option or try 'help'."
+msgstr "다른 옵션을 선택하거나 'help'를 확인해보세요."
+
+#: .\utils\utils.py:1882
+#, python-format
+msgid "Could not find '%s'."
+msgstr "'%s'를 찾을 수 없습니다."
+
+#: .\utils\utils.py:1889
+#, python-format
+msgid "More than one match for '%s' (please narrow target):\n"
+msgstr "'%s'와 일치하는 항목을 여러 개 찾았습니다.：\n"
