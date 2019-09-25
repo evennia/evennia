@@ -41,6 +41,7 @@ before_script:
   - evennia collectstatic --noinput
 
 script:
+  - make fmt
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
 
 after_success:
