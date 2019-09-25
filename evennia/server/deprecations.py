@@ -85,7 +85,12 @@ def check_errors(settings):
 
 def check_warnings(settings):
     """
-    Check deprecations that should produce warnings but which
+    Check conditions and deprecations that should produce warnings but which
     does not stop launch.
     """
-    pass
+    if settings.DEBUG:
+        print(" [Devel: settings.DEBUG is True. Important to turn off in production.]")
+    if settings.IN_GAME_ERRORS:
+        print(" [Devel: settings.IN_GAME_ERRORS is True. Turn off in production.]")
+    if settings.ALLOWED_HOSTS == ["*"]:
+        print(" [Devel: settings.ALLOWED_HOSTS set to '*' (all). Limit in production.]")
