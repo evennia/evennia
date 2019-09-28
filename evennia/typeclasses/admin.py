@@ -11,10 +11,11 @@ class TagAdmin(admin.ModelAdmin):
     """
     A django Admin wrapper for Tags.
     """
-    search_fields = ('db_key', 'db_category', 'db_tagtype')
-    list_display = ('db_key', 'db_category', 'db_tagtype', 'db_data')
-    fields = ('db_key', 'db_category', 'db_tagtype', 'db_data')
-    list_filter = ('db_tagtype',)
+
+    search_fields = ("db_key", "db_category", "db_tagtype")
+    list_display = ("db_key", "db_category", "db_tagtype", "db_data")
+    fields = ("db_key", "db_category", "db_tagtype", "db_data")
+    list_filter = ("db_tagtype",)
 
 
 class TagForm(forms.ModelForm):
@@ -26,18 +27,25 @@ class TagForm(forms.ModelForm):
     Object's handler, which will handle the creation, change, or deletion of a tag for us, as well
     as updating the handler's cache so that all changes are instantly updated in-game.
     """
-    tag_key = forms.CharField(label='Tag Name',
-                              required=True,
-                              help_text="This is the main key identifier")
-    tag_category = forms.CharField(label="Category",
-                                   help_text="Used for grouping tags. Unset (default) gives a category of None",
-                                   required=False)
-    tag_type = forms.CharField(label="Type",
-                               help_text="Internal use. Either unset, \"alias\" or \"permission\"",
-                               required=False)
-    tag_data = forms.CharField(label="Data",
-                               help_text="Usually unused. Intended for eventual info about the tag itself",
-                               required=False)
+
+    tag_key = forms.CharField(
+        label="Tag Name", required=True, help_text="This is the main key identifier"
+    )
+    tag_category = forms.CharField(
+        label="Category",
+        help_text="Used for grouping tags. Unset (default) gives a category of None",
+        required=False,
+    )
+    tag_type = forms.CharField(
+        label="Type",
+        help_text='Internal use. Either unset, "alias" or "permission"',
+        required=False,
+    )
+    tag_data = forms.CharField(
+        label="Data",
+        help_text="Usually unused. Intended for eventual info about the tag itself",
+        required=False,
+    )
 
     class Meta:
         fields = ("tag_key", "tag_category", "tag_data", "tag_type")
@@ -54,15 +62,15 @@ class TagForm(forms.ModelForm):
         tagcategory = None
         tagtype = None
         tagdata = None
-        if hasattr(self.instance, 'tag'):
+        if hasattr(self.instance, "tag"):
             tagkey = self.instance.tag.db_key
             tagcategory = self.instance.tag.db_category
             tagtype = self.instance.tag.db_tagtype
             tagdata = self.instance.tag.db_data
-            self.fields['tag_key'].initial = tagkey
-            self.fields['tag_category'].initial = tagcategory
-            self.fields['tag_type'].initial = tagtype
-            self.fields['tag_data'].initial = tagdata
+            self.fields["tag_key"].initial = tagkey
+            self.fields["tag_category"].initial = tagcategory
+            self.fields["tag_type"].initial = tagtype
+            self.fields["tag_data"].initial = tagdata
         self.instance.tag_key = tagkey
         self.instance.tag_category = tagcategory
         self.instance.tag_type = tagtype
@@ -78,10 +86,10 @@ class TagForm(forms.ModelForm):
         # we are spoofing a tag for the Handler that will be called
         # instance = super().save(commit=False)
         instance = self.instance
-        instance.tag_key = self.cleaned_data['tag_key']
-        instance.tag_category = self.cleaned_data['tag_category'] or None
-        instance.tag_type = self.cleaned_data['tag_type'] or None
-        instance.tag_data = self.cleaned_data['tag_data'] or None
+        instance.tag_key = self.cleaned_data["tag_key"]
+        instance.tag_category = self.cleaned_data["tag_category"] or None
+        instance.tag_type = self.cleaned_data["tag_type"] or None
+        instance.tag_data = self.cleaned_data["tag_data"] or None
         return instance
 
 
@@ -110,6 +118,7 @@ class TagFormSet(forms.BaseInlineFormSet):
             else:
                 handler_name = "tags"
             return getattr(related, handler_name)
+
         instances = super().save(commit=False)
         # self.deleted_objects is a list created when super of save is called, we'll remove those
         for obj in self.deleted_objects:
@@ -128,6 +137,7 @@ class TagInline(admin.TabularInline):
     of the field on that through model which points to the model being used: 'objectdb',
     'msg', 'accountdb', etc.
     """
+
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     form = TagForm
@@ -148,6 +158,7 @@ class TagInline(admin.TabularInline):
 
         class ProxyFormset(formset):
             pass
+
         ProxyFormset.related_field = self.related_field
         return ProxyFormset
 
@@ -161,20 +172,26 @@ class AttributeForm(forms.ModelForm):
     the creation, change, or deletion of an Attribute for us, as well as updating the handler's cache so that all
     changes are instantly updated in-game.
     """
-    attr_key = forms.CharField(label='Attribute Name', required=False, initial="Enter Attribute Name Here")
-    attr_category = forms.CharField(label="Category",
-                                    help_text="type of attribute, for sorting",
-                                    required=False,
-                                    max_length=128)
+
+    attr_key = forms.CharField(
+        label="Attribute Name", required=False, initial="Enter Attribute Name Here"
+    )
+    attr_category = forms.CharField(
+        label="Category", help_text="type of attribute, for sorting", required=False, max_length=128
+    )
     attr_value = PickledFormField(label="Value", help_text="Value to pickle/save", required=False)
-    attr_type = forms.CharField(label="Type",
-                                help_text="Internal use. Either unset (normal Attribute) or \"nick\"",
-                                required=False,
-                                max_length=16)
-    attr_lockstring = forms.CharField(label="Locks",
-                                      required=False,
-                                      help_text="Lock string on the form locktype:lockdef;lockfunc:lockdef;...",
-                                      widget=forms.Textarea(attrs={"rows": 1, "cols": 8}))
+    attr_type = forms.CharField(
+        label="Type",
+        help_text='Internal use. Either unset (normal Attribute) or "nick"',
+        required=False,
+        max_length=16,
+    )
+    attr_lockstring = forms.CharField(
+        label="Locks",
+        required=False,
+        help_text="Lock string on the form locktype:lockdef;lockfunc:lockdef;...",
+        widget=forms.Textarea(attrs={"rows": 1, "cols": 8}),
+    )
 
     class Meta:
         fields = ("attr_key", "attr_value", "attr_category", "attr_lockstring", "attr_type")
@@ -193,24 +210,24 @@ class AttributeForm(forms.ModelForm):
         attr_value = None
         attr_type = None
         attr_lockstring = None
-        if hasattr(self.instance, 'attribute'):
+        if hasattr(self.instance, "attribute"):
             attr_key = self.instance.attribute.db_key
             attr_category = self.instance.attribute.db_category
             attr_value = self.instance.attribute.db_value
             attr_type = self.instance.attribute.db_attrtype
             attr_lockstring = self.instance.attribute.db_lock_storage
-            self.fields['attr_key'].initial = attr_key
-            self.fields['attr_category'].initial = attr_category
-            self.fields['attr_type'].initial = attr_type
-            self.fields['attr_value'].initial = attr_value
-            self.fields['attr_lockstring'].initial = attr_lockstring
+            self.fields["attr_key"].initial = attr_key
+            self.fields["attr_category"].initial = attr_category
+            self.fields["attr_type"].initial = attr_type
+            self.fields["attr_value"].initial = attr_value
+            self.fields["attr_lockstring"].initial = attr_lockstring
         self.instance.attr_key = attr_key
         self.instance.attr_category = attr_category
         self.instance.attr_value = attr_value
 
         # prevent from being transformed to str
         if isinstance(attr_value, (set, _SaverSet)):
-            self.fields['attr_value'].disabled = True
+            self.fields["attr_value"].disabled = True
 
         self.instance.deserialized_value = from_pickle(attr_value)
         self.instance.attr_type = attr_type
@@ -225,13 +242,13 @@ class AttributeForm(forms.ModelForm):
         """
         # we are spoofing an Attribute for the Handler that will be called
         instance = self.instance
-        instance.attr_key = self.cleaned_data['attr_key'] or "no_name_entered_for_attribute"
-        instance.attr_category = self.cleaned_data['attr_category'] or None
-        instance.attr_value = self.cleaned_data['attr_value']
+        instance.attr_key = self.cleaned_data["attr_key"] or "no_name_entered_for_attribute"
+        instance.attr_category = self.cleaned_data["attr_category"] or None
+        instance.attr_value = self.cleaned_data["attr_value"]
         # convert the serialized string value into an object, if necessary, for AttributeHandler
         instance.attr_value = from_pickle(instance.attr_value)
-        instance.attr_type = self.cleaned_data['attr_type'] or None
-        instance.attr_lockstring = self.cleaned_data['attr_lockstring']
+        instance.attr_type = self.cleaned_data["attr_type"] or None
+        instance.attr_lockstring = self.cleaned_data["attr_lockstring"]
         return instance
 
     def clean_attr_value(self):
@@ -240,7 +257,7 @@ class AttributeForm(forms.ModelForm):
         failing on them. Otherwise they will be turned into str.
 
         """
-        data = self.cleaned_data['attr_value']
+        data = self.cleaned_data["attr_value"]
         initial = self.instance.attr_value
         if isinstance(initial, (set, _SaverSet, datetime)):
             return initial
@@ -264,6 +281,7 @@ class AttributeFormSet(forms.BaseInlineFormSet):
             else:
                 handler_name = "attributes"
             return getattr(related, handler_name)
+
         instances = super().save(commit=False)
         for obj in self.deleted_objects:
             # self.deleted_objects is a list created when super of save is called, we'll remove those
@@ -276,9 +294,13 @@ class AttributeFormSet(forms.BaseInlineFormSet):
             value = instance.attr_value
 
             try:
-                handler.add(instance.attr_key, value,
-                            category=instance.attr_category, strattr=False,
-                            lockstring=instance.attr_lockstring)
+                handler.add(
+                    instance.attr_key,
+                    value,
+                    category=instance.attr_category,
+                    strattr=False,
+                    lockstring=instance.attr_lockstring,
+                )
             except (TypeError, ValueError):
                 # catch errors in nick templates and continue
                 traceback.print_exc()
@@ -293,6 +315,7 @@ class AttributeInline(admin.TabularInline):
     of the field on that through model which points to the model being used: 'objectdb',
     'msg', 'accountdb', etc.
     """
+
     # Set this to the through model of your desired M2M when subclassing.
     model = None
     form = AttributeForm

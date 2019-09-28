@@ -56,6 +56,7 @@ class EvscaperoomObject(DefaultObject):
     Default object base for all objects related to the contrib.
 
     """
+
     # these will be automatically filtered out by self.parse for
     # focus-commands using arguments like (`combine [with] object`)
     # override this per-class as necessary.
@@ -63,10 +64,7 @@ class EvscaperoomObject(DefaultObject):
 
     # this mapping allows for prettier descriptions of our current
     # position
-    position_prep_map = {"sit": "sitting",
-                         "kneel": "kneeling",
-                         "lie": "lying",
-                         "climb": "standing"}
+    position_prep_map = {"sit": "sitting", "kneel": "kneeling", "lie": "lying", "climb": "standing"}
 
     def at_object_creation(self):
         """
@@ -86,8 +84,9 @@ class EvscaperoomObject(DefaultObject):
     @property
     def tagcategory(self):
         if not self._tagcategory:
-            self._tagcategory = (self.location.db.tagcategory
-                                 if self.location else self.db.tagcategory)
+            self._tagcategory = (
+                self.location.db.tagcategory if self.location else self.db.tagcategory
+            )
         return self._tagcategory
 
     @property
@@ -162,16 +161,15 @@ class EvscaperoomObject(DefaultObject):
         you = caller.key if caller else "they"
         first_person, third_person = parse_for_perspectives(string, you=you)
         for char in self.room.get_all_characters():
-            options = char.attributes.get(
-                "options", category=self.room.tagcategory, default={})
+            options = char.attributes.get("options", category=self.room.tagcategory, default={})
             style = options.get("things_style", 2)
             if char == caller:
                 if not skip_caller:
                     txt = parse_for_things(first_person, things_style=style)
-                    char.msg((txt, {'type': 'your_action'}))
+                    char.msg((txt, {"type": "your_action"}))
             else:
                 txt = parse_for_things(third_person, things_style=style)
-                char.msg((txt, {'type': 'others_action'}))
+                char.msg((txt, {"type": "others_action"}))
 
     def msg_char(self, caller, string, client_type="your_action"):
         """
@@ -180,8 +178,7 @@ class EvscaperoomObject(DefaultObject):
         """
         # we must clean away markers
         first_person, _ = parse_for_perspectives(string)
-        options = caller.attributes.get(
-            "options", category=self.room.tagcategory, default={})
+        options = caller.attributes.get("options", category=self.room.tagcategory, default={})
         style = options.get("things_style", 2)
         txt = parse_for_things(first_person, things_style=style)
         caller.msg((txt, {"type": client_type}))
@@ -227,8 +224,7 @@ class EvscaperoomObject(DefaultObject):
         """
         if new_position is None:
             # reset position
-            caller.attributes.remove(
-                "position", category=self.tagcategory)
+            caller.attributes.remove("position", category=self.tagcategory)
             if caller in self.db.positions:
                 del self.db.positions[caller]
         else:
@@ -279,8 +275,9 @@ class EvscaperoomObject(DefaultObject):
         here.
 
         """
-        args = re.sub(r"|".join(r"^{}\s".format(prep) for prep in self.action_prepositions),
-                      "", args)
+        args = re.sub(
+            r"|".join(r"^{}\s".format(prep) for prep in self.action_prepositions), "", args
+        )
         return args
 
     def get_cmd_signatures(self):
@@ -307,11 +304,11 @@ class EvscaperoomObject(DefaultObject):
         command_signatures = sorted(command_signatures)
 
         if len(command_signatures) == 1:
-            helpstr = (f"It looks like {self.key} may be "
-                       "suitable to {callsigns}.")
+            helpstr = f"It looks like {self.key} may be " "suitable to {callsigns}."
         else:
-            helpstr = (f"At first glance, it looks like {self.key} might be "
-                       "suitable to {callsigns}.")
+            helpstr = (
+                f"At first glance, it looks like {self.key} might be " "suitable to {callsigns}."
+            )
         return command_signatures, helpstr
 
     def get_short_desc(self, full_desc):
@@ -319,7 +316,7 @@ class EvscaperoomObject(DefaultObject):
         Extract the first sentence from the desc and use as the short desc.
 
         """
-        mat = re.match(r"(^.*?[.?!])", full_desc.strip(), re.M+re.U+re.I+re.S)
+        mat = re.match(r"(^.*?[.?!])", full_desc.strip(), re.M + re.U + re.I + re.S)
         if mat:
             return mat.group(0).strip()
         return full_desc
@@ -336,8 +333,7 @@ class EvscaperoomObject(DefaultObject):
         callsigns = list_to_string(["*" + sig for sig in command_signatures], endsep="or")
 
         # parse for *thing markers (use these as items)
-        options = caller.attributes.get(
-            "options", category=self.room.tagcategory, default={})
+        options = caller.attributes.get("options", category=self.room.tagcategory, default={})
         style = options.get("things_style", 2)
 
         helpstr = helpstr.format(callsigns=callsigns)
@@ -354,7 +350,7 @@ class EvscaperoomObject(DefaultObject):
         # accept a custom desc
         desc = kwargs.get("desc", self.db.desc)
 
-        if kwargs.get('unfocused', False):
+        if kwargs.get("unfocused", False):
             # use the shorter description
             focused = ""
             desc = self.get_short_desc(desc)
@@ -364,8 +360,11 @@ class EvscaperoomObject(DefaultObject):
             helptxt = kwargs.get("helptxt", f"\n\n({self.get_help(looker)})")
 
         obj, pos = self.get_position(looker)
-        pos = (f" |w({self.position_prep_map[pos]} on "
-               f"{obj.get_display_name(looker)})" if obj else "")
+        pos = (
+            f" |w({self.position_prep_map[pos]} on " f"{obj.get_display_name(looker)})"
+            if obj
+            else ""
+        )
 
         return f" ~~ |y{self.get_display_name(looker)}|n{focused}{pos}|n ~~\n\n{desc}{helptxt}"
 
@@ -375,6 +374,7 @@ class Feelable(EvscaperoomObject):
     Any object that you can feel the surface of.
 
     """
+
     def at_focus_feel(self, caller, **kwargs):
         self.msg_char(caller, f"You feel *{self.key}.")
 
@@ -384,6 +384,7 @@ class Listenable(EvscaperoomObject):
     Any object one can listen to.
 
     """
+
     def at_focus_listen(self, caller, **kwargs):
         self.msg_char(caller, f"You listen to *{self.key}")
 
@@ -393,6 +394,7 @@ class Smellable(EvscaperoomObject):
     Any object you can smell.
 
     """
+
     def at_focus_smell(self, caller, **kwargs):
         self.msg_char(caller, f"You smell *{self.key}.")
 
@@ -402,6 +404,7 @@ class Rotatable(EvscaperoomObject):
     Any object that you can lift up and look at from different angles
 
     """
+
     rotate_flag = "rotatable"
     start_rotatable = True
 
@@ -417,6 +420,7 @@ class Rotatable(EvscaperoomObject):
             self.at_rotate(caller)
         else:
             self.at_cannot_rotate(caller)
+
     at_focus_turn = at_focus_rotate
 
     def at_rotate(self, caller):
@@ -432,6 +436,7 @@ class Openable(EvscaperoomObject):
     a flag.
 
     """
+
     # this flag must be set for item to open. None for unlocked.
     unlock_flag = "unlocked"
     open_flag = "open"
@@ -482,6 +487,7 @@ class Readable(EvscaperoomObject):
     from a flag.
 
     """
+
     # this must be set to be able to read. None to
     # always be able to read.
 
@@ -515,11 +521,7 @@ class IndexReadable(Readable):
     """
 
     # keys should be lower-key
-    index = {
-        "page1": "This is page1",
-        "page2": "This is page2",
-        "page two": "page2"  # alias
-    }
+    index = {"page1": "This is page1", "page2": "This is page2", "page two": "page2"}  # alias
 
     def at_focus_read(self, caller, **kwargs):
 
@@ -536,8 +538,10 @@ class IndexReadable(Readable):
             self.at_read(caller, topic, entry)
 
     def get_cmd_signatures(self):
-        txt = (f"You don't have the time to read this from beginning to end. "
-               "Use *read <topic> to look up something in particular.")
+        txt = (
+            f"You don't have the time to read this from beginning to end. "
+            "Use *read <topic> to look up something in particular."
+        )
         return [], txt
 
     def at_cannot_read(self, caller, topic, *args, **kwargs):
@@ -556,10 +560,10 @@ class Movable(EvscaperoomObject):
     change.
 
     """
+
     # these are the possible locations (or directions) to move to
     # name: callable
-    move_positions = {"left": "at_left",
-                      "right": "at_right"}
+    move_positions = {"left": "at_left", "right": "at_right"}
     start_position = "left"
 
     def at_object_creation(self):
@@ -571,7 +575,7 @@ class Movable(EvscaperoomObject):
         return ["move", "push", "shove left/right"], txt
 
     def at_focus_move(self, caller, **kwargs):
-        pos = self.parse(kwargs['args'])
+        pos = self.parse(kwargs["args"])
         callfunc_name = self.move_positions.get(pos)
 
         if callfunc_name:
@@ -610,6 +614,7 @@ class BaseConsumable(EvscaperoomObject):
     a custom object if needed).
 
     """
+
     consume_flag = "consume"
     # may only consume once
     one_consume_only = True
@@ -647,6 +652,7 @@ class Edible(BaseConsumable):
     Any object specifically possible to eat.
 
     """
+
     consume_flag = "eat"
 
     def at_focus_eat(self, caller, **kwargs):
@@ -658,6 +664,7 @@ class Drinkable(BaseConsumable):
     Any object specifically possible to drink.
 
     """
+
     consume_flag = "drink"
 
     def at_focus_drink(self, caller, **kwargs):
@@ -679,6 +686,7 @@ class BaseApplicable(EvscaperoomObject):
     This acts an an abstract base class.
 
     """
+
     # the target object this is to be used with must
     # have this flag. It'll likely be unique to this
     # object combination.
@@ -689,7 +697,7 @@ class BaseApplicable(EvscaperoomObject):
         Wrap this with the at_focus methods in the child classes
 
         """
-        args = self.parse(kwargs['args'])
+        args = self.parse(kwargs["args"])
         if not args:
             self.msg_char(caller, "You need to specify a target.")
             return
@@ -717,6 +725,7 @@ class Usable(BaseApplicable):
     Any object that can be used with another object.
 
     """
+
     target_flag = "usable"
 
     def at_focus_use(self, caller, **kwargs):
@@ -736,6 +745,7 @@ class Insertable(BaseApplicable):
     This would cover a key, for example.
 
     """
+
     # this would likely be a custom name
     target_flag = "insertable"
 
@@ -759,6 +769,7 @@ class Combinable(BaseApplicable):
     a new one.
 
     """
+
     # the other object must have this flag to be able to be combined
     # (this is likely unique for a given combination)
     target_flag = "combinable"
@@ -767,7 +778,8 @@ class Combinable(BaseApplicable):
     new_create_dict = {
         "typeclass": "evscaperoom.objects.Combinable",
         "key": "sword",
-        "aliases": ["combined"]}
+        "aliases": ["combined"],
+    }
     # if set, destroy the two components used to make the new one
     destroy_components = True
 
@@ -784,11 +796,12 @@ class Combinable(BaseApplicable):
     def at_apply(self, caller, action, other_obj):
         create_dict = self.new_create_dict
         if "location" not in create_dict:
-            create_dict['location'] = self.location
+            create_dict["location"] = self.location
         new_obj = create_evscaperoom_object(**create_dict)
         if new_obj and self.destroy_components:
-            self.msg_char(caller,
-                f"You combine *{self.key} with {other_obj.key} to make {new_obj.key}!")
+            self.msg_char(
+                caller, f"You combine *{self.key} with {other_obj.key} to make {new_obj.key}!"
+            )
             other_obj.delete()
             self.delete()
 
@@ -800,14 +813,11 @@ class Mixable(EvscaperoomObject):
     the ingredients should be 'used' with this object in order
     mix, calling at_mix when they do.
     """
+
     # ingredients can check for this before they allow to mix at all
     mixer_flag = "mixer"
     # ingredients must have these flags and this order
-    ingredient_recipe = [
-        "ingredient1",
-        "ingredient2",
-        "ingredient3"
-    ]
+    ingredient_recipe = ["ingredient1", "ingredient2", "ingredient3"]
 
     def at_object_creation(self):
         super().at_object_creation()
@@ -847,7 +857,9 @@ class Mixable(EvscaperoomObject):
             if self.check_mixture():
                 self.at_mix_success(caller, ingredient, **kwargs)
             else:
-                self.room.log(f"{self.name} mix failure: Tried {' + '.join([ing.key for ing in self.db.ingredients if ing])}")
+                self.room.log(
+                    f"{self.name} mix failure: Tried {' + '.join([ing.key for ing in self.db.ingredients if ing])}"
+                )
                 self.db.ingredients = []
                 self.at_mix_failure(caller, ingredient, **kwargs)
 
@@ -866,25 +878,31 @@ class HasButtons(EvscaperoomObject):
     Any object with buttons to push/press
 
     """
+
     # mapping keys/aliases to calling method
-    buttons = {'green button': "at_green_button",
-               'green': "at_green_button",
-               'red button': "at_red_button",
-               'red': "at_red_button"}
+    buttons = {
+        "green button": "at_green_button",
+        "green": "at_green_button",
+        "red button": "at_red_button",
+        "red": "at_red_button",
+    }
 
     def get_cmd_signatures(self):
-        helptxt = ("It looks like you should be able to operate "
-                   f"*{self.key} by means of "
-                   "{callsigns}.")
+        helptxt = (
+            "It looks like you should be able to operate "
+            f"*{self.key} by means of "
+            "{callsigns}."
+        )
         return ["push", "press red/green button"], helptxt
 
     def at_focus_press(self, caller, **kwargs):
-        arg = self.parse(kwargs['args'])
+        arg = self.parse(kwargs["args"])
         callfunc_name = self.buttons.get(arg)
         if callfunc_name:
             getattr(self, callfunc_name)(caller)
         else:
             self.at_nomatch(caller)
+
     at_focus_push = at_focus_press
 
     def at_nomatch(self, caller):
@@ -903,6 +921,7 @@ class CodeInput(EvscaperoomObject):
     to have an effect happen.
 
     """
+
     # the code of this
     code = "PASSWORD"
     code_hint = "eight letters A-Z"
@@ -912,7 +931,7 @@ class CodeInput(EvscaperoomObject):
 
     def at_focus_code(self, caller, **kwargs):
 
-        args = self.parse(kwargs['args'].strip())
+        args = self.parse(kwargs["args"].strip())
 
         if not args:
             self.at_no_code(caller)
@@ -967,6 +986,7 @@ class BasePositionable(EvscaperoomObject):
     object or not.
 
     """
+
     def at_object_creation(self):
         super().at_object_creation()
         # mapping {object: position}.
@@ -992,11 +1012,16 @@ class BasePositionable(EvscaperoomObject):
             self.at_position(caller, new_pos)
 
     def at_cannot_position(self, caller, position, old_obj, old_pos):
-        self.msg_char(caller, f"You can't; you are currently {self.position_prep_map[old_pos]} on *{old_obj.key} "
-                   "(better |wstand|n first).")
+        self.msg_char(
+            caller,
+            f"You can't; you are currently {self.position_prep_map[old_pos]} on *{old_obj.key} "
+            "(better |wstand|n first).",
+        )
 
     def at_again_position(self, caller, position):
-        self.msg_char(caller, f"But you are already {self.position_prep_map[position]} on *{self.key}?")
+        self.msg_char(
+            caller, f"But you are already {self.position_prep_map[position]} on *{self.key}?"
+        )
 
     def at_position(self, caller, position):
         self.msg_room(caller, f"~You ~{position} on *{self.key}.")
@@ -1017,6 +1042,7 @@ class Liable(BasePositionable):
     Any object you can lie down on.
 
     """
+
     def at_focus_lie(self, caller, **kwargs):
         super().handle_position(caller, "lie", **kwargs)
 
@@ -1026,6 +1052,7 @@ class Kneelable(BasePositionable):
     Any object you can kneel on.
 
     """
+
     def at_focus_kneel(self, caller, **kwargs):
         super().handle_position(caller, "kneel", **kwargs)
 
@@ -1037,6 +1064,7 @@ class Climbable(BasePositionable):
     command, which resets your position.
 
     """
+
     def at_focus_climb(self, caller, **kwargs):
         super().handle_position(caller, "climb", **kwargs)
 
@@ -1047,6 +1075,7 @@ class Positionable(Sittable, Liable, Kneelable, Climbable):
     supported ways (sit, lie, kneel or climb)
 
     """
+
     def get_cmd_signatures(self):
         txt = "It looks like you can {callsigns} on it."
         return ["sit", "lie", "kneel", "climb"], txt

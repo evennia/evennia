@@ -13,8 +13,8 @@ See README.md for more info.
 # but even so, you will get clashes when both using the tutorialworld and your
 # own code, so somthing needs to be done here. See issue #766. /Griatch
 
-#import evennia
+# import evennia
 # evennia._init()
-#import barter, dice, extended_room, menu_login, talking_npc
-#import chargen, email_login, gendersub, menusystem, slow_exit
-#import tutorial_world, tutorial_examples
+# import barter, dice, extended_room, menu_login, talking_npc
+# import chargen, email_login, gendersub, menusystem, slow_exit
+# import tutorial_world, tutorial_examples

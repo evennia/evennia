@@ -94,7 +94,7 @@ from evennia import utils
 from evennia import CmdSet
 
 # error return function, needed by Extended Look command
-_AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 
 # regexes for in-desc replacements
 RE_MORNING = re.compile(r"<morning>(.*?)</morning>", re.IGNORECASE)
@@ -103,10 +103,12 @@ RE_EVENING = re.compile(r"<evening>(.*?)</evening>", re.IGNORECASE)
 RE_NIGHT = re.compile(r"<night>(.*?)</night>", re.IGNORECASE)
 # this map is just a faster way to select the right regexes (the first
 # regex in each tuple will be parsed, the following will always be weeded out)
-REGEXMAP = {"morning": (RE_MORNING, RE_AFTERNOON, RE_EVENING, RE_NIGHT),
-            "afternoon": (RE_AFTERNOON, RE_MORNING, RE_EVENING, RE_NIGHT),
-            "evening": (RE_EVENING, RE_MORNING, RE_AFTERNOON, RE_NIGHT),
-            "night": (RE_NIGHT, RE_MORNING, RE_AFTERNOON, RE_EVENING)}
+REGEXMAP = {
+    "morning": (RE_MORNING, RE_AFTERNOON, RE_EVENING, RE_NIGHT),
+    "afternoon": (RE_AFTERNOON, RE_MORNING, RE_EVENING, RE_NIGHT),
+    "evening": (RE_EVENING, RE_MORNING, RE_AFTERNOON, RE_NIGHT),
+    "night": (RE_NIGHT, RE_MORNING, RE_AFTERNOON, RE_EVENING),
+}
 
 # set up the seasons and time slots. This assumes gametime started at the
 # beginning of the year (so month 1 is equivalent to January), and that
@@ -118,6 +120,7 @@ DAY_BOUNDARIES = (0, 6 / 24.0, 12 / 24.0, 18 / 24.0)
 
 
 # implements the Extended Room
+
 
 class ExtendedRoom(DefaultRoom):
     """
@@ -265,7 +268,6 @@ class ExtendedRoom(DefaultRoom):
         if self.db.details and detailkey.lower() in self.db.details:
             del self.db.details[detailkey.lower()]
 
-
     def return_appearance(self, looker, **kwargs):
         """
         This is called when e.g. the look command wants to retrieve
@@ -321,6 +323,7 @@ class ExtendedRoom(DefaultRoom):
 # Custom Look command supporting Room details. Add this to
 # the Default cmdset to use.
 
+
 class CmdExtendedRoomLook(default_cmds.CmdLook):
     """
     look
@@ -341,15 +344,21 @@ class CmdExtendedRoomLook(default_cmds.CmdLook):
         caller = self.caller
         args = self.args
         if args:
-            looking_at_obj = caller.search(args,
-                                           candidates=caller.location.contents + caller.contents,
-                                           use_nicks=True,
-                                           quiet=True)
+            looking_at_obj = caller.search(
+                args,
+                candidates=caller.location.contents + caller.contents,
+                use_nicks=True,
+                quiet=True,
+            )
             if not looking_at_obj:
                 # no object found. Check if there is a matching
                 # detail at location.
                 location = caller.location
-                if location and hasattr(location, "return_detail") and callable(location.return_detail):
+                if (
+                    location
+                    and hasattr(location, "return_detail")
+                    and callable(location.return_detail)
+                ):
                     detail = location.return_detail(args)
                     if detail:
                         # we found a detail instead. Show that.
@@ -367,7 +376,7 @@ class CmdExtendedRoomLook(default_cmds.CmdLook):
                 caller.msg("You have no location to look at!")
                 return
 
-        if not hasattr(looking_at_obj, 'return_appearance'):
+        if not hasattr(looking_at_obj, "return_appearance"):
             # this is likely due to us having an account instead
             looking_at_obj = looking_at_obj.character
         if not looking_at_obj.access(caller, "view"):
@@ -381,6 +390,7 @@ class CmdExtendedRoomLook(default_cmds.CmdLook):
 
 # Custom build commands for setting seasonal descriptions
 # and detailing extended rooms.
+
 
 class CmdExtendedRoomDesc(default_cmds.CmdDesc):
     """
@@ -411,6 +421,7 @@ class CmdExtendedRoomDesc(default_cmds.CmdDesc):
     version of the `desc` command.
 
     """
+
     aliases = ["describe"]
     switch_options = ()  # Inherits from default_cmds.CmdDesc, but unused here
 
@@ -442,13 +453,13 @@ class CmdExtendedRoomDesc(default_cmds.CmdDesc):
             if not location:
                 caller.msg("No location was found!")
                 return
-            if switch == 'spring':
+            if switch == "spring":
                 location.db.spring_desc = self.args
-            elif switch == 'summer':
+            elif switch == "summer":
                 location.db.summer_desc = self.args
-            elif switch == 'autumn':
+            elif switch == "autumn":
                 location.db.autumn_desc = self.args
-            elif switch == 'winter':
+            elif switch == "winter":
                 location.db.winter_desc = self.args
             # clear flag to force an update
             self.reset_times(location)
@@ -498,6 +509,7 @@ class CmdExtendedRoomDetail(default_cmds.MuxCommand):
     To remove one or several details, use the @detail/del switch.
 
     """
+
     key = "@detail"
     locks = "cmd:perm(Builder)"
     help_category = "Building"
@@ -537,6 +549,7 @@ class CmdExtendedRoomDetail(default_cmds.MuxCommand):
 
 # Simple command to view the current time and season
 
+
 class CmdExtendedRoomGameTime(default_cmds.MuxCommand):
     """
     Check the game time
@@ -546,6 +559,7 @@ class CmdExtendedRoomGameTime(default_cmds.MuxCommand):
 
     Shows the current in-game time and season.
     """
+
     key = "time"
     locks = "cmd:all()"
     help_category = "General"
@@ -565,11 +579,13 @@ class CmdExtendedRoomGameTime(default_cmds.MuxCommand):
 
 # CmdSet for easily install all commands
 
+
 class ExtendedRoomCmdSet(CmdSet):
     """
     Groups the extended-room commands.
 
     """
+
     def at_cmdset_creation(self):
         self.add(CmdExtendedRoomLook)
         self.add(CmdExtendedRoomDesc)

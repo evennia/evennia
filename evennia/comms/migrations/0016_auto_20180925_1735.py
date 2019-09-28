@@ -7,18 +7,11 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('comms', '0015_auto_20170706_2041'),
-    ]
+    dependencies = [("comms", "0015_auto_20170706_2041")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='channeldb',
-            name='db_subscriptions',
-        ),
+        migrations.RemoveField(model_name="channeldb", name="db_subscriptions"),
         migrations.AlterField(
-            model_name='msg',
-            name='db_message',
-            field=models.TextField(verbose_name='message'),
+            model_name="msg", name="db_message", field=models.TextField(verbose_name="message")
         ),
     ]

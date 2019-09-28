@@ -35,11 +35,13 @@ _GA = object.__getattribute__
 
 # handler for managing states on room
 
+
 class StateHandler(object):
     """
     This sits on the room and is used to progress through the states.
 
     """
+
     def __init__(self, room):
         self.room = room
         self.current_state_name = room.db.state or _FIRST_STATE
@@ -109,12 +111,14 @@ class StateHandler(object):
 
 # base state class
 
+
 class BaseState(object):
     """
     Base object holding all callables for a state. This is here to
     allow easy overriding for child states.
 
     """
+
     next_state = "unset"
     # a sequence of hints to describe this state.
     hints = []
@@ -144,15 +148,20 @@ class BaseState(object):
         Wrapper handling state method errors.
 
         """
+
         @wraps(method)
         def decorator(*args, **kwargs):
             try:
                 return method(*args, **kwargs)
             except Exception:
                 logger.log_trace(f"Error in State {__name__}")
-                self.room.msg_room(None, f"|rThere was an unexpected error in State {__name__}. "
-                                   "Please |wreport|r this as an issue.|n")
+                self.room.msg_room(
+                    None,
+                    f"|rThere was an unexpected error in State {__name__}. "
+                    "Please |wreport|r this as an issue.|n",
+                )
                 raise  # TODO
+
         return decorator
 
     def __getattribute__(self, key):
@@ -176,8 +185,10 @@ class BaseState(object):
             # return the next hint in the sequence.
             self.room.db.state_hint_level = next_level
             self.room.db.stats["hints_used"] += 1
-            self.room.log(f"HINT: {self.name.split('.')[-1]}, level {next_level + 1} "
-                          f"(total used: {self.room.db.stats['hints_used']})")
+            self.room.log(
+                f"HINT: {self.name.split('.')[-1]}, level {next_level + 1} "
+                f"(total used: {self.room.db.stats['hints_used']})"
+            )
             return self.hints[next_level]
         else:
             # no more hints for this state
@@ -191,8 +202,7 @@ class BaseState(object):
         if cinematic:
             message = msg_cinematic(message, borders=borders)
         if target:
-            options = target.attributes.get(
-                "options", category=self.room.tagcategory, default={})
+            options = target.attributes.get("options", category=self.room.tagcategory, default={})
             style = options.get("things_style", 2)
             # we assume this is a char
             target.msg(parse_for_things(message, things_style=style))
@@ -205,7 +215,7 @@ class BaseState(object):
         """
         self.msg(message, target=target, borders=True, cinematic=True)
 
-    def create_object(self, typeclass=None, key='testobj', location=None, **kwargs):
+    def create_object(self, typeclass=None, key="testobj", location=None, **kwargs):
         """
         This is a convenience-wrapper for quickly building EvscapeRoom objects.
 
@@ -223,8 +233,12 @@ class BaseState(object):
         if not location:
             location = self.room
         return create_evscaperoom_object(
-            typeclass=typeclass, key=key, location=location,
-            tags=[("room", self.room.tagcategory.lower())], **kwargs)
+            typeclass=typeclass,
+            key=key,
+            location=location,
+            tags=[("room", self.room.tagcategory.lower())],
+            **kwargs,
+        )
 
     def get_object(self, key):
         """
@@ -237,7 +251,8 @@ class BaseState(object):
 
         """
         match = EvscaperoomObject.objects.filter_family(
-            db_key__iexact=key, db_tags__db_category=self.room.tagcategory.lower())
+            db_key__iexact=key, db_tags__db_category=self.room.tagcategory.lower()
+        )
         if not match:
             logger.log_err(f"get_object: No match for '{key}' in state ")
             return None

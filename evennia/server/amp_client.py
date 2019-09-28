@@ -17,6 +17,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
     connection error.
 
     """
+
     # Initial reconnect delay in seconds.
     initialDelay = 1
     factor = 1.5
@@ -95,6 +96,7 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
     Portal (which acts as the AMP-server)
 
     """
+
     # sending AMP data
 
     def connectionMade(self):
@@ -108,7 +110,8 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         # first thing we do is to request the Portal to sync all sessions
         # back with the Server side. We also need the startup mode (reload, reset, shutdown)
         self.send_AdminServer2Portal(
-                amp.DUMMYSESSION, operation=amp.PSYNC, spid=os.getpid(), info_dict=info_dict)
+            amp.DUMMYSESSION, operation=amp.PSYNC, spid=os.getpid(), info_dict=info_dict
+        )
         # run the intial setup if needed
         self.factory.server.run_initial_setup()
 
@@ -131,7 +134,8 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         """
         # print("server data_to_portal: {}, {}, {}".format(command, sessid, kwargs))
         return self.callRemote(command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
-                self.errback, command.key)
+            self.errback, command.key
+        )
 
     def send_MsgServer2Portal(self, session, **kwargs):
         """
@@ -158,8 +162,9 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
             kwargs (dict, optional): Data going into the adminstrative.
 
         """
-        return self.data_to_portal(amp.AdminServer2Portal, session.sessid,
-                                   operation=operation, **kwargs)
+        return self.data_to_portal(
+            amp.AdminServer2Portal, session.sessid, operation=operation, **kwargs
+        )
 
     # receiving AMP data
 
@@ -228,18 +233,18 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
         elif operation == amp.SRELOAD:  # server reload
             # shut down in reload mode
             server_sessionhandler.all_sessions_portal_sync()
-            server_sessionhandler.server.shutdown(mode='reload')
+            server_sessionhandler.server.shutdown(mode="reload")
 
         elif operation == amp.SRESET:
             # shut down in reset mode
             server_sessionhandler.all_sessions_portal_sync()
-            server_sessionhandler.server.shutdown(mode='reset')
+            server_sessionhandler.server.shutdown(mode="reset")
 
         elif operation == amp.SSHUTD:  # server shutdown
             # shutdown in stop mode
-            server_sessionhandler.server.shutdown(mode='shutdown')
+            server_sessionhandler.server.shutdown(mode="shutdown")
 
         else:
-            raise Exception("operation %(op)s not recognized." % {'op': operation})
+            raise Exception("operation %(op)s not recognized." % {"op": operation})
 
         return {}

@@ -24,7 +24,7 @@ class BodyFunctions(DefaultScript):
         self.interval = 20  # seconds
         # self.repeats = 5  # repeat only a certain number of times
         self.start_delay = True  # wait self.interval until first call
-        #self.persistent = True
+        # self.persistent = True
 
     def at_repeat(self):
         """
@@ -44,7 +44,9 @@ class BodyFunctions(DefaultScript):
         elif rand < 0.2:
             string = "You have an itch. Hard to reach too."
         elif rand < 0.3:
-            string = "You think you hear someone behind you. ... but when you look there's noone there."
+            string = (
+                "You think you hear someone behind you. ... but when you look there's noone there."
+            )
         elif rand < 0.4:
             string = "You inspect your fingernails. Nothing to report."
         elif rand < 0.5:

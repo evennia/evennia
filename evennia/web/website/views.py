@@ -67,7 +67,7 @@ def _gamestats():
         "num_exits": nexits or "no",
         "num_objects": nobjs or "none",
         "num_characters": nchars or "no",
-        "num_others": nothers or "no"
+        "num_others": nothers or "no",
     }
     return pagevars
 
@@ -78,11 +78,9 @@ def to_be_implemented(request):
     implemented yet.
     """
 
-    pagevars = {
-        "page_title": "To Be Implemented...",
-    }
+    pagevars = {"page_title": "To Be Implemented..."}
 
-    return render(request, 'tbi.html', pagevars)
+    return render(request, "tbi.html", pagevars)
 
 
 @staff_member_required
@@ -90,9 +88,7 @@ def evennia_admin(request):
     """
     Helpful Evennia-specific admin page.
     """
-    return render(
-        request, 'evennia_admin.html', {
-            'accountdb': AccountDB})
+    return render(request, "evennia_admin.html", {"accountdb": AccountDB})
 
 
 def admin_wrapper(request):
@@ -105,6 +101,7 @@ def admin_wrapper(request):
 #
 # Class-based views
 #
+
 
 class EvenniaIndexView(TemplateView):
     """
@@ -126,8 +123,9 @@ class EvenniaIndexView(TemplateView):
     This particular example displays the index page.
 
     """
+
     # Tell the view what HTML template to use for the page
-    template_name = 'website/index.html'
+    template_name = "website/index.html"
 
     # This method tells the view what data should be displayed on the template.
     def get_context_data(self, **kwargs):
@@ -176,6 +174,7 @@ class TypeclassMixin(object):
     Django models interchangeably.
 
     """
+
     @property
     def typeclass(self):
         return self.model
@@ -193,10 +192,11 @@ class EvenniaCreateView(CreateView, TypeclassMixin):
     otherwise.
 
     """
+
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return 'Create %s' % self.typeclass._meta.verbose_name.title()
+        return "Create %s" % self.typeclass._meta.verbose_name.title()
 
 
 class EvenniaDetailView(DetailView, TypeclassMixin):
@@ -207,10 +207,11 @@ class EvenniaDetailView(DetailView, TypeclassMixin):
     otherwise.
 
     """
+
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return '%s Detail' % self.typeclass._meta.verbose_name.title()
+        return "%s Detail" % self.typeclass._meta.verbose_name.title()
 
 
 class EvenniaUpdateView(UpdateView, TypeclassMixin):
@@ -221,10 +222,11 @@ class EvenniaUpdateView(UpdateView, TypeclassMixin):
     otherwise.
 
     """
+
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return 'Update %s' % self.typeclass._meta.verbose_name.title()
+        return "Update %s" % self.typeclass._meta.verbose_name.title()
 
 
 class EvenniaDeleteView(DeleteView, TypeclassMixin):
@@ -235,15 +237,17 @@ class EvenniaDeleteView(DeleteView, TypeclassMixin):
     otherwise.
 
     """
+
     @property
     def page_title(self):
         # Makes sure the page has a sensible title.
-        return 'Delete %s' % self.typeclass._meta.verbose_name.title()
+        return "Delete %s" % self.typeclass._meta.verbose_name.title()
 
 
 #
 # Object views
 #
+
 
 class ObjectDetailView(EvenniaDetailView):
     """
@@ -255,6 +259,7 @@ class ObjectDetailView(EvenniaDetailView):
     permissions to actually *do* things to it.
 
     """
+
     # -- Django constructs --
     #
     # Choose what class of object this view will display. Note that this should
@@ -267,18 +272,18 @@ class ObjectDetailView(EvenniaDetailView):
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
 
     # What HTML template you wish to use to display this page.
-    template_name = 'website/object_detail.html'
+    template_name = "website/object_detail.html"
 
     # -- Evennia constructs --
     #
     # What lock type to check for the requesting user, authenticated or not.
     # https://github.com/evennia/evennia/wiki/Locks#valid-access_types
-    access_type = 'view'
+    access_type = "view"
 
     # What attributes of the object you wish to display on the page. Model-level
     # attributes will take precedence over identically-named db.attributes!
     # The order you specify here will be followed.
-    attributes = ['name', 'desc']
+    attributes = ["name", "desc"]
 
     def get_context_data(self, **kwargs):
         """
@@ -304,15 +309,15 @@ class ObjectDetailView(EvenniaDetailView):
         for attribute in self.attributes:
             # Check if the attribute is a core fieldname (name, desc)
             if attribute in self.typeclass._meta._property_names:
-                attribute_list[attribute.title()] = getattr(obj, attribute, '')
+                attribute_list[attribute.title()] = getattr(obj, attribute, "")
 
             # Check if the attribute is a db attribute (char1.db.favorite_color)
             else:
-                attribute_list[attribute.title()] = getattr(obj.db, attribute, '')
+                attribute_list[attribute.title()] = getattr(obj.db, attribute, "")
 
         # Add our attribute map to the Django request context, so it gets
         # displayed on the template
-        context['attribute_list'] = attribute_list
+        context["attribute_list"] = attribute_list
 
         # Return the comprehensive context object
         return context
@@ -336,18 +341,19 @@ class ObjectDetailView(EvenniaDetailView):
             queryset = self.get_queryset()
 
         # Get the object, ignoring all checks and filters for now
-        obj = self.typeclass.objects.get(pk=self.kwargs.get('pk'))
+        obj = self.typeclass.objects.get(pk=self.kwargs.get("pk"))
 
         # Check if this object was requested in a valid manner
         if slugify(obj.name) != self.kwargs.get(self.slug_url_kwarg):
             raise HttpResponseBadRequest(
-                "No %(verbose_name)s found matching the query" %
-                {'verbose_name': queryset.model._meta.verbose_name})
+                "No %(verbose_name)s found matching the query"
+                % {"verbose_name": queryset.model._meta.verbose_name}
+            )
 
         # Check if the requestor account has permissions to access object
         account = self.request.user
         if not obj.access(account, self.access_type):
-            raise PermissionDenied(u"You are not authorized to %s this object." % self.access_type)
+            raise PermissionDenied("You are not authorized to %s this object." % self.access_type)
 
         # Get the object, if it is in the specified queryset
         obj = super(ObjectDetailView, self).get_object(queryset)
@@ -365,6 +371,7 @@ class ObjectCreateView(LoginRequiredMixin, EvenniaCreateView):
     default title for the page.
 
     """
+
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
 
 
@@ -378,12 +385,13 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
     permissions to delete the requested object.
 
     """
+
     # -- Django constructs --
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
-    template_name = 'website/object_confirm_delete.html'
+    template_name = "website/object_confirm_delete.html"
 
     # -- Evennia constructs --
-    access_type = 'delete'
+    access_type = "delete"
 
     def delete(self, request, *args, **kwargs):
         """
@@ -420,11 +428,12 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     it does not update core model fields, *only* object attributes!
 
     """
+
     # -- Django constructs --
     model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
 
     # -- Evennia constructs --
-    access_type = 'edit'
+    access_type = "edit"
 
     def get_success_url(self):
         """
@@ -454,10 +463,10 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
         obj = self.get_object()
 
         # Get attributes
-        data = {k: getattr(obj.db, k, '') for k in self.form_class.base_fields}
+        data = {k: getattr(obj.db, k, "") for k in self.form_class.base_fields}
 
         # Get model fields
-        data.update({k: getattr(obj, k, '') for k in self.form_class.Meta.fields})
+        data.update({k: getattr(obj, k, "") for k in self.form_class.Meta.fields})
 
         return data
 
@@ -493,6 +502,7 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
 # Account views
 #
 
+
 class AccountMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
@@ -501,6 +511,7 @@ class AccountMixin(TypeclassMixin):
     with Account objects instead of generic Objects or otherwise.
 
     """
+
     # -- Django constructs --
     model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
     form_class = website_forms.AccountForm
@@ -511,9 +522,10 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
     Account creation view.
 
     """
+
     # -- Django constructs --
-    template_name = 'website/registration/register.html'
-    success_url = reverse_lazy('login')
+    template_name = "website/registration/register.html"
+    success_url = reverse_lazy("login")
 
     def form_valid(self, form):
         """
@@ -526,15 +538,12 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
 
         """
         # Get values provided
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password1']
-        email = form.cleaned_data.get('email', '')
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password1"]
+        email = form.cleaned_data.get("email", "")
 
         # Create account
-        account, errs = self.typeclass.create(
-            username=username,
-            password=password,
-            email=email,)
+        account, errs = self.typeclass.create(username=username, password=password, email=email)
 
         # If unsuccessful, display error messages to user
         if not account:
@@ -544,8 +553,11 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
             return self.form_invalid(form)
 
         # Inform user of success
-        messages.success(self.request, "Your account '%s' was successfully created! "
-                                       "You may log in using it now." % account.name)
+        messages.success(
+            self.request,
+            "Your account '%s' was successfully created! "
+            "You may log in using it now." % account.name,
+        )
 
         # Redirect the user to the login page
         return HttpResponseRedirect(self.success_url)
@@ -555,6 +567,7 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
 # Character views
 #
 
+
 class CharacterMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
@@ -563,10 +576,11 @@ class CharacterMixin(TypeclassMixin):
     with Character objects instead of generic Objects or otherwise.
 
     """
+
     # -- Django constructs --
     model = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
     form_class = website_forms.CharacterForm
-    success_url = reverse_lazy('character-manage')
+    success_url = reverse_lazy("character-manage")
 
     def get_queryset(self):
         """
@@ -580,10 +594,10 @@ class CharacterMixin(TypeclassMixin):
         """
         # Get IDs of characters owned by account
         account = self.request.user
-        ids = [getattr(x, 'id') for x in account.characters if x]
+        ids = [getattr(x, "id") for x in account.characters if x]
 
         # Return a queryset consisting of those characters
-        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower("db_key"))
 
 
 class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
@@ -595,13 +609,14 @@ class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
     human stalkers and automated bots/scrapers from harvesting data on your users.
 
     """
+
     # -- Django constructs --
-    template_name = 'website/character_list.html'
+    template_name = "website/character_list.html"
     paginate_by = 100
 
     # -- Evennia constructs --
-    page_title = 'Character List'
-    access_type = 'view'
+    page_title = "Character List"
+    access_type = "view"
 
     def get_queryset(self):
         """
@@ -617,10 +632,11 @@ class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
 
         # Return a queryset consisting of characters the user is allowed to
         # see.
-        ids = [obj.id for obj in self.typeclass.objects.all()
-               if obj.access(account, self.access_type)]
+        ids = [
+            obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)
+        ]
 
-        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower("db_key"))
 
 
 class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
@@ -632,6 +648,7 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
     and that their intended puppet is one that they own.
 
     """
+
     def get_redirect_url(self, *args, **kwargs):
         """
         Django hook.
@@ -647,17 +664,17 @@ class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, Obje
         char = self.get_object()
 
         # Get the page the user came from
-        next_page = self.request.GET.get('next', self.success_url)
+        next_page = self.request.GET.get("next", self.success_url)
 
         if char:
             # If the account owns the char, store the ID of the char in the
             # Django request's session (different from Evennia session!).
             # We do this because characters don't serialize well.
-            self.request.session['puppet'] = int(char.pk)
+            self.request.session["puppet"] = int(char.pk)
             messages.success(self.request, "You become '%s'!" % char)
         else:
             # If the puppeting failed, clear out the cached puppet value
-            self.request.session['puppet'] = None
+            self.request.session["puppet"] = None
             messages.error(self.request, "You cannot become '%s'." % char)
 
         return next_page
@@ -669,12 +686,13 @@ class CharacterManageView(LoginRequiredMixin, CharacterMixin, ListView):
     edit, or delete their own characters.
 
     """
+
     # -- Django constructs --
     paginate_by = 10
-    template_name = 'website/character_manage_list.html'
+    template_name = "website/character_manage_list.html"
 
     # -- Evennia constructs --
-    page_title = 'Manage Characters'
+    page_title = "Manage Characters"
 
 
 class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
@@ -683,9 +701,10 @@ class CharacterUpdateView(CharacterMixin, ObjectUpdateView):
     ObjectUpdateView) can edit the attributes of a character they own.
 
     """
+
     # -- Django constructs --
     form_class = website_forms.CharacterUpdateForm
-    template_name = 'website/character_form.html'
+    template_name = "website/character_form.html"
 
 
 class CharacterDetailView(CharacterMixin, ObjectDetailView):
@@ -694,13 +713,14 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
     a character, owned by them or not.
 
     """
+
     # -- Django constructs --
-    template_name = 'website/object_detail.html'
+    template_name = "website/object_detail.html"
 
     # -- Evennia constructs --
     # What attributes to display for this object
-    attributes = ['name', 'desc']
-    access_type = 'view'
+    attributes = ["name", "desc"]
+    access_type = "view"
 
     def get_queryset(self):
         """
@@ -715,10 +735,11 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
 
         # Return a queryset consisting of characters the user is allowed to
         # see.
-        ids = [obj.id for obj in self.typeclass.objects.all()
-               if obj.access(account, self.access_type)]
+        ids = [
+            obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)
+        ]
 
-        return self.typeclass.objects.filter(id__in=ids).order_by(Lower('db_key'))
+        return self.typeclass.objects.filter(id__in=ids).order_by(Lower("db_key"))
 
 
 class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
@@ -727,6 +748,7 @@ class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
     ObjectDeleteView) can delete a character they own.
 
     """
+
     pass
 
 
@@ -736,8 +758,9 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
     ObjectCreateView) can create a new character.
 
     """
+
     # -- Django constructs --
-    template_name = 'website/character_form.html'
+    template_name = "website/character_form.html"
 
     def form_valid(self, form):
         """
@@ -755,8 +778,8 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
 
         # Get attributes from the form
         self.attributes = {k: form.cleaned_data[k] for k in form.cleaned_data.keys()}
-        charname = self.attributes.pop('db_key')
-        description = self.attributes.pop('desc')
+        charname = self.attributes.pop("db_key")
+        description = self.attributes.pop("desc")
         # Create a character
         character, errors = self.typeclass.create(charname, account, description=description)
 
@@ -783,6 +806,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
 # Channel views
 #
 
+
 class ChannelMixin(TypeclassMixin):
     """
     This is a "mixin", a modifier of sorts.
@@ -791,15 +815,16 @@ class ChannelMixin(TypeclassMixin):
     with HelpEntry objects instead of generic Objects or otherwise.
 
     """
+
     # -- Django constructs --
     model = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
 
     # -- Evennia constructs --
-    page_title = 'Channels'
+    page_title = "Channels"
 
     # What lock type to check for the requesting user, authenticated or not.
     # https://github.com/evennia/evennia/wiki/Locks#valid-access_types
-    access_type = 'listen'
+    access_type = "listen"
 
     def get_queryset(self):
         """
@@ -816,14 +841,10 @@ class ChannelMixin(TypeclassMixin):
         channels = self.typeclass.objects.all().iterator()
 
         # Now figure out which ones the current user is allowed to see
-        bucket = [channel.id for channel in channels if channel.access(account, 'listen')]
+        bucket = [channel.id for channel in channels if channel.access(account, "listen")]
 
         # Re-query and set a sorted list
-        filtered = self.typeclass.objects.filter(
-            id__in=bucket
-        ).order_by(
-            Lower('db_key')
-        )
+        filtered = self.typeclass.objects.filter(id__in=bucket).order_by(Lower("db_key"))
 
         return filtered
 
@@ -834,9 +855,10 @@ class ChannelListView(ChannelMixin, ListView):
     or not.
 
     """
+
     # -- Django constructs --
     paginate_by = 100
-    template_name = 'website/channel_list.html'
+    template_name = "website/channel_list.html"
 
     # -- Evennia constructs --
     page_title = "Channel Index"
@@ -854,10 +876,11 @@ class ChannelListView(ChannelMixin, ListView):
         context = super(ChannelListView, self).get_context_data(**kwargs)
 
         # Calculate which channels are most popular
-        context['most_popular'] = sorted(
+        context["most_popular"] = sorted(
             list(self.get_queryset()),
             key=lambda channel: len(channel.subscriptions.all()),
-            reverse=True)[:self.max_popular]
+            reverse=True,
+        )[: self.max_popular]
 
         return context
 
@@ -867,14 +890,15 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
     Returns the log entries for a given channel.
 
     """
+
     # -- Django constructs --
-    template_name = 'website/channel_detail.html'
+    template_name = "website/channel_detail.html"
 
     # -- Evennia constructs --
     # What attributes of the object you wish to display on the page. Model-level
     # attributes will take precedence over identically-named db.attributes!
     # The order you specify here will be followed.
-    attributes = ['name']
+    attributes = ["name"]
 
     # How many log entries to read and display.
     max_num_lines = 10000
@@ -893,27 +917,24 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
 
         # Get the filename this Channel is recording to
         filename = self.object.attributes.get(
-            "log_file", default="channel_%s.log" % self.object.key)
+            "log_file", default="channel_%s.log" % self.object.key
+        )
 
         # Split log entries so we can filter by time
         bucket = []
         for log in (x.strip() for x in tail_log_file(filename, 0, self.max_num_lines)):
             if not log:
                 continue
-            time, msg = log.split(' [-] ')
-            time_key = time.split(':')[0]
+            time, msg = log.split(" [-] ")
+            time_key = time.split(":")[0]
 
-            bucket.append({
-                'key': time_key,
-                'timestamp': time,
-                'message': msg
-            })
+            bucket.append({"key": time_key, "timestamp": time, "message": msg})
 
         # Add the processed entries to the context
-        context['object_list'] = bucket
+        context["object_list"] = bucket
 
         # Get a list of unique timestamps by hour and sort them
-        context['object_filters'] = sorted(set([x['key'] for x in bucket]))
+        context["object_filters"] = sorted(set([x["key"] for x in bucket]))
 
         return context
 
@@ -931,14 +952,15 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
             queryset = self.get_queryset()
 
         # Find the object in the queryset
-        channel = slugify(self.kwargs.get('slug', ''))
+        channel = slugify(self.kwargs.get("slug", ""))
         obj = next((x for x in queryset if slugify(x.db_key) == channel), None)
 
         # Check if this object was requested in a valid manner
         if not obj:
             raise HttpResponseBadRequest(
-                "No %(verbose_name)s found matching the query" %
-                {'verbose_name': queryset.model._meta.verbose_name})
+                "No %(verbose_name)s found matching the query"
+                % {"verbose_name": queryset.model._meta.verbose_name}
+            )
 
         return obj
 
@@ -946,6 +968,7 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
 #
 # Help views
 #
+
 
 class HelpMixin(TypeclassMixin):
     """
@@ -955,11 +978,12 @@ class HelpMixin(TypeclassMixin):
     with HelpEntry objects instead of generic Objects or otherwise.
 
     """
+
     # -- Django constructs --
     model = HelpEntry
 
     # -- Evennia constructs --
-    page_title = 'Help'
+    page_title = "Help"
 
     def get_queryset(self):
         """
@@ -976,15 +1000,13 @@ class HelpMixin(TypeclassMixin):
         entries = self.typeclass.objects.all().iterator()
 
         # Now figure out which ones the current user is allowed to see
-        bucket = [entry.id for entry in entries if entry.access(account, 'view')]
+        bucket = [entry.id for entry in entries if entry.access(account, "view")]
 
         # Re-query and set a sorted list
-        filtered = self.typeclass.objects.filter(
-            id__in=bucket
-        ).order_by(
-            Lower('db_key')
-        ).order_by(
-            Lower('db_help_category')
+        filtered = (
+            self.typeclass.objects.filter(id__in=bucket)
+            .order_by(Lower("db_key"))
+            .order_by(Lower("db_help_category"))
         )
 
         return filtered
@@ -996,9 +1018,10 @@ class HelpListView(HelpMixin, ListView):
     or not.
 
     """
+
     # -- Django constructs --
     paginate_by = 500
-    template_name = 'website/help_list.html'
+    template_name = "website/help_list.html"
 
     # -- Evennia constructs --
     page_title = "Help Index"
@@ -1009,8 +1032,9 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
     Returns the detail page for a given help entry.
 
     """
+
     # -- Django constructs --
-    template_name = 'website/help_detail.html'
+    template_name = "website/help_detail.html"
 
     def get_context_data(self, **kwargs):
         """
@@ -1027,9 +1051,12 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
         obj = self.get_object()
 
         # Get queryset and filter out non-related categories
-        queryset = self.get_queryset().filter(
-            db_help_category=obj.db_help_category).order_by(Lower('db_key'))
-        context['topic_list'] = queryset
+        queryset = (
+            self.get_queryset()
+            .filter(db_help_category=obj.db_help_category)
+            .order_by(Lower("db_key"))
+        )
+        context["topic_list"] = queryset
 
         # Find the index position of the given obj in the queryset
         objs = list(queryset)
@@ -1039,23 +1066,23 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
 
         # Find the previous and next topics, if either exist
         try:
-            assert i+1 <= len(objs) and objs[i+1] is not obj
-            context['topic_next'] = objs[i+1]
+            assert i + 1 <= len(objs) and objs[i + 1] is not obj
+            context["topic_next"] = objs[i + 1]
         except:
-            context['topic_next'] = None
+            context["topic_next"] = None
 
         try:
-            assert i-1 >= 0 and objs[i-1] is not obj
-            context['topic_previous'] = objs[i-1]
+            assert i - 1 >= 0 and objs[i - 1] is not obj
+            context["topic_previous"] = objs[i - 1]
         except:
-            context['topic_previous'] = None
+            context["topic_previous"] = None
 
         # Format the help entry using HTML instead of newlines
         text = obj.db_entrytext
-        text = text.replace('\r\n\r\n', '\n\n')
-        text = text.replace('\r\n', '\n')
-        text = text.replace('\n', '<br />')
-        context['entry_text'] = text
+        text = text.replace("\r\n\r\n", "\n\n")
+        text = text.replace("\r\n", "\n")
+        text = text.replace("\n", "<br />")
+        context["entry_text"] = text
 
         return context
 
@@ -1073,16 +1100,22 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
             queryset = self.get_queryset()
 
         # Find the object in the queryset
-        category = slugify(self.kwargs.get('category', ''))
-        topic = slugify(self.kwargs.get('topic', ''))
-        obj = next((x for x in queryset
-                    if slugify(x.db_help_category) == category and
-                    slugify(x.db_key) == topic), None)
+        category = slugify(self.kwargs.get("category", ""))
+        topic = slugify(self.kwargs.get("topic", ""))
+        obj = next(
+            (
+                x
+                for x in queryset
+                if slugify(x.db_help_category) == category and slugify(x.db_key) == topic
+            ),
+            None,
+        )
 
         # Check if this object was requested in a valid manner
         if not obj:
             raise HttpResponseBadRequest(
-                "No %(verbose_name)s found matching the query" %
-                {'verbose_name': queryset.model._meta.verbose_name})
+                "No %(verbose_name)s found matching the query"
+                % {"verbose_name": queryset.model._meta.verbose_name}
+            )
 
         return obj

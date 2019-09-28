@@ -32,7 +32,9 @@ from evennia.utils.text2html import parse_html
 from evennia.server import session
 
 _CLIENT_SESSIONS = utils.mod_import(settings.SESSION_ENGINE).SessionStore
-_RE_SCREENREADER_REGEX = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
+_RE_SCREENREADER_REGEX = re.compile(
+    r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
+)
 _SERVERNAME = settings.SERVERNAME
 _KEEPALIVE = 30  # how often to check keepalive
 
@@ -41,6 +43,7 @@ _KEEPALIVE = 30  # how often to check keepalive
 # django data to the client. Might need to
 # extend this if one wants to send more
 # complex database objects too.
+
 
 class LazyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -58,13 +61,15 @@ def jsonify(obj):
 # using POST requests to /webclientdata.
 #
 
+
 class AjaxWebClient(resource.Resource):
     """
     An ajax/comet long-polling transport
 
     """
+
     isLeaf = True
-    allowedMethods = ('POST',)
+    allowedMethods = ("POST",)
 
     def __init__(self):
         self.requests = {}
@@ -87,8 +92,11 @@ class AjaxWebClient(resource.Resource):
         """
         now = time.time()
         to_remove = []
-        keep_alives = ((csessid, remove) for csessid, (t, remove)
-                       in self.last_alive.items() if now - t > _KEEPALIVE)
+        keep_alives = (
+            (csessid, remove)
+            for csessid, (t, remove) in self.last_alive.items()
+            if now - t > _KEEPALIVE
+        )
         for csessid, remove in keep_alives:
             if remove:
                 # keepalive timeout. Line is dead.
@@ -118,7 +126,7 @@ class AjaxWebClient(resource.Resource):
             csessid (int): The client-session id.
 
         """
-        return html.escape(request.args[b'csessid'][0].decode("utf-8"))
+        return html.escape(request.args[b"csessid"][0].decode("utf-8"))
 
     def at_login(self):
         """
@@ -174,9 +182,11 @@ class AjaxWebClient(resource.Resource):
         csessid = self.get_client_sessid(request)
 
         remote_addr = request.getClientIP()
-        host_string = "%s (%s:%s)" % (_SERVERNAME,
-                                      request.getRequestHostname(),
-                                      request.getHost().port)
+        host_string = "%s (%s:%s)" % (
+            _SERVERNAME,
+            request.getRequestHostname(),
+            request.getHost().port,
+        )
 
         sess = AjaxWebClientSession()
         sess.client = self
@@ -200,7 +210,7 @@ class AjaxWebClient(resource.Resource):
         # actually do the connection
         sess.sessionhandler.connect(sess)
 
-        return jsonify({'msg': host_string, 'csessid': csessid})
+        return jsonify({"msg": host_string, "csessid": csessid})
 
     def mode_keepalive(self, request):
 
@@ -223,7 +233,7 @@ class AjaxWebClient(resource.Resource):
         """
         csessid = self.get_client_sessid(request)
         self.last_alive[csessid] = (time.time(), False)
-        cmdarray = json.loads(request.args.get(b'data')[0])
+        cmdarray = json.loads(request.args.get(b"data")[0])
         for sess in self.sessionhandler.sessions_from_csessid(csessid):
             sess.data_in(**{cmdarray[0]: [cmdarray[1], cmdarray[2]]})
         return b'""'
@@ -239,7 +249,7 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        csessid = html.escape(request.args[b'csessid'][0].decode("utf-8"))
+        csessid = html.escape(request.args[b"csessid"][0].decode("utf-8"))
         self.last_alive[csessid] = (time.time(), False)
 
         dataentries = self.databuffer.get(csessid)
@@ -286,21 +296,21 @@ class AjaxWebClient(resource.Resource):
             request (Request): Incoming request.
 
         """
-        dmode = request.args.get(b'mode', [b'None'])[0].decode("utf-8")
+        dmode = request.args.get(b"mode", [b"None"])[0].decode("utf-8")
 
-        if dmode == 'init':
+        if dmode == "init":
             # startup. Setup the server.
             return self.mode_init(request)
-        elif dmode == 'input':
+        elif dmode == "input":
             # input from the client to the server
             return self.mode_input(request)
-        elif dmode == 'receive':
+        elif dmode == "receive":
             # the client is waiting to receive data.
             return self.mode_receive(request)
-        elif dmode == 'close':
+        elif dmode == "close":
             # the client is closing
             return self.mode_close(request)
-        elif dmode == 'keepalive':
+        elif dmode == "keepalive":
             # A reply to our keepalive request - all is well
             return self.mode_keepalive(request)
         else:
@@ -312,6 +322,7 @@ class AjaxWebClient(resource.Resource):
 # A session type handling communication over the
 # web client interface.
 #
+
 
 class AjaxWebClientSession(session.Session):
     """
@@ -405,8 +416,8 @@ class AjaxWebClientSession(session.Session):
 
         options = kwargs.pop("options", {})
         raw = options.get("raw", flags.get("RAW", False))
-        xterm256 = options.get("xterm256", flags.get('XTERM256', True))
-        useansi = options.get("ansi", flags.get('ANSI', True))
+        xterm256 = options.get("xterm256", flags.get("XTERM256", True))
+        useansi = options.get("ansi", flags.get("ANSI", True))
         nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)

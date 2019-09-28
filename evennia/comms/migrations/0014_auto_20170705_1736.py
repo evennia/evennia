@@ -8,15 +8,16 @@ from django.db import migrations
 # the player->account transition. Now it will do nothing since players.PlayerDB
 # no longer exists.
 
+
 def forwards(apps, schema_editor):
 
     try:
-        apps.get_model('players', 'PlayerDB')
+        apps.get_model("players", "PlayerDB")
     except LookupError:
         return
-    AccountDB = apps.get_model('accounts', 'AccountDB')
+    AccountDB = apps.get_model("accounts", "AccountDB")
 
-    Msg = apps.get_model('comms', 'Msg')
+    Msg = apps.get_model("comms", "Msg")
     for msg in Msg.objects.all():
         for player in msg.db_sender_players.all():
             account = AccountDB.objects.get(id=player.id)
@@ -28,7 +29,7 @@ def forwards(apps, schema_editor):
             account = AccountDB.objects.get(id=player.id)
             msg.db_hide_from_accounts.add(account)
 
-    ChannelDB = apps.get_model('comms', 'ChannelDB')
+    ChannelDB = apps.get_model("comms", "ChannelDB")
     for channel in ChannelDB.objects.all():
         for player in channel.db_subscriptions.all():
             account = AccountDB.objects.get(id=player.id)
@@ -37,10 +38,6 @@ def forwards(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('comms', '0013_auto_20170705_1726'),
-    ]
+    dependencies = [("comms", "0013_auto_20170705_1726")]
 
-    operations = [
-        migrations.RunPython(forwards)
-    ]
+    operations = [migrations.RunPython(forwards)]

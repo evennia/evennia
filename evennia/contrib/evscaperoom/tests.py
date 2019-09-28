@@ -16,11 +16,9 @@ from . import utils
 
 
 class TestEvscaperoomCommands(CommandTest):
-
     def setUp(self):
         super().setUp()
-        self.room1 = utils.create_evscaperoom_object(
-            "evscaperoom.room.EvscapeRoom", key='Testroom')
+        self.room1 = utils.create_evscaperoom_object("evscaperoom.room.EvscapeRoom", key="Testroom")
         self.char1.location = self.room1
         self.obj1.location = self.room1
 
@@ -114,7 +112,7 @@ class TestEvscaperoomCommands(CommandTest):
 
         self.assertEqual(cmd.obj1, None)
         self.assertEqual(cmd.obj2, self.obj1)
-        self.assertEqual(cmd.arg1, 'foo')
+        self.assertEqual(cmd.arg1, "foo")
         self.assertEqual(cmd.arg2, None)
 
         cmd = commands.CmdEvscapeRoom()
@@ -127,7 +125,7 @@ class TestEvscaperoomCommands(CommandTest):
         self.assertEqual(cmd.obj1, self.obj1)
         self.assertEqual(cmd.obj2, None)
         self.assertEqual(cmd.arg1, None)
-        self.assertEqual(cmd.arg2, 'foo')
+        self.assertEqual(cmd.arg2, "foo")
 
         cmd = commands.CmdEvscapeRoom()
         cmd.caller = self.char1
@@ -152,21 +150,20 @@ class TestEvscaperoomCommands(CommandTest):
         cmd.caller = self.char1
         cmd.room = self.room1
         cmd.focus = self.obj1
-        self.assertEqual(self.char1.attributes.get(
-            "focus", category=self.room1.tagcategory), self.obj1)
+        self.assertEqual(
+            self.char1.attributes.get("focus", category=self.room1.tagcategory), self.obj1
+        )
 
     def test_focus(self):
         # don't focus on a non-room object
         self.call(commands.CmdFocus(), "obj")
-        self.assertEqual(self.char1.attributes.get(
-            "focus", category=self.room1.tagcategory), None)
+        self.assertEqual(self.char1.attributes.get("focus", category=self.room1.tagcategory), None)
         # should focus correctly
         myobj = utils.create_evscaperoom_object(
-            objects.EvscaperoomObject, "mytestobj", location=self.room1)
+            objects.EvscaperoomObject, "mytestobj", location=self.room1
+        )
         self.call(commands.CmdFocus(), "mytestobj")
-        self.assertEqual(self.char1.attributes.get(
-            "focus", category=self.room1.tagcategory), myobj)
-
+        self.assertEqual(self.char1.attributes.get("focus", category=self.room1.tagcategory), myobj)
 
     def test_look(self):
         self.call(commands.CmdLook(), "at obj", "Obj")
@@ -181,31 +178,31 @@ class TestEvscaperoomCommands(CommandTest):
         self.call(commands.CmdSpeak(), "Hi.", "You whisper: Hi.", cmdstring="whisper")
         self.call(commands.CmdSpeak(), "HELLO!", "You shout: HELLO!", cmdstring="shout")
 
-        self.call(commands.CmdSpeak(), "Hello to obj",
-                  "You say: Hello", cmdstring="say")
-        self.call(commands.CmdSpeak(), "Hello to obj",
-                  "You shout: Hello", cmdstring="shout")
+        self.call(commands.CmdSpeak(), "Hello to obj", "You say: Hello", cmdstring="say")
+        self.call(commands.CmdSpeak(), "Hello to obj", "You shout: Hello", cmdstring="shout")
 
     def test_emote(self):
-        self.call(commands.CmdEmote(),
-                  "/me smiles to /obj",
-                  f"Char(#{self.char1.id}) smiles to Obj(#{self.obj1.id})")
+        self.call(
+            commands.CmdEmote(),
+            "/me smiles to /obj",
+            f"Char(#{self.char1.id}) smiles to Obj(#{self.obj1.id})",
+        )
 
     def test_focus_interaction(self):
         self.call(commands.CmdFocusInteraction(), "", "Hm?")
 
 
 class TestUtils(EvenniaTest):
-
     def test_overwrite(self):
-        room = utils.create_evscaperoom_object(
-            "evscaperoom.room.EvscapeRoom", key='Testroom')
+        room = utils.create_evscaperoom_object("evscaperoom.room.EvscapeRoom", key="Testroom")
         obj1 = utils.create_evscaperoom_object(
-            objects.EvscaperoomObject, key="testobj", location=room)
+            objects.EvscaperoomObject, key="testobj", location=room
+        )
         id1 = obj1.id
 
         obj2 = utils.create_evscaperoom_object(
-            objects.EvscaperoomObject, key="testobj", location=room)
+            objects.EvscaperoomObject, key="testobj", location=room
+        )
         id2 = obj2.id
 
         # we should have created a new object, deleting the old same-named one
@@ -231,14 +228,12 @@ class TestUtils(EvenniaTest):
         self.assertEqual(utils.parse_for_things(string, 2), "Looking at |y[book]|n and |y[key]|n.")
 
 
-
 class TestEvScapeRoom(EvenniaTest):
-
     def setUp(self):
         super().setUp()
         self.room = utils.create_evscaperoom_object(
-            "evscaperoom.room.EvscapeRoom", key='Testroom',
-            home=self.room1)
+            "evscaperoom.room.EvscapeRoom", key="Testroom", home=self.room1
+        )
         self.roomtag = "evscaperoom_{}".format(self.room.key)
 
     def tearDown(self):
@@ -253,24 +248,21 @@ class TestEvScapeRoom(EvenniaTest):
         self.assertEqual(list(room.get_all_characters()), [self.char1])
 
         room.tag_character(self.char1, "opened_door")
-        self.assertEqual(self.char1.tags.get(
-            "opened_door", category=self.roomtag), "opened_door")
+        self.assertEqual(self.char1.tags.get("opened_door", category=self.roomtag), "opened_door")
 
         room.tag_all_characters("tagged_all")
-        self.assertEqual(self.char1.tags.get(
-            "tagged_all", category=self.roomtag), "tagged_all")
+        self.assertEqual(self.char1.tags.get("tagged_all", category=self.roomtag), "tagged_all")
 
         room.character_cleanup(self.char1)
         self.assertEqual(self.char1.tags.get(category=self.roomtag), None)
 
 
 class TestStates(EvenniaTest):
-
     def setUp(self):
         super().setUp()
         self.room = utils.create_evscaperoom_object(
-            "evscaperoom.room.EvscapeRoom", key='Testroom',
-            home=self.room1)
+            "evscaperoom.room.EvscapeRoom", key="Testroom", home=self.room1
+        )
         self.roomtag = "evscaperoom_#{}".format(self.room.id)
 
     def tearDown(self):
@@ -280,7 +272,8 @@ class TestStates(EvenniaTest):
         dirname = path.join(path.dirname(__file__), "states")
         states = []
         for imp, module, ispackage in pkgutil.walk_packages(
-                path=[dirname], prefix="evscaperoom.states."):
+            path=[dirname], prefix="evscaperoom.states."
+        ):
             mod = mod_import(module)
             states.append(mod)
         return states

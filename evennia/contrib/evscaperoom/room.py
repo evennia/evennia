@@ -32,7 +32,7 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
         super().at_object_creation()
 
         # starting state
-        self.db.state = None   # name
+        self.db.state = None  # name
         self.db.prev_state = None
 
         # this is used for tagging of all objects belonging to this
@@ -43,11 +43,11 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
         # room progress statistics
         self.db.stats = {
             "progress": 0,  # in percent
-            "score": {},   # reason: score
+            "score": {},  # reason: score
             "max_score": 100,
             "hints_used": 0,  # total across all states
             "hints_total": 41,
-            "total_achievements": 14
+            "total_achievements": 14,
         }
 
         self.cmdset.add(CmdSetEvScapeRoom, permanent=True)
@@ -69,21 +69,21 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
         caller = f"[caller.key]: " if caller else ""
 
         logger.log_file(
-            strip_ansi(f"{caller}{message.strip()}"),
-            filename=self.tagcategory + ".log")
+            strip_ansi(f"{caller}{message.strip()}"), filename=self.tagcategory + ".log"
+        )
 
     def score(self, new_score, reason):
         """
         We don't score individually but for everyone in room together.
         You can only be scored for a given reason once."""
-        if reason not in self.db.stats['score']:
+        if reason not in self.db.stats["score"]:
             self.log(f"score: {reason} ({new_score}pts)")
-            self.db.stats['score'][reason] = new_score
+            self.db.stats["score"][reason] = new_score
 
     def progress(self, new_progress):
         "Progress is what we set it to be (0-100%)"
         self.log(f"progress: {new_progress}%")
-        self.db.stats['progress'] = new_progress
+        self.db.stats["progress"] = new_progress
 
     def achievement(self, caller, achievement, subtext=""):
         """
@@ -96,8 +96,7 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
             subtext (str, optional): Eventual subtext/explanation
                 of the achievement.
         """
-        achievements = caller.attributes.get(
-            "achievements", category=self.tagcategory)
+        achievements = caller.attributes.get("achievements", category=self.tagcategory)
         if not achievements:
             achievements = {}
         if achievement not in achievements:
@@ -173,6 +172,7 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
         """
         self.log(f"EXIT: {char} left room")
         from .menu import run_evscaperoom_menu
+
         self.character_cleanup(char)
         char.location = char.home
 
@@ -223,15 +223,18 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
 
     def return_appearance(self, looker, **kwargs):
         obj, pos = self.get_position(looker)
-        pos = (f"\n|x[{self.position_prep_map[pos]} on "
-               f"{obj.get_display_name(looker)}]|n" if obj else "")
+        pos = (
+            f"\n|x[{self.position_prep_map[pos]} on " f"{obj.get_display_name(looker)}]|n"
+            if obj
+            else ""
+        )
 
         admin_only = ""
         if self.check_perm(looker, "Admin"):
             # only for admins
-            objs = DefaultObject.objects.filter_family(
-                db_location=self).exclude(id=looker.id)
-            admin_only = "\n|xAdmin only: " + \
-                list_to_string([obj.get_display_name(looker) for obj in objs])
+            objs = DefaultObject.objects.filter_family(db_location=self).exclude(id=looker.id)
+            admin_only = "\n|xAdmin only: " + list_to_string(
+                [obj.get_display_name(looker) for obj in objs]
+            )
 
         return f"{self.db.desc}{pos}{admin_only}"

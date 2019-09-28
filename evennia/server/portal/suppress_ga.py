@@ -13,7 +13,7 @@ It is set as the NOGOAHEAD protocol_flag option.
 http://www.faqs.org/rfcs/rfc858.html
 
 """
-SUPPRESS_GA = b'\x03'
+SUPPRESS_GA = b"\x03"
 
 # default taken from telnet specification
 

@@ -13,22 +13,25 @@ from evennia.server import evennia_launcher
 from evennia.server.portal import amp
 
 from twisted.internet.base import DelayedCall
+
 DelayedCall.debug = True
+
 
 @patch("evennia.server.evennia_launcher.Popen", new=MagicMock())
 class TestLauncher(TwistedTestCase):
-
     def test_is_windows(self):
-        self.assertEqual(evennia_launcher._is_windows(), os.name == 'nt')
+        self.assertEqual(evennia_launcher._is_windows(), os.name == "nt")
 
     def test_file_compact(self):
-        self.assertEqual(evennia_launcher._file_names_compact(
-            "foo/bar/test1", "foo/bar/test2"),
-            "foo/bar/test1 and test2")
+        self.assertEqual(
+            evennia_launcher._file_names_compact("foo/bar/test1", "foo/bar/test2"),
+            "foo/bar/test1 and test2",
+        )
 
-        self.assertEqual(evennia_launcher._file_names_compact(
-            "foo/test1", "foo/bar/test2"),
-            "foo/test1 and foo/bar/test2")
+        self.assertEqual(
+            evennia_launcher._file_names_compact("foo/test1", "foo/bar/test2"),
+            "foo/test1 and foo/bar/test2",
+        )
 
     @patch("evennia.server.evennia_launcher.print")
     def test_print_info(self, mockprint):
@@ -41,7 +44,7 @@ class TestLauncher(TwistedTestCase):
             "webserver_proxy": 1234,
             "webclient": 1234,
             "webserver_internal": 1234,
-            "amp": 1234
+            "amp": 1234,
         }
         server_dict = {
             "servername": "testserver",
@@ -50,7 +53,7 @@ class TestLauncher(TwistedTestCase):
             "amp": 1234,
             "irc_rss": "irc.test",
             "info": "testing mode",
-            "errors": ""
+            "errors": "",
         }
 
         evennia_launcher._print_info(portal_dict, server_dict)
@@ -129,14 +132,14 @@ class TestLauncher(TwistedTestCase):
     @patch("evennia.server.evennia_launcher.print")
     def test_query_status_run(self, mprint):
         evennia_launcher.query_status()
-        mprint.assert_called_with('Portal: RUNNING (pid 100)\nServer: RUNNING (pid 100)')
+        mprint.assert_called_with("Portal: RUNNING (pid 100)\nServer: RUNNING (pid 100)")
 
     @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_err)
     @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)
     @patch("evennia.server.evennia_launcher.print")
     def test_query_status_not_run(self, mprint):
         evennia_launcher.query_status()
-        mprint.assert_called_with('Portal: NOT RUNNING\nServer: NOT RUNNING')
+        mprint.assert_called_with("Portal: NOT RUNNING\nServer: NOT RUNNING")
 
     @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_ok)
     @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)
@@ -144,7 +147,7 @@ class TestLauncher(TwistedTestCase):
         mprint = MagicMock()
 
         def testcall(response):
-            resp = pickle.loads(response['status'])
+            resp = pickle.loads(response["status"])
             mprint(resp)
 
         evennia_launcher.query_status(callback=testcall)
@@ -173,10 +176,8 @@ class TestLauncher(TwistedTestCase):
         mcall = MagicMock()
         merr = MagicMock()
         evennia_launcher.wait_for_status(
-            portal_running=True,
-            server_running=True,
-            callback=mcall,
-            errback=merr)
+            portal_running=True, server_running=True, callback=mcall, errback=merr
+        )
 
         mcall.assert_called_with(True, True)
         merr.assert_not_called()
@@ -187,10 +188,8 @@ class TestLauncher(TwistedTestCase):
         mcall = MagicMock()
         merr = MagicMock()
         evennia_launcher.wait_for_status(
-            portal_running=True,
-            server_running=True,
-            callback=mcall,
-            errback=merr)
+            portal_running=True, server_running=True, callback=mcall, errback=merr
+        )
 
         mcall.assert_not_called()
         merr.assert_not_called()

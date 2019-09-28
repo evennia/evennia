@@ -81,16 +81,17 @@ from evennia.utils import search, utils, logger
 from evennia.prototypes.spawner import spawn
 
 # Tag used by puzzles
-_PUZZLES_TAG_CATEGORY = 'puzzles'
-_PUZZLES_TAG_RECIPE = 'puzzle_recipe'
+_PUZZLES_TAG_CATEGORY = "puzzles"
+_PUZZLES_TAG_RECIPE = "puzzle_recipe"
 # puzzle part and puzzle result
-_PUZZLES_TAG_MEMBER = 'puzzle_member'
+_PUZZLES_TAG_MEMBER = "puzzle_member"
 
-_PUZZLE_DEFAULT_FAIL_USE_MESSAGE = 'You try to utilize %s but nothing happens ... something amiss?'
-_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = 'You are a Genius!!!'
+_PUZZLE_DEFAULT_FAIL_USE_MESSAGE = "You try to utilize %s but nothing happens ... something amiss?"
+_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = "You are a Genius!!!"
 _PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE = "|c{caller}|n performs some kind of tribal dance and |y{result_names}|n seems to appear from thin air"
 
 # ----------- UTILITY FUNCTIONS ------------
+
 
 def proto_def(obj, with_tags=True):
     """
@@ -99,20 +100,20 @@ def proto_def(obj, with_tags=True):
     """
     protodef = {
         # TODO: Don't we need to honor ALL properties? attributes, contents, etc.
-        'prototype_key': '%s(%s)' % (obj.key, obj.dbref),
-        'key': obj.key,
-        'typeclass': obj.typeclass_path,
-        'desc': obj.db.desc,
-        'location': obj.location,
-        'home': obj.home,
-        'locks': ';'.join(obj.locks.all()),
-        'permissions': obj.permissions.all()[:],
+        "prototype_key": "%s(%s)" % (obj.key, obj.dbref),
+        "key": obj.key,
+        "typeclass": obj.typeclass_path,
+        "desc": obj.db.desc,
+        "location": obj.location,
+        "home": obj.home,
+        "locks": ";".join(obj.locks.all()),
+        "permissions": obj.permissions.all()[:],
     }
     if with_tags:
         tags = obj.tags.all(return_key_and_category=True)
         tags = [(t[0], t[1], None) for t in tags]
         tags.append((_PUZZLES_TAG_MEMBER, _PUZZLES_TAG_CATEGORY, None))
-        protodef['tags'] = tags
+        protodef["tags"] = tags
     return protodef
 
 
@@ -130,13 +131,14 @@ def maskout_protodef(protodef, mask):
 # Colorize the default success message
 def _colorize_message(msg):
     _i = 0
-    _colors = ['|r', '|g', '|y']
+    _colors = ["|r", "|g", "|y"]
     _msg = []
     for l in msg:
         _msg += _colors[_i] + l
         _i = (_i + 1) % len(_colors)
-    msg = ''.join(_msg) + '|n'
+    msg = "".join(_msg) + "|n"
     return msg
+
 
 _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = _colorize_message(_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE)
 
@@ -182,13 +184,13 @@ class CmdCreatePuzzleRecipe(MuxCommand):
 
     """
 
-    key = '@puzzle'
-    aliases = '@puzzlerecipe'
-    locks = 'cmd:perm(puzzle) or perm(Builder)'
-    help_category = 'Puzzles'
+    key = "@puzzle"
+    aliases = "@puzzlerecipe"
+    locks = "cmd:perm(puzzle) or perm(Builder)"
+    help_category = "Puzzles"
 
     confirm = True
-    default_confirm = 'no'
+    default_confirm = "no"
 
     def func(self):
         caller = self.caller
@@ -200,27 +202,26 @@ class CmdCreatePuzzleRecipe(MuxCommand):
 
         puzzle_name = self.lhslist[0]
         if len(puzzle_name) == 0:
-            caller.msg('Invalid puzzle name %r.' % puzzle_name)
+            caller.msg("Invalid puzzle name %r." % puzzle_name)
             return
 
         # if there is another puzzle with same name
         # warn user that parts and results will be
         # interchangable
-        _puzzles = search.search_script_attribute(
-                key='puzzle_name',
-                value=puzzle_name
-        )
+        _puzzles = search.search_script_attribute(key="puzzle_name", value=puzzle_name)
         _puzzles = list(filter(lambda p: isinstance(p, PuzzleRecipe), _puzzles))
         if _puzzles:
-            confirm = 'There are %d puzzles with the same name.\n' % len(_puzzles) \
-                + 'Its parts and results will be interchangeable.\n' \
-                + 'Continue yes/[no]? '
-            answer = ''
-            while answer.strip().lower() not in ('y', 'yes', 'n', 'no'):
-                answer = yield(confirm)
-                answer = self.default_confirm if answer == '' else answer
-            if answer.strip().lower() in ('n', 'no'):
-                caller.msg('Cancelled: no puzzle created.')
+            confirm = (
+                "There are %d puzzles with the same name.\n" % len(_puzzles)
+                + "Its parts and results will be interchangeable.\n"
+                + "Continue yes/[no]? "
+            )
+            answer = ""
+            while answer.strip().lower() not in ("y", "yes", "n", "no"):
+                answer = yield (confirm)
+                answer = self.default_confirm if answer == "" else answer
+            if answer.strip().lower() in ("n", "no"):
+                caller.msg("Cancelled: no puzzle created.")
                 return
 
         def is_valid_obj_location(obj):
@@ -235,7 +236,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             # located.
             # Parts and results may have different valid locations
             if not inherits_from(obj.location, DefaultRoom):
-                caller.msg('Invalid location for %s' % (obj.key))
+                caller.msg("Invalid location for %s" % (obj.key))
                 valid = False
             return valid
 
@@ -246,20 +247,20 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             return is_valid_obj_location(part)
 
         def is_valid_inheritance(obj):
-            valid = not inherits_from(obj, DefaultCharacter) \
-                    and not inherits_from(obj, DefaultRoom) \
-                    and not inherits_from(obj, DefaultExit)
+            valid = (
+                not inherits_from(obj, DefaultCharacter)
+                and not inherits_from(obj, DefaultRoom)
+                and not inherits_from(obj, DefaultExit)
+            )
             if not valid:
-                caller.msg('Invalid typeclass for %s' % (obj))
+                caller.msg("Invalid typeclass for %s" % (obj))
             return valid
 
         def is_valid_part(part):
-            return is_valid_inheritance(part) \
-                    and is_valid_part_location(part)
+            return is_valid_inheritance(part) and is_valid_part_location(part)
 
         def is_valid_result(result):
-            return is_valid_inheritance(result) \
-                    and is_valid_result_location(result)
+            return is_valid_inheritance(result) and is_valid_result_location(result)
 
         parts = []
         for objname in self.lhslist[1:]:
@@ -280,26 +281,28 @@ class CmdCreatePuzzleRecipe(MuxCommand):
             results.append(obj)
 
         for part in parts:
-            caller.msg('Part %s(%s)' % (part.name, part.dbref))
+            caller.msg("Part %s(%s)" % (part.name, part.dbref))
 
         for result in results:
-            caller.msg('Result %s(%s)' % (result.name, result.dbref))
+            caller.msg("Result %s(%s)" % (result.name, result.dbref))
 
         proto_parts = [proto_def(obj) for obj in parts]
         proto_results = [proto_def(obj) for obj in results]
 
         puzzle = create_script(PuzzleRecipe, key=puzzle_name)
         puzzle.save_recipe(puzzle_name, proto_parts, proto_results)
-        puzzle.locks.add('control:id(%s) or perm(Builder)' % caller.dbref[1:])
+        puzzle.locks.add("control:id(%s) or perm(Builder)" % caller.dbref[1:])
 
         caller.msg(
             "Puzzle |y'%s' |w%s(%s)|n has been created |gsuccessfully|n."
-            % (puzzle.db.puzzle_name, puzzle.name, puzzle.dbref))
+            % (puzzle.db.puzzle_name, puzzle.name, puzzle.dbref)
+        )
 
         caller.msg(
-            'You may now dispose of all parts and results. \n'
-            'Use @puzzleedit #{dbref} to customize this puzzle further. \n'
-            'Use @armpuzzle #{dbref} to arm a new puzzle instance.'.format(dbref=puzzle.dbref))
+            "You may now dispose of all parts and results. \n"
+            "Use @puzzleedit #{dbref} to customize this puzzle further. \n"
+            "Use @armpuzzle #{dbref} to arm a new puzzle instance.".format(dbref=puzzle.dbref)
+        )
 
 
 class CmdEditPuzzle(MuxCommand):
@@ -331,9 +334,9 @@ class CmdEditPuzzle(MuxCommand):
 
     """
 
-    key = '@puzzleedit'
-    locks = 'cmd:perm(puzzleedit) or perm(Builder)'
-    help_category = 'Puzzles'
+    key = "@puzzleedit"
+    locks = "cmd:perm(puzzleedit) or perm(Builder)"
+    help_category = "Puzzles"
 
     def func(self):
         self._USAGE = "Usage: @puzzleedit[/switches] <dbref>[/attribute = <value>]"
@@ -343,8 +346,8 @@ class CmdEditPuzzle(MuxCommand):
             caller.msg(self._USAGE)
             return
 
-        if '/' in self.lhslist[0]:
-            recipe_dbref, attr = self.lhslist[0].split('/')
+        if "/" in self.lhslist[0]:
+            recipe_dbref, attr = self.lhslist[0].split("/")
         else:
             recipe_dbref = self.lhslist[0]
 
@@ -354,75 +357,73 @@ class CmdEditPuzzle(MuxCommand):
 
         puzzle = search.search_script(recipe_dbref)
         if not puzzle or not inherits_from(puzzle[0], PuzzleRecipe):
-            caller.msg('%s(%s) is not a puzzle' % (puzzle[0].name, recipe_dbref))
+            caller.msg("%s(%s) is not a puzzle" % (puzzle[0].name, recipe_dbref))
             return
 
         puzzle = puzzle[0]
-        puzzle_name_id = '%s(%s)' % (puzzle.name, puzzle.dbref)
+        puzzle_name_id = "%s(%s)" % (puzzle.name, puzzle.dbref)
 
-        if 'delete' in self.switches:
-            if not (puzzle.access(caller, 'control') or puzzle.access(caller, 'delete')):
+        if "delete" in self.switches:
+            if not (puzzle.access(caller, "control") or puzzle.access(caller, "delete")):
                 caller.msg("You don't have permission to delete %s." % puzzle_name_id)
                 return
 
             puzzle.delete()
-            caller.msg('%s was deleted' % puzzle_name_id)
+            caller.msg("%s was deleted" % puzzle_name_id)
             return
 
-        elif 'addpart' in self.switches:
+        elif "addpart" in self.switches:
             objs = self._get_objs()
             if objs:
                 added = self._add_parts(objs, puzzle)
-                caller.msg('%s were added to parts' % (', '.join(added)))
+                caller.msg("%s were added to parts" % (", ".join(added)))
             return
 
-        elif 'delpart' in self.switches:
+        elif "delpart" in self.switches:
             objs = self._get_objs()
             if objs:
                 removed = self._remove_parts(objs, puzzle)
-                caller.msg('%s were removed from parts' % (', '.join(removed)))
+                caller.msg("%s were removed from parts" % (", ".join(removed)))
             return
 
-        elif 'addresult' in self.switches:
+        elif "addresult" in self.switches:
             objs = self._get_objs()
             if objs:
                 added = self._add_results(objs, puzzle)
-                caller.msg('%s were added to results' % (', '.join(added)))
+                caller.msg("%s were added to results" % (", ".join(added)))
             return
 
-        elif 'delresult' in self.switches:
+        elif "delresult" in self.switches:
             objs = self._get_objs()
             if objs:
                 removed = self._remove_results(objs, puzzle)
-                caller.msg('%s were removed from results' % (', '.join(removed)))
+                caller.msg("%s were removed from results" % (", ".join(removed)))
             return
 
         else:
             # edit attributes
 
-            if not (puzzle.access(caller, 'control') or puzzle.access(caller, 'edit')):
+            if not (puzzle.access(caller, "control") or puzzle.access(caller, "edit")):
                 caller.msg("You don't have permission to edit %s." % puzzle_name_id)
                 return
 
-            if attr == 'use_success_message':
+            if attr == "use_success_message":
                 puzzle.db.use_success_message = self.rhs
                 caller.msg(
-                    "%s use_success_message = %s\n" % (
-                        puzzle_name_id, puzzle.db.use_success_message)
+                    "%s use_success_message = %s\n"
+                    % (puzzle_name_id, puzzle.db.use_success_message)
                 )
                 return
-            elif attr == 'use_success_location_message':
+            elif attr == "use_success_location_message":
                 puzzle.db.use_success_location_message = self.rhs
                 caller.msg(
-                    "%s use_success_location_message = %s\n" % (
-                        puzzle_name_id, puzzle.db.use_success_location_message)
+                    "%s use_success_location_message = %s\n"
+                    % (puzzle_name_id, puzzle.db.use_success_location_message)
                 )
                 return
-            elif attr == 'mask':
+            elif attr == "mask":
                 puzzle.db.mask = tuple(self.rhslist)
-                caller.msg(
-                    "%s mask = %r\n" % (puzzle_name_id, puzzle.db.mask)
-                )
+                caller.msg("%s mask = %r\n" % (puzzle_name_id, puzzle.db.mask))
                 return
 
     def _get_objs(self):
@@ -491,9 +492,9 @@ class CmdArmPuzzle(MuxCommand):
 
     """
 
-    key = '@armpuzzle'
-    locks = 'cmd:perm(armpuzzle) or perm(Builder)'
-    help_category = 'Puzzles'
+    key = "@armpuzzle"
+    locks = "cmd:perm(armpuzzle) or perm(Builder)"
+    help_category = "Puzzles"
 
     def func(self):
         caller = self.caller
@@ -504,18 +505,21 @@ class CmdArmPuzzle(MuxCommand):
 
         puzzle = search.search_script(self.args)
         if not puzzle or not inherits_from(puzzle[0], PuzzleRecipe):
-            caller.msg('Invalid puzzle %r' % (self.args))
+            caller.msg("Invalid puzzle %r" % (self.args))
             return
 
         puzzle = puzzle[0]
         caller.msg(
-            "Puzzle Recipe %s(%s) '%s' found.\nSpawning %d parts ..." % (
-                puzzle.name, puzzle.dbref, puzzle.db.puzzle_name, len(puzzle.db.parts)))
+            "Puzzle Recipe %s(%s) '%s' found.\nSpawning %d parts ..."
+            % (puzzle.name, puzzle.dbref, puzzle.db.puzzle_name, len(puzzle.db.parts))
+        )
 
         for proto_part in puzzle.db.parts:
             part = spawn(proto_part)[0]
-            caller.msg("Part %s(%s) spawned and placed at %s(%s)" % (
-                part.name, part.dbref, part.location, part.location.dbref))
+            caller.msg(
+                "Part %s(%s) spawned and placed at %s(%s)"
+                % (part.name, part.dbref, part.location, part.location.dbref)
+            )
             part.tags.add(puzzle.db.puzzle_name, category=_PUZZLES_TAG_CATEGORY)
             part.db.puzzle_name = puzzle.db.puzzle_name
 
@@ -531,7 +535,7 @@ def _lookups_parts_puzzlenames_protodefs(parts):
         parts_dict[part.dbref] = part
         protodef = proto_def(part, with_tags=False)
         # remove 'prototype_key' as it will prevent equality
-        del(protodef['prototype_key'])
+        del protodef["prototype_key"]
         puzzle_ingredients[part.dbref] = protodef
         tags_categories = part.tags.all(return_key_and_category=True)
         for tag, category in tags_categories:
@@ -547,10 +551,7 @@ def _puzzles_by_names(names):
     # Find all puzzles by puzzle name (i.e. tag name)
     puzzles = []
     for puzzle_name in names:
-        _puzzles = search.search_script_attribute(
-                key='puzzle_name',
-                value=puzzle_name
-        )
+        _puzzles = search.search_script_attribute(key="puzzle_name", value=puzzle_name)
         _puzzles = list(filter(lambda p: isinstance(p, PuzzleRecipe), _puzzles))
         if not _puzzles:
             continue
@@ -567,8 +568,8 @@ def _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients):
         puzzle_mask = puzzle.db.mask[:]
         # remove tags and prototype_key as they prevent equality
         for i, puzzle_protopart in enumerate(puzzle_protoparts[:]):
-            del(puzzle_protopart['tags'])
-            del(puzzle_protopart['prototype_key'])
+            del puzzle_protopart["tags"]
+            del puzzle_protopart["prototype_key"]
             puzzle_protopart = maskout_protodef(puzzle_protopart, puzzle_mask)
             puzzle_protoparts[i] = puzzle_protopart
 
@@ -596,19 +597,19 @@ class CmdUsePuzzleParts(MuxCommand):
         use <part1[,part2,...>]
     """
 
-    key = 'use'
-    aliases = 'combine'
-    locks = 'cmd:pperm(use) or pperm(Player)'
-    help_category = 'Puzzles'
+    key = "use"
+    aliases = "combine"
+    locks = "cmd:pperm(use) or pperm(Player)"
+    help_category = "Puzzles"
 
     def func(self):
         caller = self.caller
 
         if not self.lhs:
-            caller.msg('Use what?')
+            caller.msg("Use what?")
             return
 
-        many = 'these' if len(self.lhslist) > 1 else 'this'
+        many = "these" if len(self.lhslist) > 1 else "this"
 
         # either all are parts, or abort finding matching puzzles
         parts = []
@@ -616,8 +617,8 @@ class CmdUsePuzzleParts(MuxCommand):
         for partname in partnames:
             part = caller.search(
                 partname,
-                multimatch_string='Which %s. There are many.\n' % (partname),
-                nofound_string='There is no %s around.' % (partname)
+                multimatch_string="Which %s. There are many.\n" % (partname),
+                nofound_string="There is no %s around." % (partname),
             )
 
             if not part:
@@ -626,15 +627,16 @@ class CmdUsePuzzleParts(MuxCommand):
             if not part.tags.get(_PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY):
 
                 # not a puzzle part ... abort
-                caller.msg('You have no idea how %s can be used' % (many))
+                caller.msg("You have no idea how %s can be used" % (many))
                 return
 
             # a valid part
             parts.append(part)
 
         # Create lookup dicts by part's dbref and by puzzle_name(tags)
-        parts_dict, puzzlename_tags_dict, puzzle_ingredients = \
-                _lookups_parts_puzzlenames_protodefs(parts)
+        parts_dict, puzzlename_tags_dict, puzzle_ingredients = _lookups_parts_puzzlenames_protodefs(
+            parts
+        )
 
         # Find all puzzles by puzzle name (i.e. tag name)
         puzzles = _puzzles_by_names(puzzlename_tags_dict.keys())
@@ -644,8 +646,7 @@ class CmdUsePuzzleParts(MuxCommand):
         # Create lookup dict of puzzles by dbref
         puzzles_dict = dict((puzzle.dbref, puzzle) for puzzle in puzzles)
         # Check if parts can be combined to solve a puzzle
-        matched_puzzles = _matching_puzzles(
-                puzzles, puzzlename_tags_dict, puzzle_ingredients)
+        matched_puzzles = _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients)
 
         if len(matched_puzzles) == 0:
             # TODO: we could use part.fail_message instead, if there was one
@@ -671,7 +672,7 @@ class CmdUsePuzzleParts(MuxCommand):
         # just hint how many.
         if len(largest_puzzles) > 1:
             caller.msg(
-                'Your gears start turning and %d different ideas come to your mind ...\n'
+                "Your gears start turning and %d different ideas come to your mind ...\n"
                 % (len(largest_puzzles))
             )
             puzzletuple = choice(largest_puzzles)
@@ -690,12 +691,11 @@ class CmdUsePuzzleParts(MuxCommand):
         for dbref in matched_dbrefparts:
             parts_dict[dbref].delete()
 
-        result_names = ', '.join(result_names)
+        result_names = ", ".join(result_names)
         caller.msg(puzzle.db.use_success_message)
         caller.location.msg_contents(
-            puzzle.db.use_success_location_message.format(
-                caller=caller, result_names=result_names),
-            exclude=(caller,)
+            puzzle.db.use_success_location_message.format(caller=caller, result_names=result_names),
+            exclude=(caller,),
         )
 
 
@@ -707,15 +707,14 @@ class CmdListPuzzleRecipes(MuxCommand):
         @lspuzzlerecipes
     """
 
-    key = '@lspuzzlerecipes'
-    locks = 'cmd:perm(lspuzzlerecipes) or perm(Builder)'
-    help_category = 'Puzzles'
+    key = "@lspuzzlerecipes"
+    locks = "cmd:perm(lspuzzlerecipes) or perm(Builder)"
+    help_category = "Puzzles"
 
     def func(self):
         caller = self.caller
 
-        recipes = search.search_script_tag(
-            _PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
+        recipes = search.search_script_tag(_PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
 
         div = "-" * 60
         text = [div]
@@ -723,26 +722,28 @@ class CmdListPuzzleRecipes(MuxCommand):
         msgf_item = "%2s|c%15s|n: |w%s|n"
         for recipe in recipes:
             text.append(msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref))
-            text.append('Success Caller message:\n' + recipe.db.use_success_message + '\n')
-            text.append('Success Location message:\n' + recipe.db.use_success_location_message + '\n')
-            text.append('Mask:\n' + str(recipe.db.mask) + '\n')
-            text.append('Parts')
+            text.append("Success Caller message:\n" + recipe.db.use_success_message + "\n")
+            text.append(
+                "Success Location message:\n" + recipe.db.use_success_location_message + "\n"
+            )
+            text.append("Mask:\n" + str(recipe.db.mask) + "\n")
+            text.append("Parts")
             for protopart in recipe.db.parts[:]:
-                mark = '-'
+                mark = "-"
                 for k, v in protopart.items():
                     text.append(msgf_item % (mark, k, v))
-                    mark = ''
-            text.append('Results')
+                    mark = ""
+            text.append("Results")
             for protoresult in recipe.db.results[:]:
-                mark = '-'
+                mark = "-"
                 for k, v in protoresult.items():
                     text.append(msgf_item % (mark, k, v))
-                    mark = ''
+                    mark = ""
         else:
             text.append(div)
-            text.append('Found |r%d|n puzzle(s).' % (len(recipes)))
+            text.append("Found |r%d|n puzzle(s)." % (len(recipes)))
             text.append(div)
-        caller.msg('\n'.join(text))
+        caller.msg("\n".join(text))
 
 
 class CmdListArmedPuzzles(MuxCommand):
@@ -753,35 +754,34 @@ class CmdListArmedPuzzles(MuxCommand):
         @lsarmedpuzzles
     """
 
-    key = '@lsarmedpuzzles'
-    locks = 'cmd:perm(lsarmedpuzzles) or perm(Builder)'
-    help_category = 'Puzzles'
+    key = "@lsarmedpuzzles"
+    locks = "cmd:perm(lsarmedpuzzles) or perm(Builder)"
+    help_category = "Puzzles"
 
     def func(self):
         caller = self.caller
 
-        armed_puzzles = search.search_tag(
-            _PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY)
+        armed_puzzles = search.search_tag(_PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY)
 
-        armed_puzzles = dict((k, list(g)) for k, g in itertools.groupby(
-            armed_puzzles,
-            lambda ap: ap.db.puzzle_name))
+        armed_puzzles = dict(
+            (k, list(g)) for k, g in itertools.groupby(armed_puzzles, lambda ap: ap.db.puzzle_name)
+        )
 
-        div = '-' * 60
+        div = "-" * 60
         msgf_pznm = "Puzzle name: |y%s|n"
         msgf_item = "|m%25s|w(%s)|n at |c%25s|w(%s)|n"
         text = [div]
         for pzname, items in armed_puzzles.items():
             text.append(msgf_pznm % (pzname))
             for item in items:
-                text.append(msgf_item % (
-                    item.name, item.dbref,
-                    item.location.name, item.location.dbref))
+                text.append(
+                    msgf_item % (item.name, item.dbref, item.location.name, item.location.dbref)
+                )
         else:
             text.append(div)
-            text.append('Found |r%d|n armed puzzle(s).' % (len(armed_puzzles)))
+            text.append("Found |r%d|n armed puzzle(s)." % (len(armed_puzzles)))
             text.append(div)
-        caller.msg('\n'.join(text))
+        caller.msg("\n".join(text))
 
 
 class PuzzleSystemCmdSet(CmdSet):

@@ -14,6 +14,7 @@ class CharacterCmdSet(CmdSet):
     """
     Implements the default command set.
     """
+
     key = "DefaultCharacter"
     priority = 0
 

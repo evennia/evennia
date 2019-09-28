@@ -36,10 +36,24 @@ class Session(object):
     """
 
     # names of attributes that should be affected by syncing.
-    _attrs_to_sync = ('protocol_key', 'address', 'suid', 'sessid', 'uid', 'csessid',
-                      'uname', 'logged_in', 'puid',
-                      'conn_time', 'cmd_last', 'cmd_last_visible', 'cmd_total',
-                      'protocol_flags', 'server_data', "cmdset_storage_string")
+    _attrs_to_sync = (
+        "protocol_key",
+        "address",
+        "suid",
+        "sessid",
+        "uid",
+        "csessid",
+        "uname",
+        "logged_in",
+        "puid",
+        "conn_time",
+        "cmd_last",
+        "cmd_last_visible",
+        "cmd_total",
+        "protocol_flags",
+        "server_data",
+        "cmdset_storage_string",
+    )
 
     def init_session(self, protocol_key, address, sessionhandler):
         """
@@ -82,11 +96,13 @@ class Session(object):
         self.cmd_last = self.conn_time
         self.cmd_total = 0
 
-        self.protocol_flags = {"ENCODING": "utf-8",
-                               "SCREENREADER": False,
-                               "INPUTDEBUG": False,
-                               "RAW": False,
-                               "NOCOLOR": False}
+        self.protocol_flags = {
+            "ENCODING": "utf-8",
+            "SCREENREADER": False,
+            "INPUTDEBUG": False,
+            "RAW": False,
+            "NOCOLOR": False,
+        }
         self.server_data = {}
 
         # map of input data to session methods
@@ -105,8 +121,9 @@ class Session(object):
                 the keys given by self._attrs_to_sync.
 
         """
-        return dict((key, value) for key, value in self.__dict__.items()
-                    if key in self._attrs_to_sync)
+        return dict(
+            (key, value) for key, value in self.__dict__.items() if key in self._attrs_to_sync
+        )
 
     def load_sync_data(self, sessdata):
         """
@@ -118,9 +135,12 @@ class Session(object):
 
         """
         for propname, value in sessdata.items():
-            if (propname == "protocol_flags" and isinstance(value, dict) and
-                    hasattr(self, "protocol_flags") and
-                    isinstance(self.protocol_flags, dict)):
+            if (
+                propname == "protocol_flags"
+                and isinstance(value, dict)
+                and hasattr(self, "protocol_flags")
+                and isinstance(self.protocol_flags, dict)
+            ):
                 # special handling to allow partial update of protocol flags
                 self.protocol_flags.update(value)
             else:
@@ -134,7 +154,9 @@ class Session(object):
 
         """
         if self.account:
-            self.protocol_flags.update(self.account.attributes.get("_saved_protocol_flags", None) or {})
+            self.protocol_flags.update(
+                self.account.attributes.get("_saved_protocol_flags", None) or {}
+            )
 
     # access hooks
 

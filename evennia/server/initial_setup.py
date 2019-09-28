@@ -25,11 +25,13 @@ ERROR_NO_SUPERUSER = """
     """
 
 
-LIMBO_DESC = _("""
+LIMBO_DESC = _(
+    """
 Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
 As Account #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.
-    """)
+    """
+)
 
 
 WARNING_POSTGRESQL_FIX = """
@@ -74,7 +76,9 @@ def create_objects():
     god_account.swap_typeclass(account_typeclass, clean_attributes=True)
     god_account.basetype_setup()
     god_account.at_account_creation()
-    god_account.locks.add("examine:perm(Developer);edit:false();delete:false();boot:false();msg:all()")
+    god_account.locks.add(
+        "examine:perm(Developer);edit:false();delete:false();boot:false();msg:all()"
+    )
     # this is necessary for quelling to work correctly.
     god_account.permissions.add("Developer")
 
@@ -83,14 +87,14 @@ def create_objects():
     # Create the in-game god-character for account #1 and set
     # it to exist in Limbo.
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-    god_character = create.create_object(character_typeclass,
-                                         key=god_account.username,
-                                         nohome=True)
+    god_character = create.create_object(character_typeclass, key=god_account.username, nohome=True)
 
     god_character.id = 1
     god_character.save()
-    god_character.db.desc = _('This is User #1.')
-    god_character.locks.add("examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()")
+    god_character.db.desc = _("This is User #1.")
+    god_character.locks.add(
+        "examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()"
+    )
     god_character.permissions.add("Developer")
 
     god_account.attributes.add("_first_login", True)
@@ -102,7 +106,7 @@ def create_objects():
         god_account.db_playable_characters = [god_character]
 
     room_typeclass = settings.BASE_ROOM_TYPECLASS
-    limbo_obj = create.create_object(room_typeclass, _('Limbo'), nohome=True)
+    limbo_obj = create.create_object(room_typeclass, _("Limbo"), nohome=True)
     limbo_obj.id = 2
     limbo_obj.save()
     limbo_obj.db.desc = LIMBO_DESC.strip()
@@ -166,8 +170,9 @@ def collectstatic():
 
     """
     from django.core.management import call_command
+
     logger.log_info("Initial setup: Gathering static resources using 'collectstatic'")
-    call_command('collectstatic', '--noinput')
+    call_command("collectstatic", "--noinput")
 
 
 def reset_server():
@@ -180,6 +185,7 @@ def reset_server():
     """
     ServerConfig.objects.conf("server_epoch", time.time())
     from evennia.server.sessionhandler import SESSIONS
+
     logger.log_info("Initial setup complete. Restarting Server once.")
     SESSIONS.portal_reset_server()
 
@@ -204,11 +210,7 @@ def handle_setup(last_step):
     last_step = last_step or 0
 
     # setting up the list of functions to run
-    setup_queue = [create_objects,
-                   create_channels,
-                   at_initial_setup,
-                   collectstatic,
-                   reset_server]
+    setup_queue = [create_objects, create_channels, at_initial_setup, collectstatic, reset_server]
 
     # step through queue, from last completed function
     for num, setup_func in enumerate(setup_queue[last_step:]):
@@ -221,10 +223,12 @@ def handle_setup(last_step):
         except Exception:
             if last_step + num == 1:
                 from evennia.objects.models import ObjectDB
+
                 for obj in ObjectDB.objects.all():
                     obj.delete()
             elif last_step + num == 2:
                 from evennia.comms.models import ChannelDB
+
                 ChannelDB.objects.all().delete()
             raise
         # save this step

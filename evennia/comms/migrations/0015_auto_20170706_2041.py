@@ -12,9 +12,7 @@ def _table_exists(db_cursor, tablename):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('comms', '0014_auto_20170705_1736'),
-    ]
+    dependencies = [("comms", "0014_auto_20170705_1736")]
 
     db_cursor = connection.cursor()
 
@@ -24,15 +22,9 @@ class Migration(migrations.Migration):
     else:
         operations = [
             migrations.RemoveField(
-                model_name='channeldb',
-                name='db_subscriptions',  # this is now db_account_subscriptions
+                model_name="channeldb",
+                name="db_subscriptions",  # this is now db_account_subscriptions
             ),
-            migrations.RemoveField(
-                model_name='msg',
-                name='db_receivers_players',
-            ),
-            migrations.RemoveField(
-                model_name='msg',
-                name='db_sender_players',
-            ),
+            migrations.RemoveField(model_name="msg", name="db_receivers_players"),
+            migrations.RemoveField(model_name="msg", name="db_sender_players"),
         ]

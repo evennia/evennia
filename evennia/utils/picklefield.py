@@ -34,6 +34,7 @@ from datetime import datetime
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
+
 # import six # this is actually a pypy component, not in default syslib
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -71,14 +72,15 @@ class _ObjectWrapper(object):
     `django.db.Model` subclasses won't work under certain conditions and the
     same apply for trying to retrieve any `callable` object.
     """
-    __slots__ = ('_obj',)
+
+    __slots__ = ("_obj",)
 
     def __init__(self, obj):
         self._obj = obj
 
 
 def wrap_conflictual_object(obj):
-    if hasattr(obj, 'prepare_database_save') or callable(obj):
+    if hasattr(obj, "prepare_database_save") or callable(obj):
         obj = _ObjectWrapper(obj)
     return obj
 
@@ -109,6 +111,7 @@ class PickledWidget(Textarea):
     """
     This is responsible for outputting HTML representing a given field.
     """
+
     def render(self, name, value, attrs=None, renderer=None):
         """Display of the PickledField in django admin"""
 
@@ -119,12 +122,12 @@ class PickledWidget(Textarea):
             attrs["name"] = name
         else:
             attrs = {"name": name}
-        attrs['cols'] = 30
+        attrs["cols"] = 30
         # adapt number of rows to number of lines in string
         rows = 1
         if isinstance(value, str) and "\n" in repr_value:
-            rows = max(1, len(value.split('\n')))
-        attrs['rows'] = rows
+            rows = max(1, len(value.split("\n")))
+        attrs["rows"] = rows
         attrs = self.build_attrs(attrs)
 
         try:
@@ -148,16 +151,17 @@ class PickledFormField(CharField):
 
     widget = PickledWidget
     default_error_messages = dict(CharField.default_error_messages)
-    default_error_messages['invalid'] = (
+    default_error_messages["invalid"] = (
         "This is not a Python Literal. You can store things like strings, "
         "integers, or floats, but you must do it by typing them as you would "
         "type them in the Python Interpreter. For instance, strings must be "
         "surrounded by quote marks. We have converted it to a string for your "
-        "convenience. If it is acceptable, please hit save again.")
+        "convenience. If it is acceptable, please hit save again."
+    )
 
     def __init__(self, *args, **kwargs):
         # This needs to fall through to literal_eval.
-        kwargs['required'] = False
+        kwargs["required"] = False
         super().__init__(*args, **kwargs)
 
     def clean(self, value):
@@ -167,7 +171,7 @@ class PickledFormField(CharField):
         try:
             if not value.strip():
                 # Field was left blank. Make this None.
-                value = 'None'
+                value = "None"
         except AttributeError:
             pass
 
@@ -182,7 +186,7 @@ class PickledFormField(CharField):
             value = repr(value)
             return literal_eval(value)
         except (ValueError, SyntaxError):
-            raise ValidationError(self.error_messages['invalid'])
+            raise ValidationError(self.error_messages["invalid"])
 
 
 class PickledObjectField(models.Field):
@@ -197,8 +201,8 @@ class PickledObjectField(models.Field):
     """
 
     def __init__(self, *args, **kwargs):
-        self.compress = kwargs.pop('compress', False)
-        self.protocol = kwargs.pop('protocol', DEFAULT_PROTOCOL)
+        self.compress = kwargs.pop("compress", False)
+        self.protocol = kwargs.pop("protocol", DEFAULT_PROTOCOL)
         super().__init__(*args, **kwargs)
 
     def get_default(self):
@@ -276,12 +280,13 @@ class PickledObjectField(models.Field):
         return self.get_db_prep_value(value)
 
     def get_internal_type(self):
-        return 'TextField'
+        return "TextField"
 
     def get_db_prep_lookup(self, lookup_type, value, connection=None, prepared=False):
-        if lookup_type not in ['exact', 'in', 'isnull']:
-            raise TypeError('Lookup type %s is not supported.' % lookup_type)
+        if lookup_type not in ["exact", "in", "isnull"]:
+            raise TypeError("Lookup type %s is not supported." % lookup_type)
         # The Field model already calls get_db_prep_value before doing the
         # actual lookup, so all we need to do is limit the lookup types.
         return super().get_db_prep_lookup(
-            lookup_type, value, connection=connection, prepared=prepared)
+            lookup_type, value, connection=connection, prepared=prepared
+        )

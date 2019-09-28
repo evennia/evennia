@@ -12,9 +12,9 @@ from evennia import Command, CmdSet
 
 # Some simple commands for the red button
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Commands defined on the red button
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 class CmdNudge(Command):
@@ -54,6 +54,7 @@ class CmdPush(Command):
       push button
 
     """
+
     key = "push button"
     aliases = ["push", "press button", "press"]
     locks = "cmd:all()"
@@ -75,8 +76,11 @@ class CmdPush(Command):
             string += "\n\nA BOOM! A bright light blinds you!"
             string += "\nThe world goes dark ..."
             self.caller.msg(string)
-            self.caller.location.msg_contents("%s presses the button. BOOM! %s is blinded by a flash!" %
-                                              (self.caller.name, self.caller.name), exclude=self.caller)
+            self.caller.location.msg_contents(
+                "%s presses the button. BOOM! %s is blinded by a flash!"
+                % (self.caller.name, self.caller.name),
+                exclude=self.caller,
+            )
             # the button's method will handle all setup of scripts etc.
             self.obj.press_button(self.caller)
         else:
@@ -118,8 +122,9 @@ class CmdSmashGlass(Command):
             string += " Unfortunately all you get is a pain in your hand. Maybe"
             string += " you should just try to open the lid instead?"
         self.caller.msg(string)
-        self.caller.location.msg_contents("%s tries to smash the glass of the button." %
-                                          (self.caller.name), exclude=self.caller)
+        self.caller.location.msg_contents(
+            "%s tries to smash the glass of the button." % (self.caller.name), exclude=self.caller
+        )
 
 
 class CmdOpenLid(Command):
@@ -132,7 +137,7 @@ class CmdOpenLid(Command):
     """
 
     key = "open lid"
-    aliases = ["open button", 'open']
+    aliases = ["open button", "open"]
     locks = "cmd:all()"
 
     def func(self):
@@ -145,8 +150,9 @@ class CmdOpenLid(Command):
         string = "\nA ticking sound is heard, like a winding mechanism. Seems "
         string += "the lid will soon close again."
         self.caller.msg(string)
-        self.caller.location.msg_contents("%s opens the lid of the button." %
-                                          (self.caller.name), exclude=self.caller)
+        self.caller.location.msg_contents(
+            "%s opens the lid of the button." % (self.caller.name), exclude=self.caller
+        )
         # add the relevant cmdsets to button
         self.obj.cmdset.add(LidClosedCmdSet)
         # call object method
@@ -174,8 +180,9 @@ class CmdCloseLid(Command):
 
         # this will clean out scripts dependent on lid being open.
         self.caller.msg("You close the button's lid. It clicks back into place.")
-        self.caller.location.msg_contents("%s closes the button's lid." %
-                                          (self.caller.name), exclude=self.caller)
+        self.caller.location.msg_contents(
+            "%s closes the button's lid." % (self.caller.name), exclude=self.caller
+        )
 
 
 class CmdBlindLook(Command):
@@ -212,8 +219,9 @@ class CmdBlindLook(Command):
             string = "You are temporarily blinded by the flash. "
             string += "Until it wears off, all you can do is feel around blindly."
         self.caller.msg(string)
-        self.caller.location.msg_contents("%s stumbles around, blinded." %
-                                          (self.caller.name), exclude=self.caller)
+        self.caller.location.msg_contents(
+            "%s stumbles around, blinded." % (self.caller.name), exclude=self.caller
+        )
 
 
 class CmdBlindHelp(Command):
@@ -224,6 +232,7 @@ class CmdBlindHelp(Command):
       help
 
     """
+
     key = "help"
     aliases = "h"
     locks = "cmd:all()"
@@ -233,13 +242,14 @@ class CmdBlindHelp(Command):
         self.caller.msg("You are beyond help ... until you can see again.")
 
 
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 # Command sets for the red button
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 # We next tuck these commands into their respective command sets.
 # (note that we are overdoing the cdmset separation a bit here
 # to show how it works).
+
 
 class DefaultCmdSet(CmdSet):
     """
@@ -250,6 +260,7 @@ class DefaultCmdSet(CmdSet):
     bring it back. It's added to the object
     using obj.cmdset.add_default().
     """
+
     key = "RedButtonDefault"
     mergetype = "Union"  # this is default, we don't really need to put it here.
 
@@ -267,6 +278,7 @@ class LidClosedCmdSet(CmdSet):
     item (i.e. you don't have to manually add any
     scripts etc to it when creating it).
     """
+
     key = "LidClosedCmdSet"
     # default Union is used *except* if we are adding to a
     # cmdset named LidOpenCmdSet - this one we replace
@@ -284,6 +296,7 @@ class LidOpenCmdSet(CmdSet):
     """
     This is the opposite of the Closed cmdset.
     """
+
     key = "LidOpenCmdSet"
     # default Union is used *except* if we are adding to a
     # cmdset named LidClosedCmdSet - this one we replace
@@ -300,6 +313,7 @@ class BlindCmdSet(CmdSet):
     This is the cmdset added to the *account* when
     the button is pushed.
     """
+
     key = "BlindCmdSet"
     # we want it to completely replace all normal commands
     # until the timed script removes it again.
@@ -314,6 +328,7 @@ class BlindCmdSet(CmdSet):
         "Setup the blind cmdset"
         from evennia.commands.default.general import CmdSay
         from evennia.commands.default.general import CmdPose
+
         self.add(CmdSay())
         self.add(CmdPose())
         self.add(CmdBlindLook())
