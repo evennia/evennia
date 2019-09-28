@@ -29,17 +29,18 @@ def set_game_name_and_slogan():
         GAME_SLOGAN = settings.GAME_SLOGAN.strip()
     except AttributeError:
         GAME_SLOGAN = SERVER_VERSION
+
+
 set_game_name_and_slogan()
 
 # Setup lists of the most relevant apps so
 # the adminsite becomes more readable.
 
-ACCOUNT_RELATED = ['Accounts']
-GAME_ENTITIES = ['Objects', 'Scripts', 'Comms', 'Help']
-GAME_SETUP = ['Permissions', 'Config']
-CONNECTIONS = ['Irc']
-WEBSITE = ['Flatpages', 'News', 'Sites']
-
+ACCOUNT_RELATED = ["Accounts"]
+GAME_ENTITIES = ["Objects", "Scripts", "Comms", "Help"]
+GAME_SETUP = ["Permissions", "Config"]
+CONNECTIONS = ["Irc"]
+WEBSITE = ["Flatpages", "News", "Sites"]
 
 
 def set_webclient_settings():
@@ -56,9 +57,13 @@ def set_webclient_settings():
     # if we are working through a proxy or uses docker port-remapping, the webclient port encoded
     # in the webclient should be different than the one the server expects. Use the environment
     # variable WEBSOCKET_CLIENT_PROXY_PORT if this is the case.
-    WEBSOCKET_PORT = int(os.environ.get("WEBSOCKET_CLIENT_PROXY_PORT", settings.WEBSOCKET_CLIENT_PORT))
+    WEBSOCKET_PORT = int(
+        os.environ.get("WEBSOCKET_CLIENT_PROXY_PORT", settings.WEBSOCKET_CLIENT_PORT)
+    )
     # this is determined dynamically by the client and is less of an issue
     WEBSOCKET_URL = settings.WEBSOCKET_CLIENT_URL
+
+
 set_webclient_settings()
 
 # The main context processor function
@@ -72,22 +77,22 @@ def general_context(request):
         account = request.user
 
     puppet = None
-    if account and request.session.get('puppet'):
-        pk = int(request.session.get('puppet'))
+    if account and request.session.get("puppet"):
+        pk = int(request.session.get("puppet"))
         puppet = next((x for x in account.characters if x.pk == pk), None)
 
     return {
-        'account': account,
-        'puppet': puppet,
-        'game_name': GAME_NAME,
-        'game_slogan': GAME_SLOGAN,
-        'evennia_userapps': ACCOUNT_RELATED,
-        'evennia_entityapps': GAME_ENTITIES,
-        'evennia_setupapps': GAME_SETUP,
-        'evennia_connectapps': CONNECTIONS,
-        'evennia_websiteapps': WEBSITE,
+        "account": account,
+        "puppet": puppet,
+        "game_name": GAME_NAME,
+        "game_slogan": GAME_SLOGAN,
+        "evennia_userapps": ACCOUNT_RELATED,
+        "evennia_entityapps": GAME_ENTITIES,
+        "evennia_setupapps": GAME_SETUP,
+        "evennia_connectapps": CONNECTIONS,
+        "evennia_websiteapps": WEBSITE,
         "webclient_enabled": WEBCLIENT_ENABLED,
         "websocket_enabled": WEBSOCKET_CLIENT_ENABLED,
         "websocket_port": WEBSOCKET_PORT,
-        "websocket_url": WEBSOCKET_URL
+        "websocket_url": WEBSOCKET_URL,
     }

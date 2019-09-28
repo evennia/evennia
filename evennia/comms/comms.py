@@ -21,6 +21,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     create different types of communication channels.
 
     """
+
     objects = ChannelManager()
 
     def at_first_save(self):
@@ -105,7 +106,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         listening = [ob for ob in subs if ob.is_connected and ob not in muted]
         if subs:
             # display listening subscribers in bold
-            string = ", ".join([account.key if account not in listening else "|w%s|n" % account.key for account in subs])
+            string = ", ".join(
+                [
+                    account.key if account not in listening else "|w%s|n" % account.key
+                    for account in subs
+                ]
+            )
         else:
             string = "<None>"
         return string
@@ -163,7 +169,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         # check access
-        if not self.access(subscriber, 'listen'):
+        if not self.access(subscriber, "listen"):
             return False
         # pre-join hook
         connect = self.pre_join_channel(subscriber)
@@ -204,7 +210,14 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         self.post_leave_channel(subscriber)
         return True
 
-    def access(self, accessing_obj, access_type='listen', default=False, no_superuser_bypass=False, **kwargs):
+    def access(
+        self,
+        accessing_obj,
+        access_type="listen",
+        default=False,
+        no_superuser_bypass=False,
+        **kwargs,
+    ):
         """
         Determines if another object has permission to access.
 
@@ -221,8 +234,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             return (bool): Result of lock check.
 
         """
-        return self.locks.check(accessing_obj, access_type=access_type,
-                                default=default, no_superuser_bypass=no_superuser_bypass)
+        return self.locks.check(
+            accessing_obj,
+            access_type=access_type,
+            default=default,
+            no_superuser_bypass=no_superuser_bypass,
+        )
 
     @classmethod
     def create(cls, key, account=None, *args, **kwargs):
@@ -252,16 +269,18 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         errors = []
         obj = None
-        ip = kwargs.pop('ip', '')
+        ip = kwargs.pop("ip", "")
 
         try:
-            kwargs['desc'] = kwargs.pop('description', '')
-            kwargs['typeclass'] = kwargs.get('typeclass', cls)
+            kwargs["desc"] = kwargs.pop("description", "")
+            kwargs["typeclass"] = kwargs.get("typeclass", cls)
             obj = create.create_channel(key, *args, **kwargs)
 
             # Record creator id and creation IP
-            if ip: obj.db.creator_ip = ip
-            if account: obj.db.creator_id = account.id
+            if ip:
+                obj.db.creator_ip = ip
+            if account:
+                obj.db.creator_id = account.id
 
         except Exception as exc:
             errors.append("An error occurred while creating this '%s' object." % key)
@@ -278,10 +297,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         self.aliases.clear()
         super().delete()
         from evennia.comms.channelhandler import CHANNELHANDLER
+
         CHANNELHANDLER.update()
 
-    def message_transform(self, msgobj, emit=False, prefix=True,
-                          sender_strings=None, external=False, **kwargs):
+    def message_transform(
+        self, msgobj, emit=False, prefix=True, sender_strings=None, external=False, **kwargs
+    ):
         """
         Generates the formatted string sent to listeners on a channel.
 
@@ -333,16 +354,29 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             try:
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom account.msg() to treat channel-receives differently.
-                entity.msg(msgobj.message, from_obj=msgobj.senders, options={"from_channel": self.id})
+                entity.msg(
+                    msgobj.message, from_obj=msgobj.senders, options={"from_channel": self.id}
+                )
             except AttributeError as e:
                 logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
 
         if msgobj.keep_log:
             # log to file
-            logger.log_file(msgobj.message, self.attributes.get("log_file") or "channel_%s.log" % self.key)
+            logger.log_file(
+                msgobj.message, self.attributes.get("log_file") or "channel_%s.log" % self.key
+            )
 
-    def msg(self, msgobj, header=None, senders=None, sender_strings=None,
-            keep_log=None, online=False, emit=False, external=False):
+    def msg(
+        self,
+        msgobj,
+        header=None,
+        senders=None,
+        sender_strings=None,
+        keep_log=None,
+        online=False,
+        emit=False,
+        external=False,
+    ):
         """
         Send the given message to all accounts connected to channel. Note that
         no permission-checking is done here; it is assumed to have been
@@ -391,9 +425,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         msgobj = self.pre_send_message(msgobj)
         if not msgobj:
             return False
-        msgobj = self.message_transform(msgobj, emit=emit,
-                                        sender_strings=sender_strings,
-                                        external=external)
+        msgobj = self.message_transform(
+            msgobj, emit=emit, sender_strings=sender_strings, external=external
+        )
         self.distribute_message(msgobj, online=online)
         self.post_send_message(msgobj)
         return True
@@ -427,7 +461,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             prefix (str): The created channel prefix.
 
         """
-        return '' if emit else '[%s] ' % self.key
+        return "" if emit else "[%s] " % self.key
 
     def format_senders(self, senders=None, **kwargs):
         """
@@ -448,8 +482,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         if not senders:
-            return ''
-        return ', '.join(senders)
+            return ""
+        return ", ".join(senders)
 
     def pose_transform(self, msgobj, sender_string, **kwargs):
         """
@@ -472,16 +506,16 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         pose = False
         message = msgobj.message
         message_start = message.lstrip()
-        if message_start.startswith((':', ';')):
+        if message_start.startswith((":", ";")):
             pose = True
             message = message[1:]
-            if not message.startswith((':', "'", ',')):
-                if not message.startswith(' '):
-                    message = ' ' + message
+            if not message.startswith((":", "'", ",")):
+                if not message.startswith(" "):
+                    message = " " + message
         if pose:
-            return '%s%s' % (sender_string, message)
+            return "%s%s" % (sender_string, message)
         else:
-            return '%s: %s' % (sender_string, message)
+            return "%s: %s" % (sender_string, message)
 
     def format_external(self, msgobj, senders, emit=False, **kwargs):
         """
@@ -503,7 +537,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         if emit or not senders:
             return msgobj.message
-        senders = ', '.join(senders)
+        senders = ", ".join(senders)
         return self.pose_transform(msgobj, senders)
 
     def format_message(self, msgobj, emit=False, **kwargs):
@@ -522,14 +556,14 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         # We don't want to count things like external sources as senders for
         # the purpose of constructing the message string.
-        senders = [sender for sender in msgobj.senders if hasattr(sender, 'key')]
+        senders = [sender for sender in msgobj.senders if hasattr(sender, "key")]
         if not senders:
             emit = True
         if emit:
             return msgobj.message
         else:
             senders = [sender.key for sender in msgobj.senders]
-            senders = ', '.join(senders)
+            senders = ", ".join(senders)
             return self.pose_transform(msgobj, senders)
 
     def pre_join_channel(self, joiner, **kwargs):
@@ -643,8 +677,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         content_type = ContentType.objects.get_for_model(self.__class__)
-        return reverse("admin:%s_%s_change" % (content_type.app_label,
-                                               content_type.model), args=(self.id,))
+        return reverse(
+            "admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,)
+        )
 
     @classmethod
     def web_get_create_url(cls):
@@ -673,9 +708,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         try:
-            return reverse('%s-create' % slugify(cls._meta.verbose_name))
+            return reverse("%s-create" % slugify(cls._meta.verbose_name))
         except:
-            return '#'
+            return "#"
 
     def web_get_detail_url(self):
         """
@@ -704,11 +739,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         try:
-            return reverse('%s-detail' % slugify(self._meta.verbose_name),
-               kwargs={'slug': slugify(self.db_key)})
+            return reverse(
+                "%s-detail" % slugify(self._meta.verbose_name),
+                kwargs={"slug": slugify(self.db_key)},
+            )
         except:
-            return '#'
-
+            return "#"
 
     def web_get_update_url(self):
         """
@@ -737,10 +773,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         try:
-            return reverse('%s-update' % slugify(self._meta.verbose_name),
-               kwargs={'slug': slugify(self.db_key)})
+            return reverse(
+                "%s-update" % slugify(self._meta.verbose_name),
+                kwargs={"slug": slugify(self.db_key)},
+            )
         except:
-            return '#'
+            return "#"
 
     def web_get_delete_url(self):
         """
@@ -768,10 +806,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         try:
-            return reverse('%s-delete' % slugify(self._meta.verbose_name),
-               kwargs={'slug': slugify(self.db_key)})
+            return reverse(
+                "%s-delete" % slugify(self._meta.verbose_name),
+                kwargs={"slug": slugify(self.db_key)},
+            )
         except:
-            return '#'
+            return "#"
 
     # Used by Django Sites/Admin
     get_absolute_url = web_get_detail_url

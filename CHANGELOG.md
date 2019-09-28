@@ -29,6 +29,7 @@ without arguments starts a full interactive Python console.
 - Remove `pillow` requirement (install especially if using imagefield)
 - Add Simplified Korean translation (user aceamro)
 - Show warning on `start -l` if settings contains values unsafe for production.
+- Make code auto-formatted with Black.
 
 
 ## Evennia 0.9 (2018-2019)

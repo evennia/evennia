@@ -14,8 +14,8 @@ def _table_exists(db_cursor, tablename):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0007_copy_player_to_account'),
-        ('objects', '0006_auto_20170606_1731'),
+        ("accounts", "0007_copy_player_to_account"),
+        ("objects", "0006_auto_20170606_1731"),
     ]
 
     db_cursor = connection.cursor()
@@ -25,8 +25,14 @@ class Migration(migrations.Migration):
         # here we are not starting from scratch.
         operations = [
             migrations.AddField(
-                model_name='objectdb',
-                name='db_account',
-                field=models.ForeignKey(help_text='an Account connected to this object, if any.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.AccountDB', verbose_name='account'),
-            ),
+                model_name="objectdb",
+                name="db_account",
+                field=models.ForeignKey(
+                    help_text="an Account connected to this object, if any.",
+                    null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    to="accounts.AccountDB",
+                    verbose_name="account",
+                ),
+            )
         ]

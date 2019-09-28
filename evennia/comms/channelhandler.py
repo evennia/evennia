@@ -55,6 +55,7 @@ class ChannelCommand(command.Command):
         {lower_channelkey}/history 30
 
     """
+
     # ^note that channeldesc and lower_channelkey will be filled
     # automatically by ChannelHandler
 
@@ -106,12 +107,12 @@ class ChannelCommand(command.Command):
             string = _("You are not connected to channel '%s'.")
             self.msg(string % channelkey)
             return
-        if not channel.access(caller, 'send'):
+        if not channel.access(caller, "send"):
             string = _("You are not permitted to send to channel '%s'.")
             self.msg(string % channelkey)
             return
         if msg == "on":
-            caller = caller if not hasattr(caller, 'account') else caller.account
+            caller = caller if not hasattr(caller, "account") else caller.account
             unmuted = channel.unmute(caller)
             if unmuted:
                 self.msg("You start listening to %s." % channel)
@@ -119,7 +120,7 @@ class ChannelCommand(command.Command):
             self.msg("You were already listening to %s." % channel)
             return
         if msg == "off":
-            caller = caller if not hasattr(caller, 'account') else caller.account
+            caller = caller if not hasattr(caller, "account") else caller.account
             muted = channel.mute(caller)
             if muted:
                 self.msg("You stop listening to %s." % channel)
@@ -130,11 +131,14 @@ class ChannelCommand(command.Command):
             # Try to view history
             log_file = channel.attributes.get("log_file", default="channel_%s.log" % channel.key)
 
-            def send_msg(lines): return self.msg("".join(line.split("[-]", 1)[1]
-                                                         if "[-]" in line else line for line in lines))
+            def send_msg(lines):
+                return self.msg(
+                    "".join(line.split("[-]", 1)[1] if "[-]" in line else line for line in lines)
+                )
+
             tail_log_file(log_file, self.history_start, 20, callback=send_msg)
         else:
-            caller = caller if not hasattr(caller, 'account') else caller.account
+            caller = caller if not hasattr(caller, "account") else caller.account
             if caller in channel.mutelist:
                 self.msg("You currently have %s muted." % channel)
                 return
@@ -216,16 +220,19 @@ class ChannelHandler(object):
             locks="cmd:all();%s" % channel.locks,
             help_category="Channel names",
             obj=channel,
-            is_channel=True)
+            is_channel=True,
+        )
         # format the help entry
         key = channel.key
-        cmd.__doc__ = cmd.__doc__.format(channelkey=key,
-                                         lower_channelkey=key.strip().lower(),
-                                         channeldesc=channel.attributes.get(
-                                            "desc", default="").strip())
+        cmd.__doc__ = cmd.__doc__.format(
+            channelkey=key,
+            lower_channelkey=key.strip().lower(),
+            channeldesc=channel.attributes.get("desc", default="").strip(),
+        )
         self._cached_channel_cmds[channel] = cmd
         self._cached_channels[key] = channel
         self._cached_cmdsets = {}
+
     add_channel = add  # legacy alias
 
     def remove(self, channel):
@@ -290,12 +297,15 @@ class ChannelHandler(object):
         else:
             # create a new cmdset holding all viable channels
             chan_cmdset = None
-            chan_cmds = [channelcmd for channel, channelcmd in self._cached_channel_cmds.items()
-                         if channel.subscriptions.has(source_object) and
-                         channelcmd.access(source_object, 'send')]
+            chan_cmds = [
+                channelcmd
+                for channel, channelcmd in self._cached_channel_cmds.items()
+                if channel.subscriptions.has(source_object)
+                and channelcmd.access(source_object, "send")
+            ]
             if chan_cmds:
                 chan_cmdset = cmdset.CmdSet()
-                chan_cmdset.key = 'ChannelCmdSet'
+                chan_cmdset.key = "ChannelCmdSet"
                 chan_cmdset.priority = 101
                 chan_cmdset.duplicates = True
                 for cmd in chan_cmds:

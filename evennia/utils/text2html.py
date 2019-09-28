@@ -1,4 +1,3 @@
-
 """
 ANSI -> html converter
 
@@ -32,48 +31,48 @@ class TextToHTMLparser(object):
     normal = ANSI_NORMAL  # "
     underline = ANSI_UNDERLINE
     blink = ANSI_BLINK
-    inverse = ANSI_INVERSE   # this will produce an outline; no obvious css equivalent?
+    inverse = ANSI_INVERSE  # this will produce an outline; no obvious css equivalent?
     colorcodes = [
-        ('color-000', unhilite + ANSI_BLACK),  # pure black
-        ('color-001', unhilite + ANSI_RED),
-        ('color-002', unhilite + ANSI_GREEN),
-        ('color-003', unhilite + ANSI_YELLOW),
-        ('color-004', unhilite + ANSI_BLUE),
-        ('color-005', unhilite + ANSI_MAGENTA),
-        ('color-006', unhilite + ANSI_CYAN),
-        ('color-007', unhilite + ANSI_WHITE),  # light grey
-        ('color-008', hilite + ANSI_BLACK),  # dark grey
-        ('color-009', hilite + ANSI_RED),
-        ('color-010', hilite + ANSI_GREEN),
-        ('color-011', hilite + ANSI_YELLOW),
-        ('color-012', hilite + ANSI_BLUE),
-        ('color-013', hilite + ANSI_MAGENTA),
-        ('color-014', hilite + ANSI_CYAN),
-        ('color-015', hilite + ANSI_WHITE)  # pure white
+        ("color-000", unhilite + ANSI_BLACK),  # pure black
+        ("color-001", unhilite + ANSI_RED),
+        ("color-002", unhilite + ANSI_GREEN),
+        ("color-003", unhilite + ANSI_YELLOW),
+        ("color-004", unhilite + ANSI_BLUE),
+        ("color-005", unhilite + ANSI_MAGENTA),
+        ("color-006", unhilite + ANSI_CYAN),
+        ("color-007", unhilite + ANSI_WHITE),  # light grey
+        ("color-008", hilite + ANSI_BLACK),  # dark grey
+        ("color-009", hilite + ANSI_RED),
+        ("color-010", hilite + ANSI_GREEN),
+        ("color-011", hilite + ANSI_YELLOW),
+        ("color-012", hilite + ANSI_BLUE),
+        ("color-013", hilite + ANSI_MAGENTA),
+        ("color-014", hilite + ANSI_CYAN),
+        ("color-015", hilite + ANSI_WHITE),  # pure white
     ] + [("color-%03i" % (i + 16), XTERM256_FG % ("%i" % (i + 16))) for i in range(240)]
 
     colorback = [
-        ('bgcolor-000', ANSI_BACK_BLACK),  # pure black
-        ('bgcolor-001', ANSI_BACK_RED),
-        ('bgcolor-002', ANSI_BACK_GREEN),
-        ('bgcolor-003', ANSI_BACK_YELLOW),
-        ('bgcolor-004', ANSI_BACK_BLUE),
-        ('bgcolor-005', ANSI_BACK_MAGENTA),
-        ('bgcolor-006', ANSI_BACK_CYAN),
-        ('bgcolor-007', ANSI_BACK_WHITE),  # light grey
-        ('bgcolor-008', hilite + ANSI_BACK_BLACK),  # dark grey
-        ('bgcolor-009', hilite + ANSI_BACK_RED),
-        ('bgcolor-010', hilite + ANSI_BACK_GREEN),
-        ('bgcolor-011', hilite + ANSI_BACK_YELLOW),
-        ('bgcolor-012', hilite + ANSI_BACK_BLUE),
-        ('bgcolor-013', hilite + ANSI_BACK_MAGENTA),
-        ('bgcolor-014', hilite + ANSI_BACK_CYAN),
-        ('bgcolor-015', hilite + ANSI_BACK_WHITE),  # pure white
+        ("bgcolor-000", ANSI_BACK_BLACK),  # pure black
+        ("bgcolor-001", ANSI_BACK_RED),
+        ("bgcolor-002", ANSI_BACK_GREEN),
+        ("bgcolor-003", ANSI_BACK_YELLOW),
+        ("bgcolor-004", ANSI_BACK_BLUE),
+        ("bgcolor-005", ANSI_BACK_MAGENTA),
+        ("bgcolor-006", ANSI_BACK_CYAN),
+        ("bgcolor-007", ANSI_BACK_WHITE),  # light grey
+        ("bgcolor-008", hilite + ANSI_BACK_BLACK),  # dark grey
+        ("bgcolor-009", hilite + ANSI_BACK_RED),
+        ("bgcolor-010", hilite + ANSI_BACK_GREEN),
+        ("bgcolor-011", hilite + ANSI_BACK_YELLOW),
+        ("bgcolor-012", hilite + ANSI_BACK_BLUE),
+        ("bgcolor-013", hilite + ANSI_BACK_MAGENTA),
+        ("bgcolor-014", hilite + ANSI_BACK_CYAN),
+        ("bgcolor-015", hilite + ANSI_BACK_WHITE),  # pure white
     ] + [("bgcolor-%03i" % (i + 16), XTERM256_BG % ("%i" % (i + 16))) for i in range(240)]
 
     # make sure to escape [
-    #colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
-    #colorback = [(c, code.replace("[", r"\[")) for c, code in colorback]
+    # colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
+    # colorback = [(c, code.replace("[", r"\[")) for c, code in colorback]
     fg_colormap = dict((code, clr) for clr, code in colorcodes)
     bg_colormap = dict((code, clr) for clr, code in colorback)
 
@@ -97,37 +96,44 @@ class TextToHTMLparser(object):
     re_uline = re.compile("(?:%s)(.*?)(?=%s|%s)" % (underline.replace("[", r"\["), fgstop, bgstop))
     re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
     re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
-    re_string = re.compile(r'(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S)  )|(?P<space> [ \t]+)|'
-                           r'(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)', re.S | re.M | re.I)
-    re_dblspace = re.compile(r' {2,}', re.M)
-    re_url = re.compile(r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)')
-    re_mxplink = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
+    re_string = re.compile(
+        r"(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S)  )|(?P<space> [ \t]+)|"
+        r"(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)",
+        re.S | re.M | re.I,
+    )
+    re_dblspace = re.compile(r" {2,}", re.M)
+    re_url = re.compile(
+        r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
+    )
+    re_mxplink = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
 
     def _sub_bgfg(self, colormatch):
         # print("colormatch.groups()", colormatch.groups())
         bgcode, prespace, fgcode, text, postspace = colormatch.groups()
         if not fgcode:
-            ret = r'''<span class="%s">%s%s%s</span>''' % (
+            ret = r"""<span class="%s">%s%s%s</span>""" % (
                 self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
                 prespace and "&nbsp;" * len(prespace) or "",
                 postspace and "&nbsp;" * len(postspace) or "",
-                text)
+                text,
+            )
         else:
-            ret = r'''<span class="%s"><span class="%s">%s%s%s</span></span>''' % (
-                    self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
-                    self.fg_colormap.get(fgcode, self.bg_colormap.get(fgcode, "err")),
-                    prespace and "&nbsp;" * len(prespace) or "",
-                    postspace and "&nbsp;" * len(postspace) or "",
-                    text)
+            ret = r"""<span class="%s"><span class="%s">%s%s%s</span></span>""" % (
+                self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
+                self.fg_colormap.get(fgcode, self.bg_colormap.get(fgcode, "err")),
+                prespace and "&nbsp;" * len(prespace) or "",
+                postspace and "&nbsp;" * len(postspace) or "",
+                text,
+            )
         return ret
 
     def _sub_fg(self, colormatch):
         code, text = colormatch.groups()
-        return r'''<span class="%s">%s</span>''' % (self.fg_colormap.get(code, "err"), text)
+        return r"""<span class="%s">%s</span>""" % (self.fg_colormap.get(code, "err"), text)
 
     def _sub_bg(self, colormatch):
         code, text = colormatch.groups()
-        return r'''<span class="%s">%s</span>''' % (self.bg_colormap.get(code, "err"), text)
+        return r"""<span class="%s">%s</span>""" % (self.bg_colormap.get(code, "err"), text)
 
     def re_color(self, text):
         """
@@ -159,8 +165,8 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        text = self.re_hilite.sub(r'<strong>\1</strong>', text)
-        return self.re_unhilite.sub(r'\1', text)  # strip unhilite - there is no equivalent in css.
+        text = self.re_hilite.sub(r"<strong>\1</strong>", text)
+        return self.re_unhilite.sub(r"\1", text)  # strip unhilite - there is no equivalent in css.
 
     def re_underline(self, text):
         """
@@ -210,7 +216,7 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        return text.replace('\07', '')
+        return text.replace("\07", "")
 
     def remove_backspaces(self, text):
         """
@@ -223,10 +229,10 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        backspace_or_eol = r'(.\010)|(\033\[K)'
+        backspace_or_eol = r"(.\010)|(\033\[K)"
         n = 1
         while n > 0:
-            text, n = re.subn(backspace_or_eol, '', text, 1)
+            text, n = re.subn(backspace_or_eol, "", text, 1)
         return text
 
     def convert_linebreaks(self, text):
@@ -241,7 +247,7 @@ class TextToHTMLparser(object):
 
         """
         return text
-        return text.replace(r'\n', r'<br>')
+        return text.replace(r"\n", r"<br>")
 
     def convert_urls(self, text):
         """
@@ -277,10 +283,12 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        cmd, text = [grp.replace('\"', "\\&quot;") for grp in match.groups()]
-        val = r'''<a id="mxplink" href="#" ''' \
-            '''onclick="Evennia.msg(&quot;text&quot;,[&quot;{cmd}&quot;],{{}});''' \
-            '''return false;">{text}</a>'''.format(cmd=cmd, text=text)
+        cmd, text = [grp.replace('"', "\\&quot;") for grp in match.groups()]
+        val = (
+            r"""<a id="mxplink" href="#" """
+            """onclick="Evennia.msg(&quot;text&quot;,[&quot;{cmd}&quot;],{{}});"""
+            """return false;">{text}</a>""".format(cmd=cmd, text=text)
+        )
         return val
 
     def sub_text(self, match):
@@ -296,24 +304,24 @@ class TextToHTMLparser(object):
 
         """
         cdict = match.groupdict()
-        if cdict['htmlchars']:
-            return cgi.escape(cdict['htmlchars'])
-        elif cdict['lineend']:
-            return '<br>'
-        elif cdict['firstspace']:
-            return ' &nbsp;'
-        elif cdict['space'] == '\t':
+        if cdict["htmlchars"]:
+            return cgi.escape(cdict["htmlchars"])
+        elif cdict["lineend"]:
+            return "<br>"
+        elif cdict["firstspace"]:
+            return " &nbsp;"
+        elif cdict["space"] == "\t":
             text = match.group()
-            return ' ' if tabstop == 1 else ' ' + "&nbsp;" * tabstop
-        elif cdict['space'] or cdict["spacestart"]:
-            text = match.group().replace('\t', '&nbsp;' * self.tabstop)
-            text = text.replace(' ', '&nbsp;')
+            return " " if tabstop == 1 else " " + "&nbsp;" * tabstop
+        elif cdict["space"] or cdict["spacestart"]:
+            text = match.group().replace("\t", "&nbsp;" * self.tabstop)
+            text = text.replace(" ", "&nbsp;")
             return text
         return None
 
     def sub_dblspace(self, match):
         "clean up double-spaces"
-        return ' ' + '&nbsp;' * (len(match.group()) - 1)
+        return " " + "&nbsp;" * (len(match.group()) - 1)
 
     def parse(self, text, strip_ansi=False):
         """
@@ -354,6 +362,7 @@ HTML_PARSER = TextToHTMLparser()
 #
 # Access function
 #
+
 
 def parse_html(string, strip_ansi=False, parser=HTML_PARSER):
     """

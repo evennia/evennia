@@ -61,6 +61,7 @@ class TimeScript(DefaultScript):
         seconds = real_seconds_until(**self.db.gametime)
         self.restart(interval=seconds)
 
+
 # Access functions
 
 
@@ -87,8 +88,9 @@ def server_epoch():
     """
     global _SERVER_EPOCH
     if not _SERVER_EPOCH:
-        _SERVER_EPOCH = ServerConfig.objects.conf("server_epoch", default=None) \
-            or time.time() - runtime()
+        _SERVER_EPOCH = (
+            ServerConfig.objects.conf("server_epoch", default=None) or time.time() - runtime()
+        )
     return _SERVER_EPOCH
 
 
@@ -115,6 +117,7 @@ def portal_uptime():
         time (float): The uptime of the portal.
     """
     from evennia.server.sessionhandler import SESSIONS
+
     return time.time() - SESSIONS.portal_start_time
 
 
@@ -153,8 +156,7 @@ def gametime(absolute=False):
     return gtime
 
 
-def real_seconds_until(sec=None, min=None, hour=None,
-                       day=None, month=None, year=None):
+def real_seconds_until(sec=None, min=None, hour=None, day=None, month=None, year=None):
     """
     Return the real seconds until game time.
 
@@ -190,10 +192,10 @@ def real_seconds_until(sec=None, min=None, hour=None,
     if projected <= current:
         # We increase one unit of time depending on parameters
         if month is not None:
-            projected = projected.replace(year=s_year+1)
+            projected = projected.replace(year=s_year + 1)
         elif day is not None:
             try:
-                projected = projected.replace(month=s_month+1)
+                projected = projected.replace(month=s_month + 1)
             except ValueError:
                 projected = projected.replace(month=1)
         elif hour is not None:
@@ -208,8 +210,9 @@ def real_seconds_until(sec=None, min=None, hour=None,
     return seconds / TIMEFACTOR
 
 
-def schedule(callback, repeat=False, sec=None, min=None,
-             hour=None, day=None, month=None, year=None):
+def schedule(
+    callback, repeat=False, sec=None, min=None, hour=None, day=None, month=None, year=None
+):
     """
     Call a callback at a given in-game time.
 
@@ -233,12 +236,15 @@ def schedule(callback, repeat=False, sec=None, min=None,
         schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.
         schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.
     """
-    seconds = real_seconds_until(sec=sec, min=min, hour=hour,
-                                 day=day, month=month, year=year)
-    script = create_script("evennia.utils.gametime.TimeScript",
-                           key="TimeScript", desc="A gametime-sensitive script",
-                           interval=seconds, start_delay=True,
-                           repeats=-1 if repeat else 1)
+    seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day, month=month, year=year)
+    script = create_script(
+        "evennia.utils.gametime.TimeScript",
+        key="TimeScript",
+        desc="A gametime-sensitive script",
+        interval=seconds,
+        start_delay=True,
+        repeats=-1 if repeat else 1,
+    )
     script.db.callback = callback
     script.db.gametime = {
         "sec": sec,

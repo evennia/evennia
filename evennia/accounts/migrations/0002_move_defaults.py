@@ -13,10 +13,6 @@ def convert_defaults(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0001_initial'),
-    ]
+    dependencies = [("accounts", "0001_initial")]
 
-    operations = [
-        migrations.RunPython(convert_defaults),
-    ]
+    operations = [migrations.RunPython(convert_defaults)]

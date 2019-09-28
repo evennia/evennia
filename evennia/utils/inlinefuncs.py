@@ -69,6 +69,7 @@ from evennia.utils import utils, logger
 
 # example/testing inline functions
 
+
 def pad(*args, **kwargs):
     """
     Inlinefunc. Pads text to given width.
@@ -87,14 +88,14 @@ def pad(*args, **kwargs):
         `$pad(text, width, align, fillchar)`
 
     """
-    text, width, align, fillchar = "", 78, 'c', ' '
+    text, width, align, fillchar = "", 78, "c", " "
     nargs = len(args)
     if nargs > 0:
         text = args[0]
     if nargs > 1:
         width = int(args[1]) if args[1].strip().isdigit() else 78
     if nargs > 2:
-        align = args[2] if args[2] in ('c', 'l', 'r') else 'c'
+        align = args[2] if args[2] in ("c", "l", "r") else "c"
     if nargs > 3:
         fillchar = args[3]
     return utils.pad(text, width=width, align=align, fillchar=fillchar)
@@ -160,7 +161,7 @@ def clr(*args, **kwargs):
 
 
 def null(*args, **kwargs):
-    return args[0] if args else ''
+    return args[0] if args else ""
 
 
 def nomatch(name, *args, **kwargs):
@@ -174,15 +175,19 @@ def nomatch(name, *args, **kwargs):
     return "${name}({args}{kwargs})".format(
         name=name,
         args=",".join(args),
-        kwargs=",".join("{}={}".format(key, val) for key, val in kwargs.items()))
+        kwargs=",".join("{}={}".format(key, val) for key, val in kwargs.items()),
+    )
+
 
 _INLINE_FUNCS = {}
 
 # we specify a default nomatch function to use if no matching func was
 # found. This will be overloaded by any nomatch function defined in
 # the imported modules.
-_DEFAULT_FUNCS = {"nomatch": lambda *args, **kwargs: "<UNKNOWN>",
-                  "stackfull": lambda *args, **kwargs: "\n (not parsed: "}
+_DEFAULT_FUNCS = {
+    "nomatch": lambda *args, **kwargs: "<UNKNOWN>",
+    "stackfull": lambda *args, **kwargs: "\n (not parsed: ",
+}
 
 _INLINE_FUNCS.update(_DEFAULT_FUNCS)
 
@@ -193,9 +198,11 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
     except ImportError as err:
         if module == "server.conf.inlinefuncs":
             # a temporary warning since the default module changed name
-            raise ImportError("Error: %s\nPossible reason: mygame/server/conf/inlinefunc.py should "
-                              "be renamed to mygame/server/conf/inlinefuncs.py (note "
-                              "the S at the end)." % err)
+            raise ImportError(
+                "Error: %s\nPossible reason: mygame/server/conf/inlinefunc.py should "
+                "be renamed to mygame/server/conf/inlinefuncs.py (note "
+                "the S at the end)." % err
+            )
         else:
             raise
 
@@ -211,7 +218,8 @@ except AttributeError:
 _RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname( (start of function call)
 
 # note: this regex can be experimented with at https://regex101.com/r/kGR3vE/2
-_RE_TOKEN = re.compile(r"""
+_RE_TOKEN = re.compile(
+    r"""
       (?<!\\)\'\'\'(?P<singlequote>.*?)(?<!\\)\'\'\'|  # single-triplets escape all inside
       (?<!\\)\"\"\"(?P<doublequote>.*?)(?<!\\)\"\"\"|  # double-triplets escape all inside
       (?P<comma>(?<!\\)\,)|                            # , (argument sep)
@@ -222,7 +230,8 @@ _RE_TOKEN = re.compile(r"""
             \\\'|\\\"|\\\)|\\\$\w+\(|\\\()|
       (?P<rest>                                        # everything else to re-insert verbatim
             \$(?!\w+\()|\'|\"|\\|[^),$\'\"\\\(]+)""",
-                       re.UNICODE | re.IGNORECASE | re.VERBOSE | re.DOTALL)
+    re.UNICODE | re.IGNORECASE | re.VERBOSE | re.DOTALL,
+)
 
 # Cache for function lookups.
 _PARSING_CACHE = utils.LimitedSizeOrderedDict(size_limit=1000)
@@ -253,8 +262,11 @@ class ParseStack(list):
         self._string_last = True
 
     def __eq__(self, other):
-        return (super().__eq__(other) and
-                hasattr(other, "_string_last") and self._string_last == other._string_last)
+        return (
+            super().__eq__(other)
+            and hasattr(other, "_string_last")
+            and self._string_last == other._string_last
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -422,6 +434,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
                 kwargs["inlinefunc_stack_depth"] = depth
                 retval = "" if strip else func(*args, **kwargs)
         return utils.to_str(retval)
+
     retval = "".join(_run_stack(item) for item in stack)
     if stacktrace:
         out = "STACK: \n{} => {}\n".format(stack, retval)
@@ -430,6 +443,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
 
     # execute the stack
     return retval
+
 
 #
 # Nick templating

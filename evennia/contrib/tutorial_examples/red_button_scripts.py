@@ -141,9 +141,9 @@ class BlindedState(DefaultScript):
         when we are done!
         """
         self.obj.msg("You blink feverishly as your eyesight slowly returns.")
-        self.obj.location.msg_contents("%s seems to be recovering their eyesight."
-                                       % self.obj.name,
-                                       exclude=self.obj)
+        self.obj.location.msg_contents(
+            "%s seems to be recovering their eyesight." % self.obj.name, exclude=self.obj
+        )
         self.obj.cmdset.delete()  # this will clear the latest added cmdset,
         # (which is the blinded one).
 
@@ -156,6 +156,7 @@ class BlindedState(DefaultScript):
 # more "alive" - one that makes the button blink menacingly, another
 # that makes the lid covering the button slide back after a while.
 #
+
 
 class CloseLidEvent(DefaultScript):
     """

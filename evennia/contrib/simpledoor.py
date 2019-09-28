@@ -97,14 +97,14 @@ class CmdOpen(default_cmds.CmdOpen):
     __doc__ = default_cmds.CmdOpen.__doc__
     # overloading parts of the default CmdOpen command to support doors.
 
-    def create_exit(self, exit_name, location, destination,
-                    exit_aliases=None, typeclass=None):
+    def create_exit(self, exit_name, location, destination, exit_aliases=None, typeclass=None):
         """
         Simple wrapper for the default CmdOpen.create_exit
         """
         # create a new exit as normal
-        new_exit = super().create_exit(exit_name, location, destination,
-                                                    exit_aliases=exit_aliases, typeclass=typeclass)
+        new_exit = super().create_exit(
+            exit_name, location, destination, exit_aliases=exit_aliases, typeclass=typeclass
+        )
         if hasattr(self, "return_exit_already_created"):
             # we don't create a return exit if it was already created (because
             # we created a door)
@@ -113,10 +113,13 @@ class CmdOpen(default_cmds.CmdOpen):
         if inherits_from(new_exit, SimpleDoor):
             # a door - create its counterpart and make sure to turn off the default
             # return-exit creation of CmdOpen
-            self.caller.msg("Note: A door-type exit was created - ignored eventual custom return-exit type.")
+            self.caller.msg(
+                "Note: A door-type exit was created - ignored eventual custom return-exit type."
+            )
             self.return_exit_already_created = True
-            back_exit = self.create_exit(exit_name, destination, location,
-                                         exit_aliases=exit_aliases, typeclass=typeclass)
+            back_exit = self.create_exit(
+                exit_name, destination, location, exit_aliases=exit_aliases, typeclass=typeclass
+            )
             new_exit.db.return_exit = back_exit
             back_exit.db.return_exit = new_exit
         return new_exit
@@ -125,6 +128,7 @@ class CmdOpen(default_cmds.CmdOpen):
 # A simple example of a command making use of the door exit class'
 # functionality. One could easily expand it with functionality to
 # operate on other types of open-able objects as needed.
+
 
 class CmdOpenCloseDoor(default_cmds.MuxCommand):
     """

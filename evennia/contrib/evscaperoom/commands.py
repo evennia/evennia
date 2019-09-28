@@ -35,7 +35,7 @@ from evennia import syscmdkeys
 from evennia.utils import variable_from_module
 from .utils import create_evscaperoom_object
 
-_AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 
 _RE_ARGSPLIT = re.compile(r"\s(with|on|to|in|at)\s", re.I + re.U)
 _RE_EMOTE_SPEECH = re.compile(r"(\".*?\")|(\'.*?\')")
@@ -111,6 +111,7 @@ class CmdEvscapeRoom(Command):
        command [<obj1>|<arg1>] [<prep> <obj2>|<arg2>]
 
     """
+
     # always separate the command from any args with a space
     arg_regex = r"(/\w+?(\s|$))|\s|$"
     help_category = "Evscaperoom"
@@ -210,6 +211,7 @@ class CmdGiveUp(CmdEvscapeRoom):
     Abandons your attempts at escaping and of ever winning the pie-eating contest.
 
     """
+
     key = "give up"
     aliases = ("abort", "chicken out", "quit", "q")
 
@@ -224,10 +226,10 @@ class CmdGiveUp(CmdEvscapeRoom):
             warning = _QUIT_WARNING_CAN_COME_BACK.format(roomname=self.room.name)
             warning = _QUIT_WARNING.format(warning=warning)
 
-        ret = yield(warning)
+        ret = yield (warning)
         if ret.upper() == "QUIT":
             self.msg("|R ... Oh. Okay then. Off you go.|n\n")
-            yield(1)
+            yield (1)
 
             self.room.log(f"QUIT: {self.caller.key} used the quit command")
 
@@ -250,6 +252,7 @@ class CmdLook(CmdEvscapeRoom):
       look [obj]
 
     """
+
     key = "look"
     aliases = ["l", "ls"]
     obj1_search = None
@@ -276,6 +279,7 @@ class CmdWho(CmdEvscapeRoom, default_cmds.CmdWho):
     server as a whole.
 
     """
+
     key = "who"
 
     obj1_search = False
@@ -285,7 +289,7 @@ class CmdWho(CmdEvscapeRoom, default_cmds.CmdWho):
 
         caller = self.caller
 
-        if self.args == 'all':
+        if self.args == "all":
             table = self.style_table("|wName", "|wRoom")
             sessions = SESSION_HANDLER.get_sessions()
             for session in sessions:
@@ -298,15 +302,19 @@ class CmdWho(CmdEvscapeRoom, default_cmds.CmdWho):
                     account = session.get_account()
                     table.add_row(account.get_display_name(caller), "(OOC)")
 
-            txt = (f"|cPlayers active on this server|n:\n{table}\n"
-                   "(use 'who' to see only those in your room)")
+            txt = (
+                f"|cPlayers active on this server|n:\n{table}\n"
+                "(use 'who' to see only those in your room)"
+            )
 
         else:
-            chars = [f"{obj.get_display_name(caller)} - {obj.db.desc.strip()}"
-                     for obj in self.room.get_all_characters()
-                     if obj != caller]
+            chars = [
+                f"{obj.get_display_name(caller)} - {obj.db.desc.strip()}"
+                for obj in self.room.get_all_characters()
+                if obj != caller
+            ]
             chars = "\n".join([f"{caller.key} - {caller.db.desc.strip()} (you)"] + chars)
-            txt = (f"|cPlayers in this room (room-name '{self.room.name}')|n:\n  {chars}")
+            txt = f"|cPlayers in this room (room-name '{self.room.name}')|n:\n  {chars}"
         caller.msg(txt)
 
 
@@ -320,6 +328,7 @@ class CmdSpeak(Command):
       shout
 
     """
+
     key = "say"
     aliases = [";", "shout", "whisper"]
     arg_regex = r"\w|\s|$"
@@ -329,7 +338,7 @@ class CmdSpeak(Command):
         args = self.args.strip()
         caller = self.caller
         action = self.cmdname
-        action = "say" if action == ';' else action
+        action = "say" if action == ";" else action
         room = self.caller.location
 
         if not self.args:
@@ -365,6 +374,7 @@ class CmdEmote(Command):
         emote /me points to /box and /lever.
 
     """
+
     key = "emote"
     aliases = [":", "pose"]
     arg_regex = r"\w|\s|$"
@@ -379,7 +389,7 @@ class CmdEmote(Command):
         emote = self.args.strip()
 
         if not emote:
-            self.caller.msg("Usage: emote /me points to /door, saying \"look over there!\"")
+            self.caller.msg('Usage: emote /me points to /door, saying "look over there!"')
             return
 
         speech_clr = "|c"
@@ -438,6 +448,7 @@ class CmdFocus(CmdEvscapeRoom):
     looks and what actions is available.
 
     """
+
     key = "focus"
     aliases = ["examine", "e", "ex", "unfocus"]
 
@@ -454,7 +465,9 @@ class CmdFocus(CmdEvscapeRoom):
                 return
 
             if self.focus != self.obj1:
-                self.room.msg_room(self.caller, f"~You ~examine *{self.obj1.key}.", skip_caller=True)
+                self.room.msg_room(
+                    self.caller, f"~You ~examine *{self.obj1.key}.", skip_caller=True
+                )
             self.focus = self.obj1
             self.obj1.at_focus(self.caller)
         elif not self.focus:
@@ -473,11 +486,13 @@ class CmdOptions(CmdEvscapeRoom):
       options
 
     """
+
     key = "options"
     aliases = ["option"]
 
     def func(self):
         from .menu import run_option_menu
+
         run_option_menu(self.caller, self.session)
 
 
@@ -486,6 +501,7 @@ class CmdGet(CmdEvscapeRoom):
     Use focus / examine instead.
 
     """
+
     key = "get"
     aliases = ["inventory", "i", "inv", "give"]
 
@@ -501,6 +517,7 @@ class CmdRerouter(default_cmds.MuxCommand):
        <action> [arg]
 
     """
+
     # reroute commands from the default cmdset to the catch-all
     # focus function where needed. This allows us to override
     # individual default commands without replacing the entire
@@ -512,9 +529,10 @@ class CmdRerouter(default_cmds.MuxCommand):
     def func(self):
         # reroute to another command
         from evennia.commands import cmdhandler
-        cmdhandler.cmdhandler(self.session, self.raw_string,
-                              cmdobj=CmdFocusInteraction(),
-                              cmdobj_key=self.cmdname)
+
+        cmdhandler.cmdhandler(
+            self.session, self.raw_string, cmdobj=CmdFocusInteraction(), cmdobj_key=self.cmdname
+        )
 
 
 class CmdFocusInteraction(CmdEvscapeRoom):
@@ -532,6 +550,7 @@ class CmdFocusInteraction(CmdEvscapeRoom):
     as keys into the method.
 
     """
+
     # all commands not matching something else goes here.
     key = syscmdkeys.CMD_NOMATCH
 
@@ -571,19 +590,18 @@ class CmdStand(CmdEvscapeRoom):
     Stand up from whatever position you had.
 
     """
+
     key = "stand"
 
     def func(self):
 
         # Positionable objects will set this flag on you.
-        pos = self.caller.attributes.get(
-            "position", category=self.room.tagcategory)
+        pos = self.caller.attributes.get("position", category=self.room.tagcategory)
 
         if pos:
             # we have a position, clean up.
             obj, position = pos
-            self.caller.attributes.remove(
-                "position", category=self.room.tagcategory)
+            self.caller.attributes.remove("position", category=self.room.tagcategory)
             del obj.db.positions[self.caller]
             self.room.msg_room(self.caller, "~You ~are back standing on the floor again.")
         else:
@@ -598,8 +616,9 @@ class CmdHelp(CmdEvscapeRoom, default_cmds.CmdHelp):
       help <topic> or <command>
 
     """
-    key = 'help'
-    aliases = ['?']
+
+    key = "help"
+    aliases = ["?"]
 
     def func(self):
         if self.obj1:
@@ -608,8 +627,10 @@ class CmdHelp(CmdEvscapeRoom, default_cmds.CmdHelp):
                 if not helptxt:
                     helptxt = f"There is no help to be had about {self.obj1.get_display_name(self.caller)}."
             else:
-                helptxt = (f"|y{self.obj1.get_display_name(self.caller)}|n is "
-                           "likely |rnot|n part of any of the Jester's trickery.")
+                helptxt = (
+                    f"|y{self.obj1.get_display_name(self.caller)}|n is "
+                    "likely |rnot|n part of any of the Jester's trickery."
+                )
         elif self.arg1:
             # fall back to the normal help command
             super().func()
@@ -621,6 +642,7 @@ class CmdHelp(CmdEvscapeRoom, default_cmds.CmdHelp):
 
 # Debug/help command
 
+
 class CmdCreateObj(CmdEvscapeRoom):
     """
     Create command, only for Admins during debugging.
@@ -631,6 +653,7 @@ class CmdCreateObj(CmdEvscapeRoom):
     Here, :typeclass is a class in evscaperoom.commands
 
     """
+
     key = "createobj"
     aliases = ["cobj"]
     locks = "cmd:perm(Admin)"
@@ -668,6 +691,7 @@ class CmdSetFlag(CmdEvscapeRoom):
       flag <obj> with <flagname>
 
     """
+
     key = "flag"
     aliases = ["setflag"]
     locks = "cmd:perm(Admin)"
@@ -700,6 +724,7 @@ class CmdJumpState(CmdEvscapeRoom):
       jumpstate <statename>
 
     """
+
     key = "jumpstate"
     locks = "cmd:perm(Admin)"
 
@@ -713,21 +738,25 @@ class CmdJumpState(CmdEvscapeRoom):
 
 # Helper command to start the Evscaperoom menu
 
+
 class CmdEvscapeRoomStart(Command):
     """
     Go to the Evscaperoom start menu
 
     """
+
     key = "evscaperoom"
     help_category = "EvscapeRoom"
 
     def func(self):
         # need to import here to break circular import
         from .menu import run_evscaperoom_menu
+
         run_evscaperoom_menu(self.caller)
 
 
 # command sets
+
 
 class CmdSetEvScapeRoom(CmdSet):
     priority = 1

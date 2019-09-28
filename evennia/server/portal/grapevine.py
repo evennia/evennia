@@ -15,8 +15,7 @@ from django.conf import settings
 from evennia.server.session import Session
 from evennia.utils import get_evennia_version
 from evennia.utils.logger import log_info, log_err
-from autobahn.twisted.websocket import (
-    WebSocketClientProtocol, WebSocketClientFactory, connectWS)
+from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory, connectWS
 
 # There is only one at this time
 GRAPEVINE_URI = "wss://grapevine.haus/socket"
@@ -31,8 +30,7 @@ GRAPEVINE_AUTH_ERROR = 4000
 GRAPEVINE_HEARTBEAT_FAILURE = 4001
 
 
-class RestartingWebsocketServerFactory(WebSocketClientFactory,
-                                       protocol.ReconnectingClientFactory):
+class RestartingWebsocketServerFactory(WebSocketClientFactory, protocol.ReconnectingClientFactory):
     """
     A variant of the websocket-factory that auto-reconnects.
 
@@ -44,8 +42,8 @@ class RestartingWebsocketServerFactory(WebSocketClientFactory,
 
     def __init__(self, sessionhandler, *args, **kwargs):
 
-        self.uid = kwargs.pop('uid')
-        self.channel = kwargs.pop('grapevine_channel')
+        self.uid = kwargs.pop("uid")
+        self.channel = kwargs.pop("grapevine_channel")
         self.sessionhandler = sessionhandler
 
         # self.noisy = False
@@ -170,7 +168,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
         """
         if not isBinary:
-            data = json.loads(str(payload, 'utf-8'))
+            data = json.loads(str(payload, "utf-8"))
             self.data_in(data=data)
             self.retry_task = None
 
@@ -205,7 +203,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
             data (str): Text to send.
 
         """
-        return self.sendMessage(json.dumps(data).encode('utf-8'))
+        return self.sendMessage(json.dumps(data).encode("utf-8"))
 
     def disconnect(self, reason=None):
         """
@@ -238,9 +236,9 @@ class GrapevineClient(WebSocketClientProtocol, Session):
                 "supports": ["channels"],
                 "channels": GRAPEVINE_CHANNELS,
                 "version": "1.0.0",
-                "user_agent": get_evennia_version('pretty')
-              }
-            }
+                "user_agent": get_evennia_version("pretty"),
+            },
+        }
         # override on-the-fly
         data.update(kwargs)
 
@@ -252,14 +250,11 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
         """
         # pass along all connected players
-        data = {
-            "event": "heartbeat",
-            "payload": {
-            }
-        }
+        data = {"event": "heartbeat", "payload": {}}
         sessions = self.sessionhandler.get_sessions(include_unloggedin=False)
-        data['payload']['players'] = [sess.account.key for sess in sessions
-                                      if hasattr(sess, "account")]
+        data["payload"]["players"] = [
+            sess.account.key for sess in sessions if hasattr(sess, "account")
+        ]
 
         self._send_json(data)
 
@@ -269,12 +264,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
         Use with session.msg(subscribe="channelname")
         """
-        data = {
-            "event": "channels/subscribe",
-            "payload": {
-               "channel": channelname
-            }
-        }
+        data = {"event": "channels/subscribe", "payload": {"channel": channelname}}
         self._send_json(data)
 
     def send_unsubscribe(self, channelname, *args, **kwargs):
@@ -283,12 +273,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
         Use with session.msg(unsubscribe="channelname")
         """
-        data = {
-            "event": "channels/unsubscribe",
-            "payload": {
-               "channel": channelname
-            }
-        }
+        data = {"event": "channels/unsubscribe", "payload": {"channel": channelname}}
         self._send_json(data)
 
     def send_channel(self, text, channel, sender, *args, **kwargs):
@@ -303,11 +288,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
         data = {
             "event": "channels/send",
-            "payload": {
-                "message": text,
-                "channel": channel,
-                "name": sender
-            }
+            "payload": {"message": text, "channel": channel, "name": sender},
         }
         self._send_json(data)
 
@@ -326,10 +307,10 @@ class GrapevineClient(WebSocketClientProtocol, Session):
             data (dict): Converted json data.
 
         """
-        event = data['event']
+        event = data["event"]
         if event == "authenticate":
             # server replies to our auth handshake
-            if data['status'] != "success":
+            if data["status"] != "success":
                 log_err("Grapevine authentication failed.")
                 self.disconnect()
             else:
@@ -339,13 +320,14 @@ class GrapevineClient(WebSocketClientProtocol, Session):
             self.send_heartbeat()
         elif event == "restart":
             # set the expected downtime
-            self.restart_downtime = data['payload']['downtime']
+            self.restart_downtime = data["payload"]["downtime"]
         elif event == "channels/subscribe":
             # subscription verification
-            if data.get('status', 'success') == "failure":
+            if data.get("status", "success") == "failure":
                 err = data.get("error", "N/A")
-                self.sessionhandler.data_in(bot_data_in=((f"Grapevine error: {err}"),
-                                                         {'event': event}))
+                self.sessionhandler.data_in(
+                    bot_data_in=((f"Grapevine error: {err}"), {"event": event})
+                )
         elif event == "channels/unsubscribe":
             # unsubscribe-verification
             pass
@@ -353,19 +335,24 @@ class GrapevineClient(WebSocketClientProtocol, Session):
             # incoming broadcast from network
             payload = data["payload"]
 
-            print("channels/broadcast:", payload['channel'], self.channel)
-            if str(payload['channel']) != self.channel:
+            print("channels/broadcast:", payload["channel"], self.channel)
+            if str(payload["channel"]) != self.channel:
                 # only echo from channels this particular bot actually listens to
                 return
             else:
                 # correct channel
                 self.sessionhandler.data_in(
-                    self, bot_data_in=(
-                        str(payload['message'],),
-                        {"event": event,
-                         "grapevine_channel": str(payload['channel']),
-                         "sender": str(payload['name']),
-                         "game": str(payload['game'])}))
+                    self,
+                    bot_data_in=(
+                        str(payload["message"]),
+                        {
+                            "event": event,
+                            "grapevine_channel": str(payload["channel"]),
+                            "sender": str(payload["name"]),
+                            "game": str(payload["game"]),
+                        },
+                    ),
+                )
         elif event == "channels/send":
             pass
         else:

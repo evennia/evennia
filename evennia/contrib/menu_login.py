@@ -24,25 +24,27 @@ from django.conf import settings
 from evennia import Command, CmdSet
 from evennia import syscmdkeys
 from evennia.utils.evmenu import EvMenu
-from evennia.utils.utils import (
-    random_string_from_module, class_from_module, callables_from_module)
+from evennia.utils.utils import random_string_from_module, class_from_module, callables_from_module
 
 _CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 _GUEST_ENABLED = settings.GUEST_ENABLED
 _ACCOUNT = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 _GUEST = class_from_module(settings.BASE_GUEST_TYPECLASS)
 
-_ACCOUNT_HELP = ("Enter the name you used to log into the game before, "
-                 "or a new account-name if you are new.")
-_PASSWORD_HELP = ("Password should be a minimum of 8 characters (preferably longer) and "
-                  "can contain a mix of letters, spaces, digits and @/./+/-/_/'/, only.")
+_ACCOUNT_HELP = (
+    "Enter the name you used to log into the game before, " "or a new account-name if you are new."
+)
+_PASSWORD_HELP = (
+    "Password should be a minimum of 8 characters (preferably longer) and "
+    "can contain a mix of letters, spaces, digits and @/./+/-/_/'/, only."
+)
 
 # Menu nodes
 
 
 def _show_help(caller, raw_string, **kwargs):
     """Echo help message, then re-run node that triggered it"""
-    help_entry = kwargs['help_entry']
+    help_entry = kwargs["help_entry"]
     caller.msg(help_entry)
     return None  # re-run calling node
 
@@ -53,6 +55,7 @@ def node_enter_username(caller, raw_text, **kwargs):
     Start login by displaying the connection screen and ask for a user name.
 
     """
+
     def _check_input(caller, username, **kwargs):
         """
         'Goto-callable', set up to be called from the _default option below.
@@ -65,9 +68,9 @@ def node_enter_username(caller, raw_text, **kwargs):
         and what kwarg it will be called with.
 
         """
-        username = username.rstrip('\n')
+        username = username.rstrip("\n")
 
-        if username == 'guest' and _GUEST_ENABLED:
+        if username == "guest" and _GUEST_ENABLED:
             # do an immediate guest login
             session = caller
             address = session.address
@@ -76,7 +79,7 @@ def node_enter_username(caller, raw_text, **kwargs):
                 return "node_quit_or_login", {"login": True, "account": account}
             else:
                 session.msg("|R{}|n".format("\n".join(errors)))
-                return None # re-run the username node
+                return None  # re-run the username node
 
         try:
             _ACCOUNT.objects.get(username__iexact=username)
@@ -86,28 +89,26 @@ def node_enter_username(caller, raw_text, **kwargs):
             new_user = False
 
         # pass username/new_user into next node as kwargs
-        return "node_enter_password", {'new_user': new_user, 'username': username}
+        return "node_enter_password", {"new_user": new_user, "username": username}
 
     callables = callables_from_module(_CONNECTION_SCREEN_MODULE)
     if "connection_screen" in callables:
-        connection_screen = callables['connection_screen']()
+        connection_screen = callables["connection_screen"]()
     else:
         connection_screen = random_string_from_module(_CONNECTION_SCREEN_MODULE)
 
     if _GUEST_ENABLED:
         text = "Enter a new or existing user name to login (write 'guest' for a guest login):"
-    else: 
+    else:
         text = "Enter a new or existing user name to login:"
     text = "{}\n\n{}".format(connection_screen, text)
 
-    options = ({"key": "",
-                "goto": "node_enter_username"},
-               {"key": ("quit", "q"),
-                "goto": "node_quit_or_login"},
-               {"key": ("help", "h"), 
-                "goto": (_show_help, {"help_entry": _ACCOUNT_HELP, **kwargs})},
-               {"key": "_default",
-                "goto": _check_input})
+    options = (
+        {"key": "", "goto": "node_enter_username"},
+        {"key": ("quit", "q"), "goto": "node_quit_or_login"},
+        {"key": ("help", "h"), "goto": (_show_help, {"help_entry": _ACCOUNT_HELP, **kwargs})},
+        {"key": "_default", "goto": _check_input},
+    )
     return text, options
 
 
@@ -116,6 +117,7 @@ def node_enter_password(caller, raw_string, **kwargs):
     Handle password input.
 
     """
+
     def _check_input(caller, password, **kwargs):
         """
         'Goto-callable', set up to be called from the _default option below.
@@ -129,20 +131,22 @@ def node_enter_password(caller, raw_string, **kwargs):
 
         """
         # these flags were set by the goto-callable
-        username = kwargs['username']
-        new_user = kwargs['new_user']
-        password = password.rstrip('\n')
+        username = kwargs["username"]
+        new_user = kwargs["new_user"]
+        password = password.rstrip("\n")
 
         session = caller
         address = session.address
         if new_user:
             # create a new account
-            account, errors = _ACCOUNT.create(username=username, password=password,
-                                              ip=address, session=session)
+            account, errors = _ACCOUNT.create(
+                username=username, password=password, ip=address, session=session
+            )
         else:
             # check password against existing account
-            account, errors = _ACCOUNT.authenticate(username=username, password=password,
-                                                    ip=address, session=session)
+            account, errors = _ACCOUNT.authenticate(
+                username=username, password=password, ip=address, session=session
+            )
 
         if account:
             if new_user:
@@ -152,32 +156,31 @@ def node_enter_password(caller, raw_string, **kwargs):
         else:
             # restart due to errors
             session.msg("|R{}".format("\n".join(errors)))
-            kwargs['retry_password'] = True
+            kwargs["retry_password"] = True
             return "node_enter_password", kwargs
 
     def _restart_login(caller, *args, **kwargs):
         caller.msg("|yCancelled login.|n")
         return "node_enter_username"
 
-    username = kwargs['username']
+    username = kwargs["username"]
     if kwargs["new_user"]:
 
-        if kwargs.get('retry_password'):
+        if kwargs.get("retry_password"):
             # Attempting to fix password
             text = "Enter a new password:"
         else:
-            text = ("Creating a new account |c{}|n. "
-                    "Enter a password (empty to abort):".format(username))
+            text = "Creating a new account |c{}|n. " "Enter a password (empty to abort):".format(
+                username
+            )
     else:
         text = "Enter the password for account |c{}|n (empty to abort):".format(username)
-    options = ({"key": "",
-                "goto": _restart_login},
-               {"key": ("quit", "q"),
-                "goto": "node_quit_or_login"},
-               {"key": ("help", "h"),
-                "goto": (_show_help, {"help_entry": _PASSWORD_HELP, **kwargs})},
-               {"key": "_default",
-                "goto": (_check_input, kwargs)})
+    options = (
+        {"key": "", "goto": _restart_login},
+        {"key": ("quit", "q"), "goto": "node_quit_or_login"},
+        {"key": ("help", "h"), "goto": (_show_help, {"help_entry": _PASSWORD_HELP, **kwargs})},
+        {"key": "_default", "goto": (_check_input, kwargs)},
+    )
     return text, options
 
 
@@ -198,6 +201,7 @@ def node_quit_or_login(caller, raw_text, **kwargs):
 
 # EvMenu helper function
 
+
 def _node_formatter(nodetext, optionstext, caller=None):
     """Do not display the options, only the text.
 
@@ -210,6 +214,7 @@ def _node_formatter(nodetext, optionstext, caller=None):
 
 
 # Commands and CmdSets
+
 
 class UnloggedinCmdSet(CmdSet):
     "Cmdset for the unloggedin state"
@@ -228,6 +233,7 @@ class CmdUnloggedinLook(Command):
     to the menu's own look command.
 
     """
+
     key = syscmdkeys.CMD_LOGINSTART
     locks = "cmd:all()"
     arg_regex = r"^$"
@@ -237,6 +243,12 @@ class CmdUnloggedinLook(Command):
         Run the menu using the nodes in this module.
 
         """
-        EvMenu(self.caller, "evennia.contrib.menu_login",
-               startnode="node_enter_username", auto_look=False, auto_quit=False,
-               cmd_on_exit=None, node_formatter=_node_formatter)
+        EvMenu(
+            self.caller,
+            "evennia.contrib.menu_login",
+            startnode="node_enter_username",
+            auto_look=False,
+            auto_quit=False,
+            cmd_on_exit=None,
+            node_formatter=_node_formatter,
+        )

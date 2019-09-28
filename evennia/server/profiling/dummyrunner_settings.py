@@ -89,6 +89,7 @@ TOBJ_TYPECLASS = "contrib.tutorial_examples.red_button.RedButton"
 
 # login/logout
 
+
 def c_login(client):
     "logins to the game"
     # we always use a new client name
@@ -102,12 +103,13 @@ def c_login(client):
     exitname2 = EXIT_TEMPLATE % client.counter()
     client.exits.extend([exitname1, exitname2])
 
-    cmds = ('create %s %s' % (cname, cpwd),
-            'connect %s %s' % (cname, cpwd),
-            '@dig %s' % START_ROOM % client.gid,
-            '@teleport %s' % START_ROOM % client.gid,
-            '@dig %s = %s, %s' % (roomname, exitname1, exitname2)
-            )
+    cmds = (
+        "create %s %s" % (cname, cpwd),
+        "connect %s %s" % (cname, cpwd),
+        "@dig %s" % START_ROOM % client.gid,
+        "@teleport %s" % START_ROOM % client.gid,
+        "@dig %s = %s, %s" % (roomname, exitname1, exitname2),
+    )
     return cmds
 
 
@@ -116,14 +118,14 @@ def c_login_nodig(client):
     cname = DUMMY_NAME % client.gid
     cpwd = DUMMY_PWD % client.gid
 
-    cmds = ('create %s %s' % (cname, cpwd),
-            'connect %s %s' % (cname, cpwd))
+    cmds = ("create %s %s" % (cname, cpwd), "connect %s %s" % (cname, cpwd))
     return cmds
 
 
 def c_logout(client):
     "logouts of the game"
     return "@quit"
+
 
 # random commands
 
@@ -150,17 +152,13 @@ def c_examines(client):
 
 def c_idles(client):
     "idles"
-    cmds = ('idle', 'idle')
+    cmds = ("idle", "idle")
     return cmds
 
 
 def c_help(client):
     "reads help files"
-    cmds = ('help',
-            'help @teleport',
-            'help look',
-            'help @tunnel',
-            'help @dig')
+    cmds = ("help", "help @teleport", "help look", "help @tunnel", "help @dig")
     return cmds
 
 
@@ -170,17 +168,19 @@ def c_digs(client):
     exitname1 = EXIT_TEMPLATE % client.counter()
     exitname2 = EXIT_TEMPLATE % client.counter()
     client.exits.extend([exitname1, exitname2])
-    return '@dig/tel %s = %s, %s' % (roomname, exitname1, exitname2)
+    return "@dig/tel %s = %s, %s" % (roomname, exitname1, exitname2)
 
 
 def c_creates_obj(client):
     "creates normal objects, storing their name on client"
     objname = OBJ_TEMPLATE % client.counter()
     client.objs.append(objname)
-    cmds = ('@create %s' % objname,
-            '@desc %s = "this is a test object' % objname,
-            '@set %s/testattr = this is a test attribute value.' % objname,
-            '@set %s/testattr2 = this is a second test attribute.' % objname)
+    cmds = (
+        "@create %s" % objname,
+        '@desc %s = "this is a test object' % objname,
+        "@set %s/testattr = this is a test attribute value." % objname,
+        "@set %s/testattr2 = this is a second test attribute." % objname,
+    )
     return cmds
 
 
@@ -188,18 +188,19 @@ def c_creates_button(client):
     "creates example button, storing name on client"
     objname = TOBJ_TEMPLATE % client.counter()
     client.objs.append(objname)
-    cmds = ('@create %s:%s' % (objname, TOBJ_TYPECLASS),
-            '@desc %s = test red button!' % objname)
+    cmds = ("@create %s:%s" % (objname, TOBJ_TYPECLASS), "@desc %s = test red button!" % objname)
     return cmds
 
 
 def c_socialize(client):
     "socializechats on channel"
-    cmds = ('ooc Hello!',
-            'ooc Testing ...',
-            'ooc Testing ... times 2',
-            'say Yo!',
-            'emote stands looking around.')
+    cmds = (
+        "ooc Hello!",
+        "ooc Testing ...",
+        "ooc Testing ... times 2",
+        "say Yo!",
+        "emote stands looking around.",
+    )
     return cmds
 
 
@@ -217,6 +218,7 @@ def c_moves_n(client):
 def c_moves_s(client):
     "move through south exit if available"
     return "south"
+
 
 # Action tuple (required)
 #
@@ -263,12 +265,7 @@ def c_moves_s(client):
 #           c_logout,
 #           (1.0, c_idles))
 # "normal account" definition
-ACTIONS = (c_login,
-           c_logout,
-           (0.01, c_digs),
-           (0.39, c_looks),
-           (0.2, c_help),
-           (0.4, c_moves))
+ACTIONS = (c_login, c_logout, (0.01, c_digs), (0.39, c_looks), (0.2, c_help), (0.4, c_moves))
 # walking tester. This requires a pre-made
 # "loop" of multiple rooms that ties back
 # to limbo (using @tunnel and @open)

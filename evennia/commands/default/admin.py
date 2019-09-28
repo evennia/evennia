@@ -16,8 +16,16 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 PERMISSION_HIERARCHY = [p.lower() for p in settings.PERMISSION_HIERARCHY]
 
 # limit members for API inclusion
-__all__ = ("CmdBoot", "CmdBan", "CmdUnban",
-           "CmdEmit", "CmdNewPassword", "CmdPerm", "CmdWall", "CmdForce")
+__all__ = (
+    "CmdBoot",
+    "CmdBan",
+    "CmdUnban",
+    "CmdEmit",
+    "CmdNewPassword",
+    "CmdPerm",
+    "CmdWall",
+    "CmdForce",
+)
 
 
 class CmdBoot(COMMAND_DEFAULT_CLASS):
@@ -49,14 +57,14 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
             caller.msg("Usage: boot[/switches] <account> [:reason]")
             return
 
-        if ':' in args:
-            args, reason = [a.strip() for a in args.split(':', 1)]
+        if ":" in args:
+            args, reason = [a.strip() for a in args.split(":", 1)]
         else:
             args, reason = args, ""
 
         boot_list = []
 
-        if 'sid' in self.switches:
+        if "sid" in self.switches:
             # Boot a particular session id.
             sessions = SESSIONS.get_sessions(True)
             for sess in sessions:
@@ -71,8 +79,8 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
                 caller.msg("Account %s was not found." % args)
                 return
             pobj = pobj[0]
-            if not pobj.access(caller, 'boot'):
-                string = "You don't have the permission to boot %s." % (pobj.key, )
+            if not pobj.access(caller, "boot"):
+                string = "You don't have the permission to boot %s." % (pobj.key,)
                 caller.msg(string)
                 return
             # we have a bootable object with a connected user
@@ -87,7 +95,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
         # Carry out the booting of the sessions in the boot list.
 
         feedback = None
-        if 'quiet' not in self.switches:
+        if "quiet" not in self.switches:
             feedback = "You have been disconnected by %s.\n" % caller.name
             if reason:
                 feedback += "\nReason given: %s" % reason
@@ -97,7 +105,10 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
             session.account.disconnect_session_from_account(session)
 
         if pobj and boot_list:
-            logger.log_sec('Booted: %s (Reason: %s, Caller: %s, IP: %s).' % (pobj, reason, caller, self.session.address))
+            logger.log_sec(
+                "Booted: %s (Reason: %s, Caller: %s, IP: %s)."
+                % (pobj, reason, caller, self.session.address)
+            )
 
 
 # regex matching IP addresses with wildcards, eg. 233.122.4.*
@@ -118,9 +129,7 @@ def list_bans(cmd, banlist):
 
     table = cmd.styled_table("|wid", "|wname/ip", "|wdate", "|wreason")
     for inum, ban in enumerate(banlist):
-        table.add_row(str(inum + 1),
-                      ban[0] and ban[0] or ban[1],
-                      ban[3], ban[4])
+        table.add_row(str(inum + 1), ban[0] and ban[0] or ban[1], ban[3], ban[4])
     return "|wActive bans:|n\n%s" % table
 
 
@@ -157,6 +166,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
     or region.
 
     """
+
     key = "ban"
     aliases = ["bans"]
     locks = "cmd:perm(ban) or perm(Developer)"
@@ -175,20 +185,20 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
         'reason' is any optional info given to the command. Unset
         values in each tuple is set to the empty string.
         """
-        banlist = ServerConfig.objects.conf('server_bans')
+        banlist = ServerConfig.objects.conf("server_bans")
         if not banlist:
             banlist = []
 
-        if not self.args or (self.switches and
-                             not any(switch in ('ip', 'name')
-                                     for switch in self.switches)):
+        if not self.args or (
+            self.switches and not any(switch in ("ip", "name") for switch in self.switches)
+        ):
             self.caller.msg(list_bans(self, banlist))
             return
 
         now = time.ctime()
         reason = ""
-        if ':' in self.args:
-            ban, reason = self.args.rsplit(':', 1)
+        if ":" in self.args:
+            ban, reason = self.args.rsplit(":", 1)
         else:
             ban = self.args
         ban = ban.lower()
@@ -202,15 +212,18 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
             typ = "IP"
             ban = ipban[0]
             # replace * with regex form and compile it
-            ipregex = ban.replace('.', '\.')
-            ipregex = ipregex.replace('*', '[0-9]{1,3}')
+            ipregex = ban.replace(".", "\.")
+            ipregex = ipregex.replace("*", "[0-9]{1,3}")
             ipregex = re.compile(r"%s" % ipregex)
             bantup = ("", ban, ipregex, now, reason)
         # save updated banlist
         banlist.append(bantup)
-        ServerConfig.objects.conf('server_bans', banlist)
+        ServerConfig.objects.conf("server_bans", banlist)
         self.caller.msg("%s-Ban |w%s|n was added." % (typ, ban))
-        logger.log_sec('Banned %s: %s (Caller: %s, IP: %s).' % (typ, ban.strip(), self.caller, self.session.address))
+        logger.log_sec(
+            "Banned %s: %s (Caller: %s, IP: %s)."
+            % (typ, ban.strip(), self.caller, self.session.address)
+        )
 
 
 class CmdUnban(COMMAND_DEFAULT_CLASS):
@@ -226,6 +239,7 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
     unban.
 
     """
+
     key = "unban"
     locks = "cmd:perm(unban) or perm(Developer)"
     help_category = "Admin"
@@ -233,7 +247,7 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Implement unbanning"""
 
-        banlist = ServerConfig.objects.conf('server_bans')
+        banlist = ServerConfig.objects.conf("server_bans")
 
         if not self.args:
             self.caller.msg(list_bans(self, banlist))
@@ -253,11 +267,13 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
             # all is ok, clear ban
             ban = banlist[num - 1]
             del banlist[num - 1]
-            ServerConfig.objects.conf('server_bans', banlist)
+            ServerConfig.objects.conf("server_bans", banlist)
             value = " ".join([s for s in ban[:2]])
-            self.caller.msg("Cleared ban %s: %s" %
-                            (num, value))
-            logger.log_sec('Unbanned: %s (Caller: %s, IP: %s).' % (value.strip(), self.caller, self.session.address))
+            self.caller.msg("Cleared ban %s: %s" % (num, value))
+            logger.log_sec(
+                "Unbanned: %s (Caller: %s, IP: %s)."
+                % (value.strip(), self.caller, self.session.address)
+            )
 
 
 class CmdEmit(COMMAND_DEFAULT_CLASS):
@@ -280,6 +296,7 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
     limited forms of emit, for sending to rooms and
     to accounts respectively.
     """
+
     key = "emit"
     aliases = ["pemit", "remit"]
     switch_options = ("room", "accounts", "contents")
@@ -300,15 +317,15 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
             return
 
-        rooms_only = 'rooms' in self.switches
-        accounts_only = 'accounts' in self.switches
-        send_to_contents = 'contents' in self.switches
+        rooms_only = "rooms" in self.switches
+        accounts_only = "accounts" in self.switches
+        send_to_contents = "contents" in self.switches
 
         # we check which command was used to force the switches
-        if self.cmdstring == 'remit':
+        if self.cmdstring == "remit":
             rooms_only = True
             send_to_contents = True
-        elif self.cmdstring == 'pemit':
+        elif self.cmdstring == "pemit":
             accounts_only = True
 
         if not self.rhs:
@@ -329,7 +346,7 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
             if accounts_only and not obj.has_account:
                 caller.msg("%s has no active account. Ignored." % objname)
                 continue
-            if obj.access(caller, 'tell'):
+            if obj.access(caller, "tell"):
                 obj.msg(message)
                 if send_to_contents and hasattr(obj, "msg_contents"):
                     obj.msg_contents(message)
@@ -382,9 +399,10 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
         account.save()
         self.msg("%s - new password set to '%s'." % (account.name, newpass))
         if account.character != caller:
-            account.msg("%s has changed your password to '%s'." % (caller.name,
-                                                                   newpass))
-        logger.log_sec('Password Changed: %s (Caller: %s, IP: %s).' % (account, caller, self.session.address))
+            account.msg("%s has changed your password to '%s'." % (caller.name, newpass))
+        logger.log_sec(
+            "Password Changed: %s (Caller: %s, IP: %s)." % (account, caller, self.session.address)
+        )
 
 
 class CmdPerm(COMMAND_DEFAULT_CLASS):
@@ -402,6 +420,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
     This command sets/clears individual permission strings on an object
     or account. If no permission is given, list all permissions on <object>.
     """
+
     key = "perm"
     aliases = "setperm"
     switch_options = ("del", "account")
@@ -420,7 +439,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
             return
 
-        accountmode = 'account' in self.switches or lhs.startswith('*')
+        accountmode = "account" in self.switches or lhs.startswith("*")
         lhs = lhs.lstrip("*")
 
         if accountmode:
@@ -431,7 +450,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
             return
 
         if not rhs:
-            if not obj.access(caller, 'examine'):
+            if not obj.access(caller, "examine"):
                 caller.msg("You are not allowed to examine this object.")
                 return
 
@@ -440,9 +459,11 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 string += "<None>"
             else:
                 string += ", ".join(obj.permissions.all())
-                if (hasattr(obj, 'account') and
-                    hasattr(obj.account, 'is_superuser') and
-                        obj.account.is_superuser):
+                if (
+                    hasattr(obj, "account")
+                    and hasattr(obj.account, "is_superuser")
+                    and obj.account.is_superuser
+                ):
                     string += "\n(... but this object is currently controlled by a SUPERUSER! "
                     string += "All access checks are passed automatically.)"
             caller.msg(string)
@@ -451,22 +472,33 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
         # we supplied an argument on the form obj = perm
         locktype = "edit" if accountmode else "control"
         if not obj.access(caller, locktype):
-            caller.msg("You are not allowed to edit this %s's permissions."
-                       % ("account" if accountmode else "object"))
+            caller.msg(
+                "You are not allowed to edit this %s's permissions."
+                % ("account" if accountmode else "object")
+            )
             return
 
         caller_result = []
         target_result = []
-        if 'del' in switches:
+        if "del" in switches:
             # delete the given permission(s) from object.
             for perm in self.rhslist:
                 obj.permissions.remove(perm)
                 if obj.permissions.get(perm):
-                    caller_result.append("\nPermissions %s could not be removed from %s." % (perm, obj.name))
+                    caller_result.append(
+                        "\nPermissions %s could not be removed from %s." % (perm, obj.name)
+                    )
                 else:
-                    caller_result.append("\nPermission %s removed from %s (if they existed)." % (perm, obj.name))
-                    target_result.append("\n%s revokes the permission(s) %s from you." % (caller.name, perm))
-                    logger.log_sec('Permissions Deleted: %s, %s (Caller: %s, IP: %s).' % (perm, obj, caller, self.session.address))
+                    caller_result.append(
+                        "\nPermission %s removed from %s (if they existed)." % (perm, obj.name)
+                    )
+                    target_result.append(
+                        "\n%s revokes the permission(s) %s from you." % (caller.name, perm)
+                    )
+                    logger.log_sec(
+                        "Permissions Deleted: %s, %s (Caller: %s, IP: %s)."
+                        % (perm, obj, caller, self.session.address)
+                    )
         else:
             # add a new permission
             permissions = obj.permissions.all()
@@ -475,20 +507,32 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
 
                 # don't allow to set a permission higher in the hierarchy than
                 # the one the caller has (to prevent self-escalation)
-                if (perm.lower() in PERMISSION_HIERARCHY and not
-                        obj.locks.check_lockstring(caller, "dummy:perm(%s)" % perm)):
-                    caller.msg("You cannot assign a permission higher than the one you have yourself.")
+                if perm.lower() in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(
+                    caller, "dummy:perm(%s)" % perm
+                ):
+                    caller.msg(
+                        "You cannot assign a permission higher than the one you have yourself."
+                    )
                     return
 
                 if perm in permissions:
-                    caller_result.append("\nPermission '%s' is already defined on %s." % (perm, obj.name))
+                    caller_result.append(
+                        "\nPermission '%s' is already defined on %s." % (perm, obj.name)
+                    )
                 else:
                     obj.permissions.add(perm)
                     plystring = "the Account" if accountmode else "the Object/Character"
-                    caller_result.append("\nPermission '%s' given to %s (%s)." % (perm, obj.name, plystring))
-                    target_result.append("\n%s gives you (%s, %s) the permission '%s'."
-                                         % (caller.name, obj.name, plystring, perm))
-                    logger.log_sec('Permissions Added: %s, %s (Caller: %s, IP: %s).' % (obj, perm, caller, self.session.address))
+                    caller_result.append(
+                        "\nPermission '%s' given to %s (%s)." % (perm, obj.name, plystring)
+                    )
+                    target_result.append(
+                        "\n%s gives you (%s, %s) the permission '%s'."
+                        % (caller.name, obj.name, plystring, perm)
+                    )
+                    logger.log_sec(
+                        "Permissions Added: %s, %s (Caller: %s, IP: %s)."
+                        % (obj, perm, caller, self.session.address)
+                    )
 
         caller.msg("".join(caller_result).strip())
         if target_result:
@@ -505,6 +549,7 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
     Announces a message to all connected sessions
     including all currently unlogged in.
     """
+
     key = "wall"
     locks = "cmd:perm(wall) or perm(Admin)"
     help_category = "Admin"
@@ -514,7 +559,7 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
         if not self.args:
             self.caller.msg("Usage: wall <message>")
             return
-        message = "%s shouts \"%s\"" % (self.caller.name, self.args)
+        message = '%s shouts "%s"' % (self.caller.name, self.args)
         self.msg("Announcing to all connected sessions ...")
         SESSIONS.announce_all(message)
 
@@ -529,6 +574,7 @@ class CmdForce(COMMAND_DEFAULT_CLASS):
     Example:
         force bob=get stick
     """
+
     key = "force"
     locks = "cmd:perm(spawn) or perm(Builder)"
     help_category = "Building"

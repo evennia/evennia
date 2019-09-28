@@ -5,6 +5,7 @@ from django.forms import ModelForm
 from django.utils.html import escape
 from evennia.utils import class_from_module
 
+
 class EvenniaForm(forms.Form):
     """
     This is a stock Django form, but modified so that all values provided
@@ -17,6 +18,7 @@ class EvenniaForm(forms.Form):
     https://www.owasp.org/index.php/Input_Validation_Cheat_Sheet#Goals_of_Input_Validation
 
     """
+
     def clean(self):
         """
         Django hook. Performed on form submission.
@@ -29,8 +31,9 @@ class EvenniaForm(forms.Form):
         cleaned = super(EvenniaForm, self).clean()
 
         # Escape all values provided by user
-        cleaned = {k:escape(v) for k,v in cleaned.items()}
+        cleaned = {k: escape(v) for k, v in cleaned.items()}
         return cleaned
+
 
 class AccountForm(UserCreationForm):
     """
@@ -40,12 +43,14 @@ class AccountForm(UserCreationForm):
     core User model fields (username, email, password).
 
     """
+
     class Meta:
         """
         This is a Django construct that provides additional configuration to
         the form.
 
         """
+
         # The model/typeclass this form creates
         model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 
@@ -53,11 +58,14 @@ class AccountForm(UserCreationForm):
         fields = ("username", "email")
 
         # Any overrides of field classes
-        field_classes = {'username': UsernameField}
+        field_classes = {"username": UsernameField}
 
     # Username is collected as part of the core UserCreationForm, so we just need
     # to add a field to (optionally) capture email.
-    email = forms.EmailField(help_text="A valid email address. Optional; used for password resets.", required=False)
+    email = forms.EmailField(
+        help_text="A valid email address. Optional; used for password resets.", required=False
+    )
+
 
 class ObjectForm(EvenniaForm, ModelForm):
     """
@@ -70,12 +78,14 @@ class ObjectForm(EvenniaForm, ModelForm):
     a simple example of how to do this.
 
     """
+
     class Meta:
         """
         This is a Django construct that provides additional configuration to
         the form.
 
         """
+
         # The model/typeclass this form creates
         model = class_from_module(settings.BASE_OBJECT_TYPECLASS)
 
@@ -83,9 +93,8 @@ class ObjectForm(EvenniaForm, ModelForm):
         fields = ("db_key",)
 
         # This lets us rename ugly db-specific keys to something more human
-        labels = {
-            'db_key': 'Name',
-        }
+        labels = {"db_key": "Name"}
+
 
 class CharacterForm(ObjectForm):
     """
@@ -122,12 +131,14 @@ class CharacterForm(ObjectForm):
     https://docs.djangoproject.com/en/1.11/ref/forms/widgets/
 
     """
+
     class Meta:
         """
         This is a Django construct that provides additional configuration to
         the form.
 
         """
+
         # Get the correct object model
         model = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
 
@@ -135,15 +146,16 @@ class CharacterForm(ObjectForm):
         fields = ("db_key",)
 
         # Rename 'key' to something more intelligible
-        labels = {
-            'db_key': 'Name',
-        }
+        labels = {"db_key": "Name"}
 
     # Fields pertaining to configurable attributes on the Character object.
     desc = forms.CharField(
-        label='Description', max_length=2048, required=False,
-        widget=forms.Textarea(attrs={'rows': 3}),
-        help_text="A brief description of your character.")
+        label="Description",
+        max_length=2048,
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 3}),
+        help_text="A brief description of your character.",
+    )
 
 
 class CharacterUpdateForm(CharacterForm):
@@ -156,4 +168,5 @@ class CharacterUpdateForm(CharacterForm):
     wish to allow.
 
     """
+
     pass

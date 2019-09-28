@@ -19,26 +19,26 @@ from evennia.utils.utils import string_partial_matching as _partial
 _TZ_DICT = {str(tz): _pytz.timezone(tz) for tz in _pytz.common_timezones}
 
 
-def text(entry, option_key='Text', **kwargs):
+def text(entry, option_key="Text", **kwargs):
     try:
         return str(entry)
     except Exception as err:
         raise ValueError(f"Input could not be converted to text ({err})")
 
 
-def color(entry, option_key='Color', **kwargs):
+def color(entry, option_key="Color", **kwargs):
     """
     The color should be just a color character, so 'r' if red color is desired.
     """
     if not entry:
         raise ValueError(f"Nothing entered for a {option_key}!")
-    test_str = strip_ansi(f'|{entry}|n')
+    test_str = strip_ansi(f"|{entry}|n")
     if test_str:
         raise ValueError(f"'{entry}' is not a valid {option_key}.")
     return entry
 
 
-def datetime(entry, option_key='Datetime', account=None, from_tz=None, **kwargs):
+def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs):
     """
     Process a datetime string in standard forms while accounting for the inputter's timezone.
 
@@ -60,23 +60,27 @@ def datetime(entry, option_key='Datetime', account=None, from_tz=None, **kwargs)
         from_tz = _pytz.UTC
     utc = _pytz.UTC
     now = _dt.datetime.utcnow().replace(tzinfo=utc)
-    cur_year = now.strftime('%Y')
-    split_time = entry.split(' ')
+    cur_year = now.strftime("%Y")
+    split_time = entry.split(" ")
     if len(split_time) == 3:
         entry = f"{split_time[0]} {split_time[1]} {split_time[2]} {cur_year}"
     elif len(split_time) == 4:
         entry = f"{split_time[0]} {split_time[1]} {split_time[2]} {split_time[3]}"
     else:
-        raise ValueError(f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}")
+        raise ValueError(
+            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}"
+        )
     try:
-        local = _dt.datetime.strptime(input, '%b %d %H:%M %Y')
+        local = _dt.datetime.strptime(input, "%b %d %H:%M %Y")
     except ValueError:
-        raise ValueError(f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}")
+        raise ValueError(
+            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}"
+        )
     local_tz = from_tz.localize(local)
     return local_tz.astimezone(utc)
 
 
-def duration(entry, option_key='Duration', **kwargs):
+def duration(entry, option_key="Duration", **kwargs):
     """
     Take a string and derive a datetime timedelta from it.
 
@@ -97,18 +101,18 @@ def duration(entry, option_key='Duration', **kwargs):
     weeks = 0
 
     for interval in time_string:
-        if _re.match(r'^[\d]+s$', interval.lower()):
-            seconds =+ int(interval.lower().rstrip("s"))
-        elif _re.match(r'^[\d]+m$', interval):
-            minutes =+ int(interval.lower().rstrip("m"))
-        elif _re.match(r'^[\d]+h$', interval):
-            hours =+ int(interval.lower().rstrip("h"))
-        elif _re.match(r'^[\d]+d$', interval):
-            days =+ int(interval.lower().rstrip("d"))
-        elif _re.match(r'^[\d]+w$', interval):
-            weeks =+ int(interval.lower().rstrip("w"))
-        elif _re.match(r'^[\d]+y$', interval):
-            days =+ int(interval.lower().rstrip("y")) * 365
+        if _re.match(r"^[\d]+s$", interval.lower()):
+            seconds = +int(interval.lower().rstrip("s"))
+        elif _re.match(r"^[\d]+m$", interval):
+            minutes = +int(interval.lower().rstrip("m"))
+        elif _re.match(r"^[\d]+h$", interval):
+            hours = +int(interval.lower().rstrip("h"))
+        elif _re.match(r"^[\d]+d$", interval):
+            days = +int(interval.lower().rstrip("d"))
+        elif _re.match(r"^[\d]+w$", interval):
+            weeks = +int(interval.lower().rstrip("w"))
+        elif _re.match(r"^[\d]+y$", interval):
+            days = +int(interval.lower().rstrip("y")) * 365
         else:
             raise ValueError(f"Could not convert section '{interval}' to a {option_key}.")
 
@@ -160,9 +164,9 @@ def boolean(entry, option_key="True/False", **kwargs):
     error = f"Must enter 0 (false) or 1 (true) for {option_key}. Also accepts True, False, On, Off, Yes, No, Enabled, and Disabled"
     if not entry:
         raise ValueError(error)
-    if entry in ('1', 'TRUE', 'ON', 'ENABLED', 'ENABLE', 'YES'):
+    if entry in ("1", "TRUE", "ON", "ENABLED", "ENABLE", "YES"):
         return True
-    if entry in ('0', 'FALSE', 'OFF', 'DISABLED', 'DISABLE', 'NO'):
+    if entry in ("0", "FALSE", "OFF", "DISABLED", "DISABLE", "NO"):
         return False
     raise ValueError(error)
 
@@ -182,7 +186,9 @@ def timezone(entry, option_key="Timezone", **kwargs):
         raise ValueError(f"No {option_key} entered!")
     found = _partial(list(_TZ_DICT.keys()), entry, ret_index=False)
     if len(found) > 1:
-        raise ValueError(f"That matched: {', '.join(str(t) for t in found)}. Please be more specific!")
+        raise ValueError(
+            f"That matched: {', '.join(str(t) for t in found)}. Please be more specific!"
+        )
     if found:
         return _TZ_DICT[found[0]]
     raise ValueError(f"Could not find timezone '{entry}' for {option_key}!")
@@ -198,12 +204,12 @@ def email(entry, option_key="Email Address", **kwargs):
     return entry
 
 
-def lock(entry, option_key='locks', access_options=None, **kwargs):
+def lock(entry, option_key="locks", access_options=None, **kwargs):
     entry = entry.strip()
     if not entry:
         raise ValueError(f"No {option_key} entered to set!")
-    for locksetting in entry.split(';'):
-        access_type, lockfunc = locksetting.split(':', 1)
+    for locksetting in entry.split(";"):
+        access_type, lockfunc = locksetting.split(":", 1)
         if not access_type:
             raise ValueError("Must enter an access type!")
         if access_options:

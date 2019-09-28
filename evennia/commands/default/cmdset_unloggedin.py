@@ -11,6 +11,7 @@ class UnloggedinCmdSet(CmdSet):
     """
     Sets up the unlogged cmdset.
     """
+
     key = "DefaultUnloggedin"
     priority = 0
 

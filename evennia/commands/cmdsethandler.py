@@ -73,6 +73,7 @@ from evennia.commands.cmdset import CmdSet
 from evennia.server.models import ServerConfig
 
 from django.utils.translation import ugettext as _
+
 __all__ = ("import_cmdset", "CmdSetHandler")
 
 _CACHED_CMDSETS = {}
@@ -86,37 +87,41 @@ _CMDSET_FALLBACKS = settings.CMDSET_FALLBACKS
 _ERROR_CMDSET_IMPORT = _(
     """{traceback}
 Error loading cmdset '{path}'
-(Traceback was logged {timestamp})""")
+(Traceback was logged {timestamp})"""
+)
 
 _ERROR_CMDSET_KEYERROR = _(
     """Error loading cmdset: No cmdset class '{classname}' in '{path}'.
-(Traceback was logged {timestamp})""")
+(Traceback was logged {timestamp})"""
+)
 
 _ERROR_CMDSET_SYNTAXERROR = _(
     """{traceback}
 SyntaxError encountered when loading cmdset '{path}'.
-(Traceback was logged {timestamp})""")
+(Traceback was logged {timestamp})"""
+)
 
 _ERROR_CMDSET_EXCEPTION = _(
     """{traceback}
 Compile/Run error when loading cmdset '{path}'.",
-(Traceback was logged {timestamp})""")
+(Traceback was logged {timestamp})"""
+)
 
 _ERROR_CMDSET_FALLBACK = _(
     """
 Error encountered for cmdset at path '{path}'.
 Replacing with fallback '{fallback_path}'.
-""")
-
-_ERROR_CMDSET_NO_FALLBACK = _(
-    """Fallback path '{fallback_path}' failed to generate a cmdset."""
+"""
 )
+
+_ERROR_CMDSET_NO_FALLBACK = _("""Fallback path '{fallback_path}' failed to generate a cmdset.""")
 
 
 class _ErrorCmdSet(CmdSet):
     """
     This is a special cmdset used to report errors.
     """
+
     key = "_CMDSET_ERROR"
     errmessage = "Error when loading cmdset."
 
@@ -125,6 +130,7 @@ class _EmptyCmdSet(CmdSet):
     """
     This cmdset represents an empty cmdset
     """
+
     key = "_EMPTY_CMDSET"
     priority = -101
     mergetype = "Union"
@@ -153,8 +159,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             for the benefit of the handler.
 
     """
-    python_paths = [path] + ["%s.%s" % (prefix, path)
-                             for prefix in _CMDSET_PATHS if not path.startswith(prefix)]
+    python_paths = [path] + [
+        "%s.%s" % (prefix, path) for prefix in _CMDSET_PATHS if not path.startswith(prefix)
+    ]
     errstring = ""
     for python_path in python_paths:
 
@@ -199,30 +206,44 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             logger.log_trace()
             errstring += _ERROR_CMDSET_IMPORT
             if _IN_GAME_ERRORS:
-                errstring = errstring.format(path=python_path, traceback=format_exc(), timestamp=logger.timeformat())
+                errstring = errstring.format(
+                    path=python_path, traceback=format_exc(), timestamp=logger.timeformat()
+                )
             else:
-                errstring = errstring.format(path=python_path, traceback=err, timestamp=logger.timeformat())
+                errstring = errstring.format(
+                    path=python_path, traceback=err, timestamp=logger.timeformat()
+                )
             break
         except KeyError:
             logger.log_trace()
             errstring += _ERROR_CMDSET_KEYERROR
-            errstring = errstring.format(classname=classname, path=python_path, timestamp=logger.timeformat())
+            errstring = errstring.format(
+                classname=classname, path=python_path, timestamp=logger.timeformat()
+            )
             break
         except SyntaxError as err:
             logger.log_trace()
             errstring += _ERROR_CMDSET_SYNTAXERROR
             if _IN_GAME_ERRORS:
-                errstring = errstring.format(path=python_path, traceback=format_exc(), timestamp=logger.timeformat())
+                errstring = errstring.format(
+                    path=python_path, traceback=format_exc(), timestamp=logger.timeformat()
+                )
             else:
-                errstring = errstring.format(path=python_path, traceback=err, timestamp=logger.timeformat())
+                errstring = errstring.format(
+                    path=python_path, traceback=err, timestamp=logger.timeformat()
+                )
             break
         except Exception as err:
             logger.log_trace()
             errstring += _ERROR_CMDSET_EXCEPTION
             if _IN_GAME_ERRORS:
-                errstring = errstring.format(path=python_path, traceback=format_exc(), timestamp=logger.timeformat())
+                errstring = errstring.format(
+                    path=python_path, traceback=format_exc(), timestamp=logger.timeformat()
+                )
             else:
-                errstring = errstring.format(path=python_path, traceback=err, timestamp=logger.timeformat())
+                errstring = errstring.format(
+                    path=python_path, traceback=err, timestamp=logger.timeformat()
+                )
             break
 
     if errstring:
@@ -236,6 +257,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         err_cmdset.errmessage = errstring
         return err_cmdset
     return None  # undefined error
+
 
 # classes
 
@@ -296,9 +318,14 @@ class CmdSetHandler(object):
                     permstring = "perm"
                 if mergetype != cmdset.mergetype:
                     mergetype = "%s^" % (mergetype)
-                string += "\n %i: <%s (%s, prio %i, %s)>: %s" % \
-                    (snum, cmdset.key, mergetype,
-                     cmdset.priority, permstring, cmdset)
+                string += "\n %i: <%s (%s, prio %i, %s)>: %s" % (
+                    snum,
+                    cmdset.key,
+                    mergetype,
+                    cmdset.priority,
+                    permstring,
+                    cmdset,
+                )
                 mergelist.append(str(snum))
             string += "\n"
 
@@ -310,19 +337,24 @@ class CmdSetHandler(object):
             mergetype = mergetype.format(mergetype=mergetype, cmdset=merged_on)
         if mergelist:
             tmpstring = _(" <Merged {mergelist} {mergetype}, prio {prio}>: {current}")
-            string += tmpstring.format(mergelist="+".join(mergelist),
-                                       mergetype=mergetype, prio=self.current.priority,
-                                       current=self.current)
+            string += tmpstring.format(
+                mergelist="+".join(mergelist),
+                mergetype=mergetype,
+                prio=self.current.priority,
+                current=self.current,
+            )
         else:
             permstring = "non-perm"
             if self.current.permanent:
                 permstring = "perm"
             tmpstring = _(" <{key} ({mergetype}, prio {prio}, {permstring})>:\n {keylist}")
-            string += tmpstring.format(key=self.current.key, mergetype=mergetype,
-                                       prio=self.current.priority,
-                                       permstring=permstring,
-                                       keylist=", ".join(cmd.key for
-                                                         cmd in sorted(self.current, key=lambda o: o.key)))
+            string += tmpstring.format(
+                key=self.current.key,
+                mergetype=mergetype,
+                prio=self.current.priority,
+                permstring=permstring,
+                keylist=", ".join(cmd.key for cmd in sorted(self.current, key=lambda o: o.key)),
+            )
         return string.strip()
 
     def _import_cmdset(self, cmdset_path, emit_to_obj=None):
@@ -363,23 +395,27 @@ class CmdSetHandler(object):
                     elif path:
                         cmdset = self._import_cmdset(path)
                         if cmdset:
-                            if cmdset.key == '_CMDSET_ERROR':
+                            if cmdset.key == "_CMDSET_ERROR":
                                 # If a cmdset fails to load, check if we have a fallback path to use
                                 fallback_path = _CMDSET_FALLBACKS.get(path, None)
                                 if fallback_path:
-                                    err = _ERROR_CMDSET_FALLBACK.format(path=path, fallback_path=fallback_path)
+                                    err = _ERROR_CMDSET_FALLBACK.format(
+                                        path=path, fallback_path=fallback_path
+                                    )
                                     logger.log_err(err)
                                     if _IN_GAME_ERRORS:
                                         self.obj.msg(err)
                                     cmdset = self._import_cmdset(fallback_path)
                                 # If no cmdset is returned from the fallback, we can't go further
                                 if not cmdset:
-                                    err = _ERROR_CMDSET_NO_FALLBACK.format(fallback_path=fallback_path)
+                                    err = _ERROR_CMDSET_NO_FALLBACK.format(
+                                        fallback_path=fallback_path
+                                    )
                                     logger.log_err(err)
                                     if _IN_GAME_ERRORS:
                                         self.obj.msg(err)
                                     continue
-                            cmdset.permanent = cmdset.key != '_CMDSET_ERROR'
+                            cmdset.permanent = cmdset.key != "_CMDSET_ERROR"
                             self.cmdset_stack.append(cmdset)
 
         # merge the stack into a new merged cmdset
@@ -429,9 +465,9 @@ class CmdSetHandler(object):
         elif isinstance(cmdset, str):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
-        if cmdset and cmdset.key != '_CMDSET_ERROR':
+        if cmdset and cmdset.key != "_CMDSET_ERROR":
             cmdset.permanent = permanent
-            if permanent and cmdset.key != '_CMDSET_ERROR':
+            if permanent and cmdset.key != "_CMDSET_ERROR":
                 # store the path permanently
                 storage = self.obj.cmdset_storage or [""]
                 if default_cmdset:
@@ -498,13 +534,15 @@ class CmdSetHandler(object):
                 self.obj.cmdset_storage = storage
         else:
             # try it as a callable
-            if callable(cmdset) and hasattr(cmdset, 'path'):
-                delcmdsets = [cset for cset in self.cmdset_stack[1:]
-                              if cset.path == cmdset.path]
+            if callable(cmdset) and hasattr(cmdset, "path"):
+                delcmdsets = [cset for cset in self.cmdset_stack[1:] if cset.path == cmdset.path]
             else:
                 # try it as a path or key
-                delcmdsets = [cset for cset in self.cmdset_stack[1:]
-                              if cset.path == cmdset or cset.key == cmdset]
+                delcmdsets = [
+                    cset
+                    for cset in self.cmdset_stack[1:]
+                    if cset.path == cmdset or cset.key == cmdset
+                ]
             storage = []
 
             if any(cset.permanent for cset in delcmdsets):
@@ -530,6 +568,7 @@ class CmdSetHandler(object):
                     pass
         # re-sync the cmdsethandler.
         self.update()
+
     # legacy alias
     delete = remove
 
@@ -539,6 +578,7 @@ class CmdSetHandler(object):
 
         """
         self.remove(default_cmdset=True)
+
     # legacy alias
     delete_default = remove_default
 
@@ -582,22 +622,26 @@ class CmdSetHandler(object):
             has_cmdset (bool): Whether or not the cmdset is in the handler.
 
         """
-        if callable(cmdset) and hasattr(cmdset, 'path'):
+        if callable(cmdset) and hasattr(cmdset, "path"):
             # try it as a callable
             if must_be_default:
                 return self.cmdset_stack and (self.cmdset_stack[0].path == cmdset.path)
             else:
-                return any([cset for cset in self.cmdset_stack
-                            if cset.path == cmdset.path])
+                return any([cset for cset in self.cmdset_stack if cset.path == cmdset.path])
         else:
             # try it as a path or key
             if must_be_default:
                 return self.cmdset_stack and (
-                    self.cmdset_stack[0].key == cmdset or
-                    self.cmdset_stack[0].path == cmdset)
+                    self.cmdset_stack[0].key == cmdset or self.cmdset_stack[0].path == cmdset
+                )
             else:
-                return any([cset for cset in self.cmdset_stack
-                            if cset.path == cmdset or cset.key == cmdset])
+                return any(
+                    [
+                        cset
+                        for cset in self.cmdset_stack
+                        if cset.path == cmdset or cset.key == cmdset
+                    ]
+                )
 
     # backwards-compatability alias
     has_cmdset = has

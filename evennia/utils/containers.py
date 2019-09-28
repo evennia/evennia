@@ -28,6 +28,7 @@ class Container(object):
     The container is initialized by a list of modules containing callables.
 
     """
+
     storage_modules = []
 
     def __init__(self):
@@ -84,6 +85,7 @@ class OptionContainer(Container):
 
     Can access these as properties or dictionary-contents.
     """
+
     storage_modules = settings.OPTION_CLASS_MODULES
 
 
@@ -102,6 +104,7 @@ class GlobalScriptContainer(Container):
         callables from settings but a custom dict of tuples.
 
     """
+
     def __init__(self):
         """
         Note: We must delay loading of typeclasses since this module may get
@@ -109,8 +112,9 @@ class GlobalScriptContainer(Container):
 
         """
         self.typeclass_storage = None
-        self.loaded_data = {key: {} if data is None else data
-                            for key, data in settings.GLOBAL_SCRIPTS.items()}
+        self.loaded_data = {
+            key: {} if data is None else data for key, data in settings.GLOBAL_SCRIPTS.items()
+        }
 
     def _get_scripts(self, key=None, default=None):
         global SCRIPTDB
@@ -129,17 +133,21 @@ class GlobalScriptContainer(Container):
 
         typeclass = self.typeclass_storage[key]
         found = typeclass.objects.filter(db_key=key).first()
-        interval = self.loaded_data[key].get('interval', None)
-        start_delay = self.loaded_data[key].get('start_delay', None)
-        repeats = self.loaded_data[key].get('repeats', 0)
-        desc = self.loaded_data[key].get('desc', '')
+        interval = self.loaded_data[key].get("interval", None)
+        start_delay = self.loaded_data[key].get("start_delay", None)
+        repeats = self.loaded_data[key].get("repeats", 0)
+        desc = self.loaded_data[key].get("desc", "")
 
         if not found:
             logger.log_info(f"GLOBAL_SCRIPTS: (Re)creating {key} ({typeclass}).")
-            new_script, errors = typeclass.create(key=key, persistent=True,
-                                                  interval=interval,
-                                                  start_delay=start_delay,
-                                                  repeats=repeats, desc=desc)
+            new_script, errors = typeclass.create(
+                key=key,
+                persistent=True,
+                interval=interval,
+                start_delay=start_delay,
+                repeats=repeats,
+                desc=desc,
+            )
             if errors:
                 logger.log_err("\n".join(errors))
                 return None
@@ -147,9 +155,11 @@ class GlobalScriptContainer(Container):
             new_script.start()
             return new_script
 
-        if ((found.interval != interval) or
-                (found.start_delay != start_delay) or
-                (found.repeats != repeats)):
+        if (
+            (found.interval != interval)
+            or (found.start_delay != start_delay)
+            or (found.repeats != repeats)
+        ):
             found.restart(interval=interval, start_delay=start_delay, repeats=repeats)
         if found.desc != desc:
             found.desc = desc
@@ -181,11 +191,12 @@ class GlobalScriptContainer(Container):
             self.typeclass_storage = {}
             for key, data in self.loaded_data.items():
                 try:
-                    typeclass = data.get('typeclass', settings.BASE_SCRIPT_TYPECLASS)
+                    typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
                     self.typeclass_storage[key] = class_from_module(typeclass)
                 except ImportError as err:
                     logger.log_err(
-                            f"GlobalScriptContainer could not start global script {key}: {err}")
+                        f"GlobalScriptContainer could not start global script {key}: {err}"
+                    )
 
     def get(self, key, default=None):
         """

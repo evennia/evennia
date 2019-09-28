@@ -12,6 +12,7 @@ from evennia.commands import cmdparser
 
 # Testing-command sets
 
+
 class _CmdA(Command):
     key = "A"
 
@@ -79,6 +80,7 @@ class _CmdSetD(CmdSet):
         self.add(_CmdB("D"))
         self.add(_CmdC("D"))
         self.add(_CmdD("D"))
+
 
 # testing Command Sets
 
@@ -263,6 +265,7 @@ class TestCmdSetMergers(TestCase):
         cmdset_f = d + b + c + a  # two last mergers duplicates=True
         self.assertEqual(len(cmdset_f.commands), 10)
 
+
 # test cmdhandler functions
 
 
@@ -279,7 +282,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
     "Test the cmdhandler.get_and_merge_cmdsets function."
 
     def setUp(self):
-        self.patch(sys.modules['evennia.server.sessionhandler'], 'delay', _mockdelay)
+        self.patch(sys.modules["evennia.server.sessionhandler"], "delay", _mockdelay)
         super().setUp()
         self.cmdset_a = _CmdSetA()
         self.cmdset_b = _CmdSetB()
@@ -295,19 +298,25 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         a = self.cmdset_a
         a.no_channels = True
         self.set_cmdsets(self.session, a)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, None, None, "session", "")
+        deferred = cmdhandler.get_and_merge_cmdsets(
+            self.session, self.session, None, None, "session", ""
+        )
 
         def _callback(cmdset):
             self.assertEqual(cmdset.key, "A")
+
         deferred.addCallback(_callback)
         return deferred
 
     def test_from_account(self):
         from evennia.commands.default.cmdset_account import AccountCmdSet
+
         a = self.cmdset_a
         a.no_channels = True
         self.set_cmdsets(self.account, a)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.account, None, self.account, None, "account", "")
+        deferred = cmdhandler.get_and_merge_cmdsets(
+            self.account, None, self.account, None, "account", ""
+        )
         # get_and_merge_cmdsets converts  to lower-case internally.
 
         def _callback(cmdset):
@@ -315,7 +324,8 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
             pcmdset.at_cmdset_creation()
             pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"]
             self.assertTrue(all(cmd.key in pcmds for cmd in cmdset.commands))
-        #_callback = lambda cmdset: self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
+
+        # _callback = lambda cmdset: self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
         deferred.addCallback(_callback)
         return deferred
 
@@ -324,7 +334,11 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
         # get_and_merge_cmdsets converts  to lower-case internally.
 
-        def _callback(cmdset): return self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
+        def _callback(cmdset):
+            return self.assertEqual(
+                sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4
+            )
+
         deferred.addCallback(_callback)
         return deferred
 
@@ -340,6 +354,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
             self.assertTrue(cmdset.no_exits)
             self.assertTrue(cmdset.no_channels)
             self.assertEqual(cmdset.key, "D")
+
         deferred.addCallback(_callback)
         return deferred
 
@@ -347,6 +362,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         import evennia
         from evennia.commands.default.cmdset_account import AccountCmdSet
         from evennia.comms.channelhandler import CHANNEL_HANDLER
+
         testchannel = evennia.create_channel("channeltest", locks="listen:all();send:all()")
         CHANNEL_HANDLER.add(testchannel)
         CHANNEL_HANDLER.update()
@@ -354,14 +370,19 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         self.assertTrue(testchannel.has_connection(self.account))
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
         self.set_cmdsets(self.account, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.session, self.session, self.account, self.char1, "session", "")
+        deferred = cmdhandler.get_and_merge_cmdsets(
+            self.session, self.session, self.account, self.char1, "session", ""
+        )
 
         def _callback(cmdset):
             pcmdset = AccountCmdSet()
             pcmdset.at_cmdset_creation()
             pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"] + ["out"]
-            self.assertTrue(all(cmd.key or hasattr(cmd, "is_channel") in pcmds for cmd in cmdset.commands))
+            self.assertTrue(
+                all(cmd.key or hasattr(cmd, "is_channel") in pcmds for cmd in cmdset.commands)
+            )
             self.assertTrue(any(hasattr(cmd, "is_channel") for cmd in cmdset.commands))
+
         deferred.addCallback(_callback)
         return deferred
 
@@ -376,6 +397,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
 
         def _callback(cmdset):
             self.assertEqual(len(cmdset.commands), 9)
+
         deferred.addCallback(_callback)
         return deferred
 
@@ -383,6 +405,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
 class AccessableCommand(Command):
     def access(*args, **kwargs):
         return True
+
 
 class _CmdTest1(AccessableCommand):
     key = "test1"
@@ -402,6 +425,7 @@ class _CmdTest4(AccessableCommand):
 
 class _CmdSetTest(CmdSet):
     key = "test_cmdset"
+
     def at_cmdset_creation(self):
         self.add(_CmdTest1)
         self.add(_CmdTest2)
@@ -409,15 +433,16 @@ class _CmdSetTest(CmdSet):
 
 
 class TestCmdParser(TestCase):
-
     def test_create_match(self):
         class DummyCmd:
             pass
+
         dummy = DummyCmd()
 
         self.assertEqual(
             cmdparser.create_match("look at", "look at target", dummy, "look"),
-            ("look at", " target", dummy, 7, 0.5, "look"))
+            ("look at", " target", dummy, 7, 0.5, "look"),
+        )
 
     @override_settings(CMD_IGNORE_PREFIXES="@&/+")
     def test_build_matches(self):
@@ -427,38 +452,38 @@ class TestCmdParser(TestCase):
         # normal parsing
         self.assertEqual(
             cmdparser.build_matches("test1 rock", a_cmdset, include_prefixes=False),
-            [("test1", " rock", bcmd, 5, 0.5, 'test1')]
-            )
+            [("test1", " rock", bcmd, 5, 0.5, "test1")],
+        )
 
         # test prefix exclusion
         bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "another command"][0]
         self.assertEqual(
-            cmdparser.build_matches("@another command smiles to me  ",
-                                    a_cmdset, include_prefixes=False),
-            [("another command", " smiles to me  ", bcmd, 15, 0.5, 'another command')]
-            )
+            cmdparser.build_matches(
+                "@another command smiles to me  ", a_cmdset, include_prefixes=False
+            ),
+            [("another command", " smiles to me  ", bcmd, 15, 0.5, "another command")],
+        )
         # test prefix exclusion on the cmd class
         bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "&the third command"][0]
         self.assertEqual(
-            cmdparser.build_matches("the third command",
-                                    a_cmdset, include_prefixes=False),
-            [("the third command", "", bcmd, 17, 1.0, '&the third command')]
-            )
+            cmdparser.build_matches("the third command", a_cmdset, include_prefixes=False),
+            [("the third command", "", bcmd, 17, 1.0, "&the third command")],
+        )
 
     @override_settings(SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)")
     def test_num_prefixes(self):
-        self.assertEqual(cmdparser.try_num_prefixes("look me"),
-                         (None, None))
-        self.assertEqual(cmdparser.try_num_prefixes("3-look me"),
-                         ('3', "look me"))
-        self.assertEqual(cmdparser.try_num_prefixes("567-look me"),
-                         ('567', "look me"))
+        self.assertEqual(cmdparser.try_num_prefixes("look me"), (None, None))
+        self.assertEqual(cmdparser.try_num_prefixes("3-look me"), ("3", "look me"))
+        self.assertEqual(cmdparser.try_num_prefixes("567-look me"), ("567", "look me"))
 
-    @override_settings(SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)",
-                       CMD_IGNORE_PREFIXES="@&/+")
+    @override_settings(
+        SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)", CMD_IGNORE_PREFIXES="@&/+"
+    )
     def test_cmdparser(self):
         a_cmdset = _CmdSetTest()
         bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "test1"][0]
 
-        self.assertEqual(cmdparser.cmdparser("test1hello", a_cmdset, None),
-                         [("test1", "hello", bcmd, 5, 0.5, 'test1')])
+        self.assertEqual(
+            cmdparser.cmdparser("test1hello", a_cmdset, None),
+            [("test1", "hello", bcmd, 5, 0.5, "test1")],
+        )

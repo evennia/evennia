@@ -37,10 +37,7 @@ TickerHandler might be better.
 
 from evennia import DefaultExit, utils, Command
 
-MOVE_DELAY = {"stroll": 6,
-              "walk": 4,
-              "run": 2,
-              "sprint": 1}
+MOVE_DELAY = {"stroll": 6, "walk": 4, "run": 2, "sprint": 1}
 
 
 class SlowExit(DefaultExit):
@@ -84,10 +81,7 @@ class SlowExit(DefaultExit):
 # set speed - command
 #
 
-SPEED_DESCS = {"stroll": "strolling",
-               "walk": "walking",
-               "run": "running",
-               "sprint": "sprinting"}
+SPEED_DESCS = {"stroll": "strolling", "walk": "walking", "run": "running", "sprint": "sprinting"}
 
 
 class CmdSetSpeed(Command):
@@ -101,6 +95,7 @@ class CmdSetSpeed(Command):
     it takes to traverse exits. If no speed is set, 'walk' speed
     is assumed.
     """
+
     key = "setspeed"
 
     def func(self):
@@ -121,6 +116,7 @@ class CmdSetSpeed(Command):
 # stop moving - command
 #
 
+
 class CmdStop(Command):
     """
     stop moving
@@ -130,6 +126,7 @@ class CmdStop(Command):
 
     Stops the current movement, if any.
     """
+
     key = "stop"
 
     def func(self):

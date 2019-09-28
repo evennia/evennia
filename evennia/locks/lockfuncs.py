@@ -95,8 +95,9 @@ from evennia.utils import utils
 
 _PERMISSION_HIERARCHY = [pe.lower() for pe in settings.PERMISSION_HIERARCHY]
 # also accept different plural forms
-_PERMISSION_HIERARCHY_PLURAL = [pe + 's' if not pe.endswith('s') else pe
-                                for pe in _PERMISSION_HIERARCHY]
+_PERMISSION_HIERARCHY_PLURAL = [
+    pe + "s" if not pe.endswith("s") else pe for pe in _PERMISSION_HIERARCHY
+]
 
 
 def _to_account(accessing_obj):
@@ -108,6 +109,7 @@ def _to_account(accessing_obj):
 
 
 # lock functions
+
 
 def true(*args, **kwargs):
     "Always returns True."
@@ -171,8 +173,10 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     gtmode = kwargs.pop("_greater_than", False)
     is_quell = False
 
-    account = (utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject") and
-               accessing_obj.account)
+    account = (
+        utils.inherits_from(accessing_obj, "evennia.objects.objects.DefaultObject")
+        and accessing_obj.account
+    )
     # check object perms (note that accessing_obj could be an Account too)
     perms_account = []
     if account:
@@ -183,7 +187,7 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     hpos_target = None
     if permission in _PERMISSION_HIERARCHY:
         hpos_target = _PERMISSION_HIERARCHY.index(permission)
-    if permission.endswith('s') and permission[:-1] in _PERMISSION_HIERARCHY:
+    if permission.endswith("s") and permission[:-1] in _PERMISSION_HIERARCHY:
         hpos_target = _PERMISSION_HIERARCHY.index(permission[:-1])
     if hpos_target is not None:
         # hieratchy match
@@ -192,16 +196,22 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
 
         if account:
             # we have an account puppeting this object. We must check what perms it has
-            perms_account_single = [p[:-1] if p.endswith('s') else p for p in perms_account]
-            hpos_account = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
-                            if hperm in perms_account_single]
+            perms_account_single = [p[:-1] if p.endswith("s") else p for p in perms_account]
+            hpos_account = [
+                hpos
+                for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
+                if hperm in perms_account_single
+            ]
             hpos_account = hpos_account and hpos_account[-1] or -1
 
         if not account or is_quell:
             # only get the object-level perms if there is no account or quelling
-            perms_object_single = [p[:-1] if p.endswith('s') else p for p in perms_object]
-            hpos_object = [hpos for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
-                           if hperm in perms_object_single]
+            perms_object_single = [p[:-1] if p.endswith("s") else p for p in perms_object]
+            hpos_object = [
+                hpos
+                for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
+                if hperm in perms_object_single
+            ]
             hpos_object = hpos_object and hpos_object[-1] or -1
 
         if account and is_quell:
@@ -261,6 +271,7 @@ def pperm(accessing_obj, accessed_obj, *args, **kwargs):
     """
     return perm(_to_account(accessing_obj), accessed_obj, *args, **kwargs)
 
+
 def pperm_above(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Only allow Account objects with a permission *higher* in the permission
@@ -284,10 +295,10 @@ def dbref(accessing_obj, accessed_obj, *args, **kwargs):
     if not args:
         return False
     try:
-        dbr = int(args[0].strip().strip('#'))
+        dbr = int(args[0].strip().strip("#"))
     except ValueError:
         return False
-    if hasattr(accessing_obj, 'dbid'):
+    if hasattr(accessing_obj, "dbid"):
         return dbr == accessing_obj.dbid
     return False
 
@@ -310,13 +321,15 @@ def pid(accessing_obj, accessed_obj, *args, **kwargs):
 
 
 # this is more efficient than multiple if ... elif statments
-CF_MAPPING = {'eq': lambda val1, val2: val1 == val2 or str(val1) == str(val2) or float(val1) == float(val2),
-              'gt': lambda val1, val2: float(val1) > float(val2),
-              'lt': lambda val1, val2: float(val1) < float(val2),
-              'ge': lambda val1, val2: float(val1) >= float(val2),
-              'le': lambda val1, val2: float(val1) <= float(val2),
-              'ne': lambda val1, val2: float(val1) != float(val2),
-              'default': lambda val1, val2: False}
+CF_MAPPING = {
+    "eq": lambda val1, val2: val1 == val2 or str(val1) == str(val2) or float(val1) == float(val2),
+    "gt": lambda val1, val2: float(val1) > float(val2),
+    "lt": lambda val1, val2: float(val1) < float(val2),
+    "ge": lambda val1, val2: float(val1) >= float(val2),
+    "le": lambda val1, val2: float(val1) <= float(val2),
+    "ne": lambda val1, val2: float(val1) != float(val2),
+    "default": lambda val1, val2: False,
+}
 
 
 def attr(accessing_obj, accessed_obj, *args, **kwargs):
@@ -348,14 +361,14 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
     value = None
     if len(args) > 1:
         value = args[1].strip()
-    compare = 'eq'
+    compare = "eq"
     if kwargs:
-        compare = kwargs.get('compare', 'eq')
+        compare = kwargs.get("compare", "eq")
 
-    def valcompare(val1, val2, typ='eq'):
+    def valcompare(val1, val2, typ="eq"):
         "compare based on type"
         try:
-            return CF_MAPPING.get(typ, CF_MAPPING['default'])(val1, val2)
+            return CF_MAPPING.get(typ, CF_MAPPING["default"])(val1, val2)
         except Exception:
             # this might happen if we try to compare two things that
             # cannot be compared
@@ -375,10 +388,11 @@ def attr(accessing_obj, accessed_obj, *args, **kwargs):
         # will return Fail on False value etc
         return bool(getattr(accessing_obj, attrname))
     # check attributes, if they exist
-    if (hasattr(accessing_obj, 'attributes') and accessing_obj.attributes.has(attrname)):
+    if hasattr(accessing_obj, "attributes") and accessing_obj.attributes.has(attrname):
         if value:
-            return (hasattr(accessing_obj, 'attributes') and
-                    valcompare(accessing_obj.attributes.get(attrname), value, compare))
+            return hasattr(accessing_obj, "attributes") and valcompare(
+                accessing_obj.attributes.get(attrname), value, compare
+            )
         # fails on False/None values
         return bool(accessing_obj.attributes.get(attrname))
     return False
@@ -455,7 +469,7 @@ def attr_gt(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute > the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'gt'})
+    return attr(accessing_obj, accessed_obj, *args, **{"compare": "gt"})
 
 
 def attr_ge(accessing_obj, accessed_obj, *args, **kwargs):
@@ -465,7 +479,7 @@ def attr_ge(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute >= the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'ge'})
+    return attr(accessing_obj, accessed_obj, *args, **{"compare": "ge"})
 
 
 def attr_lt(accessing_obj, accessed_obj, *args, **kwargs):
@@ -475,7 +489,7 @@ def attr_lt(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute < the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'lt'})
+    return attr(accessing_obj, accessed_obj, *args, **{"compare": "lt"})
 
 
 def attr_le(accessing_obj, accessed_obj, *args, **kwargs):
@@ -485,7 +499,7 @@ def attr_le(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute <= the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'le'})
+    return attr(accessing_obj, accessed_obj, *args, **{"compare": "le"})
 
 
 def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
@@ -495,7 +509,7 @@ def attr_ne(accessing_obj, accessed_obj, *args, **kwargs):
 
     Only true if access_obj's attribute != the value given.
     """
-    return attr(accessing_obj, accessed_obj, *args, **{'compare': 'ne'})
+    return attr(accessing_obj, accessed_obj, *args, **{"compare": "ne"})
 
 
 def tag(accessing_obj, accessed_obj, *args, **kwargs):
@@ -570,8 +584,14 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
         if dbref and any((True for obj in contents if obj.dbid == dbref)):
             return True
         objid = objid.lower()
-        return any((True for obj in contents
-                    if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases.all()]))
+        return any(
+            (
+                True
+                for obj in contents
+                if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases.all()]
+            )
+        )
+
     if not args:
         # holds() - check if accessed_obj or accessed_obj.obj is held by accessing_obj
         try:

@@ -110,70 +110,65 @@ _ANSI_SPACE = " "
 #############################################################
 
 CURLY_COLOR_ANSI_EXTRA_MAP = [
-    (r'{n', _ANSI_NORMAL),          # reset
-    (r'{/', _ANSI_RETURN),          # line break
-    (r'{-', _ANSI_TAB),             # tab
-    (r'{_', _ANSI_SPACE),           # space
-    (r'{*', _ANSI_INVERSE),         # invert
-    (r'{^', _ANSI_BLINK),           # blinking text (very annoying and not supported by all clients)
-    (r'{u', _ANSI_UNDERLINE),       # underline
-
-    (r'{r', _ANSI_HILITE + _ANSI_RED),
-    (r'{g', _ANSI_HILITE + _ANSI_GREEN),
-    (r'{y', _ANSI_HILITE + _ANSI_YELLOW),
-    (r'{b', _ANSI_HILITE + _ANSI_BLUE),
-    (r'{m', _ANSI_HILITE + _ANSI_MAGENTA),
-    (r'{c', _ANSI_HILITE + _ANSI_CYAN),
-    (r'{w', _ANSI_HILITE + _ANSI_WHITE),  # pure white
-    (r'{x', _ANSI_HILITE + _ANSI_BLACK),  # dark grey
-
-    (r'{R', _ANSI_HILITE + _ANSI_RED),
-    (r'{G', _ANSI_HILITE + _ANSI_GREEN),
-    (r'{Y', _ANSI_HILITE + _ANSI_YELLOW),
-    (r'{B', _ANSI_HILITE + _ANSI_BLUE),
-    (r'{M', _ANSI_HILITE + _ANSI_MAGENTA),
-    (r'{C', _ANSI_HILITE + _ANSI_CYAN),
-    (r'{W', _ANSI_HILITE + _ANSI_WHITE),  # light grey
-    (r'{X', _ANSI_HILITE + _ANSI_BLACK),  # pure black
-
+    (r"{n", _ANSI_NORMAL),  # reset
+    (r"{/", _ANSI_RETURN),  # line break
+    (r"{-", _ANSI_TAB),  # tab
+    (r"{_", _ANSI_SPACE),  # space
+    (r"{*", _ANSI_INVERSE),  # invert
+    (r"{^", _ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
+    (r"{u", _ANSI_UNDERLINE),  # underline
+    (r"{r", _ANSI_HILITE + _ANSI_RED),
+    (r"{g", _ANSI_HILITE + _ANSI_GREEN),
+    (r"{y", _ANSI_HILITE + _ANSI_YELLOW),
+    (r"{b", _ANSI_HILITE + _ANSI_BLUE),
+    (r"{m", _ANSI_HILITE + _ANSI_MAGENTA),
+    (r"{c", _ANSI_HILITE + _ANSI_CYAN),
+    (r"{w", _ANSI_HILITE + _ANSI_WHITE),  # pure white
+    (r"{x", _ANSI_HILITE + _ANSI_BLACK),  # dark grey
+    (r"{R", _ANSI_HILITE + _ANSI_RED),
+    (r"{G", _ANSI_HILITE + _ANSI_GREEN),
+    (r"{Y", _ANSI_HILITE + _ANSI_YELLOW),
+    (r"{B", _ANSI_HILITE + _ANSI_BLUE),
+    (r"{M", _ANSI_HILITE + _ANSI_MAGENTA),
+    (r"{C", _ANSI_HILITE + _ANSI_CYAN),
+    (r"{W", _ANSI_HILITE + _ANSI_WHITE),  # light grey
+    (r"{X", _ANSI_HILITE + _ANSI_BLACK),  # pure black
     # hilight-able colors
-    (r'{h', _ANSI_HILITE),
-    (r'{H', _ANSI_UNHILITE),
-
-    (r'{!R', _ANSI_RED),
-    (r'{!G', _ANSI_GREEN),
-    (r'{!Y', _ANSI_YELLOW),
-    (r'{!B', _ANSI_BLUE),
-    (r'{!M', _ANSI_MAGENTA),
-    (r'{!C', _ANSI_CYAN),
-    (r'{!W', _ANSI_WHITE),  # light grey
-    (r'{!X', _ANSI_BLACK),  # pure black
-
+    (r"{h", _ANSI_HILITE),
+    (r"{H", _ANSI_UNHILITE),
+    (r"{!R", _ANSI_RED),
+    (r"{!G", _ANSI_GREEN),
+    (r"{!Y", _ANSI_YELLOW),
+    (r"{!B", _ANSI_BLUE),
+    (r"{!M", _ANSI_MAGENTA),
+    (r"{!C", _ANSI_CYAN),
+    (r"{!W", _ANSI_WHITE),  # light grey
+    (r"{!X", _ANSI_BLACK),  # pure black
     # normal ANSI backgrounds
-    (r'{[R', _ANSI_BACK_RED),
-    (r'{[G', _ANSI_BACK_GREEN),
-    (r'{[Y', _ANSI_BACK_YELLOW),
-    (r'{[B', _ANSI_BACK_BLUE),
-    (r'{[M', _ANSI_BACK_MAGENTA),
-    (r'{[C', _ANSI_BACK_CYAN),
-    (r'{[W', _ANSI_BACK_WHITE),    # light grey background
-    (r'{[X', _ANSI_BACK_BLACK),     # pure black background
+    (r"{[R", _ANSI_BACK_RED),
+    (r"{[G", _ANSI_BACK_GREEN),
+    (r"{[Y", _ANSI_BACK_YELLOW),
+    (r"{[B", _ANSI_BACK_BLUE),
+    (r"{[M", _ANSI_BACK_MAGENTA),
+    (r"{[C", _ANSI_BACK_CYAN),
+    (r"{[W", _ANSI_BACK_WHITE),  # light grey background
+    (r"{[X", _ANSI_BACK_BLACK),  # pure black background
 ]
 
-CURLY_COLOR_XTERM256_EXTRA_FG = [r'\{([0-5])([0-5])([0-5])']     # |123 - foreground colour
-CURLY_COLOR_XTERM256_EXTRA_BG = [r'\{\[([0-5])([0-5])([0-5])']   # |[123 - background colour
-CURLY_COLOR_XTERM256_EXTRA_GFG = [r'\{=([a-z])']      # |=a - greyscale foreground
-CURLY_COLOR_XTERM256_EXTRA_GBG = [r'\{\[=([a-z])']    # |[=a - greyscale background
+CURLY_COLOR_XTERM256_EXTRA_FG = [r"\{([0-5])([0-5])([0-5])"]  # |123 - foreground colour
+CURLY_COLOR_XTERM256_EXTRA_BG = [r"\{\[([0-5])([0-5])([0-5])"]  # |[123 - background colour
+CURLY_COLOR_XTERM256_EXTRA_GFG = [r"\{=([a-z])"]  # |=a - greyscale foreground
+CURLY_COLOR_XTERM256_EXTRA_GBG = [r"\{\[=([a-z])"]  # |[=a - greyscale background
 
 CURLY_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = [
-    (r'{[r', r'{[500'),
-    (r'{[g', r'{[050'),
-    (r'{[y', r'{[550'),
-    (r'{[b', r'{[005'),
-    (r'{[m', r'{[505'),
-    (r'{[c', r'{[055'),
-    (r'{[w', r'{[555'),     # white background
-    (r'{[x', r'{[222'),     # dark grey background
+    (r"{[r", r"{[500"),
+    (r"{[g", r"{[050"),
+    (r"{[y", r"{[550"),
+    (r"{[b", r"{[005"),
+    (r"{[m", r"{[505"),
+    (r"{[c", r"{[055"),
+    (r"{[w", r"{[555"),  # white background
+    (r"{[x", r"{[222"),  # dark grey background
 ]
 
 
@@ -191,48 +186,46 @@ CURLY_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = [
 #############################################################
 
 MUX_COLOR_ANSI_EXTRA_MAP = [
-    (r'%cn', _ANSI_NORMAL),  # reset
-    (r'%ch', _ANSI_HILITE),  # highlight
-    (r'%r', _ANSI_RETURN),   # line break
-    (r'%R', _ANSI_RETURN),   #
-    (r'%t', _ANSI_TAB),      # tab
-    (r'%T', _ANSI_TAB),      #
-    (r'%b', _ANSI_SPACE),    # space
-    (r'%B', _ANSI_SPACE),
-    (r'%cf', _ANSI_BLINK),    # annoying and not supported by all clients
-    (r'%ci', _ANSI_INVERSE),  # invert
-
-    (r'%cr', _ANSI_RED),
-    (r'%cg', _ANSI_GREEN),
-    (r'%cy', _ANSI_YELLOW),
-    (r'%cb', _ANSI_BLUE),
-    (r'%cm', _ANSI_MAGENTA),
-    (r'%cc', _ANSI_CYAN),
-    (r'%cw', _ANSI_WHITE),
-    (r'%cx', _ANSI_BLACK),
-
-    (r'%cR', _ANSI_BACK_RED),
-    (r'%cG', _ANSI_BACK_GREEN),
-    (r'%cY', _ANSI_BACK_YELLOW),
-    (r'%cB', _ANSI_BACK_BLUE),
-    (r'%cM', _ANSI_BACK_MAGENTA),
-    (r'%cC', _ANSI_BACK_CYAN),
-    (r'%cW', _ANSI_BACK_WHITE),
-    (r'%cX', _ANSI_BACK_BLACK)
+    (r"%cn", _ANSI_NORMAL),  # reset
+    (r"%ch", _ANSI_HILITE),  # highlight
+    (r"%r", _ANSI_RETURN),  # line break
+    (r"%R", _ANSI_RETURN),  #
+    (r"%t", _ANSI_TAB),  # tab
+    (r"%T", _ANSI_TAB),  #
+    (r"%b", _ANSI_SPACE),  # space
+    (r"%B", _ANSI_SPACE),
+    (r"%cf", _ANSI_BLINK),  # annoying and not supported by all clients
+    (r"%ci", _ANSI_INVERSE),  # invert
+    (r"%cr", _ANSI_RED),
+    (r"%cg", _ANSI_GREEN),
+    (r"%cy", _ANSI_YELLOW),
+    (r"%cb", _ANSI_BLUE),
+    (r"%cm", _ANSI_MAGENTA),
+    (r"%cc", _ANSI_CYAN),
+    (r"%cw", _ANSI_WHITE),
+    (r"%cx", _ANSI_BLACK),
+    (r"%cR", _ANSI_BACK_RED),
+    (r"%cG", _ANSI_BACK_GREEN),
+    (r"%cY", _ANSI_BACK_YELLOW),
+    (r"%cB", _ANSI_BACK_BLUE),
+    (r"%cM", _ANSI_BACK_MAGENTA),
+    (r"%cC", _ANSI_BACK_CYAN),
+    (r"%cW", _ANSI_BACK_WHITE),
+    (r"%cX", _ANSI_BACK_BLACK),
 ]
 
-MUX_COLOR_XTERM256_EXTRA_FG = [r'%c([0-5])([0-5])([0-5])']     # %c123 - foreground colour
-MUX_COLOR_XTERM256_EXTRA_BG = [r'%c\[([0-5])([0-5])([0-5])']   # %c[123 - background colour
-MUX_COLOR_XTERM256_EXTRA_GFG = [r'%c=([a-z])']      # %c=a - greyscale foreground
-MUX_COLOR_XTERM256_EXTRA_GBG = [r'%c\[=([a-z])']    # %c[=a - greyscale background
+MUX_COLOR_XTERM256_EXTRA_FG = [r"%c([0-5])([0-5])([0-5])"]  # %c123 - foreground colour
+MUX_COLOR_XTERM256_EXTRA_BG = [r"%c\[([0-5])([0-5])([0-5])"]  # %c[123 - background colour
+MUX_COLOR_XTERM256_EXTRA_GFG = [r"%c=([a-z])"]  # %c=a - greyscale foreground
+MUX_COLOR_XTERM256_EXTRA_GBG = [r"%c\[=([a-z])"]  # %c[=a - greyscale background
 
 MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = [
-    (r'%ch%cR', r'%c[500'),
-    (r'%ch%cG', r'%c[050'),
-    (r'%ch%cY', r'%c[550'),
-    (r'%ch%cB', r'%c[005'),
-    (r'%ch%cM', r'%c[505'),
-    (r'%ch%cC', r'%c[055'),
-    (r'%ch%cW', r'%c[555'),     # white background
-    (r'%ch%cX', r'%c[222'),     # dark grey background
+    (r"%ch%cR", r"%c[500"),
+    (r"%ch%cG", r"%c[050"),
+    (r"%ch%cY", r"%c[550"),
+    (r"%ch%cB", r"%c[005"),
+    (r"%ch%cM", r"%c[505"),
+    (r"%ch%cC", r"%c[055"),
+    (r"%ch%cW", r"%c[555"),  # white background
+    (r"%ch%cX", r"%c[222"),  # dark grey background
 ]

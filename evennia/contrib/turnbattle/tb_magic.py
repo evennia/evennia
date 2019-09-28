@@ -71,14 +71,15 @@ OPTIONS
 ----------------------------------------------------------------------------
 """
 
-TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
-ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
+TURN_TIMEOUT = 30  # Time before turns automatically end, in seconds
+ACTIONS_PER_TURN = 1  # Number of actions allowed per turn
 
 """
 ----------------------------------------------------------------------------
 COMBAT FUNCTIONS START HERE
 ----------------------------------------------------------------------------
 """
+
 
 def roll_init(character):
     """
@@ -194,6 +195,7 @@ def apply_damage(defender, damage):
     if defender.db.hp <= 0:
         defender.db.hp = 0
 
+
 def at_defeat(defeated):
     """
     Announces the defeat of a fighter in combat.
@@ -208,6 +210,7 @@ def at_defeat(defeated):
         do it.
     """
     defeated.location.msg_contents("%s has been defeated!" % defeated)
+
 
 def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     """
@@ -234,11 +237,14 @@ def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     else:
         damage_value = get_damage(attacker, defender)  # Calculate damage value.
         # Announce damage dealt and apply damage.
-        attacker.location.msg_contents("%s hits %s for %i damage!" % (attacker, defender, damage_value))
+        attacker.location.msg_contents(
+            "%s hits %s for %i damage!" % (attacker, defender, damage_value)
+        )
         apply_damage(defender, damage_value)
         # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
             at_defeat(defender)
+
 
 def combat_cleanup(character):
     """
@@ -300,7 +306,7 @@ def spend_action(character, actions, action_name=None):
         return
     if action_name:
         character.db.combat_lastaction = action_name
-    if actions == 'all':  # If spending all actions
+    if actions == "all":  # If spending all actions
         character.db.combat_actionsleft = 0  # Set actions to 0
     else:
         character.db.combat_actionsleft -= actions  # Use up actions.
@@ -335,10 +341,9 @@ class TBMagicCharacter(DefaultCharacter):
         """
         self.db.max_hp = 100  # Set maximum HP to 100
         self.db.hp = self.db.max_hp  # Set current HP to maximum
-        self.db.spells_known = [] # Set empty spells known list
-        self.db.max_mp = 20 # Set maximum MP to 20
-        self.db.mp = self.db.max_mp # Set current MP to maximum
-        
+        self.db.spells_known = []  # Set empty spells known list
+        self.db.max_mp = 20  # Set maximum MP to 20
+        self.db.mp = self.db.max_mp  # Set current MP to maximum
 
     def at_before_move(self, destination):
         """
@@ -364,6 +369,7 @@ class TBMagicCharacter(DefaultCharacter):
             self.msg("You can't move, you've been defeated!")
             return False
         return True
+
 
 """
 ----------------------------------------------------------------------------
@@ -412,7 +418,7 @@ class TBMagicTurnHandler(DefaultScript):
 
         # Announce the turn order.
         self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
-        
+
         # Start first fighter's turn.
         self.start_turn(self.db.fighters[0])
 
@@ -432,13 +438,17 @@ class TBMagicTurnHandler(DefaultScript):
         """
         Called once every self.interval seconds.
         """
-        currentchar = self.db.fighters[self.db.turn]  # Note the current character in the turn order.
+        currentchar = self.db.fighters[
+            self.db.turn
+        ]  # Note the current character in the turn order.
         self.db.timer -= self.interval  # Count down the timer.
 
         if self.db.timer <= 0:
             # Force current character to disengage if timer runs out.
             self.obj.msg_contents("%s's turn timed out!" % currentchar)
-            spend_action(currentchar, 'all', action_name="disengage")  # Spend all remaining actions.
+            spend_action(
+                currentchar, "all", action_name="disengage"
+            )  # Spend all remaining actions.
             return
         elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
             # Warn the current character if they're about to time out.
@@ -453,8 +463,12 @@ class TBMagicTurnHandler(DefaultScript):
             character (obj): Character to initialize for combat.
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
-        character.db.combat_actionsleft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
-        character.db.combat_turnhandler = self  # Add a reference to this turn handler script to the character
+        character.db.combat_actionsleft = (
+            0
+        )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        character.db.combat_turnhandler = (
+            self
+        )  # Add a reference to this turn handler script to the character
         character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):
@@ -484,7 +498,9 @@ class TBMagicTurnHandler(DefaultScript):
         # Check to see if every character disengaged as their last action. If so, end combat.
         disengage_check = True
         for fighter in self.db.fighters:
-            if fighter.db.combat_lastaction != "disengage":  # If a character has done anything but disengage
+            if (
+                fighter.db.combat_lastaction != "disengage"
+            ):  # If a character has done anything but disengage
                 disengage_check = False
         if disengage_check:  # All characters have disengaged
             self.obj.msg_contents("All fighters have disengaged! Combat is over!")
@@ -496,7 +512,9 @@ class TBMagicTurnHandler(DefaultScript):
         for fighter in self.db.fighters:
             if fighter.db.HP == 0:
                 defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
-        if defeated_characters == (len(self.db.fighters) - 1):  # If only one character isn't defeated
+        if defeated_characters == (
+            len(self.db.fighters) - 1
+        ):  # If only one character isn't defeated
             for fighter in self.db.fighters:
                 if fighter.db.HP != 0:
                     LastStanding = fighter  # Pick the one fighter left with HP remaining
@@ -540,7 +558,7 @@ class TBMagicTurnHandler(DefaultScript):
         # Initialize the character like you do at the start.
         self.initialize_for_combat(character)
 
-        
+
 """
 ----------------------------------------------------------------------------
 COMMANDS START HERE
@@ -559,6 +577,7 @@ class CmdFight(Command):
     fight is added to combat, and a turn order is randomly rolled.
     When it's your turn, you can attack other characters.
     """
+
     key = "fight"
     help_category = "combat"
 
@@ -667,8 +686,10 @@ class CmdPass(Command):
             self.caller.msg("You can only do that on your turn.")
             return
 
-        self.caller.location.msg_contents("%s takes no further action, passing the turn." % self.caller)
-        spend_action(self.caller, 'all', action_name="pass")  # Spend all remaining actions.
+        self.caller.location.msg_contents(
+            "%s takes no further action, passing the turn." % self.caller
+        )
+        spend_action(self.caller, "all", action_name="pass")  # Spend all remaining actions.
 
 
 class CmdDisengage(Command):
@@ -700,12 +721,13 @@ class CmdDisengage(Command):
             return
 
         self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
-        spend_action(self.caller, 'all', action_name="disengage")  # Spend all remaining actions.
+        spend_action(self.caller, "all", action_name="disengage")  # Spend all remaining actions.
         """
         The action_name kwarg sets the character's last action to "disengage", which is checked by
         the turn handler script to see if all fighters have disengaged.
         """
-        
+
+
 class CmdLearnSpell(Command):
     """
     Learn a magic spell.
@@ -731,10 +753,10 @@ class CmdLearnSpell(Command):
         
         |wcactus conjuration|n (2 MP): Creates a cactus.
     """
-    
+
     key = "learnspell"
     help_category = "magic"
-    
+
     def func(self):
         """
         This performs the actual command.
@@ -744,38 +766,39 @@ class CmdLearnSpell(Command):
         args = args.strip(" ")
         caller = self.caller
         spell_to_learn = []
-        
-        if not args or len(args) < 3: # No spell given
+
+        if not args or len(args) < 3:  # No spell given
             caller.msg("Usage: learnspell <spell name>")
             return
-        
-        for spell in spell_list: # Match inputs to spells
+
+        for spell in spell_list:  # Match inputs to spells
             if args in spell.lower():
                 spell_to_learn.append(spell)
-        
-        if spell_to_learn == []: # No spells matched
+
+        if spell_to_learn == []:  # No spells matched
             caller.msg("There is no spell with that name.")
             return
-        if len(spell_to_learn) > 1: # More than one match
-            matched_spells = ', '.join(spell_to_learn)
+        if len(spell_to_learn) > 1:  # More than one match
+            matched_spells = ", ".join(spell_to_learn)
             caller.msg("Which spell do you mean: %s?" % matched_spells)
             return
-            
-        if len(spell_to_learn) == 1: # If one match, extract the string
+
+        if len(spell_to_learn) == 1:  # If one match, extract the string
             spell_to_learn = spell_to_learn[0]
-        
-        if spell_to_learn not in self.caller.db.spells_known: # If the spell isn't known...
-            caller.db.spells_known.append(spell_to_learn) # ...then add the spell to the character
+
+        if spell_to_learn not in self.caller.db.spells_known:  # If the spell isn't known...
+            caller.db.spells_known.append(spell_to_learn)  # ...then add the spell to the character
             caller.msg("You learn the spell '%s'!" % spell_to_learn)
             return
-        if spell_to_learn in self.caller.db.spells_known: # Already has the spell specified
+        if spell_to_learn in self.caller.db.spells_known:  # Already has the spell specified
             caller.msg("You already know the spell '%s'!" % spell_to_learn)
         """
         You will almost definitely want to replace this with your own system
         for learning spells, perhaps tied to character advancement or finding
         items in the game world that spells can be learned from.
         """
-        
+
+
 class CmdCast(MuxCommand):
     """
     Cast a magic spell that you know, provided you have the MP
@@ -788,10 +811,10 @@ class CmdCast(MuxCommand):
     on only yourself, and some don't need a target specified at all.
     Typing 'cast' by itself will give you a list of spells you know.
     """
-    
+
     key = "cast"
     help_category = "magic"
-    
+
     def func(self):
         """
         This performs the actual command.
@@ -804,155 +827,169 @@ class CmdCast(MuxCommand):
         function.
         """
         caller = self.caller
-        
-        if not self.lhs or len(self.lhs) < 3: # No spell name given
+
+        if not self.lhs or len(self.lhs) < 3:  # No spell name given
             caller.msg("Usage: cast <spell name> = <target>, <target2>, ...")
             if not caller.db.spells_known:
                 caller.msg("You don't know any spells.")
                 return
             else:
                 caller.db.spells_known = sorted(caller.db.spells_known)
-                spells_known_msg = "You know the following spells:|/" + "|/".join(caller.db.spells_known)
-                caller.msg(spells_known_msg) # List the spells the player knows
+                spells_known_msg = "You know the following spells:|/" + "|/".join(
+                    caller.db.spells_known
+                )
+                caller.msg(spells_known_msg)  # List the spells the player knows
                 return
-        
+
         spellname = self.lhs.lower()
         spell_to_cast = []
         spell_targets = []
-        
+
         if not self.rhs:
             spell_targets = []
-        elif self.rhs.lower() in ['me', 'self', 'myself']:
+        elif self.rhs.lower() in ["me", "self", "myself"]:
             spell_targets = [caller]
         elif len(self.rhs) > 2:
             spell_targets = self.rhslist
-        
-        for spell in caller.db.spells_known: # Match inputs to spells
+
+        for spell in caller.db.spells_known:  # Match inputs to spells
             if self.lhs in spell.lower():
                 spell_to_cast.append(spell)
-        
-        if spell_to_cast == []: # No spells matched
+
+        if spell_to_cast == []:  # No spells matched
             caller.msg("You don't know a spell of that name.")
             return
-        if len(spell_to_cast) > 1: # More than one match
-            matched_spells = ', '.join(spell_to_cast)
+        if len(spell_to_cast) > 1:  # More than one match
+            matched_spells = ", ".join(spell_to_cast)
             caller.msg("Which spell do you mean: %s?" % matched_spells)
             return
-            
-        if len(spell_to_cast) == 1: # If one match, extract the string
+
+        if len(spell_to_cast) == 1:  # If one match, extract the string
             spell_to_cast = spell_to_cast[0]
-            
-        if spell_to_cast not in SPELLS: # Spell isn't defined
+
+        if spell_to_cast not in SPELLS:  # Spell isn't defined
             caller.msg("ERROR: Spell %s is undefined" % spell_to_cast)
             return
-        
+
         # Time to extract some info from the chosen spell!
         spelldata = SPELLS[spell_to_cast]
-        
+
         # Add in some default data if optional parameters aren't specified
         if "combat_spell" not in spelldata:
-            spelldata.update({"combat_spell":True})
+            spelldata.update({"combat_spell": True})
         if "noncombat_spell" not in spelldata:
-            spelldata.update({"noncombat_spell":True})
+            spelldata.update({"noncombat_spell": True})
         if "max_targets" not in spelldata:
-            spelldata.update({"max_targets":1})
-            
+            spelldata.update({"max_targets": 1})
+
         # Store any superfluous options as kwargs to pass to the spell function
         kwargs = {}
-        spelldata_opts = ["spellfunc", "target", "cost", "combat_spell", "noncombat_spell", "max_targets"]
+        spelldata_opts = [
+            "spellfunc",
+            "target",
+            "cost",
+            "combat_spell",
+            "noncombat_spell",
+            "max_targets",
+        ]
         for key in spelldata:
             if key not in spelldata_opts:
-                kwargs.update({key:spelldata[key]})
-            
+                kwargs.update({key: spelldata[key]})
+
         # If caster doesn't have enough MP to cover the spell's cost, give error and return
         if spelldata["cost"] > caller.db.mp:
             caller.msg("You don't have enough MP to cast '%s'." % spell_to_cast)
             return
-            
+
         # If in combat and the spell isn't a combat spell, give error message and return
         if spelldata["combat_spell"] == False and is_in_combat(caller):
             caller.msg("You can't use the spell '%s' in combat." % spell_to_cast)
             return
-            
+
         # If not in combat and the spell isn't a non-combat spell, error ms and return.
         if spelldata["noncombat_spell"] == False and is_in_combat(caller) == False:
             caller.msg("You can't use the spell '%s' outside of combat." % spell_to_cast)
             return
-        
+
         # If spell takes no targets and one is given, give error message and return
         if len(spell_targets) > 0 and spelldata["target"] == "none":
             caller.msg("The spell '%s' isn't cast on a target." % spell_to_cast)
             return
-            
+
         # If no target is given and spell requires a target, give error message
         if spelldata["target"] not in ["self", "none"]:
             if len(spell_targets) == 0:
                 caller.msg("The spell '%s' requires a target." % spell_to_cast)
                 return
-            
+
         # If more targets given than maximum, give error message
         if len(spell_targets) > spelldata["max_targets"]:
             targplural = "target"
             if spelldata["max_targets"] > 1:
                 targplural = "targets"
-            caller.msg("The spell '%s' can only be cast on %i %s." % (spell_to_cast, spelldata["max_targets"], targplural))
+            caller.msg(
+                "The spell '%s' can only be cast on %i %s."
+                % (spell_to_cast, spelldata["max_targets"], targplural)
+            )
             return
-            
+
         # Set up our candidates for targets
         target_candidates = []
-        
+
         # If spell targets 'any' or 'other', any object in caster's inventory or location
         # can be targeted by the spell.
         if spelldata["target"] in ["any", "other"]:
             target_candidates = caller.location.contents + caller.contents
-        
+
         # If spell targets 'anyobj', only non-character objects can be targeted.
         if spelldata["target"] == "anyobj":
             prefilter_candidates = caller.location.contents + caller.contents
             for thing in prefilter_candidates:
-                if not thing.attributes.has("max_hp"): # Has no max HP, isn't a fighter
+                if not thing.attributes.has("max_hp"):  # Has no max HP, isn't a fighter
                     target_candidates.append(thing)
-                    
+
         # If spell targets 'anychar' or 'otherchar', only characters can be targeted.
         if spelldata["target"] in ["anychar", "otherchar"]:
             prefilter_candidates = caller.location.contents
             for thing in prefilter_candidates:
-                if thing.attributes.has("max_hp"): # Has max HP, is a fighter
+                if thing.attributes.has("max_hp"):  # Has max HP, is a fighter
                     target_candidates.append(thing)
-                    
+
         # Now, match each entry in spell_targets to an object in the search candidates
         matched_targets = []
         for target in spell_targets:
             match = caller.search(target, candidates=target_candidates)
             matched_targets.append(match)
         spell_targets = matched_targets
-                    
+
         # If no target is given and the spell's target is 'self', set target to self
         if len(spell_targets) == 0 and spelldata["target"] == "self":
             spell_targets = [caller]
-                    
+
         # Give error message if trying to cast an "other" target spell on yourself
         if spelldata["target"] in ["other", "otherchar"]:
             if caller in spell_targets:
                 caller.msg("You can't cast '%s' on yourself." % spell_to_cast)
                 return
-                
+
         # Return if "None" in target list, indicating failed match
         if None in spell_targets:
             # No need to give an error message, as 'search' gives one by default.
             return
-                
+
         # Give error message if repeats in target list
         if len(spell_targets) != len(set(spell_targets)):
             caller.msg("You can't specify the same target more than once!")
             return
-        
+
         # Finally, we can cast the spell itself. Note that MP is not deducted here!
         try:
-            spelldata["spellfunc"](caller, spell_to_cast, spell_targets, spelldata["cost"], **kwargs)
+            spelldata["spellfunc"](
+                caller, spell_to_cast, spell_targets, spelldata["cost"], **kwargs
+            )
         except Exception:
             log_trace("Error in callback for spell: %s." % spell_to_cast)
-        
+
 
 class CmdRest(Command):
     """
@@ -979,7 +1016,8 @@ class CmdRest(Command):
         self.caller.db.mp = self.caller.db.max_mp  # Set current MP to maximum
         self.caller.location.msg_contents("%s rests to recover HP and MP." % self.caller)
         # You'll probably want to replace this with your own system for recovering HP and MP.
-        
+
+
 class CmdStatus(Command):
     """
     Gives combat information.
@@ -997,15 +1035,19 @@ class CmdStatus(Command):
     def func(self):
         "This performs the actual command."
         char = self.caller
-        
-        if not char.db.max_hp: # Character not initialized, IE in unit tests
+
+        if not char.db.max_hp:  # Character not initialized, IE in unit tests
             char.db.hp = 100
             char.db.max_hp = 100
             char.db.spells_known = []
             char.db.max_mp = 20
             char.db.mp = char.db.max_mp
-        
-        char.msg("You have %i / %i HP and %i / %i MP." % (char.db.hp, char.db.max_hp, char.db.mp, char.db.max_mp))
+
+        char.msg(
+            "You have %i / %i HP and %i / %i MP."
+            % (char.db.hp, char.db.max_hp, char.db.mp, char.db.max_mp)
+        )
+
 
 class CmdCombatHelp(CmdHelp):
     """
@@ -1019,15 +1061,18 @@ class CmdCombatHelp(CmdHelp):
     This will search for help on commands and other
     topics related to the game.
     """
+
     # Just like the default help command, but will give quick
     # tips on combat when used in a fight with no arguments.
 
     def func(self):
         if is_in_combat(self.caller) and not self.args:  # In combat and entered 'help' alone
-            self.caller.msg("Available combat commands:|/" +
-                            "|wAttack:|n Attack a target, attempting to deal damage.|/" +
-                            "|wPass:|n Pass your turn without further action.|/" +
-                            "|wDisengage:|n End your turn and attempt to end combat.|/")
+            self.caller.msg(
+                "Available combat commands:|/"
+                + "|wAttack:|n Attack a target, attempting to deal damage.|/"
+                + "|wPass:|n Pass your turn without further action.|/"
+                + "|wDisengage:|n End your turn and attempt to end combat.|/"
+            )
         else:
             super(CmdCombatHelp, self).func()  # Call the default help command
 
@@ -1036,6 +1081,7 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
     """
     This command set includes all the commmands used in the battle system.
     """
+
     key = "DefaultCharacter"
 
     def at_cmdset_creation(self):
@@ -1051,6 +1097,7 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdLearnSpell())
         self.add(CmdCast())
         self.add(CmdStatus())
+
 
 """
 ----------------------------------------------------------------------------
@@ -1072,6 +1119,7 @@ These functions also all accept **kwargs, and how these are used is specified
 in the docstring for each function.
 """
 
+
 def spell_healing(caster, spell_name, targets, cost, **kwargs):
     """
     Spell that restores HP to a target or targets.
@@ -1081,29 +1129,30 @@ def spell_healing(caster, spell_name, targets, cost, **kwargs):
             each target. (20, 40) by default.
     """
     spell_msg = "%s casts %s!" % (caster, spell_name)
-    
+
     min_healing = 20
     max_healing = 40
-    
+
     # Retrieve healing range from kwargs, if present
     if "healing_range" in kwargs:
         min_healing = kwargs["healing_range"][0]
         max_healing = kwargs["healing_range"][1]
-    
+
     for character in targets:
-        to_heal = randint(min_healing, max_healing) # Restore 20 to 40 hp
+        to_heal = randint(min_healing, max_healing)  # Restore 20 to 40 hp
         if character.db.hp + to_heal > character.db.max_hp:
-            to_heal = character.db.max_hp - character.db.hp # Cap healing to max HP
+            to_heal = character.db.max_hp - character.db.hp  # Cap healing to max HP
         character.db.hp += to_heal
         spell_msg += " %s regains %i HP!" % (character, to_heal)
-    
-    caster.db.mp -= cost # Deduct MP cost
-    
-    caster.location.msg_contents(spell_msg) # Message the room with spell results
-    
-    if is_in_combat(caster): # Spend action if in combat
+
+    caster.db.mp -= cost  # Deduct MP cost
+
+    caster.location.msg_contents(spell_msg)  # Message the room with spell results
+
+    if is_in_combat(caster):  # Spend action if in combat
         spend_action(caster, 1, action_name="cast")
-        
+
+
 def spell_attack(caster, spell_name, targets, cost, **kwargs):
     """
     Spell that deals damage in combat. Similar to resolve_attack.
@@ -1123,14 +1172,14 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
             attacked once.
     """
     spell_msg = "%s casts %s!" % (caster, spell_name)
-    
+
     atkname_single = "The spell"
     atkname_plural = "spells"
     min_damage = 10
     max_damage = 20
     accuracy = 0
     attack_count = 1
-    
+
     # Retrieve some variables from kwargs, if present
     if "attack_name" in kwargs:
         atkname_single = kwargs["attack_name"][0]
@@ -1142,7 +1191,7 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
         accuracy = kwargs["accuracy"]
     if "attack_count" in kwargs:
         attack_count = kwargs["attack_count"]
-        
+
     to_attack = []
     # If there are more attacks than targets given, attack first target multiple times
     if len(targets) < attack_count:
@@ -1152,24 +1201,23 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
             to_attack.insert(0, targets[0])
     else:
         to_attack = to_attack + targets
-            
-    
+
     # Set up dictionaries to track number of hits and total damage
     total_hits = {}
     total_damage = {}
     for fighter in targets:
-        total_hits.update({fighter:0})
-        total_damage.update({fighter:0})
-    
+        total_hits.update({fighter: 0})
+        total_damage.update({fighter: 0})
+
     # Resolve attack for each target
     for fighter in to_attack:
-        attack_value = randint(1, 100) + accuracy # Spell attack roll
+        attack_value = randint(1, 100) + accuracy  # Spell attack roll
         defense_value = get_defense(caster, fighter)
         if attack_value >= defense_value:
-            spell_dmg = randint(min_damage, max_damage) # Get spell damage
+            spell_dmg = randint(min_damage, max_damage)  # Get spell damage
             total_hits[fighter] += 1
             total_damage[fighter] += spell_dmg
-    
+
     for fighter in targets:
         # Construct combat message
         if total_hits[fighter] == 0:
@@ -1178,22 +1226,27 @@ def spell_attack(caster, spell_name, targets, cost, **kwargs):
             attack_count_str = atkname_single + " hits"
             if total_hits[fighter] > 1:
                 attack_count_str = "%i %s hit" % (total_hits[fighter], atkname_plural)
-            spell_msg += " %s %s for %i damage!" % (attack_count_str, fighter, total_damage[fighter])
-    
-    caster.db.mp -= cost # Deduct MP cost
-    
-    caster.location.msg_contents(spell_msg) # Message the room with spell results
-    
+            spell_msg += " %s %s for %i damage!" % (
+                attack_count_str,
+                fighter,
+                total_damage[fighter],
+            )
+
+    caster.db.mp -= cost  # Deduct MP cost
+
+    caster.location.msg_contents(spell_msg)  # Message the room with spell results
+
     for fighter in targets:
         # Apply damage
         apply_damage(fighter, total_damage[fighter])
         # If fighter HP is reduced to 0 or less, call at_defeat.
         if fighter.db.hp <= 0:
             at_defeat(fighter)
-    
-    if is_in_combat(caster): # Spend action if in combat
+
+    if is_in_combat(caster):  # Spend action if in combat
         spend_action(caster, 1, action_name="cast")
-        
+
+
 def spell_conjure(caster, spell_name, targets, cost, **kwargs):
     """
     Spell that creates an object.
@@ -1207,11 +1260,11 @@ def spell_conjure(caster, spell_name, targets, cost, **kwargs):
     you may want to modify it to use the spawner (in evennia.utils.spawner)
     instead of creating objects directly.
     """
-    
+
     obj_key = "a nondescript object"
     obj_desc = "A perfectly generic object."
     obj_typeclass = "evennia.objects.objects.DefaultObject"
-    
+
     # Retrieve some variables from kwargs, if present
     if "obj_key" in kwargs:
         obj_key = kwargs["obj_key"]
@@ -1219,14 +1272,19 @@ def spell_conjure(caster, spell_name, targets, cost, **kwargs):
         obj_desc = kwargs["obj_desc"]
     if "obj_typeclass" in kwargs:
         obj_typeclass = kwargs["obj_typeclass"]
-        
-    conjured_obj = create_object(obj_typeclass, key=obj_key, location=caster.location) # Create object
-    conjured_obj.db.desc = obj_desc # Add object desc
-    
-    caster.db.mp -= cost # Deduct MP cost
-    
+
+    conjured_obj = create_object(
+        obj_typeclass, key=obj_key, location=caster.location
+    )  # Create object
+    conjured_obj.db.desc = obj_desc  # Add object desc
+
+    caster.db.mp -= cost  # Deduct MP cost
+
     # Message the room to announce the creation of the object
-    caster.location.msg_contents("%s casts %s, and %s appears!" % (caster, spell_name, conjured_obj))
+    caster.location.msg_contents(
+        "%s casts %s, and %s appears!" % (caster, spell_name, conjured_obj)
+    )
+
 
 """
 ----------------------------------------------------------------------------
@@ -1272,19 +1330,44 @@ dictionary.
 """
 
 SPELLS = {
-"magic missile":{"spellfunc":spell_attack, "target":"otherchar", "cost":3, "noncombat_spell":False, "max_targets":3,
-                 "attack_name":("A bolt", "bolts"), "damage_range":(4, 7), "accuracy":999, "attack_count":3},
-
-"flame shot":{"spellfunc":spell_attack, "target":"otherchar", "cost":3, "noncombat_spell":False,
-              "attack_name":("A jet of flame", "jets of flame"), "damage_range":(25, 35)},
-
-"cure wounds":{"spellfunc":spell_healing, "target":"anychar", "cost":5},
-
-"mass cure wounds":{"spellfunc":spell_healing, "target":"anychar", "cost":10, "max_targets": 5},
-
-"full heal":{"spellfunc":spell_healing, "target":"anychar", "cost":12, "healing_range":(100, 100)},
-
-"cactus conjuration":{"spellfunc":spell_conjure, "target":"none", "cost":2, "combat_spell":False,
-                      "obj_key":"a cactus", "obj_desc":"An ordinary green cactus with little spines."}
+    "magic missile": {
+        "spellfunc": spell_attack,
+        "target": "otherchar",
+        "cost": 3,
+        "noncombat_spell": False,
+        "max_targets": 3,
+        "attack_name": ("A bolt", "bolts"),
+        "damage_range": (4, 7),
+        "accuracy": 999,
+        "attack_count": 3,
+    },
+    "flame shot": {
+        "spellfunc": spell_attack,
+        "target": "otherchar",
+        "cost": 3,
+        "noncombat_spell": False,
+        "attack_name": ("A jet of flame", "jets of flame"),
+        "damage_range": (25, 35),
+    },
+    "cure wounds": {"spellfunc": spell_healing, "target": "anychar", "cost": 5},
+    "mass cure wounds": {
+        "spellfunc": spell_healing,
+        "target": "anychar",
+        "cost": 10,
+        "max_targets": 5,
+    },
+    "full heal": {
+        "spellfunc": spell_healing,
+        "target": "anychar",
+        "cost": 12,
+        "healing_range": (100, 100),
+    },
+    "cactus conjuration": {
+        "spellfunc": spell_conjure,
+        "target": "none",
+        "cost": 2,
+        "combat_spell": False,
+        "obj_key": "a cactus",
+        "obj_desc": "An ordinary green cactus with little spines.",
+    },
 }
-

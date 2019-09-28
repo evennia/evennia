@@ -115,7 +115,9 @@ _HELP_CODE = """
  :<    - Decrease the level of automatic indentation for the next lines
  :>    - Increase the level of automatic indentation for the next lines
  :=    - Switch automatic indentation on/off
-""".lstrip("\n")
+""".lstrip(
+    "\n"
+)
 
 _ERROR_LOADFUNC = """
 {error}
@@ -148,10 +150,11 @@ to non-persistent mode (which means the editor session won't survive
 an eventual server reload - so save often!)|n
 """
 
-_TRACE_PERSISTENT_SAVING = \
-    "EvEditor persistent-mode error. Commonly, this is because one or " \
-    "more of the EvEditor callbacks could not be pickled, for example " \
+_TRACE_PERSISTENT_SAVING = (
+    "EvEditor persistent-mode error. Commonly, this is because one or "
+    "more of the EvEditor callbacks could not be pickled, for example "
     "because it's a class method or is defined inside another function."
+)
 
 
 _MSG_NO_UNDO = "Nothing to undo."
@@ -172,6 +175,7 @@ class CmdSaveYesNo(Command):
     nomatches (defaults to Yes), and avoid saves only if
     command was given specifically as "no" or "n".
     """
+
     key = _CMD_NOMATCH
     aliases = _CMD_NOINPUT
     locks = "cmd:all()"
@@ -194,6 +198,7 @@ class CmdSaveYesNo(Command):
 
 class SaveYesNoCmdSet(CmdSet):
     """Stores the yesno question"""
+
     key = "quitsave_yesno"
     priority = 1
     mergetype = "Replace"
@@ -209,10 +214,12 @@ class SaveYesNoCmdSet(CmdSet):
 #
 # -------------------------------------------------------------
 
+
 class CmdEditorBase(Command):
     """
     Base parent for editor commands
     """
+
     locks = "cmd:all()"
     help_entry = "LineEditor"
 
@@ -273,8 +280,8 @@ class CmdEditorBase(Command):
 
         lstart, lend = cline, cline + 1
         linerange = False
-        if arglist and arglist[0].count(':') == 1:
-            part1, part2 = arglist[0].split(':')
+        if arglist and arglist[0].count(":") == 1:
+            part1, part2 = arglist[0].split(":")
             if part1 and part1.isdigit():
                 lstart = min(max(0, int(part1)) - 1, nlines)
                 linerange = True
@@ -289,7 +296,11 @@ class CmdEditorBase(Command):
             arglist = arglist[1:]
 
         # nicer output formatting of the line range.
-        lstr = "line %i" % (lstart + 1) if not linerange or lstart + 1 == lend else "lines %i-%i" % (lstart + 1, lend)
+        lstr = (
+            "line %i" % (lstart + 1)
+            if not linerange or lstart + 1 == lend
+            else "lines %i-%i" % (lstart + 1, lend)
+        )
 
         # arg1 and arg2 is whatever arguments. Line numbers or -ranges are
         # never included here.
@@ -345,6 +356,7 @@ class CmdLineInput(CmdEditorBase):
     """
     No command match - Inputs line of text into buffer.
     """
+
     key = _CMD_NOMATCH
     aliases = _CMD_NOINPUT
 
@@ -368,15 +380,14 @@ class CmdLineInput(CmdEditorBase):
         self.editor.update_buffer(buf)
         if self.editor._echo_mode:
             # need to do it here or we will be off one line
-            cline = len(self.editor.get_buffer().split('\n'))
+            cline = len(self.editor.get_buffer().split("\n"))
             if editor._codefunc:
                 # display the current level of identation
                 indent = editor._indent
                 if indent < 0:
                     indent = "off"
 
-                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (
-                    cline, indent, raw(line)))
+                self.caller.msg("|b%02i|||n (|g%s|n) %s" % (cline, indent, raw(line)))
             else:
                 self.caller.msg("|b%02i|||n %s" % (cline, raw(self.args)))
 
@@ -385,11 +396,42 @@ class CmdEditorGroup(CmdEditorBase):
     """
     Commands for the editor
     """
+
     key = ":editor_command_group"
-    aliases = [":", "::", ":::", ":h", ":w", ":wq", ":q", ":q!", ":u", ":uu", ":UU",
-               ":dd", ":dw", ":DD", ":y", ":x", ":p", ":i", ":j",
-               ":r", ":I", ":A", ":s", ":S", ":f", ":fi", ":fd", ":echo",
-               ":!", ":<", ":>", ":="]
+    aliases = [
+        ":",
+        "::",
+        ":::",
+        ":h",
+        ":w",
+        ":wq",
+        ":q",
+        ":q!",
+        ":u",
+        ":uu",
+        ":UU",
+        ":dd",
+        ":dw",
+        ":DD",
+        ":y",
+        ":x",
+        ":p",
+        ":i",
+        ":j",
+        ":r",
+        ":I",
+        ":A",
+        ":s",
+        ":S",
+        ":f",
+        ":fi",
+        ":fd",
+        ":echo",
+        ":!",
+        ":<",
+        ":>",
+        ":=",
+    ]
     arg_regex = r"\s.*?|$"
 
     def func(self):
@@ -417,9 +459,7 @@ class CmdEditorGroup(CmdEditorBase):
             # Echo buffer without the line numbers and syntax parsing
             if self.linerange:
                 buf = linebuffer[lstart:lend]
-                editor.display_buffer(buf=buf,
-                                      offset=lstart,
-                                      linenums=False, options={"raw": True})
+                editor.display_buffer(buf=buf, offset=lstart, linenums=False, options={"raw": True})
             else:
                 editor.display_buffer(linenums=False, options={"raw": True})
         elif cmd == ":::":
@@ -475,7 +515,7 @@ class CmdEditorGroup(CmdEditorBase):
                 else:
                     caller.msg("Removed %s for %s." % (self.arg1, self.lstr))
                 sarea = "\n".join(linebuffer[lstart:lend])
-                sarea = re.sub(r"%s" % self.arg1.strip("\'").strip('\"'), "", sarea, re.MULTILINE)
+                sarea = re.sub(r"%s" % self.arg1.strip("'").strip('"'), "", sarea, re.MULTILINE)
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
                 editor.update_buffer(buf)
         elif cmd == ":DD":
@@ -511,7 +551,7 @@ class CmdEditorGroup(CmdEditorBase):
                 caller.msg("Pasted buffer %s to %s." % (editor._copy_buffer, self.lstr))
         elif cmd == ":i":
             # :i <l> <txt> - insert new line
-            new_lines = self.args.split('\n')
+            new_lines = self.args.split("\n")
             if not new_lines:
                 caller.msg("You need to enter a new line and where to insert it.")
             else:
@@ -520,7 +560,7 @@ class CmdEditorGroup(CmdEditorBase):
                 caller.msg("Inserted %i new line(s) at %s." % (len(new_lines), self.lstr))
         elif cmd == ":r":
             # :r <l> <txt> - replace lines
-            new_lines = self.args.split('\n')
+            new_lines = self.args.split("\n")
             if not new_lines:
                 caller.msg("You need to enter a replacement string.")
             else:
@@ -532,8 +572,11 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.raw_string and not editor._codefunc:
                 caller.msg("You need to enter text to insert.")
             else:
-                buf = linebuffer[:lstart] + ["%s%s" % (self.args, line)
-                                             for line in linebuffer[lstart:lend]] + linebuffer[lend:]
+                buf = (
+                    linebuffer[:lstart]
+                    + ["%s%s" % (self.args, line) for line in linebuffer[lstart:lend]]
+                    + linebuffer[lend:]
+                )
                 editor.update_buffer(buf)
                 caller.msg("Inserted text at beginning of %s." % self.lstr)
         elif cmd == ":A":
@@ -541,8 +584,11 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.args:
                 caller.msg("You need to enter text to append.")
             else:
-                buf = linebuffer[:lstart] + ["%s%s" % (line, self.args)
-                                             for line in linebuffer[lstart:lend]] + linebuffer[lend:]
+                buf = (
+                    linebuffer[:lstart]
+                    + ["%s%s" % (line, self.args) for line in linebuffer[lstart:lend]]
+                    + linebuffer[lend:]
+                )
                 editor.update_buffer(buf)
                 caller.msg("Appended text to end of %s." % self.lstr)
         elif cmd == ":s":
@@ -554,17 +600,26 @@ class CmdEditorGroup(CmdEditorBase):
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    caller.msg("Search-replaced %s -> %s for lines %i-%i." % (self.arg1, self.arg2, lstart + 1, lend))
+                    caller.msg(
+                        "Search-replaced %s -> %s for lines %i-%i."
+                        % (self.arg1, self.arg2, lstart + 1, lend)
+                    )
                 else:
-                    caller.msg("Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr))
+                    caller.msg(
+                        "Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr)
+                    )
                 sarea = "\n".join(linebuffer[lstart:lend])
 
                 regex = r"%s|^%s(?=\s)|(?<=\s)%s(?=\s)|^%s$|(?<=\s)%s$"
-                regarg = self.arg1.strip("\'").strip('\"')
+                regarg = self.arg1.strip("'").strip('"')
                 if " " in regarg:
                     regarg = regarg.replace(" ", " +")
-                sarea = re.sub(regex % (regarg, regarg, regarg, regarg, regarg), self.arg2.strip("\'").strip('\"'),
-                               sarea, re.MULTILINE)
+                sarea = re.sub(
+                    regex % (regarg, regarg, regarg, regarg, regarg),
+                    self.arg2.strip("'").strip('"'),
+                    sarea,
+                    re.MULTILINE,
+                )
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
                 editor.update_buffer(buf)
         elif cmd == ":f":
@@ -583,14 +638,24 @@ class CmdEditorGroup(CmdEditorBase):
         elif cmd == ":j":
             # :f <l> <w>  justify buffer of <l> with <w> as align (one of
             # f(ull), c(enter), r(ight) or l(left). Default is full.
-            align_map = {"full": "f", "f": "f", "center": "c", "c": "c",
-                         "right": "r", "r": "r", "left": "l", "l": "l"}
+            align_map = {
+                "full": "f",
+                "f": "f",
+                "center": "c",
+                "c": "c",
+                "right": "r",
+                "r": "r",
+                "left": "l",
+                "l": "l",
+            }
             align_name = {"f": "Full", "c": "Center", "l": "Left", "r": "Right"}
             width = _DEFAULT_WIDTH
             if self.arg1 and self.arg1.lower() not in align_map:
-                self.caller.msg("Valid justifications are [f]ull (default), [c]enter, [r]right or [l]eft")
+                self.caller.msg(
+                    "Valid justifications are [f]ull (default), [c]enter, [r]right or [l]eft"
+                )
                 return
-            align = align_map[self.arg1.lower()] if self.arg1 else 'f'
+            align = align_map[self.arg1.lower()] if self.arg1 else "f"
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
@@ -640,8 +705,7 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.decrease_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg("Decreased indentation: new indentation is {}.".format(
-                        indent))
+                    caller.msg("Decreased indentation: new indentation is {}.".format(indent))
                 else:
                     caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
             else:
@@ -652,8 +716,7 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.increase_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg("Increased indentation: new indentation is {}.".format(
-                        indent))
+                    caller.msg("Increased indentation: new indentation is {}.".format(indent))
                 else:
                     caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
             else:
@@ -673,12 +736,14 @@ class CmdEditorGroup(CmdEditorBase):
 
 class EvEditorCmdSet(CmdSet):
     """CmdSet for the editor commands"""
+
     key = "editorcmdset"
     mergetype = "Replace"
 
     def at_cmdset_creation(self):
         self.add(CmdLineInput())
         self.add(CmdEditorGroup())
+
 
 # -------------------------------------------------------------
 #
@@ -695,8 +760,16 @@ class EvEditor(object):
 
     """
 
-    def __init__(self, caller, loadfunc=None, savefunc=None,
-                 quitfunc=None, key="", persistent=False, codefunc=False):
+    def __init__(
+        self,
+        caller,
+        loadfunc=None,
+        savefunc=None,
+        quitfunc=None,
+        key="",
+        persistent=False,
+        codefunc=False,
+    ):
         """
         Launches a full in-game line editor, mimicking the functionality of VIM.
 
@@ -771,10 +844,20 @@ class EvEditor(object):
         if persistent:
             # save in tuple {kwargs, other options}
             try:
-                caller.attributes.add("_eveditor_saved", (
-                    dict(loadfunc=loadfunc, savefunc=savefunc, quitfunc=quitfunc,
-                         codefunc=codefunc, key=key, persistent=persistent),
-                    dict(_pristine_buffer=self._pristine_buffer, _sep=self._sep)))
+                caller.attributes.add(
+                    "_eveditor_saved",
+                    (
+                        dict(
+                            loadfunc=loadfunc,
+                            savefunc=savefunc,
+                            quitfunc=quitfunc,
+                            codefunc=codefunc,
+                            key=key,
+                            persistent=persistent,
+                        ),
+                        dict(_pristine_buffer=self._pristine_buffer, _sep=self._sep),
+                    ),
+                )
                 caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
                 caller.attributes.add("_eveditor_unsaved", False)
                 caller.attributes.add("_eveditor_indent", 0)
@@ -803,6 +886,7 @@ class EvEditor(object):
                 self._caller.msg("|rNote: input buffer was converted to a string.|n")
         except Exception as e:
             from evennia.utils import logger
+
             logger.log_trace()
             self._caller.msg(_ERROR_LOADFUNC.format(error=e))
 
@@ -831,7 +915,9 @@ class EvEditor(object):
             self.update_undo()
             self._unsaved = True
             if self._persistent:
-                self._caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
+                self._caller.attributes.add(
+                    "_eveditor_buffer_temp", (self._buffer, self._undo_buffer)
+                )
                 self._caller.attributes.add("_eveditor_unsaved", True)
                 self._caller.attributes.add("_eveditor_indent", self._indent)
 
@@ -894,12 +980,16 @@ class EvEditor(object):
             if self._undo_pos >= len(self._undo_buffer) - 1 or self._undo_pos + 1 >= self._undo_max:
                 self._caller.msg(_MSG_NO_REDO)
             else:
-                self._undo_pos = min(self._undo_pos + step, min(len(self._undo_buffer), self._undo_max) - 1)
+                self._undo_pos = min(
+                    self._undo_pos + step, min(len(self._undo_buffer), self._undo_max) - 1
+                )
                 self._buffer = self._undo_buffer[self._undo_pos]
                 self._caller.msg(_MSG_REDO)
-        if not self._undo_buffer or (self._undo_buffer and self._buffer != self._undo_buffer[self._undo_pos]):
+        if not self._undo_buffer or (
+            self._undo_buffer and self._buffer != self._undo_buffer[self._undo_pos]
+        ):
             # save undo state
-            self._undo_buffer = self._undo_buffer[:self._undo_pos + 1] + [self._buffer]
+            self._undo_buffer = self._undo_buffer[: self._undo_pos + 1] + [self._buffer]
             self._undo_pos = len(self._undo_buffer) - 1
 
     def display_buffer(self, buf=None, offset=0, linenums=True, options={"raw": False}):
@@ -921,17 +1011,31 @@ class EvEditor(object):
         if is_iter(buf):
             buf = "\n".join(buf)
 
-        lines = buf.split('\n')
+        lines = buf.split("\n")
         nlines = len(lines)
         nwords = len(buf.split())
         nchars = len(buf)
 
         sep = self._sep
-        header = "|n" + sep * 10 + "Line Editor [%s]" % self._key + sep * (_DEFAULT_WIDTH - 24 - len(self._key))
-        footer = "|n" + sep * 10 +\
-                 "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars) + sep * 12 + "(:h for help)" + sep * (_DEFAULT_WIDTH - 54)
+        header = (
+            "|n"
+            + sep * 10
+            + "Line Editor [%s]" % self._key
+            + sep * (_DEFAULT_WIDTH - 24 - len(self._key))
+        )
+        footer = (
+            "|n"
+            + sep * 10
+            + "[l:%02i w:%03i c:%04i]" % (nlines, nwords, nchars)
+            + sep * 12
+            + "(:h for help)"
+            + sep * (_DEFAULT_WIDTH - 54)
+        )
         if linenums:
-            main = "\n".join("|b%02i|||n %s" % (iline + 1 + offset, raw(line)) for iline, line in enumerate(lines))
+            main = "\n".join(
+                "|b%02i|||n %s" % (iline + 1 + offset, raw(line))
+                for iline, line in enumerate(lines)
+            )
         else:
             main = "\n".join([raw(line) for line in lines])
         string = "%s\n%s\n%s" % (header, main, footer)

@@ -58,4 +58,5 @@ class Channel(DefaultChannel):
         post_send_message(msg) - called just after message was sent to channel
 
     """
+
     pass

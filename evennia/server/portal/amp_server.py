@@ -14,7 +14,7 @@ from evennia.utils import logger
 
 
 def _is_windows():
-    return os.name == 'nt'
+    return os.name == "nt"
 
 
 def getenv():
@@ -27,7 +27,7 @@ def getenv():
     """
     sep = ";" if _is_windows() else ":"
     env = os.environ.copy()
-    env['PYTHONPATH'] = sep.join(sys.path)
+    env["PYTHONPATH"] = sep.join(sys.path)
     return env
 
 
@@ -38,6 +38,7 @@ class AMPServerFactory(protocol.ServerFactory):
     'Server' process.
 
     """
+
     noisy = False
 
     def logPrefix(self):
@@ -83,6 +84,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
     Protocol subclass for the AMP-server run by the Portal.
 
     """
+
     def connectionLost(self, reason):
         """
         Set up a simple callback mechanism to let the amp-server wait for a connection to close.
@@ -112,8 +114,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 (portal_live, server_live, portal_PID, server_PID).
 
         """
-        server_connected = bool(self.factory.server_connection and
-                                self.factory.server_connection.transport.connected)
+        server_connected = bool(
+            self.factory.server_connection and self.factory.server_connection.transport.connected
+        )
         portal_info_dict = self.factory.portal.get_info_dict()
         server_info_dict = self.factory.portal.server_info_dict
         server_pid = self.factory.portal.server_process_id
@@ -140,8 +143,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         # print("portal data_to_server: {}, {}, {}".format(command, sessid, kwargs))
         if self.factory.server_connection:
             return self.factory.server_connection.callRemote(
-                        command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
-                            self.errback, command.key)
+                command, packed_data=amp.dumps((sessid, kwargs))
+            ).addErrback(self.errback, command.key)
         else:
             # if no server connection is available, broadcast
             return self.broadcast(command, sessid, packed_data=amp.dumps((sessid, kwargs)))
@@ -158,7 +161,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         # start the Server
         print("Portal starting server ... {}".format(server_twistd_cmd))
         process = None
-        with open(settings.SERVER_LOG_FILE, 'a') as logfile:
+        with open(settings.SERVER_LOG_FILE, "a") as logfile:
             # we link stdout to a file in order to catch
             # eventual errors happening before the Server has
             # opened its logger.
@@ -166,13 +169,19 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
                 if _is_windows():
                     # Windows requires special care
                     create_no_window = 0x08000000
-                    process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
-                                    stdout=logfile, stderr=STDOUT,
-                                    creationflags=create_no_window)
+                    process = Popen(
+                        server_twistd_cmd,
+                        env=getenv(),
+                        bufsize=-1,
+                        stdout=logfile,
+                        stderr=STDOUT,
+                        creationflags=create_no_window,
+                    )
 
                 else:
-                    process = Popen(server_twistd_cmd, env=getenv(), bufsize=-1,
-                                    stdout=logfile, stderr=STDOUT)
+                    process = Popen(
+                        server_twistd_cmd, env=getenv(), bufsize=-1, stdout=logfile, stderr=STDOUT
+                    )
             except Exception:
                 logger.log_trace()
 
@@ -205,7 +214,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         """
         self.factory.server_connect_callbacks.append((callback, args, kwargs))
 
-    def stop_server(self, mode='shutdown'):
+    def stop_server(self, mode="shutdown"):
         """
         Shut down server in one or more modes.
 
@@ -213,11 +222,11 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             mode (str): One of 'shutdown', 'reload' or 'reset'.
 
         """
-        if mode == 'reload':
+        if mode == "reload":
             self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SRELOAD)
-        elif mode == 'reset':
+        elif mode == "reset":
             self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SRESET)
-        elif mode == 'shutdown':
+        elif mode == "shutdown":
             self.send_AdminPortal2Server(amp.DUMMYSESSION, operation=amp.SSHUTD)
         self.factory.portal.server_restart_mode = mode
 
@@ -232,9 +241,8 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         # print("self.get_status(): {}".format(self.get_status()))
         if self.factory.launcher_connection:
             self.factory.launcher_connection.callRemote(
-                    amp.MsgStatus,
-                    status=amp.dumps(self.get_status())).addErrback(
-                            self.errback, amp.MsgStatus.key)
+                amp.MsgStatus, status=amp.dumps(self.get_status())
+            ).addErrback(self.errback, amp.MsgStatus.key)
 
     def send_MsgPortal2Server(self, session, **kwargs):
         """
@@ -262,8 +270,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             data (str or dict, optional): Data used in the administrative operation.
 
         """
-        return self.data_to_server(amp.AdminPortal2Server, session.sessid,
-                                   operation=operation, **kwargs)
+        return self.data_to_server(
+            amp.AdminPortal2Server, session.sessid, operation=operation, **kwargs
+        )
 
     # receive amp data
 
@@ -303,7 +312,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # Since the launcher command uses amp.String() we need to convert from byte here.
-        operation = str(operation, 'utf-8')
+        operation = str(operation, "utf-8")
         self.factory.launcher_connection = self
         _, server_connected, _, _, _, _ = self.get_status()
 
@@ -311,7 +320,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         # logger.log_msg("operation == amp.SSTART: {}: {}".format(operation == amp.SSTART, amp.loads(arguments)))
 
-        if operation == amp.SSTART:   # portal start  #15
+        if operation == amp.SSTART:  # portal start  #15
             # first, check if server is already running
             if not server_connected:
                 self.wait_for_server_connect(self.send_Status2Launcher)
@@ -320,38 +329,34 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         elif operation == amp.SRELOAD:  # reload server #14
             if server_connected:
                 # We let the launcher restart us once they get the signal
-                self.factory.server_connection.wait_for_disconnect(
-                    self.send_Status2Launcher)
-                self.stop_server(mode='reload')
+                self.factory.server_connection.wait_for_disconnect(self.send_Status2Launcher)
+                self.stop_server(mode="reload")
             else:
                 self.wait_for_server_connect(self.send_Status2Launcher)
                 self.start_server(amp.loads(arguments))
 
         elif operation == amp.SRESET:  # reload server #19
             if server_connected:
-                self.factory.server_connection.wait_for_disconnect(
-                    self.send_Status2Launcher)
-                self.stop_server(mode='reset')
+                self.factory.server_connection.wait_for_disconnect(self.send_Status2Launcher)
+                self.stop_server(mode="reset")
             else:
                 self.wait_for_server_connect(self.send_Status2Launcher)
                 self.start_server(amp.loads(arguments))
 
         elif operation == amp.SSHUTD:  # server-only shutdown #17
             if server_connected:
-                self.factory.server_connection.wait_for_disconnect(
-                    self.send_Status2Launcher)
-                self.stop_server(mode='shutdown')
+                self.factory.server_connection.wait_for_disconnect(self.send_Status2Launcher)
+                self.stop_server(mode="shutdown")
 
         elif operation == amp.PSHUTD:  # portal + server shutdown  #16
             if server_connected:
-                self.factory.server_connection.wait_for_disconnect(
-                    self.factory.portal.shutdown )
+                self.factory.server_connection.wait_for_disconnect(self.factory.portal.shutdown)
             else:
                 self.factory.portal.shutdown()
 
         else:
             logger.log_err("Operation {} not recognized".format(operation))
-            raise Exception("operation %(op)s not recognized." % {'op': operation})
+            raise Exception("operation %(op)s not recognized." % {"op": operation})
 
         return {}
 
@@ -413,22 +418,23 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             portal_sessionhandler.server_disconnect_all(reason=kwargs.get("reason"))
 
         elif operation == amp.SRELOAD:  # server reload
-                self.factory.server_connection.wait_for_disconnect(
-                    self.start_server, self.factory.portal.server_twistd_cmd)
-                self.stop_server(mode='reload')
+            self.factory.server_connection.wait_for_disconnect(
+                self.start_server, self.factory.portal.server_twistd_cmd
+            )
+            self.stop_server(mode="reload")
 
         elif operation == amp.SRESET:  # server reset
-                self.factory.server_connection.wait_for_disconnect(
-                    self.start_server, self.factory.portal.server_twistd_cmd)
-                self.stop_server(mode='reset')
+            self.factory.server_connection.wait_for_disconnect(
+                self.start_server, self.factory.portal.server_twistd_cmd
+            )
+            self.stop_server(mode="reset")
 
         elif operation == amp.SSHUTD:  # server-only shutdown
-            self.stop_server(mode='shutdown')
+            self.stop_server(mode="shutdown")
 
         elif operation == amp.PSHUTD:  # full server+server shutdown
-            self.factory.server_connection.wait_for_disconnect(
-                self.factory.portal.shutdown)
-            self.stop_server(mode='shutdown')
+            self.factory.server_connection.wait_for_disconnect(self.factory.portal.shutdown)
+            self.stop_server(mode="shutdown")
 
         elif operation == amp.PSYNC:  # portal sync
             # Server has (re-)connected and wants the session data from portal
@@ -438,11 +444,13 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             server_restart_mode = self.factory.portal.server_restart_mode
 
             sessdata = self.factory.portal.sessions.get_all_sync_data()
-            self.send_AdminPortal2Server(amp.DUMMYSESSION,
-                                         amp.PSYNC,
-                                         server_restart_mode=server_restart_mode,
-                                         sessiondata=sessdata,
-                                         portal_start_time=self.factory.portal.start_time)
+            self.send_AdminPortal2Server(
+                amp.DUMMYSESSION,
+                amp.PSYNC,
+                server_restart_mode=server_restart_mode,
+                sessiondata=sessdata,
+                portal_start_time=self.factory.portal.start_time,
+            )
             self.factory.portal.sessions.at_server_connection()
 
             if self.factory.server_connection:
@@ -458,8 +466,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         elif operation == amp.SSYNC:  # server_session_sync
             # server wants to save session data to the portal,
             # maybe because it's about to shut down.
-            portal_sessionhandler.server_session_sync(kwargs.get("sessiondata"),
-                                                      kwargs.get("clean", True))
+            portal_sessionhandler.server_session_sync(
+                kwargs.get("sessiondata"), kwargs.get("clean", True)
+            )
 
             # set a flag in case we are about to shut down soon
             self.factory.server_restart_mode = True
@@ -468,5 +477,5 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             portal_sessionhandler.server_connect(**kwargs)
 
         else:
-            raise Exception("operation %(op)s not recognized." % {'op': operation})
+            raise Exception("operation %(op)s not recognized." % {"op": operation})
         return {}
