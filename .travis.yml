@@ -34,6 +34,7 @@ install:
   - pip install -e .
 
 before_script:
+  - make format
   - evennia --init testing_mygame
   - cp .travis/${TESTING_DB}_settings.py testing_mygame/server/conf/settings.py
   - cd testing_mygame
@@ -41,7 +42,6 @@ before_script:
   - evennia collectstatic --noinput
 
 script:
-  - make format
   - coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
 
 after_success:
