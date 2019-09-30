@@ -53,7 +53,8 @@ __all__ = (
 
 # used by set
 from ast import literal_eval as _LITERAL_EVAL
-LIST_APPEND_CHAR = '+'
+
+LIST_APPEND_CHAR = "+"
 
 # used by find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
@@ -1594,8 +1595,8 @@ class CmdSetAttribute(ObjManipCommand):
     by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
     or |c{ |n.
 
-    Once you have stored a Python primative as noted above, you can include
-    |c[<key>]|n in <attr> to reference nested values.
+    Once you have stored a Python primitive as noted above, you can include
+    |c[<key>]|n in <attr> to reference nested values in e.g. a list or dict. 
 
     Remember that if you use Python primitives like this, you must
     write proper Python syntax too - notably you must include quotes
@@ -1606,7 +1607,7 @@ class CmdSetAttribute(ObjManipCommand):
     key = "set"
     locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
-    nested_re = re.compile(r'\[.*?\]')
+    nested_re = re.compile(r"\[.*?\]")
     not_found = object()
 
     def check_obj(self, obj):
@@ -1645,10 +1646,10 @@ class CmdSetAttribute(ObjManipCommand):
             ("nested['asdf'][0]", []),
         ]
         """
-        quotes = '"\''
+        quotes = "\"'"
 
         def clean_key(val):
-            val = val.strip('[]')
+            val = val.strip("[]")
             if val[0] in quotes:
                 return val.strip(quotes)
             if val[0] == LIST_APPEND_CHAR:
@@ -1661,9 +1662,9 @@ class CmdSetAttribute(ObjManipCommand):
 
         parts = self.nested_re.findall(attr)
 
-        base_attr = ''
+        base_attr = ""
         if parts:
-            base_attr = attr[:attr.find(parts[0])]
+            base_attr = attr[: attr.find(parts[0])]
         for index, part in enumerate(parts):
             yield (base_attr, [clean_key(p) for p in parts[index:]])
             base_attr += part
@@ -1692,7 +1693,7 @@ class CmdSetAttribute(ObjManipCommand):
                     return "\nAttribute %s/%s = %s" % (obj.name, attr, val)
         error = "\n%s has no attribute '%s'." % (obj.name, attr)
         if nested:
-            error += ' (Nested lookups attempted)'
+            error += " (Nested lookups attempted)"
         return error
 
     def rm_attr(self, obj, attr):
@@ -1719,7 +1720,7 @@ class CmdSetAttribute(ObjManipCommand):
                     return "\nDeleted attribute '%s' (= %s) from %s." % (attr, exists, obj.name)
         error = "\n%s has no attribute '%s'." % (obj.name, attr)
         if nested:
-            error += ' (Nested lookups attempted)'
+            error += " (Nested lookups attempted)"
         return error
 
     def set_attr(self, obj, attr, value):
