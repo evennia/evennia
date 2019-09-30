@@ -1570,7 +1570,7 @@ class CmdSetAttribute(ObjManipCommand):
       set <obj>/<attr> = <value>
       set <obj>/<attr> =
       set <obj>/<attr>
-      set *<account>/attr = <value>
+      set *<account>/<attr> = <value>
 
     Switch:
         edit: Open the line editor (string values only)
@@ -1585,7 +1585,7 @@ class CmdSetAttribute(ObjManipCommand):
     Sets attributes on objects. The second example form above clears a
     previously set attribute while the third form inspects the current value of
     the attribute (if any). The last one (with the star) is a shortcut for
-    operatin on a player Account rather than an Object.
+    operating on a player Account rather than an Object.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,
@@ -1593,8 +1593,10 @@ class CmdSetAttribute(ObjManipCommand):
     the functionality of certain custom objects).  This is indicated
     by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
     or |c{ |n.
-    Note that you should leave a space after starting a dictionary ('{ ')
-    so as to not confuse the dictionary start with a colour code like \{g.
+
+    Once you have stored a Python primative as noted above, you can include
+    |c[<key>]|n in <attr> to reference nested values.
+
     Remember that if you use Python primitives like this, you must
     write proper Python syntax too - notably you must include quotes
     around your strings or you will get an error.
@@ -1680,20 +1682,26 @@ class CmdSetAttribute(ObjManipCommand):
         """
         Look up the value of an attribute and return a string displaying it.
         """
+        nested = False
         for key, nested_keys in self.split_nested_attr(attr):
+            nested = True
             if obj.attributes.has(key):
                 val = obj.attributes.get(key)
                 val = self.do_nested_lookup(val, *nested_keys)
                 if val is not self.not_found:
                     return "\nAttribute %s/%s = %s" % (obj.name, attr, val)
-        else:
-            return "\n%s has no attribute '%s'." % (obj.name, attr)
+        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+        if nested:
+            error += ' (Nested lookups attempted)'
+        return error
 
     def rm_attr(self, obj, attr):
         """
         Remove an attribute from the object, or a nested data structure, and report back.
         """
+        nested = False
         for key, nested_keys in self.split_nested_attr(attr):
+            nested = True
             if obj.attributes.has(key):
                 if nested_keys:
                     del_key = nested_keys[-1]
@@ -1709,7 +1717,10 @@ class CmdSetAttribute(ObjManipCommand):
                     exists = obj.attributes.has(key)
                     obj.attributes.remove(attr)
                     return "\nDeleted attribute '%s' (= %s) from %s." % (attr, exists, obj.name)
-        return "\n%s has no attribute '%s'." % (obj.name, attr)
+        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+        if nested:
+            error += ' (Nested lookups attempted)'
+        return error
 
     def set_attr(self, obj, attr, value):
         done = False
@@ -1720,9 +1731,9 @@ class CmdSetAttribute(ObjManipCommand):
                 deep = self.do_nested_lookup(lookup_value, *nested_keys[:-1])
                 if deep is not self.not_found:
                     # To support appending and inserting to lists
-                    # a key that starts with @ will insert a new item at that
+                    # a key that starts with LIST_APPEND_CHAR will insert a new item at that
                     # location, and move the other elements down.
-                    # Just '@' will append to the list
+                    # Using LIST_APPEND_CHAR alone will append to the list
                     if isinstance(acc_key, str) and acc_key[0] == LIST_APPEND_CHAR:
                         try:
                             if len(acc_key) > 1:
@@ -1730,7 +1741,7 @@ class CmdSetAttribute(ObjManipCommand):
                                 deep.insert(where, value)
                             else:
                                 deep.append(value)
-                        except AttributeError:
+                        except (ValueError, AttributeError):
                             pass
                         else:
                             value = lookup_value

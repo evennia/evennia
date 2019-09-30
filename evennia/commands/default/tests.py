@@ -545,40 +545,65 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 99")
         # list delete
         self.call(building.CmdSetAttribute(),
-                  "Obj/test1[0] =", "Deleted attribute 'test1[0]' (= nested) from Obj.")
+                  "Obj/test1[0] =",
+                  "Deleted attribute 'test1[0]' (= nested) from Obj.")
         self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 2")
-        self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Obj has no attribute 'test1[1]'.")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test1[1]",
+                  "Obj has no attribute 'test1[1]'. (Nested lookups attempted)")
         # Delete non-existent
         self.call(building.CmdSetAttribute(),
-                  "Obj/test1[5] =", "Obj has no attribute 'test1[5]'.")
+                  "Obj/test1[5] =",
+                  "Obj has no attribute 'test1[5]'. (Nested lookups attempted)")
         # Append
         self.call(building.CmdSetAttribute(),
-                  "Obj/test1[+] = 42", "Modified attribute Obj/test1 = [2, 42]")
+                  "Obj/test1[+] = 42",
+                  "Modified attribute Obj/test1 = [2, 42]")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test1[+0] = -1", "Modified attribute Obj/test1 = [-1, 2, 42]")
+                  "Obj/test1[+0] = -1",
+                  "Modified attribute Obj/test1 = [-1, 2, 42]")
 
         # dict - removing white space proves real parsing
         self.call(building.CmdSetAttribute(),
-                  "Obj/test2={ 'one': 1, 'two': 2 }", "Created attribute Obj/test2 = {'one': 1, 'two': 2}")
+                  "Obj/test2={ 'one': 1, 'two': 2 }",
+                  "Created attribute Obj/test2 = {'one': 1, 'two': 2}")
         self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1, 'two': 2}")
         self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 1")
         self.call(building.CmdSetAttribute(), "Obj/test2['one]", "Attribute Obj/test2['one] = 1")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test2['one']=99", "Modified attribute Obj/test2 = {'one': 99, 'two': 2}")
+                  "Obj/test2['one']=99",
+                  "Modified attribute Obj/test2 = {'one': 99, 'two': 2}")
         self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 99")
         self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Attribute Obj/test2['two'] = 2")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test2['three']=3", "Modified attribute Obj/test2 = {'one': 99, 'two': 2, 'three': 3}")
+                  "Obj/test2[+'three']",
+                  "Obj has no attribute 'test2[+'three']'. (Nested lookups attempted)")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2[+'three'] = 3",
+                  "Modified attribute Obj/test2 = {'one': 99, 'two': 2, \"+'three'\": 3}")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2[+'three'] =",
+                  "Deleted attribute 'test2[+'three']' (= nested) from Obj.")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2['three']=3",
+                  "Modified attribute Obj/test2 = {'one': 99, 'two': 2, 'three': 3}")
         # Dict delete
         self.call(building.CmdSetAttribute(),
-                  "Obj/test2['two'] =", "Deleted attribute 'test2['two']' (= nested) from Obj.")
-        self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Obj has no attribute 'test2['two']'.")
+                  "Obj/test2['two'] =",
+                  "Deleted attribute 'test2['two']' (= nested) from Obj.")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2['two']",
+                  "Obj has no attribute 'test2['two']'. (Nested lookups attempted)")
         self.call(building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 99, 'three': 3}")
-        self.call(building.CmdSetAttribute(), "Obj/test2[0]", "Obj has no attribute 'test2[0]'.")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test2['five'] =", "Obj has no attribute 'test2['five']'.")
+                  "Obj/test2[0]",
+                  "Obj has no attribute 'test2[0]'. (Nested lookups attempted)")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test2[+]=42", "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '+': 42}")
+                  "Obj/test2['five'] =",
+                  "Obj has no attribute 'test2['five']'. (Nested lookups attempted)")
+        self.call(building.CmdSetAttribute(),
+                  "Obj/test2[+]=42",
+                  "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '+': 42}")
         self.call(building.CmdSetAttribute(),
                   "Obj/test2[+1]=33",
                   "Modified attribute Obj/test2 = {'one': 99, 'three': 3, '+': 42, '+1': 33}")
@@ -586,31 +611,39 @@ class TestBuilding(CommandTest):
         # tuple
         self.call(building.CmdSetAttribute(), "Obj/tup = (1,2)", "Created attribute Obj/tup = (1, 2)")
         self.call(building.CmdSetAttribute(),
-                  "Obj/tup[1] = 99", "'tuple' object does not support item assignment - (1, 2)")
+                  "Obj/tup[1] = 99",
+                  "'tuple' object does not support item assignment - (1, 2)")
         self.call(building.CmdSetAttribute(),
-                  "Obj/tup[+] = 99", "'tuple' object does not support item assignment - (1, 2)")
+                  "Obj/tup[+] = 99",
+                  "'tuple' object does not support item assignment - (1, 2)")
         self.call(building.CmdSetAttribute(),
-                  "Obj/tup[+1] = 99", "'tuple' object does not support item assignment - (1, 2)")
+                  "Obj/tup[+1] = 99",
+                  "'tuple' object does not support item assignment - (1, 2)")
         self.call(building.CmdSetAttribute(),
                   # Special case for tuple, could have a better message
-                  "Obj/tup[1] = ", "Obj has no attribute 'tup[1]'.")
+                  "Obj/tup[1] = ",
+                  "Obj has no attribute 'tup[1]'. (Nested lookups attempted)")
 
         # Deaper nesting
         self.call(building.CmdSetAttribute(),
-                  "Obj/test3=[{'one': 1}]", "Created attribute Obj/test3 = [{'one': 1}]")
+                  "Obj/test3=[{'one': 1}]",
+                  "Created attribute Obj/test3 = [{'one': 1}]")
         self.call(building.CmdSetAttribute(), "Obj/test3[0]['one']", "Attribute Obj/test3[0]['one'] = 1")
         self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {'one': 1}")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test3[0]['one'] =", "Deleted attribute 'test3[0]['one']' (= nested) from Obj.")
+                  "Obj/test3[0]['one'] =",
+                  "Deleted attribute 'test3[0]['one']' (= nested) from Obj.")
         self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {}")
         self.call(building.CmdSetAttribute(), "Obj/test3", "Attribute Obj/test3 = [{}]")
 
         # Naughty keys
         self.call(building.CmdSetAttribute(),
-                  "Obj/test4[0]='foo'", "Created attribute Obj/test4[0] = 'foo'")
+                  "Obj/test4[0]='foo'",
+                  "Created attribute Obj/test4[0] = 'foo'")
         self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test4=[{'one': 1}]", "Created attribute Obj/test4 = [{'one': 1}]")
+                  "Obj/test4=[{'one': 1}]",
+                  "Created attribute Obj/test4 = [{'one': 1}]")
         self.call(building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1")
         # Prefer nested items
         self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = {'one': 1}")
@@ -619,7 +652,8 @@ class TestBuilding(CommandTest):
         self.call(building.CmdWipe(), "Obj/test4", "Wiped attributes test4 on Obj.")
         self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
         self.call(building.CmdSetAttribute(),
-                  "Obj/test4[0]['one']", "Obj has no attribute 'test4[0]['one']'.")
+                  "Obj/test4[0]['one']",
+                  "Obj has no attribute 'test4[0]['one']'.")
 
     def test_split_nested_attr(self):
         split_nested_attr = building.CmdSetAttribute().split_nested_attr
