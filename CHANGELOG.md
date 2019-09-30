@@ -30,6 +30,7 @@ without arguments starts a full interactive Python console.
 - Add Simplified Korean translation (user aceamro)
 - Show warning on `start -l` if settings contains values unsafe for production.
 - Make code auto-formatted with Black.
+- Make default `set` command able to edit nested structures (PR by Aaron McMillan)
 
 
 ## Evennia 0.9 (2018-2019)
