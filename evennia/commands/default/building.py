@@ -53,6 +53,7 @@ __all__ = (
 
 # used by set
 from ast import literal_eval as _LITERAL_EVAL
+LIST_APPEND_CHAR = '+'
 
 # used by find
 CHAR_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
@@ -1569,7 +1570,7 @@ class CmdSetAttribute(ObjManipCommand):
       set <obj>/<attr> = <value>
       set <obj>/<attr> =
       set <obj>/<attr>
-      set *<account>/attr = <value>
+      set *<account>/<attr> = <value>
 
     Switch:
         edit: Open the line editor (string values only)
@@ -1584,7 +1585,7 @@ class CmdSetAttribute(ObjManipCommand):
     Sets attributes on objects. The second example form above clears a
     previously set attribute while the third form inspects the current value of
     the attribute (if any). The last one (with the star) is a shortcut for
-    operatin on a player Account rather than an Object.
+    operating on a player Account rather than an Object.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,
@@ -1592,8 +1593,10 @@ class CmdSetAttribute(ObjManipCommand):
     the functionality of certain custom objects).  This is indicated
     by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
     or |c{ |n.
-    Note that you should leave a space after starting a dictionary ('{ ')
-    so as to not confuse the dictionary start with a colour code like \{g.
+
+    Once you have stored a Python primative as noted above, you can include
+    |c[<key>]|n in <attr> to reference nested values.
+
     Remember that if you use Python primitives like this, you must
     write proper Python syntax too - notably you must include quotes
     around your strings or you will get an error.
@@ -1603,6 +1606,8 @@ class CmdSetAttribute(ObjManipCommand):
     key = "set"
     locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
+    nested_re = re.compile(r'\[.*?\]')
+    not_found = object()
 
     def check_obj(self, obj):
         """
@@ -1627,30 +1632,139 @@ class CmdSetAttribute(ObjManipCommand):
         """
         return attr_name
 
+    def split_nested_attr(self, attr):
+        """
+        Yields tuples of (possible attr name, nested keys on that attr).
+        For performance, this is biased to the deepest match, but allows compatability
+        with older attrs that might have been named with `[]`'s.
+
+        > list(split_nested_attr("nested['asdf'][0]"))
+        [
+            ('nested', ['asdf', 0]),
+            ("nested['asdf']", [0]),
+            ("nested['asdf'][0]", []),
+        ]
+        """
+        quotes = '"\''
+
+        def clean_key(val):
+            val = val.strip('[]')
+            if val[0] in quotes:
+                return val.strip(quotes)
+            if val[0] == LIST_APPEND_CHAR:
+                # List insert/append syntax
+                return val
+            try:
+                return int(val)
+            except ValueError:
+                return val
+
+        parts = self.nested_re.findall(attr)
+
+        base_attr = ''
+        if parts:
+            base_attr = attr[:attr.find(parts[0])]
+        for index, part in enumerate(parts):
+            yield (base_attr, [clean_key(p) for p in parts[index:]])
+            base_attr += part
+        yield (attr, [])
+
+    def do_nested_lookup(self, value, *keys):
+        result = value
+        for key in keys:
+            try:
+                result = result.__getitem__(key)
+            except (IndexError, KeyError, TypeError):
+                return self.not_found
+        return result
+
     def view_attr(self, obj, attr):
         """
         Look up the value of an attribute and return a string displaying it.
         """
-        if obj.attributes.has(attr):
-            return "\nAttribute %s/%s = %s" % (obj.name, attr, obj.attributes.get(attr))
-        else:
-            return "\n%s has no attribute '%s'." % (obj.name, attr)
+        nested = False
+        for key, nested_keys in self.split_nested_attr(attr):
+            nested = True
+            if obj.attributes.has(key):
+                val = obj.attributes.get(key)
+                val = self.do_nested_lookup(val, *nested_keys)
+                if val is not self.not_found:
+                    return "\nAttribute %s/%s = %s" % (obj.name, attr, val)
+        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+        if nested:
+            error += ' (Nested lookups attempted)'
+        return error
 
     def rm_attr(self, obj, attr):
         """
-        Remove an attribute from the object, and report back.
+        Remove an attribute from the object, or a nested data structure, and report back.
         """
-        if obj.attributes.has(attr):
-            val = obj.attributes.has(attr)
-            obj.attributes.remove(attr)
-            return "\nDeleted attribute '%s' (= %s) from %s." % (attr, val, obj.name)
-        else:
-            return "\n%s has no attribute '%s'." % (obj.name, attr)
+        nested = False
+        for key, nested_keys in self.split_nested_attr(attr):
+            nested = True
+            if obj.attributes.has(key):
+                if nested_keys:
+                    del_key = nested_keys[-1]
+                    val = obj.attributes.get(key)
+                    deep = self.do_nested_lookup(val, *nested_keys[:-1])
+                    if deep is not self.not_found:
+                        try:
+                            del deep[del_key]
+                        except (IndexError, KeyError, TypeError):
+                            continue
+                    return "\nDeleted attribute '%s' (= nested) from %s." % (attr, obj.name)
+                else:
+                    exists = obj.attributes.has(key)
+                    obj.attributes.remove(attr)
+                    return "\nDeleted attribute '%s' (= %s) from %s." % (attr, exists, obj.name)
+        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+        if nested:
+            error += ' (Nested lookups attempted)'
+        return error
 
     def set_attr(self, obj, attr, value):
+        done = False
+        for key, nested_keys in self.split_nested_attr(attr):
+            if obj.attributes.has(key) and nested_keys:
+                acc_key = nested_keys[-1]
+                lookup_value = obj.attributes.get(key)
+                deep = self.do_nested_lookup(lookup_value, *nested_keys[:-1])
+                if deep is not self.not_found:
+                    # To support appending and inserting to lists
+                    # a key that starts with LIST_APPEND_CHAR will insert a new item at that
+                    # location, and move the other elements down.
+                    # Using LIST_APPEND_CHAR alone will append to the list
+                    if isinstance(acc_key, str) and acc_key[0] == LIST_APPEND_CHAR:
+                        try:
+                            if len(acc_key) > 1:
+                                where = int(acc_key[1:])
+                                deep.insert(where, value)
+                            else:
+                                deep.append(value)
+                        except (ValueError, AttributeError):
+                            pass
+                        else:
+                            value = lookup_value
+                            attr = key
+                            done = True
+                            break
+
+                    # List magic failed, just use like a key/index
+                    try:
+                        deep[acc_key] = value
+                    except TypeError as err:
+                        # Tuples can't be modified
+                        return "\n%s - %s" % (err, deep)
+
+                    value = lookup_value
+                    attr = key
+                    done = True
+                    break
+
+        verb = "Modified" if obj.attributes.has(attr) else "Created"
         try:
-            verb = "Modified" if obj.attributes.has(attr) else "Created"
-            obj.attributes.add(attr, value)
+            if not done:
+                obj.attributes.add(attr, value)
             return "\n%s attribute %s/%s = %s" % (verb, obj.name, attr, repr(value))
         except SyntaxError:
             # this means literal_eval tried to parse a faulty string
