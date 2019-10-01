@@ -2,24 +2,29 @@
 
 MSSP (Mud Server Status Protocol) meta information
 
-MUD website listings (that you have registered with) can use this
-information to keep up-to-date with your game stats as you change
-them. Also number of currently active players and uptime will
-automatically be reported. You don't have to fill in everything
-(and most are not used by all crawlers); leave the default
-if so needed. You need to @reload the game before updated
-information is made available to crawlers (reloading does not
-affect uptime).
+Modify this file to specify what MUD listing sites will report about your game.
+All fields are static. The number of currently active players and your game's
+current uptime will be added automatically by Evennia.
+
+You don't have to fill in everything (and most fields are not shown/used by all
+crawlers anyway); leave the default if so needed. You need to reload the server
+before the updated information is made available to crawlers (reloading does
+not affect uptime).
+
+After changing the values in this file, you must register your game with the
+MUD website list you want to track you. The listing crawler will then regularly
+connect to your server to get the latest info. No further configuration is
+needed on the Evennia side.
 
 """
 
 MSSPTable = {
-    # Required fieldss
+    # Required fields
     "NAME": "Evennia",
     # Generic
     "CRAWL DELAY": "-1",  # limit how often crawler updates the listing. -1 for no limit
     "HOSTNAME": "",  # current or new hostname
-    "PORT": ["4000"],  # most important port should be last in list
+    "PORT": ["4000"],  # most important port should be *last* in list!
     "CODEBASE": "Evennia",
     "CONTACT": "",  # email for contacting the mud
     "CREATED": "",  # year MUD was created
@@ -32,13 +37,15 @@ MSSPTable = {
     # Categorisation
     "FAMILY": "Custom",  # evennia goes under 'Custom'
     "GENRE": "None",  # Adult, Fantasy, Historical, Horror, Modern, None, or Science Fiction
-    "GAMEPLAY": "",  # Adventure, Educational, Hack and Slash, None,
+    # Gameplay: Adventure, Educational, Hack and Slash, None,
     # Player versus Player, Player versus Environment,
     # Roleplaying, Simulation, Social or Strategy
+    "GAMEPLAY": "",
     "STATUS": "Open Beta",  # Alpha, Closed Beta, Open Beta, Live
     "GAMESYSTEM": "Custom",  # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
-    "SUBGENRE": "None",  # LASG, Medieval Fantasy, World War II, Frankenstein,
+    # Subgenre: LASG, Medieval Fantasy, World War II, Frankenstein,
     # Cyberpunk, Dragonlance, etc. Or None if not available.
+    "SUBGENRE": "None",
     # World
     "AREAS": "0",
     "HELPFILES": "0",
@@ -52,18 +59,19 @@ MSSPTable = {
     # Protocols set to 1 or 0)
     "ANSI": "1",
     "GMCP": "1",
-    "ATCP": "0",
-    "MCCP": "0",
-    "MCP": "0",
-    "MSDP": "0",
-    "MSP": "0",
-    "MXP": "0",
-    "PUEBLO": "0",
+    "MSDP": "1",
+    "MXP": "1",
     "SSL": "1",
     "UTF-8": "1",
+    "MCCP": "1",
+    "XTERM 256 COLORS": "1",
+    "XTERM TRUE COLORS": "0",
+    "ATCP": "0",
+    "MCP": "0",
+    "MSP": "0",
     "VT100": "0",
+    "PUEBLO": "0",
     "ZMP": "0",
-    "XTERM 256 COLORS": "0",
     # Commercial set to 1 or 0)
     "PAY TO PLAY": "0",
     "PAY FOR PERKS": "0",
@@ -92,5 +100,6 @@ MSSPTable = {
     "QUEST SYSTEM": "None",  # "None", "Immortal Run", "Automated", "Integrated"
     "ROLEPLAYING": "None",  # "None", "Accepted", "Encouraged", "Enforced"
     "TRAINING SYSTEM": "None",  # "None", "Level", "Skill", "Both"
-    "WORLD ORIGINALITY": "None",  # "All Stock", "Mostly Stock", "Mostly Original", "All Original"
+    # World originality: "All Stock", "Mostly Stock", "Mostly Original", "All Original"
+    "WORLD ORIGINALITY": "All Original",
 }
