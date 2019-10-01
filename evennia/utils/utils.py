@@ -761,7 +761,10 @@ _UNICODE_MAP = {
     "EN DASH": "-",
     "HORIZONTAL BAR": "-",
     "HORIZONTAL ELLIPSIS": "...",
+    "LEFT SINGLE QUOTATION MARK": "'",
     "RIGHT SINGLE QUOTATION MARK": "'",
+    "LEFT DOUBLE QUOTATION MARK": '"',
+    "RIGHT DOUBLE QUOTATION MARK": '"',
 }
 
 
@@ -788,10 +791,13 @@ def latinify(string, default="?", pure_ascii=False):
 
     from unicodedata import name
 
+    if isinstance(string, bytes):
+        string = string.decode("utf8")
+
     converted = []
     for unich in iter(string):
         try:
-            ch = unich.decode("ascii")
+            ch = unich.encode("utf8").decode("ascii")
         except UnicodeDecodeError:
             # deduce a latin letter equivalent from the Unicode data
             # point name; e.g., since `name(u'á') == 'LATIN SMALL
