@@ -292,8 +292,8 @@ class TagHandler(object):
         for tagstr in make_iter(tag):
             if not tagstr:
                 continue
-            tagstr = tagstr.strip().lower()
-            category = category.strip().lower() if category else category
+            tagstr = str(tagstr).strip().lower()
+            category = str(category).strip().lower() if category else category
             data = str(data) if data is not None else None
             # this will only create tag if no matches existed beforehand (it
             # will overload data on an existing tag since that is not
