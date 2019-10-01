@@ -1173,7 +1173,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         self.basetype_posthook_setup()
 
-    # hooks called by the game engine #
+    ## Hooks called by the game engine 
 
     def basetype_setup(self):
         """
