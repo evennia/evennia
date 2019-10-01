@@ -66,6 +66,13 @@ WORKDIR /usr/src/game
 # set bash prompt
 ENV PS1 "evennia|docker \w $ "
 
+# create and switch to a non-root user for runtime security
+# -D - do not set a password
+# -H - do not create a home directory
+# -s /bin/false - set login shell to /bin/false
+RUN adduser -D -H -s /bin/false evennia
+USER evennia
+
 # startup a shell when we start the container
 ENTRYPOINT ["/usr/src/evennia/bin/unix/evennia-docker-start.sh"]
 
