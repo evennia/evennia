@@ -223,3 +223,36 @@ class TestImportFunctions(TestCase):
         test_path = self._t_dir_file("invalid_filename.py")
         loaded_mod = utils.mod_import_from_path(test_path)
         self.assertIsNone(loaded_mod)
+
+
+class LatinifyTest(TestCase):
+    """
+    utils._UNICODE_MAP may need some additional entries to resolve these tests--
+
+        LEFT DOUBLE QUOTATION MARK: "
+        RIGHT DOUBLE QUOTATION MARK: "
+
+    """
+    def setUp(self):
+        super().setUp()
+
+        self.example_str = 'It says, “plugh.”'
+        self.example_ustr = u'It says, “plugh.”'
+
+        self.expected_output = 'It says, "plugh."'
+
+    def test_plain_string(self):
+        result = utils.latinify(self.example_str)
+        self.assertEqual(result, self.expected_output)
+
+    def test_unicode_string(self):
+        result = utils.latinify(self.example_ustr)
+        self.assertEqual(result, self.expected_output)
+
+    def test_encoded_string(self):
+        result = utils.latinify(self.example_str.encode('utf8'))
+        self.assertEqual(result, self.expected_output)
+
+    def test_byte_string(self):
+        result = utils.latinify(utils.to_bytes(self.example_str))
+        self.assertEqual(result, self.expected_output)
