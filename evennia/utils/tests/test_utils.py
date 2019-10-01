@@ -223,3 +223,20 @@ class TestImportFunctions(TestCase):
         test_path = self._t_dir_file("invalid_filename.py")
         loaded_mod = utils.mod_import_from_path(test_path)
         self.assertIsNone(loaded_mod)
+
+
+class LatinifyTest(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.example_str = 'It naïvely says, “plugh.”'
+        self.expected_output = 'It naively says, "plugh."'
+
+    def test_plain_string(self):
+        result = utils.latinify(self.example_str)
+        self.assertEqual(result, self.expected_output)
+
+    def test_byte_string(self):
+        byte_str = utils.to_bytes(self.example_str)
+        result = utils.latinify(byte_str)
+        self.assertEqual(result, self.expected_output)
