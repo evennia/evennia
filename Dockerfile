@@ -14,6 +14,7 @@
 #
 #    You will end up in a shell where the `evennia` command is available. From here you
 #    can install and run the game normally. Use Ctrl-D to exit the evennia docker container.
+#    For more info see: https://github.com/evennia/evennia/wiki/Getting-Started#quick-start
 #
 #    You can also start evennia directly by passing arguments to the folder:
 #
