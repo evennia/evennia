@@ -226,13 +226,6 @@ class TestImportFunctions(TestCase):
 
 
 class LatinifyTest(TestCase):
-    """
-    utils._UNICODE_MAP may need some additional entries to resolve these tests--
-
-        LEFT DOUBLE QUOTATION MARK: "
-        RIGHT DOUBLE QUOTATION MARK: "
-
-    """
     def setUp(self):
         super().setUp()
 
