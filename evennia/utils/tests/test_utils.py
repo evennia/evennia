@@ -229,7 +229,7 @@ class LatinifyTest(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.example_str = 'It naïvely says, “plugh.”'
+        self.example_str = "It naïvely says, “plugh.”"
         self.expected_output = 'It naively says, "plugh."'
 
     def test_plain_string(self):
