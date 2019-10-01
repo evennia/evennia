@@ -229,23 +229,14 @@ class LatinifyTest(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.example_str = 'It says, “plugh.”'
-        self.example_ustr = u'It says, “plugh.”'
-
-        self.expected_output = 'It says, "plugh."'
+        self.example_str = 'It naïvely says, “plugh.”'
+        self.expected_output = 'It naively says, "plugh."'
 
     def test_plain_string(self):
         result = utils.latinify(self.example_str)
         self.assertEqual(result, self.expected_output)
 
-    def test_unicode_string(self):
-        result = utils.latinify(self.example_ustr)
-        self.assertEqual(result, self.expected_output)
-
-    def test_encoded_string(self):
-        result = utils.latinify(self.example_str.encode('utf8'))
-        self.assertEqual(result, self.expected_output)
-
     def test_byte_string(self):
-        result = utils.latinify(utils.to_bytes(self.example_str))
+        byte_str = utils.to_bytes(self.example_str)
+        result = utils.latinify(byte_str)
         self.assertEqual(result, self.expected_output)
