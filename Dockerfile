@@ -13,7 +13,7 @@
 #    folder).
 #
 #    You will end up in a shell where the `evennia` command is available. From here you
-#    can install and run the game normally. Use Ctrl-D to exit the evennia docker container.
+#    can initialize and/or run the game normally. Use Ctrl-D to exit the evennia docker container.
 #    For more info see: https://github.com/evennia/evennia/wiki/Getting-Started#quick-start
 #
 #    You can also start evennia directly by passing arguments to the folder:
@@ -21,8 +21,8 @@
 #        docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 -v $PWD:/usr/src/game evennia/evennia evennia start -l
 #
 #    This will start Evennia running as the core process of the container. Note that you *must* use -l
-#    or one of the foreground modes (like evennia ipstart) since otherwise the container will immediately
-#    die since no foreground process keeps it up. 
+#    or one of the foreground modes (like evennia ipstart), since otherwise the container will immediately
+#    die because of having no foreground process.
 #
 # The evennia/evennia base image is found on DockerHub and can also be used
 # as a base for creating your own custom containerized Evennia game. For more
