@@ -76,6 +76,7 @@ class ObjectSessionHandler(object):
             self.obj.save(update_fields=["db_sessid"])
 
     def get(self, sessid=None):
+        
         """
         Get the sessions linked to this Object.
 
@@ -167,10 +168,9 @@ class ObjectSessionHandler(object):
             self.obj.save(update_fields=["db_sessid"])
 
     def clear(self):
-        """
-        Clear all handled sessids.
-
-        """
+       
+        ##  Clear all handled sessids.
+        
         self._sessid_cache = []
         self.obj.db_sessid = None
         self.obj.save(update_fields=["db_sessid"])
@@ -186,7 +186,6 @@ class ObjectSessionHandler(object):
         return len(self._sessid_cache)
 
 
-#
 # Base class to inherit from.
 
 
@@ -206,6 +205,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
+    
     lockstring = "control:id({account_id}) or perm(Admin);" "delete:id({account_id}) or perm(Admin)"
 
     objects = ObjectManager()
@@ -348,8 +348,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # we need to wipe any old plurals/an/a in case key changed in the interrim
             self.aliases.clear(category="plural_key")
             self.aliases.add(plural, category="plural_key")
-            # save the singular form as an alias here too so we can display "an egg" and also
-            # look at 'an egg'.
+            # save the singular form as an alias here too so we can display "an egg" and also look at 'an egg'.
             self.aliases.add(singular, category="plural_key")
         return singular, plural
 
@@ -810,10 +809,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 logerr(errtxt % "at_before_move()", err)
                 return False
 
-        # Save the old location
+        # Save the old location.
         source_location = self.location
 
-        # Call hook on source location
+        # Call hook on source location.
         if move_hooks and source_location:
             try:
                 source_location.at_object_leave(self, destination)
@@ -1108,9 +1107,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
-    #
-    # Hook methods
-    #
+    
+    ##  Hook methods
+    
 
     def at_first_save(self):
         """
@@ -1125,7 +1124,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.at_object_creation()
 
         if hasattr(self, "_createdict"):
-            # this will only be set if the utils.create function
+            # This will only be set if the utils.create function
             # was used to create the object. We want the create
             # call's kwargs to override the values set by hooks.
             cdict = self._createdict
@@ -1173,7 +1172,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         self.basetype_posthook_setup()
 
-    # hooks called by the game engine #
+    ##  Hooks called by the game engine 
 
     def basetype_setup(self):
         """
@@ -1193,15 +1192,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             ";".join(
                 [
                     "control:perm(Developer)",  # edit locks/permissions, delete
-                    "examine:perm(Builder)",  # examine properties
-                    "view:all()",  # look at object (visibility)
-                    "edit:perm(Admin)",  # edit properties/attributes
-                    "delete:perm(Admin)",  # delete object
-                    "get:all()",  # pick up object
-                    "drop:holds()",  # drop only that which you hold
-                    "call:true()",  # allow to call commands on this object
-                    "tell:perm(Admin)",  # allow emits to this object
-                    "puppet:pperm(Developer)",
+                    "examine:perm(Builder)",    # examine properties
+                    "view:all()",               # look at object (visibility)
+                    "edit:perm(Admin)",         # edit properties/attributes
+                    "delete:perm(Admin)",       # delete object
+                    "get:all()",                # pick up object
+                    "drop:holds()",             # drop only that which you hold
+                    "call:true()",              # allow to call commands on this object
+                    "tell:perm(Admin)",         # allow emits to this object
+                    "puppet:pperm(Developer)"
                 ]
             )
         )  # lock down puppeting only to staff by default
@@ -1654,6 +1653,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         if not looker:
             return ""
+        
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
         exits, users, things = [], [], defaultdict(list)
@@ -2011,9 +2011,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             )
 
 
-#
-# Base Character object
-#
+
+##  Base Character object
 
 
 class DefaultCharacter(DefaultObject):
@@ -2228,8 +2227,8 @@ class DefaultCharacter(DefaultObject):
         return None
 
 
-#
-# Base Room object
+
+##  Base Room object
 
 
 class DefaultRoom(DefaultObject):
@@ -2323,9 +2322,8 @@ class DefaultRoom(DefaultObject):
         self.location = None
 
 
-#
-# Default Exit command, used by the base exit object
-#
+
+##  Default Exit command, used by the base exit object
 
 
 class ExitCommand(command.Command):
@@ -2372,8 +2370,8 @@ class ExitCommand(command.Command):
             return " (%s)" % self.obj.get_display_name(caller)
 
 
-#
-# Base Exit object
+
+##  Base Exit object
 
 
 class DefaultExit(DefaultObject):
