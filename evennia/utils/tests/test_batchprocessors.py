@@ -67,3 +67,22 @@ class TestBatchCommandProcessor(TestCase):
             mock.call('foopath', file_ending='.ev'),
             mock.call('another.ev', file_ending='.ev')])
 
+    @mock.patch.object(batchprocessors, 'read_batchfile')
+    def test_parses_INSERT_raises_IOError(self, mocked_read):
+        mocked_read.side_effect = [
+        textwrap.dedent(r"""
+            @create sky
+            #
+            #INSERT x
+            #
+            @create sun
+            #
+            """),
+            IOError
+        ]
+        with self.assertRaises(IOError, msg='#INSERT x failed.'):
+            commands = batchprocessors.BATCHCMD.parse_file('foopath')
+        self.assertEqual(mocked_read.mock_calls, [
+            mock.call('foopath', file_ending='.ev'),
+            mock.call('x', file_ending='.ev')])
+
