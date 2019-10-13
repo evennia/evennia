@@ -43,18 +43,27 @@ class TestBatchCommandProcessor(TestCase):
 
     @mock.patch.object(batchprocessors, 'read_batchfile')
     def test_parses_INSERT(self, mocked_read):
-        mocked_read.return_value = textwrap.dedent(
-        r"""
-        #INSERT another.ev
-        #
-
-        """)
-        mocked_read.return_value = textwrap.dedent(r"""
-        @create bird
-        #
-        """)
+        mocked_read.side_effect = [
+        textwrap.dedent(r"""
+            @create sky
+            #
+            #INSERT another.ev
+            #
+            @create sun
+            #
+            """),
+        textwrap.dedent(r"""
+            @create bird
+            #
+            @create cloud
+            #
+            """)
+        ]
         commands = batchprocessors.BATCHCMD.parse_file('foopath')
         self.assertEqual(
-            ['@create bird'],
-            commands)
+            commands,
+            ['@create sky', '@create bird', '@create cloud', '@create sun'])
+        self.assertEqual(mocked_read.mock_calls, [
+            mock.call('foopath', file_ending='.ev'),
+            mock.call('another.ev', file_ending='.ev')])
 
