@@ -81,7 +81,7 @@ class TestBatchCommandProcessor(TestCase):
             IOError
         ]
         with self.assertRaises(IOError, msg='#INSERT x failed.'):
-            commands = batchprocessors.BATCHCMD.parse_file('foopath')
+            batchprocessors.BATCHCMD.parse_file('foopath')
         self.assertEqual(mocked_read.mock_calls, [
             mock.call('foopath', file_ending='.ev'),
             mock.call('x', file_ending='.ev')])
@@ -115,7 +115,7 @@ class TestBatchCodeProcessor(TestCase):
         self.assertEqual([
             '# batchcode code:\n\n',
             '# batchcode code:\n\nprint("Hello")\n',
-            '# batchcode code:\n\na = 1\nb = [1, \n2, 3]\n'],
+            '# batchcode code:\n\na = 1\nb = [1,\n2, 3]\n'],
             commands)
 
     @mock.patch.object(batchprocessors, 'read_batchfile')
@@ -171,7 +171,7 @@ class TestBatchCodeProcessor(TestCase):
             IOError
         ]
         with self.assertRaises(IOError, msg='#INSERT x failed.'):
-            commands = batchprocessors.BATCHCODE.parse_file('foopath')
+            batchprocessors.BATCHCODE.parse_file('foopath')
         self.assertEqual(mocked_read.mock_calls, [
             mock.call('foopath', file_ending='.py'),
             mock.call('x', file_ending='.py')])
