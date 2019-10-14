@@ -145,7 +145,7 @@ Example batch.py file
 ```
 #HEADER
 
-from django.config import settings
+from django.conf import settings
 from evennia.utils import create
 from types import basetypes
 
@@ -233,7 +233,7 @@ def read_batchfile(pythonpath, file_ending=".py"):
                 continue
             break
     if not text and decoderr:
-        raise UnicodeDecodeError("\n".join(decoderr))
+        raise UnicodeDecodeError("\n".join(decoderr), bytearray(), 0, 0, '')
 
     return text
 
