@@ -184,9 +184,16 @@ class TestBatchCodeProcessor(TestCase):
         self.assertIsNone(err)
 
     @mock.patch('builtins.exec')
+    def test_execs_codeblock_with_extra_environ(self, mocked_exec):
+        err = batchprocessors.BATCHCODE.code_exec(
+            '# batchcode code:\n\nprint("Hello")\n',
+            extra_environ={'foo': 'bar', 'baz': True})
+        self.assertIsNone(err)
+
+    @mock.patch('builtins.exec')
     def test_execs_codeblock_raises(self, mocked_exec):
         mocked_exec.side_effect = Exception
         err = batchprocessors.BATCHCODE.code_exec(
-            '# batchcode code:\n\nprint("Hello")\n',
+            '# batchcode code:\n\nprint("Hello")\nprint("Evennia")',
             extra_environ={})
         self.assertIsNotNone(err)
