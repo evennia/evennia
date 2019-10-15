@@ -135,8 +135,12 @@ def space(*args, **kwargs):
 
     Args:
         spaces (int, optional): The number of spaces to insert.
+
     Kwargs:
         session (Session): Session performing the crop.
+
+    Example:
+        `$space(20)`
 
     """
     width = 4
