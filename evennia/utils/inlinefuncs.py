@@ -129,6 +129,22 @@ def crop(*args, **kwargs):
     return utils.crop(text, width=width, suffix=suffix)
 
 
+def space(*args, **kwargs):
+    """
+    Inlinefunc. Inserts an arbitrary number of spaces. Defaults to 4 spaces.
+
+    Args:
+        spaces (int, optional): The number of spaces to insert.
+    Kwargs:
+        session (Session): Session performing the crop.
+
+    """
+    width = 4
+    if args:
+        width = abs(int(args[0])) if args[0].strip().isdigit() else 4
+    return " " * width
+
+
 def clr(*args, **kwargs):
     """
     Inlinefunc. Colorizes nested text.
