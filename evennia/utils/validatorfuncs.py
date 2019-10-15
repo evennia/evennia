@@ -68,13 +68,13 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
         entry = f"{split_time[0]} {split_time[1]} {split_time[2]} {split_time[3]}"
     else:
         raise ValueError(
-            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}"
+            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%M')}"
         )
     try:
-        local = _dt.datetime.strptime(input, "%b %d %H:%M %Y")
+        local = _dt.datetime.strptime(entry, "%b %d %H:%M %Y")
     except ValueError:
         raise ValueError(
-            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%H')}"
+            f"{option_key} must be entered in a 24-hour format such as: {now.strftime('%b %d %H:%M')}"
         )
     local_tz = from_tz.localize(local)
     return local_tz.astimezone(utc)
