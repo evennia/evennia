@@ -93,7 +93,7 @@ def duration(entry, option_key="Duration", **kwargs):
         timedelta
 
     """
-    time_string = entry.split(" ")
+    time_string = entry.lower().split(" ")
     seconds = 0
     minutes = 0
     hours = 0
@@ -101,18 +101,18 @@ def duration(entry, option_key="Duration", **kwargs):
     weeks = 0
 
     for interval in time_string:
-        if _re.match(r"^[\d]+s$", interval.lower()):
-            seconds = +int(interval.lower().rstrip("s"))
+        if _re.match(r"^[\d]+s$", interval):
+            seconds = +int(interval.rstrip("s"))
         elif _re.match(r"^[\d]+m$", interval):
-            minutes = +int(interval.lower().rstrip("m"))
+            minutes = +int(interval.rstrip("m"))
         elif _re.match(r"^[\d]+h$", interval):
-            hours = +int(interval.lower().rstrip("h"))
+            hours = +int(interval.rstrip("h"))
         elif _re.match(r"^[\d]+d$", interval):
-            days = +int(interval.lower().rstrip("d"))
+            days = +int(interval.rstrip("d"))
         elif _re.match(r"^[\d]+w$", interval):
-            weeks = +int(interval.lower().rstrip("w"))
+            weeks = +int(interval.rstrip("w"))
         elif _re.match(r"^[\d]+y$", interval):
-            days = +int(interval.lower().rstrip("y")) * 365
+            days = +int(interval.rstrip("y")) * 365
         else:
             raise ValueError(f"Could not convert section '{interval}' to a {option_key}.")
 
@@ -120,7 +120,7 @@ def duration(entry, option_key="Duration", **kwargs):
 
 
 def future(entry, option_key="Future Datetime", from_tz=None, **kwargs):
-    time = datetime(entry, option_key)
+    time = datetime(entry, option_key, from_tz=from_tz)
     if time < _dt.datetime.utcnow():
         raise ValueError(f"That {option_key} is in the past! Must give a Future datetime!")
     return time
@@ -160,10 +160,10 @@ def boolean(entry, option_key="True/False", **kwargs):
     Returns:
         Boolean
     """
-    entry = entry.upper()
     error = f"Must enter 0 (false) or 1 (true) for {option_key}. Also accepts True, False, On, Off, Yes, No, Enabled, and Disabled"
-    if not entry:
+    if not isinstance(entry, str):
         raise ValueError(error)
+    entry = entry.upper()
     if entry in ("1", "TRUE", "ON", "ENABLED", "ENABLE", "YES"):
         return True
     if entry in ("0", "FALSE", "OFF", "DISABLED", "DISABLE", "NO"):
@@ -198,7 +198,7 @@ def email(entry, option_key="Email Address", **kwargs):
     if not entry:
         raise ValueError("Email address field empty!")
     try:
-        _val_email(entry)  # offloading the hard work to Django!
+        _val_email(str(entry))  # offloading the hard work to Django!
     except _error:
         raise ValueError(f"That isn't a valid {option_key}!")
     return entry
