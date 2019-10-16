@@ -180,7 +180,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 except ImportError as exc:
                     if len(trace()) > 2:
                         # error in module, make sure to not hide it.
-                        _, _, tb = sys.exc_info()
+                        dum, dum, tb = sys.exc_info()
                         raise exc.with_traceback(tb)
                     else:
                         # try next suggested path
@@ -191,7 +191,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                 except AttributeError as exc:
                     if len(trace()) > 2:
                         # Attribute error within module, don't hide it
-                        _, _, tb = sys.exc_info()
+                        dum, dum, tb = sys.exc_info()
                         raise exc.with_traceback(tb)
                     else:
                         errstring += _("\n(Unsuccessfully tried '%s')." % python_path)

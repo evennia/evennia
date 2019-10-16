@@ -233,7 +233,7 @@ def read_batchfile(pythonpath, file_ending=".py"):
                 continue
             break
     if not text and decoderr:
-        raise UnicodeDecodeError("\n".join(decoderr), bytearray(), 0, 0, '')
+        raise UnicodeDecodeError("\n".join(decoderr), bytearray(), 0, 0, "")
 
     return text
 
