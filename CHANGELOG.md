@@ -31,6 +31,7 @@ without arguments starts a full interactive Python console.
 - Show warning on `start -l` if settings contains values unsafe for production.
 - Make code auto-formatted with Black.
 - Make default `set` command able to edit nested structures (PR by Aaron McMillan)
+- Allow running Evennia test suite from core repo with `make test`.
 
 
 ## Evennia 0.9 (2018-2019)

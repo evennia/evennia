@@ -2579,9 +2579,10 @@ class CmdExamine(ObjManipCommand):
                     # we are only interested in specific attributes
                     caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
-                session = obj.sessions.get()[0]
+                session = None
                 if obj.sessions.count():
                     mergemode = "session"
+                    session = obj.sessions.get()[0]
                 elif self.account_mode:
                     mergemode = "account"
                 else:
