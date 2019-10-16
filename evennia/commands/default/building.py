@@ -1596,7 +1596,7 @@ class CmdSetAttribute(ObjManipCommand):
     or |c{ |n.
 
     Once you have stored a Python primitive as noted above, you can include
-    |c[<key>]|n in <attr> to reference nested values in e.g. a list or dict. 
+    |c[<key>]|n in <attr> to reference nested values in e.g. a list or dict.
 
     Remember that if you use Python primitives like this, you must
     write proper Python syntax too - notably you must include quotes
@@ -2352,7 +2352,6 @@ class CmdExamine(ObjManipCommand):
 
         returns a string.
         """
-
         string = "\n|wName/key|n: |c%s|n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases.all():
             string += "\n|wAliases|n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
@@ -2534,9 +2533,11 @@ class CmdExamine(ObjManipCommand):
                     # If we don't have special info access, just look at the object instead.
                     self.msg(caller.at_look(obj))
                     return
+                obj_session = obj.sessions.get()[0] if obj.sessions.count() else None
+
                 # using callback for printing result whenever function returns.
                 get_and_merge_cmdsets(
-                    obj, self.session, self.account, obj, "object", self.raw_string
+                    obj, obj_session, self.account, obj, "object", self.raw_string
                 ).addCallback(get_cmdset_callback)
             else:
                 self.msg("You need to supply a target to examine.")
@@ -2578,15 +2579,25 @@ class CmdExamine(ObjManipCommand):
                     # we are only interested in specific attributes
                     caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
+                session = obj.sessions.get()[0]
                 if obj.sessions.count():
                     mergemode = "session"
                 elif self.account_mode:
                     mergemode = "account"
                 else:
                     mergemode = "object"
+
+                account = None
+                objct = None
+                if self.account_mode:
+                    account = obj
+                else:
+                    account = obj.account
+                    objct = obj
+
                 # using callback to print results whenever function returns.
                 get_and_merge_cmdsets(
-                    obj, self.session, self.account, obj, mergemode, self.raw_string
+                    obj, session, account, objct, mergemode, self.raw_string
                 ).addCallback(get_cmdset_callback)
 
 

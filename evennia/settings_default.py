@@ -417,7 +417,7 @@ CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 # Command set for accounts without a character (ooc)
 CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
 # Location to search for cmdsets if full path not given
-CMDSET_PATHS = ["commands", "evennia", "contribs"]
+CMDSET_PATHS = ["commands", "evennia", "evennia.contrib"]
 # Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
 # default cmdsets, you will also need to copy CMDSET_FALLBACKS after your change in your
 # settings file for it to detect the change.
