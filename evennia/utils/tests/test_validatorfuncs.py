@@ -140,6 +140,12 @@ class TestValidatorFuncs(TestCase):
             self.assertEqual(l, validatorfuncs.lock(l))
 
     def test_lock_raises_ValueError(self):
-        for l in [';;;', '', ':', ':::', ';:;:']:
+        for l in [';;;', '', ':', ':::', ';:;:', 'x:', ':y']:
             with self.assertRaises(ValueError):
                 validatorfuncs.lock(l)
+        with self.assertRaises(ValueError):
+            validatorfuncs.lock('view:',
+                access_options=())
+        with self.assertRaises(ValueError):
+            validatorfuncs.lock('view:',
+                access_options=('view'))
