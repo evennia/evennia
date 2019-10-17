@@ -148,4 +148,4 @@ class TestValidatorFuncs(TestCase):
                 access_options=())
         with self.assertRaises(ValueError):
             validatorfuncs.lock('view:',
-                access_options=('view'))
+                access_options=('look'))
