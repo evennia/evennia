@@ -121,7 +121,7 @@ def duration(entry, option_key="Duration", **kwargs):
 
 def future(entry, option_key="Future Datetime", from_tz=None, **kwargs):
     time = datetime(entry, option_key, from_tz=from_tz)
-    if time < _dt.datetime.utcnow():
+    if time < _dt.datetime.utcnow().replace(tzinfo=_dt.timezone.utc):
         raise ValueError(f"That {option_key} is in the past! Must give a Future datetime!")
     return time
 
