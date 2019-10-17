@@ -11,7 +11,7 @@ class TestValidatorFuncs(TestCase):
 
     def test_text_ok(self):
         for val in [None, -123, 'abc', 1.234, {1:True, 2:False}, ['a', 1]]:
-            self.assertEqual(str(val), validatorfuncs.text(val))    
+            self.assertEqual(str(val), validatorfuncs.text(val))
 
     @mock.patch('builtins.str')
     def test_text_raises_ValueError(self, mocked_str):
@@ -91,7 +91,7 @@ class TestValidatorFuncs(TestCase):
             mocked_int.side_effect = ValueError
             with self.assertRaises(ValueError):
                 validatorfuncs.positive_integer(pi)
-        
+
     def test_unsigned_integer_ok(self):
         for ui in ['123', '4567890', '001', '0']:
           self.assertEqual(int(ui), validatorfuncs.unsigned_integer(ui))
