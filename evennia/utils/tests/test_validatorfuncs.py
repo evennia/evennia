@@ -54,18 +54,18 @@ class TestValidatorFuncs(TestCase):
             with self.assertRaises(ValueError):
                 validatorfuncs.duration(d)
 
-    # def test_future_ok(self):
-    #     year = int(datetime.datetime.utcnow().strftime("%Y"))
-    #     for f in [f'Jan 2 12:00 {year+1}', f'Dec 31 00:00 {year+1}']:
-    #         self.assertTrue(
-    #             isinstance(validatorfuncs.future(f, from_tz=pytz.UTC),
-    #             datetime.timedelta))
+    def test_future_ok(self):
+        year = int(datetime.datetime.utcnow().strftime("%Y"))
+        for f in [f'Jan 2 12:00 {year+1}', f'Dec 31 00:00 {year+1}']:
+            self.assertTrue(
+                isinstance(validatorfuncs.future(f, from_tz=pytz.UTC),
+                datetime.datetime))
 
-    # def test_future_raises_ValueError(self):
-    #     year = int(datetime.datetime.utcnow().strftime("%Y"))
-    #     for f in [f'Jan 2 12:00 {year-1}', f'Dec 31 00:00 {year-1}']:
-    #         with self.assertRaises(ValueError):
-    #             validatorfuncs.future(f, from_tz=pytz.UTC)
+    def test_future_raises_ValueError(self):
+        year = int(datetime.datetime.utcnow().strftime("%Y"))
+        for f in [f'Jan 2 12:00 {year-1}', f'Dec 31 00:00 {year-1}']:
+            with self.assertRaises(ValueError):
+                validatorfuncs.future(f, from_tz=pytz.UTC)
 
     def test_signed_integer_ok(self):
         for si in ['123', '4567890', '001', '-123', '-45', '0']:
