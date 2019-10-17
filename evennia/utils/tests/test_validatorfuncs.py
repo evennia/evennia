@@ -84,21 +84,27 @@ class TestValidatorFuncs(TestCase):
 
     @mock.patch('builtins.int')
     def test_positive_integer_raises_ValueError(self, mocked_int):
+        mocked_int.return_value = -1
+        with self.assertRaises(ValueError):
+            validatorfuncs.positive_integer(str(-1))
         for pi in ['', '000', 'abc', '-1']:
             mocked_int.side_effect = ValueError
             with self.assertRaises(ValueError):
                 validatorfuncs.positive_integer(pi)
         
     def test_unsigned_integer_ok(self):
-        for ui in ['123', '4567890', '001']:
+        for ui in ['123', '4567890', '001', '0']:
           self.assertEqual(int(ui), validatorfuncs.unsigned_integer(ui))
 
     @mock.patch('builtins.int')
     def test_unsigned_integer_raises_ValueError(self, mocked_int):
+        mocked_int.return_value = -1
+        with self.assertRaises(ValueError):
+            validatorfuncs.unsigned_integer(str(-1))
         for ui in ['', '000', 'abc', '-1', '0']:
             mocked_int.side_effect = ValueError
             with self.assertRaises(ValueError):
-                validatorfuncs.signed_integer(ui)
+                validatorfuncs.unsigned_integer(ui)
 
     def test_boolean(self):
         for b in ['true', '1', 'on', 'ENABLED']:
