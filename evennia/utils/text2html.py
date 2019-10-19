@@ -246,8 +246,7 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        return text
-        return text.replace(r"\n", r"<br>")
+        return text.replace("\n", r"<br>")
 
     def convert_urls(self, text):
         """
@@ -277,7 +276,7 @@ class TextToHTMLparser(object):
         replaces MXP links with HTML code.
 
         Args:
-            text (str): Text to process.
+            match (re.Matchobject): Match for substitution.
 
         Returns:
             text (str): Processed text.
