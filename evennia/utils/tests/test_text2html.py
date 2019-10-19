@@ -2,7 +2,6 @@
 
 from django.test import TestCase
 from evennia.utils import ansi, text2html
-import mock
 
 
 class TestText2Html(TestCase):
@@ -90,3 +89,19 @@ class TestText2Html(TestCase):
         self.assertEqual(
             "a &nbsp;red &nbsp;&nbsp;&nbsp;foo",
             parser.re_double_space("a  red    foo"))
+
+    def test_parse_html(self):
+        self.assertEqual("foo", text2html.parse_html("foo"))
+        self.maxDiff = None
+        self.assertEqual(
+            """<span class="blink"><span class="bgcolor-006">Hello </span><span class="underline"><span class="err">W</span><span class="err">o</span><span class="err">r</span><span class="err">l</span><span class="err">d</span><span class="err">!<span class="bgcolor-002">!</span></span></span></span>""",
+            text2html.parse_html(
+                ansi.ANSI_BLINK + ansi.ANSI_BACK_CYAN + "Hello " + ansi.ANSI_NORMAL
+                + ansi.ANSI_UNDERLINE + ansi.ANSI_RED + "W"
+                + ansi.ANSI_GREEN + "o"
+                + ansi.ANSI_YELLOW + "r"
+                + ansi.ANSI_BLUE + "l"
+                + ansi.ANSI_MAGENTA + "d"
+                + ansi.ANSI_CYAN + "!"
+                + ansi.ANSI_BACK_GREEN + "!"))
+
