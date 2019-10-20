@@ -310,8 +310,7 @@ class TextToHTMLparser(object):
         elif cdict["firstspace"]:
             return " &nbsp;"
         elif cdict["space"] == "\t":
-            text = match.group()
-            return " " if tabstop == 1 else " " + "&nbsp;" * tabstop
+            return " " if self.tabstop == 1 else " " + "&nbsp;" * self.tabstop
         elif cdict["space"] or cdict["spacestart"]:
             text = match.group().replace("\t", "&nbsp;" * self.tabstop)
             text = text.replace(" ", "&nbsp;")
