@@ -91,6 +91,16 @@ class TestText2Html(TestCase):
             "a &nbsp;red &nbsp;&nbsp;&nbsp;foo",
             parser.re_double_space("a  red    foo"))
 
+    def test_sub_mxp_links(self):
+        parser = text2html.HTML_PARSER
+        mocked_match = mock.Mock()
+        mocked_match.groups.return_value = ["cmd", "text"]
+        self.assertEqual(
+            r"""<a id="mxplink" href="#" """
+            """onclick="Evennia.msg(&quot;text&quot;,[&quot;cmd&quot;],{});"""
+            """return false;">text</a>""",
+            parser.sub_mxp_links(mocked_match))
+
     def test_sub_text(self):
         parser = text2html.HTML_PARSER
         mocked_match = mock.Mock()
