@@ -168,11 +168,17 @@ class TestEvEditor(CommandTest):
         )
         self.call(
             eveditor.CmdLineInput(),
-            "First test \"line'.",
-            raw_string="First test \"line'.",
-            msg="01First test \"line'.",
+            "First test \"line\".",
+            raw_string="First test \"line\".",
+            msg="01First test \"line\" .",
         )
-        self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "First test \"line'.")
+        self.call(
+            eveditor.CmdLineInput(),
+            "Second 'line'.",
+            raw_string="Second 'line'.",
+            msg="02Second 'line' .",
+        )
+        self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "First test \"line\".\nSecond 'line'.")
         self.call(
             eveditor.CmdEditorGroup(),
             "",
@@ -218,6 +224,14 @@ class TestEvEditor(CommandTest):
         )
         self.assertEqual(self.char1.ndb._eveditor.get_buffer(),
             "LINE 1.\nLINE 2.\nline 3.")
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "line MINE",
+            cmdstring=":s",
+            msg="Search-replaced line -> MINE for lines 1-3.",
+        )
+        self.assertEqual(self.char1.ndb._eveditor.get_buffer(),
+            "LINE 1.\nLINE 2.\nMINE 3.")
 
     def test_eveditor_COLON_DD(self):
         eveditor.EvEditor(self.char1)
@@ -366,4 +380,10 @@ class TestEvEditor(CommandTest):
             cmdstring=":s",
             msg="You must give a search word and something to replace it with.",
         )
+        # self.call(
+        #     eveditor.CmdEditorGroup(),
+        #     "",
+        #     cmdstring=":f",
+        #     msg="Valid justifications are [f]ull (default), [c]enter, [r]right or [l]eft"
+        # )
         self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "line 1.")
