@@ -13,6 +13,12 @@ class TestText2Html(TestCase):
         self.assertEqual(
             "<span class=\"err\">red</span>foo",
             parser.re_color(ansi.ANSI_RED + "red" + ansi.ANSI_NORMAL + "foo"))
+        self.assertEqual(
+            "<span class=\"bgcolor-001\">red</span>foo",
+            parser.re_color(ansi.ANSI_BACK_RED + "red" + ansi.ANSI_NORMAL + "foo"))
+        self.assertEqual(
+            "<span class=\"bgcolor-001\"><span class=\"err\">red</span></span>foo",
+            parser.re_color(ansi.ANSI_BACK_RED + ansi.ANSI_GREEN + "red" + ansi.ANSI_NORMAL + "foo"))
 
     def test_re_bold(self):
         parser = text2html.HTML_PARSER
