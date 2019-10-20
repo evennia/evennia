@@ -157,3 +157,52 @@ class TestEvEditor(CommandTest):
             self.char1.ndb._eveditor.get_buffer(),
             "First test line\nInserted-New Replaced Second line-End\n test line\n:",
         )
+
+    def test_eveditor_COLON_UU(self):
+        eveditor.EvEditor(self.char1)
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "",
+            cmdstring=":",
+            msg="Line Editor []\n01\n[l:01 w:000 c:0000](:h for help)",
+        )
+        self.call(
+            eveditor.CmdLineInput(),
+            "First test \"line'.",
+            raw_string="First test \"line'.",
+            msg="01First test \"line'.",
+        )
+        self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "First test \"line'.")
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "",
+            cmdstring=":UU",
+            msg="Reverted all changes to the buffer back to original state.",
+        )
+        self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "")
+
+    def test_eveditor_DIGIT_COLON_DIGIT(self):
+        eveditor.EvEditor(self.char1)
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "",
+            cmdstring=":",
+            msg="Line Editor []\n01\n[l:01 w:000 c:0000](:h for help)",
+        )
+        self.call(
+            eveditor.CmdLineInput(), "line 1.",
+            raw_string="line 1.",
+            msg="01line 1.",
+        )
+        self.call(
+            eveditor.CmdLineInput(), "line 2.",
+            raw_string="line 2.",
+            msg="02line 2.",
+        )
+        self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "line 1.\nline 2.")
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "",
+            cmdstring="1:2",
+            msg="",
+        )
