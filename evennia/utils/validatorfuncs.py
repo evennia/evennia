@@ -112,11 +112,28 @@ def duration(entry, option_key="Duration", **kwargs):
         elif _re.match(r"^[\d]+w$", interval):
             weeks = +int(interval.lower().rstrip("w"))
         elif _re.match(r"^[\d]+y$", interval):
-            days = +int(interval.lower().rstrip("y")) * 365
+            days += +int(interval.lower().rstrip("y")) * 365
         else:
             raise ValueError(f"Could not convert section '{interval}' to a {option_key}.")
 
     return _dt.timedelta(days, seconds, 0, 0, minutes, hours, weeks)
+
+from django.test import TestCase
+import mock
+import datetime as dt
+import pytz
+
+
+class TestValidatorFuncs(TestCase):
+    def test_duration_ok(self):
+        for d in ['1d', '2w', '3h', '4s', '5m', '6y']:
+            self.assertTrue(
+                isinstance(duration(d), dt.timedelta))
+
+        # THE FOLLOWING FAILS, year calculation seems to be incorrect
+        self.assertEqual(
+            dt.timedelta(2+4*365, 2, 0, 0, 4, 4, 5),
+            duration('2d 2s 4m 4h 5w 4y'))
 
 
 def future(entry, option_key="Future Datetime", from_tz=None, **kwargs):
