@@ -2,6 +2,7 @@
 
 from django.test import TestCase
 from evennia.utils import ansi, text2html
+import mock
 
 
 class TestText2Html(TestCase):
@@ -89,6 +90,62 @@ class TestText2Html(TestCase):
         self.assertEqual(
             "a &nbsp;red &nbsp;&nbsp;&nbsp;foo",
             parser.re_double_space("a  red    foo"))
+
+    def test_sub_text(self):
+        parser = text2html.HTML_PARSER
+        mocked_match = mock.Mock()
+        mocked_match.groupdict.return_value = {
+            "htmlchars": "foo"
+        }
+        self.assertEqual(
+            "foo",
+            parser.sub_text(mocked_match))
+        mocked_match.groupdict.return_value = {
+            "htmlchars": "",
+            "lineend": "foo",
+        }
+        self.assertEqual(
+            "<br>",
+            parser.sub_text(mocked_match))
+        mocked_match.groupdict.return_value = {
+            "htmlchars": "",
+            "lineend": "",
+            "firstspace": "foo"
+        }
+        self.assertEqual(
+            " &nbsp;",
+            parser.sub_text(mocked_match))
+        parser.tabstop = 2
+        mocked_match.groupdict.return_value = {
+            "htmlchars": "",
+            "lineend": "",
+            "firstspace": "",
+            "space": "\t"
+        }
+        self.assertEqual(
+            " &nbsp;&nbsp;",
+            parser.sub_text(mocked_match))
+        mocked_match.groupdict.return_value = {
+            "htmlchars": "",
+            "lineend": "",
+            "firstspace": "",
+            "space": " ",
+            "spacestart": " "
+        }
+        mocked_match.group.return_value = " \t "
+        self.assertEqual(
+            "&nbsp;&nbsp;&nbsp;&nbsp;",
+            parser.sub_text(mocked_match))
+        mocked_match.groupdict.return_value = {
+            "htmlchars": "",
+            "lineend": "",
+            "firstspace": "",
+            "space": "",
+            "spacestart": ""
+        }
+        self.assertEqual(
+            None,
+            parser.sub_text(mocked_match))
 
     def test_parse_html(self):
         self.assertEqual("foo", text2html.parse_html("foo"))
