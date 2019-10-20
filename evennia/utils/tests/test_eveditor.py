@@ -271,6 +271,58 @@ class TestEvEditor(CommandTest):
         )
         self.assertEqual(self.char1.ndb._eveditor.get_buffer(), "line 1")
 
+    def test_eveditor_COLON_J(self):
+        eveditor.EvEditor(self.char1)
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "",
+            cmdstring=":",
+            msg="Line Editor []\n01\n[l:01 w:000 c:0000](:h for help)",
+        )
+        self.call(
+            eveditor.CmdLineInput(), "line 1",
+            raw_string="line 1",
+            msg="01line 1",
+        )
+        self.call(
+            eveditor.CmdLineInput(), "l 2",
+            raw_string="l 2",
+            msg="02l 2",
+        )
+        self.call(
+            eveditor.CmdLineInput(), "l 3",
+            raw_string="l 3",
+            msg="03l 3",
+        )
+        self.call(
+            eveditor.CmdLineInput(), "l 4",
+            raw_string="l 4",
+            msg="04l 4",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "2 r",
+            cmdstring=":j",
+            msg="Right-justified line 2.",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "3 c",
+            cmdstring=":j",
+            msg="Center-justified line 3.",
+        )
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "4 f",
+            cmdstring=":j",
+            msg="Full-justified line 4.",
+        )
+        l1, l2, l3, l4 = tuple(self.char1.ndb._eveditor.get_buffer().split("\n"))
+        self.assertEqual(l1, "line 1")
+        self.assertEqual(l2, " " * 75 + "l 2")
+        self.assertEqual(l3, " " * 37 + "l 3" + " " * 38)
+        self.assertEqual(l4, "l" + " " * 76 + "4")
+
     def test_eveditor_bad_commands(self):
         eveditor.EvEditor(self.char1)
         self.call(
