@@ -818,7 +818,7 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
 
             if answer and answer not in ("yes", "y", "no", "n"):
                 caller.msg(
-                    "Canceled: Either accept the default by pressing " "return or specify yes/no."
+                    "Canceled: Either accept the default by pressing return or specify yes/no."
                 )
                 delete = False
             elif answer.strip().lower() in ("n", "no"):
