@@ -816,9 +816,10 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
             answer = yield (confirm)
             answer = self.default_confirm if answer == "" else answer
 
-            if answer and answer not in ("yes", "y", "no", 'n'):
-                caller.msg("Canceled: Either accept the default by pressing "
-                           "return or specify yes/no.")
+            if answer and answer not in ("yes", "y", "no", "n"):
+                caller.msg(
+                    "Canceled: Either accept the default by pressing " "return or specify yes/no."
+                )
                 delete = False
             elif answer.strip().lower() in ("n", "no"):
                 caller.msg("Canceled: No object was destroyed.")
