@@ -45,8 +45,12 @@ class TestValidatorFuncs(TestCase):
                 isinstance(validatorfuncs.duration(d), datetime.timedelta))
 
         self.assertEqual(
-            datetime.timedelta(1+6*365, 2, 0, 0, 3, 4, 6),
+            datetime.timedelta(1+6*365, 2, 0, 0, 3, 4, 5),
             validatorfuncs.duration('1d 2s 3m 4h 5w 6y'))
+        # values may be duplicated
+        self.assertEqual(
+            datetime.timedelta((1+7)+(6+12)*365, 2+8, 0, 0, 3+9, 4+10, 5+11),
+            validatorfuncs.duration('1d 2s 3m 4h 5w 6y 7d 8s 9m 10h 11w 12y'))
 
     def test_duration_raises_ValueError(self):
         for d in ['', '1', '5days', '1Week']:
