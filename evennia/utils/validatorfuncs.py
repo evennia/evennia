@@ -102,17 +102,17 @@ def duration(entry, option_key="Duration", **kwargs):
 
     for interval in time_string:
         if _re.match(r"^[\d]+s$", interval):
-            seconds = +int(interval.rstrip("s"))
+            seconds += int(interval.rstrip("s"))
         elif _re.match(r"^[\d]+m$", interval):
-            minutes = +int(interval.rstrip("m"))
+            minutes += int(interval.rstrip("m"))
         elif _re.match(r"^[\d]+h$", interval):
-            hours = +int(interval.rstrip("h"))
+            hours += int(interval.rstrip("h"))
         elif _re.match(r"^[\d]+d$", interval):
-            days = +int(interval.rstrip("d"))
+            days += int(interval.rstrip("d"))
         elif _re.match(r"^[\d]+w$", interval):
-            weeks = +int(interval.rstrip("w"))
+            weeks += int(interval.rstrip("w"))
         elif _re.match(r"^[\d]+y$", interval):
-            days = +int(interval.rstrip("y")) * 365
+            days += int(interval.rstrip("y")) * 365
         else:
             raise ValueError(f"Could not convert section '{interval}' to a {option_key}.")
 
