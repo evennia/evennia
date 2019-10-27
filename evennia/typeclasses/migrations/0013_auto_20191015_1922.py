@@ -5,14 +5,19 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('typeclasses', '0012_attrs_to_picklev4_may_be_slow'),
-    ]
+    dependencies = [("typeclasses", "0012_attrs_to_picklev4_may_be_slow")]
 
     operations = [
         migrations.AlterField(
-            model_name='tag',
-            name='db_tagtype',
-            field=models.CharField(blank=True, db_index=True, help_text='overall type of Tag', max_length=16, null=True, verbose_name='tagtype'),
-        ),
+            model_name="tag",
+            name="db_tagtype",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                help_text="overall type of Tag",
+                max_length=16,
+                null=True,
+                verbose_name="tagtype",
+            ),
+        )
     ]
