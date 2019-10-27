@@ -67,7 +67,12 @@ class Tag(models.Model):
     )
     # this is None, alias or permission
     db_tagtype = models.CharField(
-        "tagtype", max_length=16, null=True, blank=True, help_text="overall type of Tag", db_index=True
+        "tagtype",
+        max_length=16,
+        null=True,
+        blank=True,
+        help_text="overall type of Tag",
+        db_index=True,
     )
 
     class Meta(object):
