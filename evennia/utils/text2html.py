@@ -246,8 +246,7 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        return text
-        return text.replace(r"\n", r"<br>")
+        return text.replace("\n", r"<br>")
 
     def convert_urls(self, text):
         """
@@ -277,7 +276,7 @@ class TextToHTMLparser(object):
         replaces MXP links with HTML code.
 
         Args:
-            text (str): Text to process.
+            match (re.Matchobject): Match for substitution.
 
         Returns:
             text (str): Processed text.
@@ -311,8 +310,7 @@ class TextToHTMLparser(object):
         elif cdict["firstspace"]:
             return " &nbsp;"
         elif cdict["space"] == "\t":
-            text = match.group()
-            return " " if tabstop == 1 else " " + "&nbsp;" * tabstop
+            return " " if self.tabstop == 1 else " " + "&nbsp;" * self.tabstop
         elif cdict["space"] or cdict["spacestart"]:
             text = match.group().replace("\t", "&nbsp;" * self.tabstop)
             text = text.replace(" ", "&nbsp;")
