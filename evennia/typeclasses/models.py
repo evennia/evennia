@@ -191,6 +191,7 @@ class TypedObject(SharedMemoryModel):
         max_length=255,
         null=True,
         help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.",
+        db_index=True,
     )
     # Creation date. This is not changed once the object is created.
     db_date_created = models.DateTimeField("creation date", editable=False, auto_now_add=True)
