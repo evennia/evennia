@@ -9,7 +9,7 @@ snippet #577349 on http://code.activestate.com.
 """
 
 import re
-import cgi
+from html import escape as html_escape
 from .ansi import *
 
 
@@ -304,7 +304,7 @@ class TextToHTMLparser(object):
         """
         cdict = match.groupdict()
         if cdict["htmlchars"]:
-            return cgi.escape(cdict["htmlchars"])
+            return html_escape(cdict["htmlchars"])
         elif cdict["lineend"]:
             return "<br>"
         elif cdict["firstspace"]:
