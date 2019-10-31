@@ -490,6 +490,11 @@ class TickerHandler(object):
                 callback every time it is called. This must be data possible
                 to pickle!
 
+        Returns:
+            store_key (tuple): The immutable store-key for this ticker. This can
+                be stored and passed into `.remove(store_key=store_key)` later to
+                easily stop this ticker later.
+
         Notes:
             The callback will be identified by type and stored either as
             as combination of serialized database object + methodname or
@@ -512,17 +517,27 @@ class TickerHandler(object):
         self.ticker_storage[store_key] = (args, kwargs)
         self.ticker_pool.add(store_key, *args, **kwargs)
         self.save()
+        return store_key
 
-    def remove(self, interval=60, callback=None, idstring="", persistent=True):
+    def remove(self, interval=60, callback=None, idstring="", persistent=True, store_key=None):
         """
-        Remove object from ticker or only remove it from tickers with
-        a given interval.
+        Remove ticker subscription from handler.
 
         Args:
             interval (int, optional): Interval of ticker to remove.
             callback (callable function or method): Either a function or
                 the method of a typeclassed object.
             idstring (str, optional): Identifier id of ticker to remove.
+            persistent (bool, optional): Whether this ticker is persistent or not.
+            store_key (str, optional): If given, all other kwargs are ignored and only
+                this is used to identify the ticker.
+
+        Raises:
+            KeyError: If no matching ticker was found to remove.
+
+        Notes:
+            The store-key is normally built from the interval/callback/idstring/persistent values;
+            but if the `store_key` is explicitly given, this is used instead.
 
         """
         if isinstance(callback, int):
@@ -530,13 +545,15 @@ class TickerHandler(object):
                 "TICKER_HANDLER.remove has changed: "
                 "the interval is now the first argument, callback the second."
             )
-
-        obj, path, callfunc = self._get_callback(callback)
-        store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
+        if not store_key:
+            obj, path, callfunc = self._get_callback(callback)
+            store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
         to_remove = self.ticker_storage.pop(store_key, None)
         if to_remove:
             self.ticker_pool.remove(store_key)
             self.save()
+        else:
+            raise KeyError(f"No Ticker was found matching the store-key {store_key}.")
 
     def clear(self, interval=None):
         """
