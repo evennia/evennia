@@ -162,9 +162,8 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         Start task runner.
 
         """
-        if self.ndb._task:
-            return
-        self.ndb._task = ExtendedLoopingCall(self._step_task)
+        if not self.ndb._task:
+            self.ndb._task = ExtendedLoopingCall(self._step_task)
 
         if self.db._paused_time:
             # the script was paused; restarting
