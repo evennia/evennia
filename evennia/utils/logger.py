@@ -14,7 +14,6 @@ log_typemsg(). This is for historical, back-compatible reasons.
 """
 
 
-
 import os
 import time
 from datetime import datetime
@@ -62,12 +61,17 @@ def timeformat(when=None):
         tz_hour = abs(int(tz_offset // 3600))
         tz_mins = abs(int(tz_offset // 60 % 60))
         tz_sign = "-" if tz_offset >= 0 else "+"
-        tz = "%s%02d%s" % (tz_sign, tz_hour,
-                           (":%02d" % tz_mins if tz_mins else ""))
+        tz = "%s%02d%s" % (tz_sign, tz_hour, (":%02d" % tz_mins if tz_mins else ""))
 
-    return '%d-%02d-%02d %02d:%02d:%02d%s' % (
-        when.year - 2000, when.month, when.day,
-        when.hour, when.minute, when.second, tz)
+    return "%d-%02d-%02d %02d:%02d:%02d%s" % (
+        when.year - 2000,
+        when.month,
+        when.day,
+        when.hour,
+        when.minute,
+        when.second,
+        tz,
+    )
 
 
 class WeeklyLogFile(logfile.DailyLogFile):
@@ -75,6 +79,7 @@ class WeeklyLogFile(logfile.DailyLogFile):
     Log file that rotates once per week. Overrides key methods to change format
 
     """
+
     day_rotation = 7
 
     def shouldRotate(self):
@@ -89,10 +94,10 @@ class WeeklyLogFile(logfile.DailyLogFile):
         Format changed to have 03 for march instead of 3 etc (retaining unix file order)  
         """
         try:
-            return '_'.join(["{:02d}".format(part) for part in tupledate])
+            return "_".join(["{:02d}".format(part) for part in tupledate])
         except Exception:
             # try taking a float unixtime
-            return '_'.join(["{:02d}".format(part) for part in self.toDate(tupledate)])
+            return "_".join(["{:02d}".format(part) for part in self.toDate(tupledate)])
 
     def write(self, data):
         "Write data to log file"
@@ -104,6 +109,7 @@ class PortalLogObserver(log.FileLogObserver):
     """
     Reformat logging
     """
+
     timeFormat = None
     prefix = "  |Portal| "
 
@@ -118,8 +124,7 @@ class PortalLogObserver(log.FileLogObserver):
 
         # timeStr = self.formatTime(eventDict["time"])
         timeStr = timeformat(eventDict["time"])
-        fmtDict = {
-            "text": text.replace("\n", "\n\t")}
+        fmtDict = {"text": text.replace("\n", "\n\t")}
 
         msgStr = log._safeFormat("%(text)s\n", fmtDict)
 
@@ -161,16 +166,16 @@ def log_trace(errmsg=None):
     try:
         if tracestring:
             for line in tracestring.splitlines():
-                log.msg('[::] %s' % line)
+                log.msg("[::] %s" % line)
         if errmsg:
             try:
                 errmsg = str(errmsg)
             except Exception as e:
                 errmsg = str(e)
             for line in errmsg.splitlines():
-                log_msg('[EE] %s' % line)
+                log_msg("[EE] %s" % line)
     except Exception:
-        log_msg('[EE] %s' % errmsg)
+        log_msg("[EE] %s" % errmsg)
 
 
 log_tracemsg = log_trace
@@ -189,10 +194,11 @@ def log_err(errmsg):
     except Exception as e:
         errmsg = str(e)
     for line in errmsg.splitlines():
-        log_msg('[EE] %s' % line)
-
+        log_msg("[EE] %s" % line)
 
     # log.err('ERROR: %s' % (errmsg,))
+
+
 log_errmsg = log_err
 
 
@@ -207,7 +213,7 @@ def log_server(servermsg):
     except Exception as e:
         servermsg = str(e)
     for line in servermsg.splitlines():
-        log_msg('[Server] %s' % line)
+        log_msg("[Server] %s" % line)
 
 
 def log_warn(warnmsg):
@@ -223,10 +229,11 @@ def log_warn(warnmsg):
     except Exception as e:
         warnmsg = str(e)
     for line in warnmsg.splitlines():
-        log_msg('[WW] %s' % line)
-
+        log_msg("[WW] %s" % line)
 
     # log.msg('WARNING: %s' % (warnmsg,))
+
+
 log_warnmsg = log_warn
 
 
@@ -241,7 +248,7 @@ def log_info(infomsg):
     except Exception as e:
         infomsg = str(e)
     for line in infomsg.splitlines():
-        log_msg('[..] %s' % line)
+        log_msg("[..] %s" % line)
 
 
 log_infomsg = log_info
@@ -259,10 +266,11 @@ def log_dep(depmsg):
     except Exception as e:
         depmsg = str(e)
     for line in depmsg.splitlines():
-        log_msg('[DP] %s' % line)
+        log_msg("[DP] %s" % line)
 
 
 log_depmsg = log_dep
+
 
 def log_sec(secmsg):
     """
@@ -276,13 +284,14 @@ def log_sec(secmsg):
     except Exception as e:
         secmsg = str(e)
     for line in secmsg.splitlines():
-        log_msg('[SS] %s' % line)
+        log_msg("[SS] %s" % line)
 
 
 log_secmsg = log_sec
 
 
 # Arbitrary file logger
+
 
 class EvenniaLogFile(logfile.LogFile):
     """
@@ -291,11 +300,13 @@ class EvenniaLogFile(logfile.LogFile):
     lines of the previous log to the start of the new log, in order
     to preserve a continuous chat history for channel log files.
     """
+
     # we delay import of settings to keep logger module as free
     # from django as possible.
     global _CHANNEL_LOG_NUM_TAIL_LINES
     if _CHANNEL_LOG_NUM_TAIL_LINES is None:
         from django.conf import settings
+
         _CHANNEL_LOG_NUM_TAIL_LINES = settings.CHANNEL_LOG_NUM_TAIL_LINES
     num_lines_to_append = _CHANNEL_LOG_NUM_TAIL_LINES
 
@@ -334,7 +345,7 @@ class EvenniaLogFile(logfile.LogFile):
         Returns:
             lines (list): lines from our _file attribute.
         """
-        return self._file.readlines(*args, **kwargs)
+        return [line.decode("utf-8") for line in self._file.readlines(*args, **kwargs)]
 
 
 _LOG_FILE_HANDLES = {}  # holds open log handles
@@ -358,6 +369,7 @@ def _open_log_file(filename):
     global _LOG_FILE_HANDLES, _LOG_FILE_HANDLE_COUNTS, _LOGDIR, _LOG_ROTATE_SIZE
     if not _LOGDIR:
         from django.conf import settings
+
         _LOGDIR = settings.LOG_DIR
         _LOG_ROTATE_SIZE = settings.CHANNEL_LOG_ROTATE_SIZE
 
@@ -393,6 +405,7 @@ def log_file(msg, filename="game.log"):
             on new lines following datetime info.
 
     """
+
     def callback(filehandle, msg):
         """Writing to file and flushing result"""
         msg = "\n%s [-] %s" % (timeformat(), msg.strip())
@@ -433,6 +446,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             all if the file is shorter than nlines.
 
     """
+
     def seek_file(filehandle, offset, nlines, callback):
         """step backwards in chunks and stop only when we have enough lines"""
         lines_found = []
@@ -450,7 +464,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             lines_found = filehandle.readlines()
             block_count -= 1
         # return the right number of lines
-        lines_found = lines_found[-nlines - offset:-offset if offset else None]
+        lines_found = lines_found[-nlines - offset : -offset if offset else None]
         if callback:
             callback(lines_found)
             return None
@@ -464,7 +478,9 @@ def tail_log_file(filename, offset, nlines, callback=None):
     filehandle = _open_log_file(filename)
     if filehandle:
         if callback:
-            return deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(errback)
+            return deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(
+                errback
+            )
         else:
             return seek_file(filehandle, offset, nlines, callback)
     else:

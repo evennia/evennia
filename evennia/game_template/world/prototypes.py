@@ -36,7 +36,7 @@ See the `@spawn` command and `evennia.utils.spawner` for more info.
 
 """
 
-#from random import randint
+# from random import randint
 #
 # GOBLIN = {
 # "key": "goblin grunt",
@@ -56,7 +56,7 @@ See the `@spawn` command and `evennia.utils.spawner` for more info.
 # "prototype_parent": "GOBLIN",
 # "key": "goblin archer",
 # "attacks": ["short bow"]
-#}
+# }
 #
 # This is an example of a prototype without a prototype
 # (nor key) of its own, so it should normally only be
@@ -65,9 +65,9 @@ See the `@spawn` command and `evennia.utils.spawner` for more info.
 # ARCHWIZARD_MIXIN = {
 # "attacks": ["archwizard staff"],
 # "spells": ["greater fire ball", "greater lighting"]
-#}
+# }
 #
 # GOBLIN_ARCHWIZARD = {
 # "key": "goblin archwizard",
 # "prototype_parent" : ("GOBLIN_WIZARD", "ARCHWIZARD_MIXIN")
-#}
+# }

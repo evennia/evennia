@@ -25,22 +25,21 @@ client supports MSDP and if not, we fallback to GMCP with a MSDP
 header where applicable.
 
 """
-from builtins import object
 import re
 import json
 from evennia.utils.utils import is_iter
 
 # MSDP-relevant telnet cmd/opt-codes
-MSDP = b'\x45'
-MSDP_VAR = b'\x01'          # ^A
-MSDP_VAL = b'\x02'          # ^B
-MSDP_TABLE_OPEN = b'\x03'   # ^C
-MSDP_TABLE_CLOSE = b'\x04'  # ^D
-MSDP_ARRAY_OPEN = b'\x05'   # ^E
-MSDP_ARRAY_CLOSE = b'\x06'  # ^F
+MSDP = b"\x45"
+MSDP_VAR = b"\x01"  # ^A
+MSDP_VAL = b"\x02"  # ^B
+MSDP_TABLE_OPEN = b"\x03"  # ^C
+MSDP_TABLE_CLOSE = b"\x04"  # ^D
+MSDP_ARRAY_OPEN = b"\x05"  # ^E
+MSDP_ARRAY_CLOSE = b"\x06"  # ^F
 
 # GMCP
-GMCP = b'\xc9'
+GMCP = b"\xc9"
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
@@ -48,26 +47,27 @@ from twisted.conch.telnet import IAC, SB, SE
 
 # pre-compiled regexes
 # returns 2-tuple
-msdp_regex_table = re.compile(br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s"
-                              % (MSDP_VAR, MSDP_VAL,
-                                 MSDP_TABLE_OPEN,
-                                 MSDP_TABLE_CLOSE))
+msdp_regex_table = re.compile(
+    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)
+)
 # returns 2-tuple
-msdp_regex_array = re.compile(br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s"
-                              % (MSDP_VAR, MSDP_VAL,
-                                 MSDP_ARRAY_OPEN,
-                                 MSDP_ARRAY_CLOSE))
+msdp_regex_array = re.compile(
+    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)
+)
 msdp_regex_var = re.compile(br"%s" % MSDP_VAR)
 msdp_regex_val = re.compile(br"%s" % MSDP_VAL)
 
-EVENNIA_TO_GMCP = {"client_options": "Core.Supports.Get",
-                   "get_inputfuncs": "Core.Commands.Get",
-                   "get_value": "Char.Value.Get",
-                   "repeat": "Char.Repeat.Update",
-                   "monitor": "Char.Monitor.Update"}
+EVENNIA_TO_GMCP = {
+    "client_options": "Core.Supports.Get",
+    "get_inputfuncs": "Core.Commands.Get",
+    "get_value": "Char.Value.Get",
+    "repeat": "Char.Repeat.Update",
+    "monitor": "Char.Monitor.Update",
+}
 
 
 # MSDP/GMCP communication handler
+
 
 class TelnetOOB(object):
     """
@@ -84,7 +84,7 @@ class TelnetOOB(object):
 
         """
         self.protocol = protocol
-        self.protocol.protocol_flags['OOB'] = False
+        self.protocol.protocol_flags["OOB"] = False
         self.MSDP = False
         self.GMCP = False
         # ask for the available protocols and assign decoders
@@ -115,7 +115,7 @@ class TelnetOOB(object):
 
         """
         self.MSDP = True
-        self.protocol.protocol_flags['OOB'] = True
+        self.protocol.protocol_flags["OOB"] = True
         self.protocol.handshake_done()
 
     def no_gmcp(self, option):
@@ -138,7 +138,7 @@ class TelnetOOB(object):
 
         """
         self.GMCP = True
-        self.protocol.protocol_flags['OOB'] = True
+        self.protocol.protocol_flags["OOB"] = True
         self.protocol.handshake_done()
 
     # encoders
@@ -168,40 +168,45 @@ class TelnetOOB(object):
 
         """
         msdp_cmdname = "{msdp_var}{msdp_cmdname}{msdp_val}".format(
-            msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL)
+            msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL
+        )
 
         if not (args or kwargs):
             return msdp_cmdname.encode()
 
         # print("encode_msdp in:", cmdname, args, kwargs)  # DEBUG
 
-        msdp_args = ''
+        msdp_args = ""
         if args:
             msdp_args = msdp_cmdname
             if len(args) == 1:
                 msdp_args += args[0]
             else:
-                msdp_args += "{msdp_array_open}" \
-                             "{msdp_args}" \
-                             "{msdp_array_close}".format(
-                                 msdp_array_open=MSDP_ARRAY_OPEN,
-                                 msdp_array_close=MSDP_ARRAY_CLOSE,
-                                 msdp_args="".join("%s%s"
-                                                   % (MSDP_VAL, json.dumps(val))
-                                                   for val in args))
+                msdp_args += (
+                    "{msdp_array_open}"
+                    "{msdp_args}"
+                    "{msdp_array_close}".format(
+                        msdp_array_open=MSDP_ARRAY_OPEN,
+                        msdp_array_close=MSDP_ARRAY_CLOSE,
+                        msdp_args="".join("%s%s" % (MSDP_VAL, json.dumps(val)) for val in args),
+                    )
+                )
 
         msdp_kwargs = ""
         if kwargs:
             msdp_kwargs = msdp_cmdname
-            msdp_kwargs += "{msdp_table_open}" \
-                           "{msdp_kwargs}" \
-                           "{msdp_table_close}".format(
-                               msdp_table_open=MSDP_TABLE_OPEN,
-                               msdp_table_close=MSDP_TABLE_CLOSE,
-                               msdp_kwargs="".join("%s%s%s%s"
-                                                   % (MSDP_VAR, key, MSDP_VAL,
-                                                      json.dumps(val))
-                                                   for key, val in kwargs.items()))
+            msdp_kwargs += (
+                "{msdp_table_open}"
+                "{msdp_kwargs}"
+                "{msdp_table_close}".format(
+                    msdp_table_open=MSDP_TABLE_OPEN,
+                    msdp_table_close=MSDP_TABLE_CLOSE,
+                    msdp_kwargs="".join(
+                        "%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, json.dumps(val))
+                        for key, val in kwargs.items()
+                    ),
+                )
+            )
 
         msdp_string = msdp_args + msdp_kwargs
 

@@ -27,8 +27,6 @@ of the text. The remaining **kwargs will be passed on to the
 caller.msg() construct every time the page is updated.
 
 """
-from builtins import object, range
-
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
@@ -43,8 +41,7 @@ _SCREEN_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
 
 # text
 
-_DISPLAY = \
-    """{text}
+_DISPLAY = """{text}
 (|wmore|n [{pageno}/{pagemax}] retur|wn|n|||wb|nack|||wt|nop|||we|nnd|||wq|nuit)"""
 
 
@@ -52,9 +49,9 @@ class CmdMore(Command):
     """
     Manipulate the text paging
     """
+
     key = _CMD_NOINPUT
-    aliases = ["quit", "q", "abort", "a", "next", "n",
-               "back", "b", "top", "t", "end", "e"]
+    aliases = ["quit", "q", "abort", "a", "next", "n", "back", "b", "top", "t", "end", "e"]
     auto_help = False
 
     def func(self):
@@ -87,6 +84,7 @@ class CmdMoreLook(Command):
     """
     Override look to display window and prevent OOCLook from firing
     """
+
     key = "look"
     aliases = ["l"]
     auto_help = False
@@ -108,6 +106,7 @@ class CmdSetMore(CmdSet):
     """
     Stores the more command
     """
+
     key = "more_commands"
     priority = 110
 
@@ -121,9 +120,17 @@ class EvMore(object):
     The main pager object
     """
 
-    def __init__(self, caller, text, always_page=False, session=None,
-                 justify_kwargs=None, exit_on_lastpage=False,
-                 exit_cmd=None, **kwargs):
+    def __init__(
+        self,
+        caller,
+        text,
+        always_page=False,
+        session=None,
+        justify_kwargs=None,
+        exit_on_lastpage=False,
+        exit_cmd=None,
+        **kwargs,
+    ):
         """
         Initialization of the text handler.
 
@@ -137,7 +144,8 @@ class EvMore(object):
                 to determine the screen width and will receive all output.
             justify_kwargs (dict, bool or None, optional): If given, this should
                 be valid keyword arguments to the utils.justify() function. If False,
-                no justification will be done.
+                no justification will be done (especially important for handling
+                fixed-width text content, like tables!).
             exit_on_lastpage (bool, optional): If reaching the last page without the
                 page being completely filled, exit pager immediately. If unset,
                 another move forward is required to exit. If set, the pager
@@ -184,7 +192,7 @@ class EvMore(object):
                 justify_kwargs = justify_kwargs or {}
                 width = justify_kwargs.get("width", width)
                 justify_kwargs["width"] = width
-                justify_kwargs["align"] = justify_kwargs.get("align", 'l')
+                justify_kwargs["align"] = justify_kwargs.get("align", "l")
                 justify_kwargs["indent"] = justify_kwargs.get("indent", 0)
 
                 lines = []
@@ -197,7 +205,7 @@ class EvMore(object):
             # always limit number of chars to 10 000 per page
             height = min(10000 // max(1, width), height)
 
-            self._pages = ["\n".join(lines[i:i + height]) for i in range(0, len(lines), height)]
+            self._pages = ["\n".join(lines[i : i + height]) for i in range(0, len(lines), height)]
             self._npages = len(self._pages)
             self._npos = 0
 
@@ -220,9 +228,7 @@ class EvMore(object):
         pos = self._pos
         text = self._pages[pos]
         if show_footer:
-            page = _DISPLAY.format(text=text,
-                                   pageno=pos + 1,
-                                   pagemax=self._npages)
+            page = _DISPLAY.format(text=text, pageno=pos + 1, pagemax=self._npages)
         else:
             page = text
         # check to make sure our session is still valid
@@ -284,8 +290,15 @@ class EvMore(object):
             self._caller.execute_cmd(self.exit_cmd, session=self._session)
 
 
-def msg(caller, text="", always_page=False, session=None,
-        justify_kwargs=None, exit_on_lastpage=True, **kwargs):
+def msg(
+    caller,
+    text="",
+    always_page=False,
+    session=None,
+    justify_kwargs=None,
+    exit_on_lastpage=True,
+    **kwargs,
+):
     """
     More-supported version of msg, mimicking the normal msg method.
 
@@ -305,5 +318,12 @@ def msg(caller, text="", always_page=False, session=None,
             to the `caller.msg` method.
 
     """
-    EvMore(caller, text, always_page=always_page, session=session,
-           justify_kwargs=justify_kwargs, exit_on_lastpage=exit_on_lastpage, **kwargs)
+    EvMore(
+        caller,
+        text,
+        always_page=always_page,
+        session=session,
+        justify_kwargs=justify_kwargs,
+        exit_on_lastpage=exit_on_lastpage,
+        **kwargs,
+    )

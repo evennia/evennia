@@ -48,7 +48,7 @@ from evennia import create_object, search_object
 from evennia.contrib.tutorial_examples import red_button
 from evennia import DefaultObject
 
-limbo = search_object('Limbo')[0]
+limbo = search_object("Limbo")[0]
 
 
 # CODE
@@ -60,8 +60,9 @@ limbo = search_object('Limbo')[0]
 # won't be able to be deleted in debug mode.
 
 # create a red button in limbo
-red_button = create_object(red_button.RedButton, key="Red button",
-                           location=limbo, aliases=["button"])
+red_button = create_object(
+    red_button.RedButton, key="Red button", location=limbo, aliases=["button"]
+)
 
 # we take a look at what we created
 caller.msg("A %s was created." % red_button.key)

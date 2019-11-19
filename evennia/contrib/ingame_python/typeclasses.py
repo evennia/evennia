@@ -212,15 +212,16 @@ class EventCharacter(DefaultCharacter):
 
         # Get the exit from location to destination
         location = self.location
-        exits = [o for o in location.contents if o.location is location and o.destination is destination]
+        exits = [
+            o for o in location.contents if o.location is location and o.destination is destination
+        ]
         mapping = mapping or {}
-        mapping.update({
-            "character": self,
-        })
+        mapping.update({"character": self})
 
         if exits:
-            exits[0].callbacks.call("msg_leave", self, exits[0],
-                                    location, destination, string, mapping)
+            exits[0].callbacks.call(
+                "msg_leave", self, exits[0], location, destination, string, mapping
+            )
             string = exits[0].callbacks.get_variable("message")
             mapping = exits[0].callbacks.get_variable("mapping")
 
@@ -267,15 +268,18 @@ class EventCharacter(DefaultCharacter):
         destination = self.location
         exits = []
         mapping = mapping or {}
-        mapping.update({
-            "character": self,
-        })
+        mapping.update({"character": self})
 
         if origin:
-            exits = [o for o in destination.contents if o.location is destination and o.destination is origin]
+            exits = [
+                o
+                for o in destination.contents
+                if o.location is destination and o.destination is origin
+            ]
             if exits:
-                exits[0].callbacks.call("msg_arrive", self, exits[0],
-                                        origin, destination, string, mapping)
+                exits[0].callbacks.call(
+                    "msg_arrive", self, exits[0], origin, destination, string, mapping
+                )
                 string = exits[0].callbacks.get_variable("message")
                 mapping = exits[0].callbacks.get_variable("mapping")
 
@@ -305,14 +309,16 @@ class EventCharacter(DefaultCharacter):
         origin = self.location
         Room = DefaultRoom
         if isinstance(origin, Room) and isinstance(destination, Room):
-            can = self.callbacks.call("can_move", self,
-                                      origin, destination)
+            can = self.callbacks.call("can_move", self, origin, destination)
             if can:
                 can = origin.callbacks.call("can_move", self, origin)
                 if can:
                     # Call other character's 'can_part' event
-                    for present in [o for o in origin.contents if isinstance(
-                            o, DefaultCharacter) and o is not self]:
+                    for present in [
+                        o
+                        for o in origin.contents
+                        if isinstance(o, DefaultCharacter) and o is not self
+                    ]:
                         can = present.callbacks.call("can_part", present, self)
                         if not can:
                             break
@@ -344,8 +350,9 @@ class EventCharacter(DefaultCharacter):
             destination.callbacks.call("move", self, origin, destination)
 
             # Call the 'greet' event of characters in the location
-            for present in [o for o in destination.contents if isinstance(
-                    o, DefaultCharacter) and o is not self]:
+            for present in [
+                o for o in destination.contents if isinstance(o, DefaultCharacter) and o is not self
+            ]:
                 present.callbacks.call("greet", present, self)
 
     def at_object_delete(self):
@@ -427,7 +434,11 @@ class EventCharacter(DefaultCharacter):
         """
         # First, try the location
         location = getattr(self, "location", None)
-        location = location if location and inherits_from(location, "evennia.objects.objects.DefaultRoom") else None
+        location = (
+            location
+            if location and inherits_from(location, "evennia.objects.objects.DefaultRoom")
+            else None
+        )
         if location and not kwargs.get("whisper", False):
             allow = location.callbacks.call("can_say", self, location, message, parameters=message)
             message = location.callbacks.get_variable("message")
@@ -436,7 +447,9 @@ class EventCharacter(DefaultCharacter):
 
             # Browse all the room's other characters
             for obj in location.contents:
-                if obj is self or not inherits_from(obj, "evennia.objects.objects.DefaultCharacter"):
+                if obj is self or not inherits_from(
+                    obj, "evennia.objects.objects.DefaultCharacter"
+                ):
                     continue
 
                 allow = obj.callbacks.call("can_say", self, obj, message, parameters=message)
@@ -490,14 +503,22 @@ class EventCharacter(DefaultCharacter):
 
         super().at_say(message, **kwargs)
         location = getattr(self, "location", None)
-        location = location if location and inherits_from(location, "evennia.objects.objects.DefaultRoom") else None
+        location = (
+            location
+            if location and inherits_from(location, "evennia.objects.objects.DefaultRoom")
+            else None
+        )
 
         if location and not kwargs.get("whisper", False):
-            location.callbacks.call("say", self, location, message,
-                  parameters=message)
+            location.callbacks.call("say", self, location, message, parameters=message)
 
             # Call the other characters' "say" event
-            presents = [obj for obj in location.contents if obj is not self and inherits_from(obj, "evennia.objects.objects.DefaultCharacter")]
+            presents = [
+                obj
+                for obj in location.contents
+                if obj is not self
+                and inherits_from(obj, "evennia.objects.objects.DefaultCharacter")
+            ]
             for present in presents:
                 present.callbacks.call("say", self, present, message, parameters=message)
 
@@ -602,8 +623,14 @@ class EventExit(DefaultExit):
 
     _events = {
         "can_traverse": (["character", "exit", "room"], EXIT_CAN_TRAVERSE),
-        "msg_arrive": (["character", "exit", "origin", "destination", "message", "mapping"], EXIT_MSG_ARRIVE),
-        "msg_leave": (["character", "exit", "origin", "destination", "message", "mapping"], EXIT_MSG_LEAVE),
+        "msg_arrive": (
+            ["character", "exit", "origin", "destination", "message", "mapping"],
+            EXIT_MSG_ARRIVE,
+        ),
+        "msg_leave": (
+            ["character", "exit", "origin", "destination", "message", "mapping"],
+            EXIT_MSG_LEAVE,
+        ),
         "time": (["exit"], EXIT_TIME, None, time_event),
         "traverse": (["character", "exit", "origin", "destination"], EXIT_TRAVERSE),
     }
@@ -630,8 +657,7 @@ class EventExit(DefaultExit):
         """
         is_character = inherits_from(traversing_object, DefaultCharacter)
         if is_character:
-            allow = self.callbacks.call("can_traverse", traversing_object,
-                                        self, self.location)
+            allow = self.callbacks.call("can_traverse", traversing_object, self, self.location)
             if not allow:
                 return
 
@@ -639,8 +665,9 @@ class EventExit(DefaultExit):
 
         # After traversing
         if is_character:
-            self.callbacks.call("traverse", traversing_object,
-                                self, self.location, self.destination)
+            self.callbacks.call(
+                "traverse", traversing_object, self, self.location, self.destination
+            )
 
 
 # Object help

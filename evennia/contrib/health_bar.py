@@ -22,11 +22,19 @@ below 0, rendering them as a completely full or empty bar with the
 values displayed within.
 """
 
-def display_meter(cur_value, max_value, 
-                  length=30, fill_color=["R", "Y", "G"],
-                  empty_color="B", text_color="w",
-                  align="left", pre_text="", post_text="",
-                  show_values=True):
+
+def display_meter(
+    cur_value,
+    max_value,
+    length=30,
+    fill_color=["R", "Y", "G"],
+    empty_color="B",
+    text_color="w",
+    align="left",
+    pre_text="",
+    post_text="",
+    show_values=True,
+):
     """
     Represents a current and maximum value given as a "bar" rendered with
     ANSI or xterm256 background colors.
@@ -70,34 +78,43 @@ def display_meter(cur_value, max_value,
         bar_base_str = bar_base_str.center(length, " ")
     else:
         bar_base_str = bar_base_str.ljust(length, " ")
-    
-    if max_value < 1: # Prevent divide by zero
-      max_value = 1
-    if cur_value < 0: # Prevent weirdly formatted 'negative bars'
-      cur_value = 0
-    if cur_value > max_value: # Display overfull bars correctly
-      cur_value = max_value
-    
+
+    if max_value < 1:  # Prevent divide by zero
+        max_value = 1
+    if cur_value < 0:  # Prevent weirdly formatted 'negative bars'
+        cur_value = 0
+    if cur_value > max_value:  # Display overfull bars correctly
+        cur_value = max_value
+
     # Now it's time to determine where to put the color codes.
     percent_full = float(cur_value) / float(max_value)
     split_index = round(float(length) * percent_full)
     # Determine point at which to split the bar
     split_index = int(split_index)
-    
+
     # Separate the bar string into full and empty portions
     full_portion = bar_base_str[:split_index]
     empty_portion = bar_base_str[split_index:]
-    
+
     # Pick which fill color to use based on how full the bar is
-    fillcolor_index = (float(len(fill_color)) * percent_full)
+    fillcolor_index = float(len(fill_color)) * percent_full
     fillcolor_index = max(0, int(round(fillcolor_index)) - 1)
     fillcolor_code = "|[" + fill_color[fillcolor_index]
-    
+
     # Make color codes for empty bar portion and text_color
     emptycolor_code = "|[" + empty_color
     textcolor_code = "|" + text_color
-    
+
     # Assemble the final bar
-    final_bar = fillcolor_code + textcolor_code + full_portion + "|n" + emptycolor_code + textcolor_code + empty_portion + "|n"
-    
+    final_bar = (
+        fillcolor_code
+        + textcolor_code
+        + full_portion
+        + "|n"
+        + emptycolor_code
+        + textcolor_code
+        + empty_portion
+        + "|n"
+    )
+
     return final_bar

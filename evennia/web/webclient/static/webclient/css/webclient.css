@@ -17,7 +17,7 @@ body {
     color: #ccc;
     font-size: .9em;
     font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
-    line-height: 1.6em;
+    line-height: 1.4em;
     overflow: hidden;
 }
 @media screen and (max-width: 480px) {
@@ -47,7 +47,10 @@ div {margin:0px;}
 .inp { color: #555 }
 
 /* Messages returned from the server (most messages) */
-.out { color: #aaa }
+.out {
+  color: #aaa;
+  background-color: #000;
+}
 
 /* Error messages (red) */
 .err { color: #f00; }
@@ -326,6 +329,13 @@ div {margin:0px;}
     height: 100%;
     float: left;
 }
+
+
+/* MXP links */
+#mxplink {
+  text-decoration: underline;
+}
+
 
 /* XTERM256 colors */
 

@@ -5,21 +5,21 @@ This connects an RSS feed to an in-game Evennia channel, sending messages
 to the channel whenever the feed updates.
 
 """
-from builtins import object
-
 from twisted.internet import task, threads
 from django.conf import settings
 from evennia.server.session import Session
 from evennia.utils import logger
 
 RSS_ENABLED = settings.RSS_ENABLED
-#RETAG = re.compile(r'<[^>]*?>')
+# RETAG = re.compile(r'<[^>]*?>')
 
 if RSS_ENABLED:
     try:
         import feedparser
     except ImportError:
-        raise ImportError("RSS requires python-feedparser to be installed. Install or set RSS_ENABLED=False.")
+        raise ImportError(
+            "RSS requires python-feedparser to be installed. Install or set RSS_ENABLED=False."
+        )
 
 
 class RSSReader(Session):
@@ -50,8 +50,8 @@ class RSSReader(Session):
         """
         feed = feedparser.parse(self.url)
         new_entries = []
-        for entry in feed['entries']:
-            idval = entry['id'] + entry.get("updated", "")
+        for entry in feed["entries"]:
+            idval = entry["id"] + entry.get("updated", "")
             if idval not in self.old_entries:
                 self.old_entries[idval] = entry
                 new_entries.append(entry)
@@ -112,7 +112,11 @@ class RSSReader(Session):
             on slow connections.
 
         """
-        return threads.deferToThread(self.get_new).addCallback(self._callback, init).addErrback(self._errback)
+        return (
+            threads.deferToThread(self.get_new)
+            .addCallback(self._callback, init)
+            .addErrback(self._errback)
+        )
 
 
 class RSSBotFactory(object):
@@ -142,6 +146,7 @@ class RSSBotFactory(object):
         """
         Called by portalsessionhandler. Starts the bot.
         """
+
         def errback(fail):
             logger.log_err(fail.value)
 

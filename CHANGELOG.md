@@ -2,10 +2,38 @@
 
 ## Evennia 1.0 (2019-) (WIP)
 
-### Already in master 
+- new `drop:holds()` lock default to limit dropping nonsensical things. Access check
+  defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+
+### Already in master
 
 - `py` command now reroutes stdout to output results in-game client. `py`
-without arguments starts a full interactive Python console. 
+without arguments starts a full interactive Python console.
+- Webclient default to a single input pane instead of two. Now defaults to no help-popup.
+- Webclient fix of prompt display
+- Webclient multimedia support for relaying images, video and sounds via
+  `.msg(image=URL)`, `.msg(video=URL)`
+  and `.msg(audio=URL)`
+- Add Spanish translation (fermuch)
+- Expand `GLOBAL_SCRIPTS` container to always start scripts and to include all
+  global scripts regardless of how they were created.
+- Change settings to always use lists instead of tuples, to make mutable
+  settings easier to add to. (#1912)
+- Make new `CHANNEL_MUDINFO` setting for specifying the mudinfo channel
+- Make `CHANNEL_CONNECTINFO` take full channel definition
+- Make `DEFAULT_CHANNELS` list auto-create channels missing at reload
+- Webclient `ANSI->HTML` parser updated. Webclient line width changed from 1.6em to 1.1em
+  to better make ANSI graphics look the same as for third-party clients
+- `AttributeHandler.get(return_list=True)` will return `[]` if there are no
+  Attributes instead of `[None]`.
+- Remove `pillow` requirement (install especially if using imagefield)
+- Add Simplified Korean translation (user aceamro)
+- Show warning on `start -l` if settings contains values unsafe for production.
+- Make code auto-formatted with Black.
+- Make default `set` command able to edit nested structures (PR by Aaron McMillan)
+- Allow running Evennia test suite from core repo with `make test`.
+- Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to 
+  the `TickerHandler.remove` method. This makes it easier to manage tickers. 
 
 
 ## Evennia 0.9 (2018-2019)
@@ -44,12 +72,12 @@ without arguments starts a full interactive Python console.
 
 - Change webclient from old txws version to use more supported/feature-rich Autobahn websocket library
 
-#### Evennia game index 
+#### Evennia game index
 
 - Made Evennia game index client a part of core - now configured from settings file (old configs
   need to be moved)
 - The `evennia connections` command starts a wizard that helps you connect your game to the game index.
-- The game index now accepts games with no public telnet/webclient info (for early prototypes). 
+- The game index now accepts games with no public telnet/webclient info (for early prototypes).
 
 #### New golden-layout based Webclient UI (@friarzen)
 - Features
@@ -184,9 +212,9 @@ without arguments starts a full interactive Python console.
 
 ### Contribs
 
-- Evscaperoom - a full puzzle engine for making multiplayer escape rooms in Evennia. Used to make 
-  the entry for the MUD-Coder's Guild's 2019 Game Jam with the theme "One Room", where it ranked #1. 
-- Evennia game-index client no longer a contrib - moved into server core and configured with new 
+- Evscaperoom - a full puzzle engine for making multiplayer escape rooms in Evennia. Used to make
+  the entry for the MUD-Coder's Guild's 2019 Game Jam with the theme "One Room", where it ranked #1.
+- Evennia game-index client no longer a contrib - moved into server core and configured with new
   setting `GAME_INDEX_ENABLED`.
 - The `extended_room` contrib saw some backwards-incompatible refactoring:
   + All commands now begin with `CmdExtendedRoom`. So before it was `CmdExtendedLook`, now

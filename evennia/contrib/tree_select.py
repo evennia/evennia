@@ -161,10 +161,17 @@ from evennia.utils import evmenu
 from evennia.utils.logger import log_trace
 from evennia import Command
 
-def init_tree_selection(treestr, caller, callback,
-                        index=None, mark_category=True, go_back=True,
-                        cmd_on_exit="look",
-                        start_text="Make your selection:"):
+
+def init_tree_selection(
+    treestr,
+    caller,
+    callback,
+    index=None,
+    mark_category=True,
+    go_back=True,
+    cmd_on_exit="look",
+    start_text="Make your selection:",
+):
     """
     Prompts a player to select an option from a menu tree given as a multi-line string.
 
@@ -205,17 +212,24 @@ def init_tree_selection(treestr, caller, callback,
 
     # Pass kwargs to store data needed in the menu
     kwargs = {
-    "index":index,
-    "mark_category":mark_category,
-    "go_back":go_back,
-    "treestr":treestr,
-    "callback":callback,
-    "start_text":start_text
+        "index": index,
+        "mark_category": mark_category,
+        "go_back": go_back,
+        "treestr": treestr,
+        "callback": callback,
+        "start_text": start_text,
     }
 
     # Initialize menu of selections
-    evmenu.EvMenu(caller, "evennia.contrib.tree_select", startnode="menunode_treeselect",
-                  startnode_input=None, cmd_on_exit=cmd_on_exit, **kwargs)
+    evmenu.EvMenu(
+        caller,
+        "evennia.contrib.tree_select",
+        startnode="menunode_treeselect",
+        startnode_input=None,
+        cmd_on_exit=cmd_on_exit,
+        **kwargs,
+    )
+
 
 def dashcount(entry):
     """
@@ -236,6 +250,7 @@ def dashcount(entry):
             return dashes
     return dashes
 
+
 def is_category(treestr, index):
     """
     Determines whether an option in a tree string is a category by
@@ -248,12 +263,13 @@ def is_category(treestr, index):
     Returns:
         is_category (bool): Whether the option is a category
     """
-    opt_list = treestr.split('\n')
+    opt_list = treestr.split("\n")
     # Not a category if it's the last one in the list
     if index == len(opt_list) - 1:
         return False
     # Not a category if next option is not one level deeper
-    return not bool(dashcount(opt_list[index+1]) != dashcount(opt_list[index]) + 1)
+    return not bool(dashcount(opt_list[index + 1]) != dashcount(opt_list[index]) + 1)
+
 
 def parse_opts(treestr, category_index=None):
     """
@@ -272,7 +288,7 @@ def parse_opts(treestr, category_index=None):
                                   category or True if a selection was made
     """
     dash_depth = 0
-    opt_list = treestr.split('\n')
+    opt_list = treestr.split("\n")
     kept_opts = []
 
     # If a category index is given
@@ -283,7 +299,7 @@ def parse_opts(treestr, category_index=None):
         # Otherwise, change the dash depth to match the new category.
         dash_depth = dashcount(opt_list[category_index]) + 1
         # Delete everything before the category index
-        opt_list = opt_list [category_index+1:]
+        opt_list = opt_list[category_index + 1 :]
 
     # Keep every option (referenced by index) at the appropriate depth
     cur_index = 0
@@ -298,6 +314,7 @@ def parse_opts(treestr, category_index=None):
             return kept_opts
         cur_index += 1
     return kept_opts
+
 
 def index_to_selection(treestr, index, desc=False):
     """
@@ -315,15 +332,15 @@ def index_to_selection(treestr, index, desc=False):
     Returns:
         selection (str): Selection key or description if 'desc' is set
     """
-    opt_list = treestr.split('\n')
+    opt_list = treestr.split("\n")
     # Fetch the given line
     selection = opt_list[index]
     # Strip out the dashes at the start
-    selection = selection[dashcount(selection):]
+    selection = selection[dashcount(selection) :]
     # Separate out description, if any
     if ":" in selection:
         # Split string into key and description
-        selection = selection.split(':', 1)
+        selection = selection.split(":", 1)
         selection[1] = selection[1].strip(" ")
     else:
         # If no description given, set description to None
@@ -332,6 +349,7 @@ def index_to_selection(treestr, index, desc=False):
         return selection[0]
     else:
         return selection[1]
+
 
 def go_up_one_category(treestr, index):
     """
@@ -345,12 +363,11 @@ def go_up_one_category(treestr, index):
     Returns:
         parent_category (int): Index of parent category
     """
-    opt_list = treestr.split('\n')
+    opt_list = treestr.split("\n")
     # Get the number of dashes deep the given index is
     dash_level = dashcount(opt_list[index])
     # Delete everything after the current index
-    opt_list = opt_list[:index+1]
-
+    opt_list = opt_list[: index + 1]
 
     # If there's no dash, return 'None' to return to base menu
     if dash_level == 0:
@@ -361,6 +378,7 @@ def go_up_one_category(treestr, index):
         if dashcount(selection) == dash_level - 1:
             return current_index
         current_index -= 1
+
 
 def optlist_to_menuoptions(treestr, optlist, index, mark_category, go_back):
     """
@@ -396,16 +414,19 @@ def optlist_to_menuoptions(treestr, optlist, index, mark_category, go_back):
         if desc:
             menuitem["desc"] = desc
         # Passing 'newindex' as a kwarg to the node is how we move through the menu!
-        menuitem["goto"] = ["menunode_treeselect", {"newindex":index_to_add}]
+        menuitem["goto"] = ["menunode_treeselect", {"newindex": index_to_add}]
         menuoptions.append(menuitem)
         cur_index += 1
     # Add option to go back, if needed
     if index != None and go_back == True:
-        gobackitem = {"key":["<< Go Back", "go back", "back"],
-                      "desc":"Return to the previous menu.",
-                      "goto":["menunode_treeselect", {"newindex":go_up_one_category(treestr, index)}]}
+        gobackitem = {
+            "key": ["<< Go Back", "go back", "back"],
+            "desc": "Return to the previous menu.",
+            "goto": ["menunode_treeselect", {"newindex": go_up_one_category(treestr, index)}],
+        }
         menuoptions.append(gobackitem)
     return menuoptions
+
 
 def menunode_treeselect(caller, raw_string, **kwargs):
     """
@@ -447,10 +468,16 @@ def menunode_treeselect(caller, raw_string, **kwargs):
         else:
             # Use the category name and description (if any) as the menu text
             if index_to_selection(treestr, index, desc=True) != None:
-                text = "|w" + index_to_selection(treestr, index) + "|n: " + index_to_selection(treestr, index, desc=True)
+                text = (
+                    "|w"
+                    + index_to_selection(treestr, index)
+                    + "|n: "
+                    + index_to_selection(treestr, index, desc=True)
+                )
             else:
                 text = "|w" + index_to_selection(treestr, index) + "|n"
         return text, options
+
 
 # The rest of this module is for the example menu and command! It'll change the color of your name.
 
@@ -486,6 +513,7 @@ NAMECOLOR_MENU = """Set name color: Choose a color for your name!
 --Fuchsia: |503Set your name to Fuchsia|n
 Remove name color: Remove your name color, if any"""
 
+
 class CmdNameColor(Command):
     """
     Set or remove a special color on your name. Just an example for the
@@ -496,9 +524,10 @@ class CmdNameColor(Command):
 
     def func(self):
         # This is all you have to do to initialize a menu!
-        init_tree_selection(NAMECOLOR_MENU, self.caller,
-                            change_name_color,
-                            start_text="Name color options:")
+        init_tree_selection(
+            NAMECOLOR_MENU, self.caller, change_name_color, start_text="Name color options:"
+        )
+
 
 def change_name_color(caller, treestr, index, selection):
     """
@@ -517,19 +546,32 @@ def change_name_color(caller, treestr, index, selection):
         caller.db.uncolored_name = caller.key
 
     # Dictionary matching color selection names to color codes
-    colordict = { "Red":"|511", "Pink":"|533", "Maroon":"|301",
-    "Orange":"|531", "Brown":"|321", "Sienna":"|420",
-    "Yellow":"|551", "Gold":"|540", "Dandelion":"|553",
-    "Green":"|141", "Lime":"|350", "Forest":"|032",
-    "Blue":"|115", "Cyan":"|155", "Navy":"|113",
-    "Purple":"|415", "Lavender":"|535", "Fuchsia":"|503"}
+    colordict = {
+        "Red": "|511",
+        "Pink": "|533",
+        "Maroon": "|301",
+        "Orange": "|531",
+        "Brown": "|321",
+        "Sienna": "|420",
+        "Yellow": "|551",
+        "Gold": "|540",
+        "Dandelion": "|553",
+        "Green": "|141",
+        "Lime": "|350",
+        "Forest": "|032",
+        "Blue": "|115",
+        "Cyan": "|155",
+        "Navy": "|113",
+        "Purple": "|415",
+        "Lavender": "|535",
+        "Fuchsia": "|503",
+    }
 
     # I know this probably isn't the best way to do this. It's just an example!
-    if selection == "Remove name color": # Player chose to remove their name color
+    if selection == "Remove name color":  # Player chose to remove their name color
         caller.key = caller.db.uncolored_name
         caller.msg("Name color removed.")
     elif selection in colordict:
-        newcolor = colordict[selection] # Retrieve color code based on menu selection
-        caller.key = newcolor + caller.db.uncolored_name + "|n" # Add color code to caller's name
+        newcolor = colordict[selection]  # Retrieve color code based on menu selection
+        caller.key = newcolor + caller.db.uncolored_name + "|n"  # Add color code to caller's name
         caller.msg(newcolor + ("Name color changed to %s!" % selection) + "|n")
-

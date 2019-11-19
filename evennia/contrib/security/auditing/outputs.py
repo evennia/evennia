@@ -31,7 +31,7 @@ def to_file(data):
 
     """
     # Bucket logs by day and remove objects before serialization
-    bucket = data.pop('objects')['time'].strftime('%Y-%m-%d')
+    bucket = data.pop("objects")["time"].strftime("%Y-%m-%d")
 
     # Write it
     log_file(json.dumps(data), filename="audit_%s.log" % bucket)
@@ -54,7 +54,7 @@ def to_syslog(data):
 
     """
     # Remove objects before serialization
-    data.pop('objects')
+    data.pop("objects")
 
     # Write it out
     syslog.syslog(json.dumps(data))

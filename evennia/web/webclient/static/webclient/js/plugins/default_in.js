@@ -28,14 +28,24 @@ let defaultin_plugin = (function () {
             case 13: // Enter key
                 var outtext = inputfield.val() || ""; // Grab the text from which-ever inputfield is focused
                 if ( !event.shiftKey ) {  // Enter Key without shift --> send Mesg
-                    var lines = outtext.trim().replace(/[\r]+/,"\n").replace(/[\n]+/, "\n").split("\n");
+                    var lines = outtext.replace(/[\r]+/,"\n").replace(/[\n]+/, "\n").split("\n");
                     for (var i = 0; i < lines.length; i++) {
-                        plugin_handler.onSend( lines[i].trim() );
+                        plugin_handler.onSend( lines[i] );
                     }
                     inputfield.val(""); // Clear this inputfield
                     event.preventDefault();
-                }
-                inputfield.blur();
+
+                    // enter key by itself should toggle focus
+                    if( inputfield.length < 1 ) {
+                        inputfield = $(".inputfield:last");
+                        inputfield.focus();
+                        if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
+                            $("#inputfield").focus();
+                        }
+                    } else {
+                        inputfield.blur();
+                    }
+                } // else allow building a multi-line input command
                 break;
 
             // Anything else, focus() a textarea if needed, and allow the default event

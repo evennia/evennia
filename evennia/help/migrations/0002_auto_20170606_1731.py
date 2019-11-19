@@ -7,14 +7,16 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('help', '0001_initial'),
-    ]
+    dependencies = [("help", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='helpentry',
-            name='db_tags',
-            field=models.ManyToManyField(blank=True, help_text='tags on this object. Tags are simple string markers to identify, group and alias objects.', to='typeclasses.Tag'),
-        ),
+            model_name="helpentry",
+            name="db_tags",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="tags on this object. Tags are simple string markers to identify, group and alias objects.",
+                to="typeclasses.Tag",
+            ),
+        )
     ]

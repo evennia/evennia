@@ -3,7 +3,6 @@ This connects to an IRC network/channel and launches an 'bot' onto it.
 The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.
 """
-from future.utils import viewkeys, viewvalues, viewitems
 
 import re
 from twisted.application import internet
@@ -50,55 +49,54 @@ IRC_GREY = "15"
 # test irc->evennia
 # Use Ctrl+C <num> to produce mIRC colors in e.g. irssi
 
-IRC_COLOR_MAP = dict((
-    (r'|n', IRC_COLOR + IRC_NORMAL),  # normal mode
-    (r'|H', IRC_RESET),   # un-highlight
-    (r'|/', "\n"),        # line break
-    (r'|t', "    "),      # tab
-    (r'|-', "    "),      # fixed tab
-    (r'|_', " "),         # space
-    (r'|*', IRC_INVERT),          # invert
-    (r'|^', ""),          # blinking text
-    (r'|h', IRC_BOLD),    # highlight, use bold instead
-
-    (r'|r', IRC_COLOR + IRC_RED),
-    (r'|g', IRC_COLOR + IRC_GREEN),
-    (r'|y', IRC_COLOR + IRC_YELLOW),
-    (r'|b', IRC_COLOR + IRC_BLUE),
-    (r'|m', IRC_COLOR + IRC_MAGENTA),
-    (r'|c', IRC_COLOR + IRC_CYAN),
-    (r'|w', IRC_COLOR + IRC_WHITE),  # pure white
-    (r'|x', IRC_COLOR + IRC_DGREY),  # dark grey
-
-    (r'|R', IRC_COLOR + IRC_DRED),
-    (r'|G', IRC_COLOR + IRC_DGREEN),
-    (r'|Y', IRC_COLOR + IRC_DYELLOW),
-    (r'|B', IRC_COLOR + IRC_DBLUE),
-    (r'|M', IRC_COLOR + IRC_DMAGENTA),
-    (r'|C', IRC_COLOR + IRC_DCYAN),
-    (r'|W', IRC_COLOR + IRC_GREY),   # light grey
-    (r'|X', IRC_COLOR + IRC_BLACK),  # pure black
-
-    (r'|[r', IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
-    (r'|[g', IRC_COLOR + IRC_NORMAL + "," + IRC_DGREEN),
-    (r'|[y', IRC_COLOR + IRC_NORMAL + "," + IRC_DYELLOW),
-    (r'|[b', IRC_COLOR + IRC_NORMAL + "," + IRC_DBLUE),
-    (r'|[m', IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
-    (r'|[c', IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
-    (r'|[w', IRC_COLOR + IRC_NORMAL + "," + IRC_GREY),    # light grey background
-    (r'|[x', IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK)    # pure black background
-))
+IRC_COLOR_MAP = dict(
+    (
+        (r"|n", IRC_COLOR + IRC_NORMAL),  # normal mode
+        (r"|H", IRC_RESET),  # un-highlight
+        (r"|/", "\n"),  # line break
+        (r"|t", "    "),  # tab
+        (r"|-", "    "),  # fixed tab
+        (r"|_", " "),  # space
+        (r"|*", IRC_INVERT),  # invert
+        (r"|^", ""),  # blinking text
+        (r"|h", IRC_BOLD),  # highlight, use bold instead
+        (r"|r", IRC_COLOR + IRC_RED),
+        (r"|g", IRC_COLOR + IRC_GREEN),
+        (r"|y", IRC_COLOR + IRC_YELLOW),
+        (r"|b", IRC_COLOR + IRC_BLUE),
+        (r"|m", IRC_COLOR + IRC_MAGENTA),
+        (r"|c", IRC_COLOR + IRC_CYAN),
+        (r"|w", IRC_COLOR + IRC_WHITE),  # pure white
+        (r"|x", IRC_COLOR + IRC_DGREY),  # dark grey
+        (r"|R", IRC_COLOR + IRC_DRED),
+        (r"|G", IRC_COLOR + IRC_DGREEN),
+        (r"|Y", IRC_COLOR + IRC_DYELLOW),
+        (r"|B", IRC_COLOR + IRC_DBLUE),
+        (r"|M", IRC_COLOR + IRC_DMAGENTA),
+        (r"|C", IRC_COLOR + IRC_DCYAN),
+        (r"|W", IRC_COLOR + IRC_GREY),  # light grey
+        (r"|X", IRC_COLOR + IRC_BLACK),  # pure black
+        (r"|[r", IRC_COLOR + IRC_NORMAL + "," + IRC_DRED),
+        (r"|[g", IRC_COLOR + IRC_NORMAL + "," + IRC_DGREEN),
+        (r"|[y", IRC_COLOR + IRC_NORMAL + "," + IRC_DYELLOW),
+        (r"|[b", IRC_COLOR + IRC_NORMAL + "," + IRC_DBLUE),
+        (r"|[m", IRC_COLOR + IRC_NORMAL + "," + IRC_DMAGENTA),
+        (r"|[c", IRC_COLOR + IRC_NORMAL + "," + IRC_DCYAN),
+        (r"|[w", IRC_COLOR + IRC_NORMAL + "," + IRC_GREY),  # light grey background
+        (r"|[x", IRC_COLOR + IRC_NORMAL + "," + IRC_BLACK),  # pure black background
+    )
+)
 # ansi->irc
-RE_ANSI_COLOR = re.compile(r"|".join(
-    [re.escape(key) for key in viewkeys(IRC_COLOR_MAP)]), re.DOTALL)
-RE_MXP = re.compile(r'\|lc(.*?)\|lt(.*?)\|le', re.DOTALL)
+RE_ANSI_COLOR = re.compile(r"|".join([re.escape(key) for key in IRC_COLOR_MAP.keys()]), re.DOTALL)
+RE_MXP = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
 # irc->ansi
-_CLR_LIST = [re.escape(val)
-             for val in sorted(viewvalues(IRC_COLOR_MAP), key=len, reverse=True) if val.strip()]
+_CLR_LIST = [
+    re.escape(val) for val in sorted(IRC_COLOR_MAP.values(), key=len, reverse=True) if val.strip()
+]
 _CLR_LIST = _CLR_LIST[-2:] + _CLR_LIST[:-2]
 RE_IRC_COLOR = re.compile(r"|".join(_CLR_LIST), re.DOTALL)
-ANSI_COLOR_MAP = dict((tup[1], tup[0]) for tup in viewitems(IRC_COLOR_MAP) if tup[1].strip())
+ANSI_COLOR_MAP = dict((tup[1], tup[0]) for tup in IRC_COLOR_MAP.items() if tup[1].strip())
 
 
 def parse_ansi_to_irc(string):
@@ -123,7 +121,7 @@ def parse_ansi_to_irc(string):
         pstring = RE_ANSI_COLOR.sub(_sub_to_irc, part)
         parsed_string.append("%s%s" % (pstring, sep[0].strip()))
     # strip mxp
-    parsed_string = RE_MXP.sub(r'\2', "".join(parsed_string))
+    parsed_string = RE_MXP.sub(r"\2", "".join(parsed_string))
     return parsed_string
 
 
@@ -149,12 +147,14 @@ def parse_irc_to_ansi(string):
 
 # IRC bot
 
+
 class IRCBot(irc.IRCClient, Session):
     """
     An IRC bot that tracks activity in a channel as well
     as sends text to it when prompted
 
     """
+
     lineRate = 1
 
     # assigned by factory at creation
@@ -180,8 +180,10 @@ class IRCBot(irc.IRCClient, Session):
         self.uid = int(self.factory.uid)
         self.logged_in = True
         self.factory.sessionhandler.connect(self)
-        logger.log_info("IRC bot '%s' connected to %s at %s:%s." % (self.nickname, self.channel,
-                                                                    self.network, self.port))
+        logger.log_info(
+            "IRC bot '%s' connected to %s at %s:%s."
+            % (self.nickname, self.channel, self.network, self.port)
+        )
 
     def disconnect(self, reason=""):
         """
@@ -210,11 +212,11 @@ class IRCBot(irc.IRCClient, Session):
         """
         if channel == self.nickname:
             # private message
-            user = user.split('!', 1)[0]
+            user = user.split("!", 1)[0]
             self.data_in(text=msg, type="privmsg", user=user, channel=channel)
-        elif not msg.startswith('***'):
+        elif not msg.startswith("***"):
             # channel message
-            user = user.split('!', 1)[0]
+            user = user.split("!", 1)[0]
             user = ansi.raw(user)
             self.data_in(text=msg, type="msg", user=user, channel=channel)
 
@@ -228,8 +230,8 @@ class IRCBot(irc.IRCClient, Session):
             msg (str): The message arriving from channel.
 
         """
-        if not msg.startswith('**'):
-            user = user.split('!', 1)[0]
+        if not msg.startswith("**"):
+            user = user.split("!", 1)[0]
             self.data_in(text=msg, type="action", user=user, channel=channel)
 
     def get_nicklist(self):
@@ -246,14 +248,16 @@ class IRCBot(irc.IRCClient, Session):
         channel = params[2].lower()
         if channel != self.channel.lower():
             return
-        self.nicklist += params[3].split(' ')
+        self.nicklist += params[3].split(" ")
 
     def irc_RPL_ENDOFNAMES(self, prefix, params):
         """Called when the nicklist has finished being returned."""
         channel = params[1].lower()
         if channel != self.channel.lower():
             return
-        self.data_in(text="", type="nicklist", user="server", channel=channel, nicklist=self.nicklist)
+        self.data_in(
+            text="", type="nicklist", user="server", channel=channel, nicklist=self.nicklist
+        )
         self.nicklist = []
 
     def pong(self, user, time):
@@ -349,12 +353,22 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
     increase in delay
 
     """
+
     # scaling reconnect time
     initialDelay = 1
     factor = 1.5
     maxDelay = 60
 
-    def __init__(self, sessionhandler, uid=None, botname=None, channel=None, network=None, port=None, ssl=None):
+    def __init__(
+        self,
+        sessionhandler,
+        uid=None,
+        botname=None,
+        channel=None,
+        network=None,
+        port=None,
+        ssl=None,
+    ):
         """
         Storing some important protocol properties.
 
@@ -453,7 +467,10 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
             if self.ssl:
                 try:
                     from twisted.internet import ssl
-                    service = reactor.connectSSL(self.network, int(self.port), self, ssl.ClientContextFactory())
+
+                    service = reactor.connectSSL(
+                        self.network, int(self.port), self, ssl.ClientContextFactory()
+                    )
                 except ImportError:
                     logger.log_err("To use SSL, the PyOpenSSL module must be installed.")
             else:

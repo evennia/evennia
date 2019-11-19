@@ -40,6 +40,7 @@ class Door(objects.Openable):
     The door leads out of the room.
 
     """
+
     start_open = False
 
     def at_object_creation(self):
@@ -108,7 +109,6 @@ On the wall is a button marked
 
 
 class HelpButton(objects.EvscaperoomObject):
-
     def at_focus_push(self, caller, **kwargs):
         "this adds the 'push' action to the button"
 
@@ -116,8 +116,9 @@ class HelpButton(objects.EvscaperoomObject):
         if hint is None:
             self.msg_char(caller, "There are no more hints to be had.")
         else:
-            self.msg_room(caller, f"{caller.key} pushes *button and gets the "
-                                  f"hint:\n \"{hint.strip()}\"|n")
+            self.msg_room(
+                caller, f"{caller.key} pushes *button and gets the " f'hint:\n "{hint.strip()}"|n'
+            )
 
 
 # state
@@ -144,9 +145,7 @@ class State(BaseState):
     """
 
     # this makes these hints available to the .get_hint method.
-    hints = [STATE_HINT_LVL1,
-             STATE_HINT_LVL2,
-             STATE_HINT_LVL3]
+    hints = [STATE_HINT_LVL1, STATE_HINT_LVL2, STATE_HINT_LVL3]
 
     def character_enters(self, char):
         "Called when char enters room at this state"
@@ -159,16 +158,13 @@ class State(BaseState):
         self.room.db.desc = ROOM_DESC
 
         # create the room objects
-        door = self.create_object(
-            Door, key="door to the cabin", aliases=["door"])
+        door = self.create_object(Door, key="door to the cabin", aliases=["door"])
         door.db.desc = DOOR_DESC.strip()
 
-        key = self.create_object(
-            Key, key="key", aliases=["room key"])
+        key = self.create_object(Key, key="key", aliases=["room key"])
         key.db.desc = KEY_DESC.strip()
 
-        button = self.create_object(
-            HelpButton, key="button", aliases=["help button"])
+        button = self.create_object(HelpButton, key="button", aliases=["help button"])
         button.db.desc = BUTTON_DESC.strip()
 
     def clean(self):

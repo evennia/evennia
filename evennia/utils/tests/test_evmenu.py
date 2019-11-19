@@ -72,7 +72,7 @@ class TestEvMenu(TestCase):
             nodename = menu.nodename
             options = menu.test_options
             if isinstance(options, dict):
-                options = (options, )
+                options = (options,)
 
             # run validation tests for this node
             compare_text = self.expected_node_texts.get(nodename, None)
@@ -81,24 +81,31 @@ class TestEvMenu(TestCase):
                 node_text = menu.test_nodetext
                 self.assertIsNotNone(
                     bool(node_text),
-                    "node: {}: node-text is None, which was not expected.".format(nodename))
+                    "node: {}: node-text is None, which was not expected.".format(nodename),
+                )
                 if isinstance(node_text, tuple):
                     node_text, helptext = node_text
                 node_text = ansi.strip_ansi(node_text.strip())
                 self.assertTrue(
                     node_text.startswith(compare_text),
-                    "\nnode \"{}\':\nOutput:\n{}\n\nExpected (startswith):\n{}".format(
-                        nodename, node_text, compare_text))
+                    "\nnode \"{}':\nOutput:\n{}\n\nExpected (startswith):\n{}".format(
+                        nodename, node_text, compare_text
+                    ),
+                )
             compare_options_count = self.expected_node_options_count.get(nodename, None)
             if compare_options_count is not None:
                 self.assertEqual(
-                    len(options), compare_options_count,
-                    "Not the right number of options returned from node {}.".format(nodename))
+                    len(options),
+                    compare_options_count,
+                    "Not the right number of options returned from node {}.".format(nodename),
+                )
             compare_options = self.expected_node_options.get(nodename, None)
             if compare_options:
                 self.assertEqual(
-                    options, compare_options,
-                    "Options returned from node {} does not match.".format(nodename))
+                    options,
+                    compare_options,
+                    "Options returned from node {} does not match.".format(nodename),
+                )
 
             self._debug_output(indent, "*{}".format(nodename))
             subtree = []
@@ -111,8 +118,12 @@ class TestEvMenu(TestCase):
             else:
                 for inum, optdict in enumerate(options):
 
-                    key, desc, execute, goto = optdict.get("key", ""), optdict.get("desc", None),\
-                                               optdict.get("exec", None), optdict.get("goto", None)
+                    key, desc, execute, goto = (
+                        optdict.get("key", ""),
+                        optdict.get("desc", None),
+                        optdict.get("exec", None),
+                        optdict.get("goto", None),
+                    )
 
                     # prepare the key to pass to the menu
                     if isinstance(key, (tuple, list)) and len(key) > 1:
@@ -141,10 +152,10 @@ class TestEvMenu(TestCase):
                         visited.append(nodename)
                         subtree.append(nodename)
                         _depth_first(menu, subtree, visited, indent + 2)
-                        #self._debug_output(indent, "    -> arrived at {}".format(nodename))
+                        # self._debug_output(indent, "    -> arrived at {}".format(nodename))
                     else:
                         subtree.append(nodename)
-                        #self._debug_output( indent, "    -> arrived at {} (circular call)".format(nodename))
+                        # self._debug_output( indent, "    -> arrived at {} (circular call)".format(nodename))
                     self._debug_output(indent, "-- {} ({}) -> {}".format(key, desc, goto))
 
             if subtree:
@@ -175,23 +186,37 @@ class TestEvMenu(TestCase):
             self.caller.session = self.session
             self.caller2.session = self.session2
 
-            self.menu = evmenu.EvMenu(self.caller, self.menutree, startnode=self.startnode,
-                                      cmdset_mergetype=self.cmdset_mergetype,
-                                      cmdset_priority=self.cmdset_priority,
-                                      auto_quit=self.auto_quit, auto_look=self.auto_look,
-                                      auto_help=self.auto_help,
-                                      cmd_on_exit=self.cmd_on_exit, persistent=False,
-                                      startnode_input=self.startnode_input, session=self.session,
-                                      **self.kwargs)
+            self.menu = evmenu.EvMenu(
+                self.caller,
+                self.menutree,
+                startnode=self.startnode,
+                cmdset_mergetype=self.cmdset_mergetype,
+                cmdset_priority=self.cmdset_priority,
+                auto_quit=self.auto_quit,
+                auto_look=self.auto_look,
+                auto_help=self.auto_help,
+                cmd_on_exit=self.cmd_on_exit,
+                persistent=False,
+                startnode_input=self.startnode_input,
+                session=self.session,
+                **self.kwargs,
+            )
             # persistent version
-            self.pmenu = evmenu.EvMenu(self.caller2, self.menutree, startnode=self.startnode,
-                                       cmdset_mergetype=self.cmdset_mergetype,
-                                       cmdset_priority=self.cmdset_priority,
-                                       auto_quit=self.auto_quit, auto_look=self.auto_look,
-                                       auto_help=self.auto_help,
-                                       cmd_on_exit=self.cmd_on_exit, persistent=True,
-                                       startnode_input=self.startnode_input, session=self.session2,
-                                       **self.kwargs)
+            self.pmenu = evmenu.EvMenu(
+                self.caller2,
+                self.menutree,
+                startnode=self.startnode,
+                cmdset_mergetype=self.cmdset_mergetype,
+                cmdset_priority=self.cmdset_priority,
+                auto_quit=self.auto_quit,
+                auto_look=self.auto_look,
+                auto_help=self.auto_help,
+                cmd_on_exit=self.cmd_on_exit,
+                persistent=True,
+                startnode_input=self.startnode_input,
+                session=self.session2,
+                **self.kwargs,
+            )
 
             self.menu.close_menu = MagicMock()
             self.pmenu.close_menu = MagicMock()
@@ -209,26 +234,30 @@ class TestEvMenuExample(TestEvMenu):
     kwargs = {"testval": "val", "testval2": "val2"}
     debug_output = False
 
-    expected_node_texts = {
-        "test_view_node": "Your name is"}
+    expected_node_texts = {"test_view_node": "Your name is"}
 
-    expected_tree = \
-        ['test_start_node',
-         ['test_set_node',
-          ['test_start_node'],
-          'test_look_node',
-          ['test_start_node'],
-          'test_view_node',
-          ['test_start_node'],
-          'test_dynamic_node',
-          ['test_dynamic_node',
-           'test_dynamic_node',
-           'test_dynamic_node',
-           'test_dynamic_node',
-           'test_start_node'],
-          'test_end_node',
-          'test_displayinput_node',
-          ['test_start_node']]]
+    expected_tree = [
+        "test_start_node",
+        [
+            "test_set_node",
+            ["test_start_node"],
+            "test_look_node",
+            ["test_start_node"],
+            "test_view_node",
+            ["test_start_node"],
+            "test_dynamic_node",
+            [
+                "test_dynamic_node",
+                "test_dynamic_node",
+                "test_dynamic_node",
+                "test_dynamic_node",
+                "test_start_node",
+            ],
+            "test_end_node",
+            "test_displayinput_node",
+            ["test_start_node"],
+        ],
+    ]
 
     def test_kwargsave(self):
         self.assertTrue(hasattr(self.menu, "testval"))

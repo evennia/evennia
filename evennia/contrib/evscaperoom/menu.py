@@ -55,7 +55,7 @@ def _move_to_room(caller, raw_string, **kwargs):
     Helper to move a user to a room
 
     """
-    room = kwargs['room']
+    room = kwargs["room"]
     room.msg_char(caller, f"Entering room |c'{room.name}'|n ...")
     room.msg_room(caller, f"~You |c~were just tricked in here too!|n")
     # we do a manual move since we don't want all hooks to fire.
@@ -78,7 +78,9 @@ def _create_new_room(caller, raw_string, **kwargs):
     _move_to_room(caller, "", room=room)
 
     nrooms = EvscapeRoom.objects.all().count()
-    logger.log_info(f"Evscaperoom: {caller.key} created room '{key}' (#{room.id}). Now {nrooms} room(s) active.")
+    logger.log_info(
+        f"Evscaperoom: {caller.key} created room '{key}' (#{room.id}). Now {nrooms} room(s) active."
+    )
 
     room.log(f"JOIN: {caller.key} created and joined room")
     return "node_quit", {"quiet": True}
@@ -96,10 +98,12 @@ def _get_all_rooms(caller):
         if not room.pk or room.db.deleting:
             continue
         stats = room.db.stats or {"progress": 0}
-        progress = int(stats['progress'])
+        progress = int(stats["progress"])
         nplayers = len(room.get_all_characters())
-        desc = (f"Join room |c'{room.get_display_name(caller)}'|n "
-                f"(complete: {progress}%, players: {nplayers})")
+        desc = (
+            f"Join room |c'{room.get_display_name(caller)}'|n "
+            f"(complete: {progress}%, players: {nplayers})"
+        )
         room_map[desc] = room
         room_option_descs.append(desc)
     caller.ndb._menutree.room_map = room_map
@@ -121,24 +125,34 @@ def node_start(caller, raw_string, **kwargs):
 
     # build a list of available rooms
     options = (
-        {"key": ("|y[s]et your description|n", "set your description",
-                 "set", "desc", "description", "s"),
-         "goto": "node_set_desc"},
-        {"key": ("|y[c]reate/join a new room|n", "create a new room", "create", "c"),
-         "goto": "node_create_room"},
-        {"key": ("|r[q]uit the challenge", "quit", "q"),
-         "goto": "node_quit"})
+        {
+            "key": (
+                "|y[s]et your description|n",
+                "set your description",
+                "set",
+                "desc",
+                "description",
+                "s",
+            ),
+            "goto": "node_set_desc",
+        },
+        {
+            "key": ("|y[c]reate/join a new room|n", "create a new room", "create", "c"),
+            "goto": "node_create_room",
+        },
+        {"key": ("|r[q]uit the challenge", "quit", "q"), "goto": "node_quit"},
+    )
 
     return text, options
 
 
 def node_set_desc(caller, raw_string, **kwargs):
 
-    current_desc = kwargs.get('desc', caller.db.desc)
+    current_desc = kwargs.get("desc", caller.db.desc)
 
-    text = ("Your current description is\n\n "
-            f"   \"{current_desc}\""
-            "\n\nEnter your new description!")
+    text = (
+        "Your current description is\n\n " f'   "{current_desc}"' "\n\nEnter your new description!"
+    )
 
     def _temp_description(caller, raw_string, **kwargs):
         desc = raw_string.strip()
@@ -154,12 +168,10 @@ def node_set_desc(caller, raw_string, **kwargs):
         return "node_start"
 
     options = (
-        {"key": "_default",
-         "goto": _temp_description},
-        {"key": ("|g[a]ccept", "a"),
-         "goto": (_set_description, {"desc": current_desc})},
-        {"key": ("|r[c]ancel", "c"),
-         "goto": "node_start"})
+        {"key": "_default", "goto": _temp_description},
+        {"key": ("|g[a]ccept", "a"), "goto": (_set_description, {"desc": current_desc})},
+        {"key": ("|r[c]ancel", "c"), "goto": "node_start"},
+    )
     return text, options
 
 
@@ -168,34 +180,31 @@ def node_create_room(caller, raw_string, **kwargs):
     text = _CREATE_ROOM_TEXT
 
     options = (
-        {"key": ("|g[c]reate new room and start game|n", "c"),
-         "goto": _create_new_room},
-        {"key": ("|r[a]bort and go back|n", "a"),
-         "goto": "node_start"})
+        {"key": ("|g[c]reate new room and start game|n", "c"), "goto": _create_new_room},
+        {"key": ("|r[a]bort and go back|n", "a"), "goto": "node_start"},
+    )
 
     return text, options
 
 
 def node_join_room(caller, raw_string, **kwargs):
 
-    room = kwargs['room']
+    room = kwargs["room"]
     stats = room.db.stats or {"progress": 0}
 
     players = [char.key for char in room.get_all_characters()]
     text = _JOIN_EXISTING_ROOM_TEXT.format(
         roomname=room.get_display_name(caller),
-        percent=int(stats['progress']),
+        percent=int(stats["progress"]),
         nplayers=len(players),
-        players=list_to_string(players)
+        players=list_to_string(players),
     )
 
     options = (
-        {"key": ("|g[a]ccept|n (default)", "a"),
-         "goto": (_move_to_room, kwargs)},
-        {"key": ("|r[c]ancel|n", "c"),
-         "goto": "node_start"},
-        {"key": "_default",
-         "goto": (_move_to_room, kwargs)})
+        {"key": ("|g[a]ccept|n (default)", "a"), "goto": (_move_to_room, kwargs)},
+        {"key": ("|r[c]ancel|n", "c"), "goto": "node_start"},
+        {"key": "_default", "goto": (_move_to_room, kwargs)},
+    )
 
     return text, options
 
@@ -210,9 +219,10 @@ def node_quit(caller, raw_string, **kwargs):
         if caller.db.evscaperoom_standalone:
             from evennia.commands import cmdhandler
             from evennia import default_cmds
-            cmdhandler.cmdhandler(caller.ndb._menutree._session, "",
-                                  cmdobj=default_cmds.CmdQuit(),
-                                  cmdobj_key="@quit")
+
+            cmdhandler.cmdhandler(
+                caller.ndb._menutree._session, "", cmdobj=default_cmds.CmdQuit(), cmdobj_key="@quit"
+            )
 
     return text, None  # empty options exit the menu
 
@@ -222,10 +232,11 @@ class EvscaperoomMenu(EvMenu):
     Custom menu with a different formatting of options.
 
     """
+
     node_border_char = "~"
 
     def nodetext_formatter(self, text):
-        return justify(text.strip("\n").rstrip(), align='c', indent=1)
+        return justify(text.strip("\n").rstrip(), align="c", indent=1)
 
     def options_formatter(self, optionlist):
         main_options = []
@@ -237,9 +248,7 @@ class EvscaperoomMenu(EvMenu):
                 main_options.append(key)
         main_options = " | ".join(main_options)
         room_choices = super().options_formatter(room_choices)
-        return "{}{}{}".format(main_options,
-                               "\n\n" if room_choices else "",
-                               room_choices)
+        return "{}{}{}".format(main_options, "\n\n" if room_choices else "", room_choices)
 
 
 # access function
@@ -248,19 +257,21 @@ def run_evscaperoom_menu(caller):
     Run room selection menu
 
     """
-    menutree = {"node_start": node_start,
-                "node_quit": node_quit,
-                "node_set_desc": node_set_desc,
-                "node_create_room": node_create_room,
-                "node_join_room": node_join_room}
+    menutree = {
+        "node_start": node_start,
+        "node_quit": node_quit,
+        "node_set_desc": node_set_desc,
+        "node_create_room": node_create_room,
+        "node_join_room": node_join_room,
+    }
 
-    EvscaperoomMenu(caller, menutree, startnode="node_start",
-                    cmd_on_exit=None, auto_quit=True)
+    EvscaperoomMenu(caller, menutree, startnode="node_start", cmd_on_exit=None, auto_quit=True)
 
 
 # ------------------------------------------------------------
 # In-game Options menu
 # ------------------------------------------------------------
+
 
 def _set_thing_style(caller, raw_string, **kwargs):
     room = caller.location
@@ -272,7 +283,7 @@ def _set_thing_style(caller, raw_string, **kwargs):
 
 def _toggle_screen_reader(caller, raw_string, **kwargs):
 
-    session = kwargs['session']
+    session = kwargs["session"]
     # flip old setting
     session.protocol_flags["SCREENREADER"] = not session.protocol_flags.get("SCREENREADER", False)
     # sync setting with portal
@@ -287,22 +298,33 @@ def node_options(caller, raw_string, **kwargs):
     options = caller.attributes.get("options", category=room.tagcategory, default={})
     things_style = options.get("things_style", 2)
 
-    session = kwargs['session']  # we give this as startnode_input when starting menu
+    session = kwargs["session"]  # we give this as startnode_input when starting menu
     screenreader = session.protocol_flags.get("SCREENREADER", False)
 
     options = (
-        {"desc": "{}No item markings (hard mode)".format(
-            "|g(*)|n " if things_style == 0 else "( ) "),
-         "goto": (_set_thing_style, {"value": 0, 'session': session})},
-        {"desc": "{}Items marked as |yitem|n (with color)".format(
-            "|g(*)|n " if things_style == 1 else "( ) "),
-         "goto": (_set_thing_style, {"value": 1, 'session': session})},
-        {"desc": "{}Items are marked as |y[item]|n (screenreader friendly)".format(
-            "|g(*)|n " if things_style == 2 else "( ) "),
-         "goto": (_set_thing_style, {"value": 2, 'session': session})},
-        {"desc": "{}Screenreader mode".format(
-            "(*) " if screenreader else "( ) "),
-         "goto": (_toggle_screen_reader, kwargs)})
+        {
+            "desc": "{}No item markings (hard mode)".format(
+                "|g(*)|n " if things_style == 0 else "( ) "
+            ),
+            "goto": (_set_thing_style, {"value": 0, "session": session}),
+        },
+        {
+            "desc": "{}Items marked as |yitem|n (with color)".format(
+                "|g(*)|n " if things_style == 1 else "( ) "
+            ),
+            "goto": (_set_thing_style, {"value": 1, "session": session}),
+        },
+        {
+            "desc": "{}Items are marked as |y[item]|n (screenreader friendly)".format(
+                "|g(*)|n " if things_style == 2 else "( ) "
+            ),
+            "goto": (_set_thing_style, {"value": 2, "session": session}),
+        },
+        {
+            "desc": "{}Screenreader mode".format("(*) " if screenreader else "( ) "),
+            "goto": (_toggle_screen_reader, kwargs),
+        },
+    )
     return text, options
 
 
@@ -310,6 +332,7 @@ class OptionsMenu(EvMenu):
     """
     Custom display of Option menu
     """
+
     def node_formatter(self, nodetext, optionstext):
         return f"{nodetext}\n\n{optionstext}"
 
@@ -321,5 +344,11 @@ def run_option_menu(caller, session):
     """
     menutree = {"node_start": node_options}
 
-    OptionsMenu(caller, menutree, startnode="node_start",
-                cmd_on_exit="look", auto_quit=True, startnode_input=("", {"session": session}))
+    OptionsMenu(
+        caller,
+        menutree,
+        startnode="node_start",
+        cmd_on_exit="look",
+        auto_quit=True,
+        startnode_input=("", {"session": session}),
+    )

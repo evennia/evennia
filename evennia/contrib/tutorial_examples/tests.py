@@ -4,6 +4,7 @@ from evennia.utils.test_resources import EvenniaTest
 
 from .bodyfunctions import BodyFunctions
 
+
 @patch("evennia.contrib.tutorial_examples.bodyfunctions.random")
 class TestBodyFunctions(EvenniaTest):
     script_typeclass = BodyFunctions
@@ -43,8 +44,9 @@ class TestBodyFunctions(EvenniaTest):
         self.char1.msg.assert_called_with("You have an itch. Hard to reach too.")
         mock_random.random = Mock(return_value=0.25)
         self.script.send_random_message()
-        self.char1.msg.assert_called_with("You think you hear someone behind you. ... "
-                                          "but when you look there's noone there.")
+        self.char1.msg.assert_called_with(
+            "You think you hear someone behind you. ... " "but when you look there's noone there."
+        )
         mock_random.random = Mock(return_value=0.35)
         self.script.send_random_message()
         self.char1.msg.assert_called_with("You inspect your fingernails. Nothing to report.")

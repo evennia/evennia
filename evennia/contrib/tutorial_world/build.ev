@@ -265,7 +265,7 @@ start
  you get a customized error message when trying to pick it up (that
  is checked and echoed by the 'get' command).
 #
-@create/drop Wooden sign;sign : tutorial_world.objects.Readable
+@create/drop Wooden sign;sign : tutorial_world.objects.TutorialReadable
 #
 @desc sign =
  The wooden sign sits at the end of a small eastward path. Beyond it
@@ -287,14 +287,14 @@ start
 #
 @set sign/tutorial_info =
  This is a readable object, of the Typeclass
- evennia.contrib.tutorial_world.objects.Readable. The sign has a cmdset
+ evennia.contrib.tutorial_world.objects.TutorialReadable. The sign has a cmdset
  defined on itself, containing only one command, namely 'read'. This
  command is what allows you to 'read sign'. Doing so returns the
  contents of the Attribute 'readable_sign', containing the information
  on the sign.
 # Set a climbable object for discovering a hidden exit
 #
-@create/drop gnarled old trees;tree;trees;gnarled : tutorial_world.objects.Climbable
+@create/drop gnarled old trees;tree;trees;gnarled : tutorial_world.objects.TutorialClimbable
 #
 @desc trees = Only the sturdiest of trees survive at the edge of the
  moor. A small group of huddling black things has dug in near the
@@ -310,7 +310,7 @@ start
 @set trees/tutorial_info =
  These are climbable objects; they make for a small puzzle for
  accessing a hidden exit. Climbing the trees allows the
- Climbable typeclass to assign an Attribute on the character
+ TutorialClimbable typeclass to assign an Attribute on the character
  that an exit is then looking for.
 #
 # The text to echo to player if trying 'climb tree'. What

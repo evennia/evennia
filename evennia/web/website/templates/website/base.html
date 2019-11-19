@@ -30,7 +30,7 @@
   </head>
   <body>
     {% block body %}
-    
+
     <div id="top"><a href="#main-content" class="sr-only sr-only-focusable">Skip to main content.</a></div>
     {% include "website/_menu.html" %}
     <div class="container main-content mt-4" id="main-copy">
@@ -43,10 +43,10 @@
         {% endif %}
         <div class="{% if sidebar %}col-8{% else %}col{% endif %}">
           {% include 'website/messages.html' %}
-          
+
           {% block content %}
           {% endblock %}
-          
+
           {% include 'website/pagination.html' %}
         </div>
       </div>
@@ -59,7 +59,7 @@
         </div>
     {% endblock %}
     </footer>
-    
+
     {% endblock %}
 
     <!-- jQuery first, then Tether, then Bootstrap JS. -->

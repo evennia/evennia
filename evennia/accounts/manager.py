@@ -5,13 +5,15 @@ The managers for the custom Account object and permissions.
 import datetime
 from django.utils import timezone
 from django.contrib.auth.models import UserManager
-from evennia.typeclasses.managers import (TypedObjectManager, TypeclassManager)
+from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
+
 __all__ = ("AccountManager",)
 
 
 #
 # Account Manager
 #
+
 
 class AccountDBManager(TypedObjectManager, UserManager):
     """
@@ -90,8 +92,7 @@ class AccountDBManager(TypedObjectManager, UserManager):
         end_date = timezone.now()
         tdelta = datetime.timedelta(days)
         start_date = end_date - tdelta
-        return self.filter(last_login__range=(
-            start_date, end_date)).order_by('-last_login')
+        return self.filter(last_login__range=(start_date, end_date)).order_by("-last_login")
 
     def get_account_from_email(self, uemail):
         """
@@ -164,14 +165,22 @@ class AccountDBManager(TypedObjectManager, UserManager):
         if typeclass:
             # we accept both strings and actual typeclasses
             if callable(typeclass):
-                typeclass = "%s.%s" % (typeclass.__module__, typeclass.__name__)
+                typeclass = f"{typeclass.__module__}.{typeclass.__name__}"
             else:
-                typeclass = "%s" % typeclass
+                typeclass = str(typeclass)
             query["db_typeclass_path"] = typeclass
         if exact:
-            return self.filter(**query)
+            matches = self.filter(**query)
         else:
-            return self.filter(**query)
+            matches = self.filter(**query)
+        if not matches:
+            # try alias match
+            matches = self.filter(
+                db_tags__db_tagtype__iexact="alias",
+                **{"db_tags__db_key__iexact" if exact else "db_tags__db_key__icontains": ostring},
+            )
+        return matches
+
     # back-compatibility alias
     account_search = search_account
 

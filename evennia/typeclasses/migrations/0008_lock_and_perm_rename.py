@@ -9,9 +9,15 @@ from django.db import migrations
 def update_perms_and_locks(apps, schema_editor):
 
     # update all permissions
-    Tag = apps.get_model('typeclasses', 'Tag')
-    perm_map = {"guests": "guest", "players": "player", "playerhelpers": "helper",
-                "builders": "builder", "wizards": "admin", "immortals": "developer"}
+    Tag = apps.get_model("typeclasses", "Tag")
+    perm_map = {
+        "guests": "guest",
+        "players": "player",
+        "playerhelpers": "helper",
+        "builders": "builder",
+        "wizards": "admin",
+        "immortals": "developer",
+    }
 
     for perm in Tag.objects.filter(db_tagtype="permission"):
         if perm.db_key in perm_map:
@@ -19,10 +25,15 @@ def update_perms_and_locks(apps, schema_editor):
             perm.save(update_fields=("db_key",))
 
     # update all locks on all entities
-    apps_models = [("objects", "ObjectDB"), ("accounts", "AccountDB"), ("scripts", "ScriptDB"),
-                   ("comms", "ChannelDB")]
-    p_reg = re.compile(r"(?<=perm\()(\w+)(?=\))|(?<=perm_above\()(\w+)(?=\))",
-                       re.IGNORECASE + re.UNICODE)
+    apps_models = [
+        ("objects", "ObjectDB"),
+        ("accounts", "AccountDB"),
+        ("scripts", "ScriptDB"),
+        ("comms", "ChannelDB"),
+    ]
+    p_reg = re.compile(
+        r"(?<=perm\()(\w+)(?=\))|(?<=perm_above\()(\w+)(?=\))", re.IGNORECASE + re.UNICODE
+    )
 
     def _sub(match):
         perm = match.group(1)
@@ -35,16 +46,11 @@ def update_perms_and_locks(apps, schema_editor):
             repl_lock = p_reg.sub(_sub, orig_lock)
             if repl_lock != orig_lock:
                 obj.db_lock_storage = repl_lock
-                obj.save(update_fields=('db_lock_storage',))
+                obj.save(update_fields=("db_lock_storage",))
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('typeclasses', '0007_tag_migrations_may_be_slow'),
-    ]
+    dependencies = [("typeclasses", "0007_tag_migrations_may_be_slow")]
 
-    operations = [
-
-        migrations.RunPython(update_perms_and_locks)
-    ]
+    operations = [migrations.RunPython(update_perms_and_locks)]

@@ -8,12 +8,12 @@ from evennia.scripts.scripts import DoNothing
 
 
 class TestScript(EvenniaTest):
-    
     def test_create(self):
         "Check the script can be created via the convenience method."
-        obj, errors = DefaultScript.create('useless-machine')
+        obj, errors = DefaultScript.create("useless-machine")
         self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
+
 
 class TestScriptDB(TestCase):
     "Check the singleton/static ScriptDB object works correctly"

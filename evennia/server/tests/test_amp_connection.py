@@ -17,12 +17,12 @@ from evennia.server import serversession, session
 from evennia.utils import create
 
 from twisted.internet.base import DelayedCall
+
 DelayedCall.debug = True
 
 # @patch("evennia.server.initial_setup.get_god_account",
 #        MagicMock(return_value=create.account("TestAMPAccount", "test@test.com", "testpassword")))
 class _TestAMP(TwistedTestCase):
-
     def setUp(self):
         super(_TestAMP, self).setUp()
         self.account = mommy.make("accounts.AccountDB", id=1)
@@ -90,9 +90,9 @@ class TestAMPClientSend(_TestAMP):
     def test_adminserver2portal(self, mocktransport):
         self._connect_client(mocktransport)
 
-        self.amp_client.send_AdminServer2Portal(self.session,
-                                                operation=amp.PSYNC,
-                                                info_dict={}, spid=None)
+        self.amp_client.send_AdminServer2Portal(
+            self.session, operation=amp.PSYNC, info_dict={}, spid=None
+        )
         wire_data = self._catch_wire_read(mocktransport)[0]
 
         self._connect_server(mocktransport)
@@ -117,8 +117,7 @@ class TestAMPClientRecv(_TestAMP):
     def test_adminportal2server(self, mocktransport):
         self._connect_server(mocktransport)
 
-        self.amp_server.send_AdminPortal2Server(self.session,
-                                                operation=amp.PDISCONNALL)
+        self.amp_server.send_AdminPortal2Server(self.session, operation=amp.PDISCONNALL)
         wire_data = self._catch_wire_read(mocktransport)[0]
 
         self._connect_client(mocktransport)

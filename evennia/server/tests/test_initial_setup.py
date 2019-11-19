@@ -11,7 +11,6 @@ from evennia.server import initial_setup
 
 
 class TestInitialSetup(TestCase):
-
     @patch("evennia.server.initial_setup.AccountDB")
     def test_get_god_account(self, mocked_accountdb):
         mocked_accountdb.objects.get = MagicMock(return_value=1)

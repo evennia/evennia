@@ -34,12 +34,8 @@ class Object(DefaultObject):
 
      key (string) - name of object
      name (string)- same as key
-     aliases (list of strings) - aliases to the object. Will be saved to
-                           database as AliasDB entries but returned as strings.
      dbref (int, read-only) - unique #id-number. Also "id" can be used.
-                                  back to this class
      date_created (string) - time stamp of object creation
-     permissions (list of strings) - list of permission strings
 
      account (Account) - controlling account (if any, only set together with
                        sessid below)
@@ -48,8 +44,6 @@ class Object(DefaultObject):
                        Sessions directly.
      location (Object) - current location. Is None if this is a room
      home (Object) - safety start-location
-     sessions (list of Sessions, read-only) - returns all sessions connected
-                       to this object
      has_account (bool, read-only)- will only return *connected* accounts
      contents (list of Objects, read-only) - returns all objects inside this
                        object (including exits)
@@ -60,16 +54,20 @@ class Object(DefaultObject):
 
     * Handlers available
 
+     aliases - alias-handler: use aliases.add/remove/get() to use.
+     permissions - permission-handler: use permissions.add/remove() to
+                   add/remove new perms.
      locks - lock-handler: use locks.add() to add new lock strings
-     db - attribute-handler: store/retrieve database attributes on this
-                             self.db.myattr=val, val=self.db.myattr
-     ndb - non-persistent attribute handler: same as db but does not create
-                             a database entry when storing data
      scripts - script-handler. Add new scripts to object with scripts.add()
      cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
      nicks - nick-handler. New nicks with nicks.add().
      sessions - sessions-handler. Get Sessions connected to this
                 object with sessions.get()
+     attributes - attribute-handler. Use attributes.add/remove/get.
+     db - attribute-handler: Shortcut for attribute-handler. Store/retrieve
+            database attributes using self.db.myattr=val, val=self.db.myattr
+     ndb - non-persistent attribute handler: same as db but does not create
+            a database entry when storing data
 
     * Helper methods (see src.objects.objects.py for full headers)
 
@@ -160,4 +158,5 @@ class Object(DefaultObject):
                                  object speaks
 
      """
+
     pass

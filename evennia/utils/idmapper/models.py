@@ -7,9 +7,6 @@ leave caching unexpectedly (no use of WeakRefs).
 Also adds `cache_size()` for monitoring the size of the cache.
 """
 
-from builtins import object
-from future.utils import listitems, listvalues, with_metaclass
-
 import os
 import threading
 import gc
@@ -61,6 +58,7 @@ class SharedMemoryModelBase(ModelBase):
         populated whenever possible (ie when it is possible to infer the pk value).
 
         """
+
         def new_instance():
             return super(SharedMemoryModelBase, cls).__call__(*args, **kwargs)
 
@@ -112,16 +110,21 @@ class SharedMemoryModelBase(ModelBase):
         # set up the typeclass handling only if a variable _is_typeclass is set on the class
         def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
             "Helper method to create property wrappers with unique names (must be in separate call)"
+
             def _get(cls, fname):
                 "Wrapper for getting database field"
                 if _GA(cls, "_is_deleted"):
-                    raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
+                    raise ObjectDoesNotExist(
+                        "Cannot access %s: Hosting object was already deleted." % fname
+                    )
                 return _GA(cls, fieldname)
 
             def _get_foreign(cls, fname):
                 "Wrapper for returning foreignkey fields"
                 if _GA(cls, "_is_deleted"):
-                    raise ObjectDoesNotExist("Cannot access %s: Hosting object was already deleted." % fname)
+                    raise ObjectDoesNotExist(
+                        "Cannot access %s: Hosting object was already deleted." % fname
+                    )
                 return _GA(cls, fieldname)
 
             def _set_nonedit(cls, fname, value):
@@ -131,20 +134,26 @@ class SharedMemoryModelBase(ModelBase):
             def _set(cls, fname, value):
                 "Wrapper for setting database field"
                 if _GA(cls, "_is_deleted"):
-                    raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
+                    raise ObjectDoesNotExist(
+                        "Cannot set %s to %s: Hosting object was already deleted!" % (fname, value)
+                    )
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be set when first creating object)
-                update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+                update_fields = (
+                    [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+                )
                 _GA(cls, "save")(update_fields=update_fields)
 
             def _set_foreign(cls, fname, value):
                 "Setter only used on foreign key relations, allows setting with #dbref"
                 if _GA(cls, "_is_deleted"):
-                    raise ObjectDoesNotExist("Cannot set %s to %s: Hosting object was already deleted!" % (fname, value))
+                    raise ObjectDoesNotExist(
+                        "Cannot set %s to %s: Hosting object was already deleted!" % (fname, value)
+                    )
                 if isinstance(value, (str, int)):
                     value = to_str(value)
-                    if (value.isdigit() or value.startswith("#")):
+                    if value.isdigit() or value.startswith("#"):
                         # we also allow setting using dbrefs, if so we try to load the matching object.
                         # (we assume the object is of the same type as the class holding the field, if
                         # not a custom handler must be used for that field)
@@ -159,7 +168,9 @@ class SharedMemoryModelBase(ModelBase):
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be set when first creating object)
-                update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+                update_fields = (
+                    [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+                )
                 _GA(cls, "save")(update_fields=update_fields)
 
             def _del_nonedit(cls, fname):
@@ -169,21 +180,39 @@ class SharedMemoryModelBase(ModelBase):
             def _del(cls, fname):
                 "Wrapper for clearing database field - sets it to None"
                 _SA(cls, fname, None)
-                update_fields = [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+                update_fields = (
+                    [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
+                )
                 _GA(cls, "save")(update_fields=update_fields)
 
             # wrapper factories
             if not editable:
-                def fget(cls): return _get(cls, fieldname)
-                def fset(cls, val): return _set_nonedit(cls, fieldname, val)
-            elif foreignkey:
-                def fget(cls): return _get_foreign(cls, fieldname)
-                def fset(cls, val): return _set_foreign(cls, fieldname, val)
-            else:
-                def fget(cls): return _get(cls, fieldname)
-                def fset(cls, val): return _set(cls, fieldname, val)
 
-            def fdel(cls): return _del(cls, fieldname) if editable else _del_nonedit(cls, fieldname)
+                def fget(cls):
+                    return _get(cls, fieldname)
+
+                def fset(cls, val):
+                    return _set_nonedit(cls, fieldname, val)
+
+            elif foreignkey:
+
+                def fget(cls):
+                    return _get_foreign(cls, fieldname)
+
+                def fset(cls, val):
+                    return _set_foreign(cls, fieldname, val)
+
+            else:
+
+                def fget(cls):
+                    return _get(cls, fieldname)
+
+                def fset(cls, val):
+                    return _set(cls, fieldname, val)
+
+            def fdel(cls):
+                return _del(cls, fieldname) if editable else _del_nonedit(cls, fieldname)
+
             # set docstrings for auto-doc
             fget.__doc__ = "A wrapper for getting database field `%s`." % fieldname
             fset.__doc__ = "A wrapper for setting (and saving) database field `%s`." % fieldname
@@ -197,18 +226,23 @@ class SharedMemoryModelBase(ModelBase):
             return
         # dynamically create the wrapper properties for all fields not already handled
         # (manytomanyfields are always handlers)
-        for fieldname, field in ((fname, field) for fname, field in listitems(attrs)
-                                 if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"):
+        for fieldname, field in (
+            (fname, field)
+            for fname, field in list(attrs.items())
+            if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"
+        ):
             foreignkey = type(field).__name__ == "ForeignKey"
             wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
             if wrappername not in attrs:
                 # makes sure not to overload manually created wrappers on the model
-                create_wrapper(cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey)
+                create_wrapper(
+                    cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey
+                )
 
         return super().__new__(cls, name, bases, attrs)
 
 
-class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
+class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
     """
     Base class for idmapped objects. Inherit from `this`.
     """
@@ -228,7 +262,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         """
         result = None
         # Quick hack for my composites work for now.
-        if hasattr(cls._meta, 'pks'):
+        if hasattr(cls._meta, "pks"):
             pk = cls._meta.pks[0]
         else:
             pk = cls._meta.pk
@@ -291,7 +325,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         Return the objects so far cached by idmapper for this class.
 
         """
-        return listvalues(cls.__dbclass__.__instance_cache__)
+        return list(cls.__dbclass__.__instance_cache__.values())
 
     @classmethod
     def _flush_cached_by_key(cls, key, force=True):
@@ -318,7 +352,8 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
 
         """
         cls._flush_cached_by_key(instance._get_pk_val(), force=force)
-    #flush_cached_instance = classmethod(flush_cached_instance)
+
+    # flush_cached_instance = classmethod(flush_cached_instance)
 
     @classmethod
     def flush_instance_cache(cls, force=False):
@@ -330,9 +365,13 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         if force:
             cls.__dbclass__.__instance_cache__ = {}
         else:
-            cls.__dbclass__.__instance_cache__ = dict((key, obj) for key, obj in cls.__dbclass__.__instance_cache__.items()
-                                                      if not obj.at_idmapper_flush())
-    #flush_instance_cache = classmethod(flush_instance_cache)
+            cls.__dbclass__.__instance_cache__ = dict(
+                (key, obj)
+                for key, obj in cls.__dbclass__.__instance_cache__.items()
+                if not obj.at_idmapper_flush()
+            )
+
+    # flush_instance_cache = classmethod(flush_instance_cache)
 
     # per-instance methods
 
@@ -404,7 +443,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             except DatabaseError:
                 # we handle the 'update_fields did not update any rows' error that
                 # may happen due to timing issues with attributes
-                ufields_removed = kwargs.pop('update_fields', None)
+                ufields_removed = kwargs.pop("update_fields", None)
                 if ufields_removed:
                     super().save(*args, **kwargs)
                 else:
@@ -413,6 +452,7 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             # in another thread; make sure to save in reactor thread
             def _save_callback(cls, *args, **kwargs):
                 super().save(*args, **kwargs)
+
             callFromThread(_save_callback, self, *args, **kwargs)
 
         if not self.pk:
@@ -424,8 +464,9 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
         new = False
         if "update_fields" in kwargs and kwargs["update_fields"]:
             # get field objects from their names
-            update_fields = (self._meta.get_field(fieldname)
-                             for fieldname in kwargs.get("update_fields"))
+            update_fields = (
+                self._meta.get_field(fieldname) for fieldname in kwargs.get("update_fields")
+            )
         else:
             # meta.fields are already field objects; get them all
             new = True
@@ -439,11 +480,11 @@ class SharedMemoryModel(with_metaclass(SharedMemoryModelBase, Model)):
             if hasattr(self, hookname) and callable(_GA(self, hookname)):
                 _GA(self, hookname)(new)
 
-#            # if a trackerhandler is set on this object, update it with the
-#            # fieldname and the new value
-#            fieldtracker = "_oob_at_%s_postsave" % fieldname
-#            if hasattr(self, fieldtracker):
-#                _GA(self, fieldtracker)(fieldname)
+        #            # if a trackerhandler is set on this object, update it with the
+        #            # fieldname and the new value
+        #            fieldtracker = "_oob_at_%s_postsave" % fieldname
+        #            if hasattr(self, fieldtracker):
+        #                _GA(self, fieldtracker)(fieldname)
         pass
 
 
@@ -452,16 +493,18 @@ class WeakSharedMemoryModelBase(SharedMemoryModelBase):
     Uses a WeakValue dictionary for caching instead of a regular one.
 
     """
+
     def _prepare(cls):
         super()._prepare()
         cls.__dbclass__.__instance_cache__ = WeakValueDictionary()
 
 
-class WeakSharedMemoryModel(with_metaclass(WeakSharedMemoryModelBase, SharedMemoryModel)):
+class WeakSharedMemoryModel(SharedMemoryModel, metaclass=WeakSharedMemoryModelBase):
     """
     Uses a WeakValue dictionary for caching instead of a regular one
 
     """
+
     class Meta(object):
         abstract = True
 
@@ -475,6 +518,7 @@ def flush_cache(**kwargs):
     Uses a signal so we make sure to catch cascades.
 
     """
+
     def class_hierarchy(clslist):
         """Recursively yield a class hierarchy"""
         for cls in clslist:
@@ -501,7 +545,7 @@ def flush_cached_instance(sender, instance, **kwargs):
 
     """
     # XXX: Is this the best way to make sure we can flush?
-    if not hasattr(instance, 'flush_cached_instance'):
+    if not hasattr(instance, "flush_cached_instance"):
         return
     sender.flush_cached_instance(instance, force=True)
 
@@ -514,7 +558,7 @@ def update_cached_instance(sender, instance, **kwargs):
     Re-cache the given instance in the idmapper cache.
 
     """
-    if not hasattr(instance, 'cache_instance'):
+    if not hasattr(instance, "cache_instance"):
         return
     sender.cache_instance(instance)
 
@@ -573,8 +617,10 @@ def conditional_flush(max_rmem, force=False):
 
     if ((now - LAST_FLUSH) < AUTO_FLUSH_MIN_INTERVAL) and not force:
         # too soon after last flush.
-        logger.log_warn("Warning: Idmapper flush called more than "
-                        "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL / 60.0))
+        logger.log_warn(
+            "Warning: Idmapper flush called more than "
+            "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL / 60.0)
+        )
         return
 
     if os.name == "nt":
@@ -584,7 +630,9 @@ def conditional_flush(max_rmem, force=False):
     # check actual memory usage
     Ncache_max = mem2cachesize(max_rmem)
     Ncache, _ = cache_size()
-    actual_rmem = float(os.popen('ps -p %d -o %s | tail -1' % (os.getpid(), "rss")).read()) / 1000.0  # resident memory
+    actual_rmem = (
+        float(os.popen("ps -p %d -o %s | tail -1" % (os.getpid(), "rss")).read()) / 1000.0
+    )  # resident memory
 
     if Ncache >= Ncache_max and actual_rmem > max_rmem * 0.9:
         # flush cache when number of objects in cache is big enough and our
@@ -620,5 +668,6 @@ def cache_size(mb=True):
                 classdict[submodel.__dbclass__.__name__] = num
             else:
                 get_recurse(subclasses)
+
     get_recurse(SharedMemoryModel.__subclasses__())
     return numtotal[0], classdict

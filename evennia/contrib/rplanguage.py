@@ -90,8 +90,6 @@ Usage:
     that never change (if this is desired).
 
 """
-from builtins import range
-
 import re
 from random import choice, randint
 from collections import defaultdict
@@ -99,15 +97,17 @@ from evennia import DefaultScript
 from evennia.utils import logger
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 #
 # Obfuscate language
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 # default language grammar
-_PHONEMES = "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh " \
-            "s z sh zh ch jh k ng g m n l r w"
+_PHONEMES = (
+    "ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh "
+    "s z sh zh ch jh k ng g m n l r w"
+)
 _VOWELS = "eaoiuy"
 # these must be able to be constructed from phonemes (so for example,
 # if you have v here, there must exist at least one single-character
@@ -116,8 +116,8 @@ _GRAMMAR = "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.DOTALL + re.UNICODE
 _RE_GRAMMAR = re.compile(r"vv|cc|v|c", _RE_FLAGS)
-_RE_WORD = re.compile(r'\w+', _RE_FLAGS)
-_RE_EXTRA_CHARS = re.compile(r'\s+(?=\W)|[,.?;](?=[,.?;]|\s+[,.?;])', _RE_FLAGS)
+_RE_WORD = re.compile(r"\w+", _RE_FLAGS)
+_RE_EXTRA_CHARS = re.compile(r"\s+(?=\W)|[,.?;](?=[,.?;]|\s+[,.?;])", _RE_FLAGS)
 
 
 class LanguageError(RuntimeError):
@@ -161,13 +161,20 @@ class LanguageHandler(DefaultScript):
         self.persistent = True
         self.db.language_storage = {}
 
-    def add(self, key="default", phonemes=_PHONEMES,
-            grammar=_GRAMMAR, word_length_variance=0,
-            noun_translate=False,
-            noun_prefix="",
-            noun_postfix="",
-            vowels=_VOWELS, manual_translations=None,
-            auto_translations=None, force=False):
+    def add(
+        self,
+        key="default",
+        phonemes=_PHONEMES,
+        grammar=_GRAMMAR,
+        word_length_variance=0,
+        noun_translate=False,
+        noun_prefix="",
+        noun_postfix="",
+        vowels=_VOWELS,
+        manual_translations=None,
+        auto_translations=None,
+        force=False,
+    ):
         """
         Add a new language. Note that you generally only need to do
         this once per language and that adding an existing language
@@ -231,7 +238,8 @@ class LanguageHandler(DefaultScript):
         if key in self.db.language_storage and not force:
             raise LanguageExistsError(
                 "Language is already created. Re-adding it will re-build"
-                " its dictionary map. Use 'force=True' keyword if you are sure.")
+                " its dictionary map. Use 'force=True' keyword if you are sure."
+            )
 
         # create grammar_component->phoneme mapping
         # {"vv": ["ea", "oh", ...], ...}
@@ -246,10 +254,11 @@ class LanguageHandler(DefaultScript):
         gramdict = defaultdict(list)
         for gram in grammar.split():
             if re.search("\W|(!=[cv])", gram):
-                raise LanguageError("The grammar '%s' is invalid (only 'c' and 'v' are allowed)" % gram)
+                raise LanguageError(
+                    "The grammar '%s' is invalid (only 'c' and 'v' are allowed)" % gram
+                )
             gramdict[len(gram)].append(gram)
         grammar = dict(gramdict)
-
 
         # create automatic translation
         translation = {}
@@ -257,14 +266,13 @@ class LanguageHandler(DefaultScript):
         if auto_translations:
             if isinstance(auto_translations, str):
                 # path to a file rather than a list
-                with open(auto_translations, 'r') as f:
+                with open(auto_translations, "r") as f:
                     auto_translations = f.readlines()
             for word in auto_translations:
                 word = word.strip()
                 lword = len(word)
                 new_word = ""
-                wlen = max(0, lword + sum(randint(-1, 1) for i
-                                          in range(word_length_variance)))
+                wlen = max(0, lword + sum(randint(-1, 1) for i in range(word_length_variance)))
                 if wlen not in grammar:
                     # always create a translation, use random length
                     structure = choice(grammar[choice(list(grammar))])
@@ -277,16 +285,20 @@ class LanguageHandler(DefaultScript):
 
         if manual_translations:
             # update with manual translations
-            translation.update(dict((key.lower(), value.lower()) for key, value in manual_translations.items()))
+            translation.update(
+                dict((key.lower(), value.lower()) for key, value in manual_translations.items())
+            )
 
         # store data
-        storage = {"translation": translation,
-                   "grammar": grammar,
-                   "grammar2phonemes": dict(grammar2phonemes),
-                   "word_length_variance": word_length_variance,
-                   "noun_translate": noun_translate,
-                   "noun_prefix": noun_prefix,
-                   "noun_postfix": noun_postfix}
+        storage = {
+            "translation": translation,
+            "grammar": grammar,
+            "grammar2phonemes": dict(grammar2phonemes),
+            "word_length_variance": word_length_variance,
+            "noun_translate": noun_translate,
+            "noun_prefix": noun_prefix,
+            "noun_postfix": noun_postfix,
+        }
         self.db.language_storage[key] = storage
 
     def _translate_sub(self, match):
@@ -323,14 +335,17 @@ class LanguageHandler(DefaultScript):
 
                 # make up translation on the fly. Length can
                 # vary from un-translated word.
-                wlen = max(0, lword + sum(randint(-1, 1) for i
-                                          in range(self.language["word_length_variance"])))
+                wlen = max(
+                    0,
+                    lword
+                    + sum(randint(-1, 1) for i in range(self.language["word_length_variance"])),
+                )
                 grammar = self.language["grammar"]
                 if wlen not in grammar:
                     if randint(0, 1) == 0:
                         # this word has no direct translation!
                         wlen = 0
-                        new_word = ''
+                        new_word = ""
                     else:
                         # use random word length
                         wlen = choice(list(grammar.keys()))
@@ -343,14 +358,16 @@ class LanguageHandler(DefaultScript):
                         try:
                             new_word += choice(grammar2phonemes[match.group()])
                         except KeyError:
-                            logger.log_trace("You need to supply at least one example of each of "
-                                             "the four base phonemes (c, v, cc, vv)")
+                            logger.log_trace(
+                                "You need to supply at least one example of each of "
+                                "the four base phonemes (c, v, cc, vv)"
+                            )
                             # abort translation here
-                            new_word = ''
+                            new_word = ""
                             break
 
                 if word.istitle():
-                    title_word = ''
+                    title_word = ""
                     if not start_sentence and not self.language.get("noun_translate", False):
                         # don't translate what we identify as proper nouns (names)
                         title_word = word
@@ -359,9 +376,11 @@ class LanguageHandler(DefaultScript):
 
                     if title_word:
                         # Regardless of if we translate or not, we will add the custom prefix/postfixes
-                        new_word = "%s%s%s" % (self.language["noun_prefix"],
-                                               title_word.capitalize(),
-                                               self.language["noun_postfix"])
+                        new_word = "%s%s%s" % (
+                            self.language["noun_prefix"],
+                            title_word.capitalize(),
+                            self.language["noun_postfix"],
+                        )
 
             if len(word) > 1 and word.isupper():
                 # keep LOUD words loud also when translated
@@ -429,6 +448,7 @@ def obfuscate_language(text, level=0.0, language="default"):
         except LanguageHandler.DoesNotExist:
             if not _LANGUAGE_HANDLER:
                 from evennia import create_script
+
                 _LANGUAGE_HANDLER = create_script(LanguageHandler)
     return _LANGUAGE_HANDLER.translate(text, level=level, language=language)
 
@@ -446,6 +466,7 @@ def add_language(**kwargs):
         except LanguageHandler.DoesNotExist:
             if not _LANGUAGE_HANDLER:
                 from evennia import create_script
+
                 _LANGUAGE_HANDLER = create_script(LanguageHandler)
     _LANGUAGE_HANDLER.add(**kwargs)
 
@@ -465,11 +486,12 @@ def available_languages():
         except LanguageHandler.DoesNotExist:
             if not _LANGUAGE_HANDLER:
                 from evennia import create_script
+
                 _LANGUAGE_HANDLER = create_script(LanguageHandler)
     return list(_LANGUAGE_HANDLER.attributes.get("language_storage", {}))
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 #
 # Whisper obscuration
 #
@@ -481,24 +503,25 @@ def available_languages():
 # give a user some idea of the sentence structure. Then the  word
 # lengths are also obfuscated and finally the whisper # length itself.
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 _RE_WHISPER_OBSCURE = [
-    re.compile(r"^$", _RE_FLAGS),                   # This is a Test! #0 full whisper
-    re.compile(r"[ae]", _RE_FLAGS),                 # This -s - Test! #1 add uy
-    re.compile(r"[aeuy]", _RE_FLAGS),               # This -s - Test! #2 add oue
-    re.compile(r"[aeiouy]", _RE_FLAGS),             # Th-s -s - T-st! #3 add all consonants
+    re.compile(r"^$", _RE_FLAGS),  # This is a Test! #0 full whisper
+    re.compile(r"[ae]", _RE_FLAGS),  # This -s - Test! #1 add uy
+    re.compile(r"[aeuy]", _RE_FLAGS),  # This -s - Test! #2 add oue
+    re.compile(r"[aeiouy]", _RE_FLAGS),  # Th-s -s - T-st! #3 add all consonants
     re.compile(r"[aeiouybdhjlmnpqrv]", _RE_FLAGS),  # T--s -s - T-st! #4 add hard consonants
-    re.compile(r"[a-eg-rt-z]", _RE_FLAGS),          # T--s -s - T-s-! #5 add all capitals
+    re.compile(r"[a-eg-rt-z]", _RE_FLAGS),  # T--s -s - T-s-! #5 add all capitals
     re.compile(r"[A-EG-RT-Za-eg-rt-z]", _RE_FLAGS),  # ---s -s - --s-! #6 add f
-    re.compile(r"[A-EG-RT-Za-rt-z]", _RE_FLAGS),    # ---s -s - --s-! #7 add s
-    re.compile(r"[A-EG-RT-Za-z]", _RE_FLAGS),       # ---- -- - ----! #8 add capital F
-    re.compile(r"[A-RT-Za-z]", _RE_FLAGS),          # ---- -- - ----! #9 add capital S
-    re.compile(r"[\w]", _RE_FLAGS),                 # ---- -- - ----! #10 non-alphanumerals
-    re.compile(r"[\S]", _RE_FLAGS),                 # ---- -- - ----  #11 words
-    re.compile(r"[\w\W]", _RE_FLAGS),               # --------------  #12 whisper length
-    re.compile(r".*", _RE_FLAGS)]                   # ...             #13 (always same length)
+    re.compile(r"[A-EG-RT-Za-rt-z]", _RE_FLAGS),  # ---s -s - --s-! #7 add s
+    re.compile(r"[A-EG-RT-Za-z]", _RE_FLAGS),  # ---- -- - ----! #8 add capital F
+    re.compile(r"[A-RT-Za-z]", _RE_FLAGS),  # ---- -- - ----! #9 add capital S
+    re.compile(r"[\w]", _RE_FLAGS),  # ---- -- - ----! #10 non-alphanumerals
+    re.compile(r"[\S]", _RE_FLAGS),  # ---- -- - ----  #11 words
+    re.compile(r"[\w\W]", _RE_FLAGS),  # --------------  #12 whisper length
+    re.compile(r".*", _RE_FLAGS),
+]  # ...             #13 (always same length)
 
 
 def obfuscate_whisper(whisper, level=0.0):
@@ -519,4 +542,4 @@ def obfuscate_whisper(whisper, level=0.0):
     if olevel == 13:
         return "..."
     else:
-        return _RE_WHISPER_OBSCURE[olevel].sub('-', whisper)
+        return _RE_WHISPER_OBSCURE[olevel].sub("-", whisper)

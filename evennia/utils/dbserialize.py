@@ -18,11 +18,10 @@ in-situ, e.g `obj.db.mynestedlist[3][5] = 3` would never be saved and
 be out of sync with the database.
 
 """
-from builtins import object, int
-
 from functools import update_wrapper
 from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
 from collections import OrderedDict, deque
+
 try:
     from pickle import dumps, loads
 except ImportError:
@@ -33,8 +32,7 @@ from django.utils.safestring import SafeString, SafeBytes
 from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
 from evennia.utils import logger
 
-__all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle",
-           "dbserialize", "dbunserialize")
+__all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
 PICKLE_PROTOCOL = 2
 
@@ -42,7 +40,8 @@ PICKLE_PROTOCOL = 2
 # message to send if editing an already deleted Attribute in a savermutable
 _ERROR_DELETED_ATTR = (
     "{cls_name} {obj} has had its root Attribute deleted. "
-    "It must be cast to a {non_saver_name} before it can be modified further.")
+    "It must be cast to a {non_saver_name} before it can be modified further."
+)
 
 
 def _get_mysql_db_version():
@@ -56,10 +55,12 @@ def _get_mysql_db_version():
 
     """
     from django.db import connection
+
     conn = connection.cursor()
     conn.execute("SELECT VERSION()")
     version = conn.fetchone()
     return version and str(version[0]) or ""
+
 
 # initialization and helpers
 
@@ -73,14 +74,14 @@ _SESSION_HANDLER = None
 
 
 def _IS_PACKED_DBOBJ(o):
-    return isinstance(o, tuple) and len(o) == 4 and o[0] == '__packed_dbobj__'
+    return isinstance(o, tuple) and len(o) == 4 and o[0] == "__packed_dbobj__"
 
 
 def _IS_PACKED_SESSION(o):
-    return isinstance(o, tuple) and len(o) == 3 and o[0] == '__packed_session__'
+    return isinstance(o, tuple) and len(o) == 3 and o[0] == "__packed_session__"
 
 
-if uses_database("mysql") and _get_mysql_db_version() < '5.6.4':
+if uses_database("mysql") and _get_mysql_db_version() < "5.6.4":
     # mysql <5.6.4 don't support millisecond precision
     _DATESTRING = "%Y:%m:%d-%H:%M:%S:000000"
 else:
@@ -118,8 +119,11 @@ def _init_globals():
         _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
     if not _TO_MODEL_MAP:
         from django.conf import settings
+
         _TO_MODEL_MAP = defaultdict(str)
-        _TO_MODEL_MAP.update(dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all()))
+        _TO_MODEL_MAP.update(
+            dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all())
+        )
         _IGNORE_DATETIME_MODELS = []
         for src_key, dst_key in settings.ATTRIBUTE_STORED_MODEL_RENAME:
             _TO_MODEL_MAP[src_key] = _TO_MODEL_MAP.get(dst_key, None)
@@ -141,6 +145,7 @@ def _save(method):
         ret = method(self, *args, **kwargs)
         self._save_tree()
         return ret
+
     return update_wrapper(save_wrapper, method)
 
 
@@ -173,14 +178,18 @@ class _SaverMutable(object):
                     non_saver_name = cls_name.split("_Saver", 1)[1].lower()
                 except IndexError:
                     non_saver_name = cls_name
-                raise ValueError(_ERROR_DELETED_ATTR.format(cls_name=cls_name, obj=self,
-                                                            non_saver_name=non_saver_name))
+                raise ValueError(
+                    _ERROR_DELETED_ATTR.format(
+                        cls_name=cls_name, obj=self, non_saver_name=non_saver_name
+                    )
+                )
             self._db_obj.value = self
         else:
             logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
 
     def _convert_mutables(self, data):
         """converts mutables to Saver* variants and assigns ._parent property"""
+
         def process_tree(item, parent):
             """recursively populate the tree, storing parents"""
             dtype = type(item)
@@ -199,6 +208,7 @@ class _SaverMutable(object):
                 dat._data.update(process_tree(val, dat) for val in item)
                 return dat
             return item
+
         return process_tree(data, self)
 
     def __repr__(self):
@@ -260,7 +270,6 @@ class _SaverList(_SaverMutable, MutableSequence):
             return list(self._data) != list(other)
         except TypeError:
             return True
-
 
     def index(self, value, *args):
         return self._data.index(value, *args)
@@ -347,6 +356,7 @@ class _SaverDeque(_SaverMutable):
 
     def _delmaxlen(self):
         del self._data.maxlen
+
     maxlen = property(_getmaxlen, _setmaxlen, _delmaxlen)
 
     @_save
@@ -366,9 +376,13 @@ class _SaverDeque(_SaverMutable):
         self._data.rotate(*args)
 
 
-_DESERIALIZE_MAPPING = {_SaverList.__name__: list, _SaverDict.__name__: dict,
-                        _SaverSet.__name__: set, _SaverOrderedDict.__name__: OrderedDict,
-                        _SaverDeque.__name__: deque}
+_DESERIALIZE_MAPPING = {
+    _SaverList.__name__: list,
+    _SaverDict.__name__: dict,
+    _SaverSet.__name__: set,
+    _SaverOrderedDict.__name__: OrderedDict,
+    _SaverDeque.__name__: deque,
+}
 
 
 def deserialize(obj):
@@ -377,16 +391,18 @@ def deserialize(obj):
     inside it back into their normal Python forms.
 
     """
+
     def _iter(obj):
         typ = type(obj)
         tname = typ.__name__
-        if tname in ('_SaverDict', 'dict'):
+        if tname in ("_SaverDict", "dict"):
             return {_iter(key): _iter(val) for key, val in obj.items()}
         elif tname in _DESERIALIZE_MAPPING:
             return _DESERIALIZE_MAPPING[tname](_iter(val) for val in obj)
         elif is_iter(obj):
             return typ(_iter(val) for val in obj)
         return obj
+
     return _iter(obj)
 
 
@@ -408,12 +424,19 @@ def pack_dbobj(item):
     """
     _init_globals()
     obj = item
-    natural_key = _FROM_MODEL_MAP[hasattr(obj, "id") and hasattr(obj, "db_date_created") and
-                                  hasattr(obj, '__dbclass__') and obj.__dbclass__.__name__.lower()]
+    natural_key = _FROM_MODEL_MAP[
+        hasattr(obj, "id")
+        and hasattr(obj, "db_date_created")
+        and hasattr(obj, "__dbclass__")
+        and obj.__dbclass__.__name__.lower()
+    ]
     # build the internal representation as a tuple
     #  ("__packed_dbobj__", key, creation_time, id)
-    return natural_key and ('__packed_dbobj__', natural_key,
-                            _TO_DATESTRING(obj), _GA(obj, "id")) or item
+    return (
+        natural_key
+        and ("__packed_dbobj__", natural_key, _TO_DATESTRING(obj), _GA(obj, "id"))
+        or item
+    )
 
 
 def unpack_dbobj(item):
@@ -472,9 +495,11 @@ def pack_session(item):
         # we require connection times to be identical for the Session
         # to be accepted as actually being a session (sessids gets
         # reused all the time).
-        return item.conn_time and item.sessid and ('__packed_session__',
-                                                   _GA(item, "sessid"),
-                                                   _GA(item, "conn_time"))
+        return (
+            item.conn_time
+            and item.sessid
+            and ("__packed_session__", _GA(item, "sessid"), _GA(item, "conn_time"))
+        )
     return None
 
 
@@ -500,6 +525,7 @@ def unpack_session(item):
         return session
     return None
 
+
 #
 # Access methods
 
@@ -519,6 +545,7 @@ def to_pickle(data):
         data (any): Pickled data.
 
     """
+
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
@@ -537,7 +564,7 @@ def to_pickle(data):
         elif dtype in (deque, _SaverDeque):
             return deque(process_item(val) for val in item)
 
-        elif hasattr(item, '__iter__'):
+        elif hasattr(item, "__iter__"):
             # we try to conserve the iterable class, if not convert to list
             try:
                 return item.__class__([process_item(val) for val in item])
@@ -545,7 +572,14 @@ def to_pickle(data):
                 return [process_item(val) for val in item]
         elif hasattr(item, "sessid") and hasattr(item, "conn_time"):
             return pack_session(item)
-        return pack_dbobj(item)
+        try:
+            return pack_dbobj(item)
+        except TypeError:
+            return item
+        except Exception:
+            logger.log_error(f"The object {item} of type {type(item)} could not be stored.")
+            raise
+
     return process_item(data)
 
 
@@ -571,6 +605,7 @@ def from_pickle(data, db_obj=None):
         data (any): Unpickled data.
 
     """
+
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
@@ -591,7 +626,7 @@ def from_pickle(data, db_obj=None):
             return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == deque:
             return deque(process_item(val) for val in item)
-        elif hasattr(item, '__iter__'):
+        elif hasattr(item, "__iter__"):
             try:
                 # we try to conserve the iterable class if
                 # it accepts an iterator
@@ -616,8 +651,9 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(_parent=parent)
-            dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in item.items())
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in item.items()
+            )
             return dat
         elif dtype == set:
             dat = _SaverSet(_parent=parent)
@@ -625,14 +661,15 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_parent=parent)
-            dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in item.items())
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in item.items()
+            )
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_parent=parent)
             dat._data.extend(process_item(val) for val in item)
             return dat
-        elif hasattr(item, '__iter__'):
+        elif hasattr(item, "__iter__"):
             try:
                 # we try to conserve the iterable class if it
                 # accepts an iterator
@@ -653,8 +690,9 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == dict:
             dat = _SaverDict(_db_obj=db_obj)
-            dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in data.items())
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in data.items()
+            )
             return dat
         elif dtype == set:
             dat = _SaverSet(_db_obj=db_obj)
@@ -662,8 +700,9 @@ def from_pickle(data, db_obj=None):
             return dat
         elif dtype == OrderedDict:
             dat = _SaverOrderedDict(_db_obj=db_obj)
-            dat._data.update((process_item(key), process_tree(val, dat))
-                             for key, val in data.items())
+            dat._data.update(
+                (process_item(key), process_tree(val, dat)) for key, val in data.items()
+            )
             return dat
         elif dtype == deque:
             dat = _SaverDeque(_db_obj=db_obj)
@@ -674,12 +713,20 @@ def from_pickle(data, db_obj=None):
 
 def do_pickle(data):
     """Perform pickle to string"""
-    return dumps(data, protocol=PICKLE_PROTOCOL)
+    try:
+        return dumps(data, protocol=PICKLE_PROTOCOL)
+    except Exception:
+        logger.log_error(f"Could not pickle data for storage: {data}")
+        raise
 
 
 def do_unpickle(data):
     """Retrieve pickle from pickled string"""
-    return loads(to_bytes(data))
+    try:
+        return loads(to_bytes(data))
+    except Exception:
+        logger.log_error(f"Could not unpickle data from storage: {data}")
+        raise
 
 
 def dbserialize(data):

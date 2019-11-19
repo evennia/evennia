@@ -11,6 +11,7 @@ class InMemorySaveHandler(object):
     and storing data in memory.
 
     """
+
     def __init__(self):
         self.storage = {}
 
@@ -32,8 +33,15 @@ class OptionHandler(object):
 
     """
 
-    def __init__(self, obj, options_dict=None, savefunc=None, loadfunc=None,
-                 save_kwargs=None, load_kwargs=None):
+    def __init__(
+        self,
+        obj,
+        options_dict=None,
+        savefunc=None,
+        loadfunc=None,
+        save_kwargs=None,
+        load_kwargs=None,
+    ):
         """
         Initialize an OptionHandler.
 

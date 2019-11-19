@@ -5,6 +5,7 @@ SSL keys and certificates.
 """
 import os
 import sys
+
 try:
     import OpenSSL
     from twisted.internet import ssl as twisted_ssl
@@ -67,14 +68,14 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         from Crypto.PublicKey import RSA
         from twisted.conch.ssh.keys import Key
 
-        print("  Creating SSL key and certificate ... ", end=' ')
+        print("  Creating SSL key and certificate ... ", end=" ")
 
         try:
             # create the RSA key and store it.
             KEY_LENGTH = 1024
             rsaKey = Key(RSA.generate(KEY_LENGTH))
             keyString = rsaKey.toString(type="OPENSSH")
-            file(keyfile, 'w+b').write(keyString)
+            file(keyfile, "w+b").write(keyString)
         except Exception as err:
             print(NO_AUTOGEN.format(err=err, keyfile=keyfile))
             sys.exit(5)
@@ -83,11 +84,17 @@ def verify_SSL_key_and_cert(keyfile, certfile):
         CERT_EXPIRE = 365 * 20  # twenty years validity
         # default:
         # openssl req -new -x509 -key ssl.key -out ssl.cert -days 7300
-        exestring = "openssl req -new -x509 -key %s -out %s -days %s" % (keyfile, certfile, CERT_EXPIRE)
+        exestring = "openssl req -new -x509 -key %s -out %s -days %s" % (
+            keyfile,
+            certfile,
+            CERT_EXPIRE,
+        )
         try:
             subprocess.call(exestring)
         except OSError as err:
-            raise OSError(NO_AUTOCERT.format(err=err, certfile=certfile, keyfile=keyfile, exestring=exestring))
+            raise OSError(
+                NO_AUTOCERT.format(err=err, certfile=certfile, keyfile=keyfile, exestring=exestring)
+            )
         print("done.")
 
 

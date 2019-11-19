@@ -24,8 +24,6 @@ Common examples of uses of Scripts:
 - Give the account/object a time-limited bonus/effect
 
 """
-from builtins import object
-
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -38,11 +36,12 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 #
 # ScriptDB
 #
-#------------------------------------------------------------
+# ------------------------------------------------------------
+
 
 class ScriptDB(TypedObject):
     """
@@ -81,25 +80,39 @@ class ScriptDB(TypedObject):
     # db_key, db_typeclass_path, db_date_created, db_permissions
 
     # optional description.
-    db_desc = models.CharField('desc', max_length=255, blank=True)
+    db_desc = models.CharField("desc", max_length=255, blank=True)
     # A reference to the database object affected by this Script, if any.
-    db_obj = models.ForeignKey("objects.ObjectDB", null=True, blank=True, on_delete=models.CASCADE,
-                               verbose_name='scripted object',
-                               help_text='the object to store this script on, if not a global script.')
-    db_account = models.ForeignKey("accounts.AccountDB", null=True, blank=True,
-                                   on_delete=models.CASCADE, verbose_name="scripted account",
-                                   help_text='the account to store this script on (should not be set if db_obj is set)')
+    db_obj = models.ForeignKey(
+        "objects.ObjectDB",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name="scripted object",
+        help_text="the object to store this script on, if not a global script.",
+    )
+    db_account = models.ForeignKey(
+        "accounts.AccountDB",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name="scripted account",
+        help_text="the account to store this script on (should not be set if db_obj is set)",
+    )
 
     # how often to run Script (secs). -1 means there is no timer
-    db_interval = models.IntegerField('interval', default=-1, help_text='how often to repeat script, in seconds. -1 means off.')
+    db_interval = models.IntegerField(
+        "interval", default=-1, help_text="how often to repeat script, in seconds. -1 means off."
+    )
     # start script right away or wait interval seconds first
-    db_start_delay = models.BooleanField('start delay', default=False, help_text='pause interval seconds before starting.')
+    db_start_delay = models.BooleanField(
+        "start delay", default=False, help_text="pause interval seconds before starting."
+    )
     # how many times this script is to be repeated, if interval!=0.
-    db_repeats = models.IntegerField('number of repeats', default=0, help_text='0 means off.')
+    db_repeats = models.IntegerField("number of repeats", default=0, help_text="0 means off.")
     # defines if this script should survive a reboot or not
-    db_persistent = models.BooleanField('survive server reboot', default=False)
+    db_persistent = models.BooleanField("survive server reboot", default=False)
     # defines if this script has already been started in this session
-    db_is_active = models.BooleanField('script active', default=False)
+    db_is_active = models.BooleanField("script active", default=False)
 
     # Database manager
     objects = ScriptDBManager()
@@ -145,8 +158,9 @@ class ScriptDB(TypedObject):
             pass
         if isinstance(value, (str, int)):
             from evennia.objects.models import ObjectDB
+
             value = to_str(value)
-            if (value.isdigit() or value.startswith("#")):
+            if value.isdigit() or value.startswith("#"):
                 dbid = dbref(value, reqhash=False)
                 if dbid:
                     try:
@@ -162,5 +176,6 @@ class ScriptDB(TypedObject):
             _SA(self, fname, value)
         # saving the field
         _GA(self, "save")(update_fields=[fname])
+
     obj = property(__get_obj, __set_obj)
     object = property(__get_obj, __set_obj)

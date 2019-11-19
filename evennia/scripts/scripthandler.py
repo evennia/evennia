@@ -5,8 +5,6 @@ added to all game objects. You access it through the property
 `scripts` on the game object.
 
 """
-from builtins import object
-
 from evennia.scripts.models import ScriptDB
 from evennia.utils import create
 from evennia.utils import logger
@@ -50,9 +48,15 @@ class ScriptHandler(object):
                     next_repeat = script.time_until_next_repeat()
                 except Exception:
                     next_repeat = "?"
-            string += _("\n '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s") % \
-                {"key": script.key, "next_repeat": next_repeat,
-                 "interval": interval, "repeats": repeats, "desc": script.desc}
+            string += _(
+                "\n '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+            ) % {
+                "key": script.key,
+                "next_repeat": next_repeat,
+                "interval": interval,
+                "repeats": repeats,
+                "desc": script.desc,
+            }
         return string.strip()
 
     def add(self, scriptclass, key=None, autostart=True):
@@ -70,12 +74,12 @@ class ScriptHandler(object):
         """
         if self.obj.__dbclass__.__name__ == "AccountDB":
             # we add to an Account, not an Object
-            script = create.create_script(scriptclass, key=key, account=self.obj,
-                                          autostart=autostart)
+            script = create.create_script(
+                scriptclass, key=key, account=self.obj, autostart=autostart
+            )
         else:
             # the normal - adding to an Object
-            script = create.create_script(scriptclass, key=key, obj=self.obj,
-                                          autostart=autostart)
+            script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=autostart)
         if not script:
             logger.log_err("Script %s could not be created and/or started." % scriptclass)
             return False
@@ -123,11 +127,16 @@ class ScriptHandler(object):
         """
         delscripts = ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key)
         if not delscripts:
-            delscripts = [script for script in ScriptDB.objects.get_all_scripts_on_obj(self.obj) if script.path == key]
+            delscripts = [
+                script
+                for script in ScriptDB.objects.get_all_scripts_on_obj(self.obj)
+                if script.path == key
+            ]
         num = 0
         for script in delscripts:
             num += script.stop()
         return num
+
     # alias to delete
     stop = delete
 

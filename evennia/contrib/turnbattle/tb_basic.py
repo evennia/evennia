@@ -52,14 +52,15 @@ OPTIONS
 ----------------------------------------------------------------------------
 """
 
-TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
-ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
+TURN_TIMEOUT = 30  # Time before turns automatically end, in seconds
+ACTIONS_PER_TURN = 1  # Number of actions allowed per turn
 
 """
 ----------------------------------------------------------------------------
 COMBAT FUNCTIONS START HERE
 ----------------------------------------------------------------------------
 """
+
 
 def roll_init(character):
     """
@@ -175,6 +176,7 @@ def apply_damage(defender, damage):
     if defender.db.hp <= 0:
         defender.db.hp = 0
 
+
 def at_defeat(defeated):
     """
     Announces the defeat of a fighter in combat.
@@ -189,6 +191,7 @@ def at_defeat(defeated):
         do it.
     """
     defeated.location.msg_contents("%s has been defeated!" % defeated)
+
 
 def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     """
@@ -215,11 +218,14 @@ def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     else:
         damage_value = get_damage(attacker, defender)  # Calculate damage value.
         # Announce damage dealt and apply damage.
-        attacker.location.msg_contents("%s hits %s for %i damage!" % (attacker, defender, damage_value))
+        attacker.location.msg_contents(
+            "%s hits %s for %i damage!" % (attacker, defender, damage_value)
+        )
         apply_damage(defender, damage_value)
         # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
             at_defeat(defender)
+
 
 def combat_cleanup(character):
     """
@@ -279,7 +285,7 @@ def spend_action(character, actions, action_name=None):
     """
     if action_name:
         character.db.combat_lastaction = action_name
-    if actions == 'all':  # If spending all actions
+    if actions == "all":  # If spending all actions
         character.db.combat_actionsleft = 0  # Set actions to 0
     else:
         character.db.combat_actionsleft -= actions  # Use up actions.
@@ -341,6 +347,7 @@ class TBBasicCharacter(DefaultCharacter):
             return False
         return True
 
+
 """
 ----------------------------------------------------------------------------
 SCRIPTS START HERE
@@ -388,7 +395,7 @@ class TBBasicTurnHandler(DefaultScript):
 
         # Announce the turn order.
         self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
-        
+
         # Start first fighter's turn.
         self.start_turn(self.db.fighters[0])
 
@@ -408,13 +415,17 @@ class TBBasicTurnHandler(DefaultScript):
         """
         Called once every self.interval seconds.
         """
-        currentchar = self.db.fighters[self.db.turn]  # Note the current character in the turn order.
+        currentchar = self.db.fighters[
+            self.db.turn
+        ]  # Note the current character in the turn order.
         self.db.timer -= self.interval  # Count down the timer.
 
         if self.db.timer <= 0:
             # Force current character to disengage if timer runs out.
             self.obj.msg_contents("%s's turn timed out!" % currentchar)
-            spend_action(currentchar, 'all', action_name="disengage")  # Spend all remaining actions.
+            spend_action(
+                currentchar, "all", action_name="disengage"
+            )  # Spend all remaining actions.
             return
         elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
             # Warn the current character if they're about to time out.
@@ -429,8 +440,12 @@ class TBBasicTurnHandler(DefaultScript):
             character (obj): Character to initialize for combat.
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
-        character.db.combat_actionsleft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
-        character.db.combat_turnhandler = self  # Add a reference to this turn handler script to the character
+        character.db.combat_actionsleft = (
+            0
+        )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        character.db.combat_turnhandler = (
+            self
+        )  # Add a reference to this turn handler script to the character
         character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):
@@ -460,7 +475,9 @@ class TBBasicTurnHandler(DefaultScript):
         # Check to see if every character disengaged as their last action. If so, end combat.
         disengage_check = True
         for fighter in self.db.fighters:
-            if fighter.db.combat_lastaction != "disengage":  # If a character has done anything but disengage
+            if (
+                fighter.db.combat_lastaction != "disengage"
+            ):  # If a character has done anything but disengage
                 disengage_check = False
         if disengage_check:  # All characters have disengaged
             self.obj.msg_contents("All fighters have disengaged! Combat is over!")
@@ -472,7 +489,9 @@ class TBBasicTurnHandler(DefaultScript):
         for fighter in self.db.fighters:
             if fighter.db.HP == 0:
                 defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
-        if defeated_characters == (len(self.db.fighters) - 1):  # If only one character isn't defeated
+        if defeated_characters == (
+            len(self.db.fighters) - 1
+        ):  # If only one character isn't defeated
             for fighter in self.db.fighters:
                 if fighter.db.HP != 0:
                     LastStanding = fighter  # Pick the one fighter left with HP remaining
@@ -516,7 +535,7 @@ class TBBasicTurnHandler(DefaultScript):
         # Initialize the character like you do at the start.
         self.initialize_for_combat(character)
 
-        
+
 """
 ----------------------------------------------------------------------------
 COMMANDS START HERE
@@ -535,6 +554,7 @@ class CmdFight(Command):
     fight is added to combat, and a turn order is randomly rolled.
     When it's your turn, you can attack other characters.
     """
+
     key = "fight"
     help_category = "combat"
 
@@ -643,8 +663,10 @@ class CmdPass(Command):
             self.caller.msg("You can only do that on your turn.")
             return
 
-        self.caller.location.msg_contents("%s takes no further action, passing the turn." % self.caller)
-        spend_action(self.caller, 'all', action_name="pass")  # Spend all remaining actions.
+        self.caller.location.msg_contents(
+            "%s takes no further action, passing the turn." % self.caller
+        )
+        spend_action(self.caller, "all", action_name="pass")  # Spend all remaining actions.
 
 
 class CmdDisengage(Command):
@@ -676,7 +698,7 @@ class CmdDisengage(Command):
             return
 
         self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
-        spend_action(self.caller, 'all', action_name="disengage")  # Spend all remaining actions.
+        spend_action(self.caller, "all", action_name="disengage")  # Spend all remaining actions.
         """
         The action_name kwarg sets the character's last action to "disengage", which is checked by
         the turn handler script to see if all fighters have disengaged.
@@ -723,15 +745,18 @@ class CmdCombatHelp(CmdHelp):
     This will search for help on commands and other
     topics related to the game.
     """
+
     # Just like the default help command, but will give quick
     # tips on combat when used in a fight with no arguments.
 
     def func(self):
         if is_in_combat(self.caller) and not self.args:  # In combat and entered 'help' alone
-            self.caller.msg("Available combat commands:|/" +
-                            "|wAttack:|n Attack a target, attempting to deal damage.|/" +
-                            "|wPass:|n Pass your turn without further action.|/" +
-                            "|wDisengage:|n End your turn and attempt to end combat.|/")
+            self.caller.msg(
+                "Available combat commands:|/"
+                + "|wAttack:|n Attack a target, attempting to deal damage.|/"
+                + "|wPass:|n Pass your turn without further action.|/"
+                + "|wDisengage:|n End your turn and attempt to end combat.|/"
+            )
         else:
             super().func()  # Call the default help command
 
@@ -740,6 +765,7 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
     """
     This command set includes all the commmands used in the battle system.
     """
+
     key = "DefaultCharacter"
 
     def at_cmdset_creation(self):

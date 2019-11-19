@@ -80,6 +80,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
       @mail/reply 9=Thanks for the info!
 
     """
+
     key = "@mail"
     aliases = ["mail"]
     lock = "cmd:all()"
@@ -87,13 +88,14 @@ class CmdMail(default_cmds.MuxAccountCommand):
 
     def parse(self):
         """
-        Add convenience check to know if caller is an Account or not since this cmd 
+        Add convenience check to know if caller is an Account or not since this cmd
         will be able to add to either Object- or Account level.
 
         """
         super().parse()
-        self.caller_is_account = bool(inherits_from(self.caller,
-                                                    "evennia.accounts.accounts.DefaultAccount"))
+        self.caller_is_account = bool(
+            inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount")
+        )
 
     def search_targets(self, namelist):
         """
@@ -143,9 +145,9 @@ class CmdMail(default_cmds.MuxAccountCommand):
         """
         for recipient in recipients:
             recipient.msg("You have received a new @mail from %s" % caller)
-            new_message = create.create_message(self.caller, message,
-                                                receivers=recipient,
-                                                header=subject)
+            new_message = create.create_message(
+                self.caller, message, receivers=recipient, header=subject
+            )
             new_message.tags.add("new", category="mail")
 
         if recipients:
@@ -176,7 +178,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
                         if all_mail[mind]:
                             mail = all_mail[mind]
                             question = "Delete message {} ({}) [Y]/N?".format(mind + 1, mail.header)
-                            ret = yield(question)
+                            ret = yield (question)
                             # handle not ret, it will be None during unit testing
                             if not ret or ret.strip().upper() not in ("N", "No"):
                                 all_mail[mind].delete()
@@ -192,8 +194,9 @@ class CmdMail(default_cmds.MuxAccountCommand):
             elif "forward" in self.switches or "fwd" in self.switches:
                 try:
                     if not self.rhs:
-                        self.caller.msg("Cannot forward a message without a target list. "
-                                        "Please try again.")
+                        self.caller.msg(
+                            "Cannot forward a message without a target list. " "Please try again."
+                        )
                         return
                     elif not self.lhs:
                         self.caller.msg("You must define a message to forward.")
@@ -208,9 +211,14 @@ class CmdMail(default_cmds.MuxAccountCommand):
                             if all_mail[mind]:
                                 old_message = all_mail[mind]
 
-                                self.send_mail(self.search_targets(self.lhslist), "FWD: " + old_message.header,
-                                               message + "\n---- Original Message ----\n" + old_message.message,
-                                               self.caller)
+                                self.send_mail(
+                                    self.search_targets(self.lhslist),
+                                    "FWD: " + old_message.header,
+                                    message
+                                    + "\n---- Original Message ----\n"
+                                    + old_message.message,
+                                    self.caller,
+                                )
                                 self.caller.msg("Message forwarded.")
                             else:
                                 raise IndexError
@@ -218,8 +226,12 @@ class CmdMail(default_cmds.MuxAccountCommand):
                             mind = max(0, min(mind_max, int(self.rhs) - 1))
                             if all_mail[mind]:
                                 old_message = all_mail[mind]
-                                self.send_mail(self.search_targets(self.lhslist), "FWD: " + old_message.header,
-                                               "\n---- Original Message ----\n" + old_message.message, self.caller)
+                                self.send_mail(
+                                    self.search_targets(self.lhslist),
+                                    "FWD: " + old_message.header,
+                                    "\n---- Original Message ----\n" + old_message.message,
+                                    self.caller,
+                                )
                                 self.caller.msg("Message forwarded.")
                                 old_message.tags.remove("new", category="mail")
                                 old_message.tags.add("fwd", category="mail")
@@ -243,8 +255,12 @@ class CmdMail(default_cmds.MuxAccountCommand):
                         mind = max(0, min(mind_max, int(self.lhs) - 1))
                         if all_mail[mind]:
                             old_message = all_mail[mind]
-                            self.send_mail(old_message.senders, "RE: " + old_message.header,
-                                           self.rhs + "\n---- Original Message ----\n" + old_message.message, self.caller)
+                            self.send_mail(
+                                old_message.senders,
+                                "RE: " + old_message.header,
+                                self.rhs + "\n---- Original Message ----\n" + old_message.message,
+                                self.caller,
+                            )
                             old_message.tags.remove("new", category="mail")
                             old_message.tags.add("-", category="mail")
                             return
@@ -275,8 +291,15 @@ class CmdMail(default_cmds.MuxAccountCommand):
                     messageForm = []
                     if message:
                         messageForm.append(_HEAD_CHAR * _WIDTH)
-                        messageForm.append("|wFrom:|n %s" % (message.senders[0].get_display_name(self.caller)))
-                        messageForm.append("|wSent:|n %s" % message.db_date_created.strftime("%b %-d, %Y - %H:%M:%S"))
+                        messageForm.append(
+                            "|wFrom:|n %s" % (message.senders[0].get_display_name(self.caller))
+                        )
+                        # note that we cannot use %-d format here since Windows does not support it
+                        day = message.db_date_created.day
+                        messageForm.append(
+                            "|wSent:|n %s"
+                            % message.db_date_created.strftime(f"%b {day}, %Y - %H:%M:%S")
+                        )
                         messageForm.append("|wSubject:|n %s" % message.header)
                         messageForm.append(_SUB_HEAD_CHAR * _WIDTH)
                         messageForm.append(message.message)
@@ -286,24 +309,34 @@ class CmdMail(default_cmds.MuxAccountCommand):
                     message.tags.add("-", category="mail")
 
         else:
-            # list messages 
+            # list messages
             messages = self.get_all_mail()
 
             if messages:
-                table = evtable.EvTable("|wID|n", "|wFrom|n", "|wSubject|n",
-                                        "|wArrived|n", "",
-                                        table=None, border="header",
-                                        header_line_char=_SUB_HEAD_CHAR, width=_WIDTH)
+                table = evtable.EvTable(
+                    "|wID|n",
+                    "|wFrom|n",
+                    "|wSubject|n",
+                    "|wArrived|n",
+                    "",
+                    table=None,
+                    border="header",
+                    header_line_char=_SUB_HEAD_CHAR,
+                    width=_WIDTH,
+                )
                 index = 1
                 for message in messages:
                     status = str(message.db_tags.last().db_key.upper())
                     if status == "NEW":
                         status = "|gNEW|n"
 
-                    table.add_row(index, message.senders[0].get_display_name(self.caller), 
-                                  message.header,
-                                  datetime_format(message.db_date_created),
-                                  status)
+                    table.add_row(
+                        index,
+                        message.senders[0].get_display_name(self.caller),
+                        message.header,
+                        datetime_format(message.db_date_created),
+                        status,
+                    )
                     index += 1
 
                 table.reformat_column(0, width=6)
@@ -320,6 +353,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
 
 
 # character - level version of the command
+
 
 class CmdMailCharacter(CmdMail):
     account_caller = False

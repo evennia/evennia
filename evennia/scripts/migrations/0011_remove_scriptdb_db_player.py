@@ -12,18 +12,11 @@ def _table_exists(db_cursor, tablename):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('scripts', '0010_auto_20170705_1736'),
-    ]
+    dependencies = [("scripts", "0010_auto_20170705_1736")]
 
     db_cursor = connection.cursor()
 
-    if not _table_exists(db_cursor, 'scripts_scriptdb_db_player'):
+    if not _table_exists(db_cursor, "scripts_scriptdb_db_player"):
         operations = []
     else:
-        operations = [
-            migrations.RemoveField(
-                model_name='scriptdb',
-                name='db_player',
-            ),
-        ]
+        operations = [migrations.RemoveField(model_name="scriptdb", name="db_player")]
