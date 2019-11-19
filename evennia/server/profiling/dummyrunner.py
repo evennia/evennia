@@ -32,8 +32,6 @@ for instructions on how to define this module.
 """
 
 
-from builtins import range
-
 import sys
 import time
 import random
@@ -49,8 +47,10 @@ from evennia.utils import mod_import, time_format
 
 DUMMYRUNNER_SETTINGS = mod_import(settings.DUMMYRUNNER_SETTINGS_MODULE)
 if not DUMMYRUNNER_SETTINGS:
-    raise IOError("Error: Dummyrunner could not find settings file at %s" %
-                  settings.DUMMYRUNNER_SETTINGS_MODULE)
+    raise IOError(
+        "Error: Dummyrunner could not find settings file at %s"
+        % settings.DUMMYRUNNER_SETTINGS_MODULE
+    )
 
 DATESTRING = "%Y%m%d%H%M%S"
 
@@ -77,8 +77,7 @@ NLOGGED_IN = 0
 # Messages
 
 
-INFO_STARTING = \
-    """
+INFO_STARTING = """
     Dummyrunner starting using {N} dummy account(s). If you don't see
     any connection messages, make sure that the Evennia server is
     running.
@@ -86,8 +85,7 @@ INFO_STARTING = \
     Use Ctrl-C to stop/disconnect clients.
     """
 
-ERROR_NO_MIXIN = \
-    """
+ERROR_NO_MIXIN = """
     Error: Evennia is not set up for dummyrunner. Before starting the
     server, make sure to include the following at *the end* of your
     settings file (remove when not using dummyrunner!):
@@ -110,8 +108,7 @@ ERROR_NO_MIXIN = \
     """
 
 
-ERROR_FEW_ACTIONS = \
-    """
+ERROR_FEW_ACTIONS = """
     Dummyrunner settings error: The ACTIONS tuple is too short: it must
     contain at least login- and logout functions.
     """
@@ -171,9 +168,9 @@ until you see the initial login slows things too much.
 
 """
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 # Helper functions
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 ICOUNT = 0
@@ -218,11 +215,12 @@ def makeiter(obj):
     Returns:
         iterable (iterable): An iterable object.
     """
-    return obj if hasattr(obj, '__iter__') else [obj]
+    return obj if hasattr(obj, "__iter__") else [obj]
 
-#------------------------------------------------------------
+
+# ------------------------------------------------------------
 # Client classes
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 class DummyClient(telnet.StatefulTelnetProtocol):
@@ -255,7 +253,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self._logout = self.factory.actions[1]
         self._actions = self.factory.actions[2:]
 
-        reactor.addSystemEventTrigger('before', 'shutdown', self.logout)
+        reactor.addSystemEventTrigger("before", "shutdown", self.logout)
 
     def dataReceived(self, data):
         """
@@ -360,10 +358,11 @@ class DummyFactory(protocol.ClientFactory):
         "Setup the factory base (shared by all clients)"
         self.actions = actions
 
-#------------------------------------------------------------
+
+# ------------------------------------------------------------
 # Access method:
 # Starts clients and connects them to a running server.
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
 def start_all_dummy_clients(nclients):
@@ -384,7 +383,12 @@ def start_all_dummy_clients(nclients):
 
     # make sure the probabilities add up to 1
     pratio = 1.0 / sum(tup[0] for tup in actions[2:])
-    flogin, flogout, probs, cfuncs = actions[0], actions[1], [tup[0] * pratio for tup in actions[2:]], [tup[1] for tup in actions[2:]]
+    flogin, flogout, probs, cfuncs = (
+        actions[0],
+        actions[1],
+        [tup[0] * pratio for tup in actions[2:]],
+        [tup[1] for tup in actions[2:]],
+    )
     # create cumulative probabilies for the random actions
     cprobs = [sum(v for i, v in enumerate(probs) if i <= k) for k in range(len(probs))]
     # rebuild a new, optimized action structure
@@ -397,12 +401,13 @@ def start_all_dummy_clients(nclients):
     # start reactor
     reactor.run()
 
-#------------------------------------------------------------
+
+# ------------------------------------------------------------
 # Command line interface
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     try:
         settings.DUMMYRUNNER_MIXIN
@@ -412,8 +417,9 @@ if __name__ == '__main__':
 
     # parsing command line with default vals
     parser = ArgumentParser(description=HELPTEXT)
-    parser.add_argument("-N", nargs=1, default=1, dest="nclients",
-                        help="Number of clients to start")
+    parser.add_argument(
+        "-N", nargs=1, default=1, dest="nclients", help="Number of clients to start"
+    )
 
     args = parser.parse_args()
 

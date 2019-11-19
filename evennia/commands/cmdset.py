@@ -26,11 +26,10 @@ Set theory.
     to affect the low-priority cmdset.  Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5
 
 """
-from future.utils import listvalues, with_metaclass
-
 from weakref import WeakKeyDictionary
 from django.utils.translation import ugettext as _
 from evennia.utils.utils import inherits_from, is_iter
+
 __all__ = ("CmdSet",)
 
 
@@ -40,6 +39,7 @@ class _CmdSetMeta(type):
     the cmdset class.
 
     """
+
     def __init__(cls, *args, **kwargs):
         """
         Fixes some things in the cmdclass
@@ -47,7 +47,7 @@ class _CmdSetMeta(type):
         """
         # by default we key the cmdset the same as the
         # name of its class.
-        if not hasattr(cls, 'key') or not cls.key:
+        if not hasattr(cls, "key") or not cls.key:
             cls.key = cls.__name__
         cls.path = "%s.%s" % (cls.__module__, cls.__name__)
 
@@ -57,7 +57,7 @@ class _CmdSetMeta(type):
         super().__init__(*args, **kwargs)
 
 
-class CmdSet(with_metaclass(_CmdSetMeta, object)):
+class CmdSet(object, metaclass=_CmdSetMeta):
     """
     This class describes a unique cmdset that understands priorities.
     CmdSets can be merged and made to perform various set operations
@@ -158,9 +158,18 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
     key_mergetypes = {}
     errmessage = ""
     # pre-store properties to duplicate straight off
-    to_duplicate = ("key", "cmdsetobj", "no_exits", "no_objs",
-                    "no_channels", "permanent", "mergetype",
-                    "priority", "duplicates", "errmessage")
+    to_duplicate = (
+        "key",
+        "cmdsetobj",
+        "no_exits",
+        "no_objs",
+        "no_channels",
+        "permanent",
+        "mergetype",
+        "priority",
+        "duplicates",
+        "errmessage",
+    )
 
     def __init__(self, cmdsetobj=None, key=None):
         """
@@ -213,8 +222,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b
-                                      if cmd not in cmdset_a])
+            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in cmdset_a])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -326,7 +334,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             commands (str): Representation of commands in Cmdset.
 
         """
-        return ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o:o.key)])
+        return ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
 
     def __iter__(self):
         """
@@ -377,8 +385,9 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             # A higher or equal priority to B
 
             # preserve system __commands
-            sys_commands = sys_commands_a + [cmd for cmd in sys_commands_b
-                                             if cmd not in sys_commands_a]
+            sys_commands = sys_commands_a + [
+                cmd for cmd in sys_commands_b if cmd not in sys_commands_a
+            ]
 
             mergetype = cmdset_a.key_mergetypes.get(self.key, cmdset_a.mergetype)
             if mergetype == "Intersect":
@@ -393,7 +402,9 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             # pass through options whenever they are set, unless the merging or higher-prio
             # set changes the setting (i.e. has a non-None value). We don't pass through
             # the duplicates setting; that is per-merge
-            cmdset_c.no_channels = self.no_channels if cmdset_a.no_channels is None else cmdset_a.no_channels
+            cmdset_c.no_channels = (
+                self.no_channels if cmdset_a.no_channels is None else cmdset_a.no_channels
+            )
             cmdset_c.no_exits = self.no_exits if cmdset_a.no_exits is None else cmdset_a.no_exits
             cmdset_c.no_objs = self.no_objs if cmdset_a.no_objs is None else cmdset_a.no_objs
 
@@ -401,8 +412,9 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             # B higher priority than A
 
             # preserver system __commands
-            sys_commands = sys_commands_b + [cmd for cmd in sys_commands_a
-                                             if cmd not in sys_commands_b]
+            sys_commands = sys_commands_b + [
+                cmd for cmd in sys_commands_a if cmd not in sys_commands_b
+            ]
 
             mergetype = self.key_mergetypes.get(cmdset_a.key, self.mergetype)
             if mergetype == "Intersect":
@@ -417,7 +429,9 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
             # pass through options whenever they are set, unless the higher-prio
             # set changes the setting (i.e. has a non-None value). We don't pass through
             # the duplicates setting; that is per-merge
-            cmdset_c.no_channels = cmdset_a.no_channels if self.no_channels is None else self.no_channels
+            cmdset_c.no_channels = (
+                cmdset_a.no_channels if self.no_channels is None else self.no_channels
+            )
             cmdset_c.no_exits = cmdset_a.no_exits if self.no_exits is None else self.no_exits
             cmdset_c.no_objs = cmdset_a.no_objs if self.no_objs is None else self.no_objs
 
@@ -467,8 +481,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
                 string += "infinite loop. When adding a cmdset to another, "
                 string += "make sure they are not themself cyclically added to "
                 string += "the new cmdset somewhere in the chain."
-                raise RuntimeError(_(string) % {"cmd": cmd,
-                                                "class": self.__class__})
+                raise RuntimeError(_(string) % {"cmd": cmd, "class": self.__class__})
             cmds = cmd.commands
         elif is_iter(cmd):
             cmds = [self._instantiate(c) for c in cmd]
@@ -478,7 +491,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         system_commands = self.system_commands
         for cmd in cmds:
             # add all commands
-            if not hasattr(cmd, 'obj'):
+            if not hasattr(cmd, "obj"):
                 cmd.obj = self.cmdsetobj
             try:
                 ic = commands.index(cmd)
@@ -580,12 +593,13 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         for cmd in self.commands:
             if cmd.key in unique:
                 ocmd = unique[cmd.key]
-                if (hasattr(cmd, 'obj') and cmd.obj == caller) and not \
-                        (hasattr(ocmd, 'obj') and ocmd.obj == caller):
+                if (hasattr(cmd, "obj") and cmd.obj == caller) and not (
+                    hasattr(ocmd, "obj") and ocmd.obj == caller
+                ):
                     unique[cmd.key] = cmd
             else:
                 unique[cmd.key] = cmd
-        self.commands = listvalues(unique)
+        self.commands = list(unique.values())
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """
@@ -603,8 +617,7 @@ class CmdSet(with_metaclass(_CmdSetMeta, object)):
         """
         names = []
         if caller:
-            [names.extend(cmd._keyaliases) for cmd in self.commands
-             if cmd.access(caller)]
+            [names.extend(cmd._keyaliases) for cmd in self.commands if cmd.access(caller)]
         else:
             [names.extend(cmd._keyaliases) for cmd in self.commands]
         return names

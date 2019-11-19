@@ -16,7 +16,7 @@ class Throttle(object):
     no recent failures have been recorded.
     """
 
-    error_msg = 'Too many failed attempts; you must wait a few minutes before trying again.'
+    error_msg = "Too many failed attempts; you must wait a few minutes before trying again."
 
     def __init__(self, **kwargs):
         """
@@ -31,8 +31,8 @@ class Throttle(object):
                 the throttle is imposed!
         """
         self.storage = defaultdict(deque)
-        self.cache_size = self.limit = kwargs.get('limit', 5)
-        self.timeout = kwargs.get('timeout', 5 * 60)
+        self.cache_size = self.limit = kwargs.get("limit", 5)
+        self.timeout = kwargs.get("timeout", 5 * 60)
 
     def get(self, ip=None):
         """
@@ -49,10 +49,12 @@ class Throttle(object):
                 timestamps of recent failures only for that IP.
 
         """
-        if ip: return self.storage.get(ip, deque(maxlen=self.cache_size))
-        else: return self.storage
+        if ip:
+            return self.storage.get(ip, deque(maxlen=self.cache_size))
+        else:
+            return self.storage
 
-    def update(self, ip, failmsg='Exceeded threshold.'):
+    def update(self, ip, failmsg="Exceeded threshold."):
         """
         Store the time of the latest failure.
 
@@ -78,8 +80,11 @@ class Throttle(object):
         currently_throttled = self.check(ip)
 
         # If this makes it engage, log a single activation event
-        if (not previously_throttled and currently_throttled):
-            logger.log_sec('Throttle Activated: %s (IP: %s, %i hits in %i seconds.)' % (failmsg, ip, self.limit, self.timeout))
+        if not previously_throttled and currently_throttled:
+            logger.log_sec(
+                "Throttle Activated: %s (IP: %s, %i hits in %i seconds.)"
+                % (failmsg, ip, self.limit, self.timeout)
+            )
 
     def check(self, ip):
         """
@@ -107,7 +112,7 @@ class Throttle(object):
                 return True
             else:
                 # timeout has passed. clear faillist
-                del(self.storage[ip])
+                del self.storage[ip]
                 return False
         else:
             return False

@@ -68,8 +68,6 @@ things you want from here into your game folder and change them there.
 
 ## Contrib packages
 
-* EGI_Client (gtaylor 2016) - Client for reporting game status
-  to the Evennia game index (games.evennia.com).
 * In-game Python (Vincent Le Goff 2017) - Allow trusted builders to script
   objects and events using Python from in-game.
 * Turnbattle (FlutterSprite 2017) - A turn-based combat engine meant

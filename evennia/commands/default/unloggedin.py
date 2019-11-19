@@ -14,8 +14,13 @@ from evennia.commands.cmdhandler import CMD_LOGINSTART
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 # limit symbol import for API
-__all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
-           "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
+__all__ = (
+    "CmdUnconnectedConnect",
+    "CmdUnconnectedCreate",
+    "CmdUnconnectedQuit",
+    "CmdUnconnectedLook",
+    "CmdUnconnectedHelp",
+)
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
@@ -45,7 +50,7 @@ def create_guest_account(session):
     if account:
         return enabled, account
     else:
-        session.msg("|R%s|n" % '\n'.join(errors))
+        session.msg("|R%s|n" % "\n".join(errors))
         return enabled, None
 
 
@@ -68,10 +73,12 @@ def create_normal_account(session, name, password):
 
     # Match account name and check password
     # authenticate() handles all its own throttling
-    account, errors = Account.authenticate(username=name, password=password, ip=address, session=session)
+    account, errors = Account.authenticate(
+        username=name, password=password, ip=address, session=session
+    )
     if not account:
         # No accountname or password match
-        session.msg("|R%s|n" % '\n'.join(errors))
+        session.msg("|R%s|n" % "\n".join(errors))
         return None
 
     return account
@@ -89,6 +96,7 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
 
     If you have spaces in your name, enclose it in double quotes.
     """
+
     key = "connect"
     aliases = ["conn", "con", "co"]
     locks = "cmd:all()"  # not really needed
@@ -122,7 +130,7 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
                     session.sessionhandler.login(session, account)
                     return
                 else:
-                    session.msg("|R%s|n" % '\n'.join(errors))
+                    session.msg("|R%s|n" % "\n".join(errors))
                     return
 
         if len(parts) != 2:
@@ -133,11 +141,13 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 
         name, password = parts
-        account, errors = Account.authenticate(username=name, password=password, ip=address, session=session)
+        account, errors = Account.authenticate(
+            username=name, password=password, ip=address, session=session
+        )
         if account:
             session.sessionhandler.login(session, account)
         else:
-            session.msg("|R%s|n" % '\n'.join(errors))
+            session.msg("|R%s|n" % "\n".join(errors))
 
 
 class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
@@ -152,6 +162,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
     If you have spaces in your name, enclose it in double quotes.
     """
+
     key = "create"
     aliases = ["cre", "cr"]
     locks = "cmd:all()"
@@ -174,25 +185,31 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             # this was (hopefully) due to no quotes being found
             parts = parts[0].split(None, 1)
         if len(parts) != 2:
-            string = "\n Usage (without <>): create <name> <password>" \
-                     "\nIf <name> or <password> contains spaces, enclose it in double quotes."
+            string = (
+                "\n Usage (without <>): create <name> <password>"
+                "\nIf <name> or <password> contains spaces, enclose it in double quotes."
+            )
             session.msg(string)
             return
 
         username, password = parts
 
         # everything's ok. Create the new account account.
-        account, errors = Account.create(username=username, password=password, ip=address, session=session)
+        account, errors = Account.create(
+            username=username, password=password, ip=address, session=session
+        )
         if account:
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"
             if " " in username:
-                string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
+                string += (
+                    "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
+                )
             else:
                 string += "\n\nYou can now log with the command 'connect %s <your password>'."
             session.msg(string % (username, username))
         else:
-            session.msg("|R%s|n" % '\n'.join(errors))
+            session.msg("|R%s|n" % "\n".join(errors))
 
 
 class CmdUnconnectedQuit(COMMAND_DEFAULT_CLASS):
@@ -206,6 +223,7 @@ class CmdUnconnectedQuit(COMMAND_DEFAULT_CLASS):
     here for unconnected accounts for the sake of simplicity. The logged in
     version is a bit more complicated.
     """
+
     key = "quit"
     aliases = ["q", "qu"]
     locks = "cmd:all()"
@@ -228,6 +246,7 @@ class CmdUnconnectedLook(COMMAND_DEFAULT_CLASS):
     This is called by the server and kicks everything in gear.
     All it does is display the connect screen.
     """
+
     key = CMD_LOGINSTART
     aliases = ["look", "l"]
     locks = "cmd:all()"
@@ -237,7 +256,7 @@ class CmdUnconnectedLook(COMMAND_DEFAULT_CLASS):
 
         callables = utils.callables_from_module(CONNECTION_SCREEN_MODULE)
         if "connection_screen" in callables:
-            connection_screen = callables['connection_screen']()
+            connection_screen = callables["connection_screen"]()
         else:
             connection_screen = utils.random_string_from_module(CONNECTION_SCREEN_MODULE)
             if not connection_screen:
@@ -255,6 +274,7 @@ class CmdUnconnectedHelp(COMMAND_DEFAULT_CLASS):
     This is an unconnected version of the help command,
     for simplicity. It shows a pane of info.
     """
+
     key = "help"
     aliases = ["h", "?"]
     locks = "cmd:all()"
@@ -262,8 +282,7 @@ class CmdUnconnectedHelp(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Shows help"""
 
-        string = \
-            """
+        string = """
 You are not yet logged into the game. Commands available at this point:
 
   |wcreate|n - create a new account
@@ -283,7 +302,7 @@ You can use the |wlook|n command if you want to see the connect screen again.
 """
 
         if settings.STAFF_CONTACT_EMAIL:
-            string += 'For support, please contact: %s' % settings.STAFF_CONTACT_EMAIL
+            string += "For support, please contact: %s" % settings.STAFF_CONTACT_EMAIL
         self.caller.msg(string)
 
 
@@ -311,7 +330,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
   """
 
     key = "encoding"
-    aliases = ("encode")
+    aliases = "encode"
     locks = "cmd:all()"
 
     def func(self):
@@ -323,7 +342,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
             return
 
         sync = False
-        if 'clear' in self.switches:
+        if "clear" in self.switches:
             # remove customization
             old_encoding = self.session.protocol_flags.get("ENCODING", None)
             if old_encoding:
@@ -337,10 +356,15 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
             pencoding = self.session.protocol_flags.get("ENCODING", None)
             string = ""
             if pencoding:
-                string += "Default encoding: |g%s|n (change with |wencoding <encoding>|n)" % pencoding
+                string += (
+                    "Default encoding: |g%s|n (change with |wencoding <encoding>|n)" % pencoding
+                )
             encodings = settings.ENCODINGS
             if encodings:
-                string += "\nServer's alternative encodings (tested in this order):\n   |g%s|n" % ", ".join(encodings)
+                string += (
+                    "\nServer's alternative encodings (tested in this order):\n   |g%s|n"
+                    % ", ".join(encodings)
+                )
             if not string:
                 string = "No encodings found."
         else:
@@ -350,11 +374,16 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
             try:
                 codecs_lookup(encoding)
             except LookupError:
-                string = "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n"\
-                         % (encoding, old_encoding)
+                string = (
+                    "|rThe encoding '|w%s|r' is invalid. Keeping the previous encoding '|w%s|r'.|n"
+                    % (encoding, old_encoding)
+                )
             else:
                 self.session.protocol_flags["ENCODING"] = encoding
-                string = "Your custom text encoding was changed from '|w%s|n' to '|w%s|n'." % (old_encoding, encoding)
+                string = "Your custom text encoding was changed from '|w%s|n' to '|w%s|n'." % (
+                    old_encoding,
+                    encoding,
+                )
                 sync = True
         if sync:
             self.session.sessionhandler.session_portal_sync(self.session)
@@ -371,6 +400,7 @@ class CmdUnconnectedScreenreader(COMMAND_DEFAULT_CLASS):
     Used to flip screenreader mode on and off before logging in (when
     logged in, use option screenreader on).
     """
+
     key = "screenreader"
 
     def func(self):
@@ -390,14 +420,20 @@ class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
     was created by looking at the MUDINFO implementation in MUX2, TinyMUSH, Rhost,
     and PennMUSH.
     """
+
     key = "info"
     locks = "cmd:all()"
 
     def func(self):
-        self.caller.msg("## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO" % (
-                        settings.SERVERNAME,
-                        datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
-                        SESSIONS.account_count(), utils.get_evennia_version()))
+        self.caller.msg(
+            "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO"
+            % (
+                settings.SERVERNAME,
+                datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
+                SESSIONS.account_count(),
+                utils.get_evennia_version(),
+            )
+        )
 
 
 def _create_account(session, accountname, password, permissions, typeclass=None, email=None):
@@ -405,10 +441,15 @@ def _create_account(session, accountname, password, permissions, typeclass=None,
     Helper function, creates an account of the specified typeclass.
     """
     try:
-        new_account = create.create_account(accountname, email, password, permissions=permissions, typeclass=typeclass)
+        new_account = create.create_account(
+            accountname, email, password, permissions=permissions, typeclass=typeclass
+        )
 
     except Exception as e:
-        session.msg("There was an error creating the Account:\n%s\n If this problem persists, contact an admin." % e)
+        session.msg(
+            "There was an error creating the Account:\n%s\n If this problem persists, contact an admin."
+            % e
+        )
         logger.log_trace()
         return False
 
@@ -431,13 +472,17 @@ def _create_character(session, new_account, typeclass, home, permissions):
     This is meant for Guest and MULTISESSION_MODE < 2 situations.
     """
     try:
-        new_character = create.create_object(typeclass, key=new_account.key, home=home, permissions=permissions)
+        new_character = create.create_object(
+            typeclass, key=new_account.key, home=home, permissions=permissions
+        )
         # set playable character list
         new_account.db._playable_characters.append(new_character)
 
         # allow only the character itself and the account to puppet this character (and Developers).
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
-                                (new_character.id, new_account.id))
+        new_character.locks.add(
+            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)"
+            % (new_character.id, new_account.id)
+        )
 
         # If no description is set, set a default description
         if not new_character.db.desc:
@@ -445,5 +490,8 @@ def _create_character(session, new_account, typeclass, home, permissions):
         # We need to set this to have ic auto-connect to this character
         new_account.db._last_puppet = new_character
     except Exception as e:
-        session.msg("There was an error creating the Character:\n%s\n If this problem persists, contact an admin." % e)
+        session.msg(
+            "There was an error creating the Character:\n%s\n If this problem persists, contact an admin."
+            % e
+        )
         logger.log_trace()

@@ -12,9 +12,7 @@ def _table_exists(db_cursor, tablename):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('objects', '0008_auto_20170705_1736'),
-    ]
+    dependencies = [("objects", "0008_auto_20170705_1736")]
 
     db_cursor = connection.cursor()
 
@@ -22,9 +20,4 @@ class Migration(migrations.Migration):
         # OBS - this is run BEFORE migrations are run!
         operations = []
     else:
-        operations = [
-            migrations.RemoveField(
-                model_name='objectdb',
-                name='db_player',
-            ),
-        ]
+        operations = [migrations.RemoveField(model_name="objectdb", name="db_player")]

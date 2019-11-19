@@ -63,7 +63,7 @@ _COMMAND_RECURSION_LIMIT = 10
 
 # This decides which command parser is to be used.
 # You have to restart the server for changes to take effect.
-_COMMAND_PARSER = utils.variable_from_module(*settings.COMMAND_PARSER.rsplit('.', 1))
+_COMMAND_PARSER = utils.variable_from_module(*settings.COMMAND_PARSER.rsplit(".", 1))
 
 # System command names - import these variables rather than trying to
 # remember the actual string constants. If not defined, Evennia
@@ -82,7 +82,7 @@ CMD_CHANNEL = "__send_to_channel_command"
 CMD_LOGINSTART = "__unloggedin_look_command"
 
 # Function for handling multiple command matches.
-_SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
+_SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 
 # Output strings. The first is the IN_GAME_ERRORS return, the second
 # is the normal "production message to echo to the account.
@@ -93,7 +93,8 @@ An untrapped error occurred.
 """,
     """
 An untrapped error occurred. Please file a bug report detailing the steps to reproduce.
-""")
+""",
+)
 
 _ERROR_CMDSETS = (
     """
@@ -103,7 +104,8 @@ error in one of the cmdsets to merge.
     """
 A cmdset merger-error occurred. Please file a bug report detailing the
 steps to reproduce.
-""")
+""",
+)
 
 _ERROR_NOCMDSETS = (
     """
@@ -114,7 +116,8 @@ multiple causes.
 No command sets found! This is a sign of a critical bug.  If
 disconnecting/reconnecting doesn't" solve the problem, try to contact
 the server admin through" some other means for assistance.
-""")
+""",
+)
 
 _ERROR_CMDHANDLER = (
     """
@@ -125,10 +128,12 @@ traceback and steps to reproduce.
     """
 A command handler bug occurred. Please notify staff - they should
 likely file a bug report with the Evennia project.
-""")
+""",
+)
 
-_ERROR_RECURSION_LIMIT = "Command recursion limit ({recursion_limit}) " \
-                         "reached for '{raw_cmdname}' ({cmdclass})."
+_ERROR_RECURSION_LIMIT = (
+    "Command recursion limit ({recursion_limit}) " "reached for '{raw_cmdname}' ({cmdclass})."
+)
 
 
 # delayed imports
@@ -136,6 +141,7 @@ _GET_INPUT = None
 
 
 # helper functions
+
 
 def _msg_err(receiver, stringtuple):
     """
@@ -153,13 +159,19 @@ def _msg_err(receiver, stringtuple):
     tracestring = format_exc()
     logger.log_trace()
     if _IN_GAME_ERRORS:
-        receiver.msg(string.format(traceback=tracestring,
-                                   errmsg=stringtuple[0].strip(),
-                                   timestamp=timestamp).strip())
+        receiver.msg(
+            string.format(
+                traceback=tracestring, errmsg=stringtuple[0].strip(), timestamp=timestamp
+            ).strip()
+        )
     else:
-        receiver.msg(string.format(traceback=tracestring.splitlines()[-1],
-                                   errmsg=stringtuple[1].strip(),
-                                   timestamp=timestamp).strip())
+        receiver.msg(
+            string.format(
+                traceback=tracestring.splitlines()[-1],
+                errmsg=stringtuple[1].strip(),
+                timestamp=timestamp,
+            ).strip()
+        )
 
 
 def _progressive_cmd_run(cmd, generator, response=None):
@@ -227,6 +239,7 @@ def _process_input(caller, prompt, result, cmd, generator):
 
 # custom Exceptions
 
+
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
     pass
@@ -247,6 +260,7 @@ class ErrorReported(Exception):
     def __init__(self, raw_string):
         self.args = (raw_string,)
         self.raw_string = raw_string
+
 
 # Helper function
 
@@ -280,6 +294,7 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
 
     """
     try:
+
         @inlineCallbacks
         def _get_channel_cmdset(account_or_obj):
             """
@@ -308,8 +323,9 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                 if location:
                     # Gather all cmdsets stored on objects in the room and
                     # also in the caller's inventory and the location itself
-                    local_objlist = yield (location.contents_get(exclude=obj) +
-                                           obj.contents_get() + [location])
+                    local_objlist = yield (
+                        location.contents_get(exclude=obj) + obj.contents_get() + [location]
+                    )
                     local_objlist = [o for o in local_objlist if not o._is_deleted]
                     for lobj in local_objlist:
                         try:
@@ -320,11 +336,18 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                     # the call-type lock is checked here, it makes sure an account
                     # is not seeing e.g. the commands on a fellow account (which is why
                     # the no_superuser_bypass must be True)
-                    local_obj_cmdsets = \
-                        yield list(chain.from_iterable(
-                            lobj.cmdset.cmdset_stack for lobj in local_objlist
-                            if (lobj.cmdset.current and
-                                lobj.access(caller, access_type='call', no_superuser_bypass=True))))
+                    local_obj_cmdsets = yield list(
+                        chain.from_iterable(
+                            lobj.cmdset.cmdset_stack
+                            for lobj in local_objlist
+                            if (
+                                lobj.cmdset.current
+                                and lobj.access(
+                                    caller, access_type="call", no_superuser_bypass=True
+                                )
+                            )
+                        )
+                    )
                     for cset in local_obj_cmdsets:
                         # This is necessary for object sets, or we won't be able to
                         # separate the command sets from each other in a busy room. We
@@ -370,7 +393,9 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                         local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
                         if current.no_exits:
                             # filter out all exits
-                            local_obj_cmdsets = [cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"]
+                            local_obj_cmdsets = [
+                                cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
+                            ]
                         cmdsets += local_obj_cmdsets
                     if not current.no_channels:
                         # also objs may have channels
@@ -392,7 +417,9 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                     local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
                     if current.no_exits:
                         # filter out all exits
-                        local_obj_cmdsets = [cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"]
+                        local_obj_cmdsets = [
+                            cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
+                        ]
                     cmdsets += local_obj_cmdsets
                 if not current.no_channels:
                     # also objs may have channels
@@ -408,7 +435,9 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                 local_obj_cmdsets = yield _get_local_obj_cmdsets(obj)
                 if current.no_exits:
                     # filter out all exits
-                    local_obj_cmdsets = [cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"]
+                    local_obj_cmdsets = [
+                        cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
+                    ]
                 cmdsets += yield local_obj_cmdsets
             if not current.no_channels:
                 # also objs may have channels
@@ -417,11 +446,11 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             raise Exception("get_and_merge_cmdsets: callertype %s is not valid." % callertype)
 
         # weed out all non-found sets
-        cmdsets = yield [cmdset for cmdset in cmdsets
-                         if cmdset and cmdset.key != "_EMPTY_CMDSET"]
+        cmdsets = yield [cmdset for cmdset in cmdsets if cmdset and cmdset.key != "_EMPTY_CMDSET"]
         # report cmdset errors to user (these should already have been logged)
-        yield [report_to.msg(cmdset.errmessage) for cmdset in cmdsets
-               if cmdset.key == "_CMDSET_ERROR"]
+        yield [
+            report_to.msg(cmdset.errmessage) for cmdset in cmdsets if cmdset.key == "_CMDSET_ERROR"
+        ]
 
         if cmdsets:
             # faster to do tuple on list than to build tuple directly
@@ -463,14 +492,23 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
     except Exception:
         _msg_err(caller, _ERROR_CMDSETS)
         raise
-        #raise ErrorReported
+        # raise ErrorReported
+
 
 # Main command-handler function
 
 
 @inlineCallbacks
-def cmdhandler(called_by, raw_string, _testing=False, callertype="session", session=None,
-               cmdobj=None, cmdobj_key=None, **kwargs):
+def cmdhandler(
+    called_by,
+    raw_string,
+    _testing=False,
+    callertype="session",
+    session=None,
+    cmdobj=None,
+    cmdobj_key=None,
+    **kwargs,
+):
     """
     This is the main mechanism that handles any string sent to the engine.
 
@@ -557,7 +595,7 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             # since this may be different for every command when
             # merging multuple cmdsets
 
-            if hasattr(cmd, 'obj') and hasattr(cmd.obj, 'scripts'):
+            if hasattr(cmd, "obj") and hasattr(cmd.obj, "scripts"):
                 # cmd.obj is automatically made available by the cmdhandler.
                 # we make sure to validate its scripts.
                 yield cmd.obj.scripts.validate()
@@ -572,9 +610,11 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
             _COMMAND_NESTING[called_by] += 1
             if _COMMAND_NESTING[called_by] > _COMMAND_RECURSION_LIMIT:
-                err = _ERROR_RECURSION_LIMIT.format(recursion_limit=_COMMAND_RECURSION_LIMIT,
-                                                    raw_cmdname=raw_cmdname,
-                                                    cmdclass=cmd.__class__)
+                err = _ERROR_RECURSION_LIMIT.format(
+                    recursion_limit=_COMMAND_RECURSION_LIMIT,
+                    raw_cmdname=raw_cmdname,
+                    cmdclass=cmd.__class__,
+                )
                 raise RuntimeError(err)
 
             # pre-command hook
@@ -653,8 +693,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
 
             else:
                 # no explicit cmdobject given, figure it out
-                cmdset = yield get_and_merge_cmdsets(caller, session, account, obj,
-                                                     callertype, raw_string)
+                cmdset = yield get_and_merge_cmdsets(
+                    caller, session, account, obj, callertype, raw_string
+                )
                 if not cmdset:
                     # this is bad and shouldn't happen.
                     raise NoCmdSets
@@ -683,7 +724,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                         syscmd.matches = matches
                     else:
                         # fall back to default error handling
-                        sysarg = yield _SEARCH_AT_RESULT([match[2] for match in matches], caller, query=matches[0][0])
+                        sysarg = yield _SEARCH_AT_RESULT(
+                            [match[2] for match in matches], caller, query=matches[0][0]
+                        )
                     raise ExecSystemCommand(syscmd, sysarg)
 
                 cmdname, args, cmd, raw_cmdname = "", "", None, ""
@@ -701,17 +744,22 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
                     else:
                         # fallback to default error text
                         sysarg = _("Command '%s' is not available.") % raw_string
-                        suggestions = string_suggestions(raw_string,
-                                                         cmdset.get_all_cmd_keys_and_aliases(caller),
-                                                         cutoff=0.7, maxnum=3)
+                        suggestions = string_suggestions(
+                            raw_string,
+                            cmdset.get_all_cmd_keys_and_aliases(caller),
+                            cutoff=0.7,
+                            maxnum=3,
+                        )
                         if suggestions:
-                            sysarg += _(" Maybe you meant %s?") % utils.list_to_string(suggestions, _('or'), addquote=True)
+                            sysarg += _(" Maybe you meant %s?") % utils.list_to_string(
+                                suggestions, _("or"), addquote=True
+                            )
                         else:
-                            sysarg += _(" Type \"help\" for help.")
+                            sysarg += _(' Type "help" for help.')
                     raise ExecSystemCommand(syscmd, sysarg)
 
                 # Check if this is a Channel-cmd match.
-                if hasattr(cmd, 'is_channel') and cmd.is_channel:
+                if hasattr(cmd, "is_channel") and cmd.is_channel:
                     # even if a user-defined syscmd is not defined, the
                     # found cmd is already a system command in its own right.
                     syscmd = yield cmdset.get(CMD_CHANNEL)
@@ -738,8 +786,9 @@ def cmdhandler(called_by, raw_string, _testing=False, callertype="session", sess
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(syscmd, syscmd.key, sysarg,
-                                         unformatted_raw_string, cmdset, session, account)
+                ret = yield _run_command(
+                    syscmd, syscmd.key, sysarg, unformatted_raw_string, cmdset, session, account
+                )
                 returnValue(ret)
             elif sysarg:
                 # return system arg

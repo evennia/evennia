@@ -8,6 +8,7 @@ ssl.cert in mygame/server/.
 
 """
 import os
+
 try:
     from OpenSSL import crypto
     from twisted.internet import ssl as twisted_ssl
@@ -34,8 +35,14 @@ _PRIVATE_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssl.key")
 _PUBLIC_KEY_FILE = os.path.join(_GAME_DIR, "server", "ssl-public.key")
 _CERTIFICATE_FILE = os.path.join(_GAME_DIR, "server", "ssl.cert")
 _CERTIFICATE_EXPIRE = 365 * 24 * 60 * 60 * 20  # 20 years
-_CERTIFICATE_ISSUER = {"C": "EV", "ST": "Evennia", "L": "Evennia", "O":
-                       "Evennia Security", "OU": "Evennia Department", "CN": "evennia"}
+_CERTIFICATE_ISSUER = {
+    "C": "EV",
+    "ST": "Evennia",
+    "L": "Evennia",
+    "O": "Evennia Security",
+    "OU": "Evennia Department",
+    "CN": "evennia",
+}
 
 # messages
 
@@ -45,7 +52,9 @@ If this error persists, create them manually (using the tools for your OS). The 
 should be placed and named like this:
     {}
     {}
-""".format(_PRIVATE_KEY_FILE, _PUBLIC_KEY_FILE)
+""".format(
+    _PRIVATE_KEY_FILE, _PUBLIC_KEY_FILE
+)
 
 NO_AUTOCERT = """
 Evennia's could not auto-generate the SSL certificate ({{err}}).
@@ -54,7 +63,9 @@ The private key already exists here:
 If this error persists, create the certificate manually (using the private key and
 the tools for your OS). The file should be placed and named like this:
     {}
-""".format(_PRIVATE_KEY_FILE, _CERTIFICATE_FILE)
+""".format(
+    _PRIVATE_KEY_FILE, _CERTIFICATE_FILE
+)
 
 
 class SSLProtocol(TelnetProtocol):
@@ -88,11 +99,11 @@ def verify_or_create_SSL_key_and_cert(keyfile, certfile):
             keypair = crypto.PKey()
             keypair.generate_key(crypto.TYPE_RSA, _PRIVATE_KEY_LENGTH)
 
-            with open(_PRIVATE_KEY_FILE, 'wt') as pfile:
+            with open(_PRIVATE_KEY_FILE, "wt") as pfile:
                 pfile.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, keypair))
                 print("Created SSL private key in '{}'.".format(_PRIVATE_KEY_FILE))
 
-            with open(_PUBLIC_KEY_FILE, 'wt') as pfile:
+            with open(_PUBLIC_KEY_FILE, "wt") as pfile:
                 pfile.write(crypto.dump_publickey(crypto.FILETYPE_PEM, keypair))
                 print("Created SSL public key in '{}'.".format(_PUBLIC_KEY_FILE))
 
@@ -114,9 +125,9 @@ def verify_or_create_SSL_key_and_cert(keyfile, certfile):
                 cert.gmtime_adj_notBefore(0)
                 cert.gmtime_adj_notAfter(_CERTIFICATE_EXPIRE)
                 cert.set_pubkey(keypair)
-                cert.sign(keypair, 'sha1')
+                cert.sign(keypair, "sha1")
 
-                with open(_CERTIFICATE_FILE, 'wt') as cfile:
+                with open(_CERTIFICATE_FILE, "wt") as cfile:
                     cfile.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
                     print("Created SSL certificate in '{}'.".format(_CERTIFICATE_FILE))
 

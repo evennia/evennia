@@ -33,4 +33,5 @@ class ServerSession(BaseServerSession):
     to the game server. All communication between game and account goes
     through their session(s).
     """
+
     pass

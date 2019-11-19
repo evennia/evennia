@@ -18,7 +18,6 @@ therefore always be limited to superusers only.
 
 """
 import re
-from builtins import range
 
 from django.conf import settings
 from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
@@ -85,6 +84,7 @@ print "leaving run ..."
 # Helper functions
 # -------------------------------------------------------------
 
+
 def format_header(caller, entry):
     """
     Formats a header
@@ -101,7 +101,7 @@ def format_header(caller, entry):
     header = "|w%02i/%02i|G: %s|n" % (ptr, stacklen, header)
     # add extra space to the side for padding.
     header = "%s%s" % (header, " " * (width - len(header)))
-    header = header.replace('\n', '\\n')
+    header = header.replace("\n", "\\n")
 
     return header
 
@@ -111,7 +111,7 @@ def format_code(entry):
     Formats the viewing of code and errors
     """
     code = ""
-    for line in entry.split('\n'):
+    for line in entry.split("\n"):
         code += "\n|G>>>|n %s" % line
     return code.strip()
 
@@ -142,8 +142,7 @@ def batch_code_exec(caller):
     code = stack[ptr]
 
     caller.msg(format_header(caller, code))
-    err = BATCHCODE.code_exec(code,
-                              extra_environ={"caller": caller}, debug=debug)
+    err = BATCHCODE.code_exec(code, extra_environ={"caller": caller}, debug=debug)
     if err:
         caller.msg(format_code(err))
         return False
@@ -186,7 +185,7 @@ def show_curr(caller, showall=False):
     codeall = entry.strip()
     string += "|G(hh for help)"
     if showall:
-        for line in codeall.split('\n'):
+        for line in codeall.split("\n"):
             string += "\n|G||n %s" % line
     caller.msg(string)
 
@@ -215,6 +214,7 @@ def purge_processor(caller):
 
     caller.scripts.validate()  # this will purge interactive mode
 
+
 # -------------------------------------------------------------
 # main access commands
 # -------------------------------------------------------------
@@ -235,6 +235,7 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
     Runs batches of commands from a batch-cmd text file (*.ev).
 
     """
+
     key = "batchcommands"
     aliases = ["batchcommand", "batchcmd"]
     switch_options = ("interactive",)
@@ -264,8 +265,10 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
                 err = "{}\n".format(str(err))
             else:
                 err = ""
-            string = "%s'%s' could not load. You have to supply python paths " \
-                     "from one of the defined batch-file directories\n (%s)."
+            string = (
+                "%s'%s' could not load. You have to supply python paths "
+                "from one of the defined batch-file directories\n (%s)."
+            )
             caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not commands:
@@ -283,7 +286,7 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
         caller.ndb.batch_cmdset_backup = list(caller.cmdset.cmdset_stack)
         caller.cmdset.add(BatchSafeCmdSet)
 
-        if 'inter' in switches or 'interactive' in switches:
+        if "inter" in switches or "interactive" in switches:
             # Allow more control over how batch file is executed
 
             # Set interactive state directly
@@ -292,9 +295,10 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
             caller.msg("\nBatch-command processor - Interactive mode for %s ..." % python_path)
             show_curr(caller)
         else:
-            caller.msg("Running Batch-command processor - Automatic mode "
-                       "for %s (this might take some time) ..."
-                       % python_path)
+            caller.msg(
+                "Running Batch-command processor - Automatic mode "
+                "for %s (this might take some time) ..." % python_path
+            )
 
             procpool = False
             if "PythonProcPool" in utils.server_services():
@@ -313,11 +317,13 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
                     caller.msg("  |RError from processor: '%s'" % e)
                     purge_processor(caller)
 
-                utils.run_async(_PROCPOOL_BATCHCMD_SOURCE,
-                                commands=commands,
-                                caller=caller,
-                                at_return=callback,
-                                at_err=errback)
+                utils.run_async(
+                    _PROCPOOL_BATCHCMD_SOURCE,
+                    commands=commands,
+                    caller=caller,
+                    at_return=callback,
+                    at_err=errback,
+                )
             else:
                 # run in-process (might block)
                 for _ in range(len(commands)):
@@ -351,6 +357,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
     Runs batches of commands from a batch-code text file (*.py).
 
     """
+
     key = "batchcode"
     aliases = ["batchcodes"]
     switch_options = ("interactive", "debug")
@@ -367,7 +374,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
             caller.msg("Usage: batchcode[/interactive/debug] <path.to.file>")
             return
         python_path = self.args
-        debug = 'debug' in self.switches
+        debug = "debug" in self.switches
 
         # parse indata file
         try:
@@ -380,8 +387,10 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
                 err = "{}\n".format(str(err))
             else:
                 err = ""
-            string = "%s'%s' could not load. You have to supply python paths " \
-                     "from one of the defined batch-file directories\n (%s)."
+            string = (
+                "%s'%s' could not load. You have to supply python paths "
+                "from one of the defined batch-file directories\n (%s)."
+            )
             caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not codes:
@@ -400,7 +409,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
         caller.ndb.batch_cmdset_backup = list(caller.cmdset.cmdset_stack)
         caller.cmdset.add(BatchSafeCmdSet)
 
-        if 'inter' in switches or 'interactive'in switches:
+        if "inter" in switches or "interactive" in switches:
             # Allow more control over how batch file is executed
 
             # Set interactive state directly
@@ -426,11 +435,14 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
                 def errback(e):
                     caller.msg("  |RError from processor: '%s'" % e)
                     purge_processor(caller)
-                utils.run_async(_PROCPOOL_BATCHCODE_SOURCE,
-                                codes=codes,
-                                caller=caller,
-                                at_return=callback,
-                                at_err=errback)
+
+                utils.run_async(
+                    _PROCPOOL_BATCHCODE_SOURCE,
+                    codes=codes,
+                    caller=caller,
+                    at_return=callback,
+                    at_err=errback,
+                )
             else:
                 # un in-process (will block)
                 for _ in range(len(codes)):
@@ -450,6 +462,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
 # (these are the same for both processors)
 # -------------------------------------------------------------
 
+
 class CmdStateAbort(_COMMAND_DEFAULT_CLASS):
     """
     abort
@@ -458,6 +471,7 @@ class CmdStateAbort(_COMMAND_DEFAULT_CLASS):
     the default cmdset, regardless of what current cmdset the processor might
     have put us in (e.g. when testing buggy scripts etc).
     """
+
     key = "abort"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -475,6 +489,7 @@ class CmdStateLL(_COMMAND_DEFAULT_CLASS):
     Look at the full source for the current
     command definition.
     """
+
     key = "ll"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -489,6 +504,7 @@ class CmdStatePP(_COMMAND_DEFAULT_CLASS):
 
     Process the currently shown command definition.
     """
+
     key = "pp"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -511,6 +527,7 @@ class CmdStateRR(_COMMAND_DEFAULT_CLASS):
     Reload the batch file, keeping the current
     position in it.
     """
+
     key = "rr"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -533,6 +550,7 @@ class CmdStateRRR(_COMMAND_DEFAULT_CLASS):
     Reload the batch file, starting over
     from the beginning.
     """
+
     key = "rrr"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -554,6 +572,7 @@ class CmdStateNN(_COMMAND_DEFAULT_CLASS):
 
     Go to next command. No commands are executed.
     """
+
     key = "nn"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -576,6 +595,7 @@ class CmdStateNL(_COMMAND_DEFAULT_CLASS):
     Go to next command, viewing its full source.
     No commands are executed.
     """
+
     key = "nl"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -598,6 +618,7 @@ class CmdStateBB(_COMMAND_DEFAULT_CLASS):
     Backwards to previous command. No commands
     are executed.
     """
+
     key = "bb"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -620,6 +641,7 @@ class CmdStateBL(_COMMAND_DEFAULT_CLASS):
     Backwards to previous command, viewing its full
     source. No commands are executed.
     """
+
     key = "bl"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -643,6 +665,7 @@ class CmdStateSS(_COMMAND_DEFAULT_CLASS):
     one. If steps is given,
     process this many commands.
     """
+
     key = "ss"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -672,6 +695,7 @@ class CmdStateSL(_COMMAND_DEFAULT_CLASS):
     one, viewing its full source. If steps is given,
     process this many commands.
     """
+
     key = "sl"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -700,6 +724,7 @@ class CmdStateCC(_COMMAND_DEFAULT_CLASS):
     Continue to process all remaining
     commands.
     """
+
     key = "cc"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -728,6 +753,7 @@ class CmdStateJJ(_COMMAND_DEFAULT_CLASS):
 
     Jump to specific command number
     """
+
     key = "jj"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -752,6 +778,7 @@ class CmdStateJL(_COMMAND_DEFAULT_CLASS):
 
     Jump to specific command number and view its full source.
     """
+
     key = "jl"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -776,6 +803,7 @@ class CmdStateQQ(_COMMAND_DEFAULT_CLASS):
 
     Quit the batchprocessor.
     """
+
     key = "qq"
     help_category = "BatchProcess"
     locks = "cmd:perm(batchcommands)"
@@ -828,12 +856,14 @@ class CmdStateHH(_COMMAND_DEFAULT_CLASS):
 #
 # -------------------------------------------------------------
 
+
 class BatchSafeCmdSet(CmdSet):
     """
     The base cmdset for the batch processor.
     This sets a 'safe' abort command that will
     always be available to get out of everything.
     """
+
     key = "Batch_default"
     priority = 150  # override other cmdsets.
 
@@ -846,6 +876,7 @@ class BatchInteractiveCmdSet(CmdSet):
     """
     The cmdset for the interactive batch processor mode.
     """
+
     key = "Batch_interactive"
     priority = 104
 

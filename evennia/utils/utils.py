@@ -6,22 +6,22 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
-from future.utils import viewkeys, raise_
-
 import os
+import gc
 import sys
-import imp
 import types
 import math
 import re
 import textwrap
 import random
 import inspect
+import traceback
+import importlib
+import importlib.util
+import importlib.machinery
 from twisted.internet.task import deferLater
 from twisted.internet.defer import returnValue  # noqa - used as import target
 from os.path import join as osjoin
-from importlib import import_module
-from importlib.util import find_spec
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
 from twisted.internet import threads, reactor
@@ -34,14 +34,6 @@ from evennia.utils import logger
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
-
-
-# ModuleNotFoundError only in py3.6, handle both
-try:
-    from builtins import ModuleNotFoundError
-except ImportError:
-    ModuleNotFoundError = ImportError
-
 ENCODINGS = settings.ENCODINGS
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -64,7 +56,7 @@ def is_iter(obj):
         what we want to do with a string.
 
     """
-    if isinstance(obj, (str, bytes )):
+    if isinstance(obj, (str, bytes)):
         return False
 
     try:
@@ -128,11 +120,11 @@ def pad(text, width=None, align="c", fillchar=" "):
 
     """
     width = width if width else settings.CLIENT_DEFAULT_WIDTH
-    align = align if align in ('c', 'l', 'r') else 'c'
+    align = align if align in ("c", "l", "r") else "c"
     fillchar = fillchar[0] if fillchar else " "
-    if align == 'l':
+    if align == "l":
         return text.ljust(width, fillchar)
-    elif align == 'r':
+    elif align == "r":
         return text.rjust(width, fillchar)
     else:
         return text.center(width, fillchar)
@@ -162,7 +154,7 @@ def crop(text, width=None, suffix="[...]"):
         return text
     else:
         lsuffix = len(suffix)
-        text = text[:width] if lsuffix >= width else "%s%s" % (text[:width - lsuffix], suffix)
+        text = text[:width] if lsuffix >= width else "%s%s" % (text[: width - lsuffix], suffix)
         return to_str(text)
 
 
@@ -191,11 +183,12 @@ def dedent(text, baseline_index=None):
     if baseline_index is None:
         return textwrap.dedent(text)
     else:
-        lines = text.split('\n')
+        lines = text.split("\n")
         baseline = lines[baseline_index]
-        spaceremove = len(baseline) - len(baseline.lstrip(' '))
-        return "\n".join(line[min(spaceremove, len(line) - len(line.lstrip(' '))):]
-                         for line in lines)
+        spaceremove = len(baseline) - len(baseline.lstrip(" "))
+        return "\n".join(
+            line[min(spaceremove, len(line) - len(line.lstrip(" "))) :] for line in lines
+        )
 
 
 def justify(text, width=None, align="f", indent=0):
@@ -228,19 +221,20 @@ def justify(text, width=None, align="f", indent=0):
         line_rest = width - (wlen + ngaps)
         gap = " "  # minimum gap between words
         if line_rest > 0:
-            if align == 'l':
+            if align == "l":
                 if line[-1] == "\n\n":
-                    line[-1] = " " * (line_rest-1) + "\n" + " " * width + "\n" + " " * width
+                    line[-1] = " " * (line_rest - 1) + "\n" + " " * width + "\n" + " " * width
                 else:
                     line[-1] += " " * line_rest
-            elif align == 'r':
+            elif align == "r":
                 line[0] = " " * line_rest + line[0]
-            elif align == 'c':
+            elif align == "c":
                 pad = " " * (line_rest // 2)
                 line[0] = pad + line[0]
                 if line[-1] == "\n\n":
-                    line[-1] += pad + " " * (line_rest % 2 - 1) + \
-                            "\n" + " " * width + "\n" + " " * width
+                    line[-1] += (
+                        pad + " " * (line_rest % 2 - 1) + "\n" + " " * width + "\n" + " " * width
+                    )
                 else:
                     line[-1] = line[-1] + pad + " " * (line_rest % 2)
             else:  # align 'f'
@@ -290,7 +284,7 @@ def justify(text, width=None, align="f", indent=0):
     return "\n".join([indentstring + line for line in lines])
 
 
-def columnize(string, columns=2, spacing=4, align='l', width=None):
+def columnize(string, columns=2, spacing=4, align="l", width=None):
     """
     Break a string into a number of columns, using as little
     vertical space as possible.
@@ -332,7 +326,7 @@ def columnize(string, columns=2, spacing=4, align='l', width=None):
     cols = []
     istart = 0
     for irows in nrows:
-        cols.append(onecol[istart:istart+irows])
+        cols.append(onecol[istart : istart + irows])
         istart = istart + irows
     for col in cols:
         if len(col) < height:
@@ -382,8 +376,8 @@ def list_to_string(inlist, endsep="and", addquote=False):
         return ""
     if addquote:
         if len(inlist) == 1:
-            return "\"%s\"" % inlist[0]
-        return ", ".join("\"%s\"" % v for v in inlist[:-1]) + "%s %s" % (endsep, "\"%s\"" % inlist[-1])
+            return '"%s"' % inlist[0]
+        return ", ".join('"%s"' % v for v in inlist[:-1]) + "%s %s" % (endsep, '"%s"' % inlist[-1])
     else:
         if len(inlist) == 1:
             return str(inlist[0])
@@ -456,9 +450,9 @@ def time_format(seconds, style=0):
         Standard colon-style output.
         """
         if days > 0:
-            retval = '%id %02i:%02i' % (days, hours, minutes,)
+            retval = "%id %02i:%02i" % (days, hours, minutes)
         else:
-            retval = '%02i:%02i' % (hours, minutes,)
+            retval = "%02i:%02i" % (hours, minutes)
         return retval
 
     elif style == 1:
@@ -466,62 +460,62 @@ def time_format(seconds, style=0):
         Simple, abbreviated form that only shows the highest time amount.
         """
         if days > 0:
-            return '%id' % (days,)
+            return "%id" % (days,)
         elif hours > 0:
-            return '%ih' % (hours,)
+            return "%ih" % (hours,)
         elif minutes > 0:
-            return '%im' % (minutes,)
+            return "%im" % (minutes,)
         else:
-            return '%is' % (seconds,)
+            return "%is" % (seconds,)
     elif style == 2:
         """
         Full-detailed, long-winded format. We ignore seconds.
         """
-        days_str = hours_str = ''
-        minutes_str = '0 minutes'
+        days_str = hours_str = ""
+        minutes_str = "0 minutes"
 
         if days > 0:
             if days == 1:
-                days_str = '%i day, ' % days
+                days_str = "%i day, " % days
             else:
-                days_str = '%i days, ' % days
+                days_str = "%i days, " % days
         if days or hours > 0:
             if hours == 1:
-                hours_str = '%i hour, ' % hours
+                hours_str = "%i hour, " % hours
             else:
-                hours_str = '%i hours, ' % hours
+                hours_str = "%i hours, " % hours
         if hours or minutes > 0:
             if minutes == 1:
-                minutes_str = '%i minute ' % minutes
+                minutes_str = "%i minute " % minutes
             else:
-                minutes_str = '%i minutes ' % minutes
-        retval = '%s%s%s' % (days_str, hours_str, minutes_str)
+                minutes_str = "%i minutes " % minutes
+        retval = "%s%s%s" % (days_str, hours_str, minutes_str)
     elif style == 3:
         """
         Full-detailed, long-winded format. Includes seconds.
         """
-        days_str = hours_str = minutes_str = seconds_str = ''
+        days_str = hours_str = minutes_str = seconds_str = ""
         if days > 0:
             if days == 1:
-                days_str = '%i day, ' % days
+                days_str = "%i day, " % days
             else:
-                days_str = '%i days, ' % days
+                days_str = "%i days, " % days
         if days or hours > 0:
             if hours == 1:
-                hours_str = '%i hour, ' % hours
+                hours_str = "%i hour, " % hours
             else:
-                hours_str = '%i hours, ' % hours
+                hours_str = "%i hours, " % hours
         if hours or minutes > 0:
             if minutes == 1:
-                minutes_str = '%i minute ' % minutes
+                minutes_str = "%i minute " % minutes
             else:
-                minutes_str = '%i minutes ' % minutes
+                minutes_str = "%i minutes " % minutes
         if minutes or seconds > 0:
             if seconds == 1:
-                seconds_str = '%i second ' % seconds
+                seconds_str = "%i second " % seconds
             else:
-                seconds_str = '%i seconds ' % seconds
-        retval = '%s%s%s%s' % (days_str, hours_str, minutes_str, seconds_str)
+                seconds_str = "%i seconds " % seconds
+        retval = "%s%s%s%s" % (days_str, hours_str, minutes_str, seconds_str)
     elif style == 4:
         """
         Only return the highest unit.
@@ -576,10 +570,10 @@ def datetime_format(dtobj):
 
     if dtobj.year < now.year:
         # another year (Apr 5, 2019)
-        timestring = dtobj.strftime("%b %-d, %Y")
+        timestring = dtobj.strftime(f"%b {dtobj.day}, %Y")
     elif dtobj.date() < now.date():
         # another date, same year  (Apr 5)
-        timestring = dtobj.strftime("%b %-d")
+        timestring = dtobj.strftime(f"%b {dtobj.day}")
     elif dtobj.hour < now.hour - 1:
         # same day, more than 1 hour ago (10:45)
         timestring = dtobj.strftime("%H:%M")
@@ -619,6 +613,7 @@ def get_evennia_version(mode="long"):
 
     """
     import evennia
+
     vers = evennia.__version__
     if mode == "short":
         return vers.split()[0].strip()
@@ -629,7 +624,7 @@ def get_evennia_version(mode="long"):
         return vers
 
 
-def pypath_to_realpath(python_path, file_ending='.py', pypath_prefixes=None):
+def pypath_to_realpath(python_path, file_ending=".py", pypath_prefixes=None):
     """
     Converts a dotted Python path to an absolute path under the
     Evennia library directory or under the current game directory.
@@ -653,26 +648,38 @@ def pypath_to_realpath(python_path, file_ending='.py', pypath_prefixes=None):
         prefixes.
 
     """
-    path = python_path.strip().split('.')
+    path = python_path.strip().split(".")
     plong = osjoin(*path) + file_ending
-    pshort = osjoin(*path[1:]) + file_ending if len(path) > 1 else plong  # in case we had evennia. or mygame.
-    prefixlong = [osjoin(*ppath.strip().split('.'))
-                  for ppath in make_iter(pypath_prefixes)] \
-        if pypath_prefixes else []
-    prefixshort = [osjoin(*ppath.strip().split('.')[1:])
-                   for ppath in make_iter(pypath_prefixes) if len(ppath.strip().split('.')) > 1]\
-        if pypath_prefixes else []
-    paths = [plong] + \
-            [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixlong] + \
-            [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixlong] + \
-            [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixshort] + \
-            [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixshort] + \
-            [osjoin(_EVENNIA_DIR, plong), osjoin(_GAME_DIR, plong)] + \
-            [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixshort] + \
-            [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixshort] + \
-            [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixlong] + \
-            [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixlong] + \
-            [osjoin(_EVENNIA_DIR, pshort), osjoin(_GAME_DIR, pshort)]
+    pshort = (
+        osjoin(*path[1:]) + file_ending if len(path) > 1 else plong
+    )  # in case we had evennia. or mygame.
+    prefixlong = (
+        [osjoin(*ppath.strip().split(".")) for ppath in make_iter(pypath_prefixes)]
+        if pypath_prefixes
+        else []
+    )
+    prefixshort = (
+        [
+            osjoin(*ppath.strip().split(".")[1:])
+            for ppath in make_iter(pypath_prefixes)
+            if len(ppath.strip().split(".")) > 1
+        ]
+        if pypath_prefixes
+        else []
+    )
+    paths = (
+        [plong]
+        + [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixlong]
+        + [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixlong]
+        + [osjoin(_EVENNIA_DIR, prefix, plong) for prefix in prefixshort]
+        + [osjoin(_GAME_DIR, prefix, plong) for prefix in prefixshort]
+        + [osjoin(_EVENNIA_DIR, plong), osjoin(_GAME_DIR, plong)]
+        + [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixshort]
+        + [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixshort]
+        + [osjoin(_EVENNIA_DIR, prefix, pshort) for prefix in prefixlong]
+        + [osjoin(_GAME_DIR, prefix, pshort) for prefix in prefixlong]
+        + [osjoin(_EVENNIA_DIR, pshort), osjoin(_GAME_DIR, pshort)]
+    )
     # filter out non-existing paths
     return list(set(p for p in paths if os.path.isfile(p)))
 
@@ -692,13 +699,14 @@ def dbref(inp, reqhash=True):
 
     """
     if reqhash:
-        num = (int(inp.lstrip('#')) if (isinstance(inp, str) and
-                                        inp.startswith("#") and
-                                        inp.lstrip('#').isdigit())
-               else None)
+        num = (
+            int(inp.lstrip("#"))
+            if (isinstance(inp, str) and inp.startswith("#") and inp.lstrip("#").isdigit())
+            else None
+        )
         return num if isinstance(num, int) and num > 0 else None
     elif isinstance(inp, str):
-        inp = inp.lstrip('#')
+        inp = inp.lstrip("#")
         return int(inp) if inp.isdigit() and int(inp) > 0 else None
     else:
         return inp if isinstance(inp, int) else None
@@ -747,11 +755,20 @@ dbid_to_obj = dbref_to_obj
 
 
 # some direct translations for the latinify
-_UNICODE_MAP = {"EM DASH": "-", "FIGURE DASH": "-", "EN DASH": "-", "HORIZONTAL BAR": "-",
-                "HORIZONTAL ELLIPSIS": "...", "RIGHT SINGLE QUOTATION MARK": "'"}
+_UNICODE_MAP = {
+    "EM DASH": "-",
+    "FIGURE DASH": "-",
+    "EN DASH": "-",
+    "HORIZONTAL BAR": "-",
+    "HORIZONTAL ELLIPSIS": "...",
+    "LEFT SINGLE QUOTATION MARK": "'",
+    "RIGHT SINGLE QUOTATION MARK": "'",
+    "LEFT DOUBLE QUOTATION MARK": '"',
+    "RIGHT DOUBLE QUOTATION MARK": '"',
+}
 
 
-def latinify(string, default='?', pure_ascii=False):
+def latinify(string, default="?", pure_ascii=False):
     """
     Convert a unicode string to "safe" ascii/latin-1 characters.
     This is used as a last resort when normal encoding does not work.
@@ -774,10 +791,13 @@ def latinify(string, default='?', pure_ascii=False):
 
     from unicodedata import name
 
+    if isinstance(string, bytes):
+        string = string.decode("utf8")
+
     converted = []
     for unich in iter(string):
         try:
-            ch = unich.decode('ascii')
+            ch = unich.encode("utf8").decode("ascii")
         except UnicodeDecodeError:
             # deduce a latin letter equivalent from the Unicode data
             # point name; e.g., since `name(u'á') == 'LATIN SMALL
@@ -794,12 +814,12 @@ def latinify(string, default='?', pure_ascii=False):
                 ch = _UNICODE_MAP[what]
             else:
                 what = what.split()
-                if what[0] == 'LATIN' and what[2] == 'LETTER' and len(what[3]) == 1:
-                    ch = what[3].lower() if what[1] == 'SMALL' else what[3].upper()
+                if what[0] == "LATIN" and what[2] == "LETTER" and len(what[3]) == 1:
+                    ch = what[3].lower() if what[1] == "SMALL" else what[3].upper()
                 else:
                     ch = default
         converted.append(chr(ord(ch)))
-    return ''.join(converted)
+    return "".join(converted)
 
 
 def to_bytes(text, session=None):
@@ -832,7 +852,7 @@ def to_bytes(text, session=None):
         except Exception:
             text = repr(text)
 
-    default_encoding = session.protocol_flags.get("ENCODING", 'utf-8') if session else 'utf-8'
+    default_encoding = session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
     try:
         return text.encode(default_encoding)
     except (LookupError, UnicodeEncodeError):
@@ -871,7 +891,7 @@ def to_str(text, session=None):
         except Exception:
             return repr(text)
 
-    default_encoding = session.protocol_flags.get("ENCODING", 'utf-8') if session else 'utf-8'
+    default_encoding = session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
     try:
         return text.decode(default_encoding)
     except (LookupError, UnicodeDecodeError):
@@ -902,9 +922,28 @@ def validate_email_address(emailaddress):
 
     emailaddress = r"%s" % emailaddress
 
-    domains = ("aero", "asia", "biz", "cat", "com", "coop",
-               "edu", "gov", "info", "int", "jobs", "mil", "mobi", "museum",
-               "name", "net", "org", "pro", "tel", "travel")
+    domains = (
+        "aero",
+        "asia",
+        "biz",
+        "cat",
+        "com",
+        "coop",
+        "edu",
+        "gov",
+        "info",
+        "int",
+        "jobs",
+        "mil",
+        "mobi",
+        "museum",
+        "name",
+        "net",
+        "org",
+        "pro",
+        "tel",
+        "travel",
+    )
 
     # Email address must be more than 7 characters in total.
     if len(emailaddress) < 7:
@@ -912,8 +951,8 @@ def validate_email_address(emailaddress):
 
     # Split up email address into parts.
     try:
-        localpart, domainname = emailaddress.rsplit('@', 1)
-        host, toplevel = domainname.rsplit('.', 1)
+        localpart, domainname = emailaddress.rsplit("@", 1)
+        host, toplevel = domainname.rsplit(".", 1)
     except ValueError:
         return False  # Address does not have enough parts.
 
@@ -921,9 +960,9 @@ def validate_email_address(emailaddress):
     if len(toplevel) != 2 and toplevel not in domains:
         return False  # Not a domain name.
 
-    for i in '-_.%+.':
+    for i in "-_.%+.":
         localpart = localpart.replace(i, "")
-    for i in '-_.':
+    for i in "-_.":
         host = host.replace(i, "")
 
     if localpart.isalnum() and host.isalnum():
@@ -981,6 +1020,7 @@ def server_services():
 
     """
     from evennia.server.sessionhandler import SESSIONS
+
     if hasattr(SESSIONS, "server") and hasattr(SESSIONS.server, "services"):
         server = SESSIONS.server.services.namedServices
     else:
@@ -1049,45 +1089,6 @@ def delay(timedelay, callback, *args, **kwargs):
     if _TASK_HANDLER is None:
         from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
     return _TASK_HANDLER.add(timedelay, callback, *args, **kwargs)
-
-
-_TYPECLASSMODELS = None
-_OBJECTMODELS = None
-
-
-def clean_object_caches(obj):
-    """
-    Clean all object caches on the given object.
-
-    Args:
-        obj (Object instace): An object whose caches to clean.
-
-    Notes:
-        This is only the contents cache these days.
-
-    """
-    global _TYPECLASSMODELS, _OBJECTMODELS
-    if not _TYPECLASSMODELS:
-        from evennia.typeclasses import models as _TYPECLASSMODELS
-
-    if not obj:
-        return
-    # contents cache
-    try:
-        _SA(obj, "_contents_cache", None)
-    except AttributeError:
-        # if the cache cannot be reached, move on anyway
-        pass
-
-    # on-object property cache
-    [_DA(obj, cname) for cname in viewkeys(obj.__dict__)
-     if cname.startswith("_cached_db_")]
-    try:
-        hashid = _GA(obj, "hashid")
-        _TYPECLASSMODELS._ATTRIBUTE_CACHE[hashid] = {}
-    except AttributeError:
-        # skip caching
-        pass
 
 
 _PPOOL = None
@@ -1167,28 +1168,34 @@ def check_evennia_dependencies():
 
     # check main dependencies
     from evennia.server.evennia_launcher import check_main_evennia_dependencies
+
     not_error = check_main_evennia_dependencies()
 
     errstring = ""
     # South is no longer used ...
-    if 'south' in settings.INSTALLED_APPS:
-        errstring += "\n ERROR: 'south' found in settings.INSTALLED_APPS. " \
-                     "\n   South is no longer used. If this was added manually, remove it."
+    if "south" in settings.INSTALLED_APPS:
+        errstring += (
+            "\n ERROR: 'south' found in settings.INSTALLED_APPS. "
+            "\n   South is no longer used. If this was added manually, remove it."
+        )
         not_error = False
     # IRC support
     if settings.IRC_ENABLED:
         try:
             import twisted.words
+
             twisted.words  # set to avoid debug info about not-used import
         except ImportError:
-            errstring += "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it." \
-                         "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others" \
-                         "\n   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
+            errstring += (
+                "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it."
+                "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others"
+                "\n   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
+            )
             not_error = False
     errstring = errstring.strip()
     if errstring:
         mlen = max(len(line) for line in errstring.split("\n"))
-        logger.log_err("%s\n%s\n%s" % ("-" * mlen, errstring, '-' * mlen))
+        logger.log_err("%s\n%s\n%s" % ("-" * mlen, errstring, "-" * mlen))
     return not_error
 
 
@@ -1205,12 +1212,39 @@ def has_parent(basepath, obj):
 
     """
     try:
-        return any(cls for cls in obj.__class__.mro()
-                   if basepath == "%s.%s" % (cls.__module__, cls.__name__))
+        return any(
+            cls
+            for cls in obj.__class__.mro()
+            if basepath == "%s.%s" % (cls.__module__, cls.__name__)
+        )
     except (TypeError, AttributeError):
         # this can occur if we tried to store a class object, not an
         # instance. Not sure if one should defend against this.
         return False
+
+
+def mod_import_from_path(path):
+    """
+    Load a Python module at the specified path.
+
+    Args:
+        path (str): An absolute path to a Python module to load.
+
+    Returns:
+        (module or None): An imported module if the path was a valid
+        Python module. Returns `None` if the import failed.
+
+    """
+    if not os.path.isabs(path):
+        path = os.path.abspath(path)
+    dirpath, filename = path.rsplit(os.path.sep, 1)
+    modname = filename.rstrip(".py")
+
+    try:
+        return importlib.machinery.SourceFileLoader(modname, path).load_module()
+    except OSError:
+        logger.log_trace(f"Could not find module '{modname}' ({modname}.py) at path '{dirpath}'")
+        return None
 
 
 def mod_import(module):
@@ -1220,52 +1254,28 @@ def mod_import(module):
     Args:
         module (str, module): This can be either a Python path
             (dot-notation like `evennia.objects.models`), an absolute path
-            (e.g. `/home/eve/evennia/evennia/objects.models.py`) or an
+            (e.g. `/home/eve/evennia/evennia/objects/models.py`) or an
             already imported module object (e.g. `models`)
     Returns:
-        module (module or None): An imported module. If the input argument was
+        (module or None): An imported module. If the input argument was
         already a module, this is returned as-is, otherwise the path is
         parsed and imported. Returns `None` and logs error if import failed.
 
     """
-
     if not module:
         return None
 
     if isinstance(module, types.ModuleType):
         # if this is already a module, we are done
-        mod = module
-    else:
-        # first try to import as a python path
-        try:
-            mod = __import__(module, fromlist=["None"])
-        except ImportError as ex:
-            # check just where the ImportError happened (it could have been
-            # an erroneous import inside the module as well). This is the
-            # trivial way to do it ...
-            if not str(ex).startswith("No module named "):
-                raise
+        return module
 
-            # error in this module. Try absolute path import instead
+    if module.endswith(".py") and os.path.exists(module):
+        return mod_import_from_path(module)
 
-            if not os.path.isabs(module):
-                module = os.path.abspath(module)
-            path, filename = module.rsplit(os.path.sep, 1)
-            modname = re.sub(r"\.py$", "", filename)
-
-            try:
-                result = imp.find_module(modname, [path])
-            except ImportError:
-                logger.log_trace("Could not find module '%s' (%s.py) at path '%s'" % (modname, modname, path))
-                return None
-            try:
-                mod = imp.load_module(modname, *result)
-            except ImportError:
-                logger.log_trace("Could not find or import module %s at path '%s'" % (modname, path))
-                mod = None
-            # we have to close the file handle manually
-            result[0].close()
-    return mod
+    try:
+        return importlib.import_module(module)
+    except ImportError:
+        return None
 
 
 def all_from_module(module):
@@ -1353,8 +1363,9 @@ def variable_from_module(module, variable=None, default=None):
                 result.append(mod.__dict__.get(var, default))
     else:
         # get all
-        result = [val for key, val in mod.__dict__.items()
-                  if not (key.startswith("_") or ismodule(val))]
+        result = [
+            val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))
+        ]
 
     if len(result) == 1:
         return result[0]
@@ -1425,7 +1436,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
     paths = [path] + make_iter(defaultpaths)
     for modpath in paths:
         try:
-            mod = import_module(modpath)
+            mod = importlib.import_module(modpath)
         except ImportError as ex:
             if not str(ex).startswith("No module named %s" % modpath):
                 # this means the module was found but it
@@ -1453,8 +1464,13 @@ def class_from_module(path, defaultpaths=None):
 
     """
     cls = None
+    err = ""
     if defaultpaths:
-        paths = [path] + ["%s.%s" % (dpath, path) for dpath in make_iter(defaultpaths)] if defaultpaths else []
+        paths = (
+            [path] + ["%s.%s" % (dpath, path) for dpath in make_iter(defaultpaths)]
+            if defaultpaths
+            else []
+        )
     else:
         paths = [path]
 
@@ -1465,14 +1481,15 @@ def class_from_module(path, defaultpaths=None):
             raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
 
         try:
-            if not find_spec(testpath, package='evennia'):
+            if not importlib.util.find_spec(testpath, package="evennia"):
                 continue
         except ModuleNotFoundError:
             continue
 
         try:
-            mod = import_module(testpath, package='evennia')
+            mod = importlib.import_module(testpath, package="evennia")
         except ModuleNotFoundError:
+            err = traceback.format_exc(30)
             break
 
         try:
@@ -1481,10 +1498,12 @@ def class_from_module(path, defaultpaths=None):
         except AttributeError:
             if len(trace()) > 2:
                 # AttributeError within the module, don't hide it
-                exc = sys.exc_info()
-                raise_(exc[1], None, exc[2])
+                err = traceback.format_exc(30)
+                break
     if not cls:
-        err = "Could not load typeclass '%s'" % path
+        err = "\nCould not load typeclass '{}'{}".format(
+            path, " with the following traceback:\n" + err if err else ""
+        )
         if defaultpaths:
             err += "\nPaths searched:\n    %s" % "\n    ".join(paths)
         else:
@@ -1502,6 +1521,7 @@ def init_new_account(account):
     Deprecated.
     """
     from evennia.utils import logger
+
     logger.log_dep("evennia.utils.utils.init_new_account is DEPRECATED and should not be used.")
 
 
@@ -1526,8 +1546,9 @@ def string_similarity(string1, string2):
     vec1 = [string1.count(v) for v in vocabulary]
     vec2 = [string2.count(v) for v in vocabulary]
     try:
-        return float(sum(vec1[i] * vec2[i] for i in range(len(vocabulary)))) / \
-            (math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2)))
+        return float(sum(vec1[i] * vec2[i] for i in range(len(vocabulary)))) / (
+            math.sqrt(sum(v1 ** 2 for v1 in vec1)) * math.sqrt(sum(v2 ** 2 for v2 in vec2))
+        )
     except ZeroDivisionError:
         # can happen if empty-string cmdnames appear for some reason.
         # This is a no-match.
@@ -1552,10 +1573,15 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
             Could be empty if there are no matches.
 
     """
-    return [tup[1] for tup in sorted([(string_similarity(string, sugg), sugg)
-                                      for sugg in vocabulary],
-                                     key=lambda tup: tup[0], reverse=True)
-            if tup[0] >= cutoff][:maxnum]
+    return [
+        tup[1]
+        for tup in sorted(
+            [(string_similarity(string, sugg), sugg) for sugg in vocabulary],
+            key=lambda tup: tup[0],
+            reverse=True,
+        )
+        if tup[0] >= cutoff
+    ][:maxnum]
 
 
 def string_partial_matching(alternatives, inp, ret_index=True):
@@ -1589,9 +1615,11 @@ def string_partial_matching(alternatives, inp, ret_index=True):
         for inp_word in inp_words:
             # loop over parts, making sure only to visit each part once
             # (this will invalidate input in the wrong word order)
-            submatch = [last_index + alt_num for alt_num, alt_word
-                        in enumerate(alt_words[last_index:])
-                        if alt_word.startswith(inp_word)]
+            submatch = [
+                last_index + alt_num
+                for alt_num, alt_word in enumerate(alt_words[last_index:])
+                if alt_word.startswith(inp_word)
+            ]
             if submatch:
                 last_index = min(submatch) + 1
                 score += 1
@@ -1650,8 +1678,12 @@ def format_table(table, extra_space=1):
     max_widths = [max([len(str(val)) for val in col]) for col in table]
     ftable = []
     for irow in range(len(table[0])):
-        ftable.append([str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
-                       for icol, col in enumerate(table)])
+        ftable.append(
+            [
+                str(col[irow]).ljust(max_widths[icol]) + " " * extra_space
+                for icol, col in enumerate(table)
+            ]
+        )
     return ftable
 
 
@@ -1674,22 +1706,18 @@ def get_evennia_pids():
         is_subprocess = self_pid not in (server_pid, portal_pid)
         ```
     """
-    server_pidfile = os.path.join(settings.GAME_DIR, 'server.pid')
-    portal_pidfile = os.path.join(settings.GAME_DIR, 'portal.pid')
+    server_pidfile = os.path.join(settings.GAME_DIR, "server.pid")
+    portal_pidfile = os.path.join(settings.GAME_DIR, "portal.pid")
     server_pid, portal_pid = None, None
     if os.path.exists(server_pidfile):
-        with open(server_pidfile, 'r') as f:
+        with open(server_pidfile, "r") as f:
             server_pid = f.read()
     if os.path.exists(portal_pidfile):
-        with open(portal_pidfile, 'r') as f:
+        with open(portal_pidfile, "r") as f:
             portal_pid = f.read()
     if server_pid and portal_pid:
         return int(server_pid), int(portal_pid)
     return None, None
-
-
-from gc import get_referents
-from sys import getsizeof
 
 
 def deepsize(obj, max_depth=4):
@@ -1714,17 +1742,19 @@ def deepsize(obj, max_depth=4):
         and their handlers.
 
     """
+
     def _recurse(o, dct, depth):
         if 0 <= max_depth < depth:
             return
-        for ref in get_referents(o):
+        for ref in gc.get_referents(o):
             idr = id(ref)
             if idr not in dct:
-                dct[idr] = (ref, getsizeof(ref, default=0))
+                dct[idr] = (ref, sys.getsizeof(ref, default=0))
                 _recurse(ref, dct, depth + 1)
+
     sizedict = {}
     _recurse(obj, sizedict, 0)
-    size = getsizeof(obj) + sum([p[1] for p in sizedict.values()])
+    size = sys.getsizeof(obj) + sum([p[1] for p in sizedict.values()])
     return size
 
 
@@ -1771,7 +1801,9 @@ class lazy_property(object):
 
 
 _STRIP_ANSI = None
-_RE_CONTROL_CHAR = re.compile('[%s]' % re.escape(''.join([chr(c) for c in range(0, 32)])))  # + range(127,160)])))
+_RE_CONTROL_CHAR = re.compile(
+    "[%s]" % re.escape("".join([chr(c) for c in range(0, 32)]))
+)  # + range(127,160)])))
 
 
 def strip_control_sequences(string):
@@ -1788,7 +1820,7 @@ def strip_control_sequences(string):
     global _STRIP_ANSI
     if not _STRIP_ANSI:
         from evennia.utils.ansi import strip_raw_ansi as _STRIP_ANSI
-    return _RE_CONTROL_CHAR.sub('', _STRIP_ANSI(string))
+    return _RE_CONTROL_CHAR.sub("", _STRIP_ANSI(string))
 
 
 def calledby(callerdepth=1):
@@ -1806,6 +1838,7 @@ def calledby(callerdepth=1):
 
     """
     import inspect
+
     stack = inspect.stack()
     # we must step one extra level back in stack since we don't want
     # to include the call of this function itself.
@@ -1830,9 +1863,11 @@ def m_len(target):
     """
     # Would create circular import if in module root.
     from evennia.utils.ansi import ANSI_PARSER
+
     if inherits_from(target, str) and "|lt" in target:
         return len(ANSI_PARSER.strip_mxp(target))
     return len(target)
+
 
 # -------------------------------------------------------------------
 # Search handler function
@@ -1888,9 +1923,12 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
             aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
             error += _MULTIMATCH_TEMPLATE.format(
                 number=num + 1,
-                name=result.get_display_name(caller) if hasattr(result, "get_display_name") else query,
+                name=result.get_display_name(caller)
+                if hasattr(result, "get_display_name")
+                else query,
                 aliases=" [%s]" % ";".join(aliases) if aliases else "",
-                info=result.get_extra_info(caller))
+                info=result.get_extra_info(caller),
+            )
         matches = None
     else:
         # exactly one match
@@ -1929,9 +1967,13 @@ class LimitedSizeOrderedDict(OrderedDict):
     def __eq__(self, other):
         ret = super().__eq__(other)
         if ret:
-            return (ret and
-                    hasattr(other, 'size_limit') and self.size_limit == other.size_limit and
-                    hasattr(other, 'fifo') and self.fifo == other.fifo)
+            return (
+                ret
+                and hasattr(other, "size_limit")
+                and self.size_limit == other.size_limit
+                and hasattr(other, "fifo")
+                and self.fifo == other.fifo
+            )
         return False
 
     def __ne__(self, other):
@@ -1990,11 +2032,18 @@ def get_all_typeclasses(parent=None):
 
     """
     from evennia.typeclasses.models import TypedObject
-    typeclasses = {"{}.{}".format(model.__module__, model.__name__): model
-                   for model in apps.get_models() if TypedObject in getmro(model)}
+
+    typeclasses = {
+        "{}.{}".format(model.__module__, model.__name__): model
+        for model in apps.get_models()
+        if TypedObject in getmro(model)
+    }
     if parent:
-        typeclasses = {name: typeclass for name, typeclass in typeclasses.items()
-                       if inherits_from(typeclass, parent)}
+        typeclasses = {
+            name: typeclass
+            for name, typeclass in typeclasses.items()
+            if inherits_from(typeclass, parent)
+        }
     return typeclasses
 
 
@@ -2023,6 +2072,7 @@ def interactive(func):
 
     """
     from evennia.utils.evmenu import get_input
+
     def _process_input(caller, prompt, result, generator):
         deferLater(reactor, 0, _iterate, generator, caller, response=result)
         return False
@@ -2040,8 +2090,10 @@ def interactive(func):
                 delay(value, _iterate, generator, caller=caller)
             elif isinstance(value, str):
                 if not caller:
-                    raise ValueError("To retrieve input from a @pausable method, that method "
-                                     "must be called with a 'caller' argument)")
+                    raise ValueError(
+                        "To retrieve input from a @pausable method, that method "
+                        "must be called with a 'caller' argument)"
+                    )
                 get_input(caller, value, _process_input, generator=generator)
             else:
                 raise ValueError("yield(val) in a @pausable method must have an int/float as arg.")
@@ -2049,9 +2101,9 @@ def interactive(func):
     def decorator(*args, **kwargs):
         argnames = inspect.getfullargspec(func).args
         caller = None
-        if 'caller' in argnames:
+        if "caller" in argnames:
             # we assume this is an object
-            caller = args[argnames.index('caller')]
+            caller = args[argnames.index("caller")]
 
         ret = func(*args, **kwargs)
         if isinstance(ret, types.GeneratorType):

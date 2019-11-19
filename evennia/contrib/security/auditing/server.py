@@ -15,31 +15,36 @@ from evennia.utils import utils, logger, mod_import, get_evennia_version
 from evennia.server.serversession import ServerSession
 
 # Attributes governing auditing of commands and where to send log objects
-AUDIT_CALLBACK = getattr(ev_settings, 'AUDIT_CALLBACK',
-                         'evennia.contrib.security.auditing.outputs.to_file')
-AUDIT_IN = getattr(ev_settings, 'AUDIT_IN', False)
-AUDIT_OUT = getattr(ev_settings, 'AUDIT_OUT', False)
-AUDIT_ALLOW_SPARSE = getattr(ev_settings, 'AUDIT_ALLOW_SPARSE', False)
+AUDIT_CALLBACK = getattr(
+    ev_settings, "AUDIT_CALLBACK", "evennia.contrib.security.auditing.outputs.to_file"
+)
+AUDIT_IN = getattr(ev_settings, "AUDIT_IN", False)
+AUDIT_OUT = getattr(ev_settings, "AUDIT_OUT", False)
+AUDIT_ALLOW_SPARSE = getattr(ev_settings, "AUDIT_ALLOW_SPARSE", False)
 AUDIT_MASKS = [
-    {'connect': r"^[@\s]*[connect]{5,8}\s+(\".+?\"|[^\s]+)\s+(?P<secret>.+)"},
-    {'connect': r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w]+)"},
-    {'create': r"^[^@]?[create]{5,6}\s+(\w+|\".+?\")\s+(?P<secret>[\w]+)"},
-    {'create': r"^[^@]?[create]{5,6}\s+(?P<secret>[\w]+)"},
-    {'userpassword': r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w]+)"},
-    {'userpassword': r"^.*new password set to '(?P<secret>[^']+)'\."},
-    {'userpassword': r"^.* has changed your password to '(?P<secret>[^']+)'\."},
-    {'password': r"^[@\s]*[password]{6,9}\s+(?P<secret>.*)"},
-] + getattr(ev_settings, 'AUDIT_MASKS', [])
+    {"connect": r"^[@\s]*[connect]{5,8}\s+(\".+?\"|[^\s]+)\s+(?P<secret>.+)"},
+    {"connect": r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w]+)"},
+    {"create": r"^[^@]?[create]{5,6}\s+(\w+|\".+?\")\s+(?P<secret>[\w]+)"},
+    {"create": r"^[^@]?[create]{5,6}\s+(?P<secret>[\w]+)"},
+    {"userpassword": r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w]+)"},
+    {"userpassword": r"^.*new password set to '(?P<secret>[^']+)'\."},
+    {"userpassword": r"^.* has changed your password to '(?P<secret>[^']+)'\."},
+    {"password": r"^[@\s]*[password]{6,9}\s+(?P<secret>.*)"},
+] + getattr(ev_settings, "AUDIT_MASKS", [])
 
 
 if AUDIT_CALLBACK:
     try:
         AUDIT_CALLBACK = getattr(
-            mod_import('.'.join(AUDIT_CALLBACK.split('.')[:-1])), AUDIT_CALLBACK.split('.')[-1])
+            mod_import(".".join(AUDIT_CALLBACK.split(".")[:-1])), AUDIT_CALLBACK.split(".")[-1]
+        )
         logger.log_sec("Auditing module online.")
-        logger.log_sec("Audit record User input: {}, output: {}.\n"
-                       "Audit sparse recording: {}, Log callback: {}".format(
-                            AUDIT_IN, AUDIT_OUT, AUDIT_ALLOW_SPARSE, AUDIT_CALLBACK))
+        logger.log_sec(
+            "Audit record User input: {}, output: {}.\n"
+            "Audit sparse recording: {}, Log callback: {}".format(
+                AUDIT_IN, AUDIT_OUT, AUDIT_ALLOW_SPARSE, AUDIT_CALLBACK
+            )
+        )
     except Exception as e:
         logger.log_err("Failed to activate Auditing module. %s" % e)
 
@@ -59,6 +64,7 @@ class AuditedServerSession(ServerSession):
 
     See README.md for installation/configuration instructions.
     """
+
     def audit(self, **kwargs):
         """
         Extracts messages and system data from a Session object upon message
@@ -79,7 +85,7 @@ class AuditedServerSession(ServerSession):
         time_str = str(time_obj)
 
         session = self
-        src = kwargs.pop('src', '?')
+        src = kwargs.pop("src", "?")
         bytecount = 0
 
         # Do not log empty lines
@@ -91,22 +97,22 @@ class AuditedServerSession(ServerSession):
 
         # Capture Account name and dbref together
         account = session.get_account()
-        account_token = ''
+        account_token = ""
         if account:
-            account_token = '%s%s' % (account.key, account.dbref)
+            account_token = "%s%s" % (account.key, account.dbref)
 
         # Capture Character name and dbref together
         char = session.get_puppet()
-        char_token = ''
+        char_token = ""
         if char:
-            char_token = '%s%s' % (char.key, char.dbref)
+            char_token = "%s%s" % (char.key, char.dbref)
 
         # Capture Room name and dbref together
         room = None
-        room_token = ''
+        room_token = ""
         if char:
             room = char.location
-            room_token = '%s%s' % (room.key, room.dbref)
+            room_token = "%s%s" % (room.key, room.dbref)
 
         # Try to compile an input/output string
         def drill(obj, bucket):
@@ -119,44 +125,44 @@ class AuditedServerSession(ServerSession):
                 bucket.append(obj)
             return bucket
 
-        text = kwargs.pop('text', '')
+        text = kwargs.pop("text", "")
         if utils.is_iter(text):
-            text = '|'.join(drill(text, []))
+            text = "|".join(drill(text, []))
 
         # Mask any PII in message, where possible
-        bytecount = len(text.encode('utf-8'))
+        bytecount = len(text.encode("utf-8"))
         text = self.mask(text)
 
         # Compile the IP, Account, Character, Room, and the message.
         log = {
-            'time': time_str,
-            'hostname': socket.getfqdn(),
-            'application': '%s' % ev_settings.SERVERNAME,
-            'version': get_evennia_version(),
-            'pid': os.getpid(),
-            'direction': 'SND' if src == 'server' else 'RCV',
-            'protocol': self.protocol_key,
-            'ip': client_ip,
-            'session': 'session#%s' % self.sessid,
-            'account': account_token,
-            'character': char_token,
-            'room': room_token,
-            'text': text.strip(),
-            'bytes': bytecount,
-            'data': kwargs,
-            'objects': {
-                'time': time_obj,
-                'session': self,
-                'account': account,
-                'character': char,
-                'room': room,
-            }
+            "time": time_str,
+            "hostname": socket.getfqdn(),
+            "application": "%s" % ev_settings.SERVERNAME,
+            "version": get_evennia_version(),
+            "pid": os.getpid(),
+            "direction": "SND" if src == "server" else "RCV",
+            "protocol": self.protocol_key,
+            "ip": client_ip,
+            "session": "session#%s" % self.sessid,
+            "account": account_token,
+            "character": char_token,
+            "room": room_token,
+            "text": text.strip(),
+            "bytes": bytecount,
+            "data": kwargs,
+            "objects": {
+                "time": time_obj,
+                "session": self,
+                "account": account,
+                "character": char,
+                "room": room,
+            },
         }
 
         # Remove any keys with blank values
         if AUDIT_ALLOW_SPARSE is False:
-            log['data'] = {k: v for k, v in log['data'].items() if v}
-            log['objects'] = {k: v for k, v in log['objects'].items() if v}
+            log["data"] = {k: v for k, v in log["data"].items() if v}
+            log["objects"] = {k: v for k, v in log["objects"].items() if v}
             log = {k: v for k, v in log.items() if v}
 
         return log
@@ -178,7 +184,7 @@ class AuditedServerSession(ServerSession):
         is_embedded = False
         match = re.match(".*Command.*'(.+)'.*is not available.*", msg, flags=re.IGNORECASE)
         if match:
-            msg = match.group(1).replace('\\', '')
+            msg = match.group(1).replace("\\", "")
             submsg = msg
             is_embedded = True
 
@@ -192,11 +198,13 @@ class AuditedServerSession(ServerSession):
                     continue
 
                 if match:
-                    term = match.group('secret')
-                    masked = re.sub(term, '*' * len(term.zfill(8)), msg)
+                    term = match.group("secret")
+                    masked = re.sub(term, "*" * len(term.zfill(8)), msg)
 
                     if is_embedded:
-                        msg = re.sub(submsg, '%s <Masked: %s>' % (masked, command), _msg, flags=re.IGNORECASE)
+                        msg = re.sub(
+                            submsg, "%s <Masked: %s>" % (masked, command), _msg, flags=re.IGNORECASE
+                        )
                     else:
                         msg = masked
 
@@ -214,7 +222,7 @@ class AuditedServerSession(ServerSession):
         """
         if AUDIT_CALLBACK and AUDIT_OUT:
             try:
-                log = self.audit(src='server', **kwargs)
+                log = self.audit(src="server", **kwargs)
                 if log:
                     AUDIT_CALLBACK(log)
             except Exception as e:
@@ -232,7 +240,7 @@ class AuditedServerSession(ServerSession):
         """
         if AUDIT_CALLBACK and AUDIT_IN:
             try:
-                log = self.audit(src='client', **kwargs)
+                log = self.audit(src="client", **kwargs)
                 if log:
                     AUDIT_CALLBACK(log)
             except Exception as e:

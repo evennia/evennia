@@ -49,6 +49,7 @@ _RE_DBREF = re.compile(r"\#[0-9]+")
 
 # default protfuncs
 
+
 def random(*args, **kwargs):
     """
     Usage: $random()
@@ -77,7 +78,7 @@ def left_justify(*args, **kwargs):
 
     """
     if args:
-        return base_justify(args[0], align='l')
+        return base_justify(args[0], align="l")
     return ""
 
 
@@ -88,7 +89,7 @@ def right_justify(*args, **kwargs):
 
     """
     if args:
-        return base_justify(args[0], align='r')
+        return base_justify(args[0], align="r")
     return ""
 
 
@@ -100,7 +101,7 @@ def center_justify(*args, **kwargs):
 
     """
     if args:
-        return base_justify(args[0], align='c')
+        return base_justify(args[0], align="c")
     return ""
 
 
@@ -122,7 +123,7 @@ def full_justify(*args, **kwargs):
 
     """
     if args:
-        return base_justify(args[0], align='f')
+        return base_justify(args[0], align="f")
     return ""
 
 
@@ -134,7 +135,7 @@ def protkey(*args, **kwargs):
 
     """
     if args:
-        prototype = kwargs['prototype']
+        prototype = kwargs["prototype"]
         return prototype[args[0].strip()]
 
 
@@ -287,7 +288,7 @@ def _obj_search(*args, **kwargs):
         retlist = []
         if account:
             for target in targets:
-                if target.access(account, target, 'control'):
+                if target.access(account, target, "control"):
                     retlist.append(target)
         else:
             retlist = targets
@@ -297,15 +298,19 @@ def _obj_search(*args, **kwargs):
         if not targets:
             raise ValueError("$obj: Query '{}' gave no matches.".format(query))
         if len(targets) > 1:
-            raise ValueError("$obj: Query '{query}' gave {nmatches} matches. Limit your "
-                             "query or use $objlist instead.".format(
-                                 query=query, nmatches=len(targets)))
+            raise ValueError(
+                "$obj: Query '{query}' gave {nmatches} matches. Limit your "
+                "query or use $objlist instead.".format(query=query, nmatches=len(targets))
+            )
         target = targets[0]
         if account:
-            if not target.access(account, target, 'control'):
-                raise ValueError("$obj: Obj {target}(#{dbref} cannot be added - "
-                                 "Account {account} does not have 'control' access.".format(
-                                    target=target.key, dbref=target.id, account=account))
+            if not target.access(account, target, "control"):
+                raise ValueError(
+                    "$obj: Obj {target}(#{dbref} cannot be added - "
+                    "Account {account} does not have 'control' access.".format(
+                        target=target.key, dbref=target.id, account=account
+                    )
+                )
         return target
 
 
@@ -336,6 +341,6 @@ def dbref(*args, **kwargs):
     Validate that a #dbref input is valid.
     """
     if not args or len(args) < 1 or _RE_DBREF.match(args[0]) is None:
-        raise ValueError('$dbref requires a valid #dbref argument.')
+        raise ValueError("$dbref requires a valid #dbref argument.")
 
     return obj(args[0])

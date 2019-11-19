@@ -64,14 +64,15 @@ OPTIONS
 ----------------------------------------------------------------------------
 """
 
-TURN_TIMEOUT = 30 # Time before turns automatically end, in seconds
-ACTIONS_PER_TURN = 1 # Number of actions allowed per turn
+TURN_TIMEOUT = 30  # Time before turns automatically end, in seconds
+ACTIONS_PER_TURN = 1  # Number of actions allowed per turn
 
 """
 ----------------------------------------------------------------------------
 COMBAT FUNCTIONS START HERE
 ----------------------------------------------------------------------------
 """
+
 
 def roll_init(character):
     """
@@ -186,7 +187,9 @@ def get_damage(attacker, defender):
         damage_value = randint(weapon.db.damage_range[0], weapon.db.damage_range[1])
     # Use attacker's unarmed damage otherwise
     else:
-        damage_value = randint(attacker.db.unarmed_damage_range[0], attacker.db.unarmed_damage_range[1])
+        damage_value = randint(
+            attacker.db.unarmed_damage_range[0], attacker.db.unarmed_damage_range[1]
+        )
     # If defender is armored, reduce incoming damage
     if defender.db.worn_armor:
         armor = defender.db.worn_armor
@@ -211,6 +214,7 @@ def apply_damage(defender, damage):
     if defender.db.hp <= 0:
         defender.db.hp = 0
 
+
 def at_defeat(defeated):
     """
     Announces the defeat of a fighter in combat.
@@ -225,6 +229,7 @@ def at_defeat(defeated):
         do it.
     """
     defeated.location.msg_contents("%s has been defeated!" % defeated)
+
 
 def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
     """
@@ -252,14 +257,21 @@ def resolve_attack(attacker, defender, attack_value=None, defense_value=None):
         defense_value = get_defense(attacker, defender)
     # If the attack value is lower than the defense value, miss. Otherwise, hit.
     if attack_value < defense_value:
-        attacker.location.msg_contents("%s's %s misses %s!" % (attacker, attackers_weapon, defender))
+        attacker.location.msg_contents(
+            "%s's %s misses %s!" % (attacker, attackers_weapon, defender)
+        )
     else:
         damage_value = get_damage(attacker, defender)  # Calculate damage value.
         # Announce damage dealt and apply damage.
         if damage_value > 0:
-            attacker.location.msg_contents("%s's %s strikes %s for %i damage!" % (attacker, attackers_weapon, defender, damage_value))
+            attacker.location.msg_contents(
+                "%s's %s strikes %s for %i damage!"
+                % (attacker, attackers_weapon, defender, damage_value)
+            )
         else:
-            attacker.location.msg_contents("%s's %s bounces harmlessly off %s!" % (attacker, attackers_weapon, defender))
+            attacker.location.msg_contents(
+                "%s's %s bounces harmlessly off %s!" % (attacker, attackers_weapon, defender)
+            )
         apply_damage(defender, damage_value)
         # If defender HP is reduced to 0 or less, call at_defeat.
         if defender.db.hp <= 0:
@@ -324,13 +336,14 @@ def spend_action(character, actions, action_name=None):
     """
     if action_name:
         character.db.combat_lastaction = action_name
-    if actions == 'all':  # If spending all actions
+    if actions == "all":  # If spending all actions
         character.db.combat_actionsleft = 0  # Set actions to 0
     else:
         character.db.combat_actionsleft -= actions  # Use up actions.
         if character.db.combat_actionsleft < 0:
             character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
     character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
+
 
 """
 ----------------------------------------------------------------------------
@@ -379,7 +392,7 @@ class TBEquipTurnHandler(DefaultScript):
 
         # Announce the turn order.
         self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
-        
+
         # Start first fighter's turn.
         self.start_turn(self.db.fighters[0])
 
@@ -399,13 +412,17 @@ class TBEquipTurnHandler(DefaultScript):
         """
         Called once every self.interval seconds.
         """
-        currentchar = self.db.fighters[self.db.turn]  # Note the current character in the turn order.
+        currentchar = self.db.fighters[
+            self.db.turn
+        ]  # Note the current character in the turn order.
         self.db.timer -= self.interval  # Count down the timer.
 
         if self.db.timer <= 0:
             # Force current character to disengage if timer runs out.
             self.obj.msg_contents("%s's turn timed out!" % currentchar)
-            spend_action(currentchar, 'all', action_name="disengage")  # Spend all remaining actions.
+            spend_action(
+                currentchar, "all", action_name="disengage"
+            )  # Spend all remaining actions.
             return
         elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
             # Warn the current character if they're about to time out.
@@ -420,8 +437,12 @@ class TBEquipTurnHandler(DefaultScript):
             character (obj): Character to initialize for combat.
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
-        character.db.combat_actionsleft = 0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
-        character.db.combat_turnhandler = self  # Add a reference to this turn handler script to the character
+        character.db.combat_actionsleft = (
+            0
+        )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        character.db.combat_turnhandler = (
+            self
+        )  # Add a reference to this turn handler script to the character
         character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):
@@ -451,7 +472,9 @@ class TBEquipTurnHandler(DefaultScript):
         # Check to see if every character disengaged as their last action. If so, end combat.
         disengage_check = True
         for fighter in self.db.fighters:
-            if fighter.db.combat_lastaction != "disengage":  # If a character has done anything but disengage
+            if (
+                fighter.db.combat_lastaction != "disengage"
+            ):  # If a character has done anything but disengage
                 disengage_check = False
         if disengage_check:  # All characters have disengaged
             self.obj.msg_contents("All fighters have disengaged! Combat is over!")
@@ -463,7 +486,9 @@ class TBEquipTurnHandler(DefaultScript):
         for fighter in self.db.fighters:
             if fighter.db.HP == 0:
                 defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
-        if defeated_characters == (len(self.db.fighters) - 1):  # If only one character isn't defeated
+        if defeated_characters == (
+            len(self.db.fighters) - 1
+        ):  # If only one character isn't defeated
             for fighter in self.db.fighters:
                 if fighter.db.HP != 0:
                     LastStanding = fighter  # Pick the one fighter left with HP remaining
@@ -507,24 +532,30 @@ class TBEquipTurnHandler(DefaultScript):
         # Initialize the character like you do at the start.
         self.initialize_for_combat(character)
 
+
 """
 ----------------------------------------------------------------------------
 TYPECLASSES START HERE
 ----------------------------------------------------------------------------
 """
 
+
 class TBEWeapon(DefaultObject):
     """
     A weapon which can be wielded in combat with the 'wield' command.
     """
+
     def at_object_creation(self):
         """
         Called once, when this object is first created. This is the
         normal hook to overload for most object types.
         """
-        self.db.damage_range = (15, 25) # Minimum and maximum damage on hit
-        self.db.accuracy_bonus = 0 # Bonus to attack rolls (or penalty if negative)
-        self.db.weapon_type_name = "weapon" # Single word for weapon - I.E. "dagger", "staff", "scimitar"
+        self.db.damage_range = (15, 25)  # Minimum and maximum damage on hit
+        self.db.accuracy_bonus = 0  # Bonus to attack rolls (or penalty if negative)
+        self.db.weapon_type_name = (
+            "weapon"
+        )  # Single word for weapon - I.E. "dagger", "staff", "scimitar"
+
     def at_drop(self, dropper):
         """
         Stop being wielded if dropped.
@@ -532,6 +563,7 @@ class TBEWeapon(DefaultObject):
         if dropper.db.wielded_weapon == self:
             dropper.db.wielded_weapon = None
             dropper.location.msg_contents("%s stops wielding %s." % (dropper, self))
+
     def at_give(self, giver, getter):
         """
         Stop being wielded if given.
@@ -539,18 +571,23 @@ class TBEWeapon(DefaultObject):
         if giver.db.wielded_weapon == self:
             giver.db.wielded_weapon = None
             giver.location.msg_contents("%s stops wielding %s." % (giver, self))
-        
+
+
 class TBEArmor(DefaultObject):
     """
     A set of armor which can be worn with the 'don' command.
     """
+
     def at_object_creation(self):
         """
         Called once, when this object is first created. This is the
         normal hook to overload for most object types.
         """
-        self.db.damage_reduction = 4 # Amount of incoming damage reduced by armor
-        self.db.defense_modifier = -4 # Amount to modify defense value (pos = harder to hit, neg = easier)
+        self.db.damage_reduction = 4  # Amount of incoming damage reduced by armor
+        self.db.defense_modifier = (
+            -4
+        )  # Amount to modify defense value (pos = harder to hit, neg = easier)
+
     def at_before_drop(self, dropper):
         """
         Can't drop in combat.
@@ -559,6 +596,7 @@ class TBEArmor(DefaultObject):
             dropper.msg("You can't doff armor in a fight!")
             return False
         return True
+
     def at_drop(self, dropper):
         """
         Stop being wielded if dropped.
@@ -566,6 +604,7 @@ class TBEArmor(DefaultObject):
         if dropper.db.worn_armor == self:
             dropper.db.worn_armor = None
             dropper.location.msg_contents("%s removes %s." % (dropper, self))
+
     def at_before_give(self, giver, getter):
         """
         Can't give away in combat.
@@ -574,6 +613,7 @@ class TBEArmor(DefaultObject):
             dropper.msg("You can't doff armor in a fight!")
             return False
         return True
+
     def at_give(self, giver, getter):
         """
         Stop being wielded if given.
@@ -581,6 +621,7 @@ class TBEArmor(DefaultObject):
         if giver.db.worn_armor == self:
             giver.db.worn_armor = None
             giver.location.msg_contents("%s removes %s." % (giver, self))
+
 
 class TBEquipCharacter(DefaultCharacter):
     """
@@ -595,11 +636,11 @@ class TBEquipCharacter(DefaultCharacter):
         """
         self.db.max_hp = 100  # Set maximum HP to 100
         self.db.hp = self.db.max_hp  # Set current HP to maximum
-        self.db.wielded_weapon = None # Currently used weapon
-        self.db.worn_armor = None # Currently worn armor
-        self.db.unarmed_damage_range = (5, 15) # Minimum and maximum unarmed damage
-        self.db.unarmed_accuracy = 30 # Accuracy bonus for unarmed attacks
-        
+        self.db.wielded_weapon = None  # Currently used weapon
+        self.db.worn_armor = None  # Currently worn armor
+        self.db.unarmed_damage_range = (5, 15)  # Minimum and maximum unarmed damage
+        self.db.unarmed_accuracy = 30  # Accuracy bonus for unarmed attacks
+
         """
         Adds attributes for a character's current and maximum HP.
         We're just going to set this value at '100' by default.
@@ -652,6 +693,7 @@ class CmdFight(Command):
     fight is added to combat, and a turn order is randomly rolled.
     When it's your turn, you can attack other characters.
     """
+
     key = "fight"
     help_category = "combat"
 
@@ -760,8 +802,10 @@ class CmdPass(Command):
             self.caller.msg("You can only do that on your turn.")
             return
 
-        self.caller.location.msg_contents("%s takes no further action, passing the turn." % self.caller)
-        spend_action(self.caller, 'all', action_name="pass")  # Spend all remaining actions.
+        self.caller.location.msg_contents(
+            "%s takes no further action, passing the turn." % self.caller
+        )
+        spend_action(self.caller, "all", action_name="pass")  # Spend all remaining actions.
 
 
 class CmdDisengage(Command):
@@ -793,7 +837,7 @@ class CmdDisengage(Command):
             return
 
         self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
-        spend_action(self.caller, 'all', action_name="disengage")  # Spend all remaining actions.
+        spend_action(self.caller, "all", action_name="disengage")  # Spend all remaining actions.
         """
         The action_name kwarg sets the character's last action to "disengage", which is checked by
         the turn handler script to see if all fighters have disengaged.
@@ -840,18 +884,22 @@ class CmdCombatHelp(CmdHelp):
     This will search for help on commands and other
     topics related to the game.
     """
+
     # Just like the default help command, but will give quick
     # tips on combat when used in a fight with no arguments.
 
     def func(self):
         if is_in_combat(self.caller) and not self.args:  # In combat and entered 'help' alone
-            self.caller.msg("Available combat commands:|/" +
-                            "|wAttack:|n Attack a target, attempting to deal damage.|/" +
-                            "|wPass:|n Pass your turn without further action.|/" +
-                            "|wDisengage:|n End your turn and attempt to end combat.|/")
+            self.caller.msg(
+                "Available combat commands:|/"
+                + "|wAttack:|n Attack a target, attempting to deal damage.|/"
+                + "|wPass:|n Pass your turn without further action.|/"
+                + "|wDisengage:|n End your turn and attempt to end combat.|/"
+            )
         else:
             super().func()  # Call the default help command
-            
+
+
 class CmdWield(Command):
     """
     Wield a weapon you are carrying
@@ -866,10 +914,10 @@ class CmdWield(Command):
     "unwield" command to stop wielding any weapon you are
     currently wielding.
     """
-    
+
     key = "wield"
     help_category = "combat"
-    
+
     def func(self):
         """
         This performs the actual command.
@@ -889,18 +937,21 @@ class CmdWield(Command):
             self.caller.msg("That's not a weapon!")
             # Remember to update the path to the weapon typeclass if you move this module!
             return
-            
+
         if not self.caller.db.wielded_weapon:
             self.caller.db.wielded_weapon = weapon
             self.caller.location.msg_contents("%s wields %s." % (self.caller, weapon))
         else:
             old_weapon = self.caller.db.wielded_weapon
             self.caller.db.wielded_weapon = weapon
-            self.caller.location.msg_contents("%s lowers %s and wields %s." % (self.caller, old_weapon, weapon))
+            self.caller.location.msg_contents(
+                "%s lowers %s and wields %s." % (self.caller, old_weapon, weapon)
+            )
         # Spend an action if in combat.
         if is_in_combat(self.caller):
             spend_action(self.caller, 1, action_name="wield")  # Use up one action.
-            
+
+
 class CmdUnwield(Command):
     """
     Stop wielding a weapon.
@@ -911,10 +962,10 @@ class CmdUnwield(Command):
     After using this command, you will stop wielding any
     weapon you are currently wielding and become unarmed.
     """
-    
+
     key = "unwield"
     help_category = "combat"
-    
+
     def func(self):
         """
         This performs the actual command.
@@ -930,7 +981,8 @@ class CmdUnwield(Command):
             old_weapon = self.caller.db.wielded_weapon
             self.caller.db.wielded_weapon = None
             self.caller.location.msg_contents("%s lowers %s." % (self.caller, old_weapon))
-            
+
+
 class CmdDon(Command):
     """
     Don armor that you are carrying
@@ -942,10 +994,10 @@ class CmdDon(Command):
     command in the middle of a fight. Use the "doff" 
     command to remove any armor you are wearing.
     """
-    
+
     key = "don"
     help_category = "combat"
-    
+
     def func(self):
         """
         This performs the actual command.
@@ -964,15 +1016,18 @@ class CmdDon(Command):
             self.caller.msg("That's not armor!")
             # Remember to update the path to the armor typeclass if you move this module!
             return
-            
+
         if not self.caller.db.worn_armor:
             self.caller.db.worn_armor = armor
             self.caller.location.msg_contents("%s dons %s." % (self.caller, armor))
         else:
             old_armor = self.caller.db.worn_armor
             self.caller.db.worn_armor = armor
-            self.caller.location.msg_contents("%s removes %s and dons %s." % (self.caller, old_armor, armor))
-            
+            self.caller.location.msg_contents(
+                "%s removes %s and dons %s." % (self.caller, old_armor, armor)
+            )
+
+
 class CmdDoff(Command):
     """
     Stop wearing armor.
@@ -984,10 +1039,10 @@ class CmdDoff(Command):
     armor you are currently using and become unarmored.
     You can't use this command in combat.
     """
-    
+
     key = "doff"
     help_category = "combat"
-    
+
     def func(self):
         """
         This performs the actual command.
@@ -1002,13 +1057,13 @@ class CmdDoff(Command):
             old_armor = self.caller.db.worn_armor
             self.caller.db.worn_armor = None
             self.caller.location.msg_contents("%s removes %s." % (self.caller, old_armor))
-        
 
 
 class BattleCmdSet(default_cmds.CharacterCmdSet):
     """
     This command set includes all the commmands used in the battle system.
     """
+
     key = "DefaultCharacter"
 
     def at_cmdset_creation(self):
@@ -1026,61 +1081,58 @@ class BattleCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdDon())
         self.add(CmdDoff())
 
+
 """
 ----------------------------------------------------------------------------
 PROTOTYPES START HERE
 ----------------------------------------------------------------------------
 """
-        
-BASEWEAPON = {
- "typeclass": "evennia.contrib.turnbattle.tb_equip.TBEWeapon",
-}
 
-BASEARMOR = {
- "typeclass": "evennia.contrib.turnbattle.tb_equip.TBEArmor",
-}
+BASEWEAPON = {"typeclass": "evennia.contrib.turnbattle.tb_equip.TBEWeapon"}
+
+BASEARMOR = {"typeclass": "evennia.contrib.turnbattle.tb_equip.TBEArmor"}
 
 DAGGER = {
- "prototype" : "BASEWEAPON",
- "damage_range" : (10, 20),
- "accuracy_bonus" : 30,
- "key": "a thin steel dagger",
- "weapon_type_name" : "dagger"
+    "prototype": "BASEWEAPON",
+    "damage_range": (10, 20),
+    "accuracy_bonus": 30,
+    "key": "a thin steel dagger",
+    "weapon_type_name": "dagger",
 }
 
 BROADSWORD = {
- "prototype" : "BASEWEAPON",
- "damage_range" : (15, 30),
- "accuracy_bonus" : 15,
- "key": "an iron broadsword",
- "weapon_type_name" : "broadsword"
+    "prototype": "BASEWEAPON",
+    "damage_range": (15, 30),
+    "accuracy_bonus": 15,
+    "key": "an iron broadsword",
+    "weapon_type_name": "broadsword",
 }
 
 GREATSWORD = {
- "prototype" : "BASEWEAPON",
- "damage_range" : (20, 40),
- "accuracy_bonus" : 0,
- "key": "a rune-etched greatsword",
- "weapon_type_name" : "greatsword"
+    "prototype": "BASEWEAPON",
+    "damage_range": (20, 40),
+    "accuracy_bonus": 0,
+    "key": "a rune-etched greatsword",
+    "weapon_type_name": "greatsword",
 }
 
 LEATHERARMOR = {
- "prototype" : "BASEARMOR",
- "damage_reduction" : 2,
- "defense_modifier" : -2,
- "key": "a suit of leather armor"
+    "prototype": "BASEARMOR",
+    "damage_reduction": 2,
+    "defense_modifier": -2,
+    "key": "a suit of leather armor",
 }
 
 SCALEMAIL = {
- "prototype" : "BASEARMOR",
- "damage_reduction" : 4,
- "defense_modifier" : -4,
- "key": "a suit of scale mail"
+    "prototype": "BASEARMOR",
+    "damage_reduction": 4,
+    "defense_modifier": -4,
+    "key": "a suit of scale mail",
 }
 
 PLATEMAIL = {
- "prototype" : "BASEARMOR",
- "damage_reduction" : 6,
- "defense_modifier" : -6,
- "key": "a suit of plate mail"
+    "prototype": "BASEARMOR",
+    "damage_reduction": 6,
+    "defense_modifier": -6,
+    "key": "a suit of plate mail",
 }

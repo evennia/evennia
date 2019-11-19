@@ -34,6 +34,7 @@ install:
   - pip install -e .
 
 before_script:
+  - make format
   - evennia --init testing_mygame
   - cp .travis/${TESTING_DB}_settings.py testing_mygame/server/conf/settings.py
   - cd testing_mygame

@@ -9,6 +9,7 @@ class SessionCmdSet(CmdSet):
     """
     Sets up the unlogged cmdset.
     """
+
     key = "DefaultSession"
     priority = -20
 

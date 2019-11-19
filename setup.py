@@ -10,11 +10,9 @@ OS_WINDOWS = os.name == "nt"
 
 def get_requirements():
     """
-    To update the requirements for Evennia, edit the requirements.txt
-    file, or win_requirements.txt for Windows platforms.
+    To update the requirements for Evennia, edit the requirements.txt file.
     """
-    filename = 'win_requirements.txt' if OS_WINDOWS else 'requirements.txt'
-    with open(filename, 'r') as f:
+    with open('requirements.txt', 'r') as f:
         req_lines = f.readlines()
     reqs = []
     for line in req_lines:
@@ -69,14 +67,57 @@ def package_data():
 setup(
     name='evennia',
     version=get_version(),
-    author="Evennia community",
+    author="The Evennia community",
     maintainer="Griatch",
-    maintainer_email="griatch AT gmail DOT com",
     url="http://www.evennia.com",
-    description='A full-featured MUD building toolkit.',
+    description="A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*).",
+    license="BSD",
+    long_description="""
+    _Evennia_ is an open-source library and toolkit for building multi-player
+    online text games (MUD, MUX, MUSH, MUCK and other MU*). You easily design
+    your entire game using normal Python modules, letting Evennia handle the
+    boring stuff all multiplayer games need. Apart from supporting traditional
+    MUD clients, Evennia comes with both a HTML5 game web-client and a
+    web-server out of the box.
+    """,
+    long_description_content_type="text/markdown",
     packages=find_packages(),
     scripts=get_scripts(),
     install_requires=get_requirements(),
     package_data={'': package_data()},
-    zip_safe=False
+    zip_safe=False,
+    classifiers=[
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: JavaScript",
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: BSD License",
+        "Environment :: Console",
+        "Environment :: Web Environment",
+        "Framework :: Django",
+        "Framework :: Django :: 2.2",
+        "Framework :: Twisted",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Operating System :: MacOS",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX :: Linux",
+        "Topic :: Database",
+        "Topic :: Education",
+        "Topic :: Games/Entertainment :: Multi-User Dungeons (MUD)",
+        "Topic :: Games/Entertainment :: Puzzle Games",
+        "Topic :: Games/Entertainment :: Role-Playing",
+        "Topic :: Games/Entertainment :: Simulation",
+        "Topic :: Software Development :: Libraries :: Application Frameworks",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Server",
+    ],
+    python_requires='>=3.7',
+    project_urls={
+        "Source": "https://github.com/evennia/evennia",
+        "Issue tracker": "https://github.com/evennia/evennia/issues",
+        "Chat": "http://www.evennia.com/chat-redirect-3",
+        "Forum":  "https://groups.google.com/forum/#%21forum/evennia",
+        "Dev Blog": "http://evennia.blogspot.com/",
+        "Patreon": "https://www.patreon.com/griatch",
+    }
 )

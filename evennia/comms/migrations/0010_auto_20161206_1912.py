@@ -8,19 +8,31 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('comms', '0009_auto_20160921_1731'),
-    ]
+    dependencies = [("comms", "0009_auto_20160921_1731")]
 
     operations = [
         migrations.AlterField(
-            model_name='channeldb',
-            name='db_object_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='object_subscription_set', to='objects.ObjectDB', verbose_name='subscriptions'),
+            model_name="channeldb",
+            name="db_object_subscriptions",
+            field=models.ManyToManyField(
+                blank=True,
+                db_index=True,
+                null=True,
+                related_name="object_subscription_set",
+                to="objects.ObjectDB",
+                verbose_name="subscriptions",
+            ),
         ),
         migrations.AlterField(
-            model_name='channeldb',
-            name='db_subscriptions',
-            field=models.ManyToManyField(blank=True, db_index=True, null=True, related_name='subscription_set', to=settings.AUTH_USER_MODEL, verbose_name='subscriptions'),
+            model_name="channeldb",
+            name="db_subscriptions",
+            field=models.ManyToManyField(
+                blank=True,
+                db_index=True,
+                null=True,
+                related_name="subscription_set",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="subscriptions",
+            ),
         ),
     ]

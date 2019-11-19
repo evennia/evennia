@@ -19,12 +19,26 @@ from evennia.utils import create, logger, utils, evtable
 from evennia.utils.utils import make_iter, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
+CHANNEL_DEFAULT_TYPECLASS = class_from_module(settings.BASE_CHANNEL_TYPECLASS)
+
 
 # limit symbol import for API
-__all__ = ("CmdAddCom", "CmdDelCom", "CmdAllCom",
-           "CmdChannels", "CmdCdestroy", "CmdCBoot", "CmdCemit",
-           "CmdCWho", "CmdChannelCreate", "CmdClock", "CmdCdesc",
-           "CmdPage", "CmdIRC2Chan", "CmdRSS2Chan")
+__all__ = (
+    "CmdAddCom",
+    "CmdDelCom",
+    "CmdAllCom",
+    "CmdChannels",
+    "CmdCdestroy",
+    "CmdCBoot",
+    "CmdCemit",
+    "CmdCWho",
+    "CmdChannelCreate",
+    "CmdClock",
+    "CmdCdesc",
+    "CmdPage",
+    "CmdIRC2Chan",
+    "CmdRSS2Chan",
+)
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 
@@ -33,11 +47,14 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
     Helper function for searching for a single channel with
     some error handling.
     """
-    channels = ChannelDB.objects.channel_search(channelname)
+    channels = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channelname)
     if not channels:
         if not noaliases:
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
-                        if channelname in chan.aliases.all()]
+            channels = [
+                chan
+                for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
+                if channelname in chan.aliases.all()
+            ]
         if channels:
             return channels[0]
         if not silent:
@@ -97,7 +114,7 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
             return
 
         # check permissions
-        if not channel.access(account, 'listen'):
+        if not channel.access(account, "listen"):
             self.msg("%s: You are not allowed to listen to this channel." % channel.key)
             return
 
@@ -169,8 +186,11 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
             delnicks = "all" in self.switches
             # find all nicks linked to this channel and delete them
             if delnicks:
-                for nick in [nick for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
-                             if nick and nick.pk and nick.value[3].lower() == chkey]:
+                for nick in [
+                    nick
+                    for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
+                    if nick and nick.pk and nick.value[3].lower() == chkey
+                ]:
                     nick.delete()
             disconnect = channel.disconnect(account)
             if disconnect:
@@ -198,9 +218,9 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
     Usage:
       allcom [on | off | who | destroy]
 
-    Allows the user to universally turn off or on all channels they are on,
-    as well as perform a 'who' for all channels they are on. Destroy deletes
-    all channels that you control.
+    Allows the user to universally turn off or on all channels they are on, as
+    well as perform a 'who' for all channels they are on. Destroy deletes all
+    channels that you control.
 
     Without argument, works like comlist.
     """
@@ -225,26 +245,35 @@ class CmdAllCom(COMMAND_DEFAULT_CLASS):
         if args == "on":
             # get names of all channels available to listen to
             # and activate them all
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
-                        if chan.access(caller, 'listen')]
+            channels = [
+                chan
+                for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
+                if chan.access(caller, "listen")
+            ]
             for channel in channels:
                 self.execute_cmd("addcom %s" % channel.key)
         elif args == "off":
             # get names all subscribed channels and disconnect from them all
-            channels = ChannelDB.objects.get_subscriptions(caller)
+            channels = CHANNEL_DEFAULT_TYPECLASS.objects.get_subscriptions(caller)
             for channel in channels:
                 self.execute_cmd("delcom %s" % channel.key)
         elif args == "destroy":
             # destroy all channels you control
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
-                        if chan.access(caller, 'control')]
+            channels = [
+                chan
+                for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
+                if chan.access(caller, "control")
+            ]
             for channel in channels:
                 self.execute_cmd("cdestroy %s" % channel.key)
         elif args == "who":
             # run a who, listing the subscribers on visible channels.
             string = "\n|CChannel subscriptions|n"
-            channels = [chan for chan in ChannelDB.objects.get_all_channels()
-                        if chan.access(caller, 'listen')]
+            channels = [
+                chan
+                for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
+                if chan.access(caller, "listen")
+            ]
             if not channels:
                 string += "No channels."
             for channel in channels:
@@ -268,6 +297,7 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
     Use 'comlist' to only view your current channel subscriptions.
     Use addcom/delcom to join and leave channels
     """
+
     key = "channels"
     aliases = ["clist", "comlist", "chanlist", "channellist", "all channels"]
     help_category = "Comms"
@@ -282,32 +312,59 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         # all channels we have available to listen to
-        channels = [chan for chan in ChannelDB.objects.get_all_channels()
-                    if chan.access(caller, 'listen')]
+        channels = [
+            chan
+            for chan in CHANNEL_DEFAULT_TYPECLASS.objects.get_all_channels()
+            if chan.access(caller, "listen")
+        ]
         if not channels:
             self.msg("No channels available.")
             return
         # all channel we are already subscribed to
-        subs = ChannelDB.objects.get_subscriptions(caller)
+        subs = CHANNEL_DEFAULT_TYPECLASS.objects.get_subscriptions(caller)
 
         if self.cmdstring == "comlist":
             # just display the subscribed channels with no extra info
-            comtable = self.styled_table("|wchannel|n", "|wmy aliases|n",
-                                         "|wdescription|n", align="l", maxwidth=_DEFAULT_WIDTH)
+            comtable = self.styled_table(
+                "|wchannel|n",
+                "|wmy aliases|n",
+                "|wdescription|n",
+                align="l",
+                maxwidth=_DEFAULT_WIDTH,
+            )
             for chan in subs:
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel", return_obj=True)
-                comtable.add_row(*["%s%s" % (chan.key, chan.aliases.all() and
-                                             "(%s)" % ",".join(chan.aliases.all()) or ""),
-                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
-                                                   if nick and nick.value[3].lower() == clower),
-                                   chan.db.desc])
-            self.msg("\n|wChannel subscriptions|n (use |wchannels|n to list all,"
-                     " |waddcom|n/|wdelcom|n to sub/unsub):|n\n%s" % comtable)
+                comtable.add_row(
+                    *[
+                        "%s%s"
+                        % (
+                            chan.key,
+                            chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or "",
+                        ),
+                        "%s"
+                        % ",".join(
+                            nick.db_key
+                            for nick in make_iter(nicks)
+                            if nick and nick.value[3].lower() == clower
+                        ),
+                        chan.db.desc,
+                    ]
+                )
+            self.msg(
+                "\n|wChannel subscriptions|n (use |wchannels|n to list all,"
+                " |waddcom|n/|wdelcom|n to sub/unsub):|n\n%s" % comtable
+            )
         else:
             # full listing (of channels caller is able to listen to)
-            comtable = self.styled_table("|wsub|n", "|wchannel|n", "|wmy aliases|n",
-                                         "|wlocks|n", "|wdescription|n", maxwidth=_DEFAULT_WIDTH)
+            comtable = self.styled_table(
+                "|wsub|n",
+                "|wchannel|n",
+                "|wmy aliases|n",
+                "|wlocks|n",
+                "|wdescription|n",
+                maxwidth=_DEFAULT_WIDTH,
+            )
             for chan in channels:
                 clower = chan.key.lower()
                 nicks = caller.nicks.get(category="channel", return_obj=True)
@@ -318,17 +375,30 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                     substatus = "|rMuted|n"
                 else:
                     substatus = "|gYes|n"
-                comtable.add_row(*[substatus,
-                                   "%s%s" % (chan.key, chan.aliases.all() and
-                                             "(%s)" % ",".join(chan.aliases.all()) or ""),
-                                   "%s" % ",".join(nick.db_key for nick in make_iter(nicks)
-                                                   if nick.value[3].lower() == clower),
-                                   str(chan.locks),
-                                   chan.db.desc])
+                comtable.add_row(
+                    *[
+                        substatus,
+                        "%s%s"
+                        % (
+                            chan.key,
+                            chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or "",
+                        ),
+                        "%s"
+                        % ",".join(
+                            nick.db_key
+                            for nick in make_iter(nicks)
+                            if nick.value[3].lower() == clower
+                        ),
+                        str(chan.locks),
+                        chan.db.desc,
+                    ]
+                )
             comtable.reformat_column(0, width=9)
             comtable.reformat_column(3, width=14)
-            self.msg("\n|wAvailable channels|n (use |wcomlist|n,|waddcom|n and |wdelcom|n"
-                     " to manage subscriptions):\n%s" % comtable)
+            self.msg(
+                "\n|wAvailable channels|n (use |wcomlist|n,|waddcom|n and |wdelcom|n"
+                " to manage subscriptions):\n%s" % comtable
+            )
 
 
 class CmdCdestroy(COMMAND_DEFAULT_CLASS):
@@ -359,7 +429,7 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
         if not channel:
             self.msg("Could not find channel %s." % self.args)
             return
-        if not channel.access(caller, 'control'):
+        if not channel.access(caller, "control"):
             self.msg("You are not allowed to do that.")
             return
         channel_key = channel.key
@@ -369,7 +439,10 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
         channel.delete()
         CHANNELHANDLER.update()
         self.msg("Channel '%s' was destroyed." % channel_key)
-        logger.log_sec('Channel Deleted: %s (Caller: %s, IP: %s).' % (channel_key, caller, self.session.address))
+        logger.log_sec(
+            "Channel Deleted: %s (Caller: %s, IP: %s)."
+            % (channel_key, caller, self.session.address)
+        )
 
 
 class CmdCBoot(COMMAND_DEFAULT_CLASS):
@@ -408,9 +481,9 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
         reason = ""
         if ":" in self.rhs:
             accountname, reason = self.rhs.rsplit(":", 1)
-            searchstring = accountname.lstrip('*')
+            searchstring = accountname.lstrip("*")
         else:
-            searchstring = self.rhs.lstrip('*')
+            searchstring = self.rhs.lstrip("*")
         account = self.caller.search(searchstring, account=True)
         if not account:
             return
@@ -428,15 +501,19 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
             string = "%s boots %s from channel.%s" % (self.caller, account.key, reason)
             channel.msg(string)
         # find all account's nicks linked to this channel and delete them
-        for nick in [nick for nick in
-                     account.character.nicks.get(category="channel") or []
-                     if nick.value[3].lower() == channel.key]:
+        for nick in [
+            nick
+            for nick in account.character.nicks.get(category="channel") or []
+            if nick.value[3].lower() == channel.key
+        ]:
             nick.delete()
         # disconnect account
         channel.disconnect(account)
         CHANNELHANDLER.update()
-        logger.log_sec('Channel Boot: %s (Channel: %s, Reason: %s, Caller: %s, IP: %s).' % (
-            account, channel, reason, self.caller, self.session.address))
+        logger.log_sec(
+            "Channel Boot: %s (Channel: %s, Reason: %s, Caller: %s, IP: %s)."
+            % (account, channel, reason, self.caller, self.session.address)
+        )
 
 
 class CmdCemit(COMMAND_DEFAULT_CLASS):
@@ -497,6 +574,7 @@ class CmdCWho(COMMAND_DEFAULT_CLASS):
 
     List who is connected to a given channel you have access to.
     """
+
     key = "cwho"
     locks = "cmd: not pperm(channel_banned)"
     help_category = "Comms"
@@ -558,19 +636,16 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
         lhs = self.lhs
         channame = lhs
         aliases = None
-        if ';' in lhs:
-            channame, aliases = lhs.split(';', 1)
-            aliases = [alias.strip().lower() for alias in aliases.split(';')]
-        channel = ChannelDB.objects.channel_search(channame)
+        if ";" in lhs:
+            channame, aliases = lhs.split(";", 1)
+            aliases = [alias.strip().lower() for alias in aliases.split(";")]
+        channel = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channame)
         if channel:
             self.msg("A channel with that name already exists.")
             return
         # Create and set the channel up
         lockstring = "send:all();listen:all();control:id(%s)" % caller.id
-        new_chan = create.create_channel(channame.strip(),
-                                         aliases,
-                                         description,
-                                         locks=lockstring)
+        new_chan = create.create_channel(channame.strip(), aliases, description, locks=lockstring)
         new_chan.connect(caller)
         CHANNELHANDLER.update()
         self.msg("Created channel %s and connected to it." % new_chan.key)
@@ -660,14 +735,13 @@ class CmdCdesc(COMMAND_DEFAULT_CLASS):
             self.msg("Channel '%s' not found." % self.lhs)
             return
         # check permissions
-        if not channel.access(caller, 'control'):
+        if not channel.access(caller, "control"):
             self.msg("You cannot admin this channel.")
             return
         # set the description
         channel.db.desc = self.rhs
         channel.save()
-        self.msg("Description of channel '%s' set to '%s'." % (channel.key,
-                                                               self.rhs))
+        self.msg("Description of channel '%s' set to '%s'." % (channel.key, self.rhs))
 
 
 class CmdPage(COMMAND_DEFAULT_CLASS):
@@ -688,7 +762,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
     """
 
     key = "page"
-    aliases = ['tell']
+    aliases = ["tell"]
     switch_options = ("last", "list")
     locks = "cmd:not pperm(page_banned)"
     help_category = "Comms"
@@ -707,7 +781,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         # get last messages we've got
         pages_we_got = Msg.objects.get_messages_by_receiver(caller)
 
-        if 'last' in self.switches:
+        if "last" in self.switches:
             if pages_we_sent:
                 recv = ",".join(obj.key for obj in pages_we_sent[-1].receivers)
                 self.msg("You last paged |c%s|n:%s" % (recv, pages_we_sent[-1].message))
@@ -733,11 +807,16 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
             else:
                 lastpages = pages
             template = "|w%s|n |c%s|n to |c%s|n: %s"
-            lastpages = "\n ".join(template %
-                                   (utils.datetime_format(page.date_created),
-                                    ",".join(obj.key for obj in page.senders),
-                                    "|n,|c ".join([obj.name for obj in page.receivers]),
-                                    page.message) for page in lastpages)
+            lastpages = "\n ".join(
+                template
+                % (
+                    utils.datetime_format(page.date_created),
+                    ",".join(obj.key for obj in page.senders),
+                    "|n,|c ".join([obj.name for obj in page.receivers]),
+                    page.message,
+                )
+                for page in lastpages
+            )
 
             if lastpages:
                 string = "Your latest pages:\n %s" % lastpages
@@ -763,7 +842,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         for receiver in set(receivers):
             if isinstance(receiver, str):
                 pobj = caller.search(receiver)
-            elif hasattr(receiver, 'character'):
+            elif hasattr(receiver, "character"):
                 pobj = receiver
             else:
                 self.msg("Who do you want to page?")
@@ -779,24 +858,25 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
         # if message begins with a :, we assume it is a 'page-pose'
         if message.startswith(":"):
-            message = "%s %s" % (caller.key, message.strip(':').strip())
+            message = "%s %s" % (caller.key, message.strip(":").strip())
 
         # create the persistent message object
-        create.create_message(caller, message,
-                              receivers=recobjs)
+        create.create_message(caller, message, receivers=recobjs)
 
         # tell the accounts they got a message.
         received = []
         rstrings = []
         for pobj in recobjs:
-            if not pobj.access(caller, 'msg'):
+            if not pobj.access(caller, "msg"):
                 rstrings.append("You are not allowed to page %s." % pobj)
                 continue
             pobj.msg("%s %s" % (header, message))
-            if hasattr(pobj, 'sessions') and not pobj.sessions.count():
+            if hasattr(pobj, "sessions") and not pobj.sessions.count():
                 received.append("|C%s|n" % pobj.name)
-                rstrings.append("%s is offline. They will see your message if they list their pages later."
-                                % received[-1])
+                rstrings.append(
+                    "%s is offline. They will see your message if they list their pages later."
+                    % received[-1]
+                )
             else:
                 received.append("|c%s|n" % pobj.name)
         if rstrings:
@@ -814,13 +894,31 @@ def _list_bots(cmd):
         bots (str): A table of bots or an error message.
 
     """
-    ircbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")]
+    ircbots = [
+        bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")
+    ]
     if ircbots:
-        table = cmd.styled_table("|w#dbref|n", "|wbotname|n", "|wev-channel|n",
-                                 "|wirc-channel|n", "|wSSL|n", maxwidth=_DEFAULT_WIDTH)
+        table = cmd.styled_table(
+            "|w#dbref|n",
+            "|wbotname|n",
+            "|wev-channel|n",
+            "|wirc-channel|n",
+            "|wSSL|n",
+            maxwidth=_DEFAULT_WIDTH,
+        )
         for ircbot in ircbots:
-            ircinfo = "%s (%s:%s)" % (ircbot.db.irc_channel, ircbot.db.irc_network, ircbot.db.irc_port)
-            table.add_row("#%i" % ircbot.id, ircbot.db.irc_botname, ircbot.db.ev_channel, ircinfo, ircbot.db.irc_ssl)
+            ircinfo = "%s (%s:%s)" % (
+                ircbot.db.irc_channel,
+                ircbot.db.irc_network,
+                ircbot.db.irc_port,
+            )
+            table.add_row(
+                "#%i" % ircbot.id,
+                ircbot.db.irc_botname,
+                ircbot.db.ev_channel,
+                ircinfo,
+                ircbot.db.irc_ssl,
+            )
         return table
     else:
         return "No irc bots found."
@@ -870,12 +968,12 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
 
-        if 'list' in self.switches:
+        if "list" in self.switches:
             # show all connections
             self.msg(_list_bots(self))
             return
 
-        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+        if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
             botname = "ircbot-%s" % self.lhs
             matches = AccountDB.objects.filter(db_is_bot=True, username=botname)
             dbref = utils.dbref(self.lhs)
@@ -890,16 +988,19 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if not self.args or not self.rhs:
-            string = "Usage: irc2chan[/switches] <evennia_channel> =" \
-                     " <ircnetwork> <port> <#irchannel> <botname>[:typeclass]"
+            string = (
+                "Usage: irc2chan[/switches] <evennia_channel> ="
+                " <ircnetwork> <port> <#irchannel> <botname>[:typeclass]"
+            )
             self.msg(string)
             return
 
         channel = self.lhs
-        self.rhs = self.rhs.replace('#', ' ')  # to avoid Python comment issues
+        self.rhs = self.rhs.replace("#", " ")  # to avoid Python comment issues
         try:
-            irc_network, irc_port, irc_channel, irc_botname = \
-                [part.strip() for part in self.rhs.split(None, 4)]
+            irc_network, irc_port, irc_channel, irc_botname = [
+                part.strip() for part in self.rhs.split(None, 4)
+            ]
             irc_channel = "#%s" % irc_channel
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
@@ -928,8 +1029,14 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             except Exception as err:
                 self.msg("|rError, could not create the bot:|n '%s'." % err)
                 return
-        bot.start(ev_channel=channel, irc_botname=irc_botname, irc_channel=irc_channel,
-                  irc_network=irc_network, irc_port=irc_port, irc_ssl=irc_ssl)
+        bot.start(
+            ev_channel=channel,
+            irc_botname=irc_botname,
+            irc_channel=irc_channel,
+            irc_network=irc_network,
+            irc_port=irc_port,
+            irc_ssl=irc_ssl,
+        )
         self.msg("Connection created. Starting IRC bot.")
 
 
@@ -951,6 +1058,7 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
     messages sent to either channel will be lost.
 
     """
+
     key = "ircstatus"
     locks = "cmd:serversetting(IRC_ENABLED) and perm(ircstatus) or perm(Builder))"
     help_category = "Comms"
@@ -974,13 +1082,20 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         if utils.dbref(botname):
             matches = AccountDB.objects.filter(db_is_bot=True, id=utils.dbref(botname))
         if not matches:
-            self.msg("No matching IRC-bot found. Use ircstatus without arguments to list active bots.")
+            self.msg(
+                "No matching IRC-bot found. Use ircstatus without arguments to list active bots."
+            )
             return
         ircbot = matches[0]
         channel = ircbot.db.irc_channel
         network = ircbot.db.irc_network
         port = ircbot.db.irc_port
-        chtext = "IRC bot '%s' on channel %s (%s:%s)" % (ircbot.db.irc_botname, channel, network, port)
+        chtext = "IRC bot '%s' on channel %s (%s:%s)" % (
+            ircbot.db.irc_botname,
+            channel,
+            network,
+            port,
+        )
         if option == "ping":
             # check connection by sending outself a ping through the server.
             self.caller.msg("Pinging through %s." % chtext)
@@ -990,7 +1105,9 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
             # an asynchronous call.
             self.caller.msg("Requesting nicklist from %s (%s:%s)." % (channel, network, port))
             ircbot.get_nicklist(self.caller)
-        elif self.caller.locks.check_lockstring(self.caller, "dummy:perm(ircstatus) or perm(Developer)"):
+        elif self.caller.locks.check_lockstring(
+            self.caller, "dummy:perm(ircstatus) or perm(Developer)"
+        ):
             # reboot the client
             self.caller.msg("Forcing a disconnect + reconnect of %s." % chtext)
             ircbot.reconnect()
@@ -1039,27 +1156,41 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             return
         try:
             import feedparser
+
             assert feedparser  # to avoid checker error of not being used
         except ImportError:
-            string = "RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser)." \
-                     " Install before continuing."
+            string = (
+                "RSS requires python-feedparser (https://pypi.python.org/pypi/feedparser)."
+                " Install before continuing."
+            )
             self.msg(string)
             return
 
-        if 'list' in self.switches:
+        if "list" in self.switches:
             # show all connections
-            rssbots = [bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")]
+            rssbots = [
+                bot
+                for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")
+            ]
             if rssbots:
-                table = self.styled_table("|wdbid|n", "|wupdate rate|n", "|wev-channel",
-                                         "|wRSS feed URL|n", border="cells", maxwidth=_DEFAULT_WIDTH)
+                table = self.styled_table(
+                    "|wdbid|n",
+                    "|wupdate rate|n",
+                    "|wev-channel",
+                    "|wRSS feed URL|n",
+                    border="cells",
+                    maxwidth=_DEFAULT_WIDTH,
+                )
                 for rssbot in rssbots:
-                    table.add_row(rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url)
+                    table.add_row(
+                        rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url
+                    )
                 self.msg(table)
             else:
                 self.msg("No rss bots found.")
             return
 
-        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+        if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
             botname = "rssbot-%s" % self.lhs
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
             if not matches:
@@ -1131,12 +1262,20 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
 
         if "list" in self.switches:
             # show all connections
-            gwbots = [bot for bot in
-                      AccountDB.objects.filter(db_is_bot=True,
-                                               username__startswith="grapevinebot-")]
+            gwbots = [
+                bot
+                for bot in AccountDB.objects.filter(
+                    db_is_bot=True, username__startswith="grapevinebot-"
+                )
+            ]
             if gwbots:
-                table = self.styled_table("|wdbid|n", "|wev-channel",
-                                          "|wgw-channel|n", border="cells", maxwidth=_DEFAULT_WIDTH)
+                table = self.styled_table(
+                    "|wdbid|n",
+                    "|wev-channel",
+                    "|wgw-channel|n",
+                    border="cells",
+                    maxwidth=_DEFAULT_WIDTH,
+                )
                 for gwbot in gwbots:
                     table.add_row(gwbot.id, gwbot.db.ev_channel, gwbot.db.grapevine_channel)
                 self.msg(table)
@@ -1144,7 +1283,7 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("No grapevine bots found.")
             return
 
-        if 'disconnect' in self.switches or 'remove' in self.switches or 'delete' in self.switches:
+        if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
             botname = "grapevinebot-%s" % self.lhs
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
 

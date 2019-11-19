@@ -59,24 +59,39 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
         matches (list) A list of match tuples created by `cmdparser.create_match`.
 
     """
-    l_raw_string = raw_string.lower()
     matches = []
     try:
         if include_prefixes:
             # use the cmdname as-is
+            l_raw_string = raw_string.lower()
             for cmd in cmdset:
-                matches.extend([create_match(cmdname, raw_string, cmd, cmdname)
-                                for cmdname in [cmd.key] + cmd.aliases
-                                if cmdname and l_raw_string.startswith(cmdname.lower()) and
-                                (not cmd.arg_regex or
-                                    cmd.arg_regex.match(l_raw_string[len(cmdname):]))])
+                matches.extend(
+                    [
+                        create_match(cmdname, raw_string, cmd, cmdname)
+                        for cmdname in [cmd.key] + cmd.aliases
+                        if cmdname
+                        and l_raw_string.startswith(cmdname.lower())
+                        and (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname) :]))
+                    ]
+                )
         else:
             # strip prefixes set in settings
+            raw_string = (
+                raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
+            )
+            l_raw_string = raw_string.lower()
             for cmd in cmdset:
                 for raw_cmdname in [cmd.key] + cmd.aliases:
-                    cmdname = raw_cmdname.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_cmdname) > 1 else raw_cmdname
-                    if cmdname and l_raw_string.startswith(cmdname.lower()) and \
-                            (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname):])):
+                    cmdname = (
+                        raw_cmdname.lstrip(_CMD_IGNORE_PREFIXES)
+                        if len(raw_cmdname) > 1
+                        else raw_cmdname
+                    )
+                    if (
+                        cmdname
+                        and l_raw_string.startswith(cmdname.lower())
+                        and (not cmd.arg_regex or cmd.arg_regex.match(l_raw_string[len(cmdname) :]))
+                    ):
                         matches.append(create_match(cmdname, raw_string, cmd, raw_cmdname))
     except Exception:
         log_trace("cmdhandler error. raw_input:%s" % raw_string)
@@ -164,18 +179,19 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
             return cmdparser(new_raw_string, cmdset, caller, match_index=int(mindex))
         if _CMD_IGNORE_PREFIXES:
             # still no match. Try to strip prefixes
-            raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
+            raw_string = (
+                raw_string.lstrip(_CMD_IGNORE_PREFIXES) if len(raw_string) > 1 else raw_string
+            )
             matches = build_matches(raw_string, cmdset, include_prefixes=False)
 
     # only select command matches we are actually allowed to call.
-    matches = [match for match in matches if match[2].access(caller, 'cmd')]
+    matches = [match for match in matches if match[2].access(caller, "cmd")]
 
     # try to bring the number of matches down to 1
     if len(matches) > 1:
         # See if it helps to analyze the match with preserved case but only if
         # it leaves at least one match.
-        trimmed = [match for match in matches
-                   if raw_string.startswith(match[0])]
+        trimmed = [match for match in matches if raw_string.startswith(match[0])]
         if trimmed:
             matches = trimmed
 
@@ -184,14 +200,14 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         matches = sorted(matches, key=lambda m: m[3])
         # only pick the matches with highest count quality
         quality = [mat[3] for mat in matches]
-        matches = matches[-quality.count(quality[-1]):]
+        matches = matches[-quality.count(quality[-1]) :]
 
     if len(matches) > 1:
         # still multiple matches. Fall back to ratio-based quality.
         matches = sorted(matches, key=lambda m: m[4])
         # only pick the highest rated ratio match
         quality = [mat[4] for mat in matches]
-        matches = matches[-quality.count(quality[-1]):]
+        matches = matches[-quality.count(quality[-1]) :]
 
     if len(matches) > 1 and match_index is not None and 0 < match_index <= len(matches):
         # We couldn't separate match by quality, but we have an

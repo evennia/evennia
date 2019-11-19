@@ -22,6 +22,8 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         If not given, a subset of settings.INSTALLED_APPS will be used.
         """
         import evennia
+
         evennia._init()
         return super(EvenniaTestSuiteRunner, self).build_suite(
-            test_labels, extra_tests=extra_tests, **kwargs)
+            test_labels, extra_tests=extra_tests, **kwargs
+        )

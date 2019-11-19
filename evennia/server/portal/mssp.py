@@ -10,13 +10,12 @@ active players and so on.
 
 
 """
-from builtins import object
 from django.conf import settings
 from evennia.utils import utils
 
-MSSP = b'\x46'
-MSSP_VAR = b'\x01'
-MSSP_VAL = b'\x02'
+MSSP = b"\x46"
+MSSP_VAR = b"\x01"
+MSSP_VAL = b"\x02"
 
 # try to get the customized mssp info, if it exists.
 MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
@@ -82,18 +81,16 @@ class Mssp(object):
         """
 
         self.mssp_table = {
-
             # Required fields
-
             "NAME": settings.SERVERNAME,
             "PLAYERS": self.get_player_count,
             "UPTIME": self.get_uptime,
-
-            "PORT": list(reversed(settings.TELNET_PORTS)),  # most important port should be last in list
-
+            "PORT": list(
+                reversed(settings.TELNET_PORTS)
+            ),  # most important port should be last in list
             # Evennia auto-filled
             "CRAWL DELAY": "-1",
-            "CODEBASE": utils.get_evennia_version(mode='pretty'),
+            "CODEBASE": utils.get_evennia_version(mode="pretty"),
             "FAMILY": "Custom",
             "ANSI": "1",
             "GMCP": "1" if settings.TELNET_OOB_ENABLED else "0",
@@ -115,16 +112,17 @@ class Mssp(object):
         if MSSPTable_CUSTOM:
             self.mssp_table.update(MSSPTable_CUSTOM)
 
-        varlist = ''
+        varlist = b""
         for variable, value in self.mssp_table.items():
             if callable(value):
                 value = value()
             if utils.is_iter(value):
                 for partval in value:
-                    varlist += (MSSP_VAR + bytes(variable, 'utf-8') +
-                                MSSP_VAL + bytes(partval, 'utf-8'))
+                    varlist += (
+                        MSSP_VAR + bytes(variable, "utf-8") + MSSP_VAL + bytes(partval, "utf-8")
+                    )
             else:
-                varlist += MSSP_VAR + bytes(variable, 'utf-8') + MSSP_VAL + bytes(value, 'utf-8')
+                varlist += MSSP_VAR + bytes(variable, "utf-8") + MSSP_VAL + bytes(value, "utf-8")
 
         # send to crawler by subnegotiation
         self.protocol.requestNegotiation(MSSP, varlist)

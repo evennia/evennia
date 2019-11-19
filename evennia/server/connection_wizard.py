@@ -10,7 +10,6 @@ from evennia.utils.utils import list_to_string, mod_import
 
 
 class ConnectionWizard(object):
-
     def __init__(self):
         self.data = {}
         self.prev_node = None
@@ -132,19 +131,19 @@ class ConnectionWizard(object):
             if not resp and default:
                 resp = str(default)
 
-            if resp.lower() in ('q', 'quit'):
+            if resp.lower() in ("q", "quit"):
                 sys.exit()
 
-            if resp.lower() == 'none':
-                resp = ''
+            if resp.lower() == "none":
+                resp = ""
 
                 if validator and not validator(resp):
                     continue
 
                 ok = input("\n Leave blank? [Y]/N: ")
-                if ok.lower() in ('n', 'no'):
+                if ok.lower() in ("n", "no"):
                     continue
-                elif ok.lower() in ('q', 'quit'):
+                elif ok.lower() in ("q", "quit"):
                     sys.exit()
                 return resp
 
@@ -155,7 +154,7 @@ class ConnectionWizard(object):
             ok = input("\n Is this correct? [Y]/N: ")
             if ok.lower() in ("n", "no"):
                 continue
-            elif ok.lower() in ('q', 'quit'):
+            elif ok.lower() in ("q", "quit"):
                 sys.exit()
             return resp
 
@@ -170,15 +169,17 @@ def node_start(wizard):
     Use `quit` at any time to abort and throw away unsaved changes.
     """
     options = {
-        "1": ("Add your game to the Evennia game index (also for closed-dev games)",
-              node_game_index_start, {}),
+        "1": (
+            "Add your game to the Evennia game index (also for closed-dev games)",
+            node_game_index_start,
+            {},
+        ),
         # "2": ("Add MSSP information (for mud-list crawlers)",
         #       node_mssp_start, {}),
         # "3": ("Add Grapevine listing",
         #       node_grapevine_start, {}),
-        "2": ("View and Save created settings",
-              node_view_and_apply_settings, {}),
-               }
+        "2": ("View and Save created settings", node_view_and_apply_settings, {}),
+    }
 
     wizard.display(text)
     wizard.ask_node(options)
@@ -201,7 +202,7 @@ def node_game_index_start(wizard, **kwargs):
     """
 
     wizard.display(text)
-    if wizard.ask_yesno("Continue adding/editing an Index entry?") == 'yes':
+    if wizard.ask_yesno("Continue adding/editing an Index entry?") == "yes":
         node_game_index_fields(wizard)
     else:
         node_start(wizard)
@@ -215,7 +216,7 @@ def node_game_index_fields(wizard, status=None):
 
     # game status
 
-    status_default = wizard.game_index_listing['game_status']
+    status_default = wizard.game_index_listing["game_status"]
     text = f"""
     What is the status of your game?
         - pre-alpha: a game in its very early stages, mostly unfinished or unstarted
@@ -230,12 +231,11 @@ def node_game_index_fields(wizard, status=None):
     options = ["pre-alpha", "alpha", "beta", "launched"]
 
     wizard.display(text)
-    wizard.game_index_listing['game_status'] = \
-        wizard.ask_choice("Select one: ", options)
+    wizard.game_index_listing["game_status"] = wizard.ask_choice("Select one: ", options)
 
     # short desc
 
-    sdesc_default = wizard.game_index_listing.get('short_description', None)
+    sdesc_default = wizard.game_index_listing.get("short_description", None)
 
     text = f"""
     Enter a short description of your game. Make it snappy and interesting!
@@ -256,8 +256,9 @@ def node_game_index_fields(wizard, status=None):
         return True
 
     wizard.display(text)
-    wizard.game_index_listing['short_description'] = \
-        wizard.ask_input(default=sdesc_default, validator=sdesc_validator)
+    wizard.game_index_listing["short_description"] = wizard.ask_input(
+        default=sdesc_default, validator=sdesc_validator
+    )
 
     # long desc
 
@@ -273,8 +274,7 @@ def node_game_index_fields(wizard, status=None):
     """
 
     wizard.display(text)
-    wizard.game_index_listing['long_description'] = \
-        wizard.ask_input(default=long_default)
+    wizard.game_index_listing["long_description"] = wizard.ask_input(default=long_default)
 
     # listing contact
 
@@ -297,12 +297,13 @@ def node_game_index_fields(wizard, status=None):
         return True
 
     wizard.display(text)
-    wizard.game_index_listing['listing_contact'] = \
-        wizard.ask_input(default=listing_default, validator=contact_validator)
+    wizard.game_index_listing["listing_contact"] = wizard.ask_input(
+        default=listing_default, validator=contact_validator
+    )
 
     # telnet hostname
 
-    hostname_default = wizard.game_index_listing.get('telnet_hostname', None)
+    hostname_default = wizard.game_index_listing.get("telnet_hostname", None)
     text = f"""
     Enter the hostname to which third-party telnet mud clients can connect to
     your game. This would be the name of the server your game is hosted on,
@@ -315,13 +316,11 @@ def node_game_index_fields(wizard, status=None):
     """
 
     wizard.display(text)
-    wizard.game_index_listing['telnet_hostname'] = \
-        wizard.ask_input(default=hostname_default)
-
+    wizard.game_index_listing["telnet_hostname"] = wizard.ask_input(default=hostname_default)
 
     # telnet port
 
-    port_default = wizard.game_index_listing.get('telnet_port', None)
+    port_default = wizard.game_index_listing.get("telnet_port", None)
     text = f"""
     Enter the main telnet port. The Evennia default is 4000. You can change
     this with the TELNET_PORTS server setting.
@@ -333,13 +332,11 @@ def node_game_index_fields(wizard, status=None):
     """
 
     wizard.display(text)
-    wizard.game_index_listing['telnet_port'] = \
-        wizard.ask_input(default=port_default)
-
+    wizard.game_index_listing["telnet_port"] = wizard.ask_input(default=port_default)
 
     # website
 
-    website_default = wizard.game_index_listing.get('game_website', None)
+    website_default = wizard.game_index_listing.get("game_website", None)
     text = f"""
     Evennia is its own web server and runs your game's website. Enter the
     URL of the website here, like http://yourwebsite.com, here.
@@ -351,12 +348,11 @@ def node_game_index_fields(wizard, status=None):
     """
 
     wizard.display(text)
-    wizard.game_index_listing['game_website'] = \
-        wizard.ask_input(default=website_default)
+    wizard.game_index_listing["game_website"] = wizard.ask_input(default=website_default)
 
     # webclient
 
-    webclient_default = wizard.game_index_listing.get('web_client_url', None)
+    webclient_default = wizard.game_index_listing.get("web_client_url", None)
     text = f"""
     Evennia offers its own native webclient. Normally it will be found from the
     game homepage at something like http://yourwebsite.com/webclient. Enter
@@ -370,15 +366,17 @@ def node_game_index_fields(wizard, status=None):
     """
 
     wizard.display(text)
-    wizard.game_index_listing['web_client_url'] = \
-        wizard.ask_input(default=webclient_default)
+    wizard.game_index_listing["web_client_url"] = wizard.ask_input(default=webclient_default)
 
-    if not (wizard.game_index_listing.get('web_client_url') or
-            (wizard.game_index_listing.get('telnet_host'))):
+    if not (
+        wizard.game_index_listing.get("web_client_url")
+        or (wizard.game_index_listing.get("telnet_host"))
+    ):
         wizard.display(
             "\nNote: You have not specified any connection options. This means "
             "your game \nwill be marked as being in 'closed development' in "
-            "the index.")
+            "the index."
+        )
 
     wizard.display("\nDon't forget to inspect and save your changes.")
 
@@ -417,6 +415,7 @@ def node_mssp_start(wizard):
 
 # Admin
 
+
 def _save_changes(wizard):
     """
     Perform the save
@@ -425,22 +424,25 @@ def _save_changes(wizard):
     # add import statement to settings file
     import_stanza = "from .connection_settings import *"
     setting_module = mod_import("server.conf.settings")
-    with open(setting_module.__file__, 'r+') as f:
+    with open(setting_module.__file__, "r+") as f:
         txt = f.read()  # moves pointer to end of file
         if import_stanza not in txt:
             # add to the end of the file
-            f.write("\n\n"
-                    "try:\n"
-                    "    # Created by the `evennia connections` wizard\n"
-                    f"    {import_stanza}\n"
-                    "except ImportError:\n"
-                    "    pass")
+            f.write(
+                "\n\n"
+                "try:\n"
+                "    # Created by the `evennia connections` wizard\n"
+                f"    {import_stanza}\n"
+                "except ImportError:\n"
+                "    pass"
+            )
 
-    connect_settings_file = path.join(settings.GAME_DIR,
-                                      "server", "conf", "connection_settings.py")
-    with open(connect_settings_file, 'w') as f:
-        f.write("# This file is auto-generated by the `evennia connections` wizard.\n"
-                "# Don't edit manually, your changes will be overwritten.\n\n")
+    connect_settings_file = path.join(settings.GAME_DIR, "server", "conf", "connection_settings.py")
+    with open(connect_settings_file, "w") as f:
+        f.write(
+            "# This file is auto-generated by the `evennia connections` wizard.\n"
+            "# Don't edit manually, your changes will be overwritten.\n\n"
+        )
 
         f.write(wizard.save_output)
         wizard.display(f"saving to {connect_settings_file} ...")
@@ -459,9 +461,9 @@ def node_view_and_apply_settings(wizard):
         if wizard.game_index_listing != settings.GAME_INDEX_LISTING:
             game_index_txt = "No changes to save for Game Index."
         else:
-            game_index_txt = ("GAME_INDEX_ENABLED = True\n"
-                              "GAME_INDEX_LISTING = \\\n" +
-                              pp.pformat(wizard.game_index_listing))
+            game_index_txt = "GAME_INDEX_ENABLED = True\n" "GAME_INDEX_LISTING = \\\n" + pp.pformat(
+                wizard.game_index_listing
+            )
             saves = True
 
     text = game_index_txt
@@ -469,7 +471,7 @@ def node_view_and_apply_settings(wizard):
     wizard.display(f"Settings to save:\n\n{text}")
 
     if saves:
-        if wizard.ask_yesno("Do you want to save these settings?") == 'yes':
+        if wizard.ask_yesno("Do you want to save these settings?") == "yes":
             wizard.save_output = text
             _save_changes(wizard)
             wizard.display("... saved!")

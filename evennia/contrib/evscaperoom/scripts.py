@@ -13,7 +13,6 @@ from evscaperoom.room import EvscapeRoom
 
 
 class CleanupScript(DefaultScript):
-
     def at_script_creation(self):
 
         self.key = "evscaperoom_cleanup"

@@ -18,9 +18,9 @@ class SharedMemoryManager(Manager):
         if len(items) == 1:
             # CL: support __exact
             key = items[0]
-            if key.endswith('__exact'):
-                key = key[:-len('__exact')]
-            if key in ('pk', self.model._meta.pk.attname):
+            if key.endswith("__exact"):
+                key = key[: -len("__exact")]
+            if key in ("pk", self.model._meta.pk.attname):
                 try:
                     inst = self.model.get_cached_instance(kwargs[items[0]])
                     # we got the item from cache, but if this is a fk, check it's ours

@@ -1,7 +1,21 @@
 from django.test import TestCase
 from mock import Mock, patch, mock_open
-from .dummyrunner_settings import (c_creates_button, c_creates_obj, c_digs, c_examines, c_help, c_idles, c_login,
-                                   c_login_nodig, c_logout, c_looks, c_moves, c_moves_n, c_moves_s, c_socialize)
+from .dummyrunner_settings import (
+    c_creates_button,
+    c_creates_obj,
+    c_digs,
+    c_examines,
+    c_help,
+    c_idles,
+    c_login,
+    c_login_nodig,
+    c_logout,
+    c_looks,
+    c_moves,
+    c_moves_n,
+    c_moves_s,
+    c_socialize,
+)
 
 try:
     import memplot
@@ -26,15 +40,25 @@ class TestDummyrunnerSettings(TestCase):
         self.client.exits = []
 
     def test_c_login(self):
-        self.assertEqual(c_login(self.client), ('create %s %s' % (self.client.name, self.client.password),
-                                                'connect %s %s' % (self.client.name, self.client.password),
-                                                '@dig %s' % self.client.start_room,
-                                                '@teleport %s' % self.client.start_room,
-                                                "@dig testing_room_1 = exit_1, exit_1"))
+        self.assertEqual(
+            c_login(self.client),
+            (
+                "create %s %s" % (self.client.name, self.client.password),
+                "connect %s %s" % (self.client.name, self.client.password),
+                "@dig %s" % self.client.start_room,
+                "@teleport %s" % self.client.start_room,
+                "@dig testing_room_1 = exit_1, exit_1",
+            ),
+        )
 
     def test_c_login_no_dig(self):
-        self.assertEqual(c_login_nodig(self.client), ('create %s %s' % (self.client.name, self.client.password),
-                                                      'connect %s %s' % (self.client.name, self.client.password)))
+        self.assertEqual(
+            c_login_nodig(self.client),
+            (
+                "create %s %s" % (self.client.name, self.client.password),
+                "connect %s %s" % (self.client.name, self.client.password),
+            ),
+        )
 
     def test_c_logout(self):
         self.assertEqual(c_logout(self.client), "@quit")
@@ -54,36 +78,54 @@ class TestDummyrunnerSettings(TestCase):
         self.perception_method_tests(c_examines, "examine", " me")
 
     def test_idles(self):
-        self.assertEqual(c_idles(self.client), ('idle', 'idle'))
+        self.assertEqual(c_idles(self.client), ("idle", "idle"))
 
     def test_c_help(self):
-        self.assertEqual(c_help(self.client), ('help', 'help @teleport', 'help look', 'help @tunnel', 'help @dig'))
+        self.assertEqual(
+            c_help(self.client),
+            ("help", "help @teleport", "help look", "help @tunnel", "help @dig"),
+        )
 
     def test_c_digs(self):
-        self.assertEqual(c_digs(self.client), ('@dig/tel testing_room_1 = exit_1, exit_1'))
-        self.assertEqual(self.client.exits, ['exit_1', 'exit_1'])
+        self.assertEqual(c_digs(self.client), ("@dig/tel testing_room_1 = exit_1, exit_1"))
+        self.assertEqual(self.client.exits, ["exit_1", "exit_1"])
         self.clear_client_lists()
 
     def test_c_creates_obj(self):
         objname = "testing_obj_1"
-        self.assertEqual(c_creates_obj(self.client), ('@create %s' % objname,
-                                                      '@desc %s = "this is a test object' % objname,
-                                                      '@set %s/testattr = this is a test attribute value.' % objname,
-                                                      '@set %s/testattr2 = this is a second test attribute.' % objname))
+        self.assertEqual(
+            c_creates_obj(self.client),
+            (
+                "@create %s" % objname,
+                '@desc %s = "this is a test object' % objname,
+                "@set %s/testattr = this is a test attribute value." % objname,
+                "@set %s/testattr2 = this is a second test attribute." % objname,
+            ),
+        )
         self.assertEqual(self.client.objs, [objname])
         self.clear_client_lists()
 
     def test_c_creates_button(self):
         objname = "testing_button_1"
         typeclass_name = "contrib.tutorial_examples.red_button.RedButton"
-        self.assertEqual(c_creates_button(self.client), ('@create %s:%s' % (objname, typeclass_name),
-                                                         '@desc %s = test red button!' % objname))
+        self.assertEqual(
+            c_creates_button(self.client),
+            ("@create %s:%s" % (objname, typeclass_name), "@desc %s = test red button!" % objname),
+        )
         self.assertEqual(self.client.objs, [objname])
         self.clear_client_lists()
 
     def test_c_socialize(self):
-        self.assertEqual(c_socialize(self.client), ('ooc Hello!', 'ooc Testing ...', 'ooc Testing ... times 2',
-                                                    'say Yo!', 'emote stands looking around.'))
+        self.assertEqual(
+            c_socialize(self.client),
+            (
+                "ooc Hello!",
+                "ooc Testing ...",
+                "ooc Testing ... times 2",
+                "say Yo!",
+                "emote stands looking around.",
+            ),
+        )
 
     def test_c_moves(self):
         self.assertEqual(c_moves(self.client), "look")
@@ -108,6 +150,7 @@ class TestMemPlot(TestCase):
         if isinstance(memplot, Mock):
             return
         from evennia.utils.create import create_script
+
         mocked_idmapper.cache_size.return_value = (9, 5000)
         mock_time.time = Mock(return_value=6000.0)
         script = create_script(memplot.Memplot)
@@ -115,5 +158,5 @@ class TestMemPlot(TestCase):
         mocked_os.popen.read.return_value = 5000.0
         script.at_repeat()
         handle = mocked_open()
-        handle.write.assert_called_with('100.0, 0.001, 0.001, 9\n')
+        handle.write.assert_called_with("100.0, 0.001, 0.001, 9\n")
         script.stop()

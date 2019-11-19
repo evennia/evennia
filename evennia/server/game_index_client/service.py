@@ -21,13 +21,13 @@ class EvenniaGameIndexService(Service):
     to the Evennia Game Index.
 
     """
+
     # We didn't stick the Evennia prefix on here because it'd get marked as
     # a core system service.
-    name = 'GameIndexClient'
+    name = "GameIndexClient"
 
     def __init__(self):
-        self.client = EvenniaGameIndexClient(
-            on_bad_request=self._die_on_bad_request)
+        self.client = EvenniaGameIndexClient(on_bad_request=self._die_on_bad_request)
         self.loop = LoopingCall(self.client.send_game_details)
 
     def startService(self):
@@ -36,8 +36,7 @@ class EvenniaGameIndexService(Service):
         # Start the loop, but only after a short delay. This allows the
         # portal and the server time to sync up as far as total player counts.
         # Prevents always reporting a count of 0.
-        reactor.callLater(
-            _FIRST_UPDATE_DELAY, self.loop.start, _CLIENT_UPDATE_RATE)
+        reactor.callLater(_FIRST_UPDATE_DELAY, self.loop.start, _CLIENT_UPDATE_RATE)
 
     def stopService(self):
         if self.running == 0:
@@ -54,6 +53,6 @@ class EvenniaGameIndexService(Service):
         Stop the service so we're not wasting resources.
         """
         logger.log_infomsg(
-            "Shutting down Evennia Game Index client service due to "
-            "invalid configuration.")
+            "Shutting down Evennia Game Index client service due to " "invalid configuration."
+        )
         self.stopService()

@@ -129,8 +129,6 @@ form will raise an error.
 
 """
 
-from builtins import object, range
-
 import re
 import copy
 from evennia.utils.evtable import EvCell, EvTable
@@ -160,7 +158,7 @@ def _to_rect(lines):
 
     """
     maxl = max(len(line) for line in lines)
-    return [line + ' ' * (maxl - len(line)) for line in lines]
+    return [line + " " * (maxl - len(line)) for line in lines]
 
 
 def _to_ansi(obj, regexable=False):
@@ -206,8 +204,12 @@ class EvForm(object):
         self.filename = filename
         self.input_form_dict = form
 
-        self.cells_mapping = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
-        self.tables_mapping = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
+        self.cells_mapping = (
+            dict((to_str(key), value) for key, value in cells.items()) if cells else {}
+        )
+        self.tables_mapping = (
+            dict((to_str(key), value) for key, value in tables.items()) if tables else {}
+        )
 
         self.cellchar = "x"
         self.tablechar = "c"
@@ -244,8 +246,12 @@ class EvForm(object):
         table_coords = {}
 
         # Locate the identifier tags and the horizontal end coords for all forms
-        re_cellchar = re.compile(r"%s+([^%s%s]+)%s+" % (cellchar, INVALID_FORMCHARS, cellchar, cellchar))
-        re_tablechar = re.compile(r"%s+([^%s%s|+])%s+" % (tablechar, INVALID_FORMCHARS, tablechar, tablechar))
+        re_cellchar = re.compile(
+            r"%s+([^%s%s]+)%s+" % (cellchar, INVALID_FORMCHARS, cellchar, cellchar)
+        )
+        re_tablechar = re.compile(
+            r"%s+([^%s%s|+])%s+" % (tablechar, INVALID_FORMCHARS, tablechar, tablechar)
+        )
         for iy, line in enumerate(_to_ansi(form, regexable=True)):
             # find cells
             ix0 = 0
@@ -297,11 +303,25 @@ class EvForm(object):
             data = self.cells_mapping.get(key, "")
             # if key == "1":
 
-            options = {"pad_left": 0, "pad_right": 0, "pad_top": 0, "pad_bottom": 0, "align": "l", "valign": "t", "enforce_size": True}
+            options = {
+                "pad_left": 0,
+                "pad_right": 0,
+                "pad_top": 0,
+                "pad_bottom": 0,
+                "align": "l",
+                "valign": "t",
+                "enforce_size": True,
+            }
             options.update(custom_options)
             # if key=="4":
 
-            mapping[key] = (iyup, leftix, width, height, EvCell(data, width=width, height=height, **options))
+            mapping[key] = (
+                iyup,
+                leftix,
+                width,
+                height,
+                EvCell(data, width=width, height=height, **options),
+            )
 
         # get rectangles and assign Tables
         for key, (iy, leftix, rightix) in table_coords.items():
@@ -332,8 +352,15 @@ class EvForm(object):
             # we have all the coordinates we need. Create Table.
             table = self.tables_mapping.get(key, None)
 
-            options = {"pad_left": 0, "pad_right": 0, "pad_top": 0, "pad_bottom": 0,
-                       "align": "l", "valign": "t", "enforce_size": True}
+            options = {
+                "pad_left": 0,
+                "pad_right": 0,
+                "pad_top": 0,
+                "pad_bottom": 0,
+                "align": "l",
+                "valign": "t",
+                "enforce_size": True,
+            }
             options.update(custom_options)
 
             if table:
@@ -356,7 +383,7 @@ class EvForm(object):
             for il, rectline in enumerate(rect):
                 formline = form[iy0 + il]
                 # insert new content, replacing old
-                form[iy0 + il] = formline[:ix0] + rectline + formline[ix0 + width:]
+                form[iy0 + il] = formline[:ix0] + rectline + formline[ix0 + width :]
         return form
 
     def map(self, cells=None, tables=None, **kwargs):
@@ -426,7 +453,9 @@ class EvForm(object):
         self.options.update(kwargs)
 
         # parse and replace
-        self.mapping = self._parse_rectangles(self.cellchar, self.tablechar, self.raw_form, **kwargs)
+        self.mapping = self._parse_rectangles(
+            self.cellchar, self.tablechar, self.raw_form, **kwargs
+        )
         self.form = self._populate_form(self.raw_form, self.mapping)
 
     def __str__(self):
@@ -439,25 +468,33 @@ def _test():
     form = EvForm("evennia.utils.tests.data.evform_example")
 
     # add data to each tagged form cell
-    form.map(cells={"AA": "|gTom the Bouncer",
-                    2: "|yGriatch",
-                    3: "A sturdy fellow",
-                    4: 12,
-                    5: 10,
-                    6: 5,
-                    7: 18,
-                    8: 10,
-                    9: 3,
-                    "F": "rev 1"})
+    form.map(
+        cells={
+            "AA": "|gTom the Bouncer",
+            2: "|yGriatch",
+            3: "A sturdy fellow",
+            4: 12,
+            5: 10,
+            6: 5,
+            7: 18,
+            8: 10,
+            9: 3,
+            "F": "rev 1",
+        }
+    )
     # create the EvTables
-    tableA = EvTable("HP", "MV", "MP",
-                     table=[["**"], ["*****"], ["***"]],
-                     border="incols")
-    tableB = EvTable("Skill", "Value", "Exp",
-                     table=[["Shooting", "Herbalism", "Smithing"],
-                            [12, 14, 9], ["550/1200", "990/1400", "205/900"]],
-                     border="incols")
+    tableA = EvTable("HP", "MV", "MP", table=[["**"], ["*****"], ["***"]], border="incols")
+    tableB = EvTable(
+        "Skill",
+        "Value",
+        "Exp",
+        table=[
+            ["Shooting", "Herbalism", "Smithing"],
+            [12, 14, 9],
+            ["550/1200", "990/1400", "205/900"],
+        ],
+        border="incols",
+    )
     # add the tables to the proper ids in the form
-    form.map(tables={"A": tableA,
-                     "B": tableB})
+    form.map(tables={"A": tableA, "B": tableB})
     return str(form)

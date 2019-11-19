@@ -81,7 +81,9 @@ class CmdOOCLook(default_cmds.CmdLook):
                 if not avail_chars:
                     self.caller.msg("You have no characters to look at. Why not create one?")
                     return
-                objs = managers.objects.get_objs_with_key_and_typeclass(self.args.strip(), CHARACTER_TYPECLASS)
+                objs = managers.objects.get_objs_with_key_and_typeclass(
+                    self.args.strip(), CHARACTER_TYPECLASS
+                )
                 objs = [obj for obj in objs if obj.id in avail_chars]
                 if not objs:
                     self.caller.msg("You cannot see this Character.")
@@ -101,15 +103,17 @@ class CmdOOCLook(default_cmds.CmdLook):
                 charlist += "\n\n   Use |w@ic <character name>|n to switch to that Character."
             else:
                 charlist = "You have no Characters."
-            string = \
-                """   You, %s, are an |wOOC ghost|n without form. The world is hidden
+            string = """   You, %s, are an |wOOC ghost|n without form. The world is hidden
    from you and besides chatting on channels your options are limited.
    You need to have a Character in order to interact with the world.
 
    %s
 
    Use |wcreate <name>|n to create a new character and |whelp|n for a
-   list of available commands.""" % (self.caller.key, charlist)
+   list of available commands.""" % (
+                self.caller.key,
+                charlist,
+            )
             self.caller.msg(string)
 
         else:
@@ -159,11 +163,15 @@ class CmdOOCCharacterCreate(Command):
 
         new_character = create_object(CHARACTER_TYPECLASS, key=charname)
         if not new_character:
-            self.caller.msg("|rThe Character couldn't be created. This is a bug. Please contact an admin.")
+            self.caller.msg(
+                "|rThe Character couldn't be created. This is a bug. Please contact an admin."
+            )
             return
         # make sure to lock the character to only be puppeted by this account
-        new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)" %
-                                (new_character.id, self.caller.id))
+        new_character.locks.add(
+            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer)"
+            % (new_character.id, self.caller.id)
+        )
 
         # save dbref
         avail_chars = self.caller.db._character_dbrefs

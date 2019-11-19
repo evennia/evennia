@@ -85,6 +85,7 @@ def register_events(path_or_typeclass):
 
     return typeclass
 
+
 # Custom callbacks for specific event types
 
 
@@ -108,8 +109,10 @@ def get_next_wait(format):
     """
     calendar = getattr(settings, "EVENTS_CALENDAR", None)
     if calendar is None:
-        logger.log_err("A time-related event has been set whereas "
-                       "the gametime calendar has not been set in the settings.")
+        logger.log_err(
+            "A time-related event has been set whereas "
+            "the gametime calendar has not been set in the settings."
+        )
         return
     elif calendar == "standard":
         rsu = standard_rsu
@@ -135,8 +138,9 @@ def get_next_wait(format):
             break
 
         if not piece.isdigit():
-            logger.log_trace("The time specified '{}' in {} isn't "
-                             "a valid number".format(piece, format))
+            logger.log_trace(
+                "The time specified '{}' in {} isn't " "a valid number".format(piece, format)
+            )
             return
 
         # Convert the piece to int
@@ -171,7 +175,9 @@ def time_event(obj, event_name, number, parameters):
 
     """
     seconds, usual, key = get_next_wait(parameters)
-    script = create_script("evennia.contrib.ingame_python.scripts.TimeEventScript", interval=seconds, obj=obj)
+    script = create_script(
+        "evennia.contrib.ingame_python.scripts.TimeEventScript", interval=seconds, obj=obj
+    )
     script.key = key
     script.desc = "event on {}".format(key)
     script.db.time_format = parameters

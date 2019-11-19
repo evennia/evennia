@@ -7,14 +7,6 @@ to provide some named prototypes for use with various tests
 prototype dictionaries)
 """
 
-GOBLIN = {
-    "key" : "Goblin", \
-    "typeclass" : "DefaultCharacter", \
-    "desc" : "A goblin."
-}
+GOBLIN = {"key": "Goblin", "typeclass": "DefaultCharacter", "desc": "A goblin."}
 
-BALL = {
-    "key" : "Ball", \
-    "typeclass" : "DefaultObject", \
-    "desc" : "A ball."
-}
+BALL = {"key": "Ball", "typeclass": "DefaultObject", "desc": "A ball."}

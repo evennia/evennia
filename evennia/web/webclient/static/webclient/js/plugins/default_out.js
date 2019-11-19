@@ -21,10 +21,19 @@ let defaultout_plugin = (function () {
     //
     // By default just show the prompt.
     var onPrompt = function (args, kwargs) {
-        // show prompt
-        $('#prompt')
-            .addClass("out")
-            .html(args[0]);
+        // show prompt on every input pane
+        var prompts = $('.prompt');
+
+        for( var x=0; x < prompts.length; x++ ) {
+            var prmpt = $( prompts[x] );
+            var sibling = prmpt.siblings().first();
+
+            prmpt.addClass("out")
+                .html(args[0])
+                .css({'height':'1.5em'});
+
+            sibling.css({'height':'calc(100% - 1.5em)'});
+        }
 
         return true;
     }

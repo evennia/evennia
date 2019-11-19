@@ -1,4 +1,3 @@
-
 """
 This contains a simple view for rendering the webclient
 page and serve it eventual static content.
@@ -26,6 +25,6 @@ def webclient(request):
         raise Http404
 
     # make sure to store the browser session's hash so the webclient can get to it!
-    pagevars = {'browser_sessid': request.session.session_key}
+    pagevars = {"browser_sessid": request.session.session_key}
 
-    return render(request, 'webclient.html', pagevars)
+    return render(request, "webclient.html", pagevars)

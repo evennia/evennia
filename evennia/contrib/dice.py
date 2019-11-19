@@ -29,8 +29,6 @@ at_cmdset_creation():
 After a reload the dice (or roll) command will be available in-game.
 
 """
-from builtins import range
-
 import re
 from random import randint
 from evennia import default_cmds, CmdSet
@@ -97,7 +95,7 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     if modifier:
         # make sure to check types well before eval
         mod, modvalue = modifier
-        if mod not in ('+', '-', '*', '/'):
+        if mod not in ("+", "-", "*", "/"):
             raise TypeError("Non-supported dice modifier: %s" % mod)
         modvalue = int(modvalue)  # for safety
         result = eval("%s %s %s" % (result, mod, modvalue))
@@ -105,7 +103,7 @@ def roll_dice(dicenum, dicetype, modifier=None, conditional=None, return_tuple=F
     if conditional:
         # make sure to check types well before eval
         cond, condvalue = conditional
-        if cond not in ('>', '<', '>=', '<=', '!=', '=='):
+        if cond not in (">", "<", ">=", "<=", "!=", "=="):
             raise TypeError("Non-supported dice result conditional: %s" % conditional)
         condvalue = int(condvalue)  # for safety
         outcome = eval("%s %s %s" % (result, cond, condvalue))  # True/False
@@ -168,9 +166,11 @@ class CmdDice(default_cmds.MuxCommand):
         modifier = None
         conditional = None
 
-        if len_parts < 3 or parts[1] != 'd':
-            self.caller.msg("You must specify the die roll(s) as <nr>d<sides>."
-                            " For example, 2d6 means rolling a 6-sided die 2 times.")
+        if len_parts < 3 or parts[1] != "d":
+            self.caller.msg(
+                "You must specify the die roll(s) as <nr>d<sides>."
+                " For example, 2d6 means rolling a 6-sided die 2 times."
+            )
             return
 
         # Limit the number of dice and sides a character can roll to prevent server slow down and crashes
@@ -186,7 +186,7 @@ class CmdDice(default_cmds.MuxCommand):
             pass
         elif len_parts == 5:
             # either e.g. 1d6 + 3  or something like 1d6 > 3
-            if parts[3] in ('+', '-', '*', '/'):
+            if parts[3] in ("+", "-", "*", "/"):
                 modifier = (parts[3], parts[4])
             else:  # assume it is a conditional
                 conditional = (parts[3], parts[4])
@@ -200,14 +200,14 @@ class CmdDice(default_cmds.MuxCommand):
             return
         # do the roll
         try:
-            result, outcome, diff, rolls = roll_dice(ndice,
-                                                     nsides,
-                                                     modifier=modifier,
-                                                     conditional=conditional,
-                                                     return_tuple=True)
+            result, outcome, diff, rolls = roll_dice(
+                ndice, nsides, modifier=modifier, conditional=conditional, return_tuple=True
+            )
         except ValueError:
-            self.caller.msg("You need to enter valid integer numbers, modifiers and operators."
-                            " |w%s|n was not understood." % self.args)
+            self.caller.msg(
+                "You need to enter valid integer numbers, modifiers and operators."
+                " |w%s|n was not understood." % self.args
+            )
             return
         # format output
         if len(rolls) > 1:
@@ -224,13 +224,13 @@ class CmdDice(default_cmds.MuxCommand):
         roomrollstring = "%s rolls %s%s."
         resultstring = " Roll(s): %s. Total result is |w%s|n."
 
-        if 'secret' in self.switches:
+        if "secret" in self.switches:
             # don't echo to the room at all
             string = yourollstring % (argstring, " (secret, not echoed)")
             string += "\n" + resultstring % (rolls, result)
             string += outcomestring + " (not echoed)"
             self.caller.msg(string)
-        elif 'hidden' in self.switches:
+        elif "hidden" in self.switches:
             # announce the roll to the room, result only to caller
             string = yourollstring % (argstring, " (hidden)")
             self.caller.msg(string)

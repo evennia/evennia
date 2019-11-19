@@ -37,8 +37,9 @@ class CmdHelp(Command):
     This will search for help on commands and other
     topics related to the game.
     """
+
     key = "help"
-    aliases = ['?']
+    aliases = ["?"]
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
@@ -128,7 +129,11 @@ class CmdHelp(Command):
             string += "\n\n" + _SEP + "\n\r  |COther help entries|n\n" + _SEP
             for category in sorted(hdict_db.keys()):
                 string += "\n\r  |w%s|n:\n" % (str(category).title())
-                string += "|G" + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]]))) + "|n"
+                string += (
+                    "|G"
+                    + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]])))
+                    + "|n"
+                )
         return string
 
     def check_show_help(self, cmd, caller):
@@ -198,9 +203,15 @@ class CmdHelp(Command):
 
         # retrieve all available commands and database topics
         all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
-        all_topics = [topic for topic in HelpEntry.objects.all() if topic.access(caller, 'view', default=True)]
-        all_categories = list(set([cmd.help_category.lower() for cmd in all_cmds] + [topic.help_category.lower()
-                                                                                     for topic in all_topics]))
+        all_topics = [
+            topic for topic in HelpEntry.objects.all() if topic.access(caller, "view", default=True)
+        ]
+        all_categories = list(
+            set(
+                [cmd.help_category.lower() for cmd in all_cmds]
+                + [topic.help_category.lower() for topic in all_topics]
+            )
+        )
 
         if query in ("list", "all"):
             # we want to list all available help entries, grouped by category
@@ -222,13 +233,23 @@ class CmdHelp(Command):
         # build vocabulary of suggestions and rate them by string similarity.
         suggestions = None
         if suggestion_maxnum > 0:
-            vocabulary = [cmd.key for cmd in all_cmds if cmd] + [topic.key for topic in all_topics] + all_categories
+            vocabulary = (
+                [cmd.key for cmd in all_cmds if cmd]
+                + [topic.key for topic in all_topics]
+                + all_categories
+            )
             [vocabulary.extend(cmd.aliases) for cmd in all_cmds]
-            suggestions = [sugg for sugg in string_suggestions(query, set(vocabulary), cutoff=suggestion_cutoff,
-                                                               maxnum=suggestion_maxnum)
-                           if sugg != query]
+            suggestions = [
+                sugg
+                for sugg in string_suggestions(
+                    query, set(vocabulary), cutoff=suggestion_cutoff, maxnum=suggestion_maxnum
+                )
+                if sugg != query
+            ]
             if not suggestions:
-                suggestions = [sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)]
+                suggestions = [
+                    sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)
+                ]
 
         # try an exact command auto-help match
         match = [cmd for cmd in all_cmds if cmd == query]
@@ -237,37 +258,52 @@ class CmdHelp(Command):
             # try an inexact match with prefixes stripped from query and cmds
             _query = query[1:] if query[0] in CMD_IGNORE_PREFIXES else query
 
-            match = [cmd for cmd in all_cmds
-                    for m in cmd._matchset if m == _query or
-                    m[0] in CMD_IGNORE_PREFIXES and m[1:] == _query]
+            match = [
+                cmd
+                for cmd in all_cmds
+                for m in cmd._matchset
+                if m == _query or m[0] in CMD_IGNORE_PREFIXES and m[1:] == _query
+            ]
 
         if len(match) == 1:
-            formatted = self.format_help_entry(match[0].key,
-                                               match[0].get_help(caller, cmdset),
-                                               aliases=match[0].aliases,
-                                               suggested=suggestions)
+            formatted = self.format_help_entry(
+                match[0].key,
+                match[0].get_help(caller, cmdset),
+                aliases=match[0].aliases,
+                suggested=suggestions,
+            )
             self.msg_help(formatted)
             return
 
         # try an exact database help entry match
         match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
         if len(match) == 1:
-            formatted = self.format_help_entry(match[0].key,
-                                               match[0].entrytext,
-                                               aliases=match[0].aliases.all(),
-                                               suggested=suggestions)
+            formatted = self.format_help_entry(
+                match[0].key,
+                match[0].entrytext,
+                aliases=match[0].aliases.all(),
+                suggested=suggestions,
+            )
             self.msg_help(formatted)
             return
 
         # try to see if a category name was entered
         if query in all_categories:
-            self.msg_help(self.format_help_list({query: [cmd.key for cmd in all_cmds if cmd.help_category == query]},
-                                                {query: [topic.key for topic in all_topics
-                                                         if topic.help_category == query]}))
+            self.msg_help(
+                self.format_help_list(
+                    {query: [cmd.key for cmd in all_cmds if cmd.help_category == query]},
+                    {query: [topic.key for topic in all_topics if topic.help_category == query]},
+                )
+            )
             return
 
         # no exact matches found. Just give suggestions.
-        self.msg((self.format_help_entry("", "No help entry found for '%s'" % query, None, suggested=suggestions), {"type": "help"}))
+        self.msg(
+            self.format_help_entry(
+                "", f"No help entry found for '{query}'", None, suggested=suggestions
+            ),
+            options={"type": "help"},
+        )
 
 
 def _loadhelp(caller):
@@ -316,6 +352,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
     is to let everyone read the help file.
 
     """
+
     key = "sethelp"
     switch_options = ("edit", "replace", "append", "extend", "delete")
     locks = "cmd:perm(Helper)"
@@ -328,7 +365,9 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
         lhslist = self.lhslist
 
         if not self.args:
-            self.msg("Usage: sethelp[/switches] <topic>[;alias;alias][,category[,locks,..] = <text>")
+            self.msg(
+                "Usage: sethelp[/switches] <topic>[;alias;alias][,category[,locks,..] = <text>"
+            )
             return
 
         nlist = len(lhslist)
@@ -356,7 +395,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             lockstring = ",".join(lhslist[2:]) if nlist > 2 else "view:all()"
         category = category.lower()
 
-        if 'edit' in switches:
+        if "edit" in switches:
             # open the line editor to edit the helptext. No = is needed.
             if old_entry:
                 topicstr = old_entry.key
@@ -365,17 +404,22 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                     old_entry.entrytext += "\n%s" % self.rhs
                 helpentry = old_entry
             else:
-                helpentry = create.create_help_entry(topicstr,
-                                                     self.rhs, category=category,
-                                                     locks=lockstring, aliases=aliases)
+                helpentry = create.create_help_entry(
+                    topicstr, self.rhs, category=category, locks=lockstring, aliases=aliases
+                )
             self.caller.db._editing_help = helpentry
 
-            EvEditor(self.caller, loadfunc=_loadhelp, savefunc=_savehelp,
-                     quitfunc=_quithelp, key="topic {}".format(topicstr),
-                     persistent=True)
+            EvEditor(
+                self.caller,
+                loadfunc=_loadhelp,
+                savefunc=_savehelp,
+                quitfunc=_quithelp,
+                key="topic {}".format(topicstr),
+                persistent=True,
+            )
             return
 
-        if 'append' in switches or "merge" in switches or "extend" in switches:
+        if "append" in switches or "merge" in switches or "extend" in switches:
             # merge/append operations
             if not old_entry:
                 self.msg("Could not find topic '%s'. You must give an exact name." % topicstr)
@@ -383,14 +427,14 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             if not self.rhs:
                 self.msg("You must supply text to append/merge.")
                 return
-            if 'merge' in switches:
+            if "merge" in switches:
                 old_entry.entrytext += " " + self.rhs
             else:
                 old_entry.entrytext += "\n%s" % self.rhs
             old_entry.aliases.add(aliases)
             self.msg("Entry updated:\n%s%s" % (old_entry.entrytext, aliastxt))
             return
-        if 'delete' in switches or 'del' in switches:
+        if "delete" in switches or "del" in switches:
             # delete the help entry
             if not old_entry:
                 self.msg("Could not find topic '%s'%s." % (topicstr, aliastxt))
@@ -404,7 +448,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             self.msg("You must supply a help text to add.")
             return
         if old_entry:
-            if 'replace' in switches:
+            if "replace" in switches:
                 # overwrite old entry
                 old_entry.key = topicstr
                 old_entry.entrytext = self.rhs
@@ -415,22 +459,30 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                 old_entry.save()
                 self.msg("Overwrote the old topic '%s'%s." % (topicstr, aliastxt))
             else:
-                self.msg("Topic '%s'%s already exists. Use /replace to overwrite "
-                         "or /append or /merge to add text to it." % (topicstr, aliastxt))
+                self.msg(
+                    "Topic '%s'%s already exists. Use /replace to overwrite "
+                    "or /append or /merge to add text to it." % (topicstr, aliastxt)
+                )
         else:
             # no old entry. Create a new one.
-            new_entry = create.create_help_entry(topicstr,
-                                                 self.rhs, category=category,
-                                                 locks=lockstring, aliases=aliases)
+            new_entry = create.create_help_entry(
+                topicstr, self.rhs, category=category, locks=lockstring, aliases=aliases
+            )
             if new_entry:
                 self.msg("Topic '%s'%s was successfully created." % (topicstr, aliastxt))
-                if 'edit' in switches:
+                if "edit" in switches:
                     # open the line editor to edit the helptext
                     self.caller.db._editing_help = new_entry
-                    EvEditor(self.caller, loadfunc=_loadhelp,
-                             savefunc=_savehelp, quitfunc=_quithelp,
-                             key="topic {}".format(new_entry.key),
-                             persistent=True)
+                    EvEditor(
+                        self.caller,
+                        loadfunc=_loadhelp,
+                        savefunc=_savehelp,
+                        quitfunc=_quithelp,
+                        key="topic {}".format(new_entry.key),
+                        persistent=True,
+                    )
                     return
             else:
-                self.msg("Error when creating topic '%s'%s! Contact an admin." % (topicstr, aliastxt))
+                self.msg(
+                    "Error when creating topic '%s'%s! Contact an admin." % (topicstr, aliastxt)
+                )

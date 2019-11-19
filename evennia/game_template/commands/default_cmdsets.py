@@ -23,6 +23,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
     `get`, etc available on in-game Character objects. It is merged with
     the `AccountCmdSet` when an Account puppets a Character.
     """
+
     key = "DefaultCharacter"
 
     def at_cmdset_creation(self):
@@ -42,6 +43,7 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
     Character. It holds game-account-specific commands, channel
     commands, etc.
     """
+
     key = "DefaultAccount"
 
     def at_cmdset_creation(self):
@@ -59,6 +61,7 @@ class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     Command set available to the Session before being logged in.  This
     holds commands like creating a new account, logging in, etc.
     """
+
     key = "DefaultUnloggedin"
 
     def at_cmdset_creation(self):
@@ -76,6 +79,7 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
     This cmdset is made available on Session level once logged in. It
     is empty by default.
     """
+
     key = "DefaultSession"
 
     def at_cmdset_creation(self):

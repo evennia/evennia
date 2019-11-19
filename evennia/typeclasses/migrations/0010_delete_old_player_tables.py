@@ -6,6 +6,7 @@ from django.db import migrations, connection
 
 _ENGINE = None
 
+
 def _table_exists(db_cursor, tablename):
     "Returns bool if table exists or not"
     return tablename in connection.introspection.table_names()
@@ -15,6 +16,7 @@ def _drop_table(db_cursor, table_name):
     global _ENGINE
     if not _ENGINE:
         from django.conf import settings
+
         try:
             _ENGINE = settings.DATABASES["default"]["ENGINE"]
         except KeyError:
@@ -47,10 +49,6 @@ def drop_tables(apps, schema_migrator):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('typeclasses', '0009_rename_player_cmdsets_typeclasses'),
-    ]
+    dependencies = [("typeclasses", "0009_rename_player_cmdsets_typeclasses")]
 
-    operations = [
-        migrations.RunPython(drop_tables)
-    ]
+    operations = [migrations.RunPython(drop_tables)]

@@ -1,4 +1,3 @@
-
 """
 This is a convenient container gathering all the main
 search methods for the various database tables.
@@ -30,10 +29,18 @@ Example: To reach the search method 'get_object_with_account'
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
-__all__ = ("search_object", "search_account", "search_script",
-           "search_message", "search_channel", "search_help_entry",
-           "search_object_tag", "search_script_tag", "search_account_tag",
-           "search_channel_tag")
+__all__ = (
+    "search_object",
+    "search_account",
+    "search_script",
+    "search_message",
+    "search_channel",
+    "search_help_entry",
+    "search_object_tag",
+    "search_script_tag",
+    "search_account_tag",
+    "search_channel_tag",
+)
 
 
 # import objects this way to avoid circular import problems
@@ -197,20 +204,29 @@ help_entries = search_help
 # Note that these return the object attached to the Attribute,
 # not the attribute object itself (this is usually what you want)
 
+
 def search_object_attribute(key=None, category=None, value=None, strvalue=None):
-    return ObjectDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+    return ObjectDB.objects.get_by_attribute(
+        key=key, category=category, value=value, strvalue=strvalue
+    )
 
 
 def search_account_attribute(key=None, category=None, value=None, strvalue=None):
-    return AccountDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+    return AccountDB.objects.get_by_attribute(
+        key=key, category=category, value=value, strvalue=strvalue
+    )
 
 
 def search_script_attribute(key=None, category=None, value=None, strvalue=None):
-    return ScriptDB.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+    return ScriptDB.objects.get_by_attribute(
+        key=key, category=category, value=value, strvalue=strvalue
+    )
 
 
 def search_channel_attribute(key=None, category=None, value=None, strvalue=None):
-    return Channel.objects.get_by_attribute(key=key, category=category, value=value, strvalue=strvalue)
+    return Channel.objects.get_by_attribute(
+        key=key, category=category, value=value, strvalue=strvalue
+    )
 
 
 # search for attribute objects

@@ -37,17 +37,17 @@ var goldenlayout_config = { // Global Variable used in goldenlayout.js init()
 //          id: "inputComponent", // mark 'ignore this component during output message processing'
 //          height: 6,
 //          isClosable: false,
+//      }, {
+//            type: "component",
+//            componentName: "input",
+//            id: "inputComponent", // mark for ignore
+//            height: 12,  // percentage
+//            tooltip: "Input - The last input in the layout is always the default.",
         }, {
             type: "component",
             componentName: "input",
             id: "inputComponent", // mark for ignore
-            height: 12,  // percentage
-            tooltip: "Input - The last input in the layout is always the default.",
-        }, {
-            type: "component",
-            componentName: "input",
-            id: "inputComponent", // mark for ignore
-            height: 12,  // percentage
+            height: 20,  // percentage
             isClosable: false, // remove the 'x' control to close this
             tooltip: "Input - The last input in the layout is always the default.",
         }]

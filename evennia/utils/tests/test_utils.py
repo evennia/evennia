@@ -5,7 +5,11 @@ TODO: Not nearly all utilities are covered yet.
 
 """
 
+import os.path
+
+import mock
 from django.test import TestCase
+from datetime import datetime
 
 from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
@@ -61,10 +65,12 @@ class TestListToString(TestCase):
     """
 
     def test_list_to_string(self):
-        self.assertEqual('1, 2, 3', utils.list_to_string([1, 2, 3], endsep=""))
+        self.assertEqual("1, 2, 3", utils.list_to_string([1, 2, 3], endsep=""))
         self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True))
-        self.assertEqual('1, 2 and 3', utils.list_to_string([1, 2, 3]))
-        self.assertEqual('"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True))
+        self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3]))
+        self.assertEqual(
+            '"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
+        )
 
 
 class TestMLen(TestCase):
@@ -74,22 +80,22 @@ class TestMLen(TestCase):
     """
 
     def test_non_mxp_string(self):
-        self.assertEqual(utils.m_len('Test_string'), 11)
+        self.assertEqual(utils.m_len("Test_string"), 11)
 
     def test_mxp_string(self):
-        self.assertEqual(utils.m_len('|lclook|ltat|le'), 2)
+        self.assertEqual(utils.m_len("|lclook|ltat|le"), 2)
 
     def test_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString('|lcl|gook|ltat|le|n')), 2)
+        self.assertEqual(utils.m_len(ANSIString("|lcl|gook|ltat|le|n")), 2)
 
     def test_non_mxp_ansi_string(self):
-        self.assertEqual(utils.m_len(ANSIString('|gHello|n')), 5)
+        self.assertEqual(utils.m_len(ANSIString("|gHello|n")), 5)
 
     def test_list(self):
         self.assertEqual(utils.m_len([None, None]), 2)
 
     def test_dict(self):
-        self.assertEqual(utils.m_len({'hello': True, 'Goodbye': False}), 2)
+        self.assertEqual(utils.m_len({"hello": True, "Goodbye": False}), 2)
 
 
 class TestTimeformat(TestCase):
@@ -137,12 +143,9 @@ class TestTimeformat(TestCase):
         self.assertEqual(utils.time_format(3600, 2), "1 hour, 0 minutes")
         self.assertEqual(utils.time_format(3725, 2), "1 hour, 2 minutes")
         self.assertEqual(utils.time_format(86350, 2), "23 hours, 59 minutes")
-        self.assertEqual(utils.time_format(86800, 2),
-                         "1 day, 0 hours, 6 minutes")
-        self.assertEqual(utils.time_format(130800, 2),
-                         "1 day, 12 hours, 20 minutes")
-        self.assertEqual(utils.time_format(530800, 2),
-                         "6 days, 3 hours, 26 minutes")
+        self.assertEqual(utils.time_format(86800, 2), "1 day, 0 hours, 6 minutes")
+        self.assertEqual(utils.time_format(130800, 2), "1 day, 12 hours, 20 minutes")
+        self.assertEqual(utils.time_format(530800, 2), "6 days, 3 hours, 26 minutes")
 
     def test_style_3(self):
         """Test the style 3 of time_format."""
@@ -151,18 +154,12 @@ class TestTimeformat(TestCase):
         self.assertEqual(utils.time_format(92, 3), "1 minute 32 seconds")
         self.assertEqual(utils.time_format(300, 3), "5 minutes 0 seconds")
         self.assertEqual(utils.time_format(660, 3), "11 minutes 0 seconds")
-        self.assertEqual(utils.time_format(3600, 3),
-                         "1 hour, 0 minutes")
-        self.assertEqual(utils.time_format(3725, 3),
-                         "1 hour, 2 minutes 5 seconds")
-        self.assertEqual(utils.time_format(86350, 3),
-                         "23 hours, 59 minutes 10 seconds")
-        self.assertEqual(utils.time_format(86800, 3),
-                         "1 day, 0 hours, 6 minutes 40 seconds")
-        self.assertEqual(utils.time_format(130800, 3),
-                         "1 day, 12 hours, 20 minutes 0 seconds")
-        self.assertEqual(utils.time_format(530800, 3),
-                         "6 days, 3 hours, 26 minutes 40 seconds")
+        self.assertEqual(utils.time_format(3600, 3), "1 hour, 0 minutes")
+        self.assertEqual(utils.time_format(3725, 3), "1 hour, 2 minutes 5 seconds")
+        self.assertEqual(utils.time_format(86350, 3), "23 hours, 59 minutes 10 seconds")
+        self.assertEqual(utils.time_format(86800, 3), "1 day, 0 hours, 6 minutes 40 seconds")
+        self.assertEqual(utils.time_format(130800, 3), "1 day, 12 hours, 20 minutes 0 seconds")
+        self.assertEqual(utils.time_format(530800, 3), "6 days, 3 hours, 26 minutes 40 seconds")
 
     def test_style_4(self):
         """Test the style 4 of time_format."""
@@ -186,3 +183,60 @@ class TestTimeformat(TestCase):
         """Test that unknown formats raise exceptions."""
         self.assertRaises(ValueError, utils.time_format, 0, 5)
         self.assertRaises(ValueError, utils.time_format, 0, "u")
+
+
+@mock.patch(
+    "evennia.utils.utils.timezone.now",
+    new=mock.MagicMock(return_value=datetime(2019, 8, 28, 21, 56)),
+)
+class TestDateTimeFormat(TestCase):
+    def test_datetimes(self):
+        dtobj = datetime(2017, 7, 26, 22, 54)
+        self.assertEqual(utils.datetime_format(dtobj), "Jul 26, 2017")
+        dtobj = datetime(2019, 7, 26, 22, 54)
+        self.assertEqual(utils.datetime_format(dtobj), "Jul 26")
+        dtobj = datetime(2019, 8, 28, 19, 54)
+        self.assertEqual(utils.datetime_format(dtobj), "19:54")
+        dtobj = datetime(2019, 8, 28, 21, 32)
+        self.assertEqual(utils.datetime_format(dtobj), "21:32:00")
+
+
+class TestImportFunctions(TestCase):
+    def _t_dir_file(self, filename):
+        testdir = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(testdir, filename)
+
+    def test_mod_import(self):
+        loaded_mod = utils.mod_import("evennia.utils.ansi")
+        self.assertIsNotNone(loaded_mod)
+
+    def test_mod_import_invalid(self):
+        loaded_mod = utils.mod_import("evennia.utils.invalid_module")
+        self.assertIsNone(loaded_mod)
+
+    def test_mod_import_from_path(self):
+        test_path = self._t_dir_file("test_eveditor.py")
+        loaded_mod = utils.mod_import_from_path(test_path)
+        self.assertIsNotNone(loaded_mod)
+
+    def test_mod_import_from_path_invalid(self):
+        test_path = self._t_dir_file("invalid_filename.py")
+        loaded_mod = utils.mod_import_from_path(test_path)
+        self.assertIsNone(loaded_mod)
+
+
+class LatinifyTest(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.example_str = "It naïvely says, “plugh.”"
+        self.expected_output = 'It naively says, "plugh."'
+
+    def test_plain_string(self):
+        result = utils.latinify(self.example_str)
+        self.assertEqual(result, self.expected_output)
+
+    def test_byte_string(self):
+        byte_str = utils.to_bytes(self.example_str)
+        result = utils.latinify(byte_str)
+        self.assertEqual(result, self.expected_output)

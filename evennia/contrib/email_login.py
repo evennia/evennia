@@ -39,11 +39,18 @@ from evennia.commands.cmdset import CmdSet
 from evennia.utils import logger, utils, ansi
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.cmdhandler import CMD_LOGINSTART
-from evennia.commands.default import unloggedin as default_unloggedin  # Used in CmdUnconnectedCreate
+from evennia.commands.default import (
+    unloggedin as default_unloggedin,
+)  # Used in CmdUnconnectedCreate
 
 # limit symbol import for API
-__all__ = ("CmdUnconnectedConnect", "CmdUnconnectedCreate",
-           "CmdUnconnectedQuit", "CmdUnconnectedLook", "CmdUnconnectedHelp")
+__all__ = (
+    "CmdUnconnectedConnect",
+    "CmdUnconnectedCreate",
+    "CmdUnconnectedQuit",
+    "CmdUnconnectedLook",
+    "CmdUnconnectedHelp",
+)
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
@@ -54,8 +61,10 @@ except Exception:
     # malformed connection screen or no screen given
     pass
 if not CONNECTION_SCREEN:
-    CONNECTION_SCREEN = "\nEvennia: Error in CONNECTION_SCREEN MODULE" \
-                        " (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
+    CONNECTION_SCREEN = (
+        "\nEvennia: Error in CONNECTION_SCREEN MODULE"
+        " (randomly picked connection screen variable is not a string). \nEnter 'help' for aid."
+    )
 
 
 class CmdUnconnectedConnect(MuxCommand):
@@ -67,6 +76,7 @@ class CmdUnconnectedConnect(MuxCommand):
 
     Use the create command to first create an account before logging in.
     """
+
     key = "connect"
     aliases = ["conn", "con", "co"]
     locks = "cmd:all()"  # not really needed
@@ -105,8 +115,10 @@ class CmdUnconnectedConnect(MuxCommand):
 
         # Check IP and/or name bans
         bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0] == account.name for tup in bans) or
-                     any(tup[2].match(session.address[0]) for tup in bans if tup[2])):
+        if bans and (
+            any(tup[0] == account.name for tup in bans)
+            or any(tup[2].match(session.address[0]) for tup in bans if tup[2])
+        ):
             # this is a banned IP or name!
             string = "|rYou have been banned and cannot continue from here."
             string += "\nIf you feel this ban is in error, please email an admin.|x"
@@ -128,6 +140,7 @@ class CmdUnconnectedCreate(MuxCommand):
     This creates a new account account.
 
     """
+
     key = "create"
     aliases = ["cre", "cr"]
     locks = "cmd:all()"
@@ -152,7 +165,7 @@ class CmdUnconnectedCreate(MuxCommand):
         else:
             accountname, email, password = self.arglist
 
-        accountname = accountname.replace('"', '')  # remove "
+        accountname = accountname.replace('"', "")  # remove "
         accountname = accountname.replace("'", "")
         self.accountinfo = (accountname, email, password)
 
@@ -163,7 +176,7 @@ class CmdUnconnectedCreate(MuxCommand):
         try:
             accountname, email, password = self.accountinfo
         except ValueError:
-            string = "\n\r Usage (without <>): create \"<accountname>\" <email> <password>"
+            string = '\n\r Usage (without <>): create "<accountname>" <email> <password>'
             session.msg(string)
             return
         if not email or not password:
@@ -192,24 +205,32 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg("Sorry, there is already an account with that email address.")
             return
         # Reserve accountnames found in GUEST_LIST
-        if settings.GUEST_LIST and accountname.lower() in (guest.lower() for guest in settings.GUEST_LIST):
+        if settings.GUEST_LIST and accountname.lower() in (
+            guest.lower() for guest in settings.GUEST_LIST
+        ):
             string = "\n\r That name is reserved. Please choose another Accountname."
             session.msg(string)
             return
         if not re.findall(r"^[\w. @+\-']+$", password) or not (3 < len(password)):
-            string = "\n\r Password should be longer than 3 characters. Letters, spaces, digits and @/./+/-/_/' only." \
-                     "\nFor best security, make it longer than 8 characters. You can also use a phrase of" \
-                     "\nmany words if you enclose the password in double quotes."
+            string = (
+                "\n\r Password should be longer than 3 characters. Letters, spaces, digits and @/./+/-/_/' only."
+                "\nFor best security, make it longer than 8 characters. You can also use a phrase of"
+                "\nmany words if you enclose the password in double quotes."
+            )
             session.msg(string)
             return
 
         # Check IP and/or name bans
         bans = ServerConfig.objects.conf("server_bans")
-        if bans and (any(tup[0] == accountname.lower() for tup in bans) or
-                     any(tup[2].match(session.address) for tup in bans if tup[2])):
+        if bans and (
+            any(tup[0] == accountname.lower() for tup in bans)
+            or any(tup[2].match(session.address) for tup in bans if tup[2])
+        ):
             # this is a banned IP or name!
-            string = "|rYou have been banned and cannot continue from here." \
-                     "\nIf you feel this ban is in error, please email an admin.|x"
+            string = (
+                "|rYou have been banned and cannot continue from here."
+                "\nIf you feel this ban is in error, please email an admin.|x"
+            )
             session.msg(string)
             session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
             return
@@ -218,15 +239,21 @@ class CmdUnconnectedCreate(MuxCommand):
         try:
             permissions = settings.PERMISSION_ACCOUNT_DEFAULT
             typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_account = default_unloggedin._create_account(session, accountname, password, permissions, email=email)
+            new_account = default_unloggedin._create_account(
+                session, accountname, password, permissions, email=email
+            )
             if new_account:
                 if MULTISESSION_MODE < 2:
                     default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-                    default_unloggedin._create_character(session, new_account, typeclass, default_home, permissions)
+                    default_unloggedin._create_character(
+                        session, new_account, typeclass, default_home, permissions
+                    )
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
                 if " " in accountname:
-                    string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
+                    string += (
+                        "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
+                    )
                 else:
                     string += "\n\nYou can now log with the command 'connect %s <your password>'."
                 session.msg(string % (accountname, email))
@@ -246,6 +273,7 @@ class CmdUnconnectedQuit(MuxCommand):
     here for unconnected accounts for the sake of simplicity. The logged in
     version is a bit more complicated.
     """
+
     key = "quit"
     aliases = ["q", "qu"]
     locks = "cmd:all()"
@@ -263,6 +291,7 @@ class CmdUnconnectedLook(MuxCommand):
     This is called by the server and kicks everything in gear.
     All it does is display the connect screen.
     """
+
     key = CMD_LOGINSTART
     aliases = ["look", "l"]
     locks = "cmd:all()"
@@ -277,6 +306,7 @@ class CmdUnconnectedHelp(MuxCommand):
     This is an unconnected version of the help command,
     for simplicity. It shows a pane of info.
     """
+
     key = "help"
     aliases = ["h", "?"]
     locks = "cmd:all()"
@@ -284,8 +314,7 @@ class CmdUnconnectedHelp(MuxCommand):
     def func(self):
         """Shows help"""
 
-        string = \
-            """
+        string = """
 You are not yet logged into the game. Commands available at this point:
   |wcreate, connect, look, help, quit|n
 
@@ -316,10 +345,12 @@ You can use the |wlook|n command if you want to see the connect screen again.
 
 # command set for the mux-like login
 
+
 class UnloggedinCmdSet(CmdSet):
     """
     Sets up the unlogged cmdset.
     """
+
     key = "Unloggedin"
     priority = 0
 
