@@ -2122,7 +2122,7 @@ def split_arguments(s, named = False):
     Args:
         s (str): The string to convert.
         named (bool, optional): True if "s" represents named arguments (**kwargs), False if not.
-    
+
     Returns:
         arguments (list): If "named" is False.
         arguments (dict): If "named" is True.
