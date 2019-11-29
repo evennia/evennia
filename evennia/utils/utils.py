@@ -2112,3 +2112,72 @@ def interactive(func):
             return ret
 
     return decorator
+
+
+def split_arguments(s, named = False):
+    """
+    Method to split an argument list from string format to an actual list of values.
+    Supports regular arguments and named arguments.
+
+    Args:
+        s (str): The string to convert.
+        named (bool, optional): True if "s" represents named arguments (**kwargs), False if not.
+    
+    Returns:
+        arguments (list): If "named" is False.
+        arguments (dict): If "named" is True.
+
+    """
+    args = {} if named else []
+    inside = False
+    char = None
+    escape = False
+    tmp = ""
+    key = None
+
+    for c in s:
+        if named and key is None:
+            if c == "=":
+                key = tmp
+                tmp = ""
+            else:
+                tmp += c
+        else:
+            if c == "," and not inside:
+                if named:
+                    args[key] = tmp.strip()
+                    key = None
+                else:
+                    args.append(tmp.strip())
+                tmp = ""
+            else:
+                if char is None and (c == "\"" or c == "'"):
+                    char = c
+                    inside = True
+                    continue
+                elif char is not None:
+                    if c == "\\":
+                        escape = True
+                    elif c == char:
+                        if escape:
+                            escape = False
+                        else:
+                            inside = False
+                            char = None
+                            continue
+                    elif escape:
+                        escape = False
+                        tmp += "\\"
+
+                if not escape:
+                    tmp += c
+
+    if inside:
+        raise Exception("Invalid syntax.")
+    else:
+        if named:
+            args[key] = tmp.strip()
+        else:
+            args.append(tmp.strip())
+
+    return args
