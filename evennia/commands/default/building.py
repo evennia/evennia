@@ -2250,7 +2250,6 @@ class CmdLock(ObjManipCommand):
                 caller.msg("You are not allowed to do that.")
                 return
             ok = False
-            lockdef = re.sub(r"\'|\"", "", lockdef)
             try:
                 ok = obj.locks.add(lockdef)
             except LockException as e:
