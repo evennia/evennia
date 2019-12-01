@@ -2114,7 +2114,7 @@ def interactive(func):
     return decorator
 
 
-def split_arguments(s, named = False):
+def split_arguments(s, named=False):
     """
     Method to split an argument list from string format to an actual list of values.
     Supports regular arguments and named arguments.
@@ -2134,22 +2134,30 @@ def split_arguments(s, named = False):
     escape = False
     tmp = ""
     key = None
+    skip = False
 
     for c in s:
         if named and key is None:
-            if c == "=":
+            if c == ",":
+                tmp = ""
+            elif not skip and c == "=":
                 key = tmp
                 tmp = ""
+            elif c == "\"" or c == "'":
+                skip = True
             else:
                 tmp += c
         else:
-            if c == "," and not inside:
+            if not named and c == "=" and not inside:
+                skip = True
+            elif c == "," and not inside:
                 if named:
                     args[key] = tmp.strip()
                     key = None
-                else:
+                elif not skip:
                     args.append(tmp.strip())
                 tmp = ""
+                skip = False
             else:
                 if char is None and (c == "\"" or c == "'"):
                     char = c
@@ -2176,8 +2184,9 @@ def split_arguments(s, named = False):
         raise Exception("Invalid syntax.")
     else:
         if named:
-            args[key] = tmp.strip()
-        else:
+            if key is not None:
+                args[key] = tmp.strip()
+        elif not skip:
             args.append(tmp.strip())
 
     return args
