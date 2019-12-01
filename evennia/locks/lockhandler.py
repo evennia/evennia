@@ -235,8 +235,8 @@ class LockHandler(object):
                 if not callable(func):
                     elist.append(_("Lock: lock-function '%s' is not available.") % funcstring)
                     continue
-                args = split_arguments(rest, False)
-                kwargs = split_arguments(rest, True)
+                args = utils.split_arguments(rest, False)
+                kwargs = utils.split_arguments(rest, True)
                 lock_funcs.append((func, args, kwargs))
                 evalstring = evalstring.replace(funcstring, "%s")
             if len(lock_funcs) < nfuncs:
