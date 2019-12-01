@@ -2128,65 +2128,78 @@ def split_arguments(s, named=False):
         arguments (dict): If "named" is True.
 
     """
+    _ESCAPE_SIGN = "\\"
     args = {} if named else []
-    inside = False
-    char = None
+    inside = (False, None)
     escape = False
     tmp = ""
     key = None
     skip = False
 
     for c in s:
-        if named and key is None:
-            if c == ",":
-                tmp = ""
-            elif not skip and c == "=":
-                key = tmp
-                tmp = ""
-            elif c == "\"" or c == "'":
-                skip = True
+        if c == _ESCAPE_SIGN:
+            # Escape sign used.
+            if escape:
+                # Already escaping: print escape sign itself.
+                tmp += _ESCAPE_SIGN
+                escape = False
+            else:
+                # Enter escape mode.
+                escape = True
+        elif escape:
+            # Escape mode: print whatever comes after the symbol.
+            escape = False
+            tmp += c
+        elif inside[0] is True:
+            # Inside single quotes or double quotes
+            # Wait for the end symbol, allow everything else through, allow escape sign for typing quotes in strings
+            if c == inside[1]:
+                # Leaving single/double quoted area
+                inside = (False, None)
             else:
                 tmp += c
-        else:
-            if not named and c == "=" and not inside:
+        elif c == "\"" or c == "'":
+            # Entering single/double quoted area
+            inside = (True, c)
+            continue
+        elif c == "=":
+            if named:
+                if key is None:
+                    # Named parameters mode and equals sign encountered. Record key and continue with value.
+                    key = tmp.strip()
+                    tmp = ""
+                else:
+                    # Invalid location of equals sign in the argument string. Should be placed inside a quoted area.
+                    raise Exception("Invalid syntax.")
+            else:
+                # Not named parameters mode: skip this parameter, because it is a named parameter.
                 skip = True
-            elif c == "," and not inside:
-                if named:
+        elif c == ",":
+            # Comma encountered outside of quoted area.
+            if not skip:
+                # Record value based on whether named parameters mode is set or not.
+                if named and key is not None:
                     args[key] = tmp.strip()
                     key = None
-                elif not skip:
+                elif not named:
                     args.append(tmp.strip())
-                tmp = ""
-                skip = False
-            else:
-                if char is None and (c == "\"" or c == "'"):
-                    char = c
-                    inside = True
-                    continue
-                elif char is not None:
-                    if c == "\\":
-                        escape = True
-                    elif c == char:
-                        if escape:
-                            escape = False
-                        else:
-                            inside = False
-                            char = None
-                            continue
-                    elif escape:
-                        escape = False
-                        tmp += "\\"
 
-                if not escape:
-                    tmp += c
+            # Reset
+            tmp = ""
+            skip = False
+        else:
+            # Any other character: add to buffer.
+            tmp += c
 
-    if inside:
+    if inside[0] is True:
+        # Invalid syntax because we are inside a quoted area.
         raise Exception("Invalid syntax.")
-    else:
-        if named:
-            if key is not None:
-                args[key] = tmp.strip()
-        elif not skip:
+    elif not skip:
+        # Record value based on whether named parameters mode is set or not.
+        if named and key is not None:
+            args[key] = tmp.strip()
+            key = None
+        elif not named:
             args.append(tmp.strip())
 
     return args
