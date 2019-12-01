@@ -3,6 +3,7 @@ import io
 import sys
 import shutil
 import unittest
+import pytest
 from contextlib import contextmanager
 
 from sphinx.application import Sphinx
@@ -47,7 +48,9 @@ class SphinxIntegrationTests(unittest.TestCase):
                 buildername='html',
                 verbosity=1,
             )
-            self.app.build(force_all=True)
+            with pytest.warns(None) as record:
+                self.app.build(force_all=True)
+            self.warnings = record
 
     def tearDown(self):
         if self.build_path is not None:
@@ -220,3 +223,15 @@ class CustomExtensionTests(SphinxIntegrationTests):
              '</ul>\n</li>\n</ul>'),
             output
             )
+
+class NodeWarningsTest(SphinxIntegrationTests):
+
+    build_path = 'tests/sphinx_node_warnings'
+
+    def test_document_node(self):
+        node_type = 'document'
+        self.read_file('index.html')
+        self.assertFalse(
+            any([parser.CommonMarkParser.skipped_node_message(node_type) in str(warn.message) for warn in self.warnings]),
+            msg='Found warning for node: {}'.format(node_type)
+        ) 

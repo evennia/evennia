@@ -52,6 +52,10 @@ class CommonMarkParser(parsers.Parser):
     def default_visit(self, mdnode):
         pass
 
+    @staticmethod
+    def skipped_node_message(node_type):
+        return "Container node skipped: type={0}".format(node_type)
+
     def default_depart(self, mdnode):
         """Default node depart handler
 
@@ -62,7 +66,7 @@ class CommonMarkParser(parsers.Parser):
         if mdnode.is_container():
             fn_name = 'visit_{0}'.format(mdnode.t)
             if not hasattr(self, fn_name):
-                warn("Container node skipped: type={0}".format(mdnode.t))
+                warn(self.skipped_node_message(mdnode.t))
             else:
                 self.current_node = self.current_node.parent
 
