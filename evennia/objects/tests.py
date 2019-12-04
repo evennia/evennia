@@ -32,6 +32,14 @@ class DefaultObjectTest(EvenniaTest):
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
         self.assertEqual(obj.db_home, self.room1)
+        
+    def test_character_create_noaccount(self):
+        obj, errors = DefaultCharacter.create(
+            "oscar", None, home=self.room1.dbref
+        )
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertEqual(obj.db_home, self.room1)
 
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
