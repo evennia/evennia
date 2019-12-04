@@ -101,3 +101,27 @@ class TestObjectManager(EvenniaTest):
         self.assertEqual(list(query), [self.obj1])
         query = ObjectDB.objects.get_objs_with_attr("NotFound", candidates=[self.char1, self.obj1])
         self.assertFalse(query)
+
+    def test_copy_object(self):
+        "Test that all attributes and tags properly copy across objects"
+        
+        # Add some tags
+        self.obj1.tags.add('plugh', category='adventure')
+        self.obj1.tags.add('xyzzy')
+        
+        # Add some attributes
+        self.obj1.attributes.add('phrase', 'plugh', category='adventure')
+        self.obj1.attributes.add('phrase', 'xyzzy')
+        
+        # Create object copy
+        obj2 = self.obj1.copy()
+
+        # Make sure each of the tags were replicated
+        self.assertTrue('plugh' in obj2.tags.all())
+        self.assertTrue('plugh' in obj2.tags.get(category='adventure'))
+        self.assertTrue('xyzzy' in obj2.tags.all())
+        
+        # Make sure each of the attributes were replicated
+        self.assertEqual(obj2.attributes.get(key='phrase'), 'xyzzy')
+        self.assertEqual(self.obj1.attributes.get(key='phrase', category='adventure'), 'plugh')
+        self.assertEqual(obj2.attributes.get(key='phrase', category='adventure'), 'plugh')
