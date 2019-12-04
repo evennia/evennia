@@ -251,6 +251,12 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 this is either `None` (a normal Tag), `alias` or
                 `permission`. This always apply to all queried tags.
                 
+        Kwargs:
+            match (str): ALL or ANY, determines whether the target object must match
+                ALL of the provided tags/categories or ANY single one. ANY will perform
+                a weighted sort, so objects with more tag matches will outrank those
+                with fewer tag matches.
+
         Returns:
             objects (list): Objects with matching tag.
 
@@ -261,10 +267,12 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         if not (key or category):
             return []
-            
+
         global _Tag
         if not _Tag:
             from evennia.typeclasses.models import Tag as _Tag
+            
+        match = kwargs.get('match', 'all').lower().strip()
 
         keys = make_iter(key) if key else []
         categories = make_iter(category) if category else []
@@ -275,7 +283,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         query = (
             self.filter(db_tags__db_tagtype__iexact=tagtype, db_tags__db_model__iexact=dbmodel)
             .distinct()
-            #.order_by("id")
+            .order_by("id")
         )
 
         if n_keys > 0:
@@ -290,30 +298,29 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                     "get_by_tag needs a single category or a list of categories "
                     "the same length as the list of tags."
                 )
-            
             clauses = Q()
             for ikey, key in enumerate(keys):
                 # Keep each key and category together, grouped by AND
-                clause = Q(db_key__iexact=key, db_category__iexact=categories[ikey])
-                clauses |= clause
-                    
-            query = query.filter(db_tags__in=_Tag.objects.filter(clauses)).annotate(num_tags=Count('db_tags', distinct=True)).filter(num_tags__gte=len(keys))
-            
-            print(keys, query.query)
-                
+                clauses |= Q(db_key__iexact=key, db_category__iexact=categories[ikey])
+
         else:
             # only one or more categories given
             clauses = Q()
             uniq_categories = sorted(set(categories))
             for category in uniq_categories:
-                clause = Q(db_category__iexact=category,)
-                
-                # Join all discrete clauses with an OR
-                clauses |= clause
-           
-            query = query.filter(db_tags__in=_Tag.objects.filter(clauses)).annotate(num_tags=Count('db_tags__db_category', distinct=True)).filter(num_tags__gte=len(uniq_categories))
+                clauses |= Q(db_category__iexact=category,)
 
-        return query.order_by('-num_tags')
+        tags = _Tag.objects.filter(clauses)
+        query = query.filter(db_tags__in=tags).annotate(matches=Count('db_tags__pk', filter=Q(db_tags__in=tags), distinct=True))
+        
+        # Default ALL: Match all of the tags and optionally more
+        if match == 'all':
+            query = query.filter(matches__gte=tags.count())
+        # ANY: Match any single tag, ordered by weight
+        elif match == 'any':
+            query = query.order_by('-matches')
+
+        return query
 
     def get_by_permission(self, key=None, category=None):
         """
