@@ -2076,9 +2076,10 @@ class DefaultCharacter(DefaultObject):
 
         try:
             # Check to make sure account does not have too many chars
-            if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                errors.append("There are too many characters associated with this account.")
-                return obj, errors
+            if account:
+                if len(account.characters) >= settings.MAX_NR_CHARACTERS:
+                    errors.append("There are too many characters associated with this account.")
+                    return obj, errors
 
             # Create the Character
             obj = create.create_object(**kwargs)
