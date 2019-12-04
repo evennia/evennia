@@ -216,13 +216,16 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     @property
     def characters(self):
         # Get playable characters list
-        objs = self.db._playable_characters
-        if not objs: objs = ()
+        objs = self.db._playable_characters or []
 
         # Rebuild the list if legacy code left null values after deletion
-        if None in objs:
-            objs = [x for x in self.db._playable_characters if x]
-            self.db._playable_characters = objs
+        try:
+            if None in objs:
+                objs = [x for x in self.db._playable_characters if x]
+                self.db._playable_characters = objs
+        except Exception as e:
+            logger.log_trace(e)
+            logger.log_err(e)
 
         return objs
 
