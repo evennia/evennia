@@ -217,6 +217,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     def characters(self):
         # Get playable characters list
         objs = self.db._playable_characters
+        if not objs: objs = ()
 
         # Rebuild the list if legacy code left null values after deletion
         if None in objs:
