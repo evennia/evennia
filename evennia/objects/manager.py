@@ -575,8 +575,8 @@ class ObjectDBManager(TypedObjectManager):
             return None
 
         # copy over all attributes from old to new.
-        for attr in original_object.attributes.all():
-            new_object.attributes.add(attr.key, attr.value)
+        attrs = ((a.key, a.value, a.category, a.lock_storage) for a in original_object.attributes.all())
+        new_object.attributes.batch_add(*attrs)
 
         # copy over all cmdsets, if any
         for icmdset, cmdset in enumerate(original_object.cmdset.all()):
@@ -590,8 +590,8 @@ class ObjectDBManager(TypedObjectManager):
             ScriptDB.objects.copy_script(script, new_obj=new_object)
 
         # copy over all tags, if any
-        for tag in original_object.tags.get(return_tagobj=True, return_list=True):
-            new_object.tags.add(tag=tag.db_key, category=tag.db_category, data=tag.db_data)
+        tags = ((t.db_key, t.db_category, t.db_data) for t in original_object.tags.all(return_objs=True))
+        new_object.tags.batch_add(*tags)
 
         return new_object
 
