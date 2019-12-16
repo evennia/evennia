@@ -121,7 +121,9 @@ class RedButton(DefaultObject):
         self.db.lamp_works = False
         desc = self.db.desc_lamp_broken
         if not desc:
-            self.db.desc += "\nThe big red button has stopped blinking for the time being."
+            self.db.desc += (
+                "\nThe big red button has stopped blinking for the time being."
+            )
         else:
             self.db.desc = desc
 

@@ -234,7 +234,9 @@ class CmdGiveUp(CmdEvscapeRoom):
             self.room.log(f"QUIT: {self.caller.key} used the quit command")
 
             # manually call move hooks
-            self.room.msg_room(self.caller, f"|r{self.caller.key} gave up and was whisked away!|n")
+            self.room.msg_room(
+                self.caller, f"|r{self.caller.key} gave up and was whisked away!|n"
+            )
             self.room.at_object_leave(self.caller, self.caller.home)
             self.caller.move_to(self.caller.home, quiet=True, move_hooks=False)
 
@@ -313,7 +315,9 @@ class CmdWho(CmdEvscapeRoom, default_cmds.CmdWho):
                 for obj in self.room.get_all_characters()
                 if obj != caller
             ]
-            chars = "\n".join([f"{caller.key} - {caller.db.desc.strip()} (you)"] + chars)
+            chars = "\n".join(
+                [f"{caller.key} - {caller.db.desc.strip()} (you)"] + chars
+            )
             txt = f"|cPlayers in this room (room-name '{self.room.name}')|n:\n  {chars}"
         caller.msg(txt)
 
@@ -389,7 +393,9 @@ class CmdEmote(Command):
         emote = self.args.strip()
 
         if not emote:
-            self.caller.msg('Usage: emote /me points to /door, saying "look over there!"')
+            self.caller.msg(
+                'Usage: emote /me points to /door, saying "look over there!"'
+            )
             return
 
         speech_clr = "|c"
@@ -429,7 +435,9 @@ class CmdEmote(Command):
                 if target == self.caller:
                     txt = [f"{self_clr}{self.caller.get_display_name(target)}|n "] + txt
                 else:
-                    txt = [f"{player_clr}{self.caller.get_display_name(target)}|n "] + txt
+                    txt = [
+                        f"{player_clr}{self.caller.get_display_name(target)}|n "
+                    ] + txt
             txt = "".join(txt).strip() + ("." if add_period else "")
             if not logged and hasattr(self.caller.location, "log"):
                 self.caller.location.log(f"emote: {txt}")
@@ -531,7 +539,10 @@ class CmdRerouter(default_cmds.MuxCommand):
         from evennia.commands import cmdhandler
 
         cmdhandler.cmdhandler(
-            self.session, self.raw_string, cmdobj=CmdFocusInteraction(), cmdobj_key=self.cmdname
+            self.session,
+            self.raw_string,
+            cmdobj=CmdFocusInteraction(),
+            cmdobj_key=self.cmdname,
         )
 
 
@@ -603,7 +614,9 @@ class CmdStand(CmdEvscapeRoom):
             obj, position = pos
             self.caller.attributes.remove("position", category=self.room.tagcategory)
             del obj.db.positions[self.caller]
-            self.room.msg_room(self.caller, "~You ~are back standing on the floor again.")
+            self.room.msg_room(
+                self.caller, "~You ~are back standing on the floor again."
+            )
         else:
             self.caller.msg("You are already standing.")
 
@@ -679,7 +692,9 @@ class CmdCreateObj(CmdEvscapeRoom):
         else:
             name = args.strip()
 
-        obj = create_evscaperoom_object(typeclass=typeclass, key=name, location=self.room)
+        obj = create_evscaperoom_object(
+            typeclass=typeclass, key=name, location=self.room
+        )
         caller.msg(f"Created new object {name} ({obj.typeclass_path}).")
 
 

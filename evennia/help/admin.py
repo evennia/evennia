@@ -20,7 +20,9 @@ class HelpEntryForm(forms.ModelForm):
         fields = "__all__"
 
     db_help_category = forms.CharField(
-        label="Help category", initial="General", help_text="organizes help entries in lists"
+        label="Help category",
+        initial="General",
+        help_text="organizes help entries in lists",
     )
     db_lock_storage = forms.CharField(
         label="Locks",
@@ -46,7 +48,11 @@ class HelpEntryAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": (("db_key", "db_help_category"), "db_entrytext", "db_lock_storage"),
+                "fields": (
+                    ("db_key", "db_help_category"),
+                    "db_entrytext",
+                    "db_lock_storage",
+                ),
                 "description": "Sets a Help entry. Set lock to <i>view:all()</I> unless you want to restrict it.",
             },
         ),

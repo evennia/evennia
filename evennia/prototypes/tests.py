@@ -55,7 +55,9 @@ class TestSpawner(EvenniaTest):
     def test_spawn_from_prot(self):
         obj1 = spawner.spawn(self.prot1)
         # check spawned objects have the right tag
-        self.assertEqual(list(protlib.search_objects_with_prototype("testprototype")), obj1)
+        self.assertEqual(
+            list(protlib.search_objects_with_prototype("testprototype")), obj1
+        )
         self.assertEqual(
             [
                 o.key
@@ -71,7 +73,9 @@ class TestSpawner(EvenniaTest):
     def test_spawn_from_str(self):
         protlib.save_prototype(self.prot1)
         obj1 = spawner.spawn(self.prot1["prototype_key"])
-        self.assertEqual(list(protlib.search_objects_with_prototype("testprototype")), obj1)
+        self.assertEqual(
+            list(protlib.search_objects_with_prototype("testprototype")), obj1
+        )
         self.assertEqual(
             [
                 o.key
@@ -177,7 +181,10 @@ class TestUtils(EvenniaTest):
         self.assertEqual(
             old_prot,
             {
-                "attrs": [("oldtest", "to_keep", None, ""), ("fooattr", "fooattrval", None, "")],
+                "attrs": [
+                    ("oldtest", "to_keep", None, ""),
+                    ("fooattr", "fooattrval", None, ""),
+                ],
                 "home": Something,
                 "key": "Obj",
                 "location": Something,
@@ -200,7 +207,11 @@ class TestUtils(EvenniaTest):
             pdiff,
             {
                 "home": (Something, Something, "KEEP"),
-                "prototype_locks": ("spawn:all();edit:all()", "spawn:all();edit:all()", "KEEP"),
+                "prototype_locks": (
+                    "spawn:all();edit:all()",
+                    "spawn:all();edit:all()",
+                    "KEEP",
+                ),
                 "prototype_key": (Something, Something, "UPDATE"),
                 "location": (Something, Something, "KEEP"),
                 "locks": (
@@ -237,7 +248,11 @@ class TestUtils(EvenniaTest):
                 ),
                 "aliases": {"foo": ("foo", None, "REMOVE")},
                 "tags": {"footag": (("footag", "foocategory", None), None, "REMOVE")},
-                "prototype_desc": ("Built from Obj", "New version of prototype", "UPDATE"),
+                "prototype_desc": (
+                    "Built from Obj",
+                    "New version of prototype",
+                    "UPDATE",
+                ),
                 "permissions": {"Builder": (None, "Builder", "ADD")},
             },
         )
@@ -334,7 +349,9 @@ class TestProtLib(EvenniaTest):
         self.assertEqual(match, [self.prot])
 
 
-@override_settings(PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"], CLIENT_DEFAULT_WIDTH=20)
+@override_settings(
+    PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"], CLIENT_DEFAULT_WIDTH=20
+)
 class TestProtFuncs(EvenniaTest):
     def setUp(self):
         super(TestProtFuncs, self).setUp()
@@ -344,16 +361,27 @@ class TestProtFuncs(EvenniaTest):
             "key": "ExampleObj",
         }
 
-    @mock.patch("evennia.prototypes.protfuncs.base_random", new=mock.MagicMock(return_value=0.5))
-    @mock.patch("evennia.prototypes.protfuncs.base_randint", new=mock.MagicMock(return_value=5))
+    @mock.patch(
+        "evennia.prototypes.protfuncs.base_random", new=mock.MagicMock(return_value=0.5)
+    )
+    @mock.patch(
+        "evennia.prototypes.protfuncs.base_randint", new=mock.MagicMock(return_value=5)
+    )
     def test_protfuncs(self):
         self.assertEqual(protlib.protfunc_parser("$random()"), 0.5)
         self.assertEqual(protlib.protfunc_parser("$randint(1, 10)"), 5)
-        self.assertEqual(protlib.protfunc_parser("$left_justify(  foo  )"), "foo                 ")
-        self.assertEqual(protlib.protfunc_parser("$right_justify( foo  )"), "                 foo")
-        self.assertEqual(protlib.protfunc_parser("$center_justify(foo  )"), "        foo         ")
         self.assertEqual(
-            protlib.protfunc_parser("$full_justify(foo bar moo too)"), "foo   bar   moo  too"
+            protlib.protfunc_parser("$left_justify(  foo  )"), "foo                 "
+        )
+        self.assertEqual(
+            protlib.protfunc_parser("$right_justify( foo  )"), "                 foo"
+        )
+        self.assertEqual(
+            protlib.protfunc_parser("$center_justify(foo  )"), "        foo         "
+        )
+        self.assertEqual(
+            protlib.protfunc_parser("$full_justify(foo bar moo too)"),
+            "foo   bar   moo  too",
         )
         self.assertEqual(
             protlib.protfunc_parser("$right_justify( foo  )", testing=True),
@@ -363,17 +391,23 @@ class TestProtFuncs(EvenniaTest):
         test_prot = {"key1": "value1", "key2": 2}
 
         self.assertEqual(
-            protlib.protfunc_parser("$protkey(key1)", testing=True, prototype=test_prot),
+            protlib.protfunc_parser(
+                "$protkey(key1)", testing=True, prototype=test_prot
+            ),
             (None, "value1"),
         )
         self.assertEqual(
-            protlib.protfunc_parser("$protkey(key2)", testing=True, prototype=test_prot), (None, 2)
+            protlib.protfunc_parser(
+                "$protkey(key2)", testing=True, prototype=test_prot
+            ),
+            (None, 2),
         )
 
         self.assertEqual(protlib.protfunc_parser("$add(1, 2)"), 3)
         self.assertEqual(protlib.protfunc_parser("$add(10, 25)"), 35)
         self.assertEqual(
-            protlib.protfunc_parser("$add('''[1,2,3]''', '''[4,5,6]''')"), [1, 2, 3, 4, 5, 6]
+            protlib.protfunc_parser("$add('''[1,2,3]''', '''[4,5,6]''')"),
+            [1, 2, 3, 4, 5, 6],
         )
         self.assertEqual(protlib.protfunc_parser("$add(foo, bar)"), "foo bar")
 
@@ -419,7 +453,9 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("dbref({})".format(odbref), session=self.session),
+                protlib.protfunc_parser(
+                    "dbref({})".format(odbref), session=self.session
+                ),
                 "dbref({})".format(odbref),
             )
             mocked__obj_search.assert_not_called()
@@ -428,27 +464,34 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("stone(#12345)", session=self.session), "stone(#12345)"
+                protlib.protfunc_parser("stone(#12345)", session=self.session),
+                "stone(#12345)",
             )
             mocked__obj_search.assert_not_called()
 
         with mock.patch(
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser(odbref, session=self.session), odbref)
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("#12345", session=self.session), "#12345")
+            self.assertEqual(
+                protlib.protfunc_parser(odbref, session=self.session), odbref
+            )
             mocked__obj_search.assert_not_called()
 
         with mock.patch(
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("nothing({})".format(odbref), session=self.session),
+                protlib.protfunc_parser("#12345", session=self.session), "#12345"
+            )
+            mocked__obj_search.assert_not_called()
+
+        with mock.patch(
+            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
+        ) as mocked__obj_search:
+            self.assertEqual(
+                protlib.protfunc_parser(
+                    "nothing({})".format(odbref), session=self.session
+                ),
                 "nothing({})".format(odbref),
             )
             mocked__obj_search.assert_not_called()
@@ -456,7 +499,9 @@ class TestProtFuncs(EvenniaTest):
         with mock.patch(
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("(#12345)", session=self.session), "(#12345)")
+            self.assertEqual(
+                protlib.protfunc_parser("(#12345)", session=self.session), "(#12345)"
+            )
             mocked__obj_search.assert_not_called()
 
         with mock.patch(
@@ -471,7 +516,9 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("objlist({})".format(odbref), session=self.session),
+                protlib.protfunc_parser(
+                    "objlist({})".format(odbref), session=self.session
+                ),
                 "objlist({})".format(odbref),
             )
             mocked__obj_search.assert_not_called()
@@ -480,7 +527,8 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("dbref(Char)", session=self.session), "dbref(Char)"
+                protlib.protfunc_parser("dbref(Char)", session=self.session),
+                "dbref(Char)",
             )
             mocked__obj_search.assert_not_called()
 
@@ -490,7 +538,9 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("$objlist({})".format(odbref), session=self.session),
+                protlib.protfunc_parser(
+                    "$objlist({})".format(odbref), session=self.session
+                ),
                 [odbref],
             )
             mocked__obj_search.assert_called_once()
@@ -500,7 +550,10 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("$obj({})".format(odbref), session=self.session), odbref
+                protlib.protfunc_parser(
+                    "$obj({})".format(odbref), session=self.session
+                ),
+                odbref,
             )
             mocked__obj_search.assert_called_once()
             assert (odbref,) == mocked__obj_search.call_args[0]
@@ -509,7 +562,10 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("$dbref({})".format(odbref), session=self.session), odbref
+                protlib.protfunc_parser(
+                    "$dbref({})".format(odbref), session=self.session
+                ),
+                odbref,
             )
             mocked__obj_search.assert_called_once()
             assert (odbref,) == mocked__obj_search.call_args[0]
@@ -519,7 +575,9 @@ class TestProtFuncs(EvenniaTest):
         with mock.patch(
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), cdbref)
+            self.assertEqual(
+                protlib.protfunc_parser("$obj(Char)", session=self.session), cdbref
+            )
             mocked__obj_search.assert_called_once()
             assert ("Char",) == mocked__obj_search.call_args[0]
 
@@ -529,7 +587,8 @@ class TestProtFuncs(EvenniaTest):
             "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
         ) as mocked__obj_search:
             self.assertEqual(
-                protlib.protfunc_parser("$badfunc(#112345)", session=self.session), "<UNKNOWN>"
+                protlib.protfunc_parser("$badfunc(#112345)", session=self.session),
+                "<UNKNOWN>",
             )
             mocked__obj_search.assert_not_called()
 
@@ -540,15 +599,20 @@ class TestProtFuncs(EvenniaTest):
             mocked__obj_search.assert_not_called()
 
         self.assertEqual(
-            protlib.value_to_obj(protlib.protfunc_parser(cdbref, session=self.session)), self.char1
-        )
-        self.assertEqual(
-            protlib.value_to_obj_or_any(protlib.protfunc_parser(cdbref, session=self.session)),
+            protlib.value_to_obj(protlib.protfunc_parser(cdbref, session=self.session)),
             self.char1,
         )
         self.assertEqual(
             protlib.value_to_obj_or_any(
-                protlib.protfunc_parser("[1,2,3,'{}',5]".format(cdbref), session=self.session)
+                protlib.protfunc_parser(cdbref, session=self.session)
+            ),
+            self.char1,
+        )
+        self.assertEqual(
+            protlib.value_to_obj_or_any(
+                protlib.protfunc_parser(
+                    "[1,2,3,'{}',5]".format(cdbref), session=self.session
+                )
             ),
             [1, 2, 3, self.char1, 5],
         )
@@ -584,11 +648,13 @@ class TestPrototypeStorage(EvenniaTest):
 
         self.assertEqual(prot1["prototype_desc"], "testdesc1")
 
-        self.assertEqual(prot1["prototype_tags"], [("foo1", _PROTOTYPE_TAG_META_CATEGORY)])
         self.assertEqual(
-            protlib.DbPrototype.objects.get_by_tag("foo1", _PROTOTYPE_TAG_META_CATEGORY)[
-                0
-            ].db.prototype,
+            prot1["prototype_tags"], [("foo1", _PROTOTYPE_TAG_META_CATEGORY)]
+        )
+        self.assertEqual(
+            protlib.DbPrototype.objects.get_by_tag(
+                "foo1", _PROTOTYPE_TAG_META_CATEGORY
+            )[0].db.prototype,
             prot1,
         )
 
@@ -605,7 +671,11 @@ class TestPrototypeStorage(EvenniaTest):
 
         # add to existing prototype
         prot1b = protlib.create_prototype(
-            {"prototype_key": "testprototype1", "foo": "bar", "prototype_tags": ["foo2"]}
+            {
+                "prototype_key": "testprototype1",
+                "foo": "bar",
+                "prototype_tags": ["foo2"],
+            }
         )
 
         self.assertEqual(
@@ -626,8 +696,12 @@ class TestPrototypeStorage(EvenniaTest):
 
         # partial match
         with mock.patch("evennia.prototypes.prototypes._MODULE_PROTOTYPES", {}):
-            self.assertEqual(list(protlib.search_prototype("prot")), [prot1b, prot2, prot3])
-            self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
+            self.assertEqual(
+                list(protlib.search_prototype("prot")), [prot1b, prot2, prot3]
+            )
+            self.assertEqual(
+                list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3]
+            )
 
         self.assertTrue(str(str(protlib.list_prototypes(self.char1))))
 
@@ -677,7 +751,8 @@ class TestMenuModule(EvenniaTest):
             " (TestKey|n)",
         )
         self.assertEqual(
-            olc_menus._format_option_value([1, 2, 3, "foo"], required=True), " (1, 2, 3, foo|n)"
+            olc_menus._format_option_value([1, 2, 3, "foo"], required=True),
+            " (1, 2, 3, foo|n)",
         )
 
         self.assertEqual(
@@ -691,8 +766,16 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(
             olc_menus._wizard_options("ThisNode", "PrevNode", "NextNode"),
             [
-                {"goto": "node_PrevNode", "key": ("|wB|Wack", "b"), "desc": "|W(PrevNode)|n"},
-                {"goto": "node_NextNode", "key": ("|wF|Worward", "f"), "desc": "|W(NextNode)|n"},
+                {
+                    "goto": "node_PrevNode",
+                    "key": ("|wB|Wack", "b"),
+                    "desc": "|W(PrevNode)|n",
+                },
+                {
+                    "goto": "node_NextNode",
+                    "key": ("|wF|Worward", "f"),
+                    "desc": "|W(NextNode)|n",
+                },
                 {"goto": "node_index", "key": ("|wI|Wndex", "i")},
                 {
                     "goto": ("node_validate_prototype", {"back": "ThisNode"}),
@@ -701,19 +784,33 @@ class TestMenuModule(EvenniaTest):
             ],
         )
 
-        self.assertEqual(olc_menus._validate_prototype(self.test_prot), (False, Something))
         self.assertEqual(
-            olc_menus._validate_prototype({"prototype_key": "testthing", "key": "mytest"}),
+            olc_menus._validate_prototype(self.test_prot), (False, Something)
+        )
+        self.assertEqual(
+            olc_menus._validate_prototype(
+                {"prototype_key": "testthing", "key": "mytest"}
+            ),
             (True, Something),
         )
 
         choices = ["test1", "test2", "test3", "test4"]
         actions = (("examine", "e", "l"), ("add", "a"), ("foo", "f"))
-        self.assertEqual(olc_menus._default_parse("l4", choices, *actions), ("test4", "examine"))
-        self.assertEqual(olc_menus._default_parse("add 2", choices, *actions), ("test2", "add"))
-        self.assertEqual(olc_menus._default_parse("foo3", choices, *actions), ("test3", "foo"))
-        self.assertEqual(olc_menus._default_parse("f3", choices, *actions), ("test3", "foo"))
-        self.assertEqual(olc_menus._default_parse("f5", choices, *actions), (None, None))
+        self.assertEqual(
+            olc_menus._default_parse("l4", choices, *actions), ("test4", "examine")
+        )
+        self.assertEqual(
+            olc_menus._default_parse("add 2", choices, *actions), ("test2", "add")
+        )
+        self.assertEqual(
+            olc_menus._default_parse("foo3", choices, *actions), ("test3", "foo")
+        )
+        self.assertEqual(
+            olc_menus._default_parse("f3", choices, *actions), ("test3", "foo")
+        )
+        self.assertEqual(
+            olc_menus._default_parse("f5", choices, *actions), (None, None)
+        )
 
     def test_node_helpers(self):
 
@@ -726,7 +823,9 @@ class TestMenuModule(EvenniaTest):
             # prototype_key helpers
             self.assertEqual(olc_menus._check_prototype_key(caller, "test_prot"), None)
             caller.ndb._menutree.olc_new = True
-            self.assertEqual(olc_menus._check_prototype_key(caller, "test_prot"), "node_index")
+            self.assertEqual(
+                olc_menus._check_prototype_key(caller, "test_prot"), "node_index"
+            )
 
             # prototype_parent helpers
             self.assertEqual(olc_menus._all_prototype_parents(caller), ["test_prot"])
@@ -741,7 +840,8 @@ class TestMenuModule(EvenniaTest):
             new=mock.MagicMock(return_value=[_PROTPARENTS["GOBLIN"]]),
         ):
             self.assertEqual(
-                olc_menus._prototype_parent_select(caller, "goblin"), "node_prototype_parent"
+                olc_menus._prototype_parent_select(caller, "goblin"),
+                "node_prototype_parent",
             )
 
         self.assertEqual(
@@ -762,7 +862,10 @@ class TestMenuModule(EvenniaTest):
             self.assertEqual(olc_menus._all_typeclasses(caller), ["bar", "foo"])
 
         self.assertEqual(
-            olc_menus._typeclass_select(caller, "evennia.objects.objects.DefaultObject"), None
+            olc_menus._typeclass_select(
+                caller, "evennia.objects.objects.DefaultObject"
+            ),
+            None,
         )
         # prototype_parent should be popped off here
         self.assertEqual(
@@ -779,12 +882,16 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(olc_menus._caller_attrs(caller), [])
         self.assertEqual(olc_menus._add_attr(caller, "test1=foo1"), Something)
         self.assertEqual(olc_menus._add_attr(caller, "test2;cat1=foo2"), Something)
-        self.assertEqual(olc_menus._add_attr(caller, "test3;cat2;edit:false()=foo3"), Something)
         self.assertEqual(
-            olc_menus._add_attr(caller, "test4;cat3;set:true();edit:false()=foo4"), Something
+            olc_menus._add_attr(caller, "test3;cat2;edit:false()=foo3"), Something
         )
         self.assertEqual(
-            olc_menus._add_attr(caller, "test5;cat4;set:true();edit:false()=123"), Something
+            olc_menus._add_attr(caller, "test4;cat3;set:true();edit:false()=foo4"),
+            Something,
+        )
+        self.assertEqual(
+            olc_menus._add_attr(caller, "test5;cat4;set:true();edit:false()=123"),
+            Something,
         )
         self.assertEqual(olc_menus._add_attr(caller, "test1=foo1_changed"), Something)
         self.assertEqual(
@@ -808,67 +915,93 @@ class TestMenuModule(EvenniaTest):
             olc_menus._get_menu_prototype(caller)["tags"],
             [("foo1", None, ""), ("foo2", "cat1", ""), ("foo3", "cat2", "dat1")],
         )
-        self.assertEqual(olc_menus._add_tag(caller, "foo1", delete=True), "Removed Tag 'foo1'.")
+        self.assertEqual(
+            olc_menus._add_tag(caller, "foo1", delete=True), "Removed Tag 'foo1'."
+        )
         self.assertEqual(
             olc_menus._get_menu_prototype(caller)["tags"],
             [("foo2", "cat1", ""), ("foo3", "cat2", "dat1")],
         )
 
         self.assertEqual(
-            olc_menus._display_tag(olc_menus._get_menu_prototype(caller)["tags"][0]), Something
+            olc_menus._display_tag(olc_menus._get_menu_prototype(caller)["tags"][0]),
+            Something,
         )
         self.assertEqual(olc_menus._caller_tags(caller), ["foo2", "foo3"])
 
         protlib.save_prototype(self.test_prot)
 
         # locks helpers
-        self.assertEqual(olc_menus._lock_add(caller, "foo:false()"), "Added lock 'foo:false()'.")
-        self.assertEqual(olc_menus._lock_add(caller, "foo2:false()"), "Added lock 'foo2:false()'.")
         self.assertEqual(
-            olc_menus._lock_add(caller, "foo2:true()"), "Lock with locktype 'foo2' updated."
+            olc_menus._lock_add(caller, "foo:false()"), "Added lock 'foo:false()'."
         )
-        self.assertEqual(olc_menus._get_menu_prototype(caller)["locks"], "foo:false();foo2:true()")
+        self.assertEqual(
+            olc_menus._lock_add(caller, "foo2:false()"), "Added lock 'foo2:false()'."
+        )
+        self.assertEqual(
+            olc_menus._lock_add(caller, "foo2:true()"),
+            "Lock with locktype 'foo2' updated.",
+        )
+        self.assertEqual(
+            olc_menus._get_menu_prototype(caller)["locks"], "foo:false();foo2:true()"
+        )
 
         # perm helpers
         self.assertEqual(olc_menus._add_perm(caller, "foo"), "Added Permission 'foo'")
         self.assertEqual(olc_menus._add_perm(caller, "foo2"), "Added Permission 'foo2'")
-        self.assertEqual(olc_menus._get_menu_prototype(caller)["permissions"], ["foo", "foo2"])
+        self.assertEqual(
+            olc_menus._get_menu_prototype(caller)["permissions"], ["foo", "foo2"]
+        )
 
         # prototype_tags helpers
-        self.assertEqual(olc_menus._add_prototype_tag(caller, "foo"), "Added Prototype-Tag 'foo'.")
+        self.assertEqual(
+            olc_menus._add_prototype_tag(caller, "foo"), "Added Prototype-Tag 'foo'."
+        )
         self.assertEqual(
             olc_menus._add_prototype_tag(caller, "foo2"), "Added Prototype-Tag 'foo2'."
         )
-        self.assertEqual(olc_menus._get_menu_prototype(caller)["prototype_tags"], ["foo", "foo2"])
+        self.assertEqual(
+            olc_menus._get_menu_prototype(caller)["prototype_tags"], ["foo", "foo2"]
+        )
 
         # spawn helpers
         with mock.patch(
             "evennia.prototypes.menus.protlib.search_prototype",
             new=mock.MagicMock(return_value=[_PROTPARENTS["GOBLIN"]]),
         ):
-            self.assertEqual(olc_menus._spawn(caller, prototype=self.test_prot), Something)
+            self.assertEqual(
+                olc_menus._spawn(caller, prototype=self.test_prot), Something
+            )
         obj = caller.contents[0]
 
         self.assertEqual(obj.typeclass_path, "evennia.objects.objects.DefaultObject")
         self.assertEqual(
-            obj.tags.get(category=spawner._PROTOTYPE_TAG_CATEGORY), self.test_prot["prototype_key"]
+            obj.tags.get(category=spawner._PROTOTYPE_TAG_CATEGORY),
+            self.test_prot["prototype_key"],
         )
 
         # update helpers
         self.assertEqual(
-            olc_menus._apply_diff(caller, prototype=self.test_prot, back_node="foo", objects=[obj]),
+            olc_menus._apply_diff(
+                caller, prototype=self.test_prot, back_node="foo", objects=[obj]
+            ),
             "foo",
         )  # no changes to apply
         self.test_prot["key"] = "updated key"  # change prototype
         self.assertEqual(
-            olc_menus._apply_diff(caller, prototype=self.test_prot, objects=[obj], back_node="foo"),
+            olc_menus._apply_diff(
+                caller, prototype=self.test_prot, objects=[obj], back_node="foo"
+            ),
             "foo",
         )  # apply change to the one obj
 
         # load helpers
         self.assertEqual(
             olc_menus._prototype_load_select(caller, self.test_prot["prototype_key"]),
-            ("node_examine_entity", {"text": "|gLoaded prototype test_prot.|n", "back": "index"}),
+            (
+                "node_examine_entity",
+                {"text": "|gLoaded prototype test_prot.|n", "back": "index"},
+            ),
         )
 
         # diff helpers
@@ -900,7 +1033,11 @@ class TestMenuModule(EvenniaTest):
             "permissions": {"developer": ("developer", "developer", "KEEP")},
             "prototype_desc": ("Testobject build", None, "REMOVE"),
             "prototype_key": ("TestDiffKey", "TestDiffKey", "KEEP"),
-            "prototype_locks": ("spawn:all();edit:all()", "spawn:all();edit:all()", "KEEP"),
+            "prototype_locks": (
+                "spawn:all();edit:all()",
+                "spawn:all();edit:all()",
+                "KEEP",
+            ),
             "prototype_tags": {},
             "tags": {"foo": (None, ("foo", None, ""), "ADD")},
             "typeclass": (
@@ -933,13 +1070,21 @@ class TestMenuModule(EvenniaTest):
         self.assertEqual(
             options,
             [
-                {"goto": (Something, Something), "key": "1", "desc": "|gKEEP|n (attrs) None"},
+                {
+                    "goto": (Something, Something),
+                    "key": "1",
+                    "desc": "|gKEEP|n (attrs) None",
+                },
                 {
                     "goto": (Something, Something),
                     "key": "2",
                     "desc": "|gKEEP|n (prototype_desc) Testobject build",
                 },
-                {"goto": (Something, Something), "key": "3", "desc": "|gKEEP|n (tags) None"},
+                {
+                    "goto": (Something, Something),
+                    "key": "3",
+                    "desc": "|gKEEP|n (tags) None",
+                },
             ],
         )
 
@@ -948,7 +1093,11 @@ class TestMenuModule(EvenniaTest):
     "evennia.prototypes.menus.protlib.search_prototype",
     new=mock.MagicMock(
         return_value=[
-            {"prototype_key": "TestPrototype", "typeclass": "TypeClassTest", "key": "TestObj"}
+            {
+                "prototype_key": "TestPrototype",
+                "typeclass": "TypeClassTest",
+                "key": "TestObj",
+            }
         ]
     ),
 )
@@ -998,15 +1147,45 @@ class TestOLCMenu(TestEvMenu):
                 "node_index",
             ],
             "node_key",
-            ["node_typeclass", "node_key", "node_index", "node_validate_prototype", "node_index"],
+            [
+                "node_typeclass",
+                "node_key",
+                "node_index",
+                "node_validate_prototype",
+                "node_index",
+            ],
             "node_aliases",
-            ["node_key", "node_aliases", "node_index", "node_validate_prototype", "node_index"],
+            [
+                "node_key",
+                "node_aliases",
+                "node_index",
+                "node_validate_prototype",
+                "node_index",
+            ],
             "node_attrs",
-            ["node_aliases", "node_attrs", "node_index", "node_validate_prototype", "node_index"],
+            [
+                "node_aliases",
+                "node_attrs",
+                "node_index",
+                "node_validate_prototype",
+                "node_index",
+            ],
             "node_tags",
-            ["node_attrs", "node_tags", "node_index", "node_validate_prototype", "node_index"],
+            [
+                "node_attrs",
+                "node_tags",
+                "node_index",
+                "node_validate_prototype",
+                "node_index",
+            ],
             "node_locks",
-            ["node_tags", "node_locks", "node_index", "node_validate_prototype", "node_index"],
+            [
+                "node_tags",
+                "node_locks",
+                "node_index",
+                "node_validate_prototype",
+                "node_index",
+            ],
             "node_permissions",
             [
                 "node_locks",

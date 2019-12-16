@@ -70,7 +70,9 @@ class TestServer(TestCase):
         ) as mocks:
             mocks["connection"].close = MagicMock()
             mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-            with patch("evennia.server.server.evennia.ScriptDB.objects.validate") as mock:
+            with patch(
+                "evennia.server.server.evennia.ScriptDB.objects.validate"
+            ) as mock:
                 self.server._server_maintenance()
                 mocks["_FLUSH_CACHE"].assert_called_with(1000)
                 mock.assert_called()
@@ -139,7 +141,9 @@ class TestServer(TestCase):
             mocks["time"].time = MagicMock(return_value=1000)
 
             mocks["ServerConfig"].objects.conf = MagicMock(return_value=100)
-            mocks["SESSIONS"].values = MagicMock(return_value=[sess1, sess2, sess3, sess4])
+            mocks["SESSIONS"].values = MagicMock(
+                return_value=[sess1, sess2, sess3, sess4]
+            )
             mocks["SESSIONS"].disconnect = MagicMock()
 
             self.server._server_maintenance()
@@ -148,7 +152,9 @@ class TestServer(TestCase):
             mocks["SESSIONS"].disconnect.assert_has_calls(calls, any_order=True)
 
     def test_evennia_start(self):
-        with patch.multiple("evennia.server.server", time=DEFAULT, service=DEFAULT) as mocks:
+        with patch.multiple(
+            "evennia.server.server", time=DEFAULT, service=DEFAULT
+        ) as mocks:
 
             mocks["time"].time = MagicMock(return_value=1000)
             evennia = self.server.Evennia(MagicMock())
@@ -196,7 +202,9 @@ class TestServer(TestCase):
     def test_initial_setup(self):
         from evennia.utils.create import create_account
 
-        acct = create_account("TestSuperuser", "test@test.com", "testpassword", is_superuser=True)
+        acct = create_account(
+            "TestSuperuser", "test@test.com", "testpassword", is_superuser=True
+        )
 
         with patch.multiple(
             "evennia.server.initial_setup", reset_server=DEFAULT, AccountDB=DEFAULT
@@ -209,7 +217,9 @@ class TestServer(TestCase):
     def test_initial_setup_retry(self):
         from evennia.utils.create import create_account
 
-        acct = create_account("TestSuperuser2", "test@test.com", "testpassword", is_superuser=True)
+        acct = create_account(
+            "TestSuperuser2", "test@test.com", "testpassword", is_superuser=True
+        )
 
         with patch.multiple(
             "evennia.server.initial_setup",
@@ -236,7 +246,9 @@ class TestServer(TestCase):
         with patch("evennia.objects.models.ObjectDB") as mockobj:
             with patch("evennia.server.server.AccountDB") as mockacct:
 
-                mockacct.get_all_cached_instances = MagicMock(return_value=[acct1, acct2])
+                mockacct.get_all_cached_instances = MagicMock(
+                    return_value=[acct1, acct2]
+                )
                 mockobj.get_all_cached_instances = MagicMock(return_value=[obj1, obj2])
                 mockobj.objects.clear_all_sessids = MagicMock()
 

@@ -126,7 +126,9 @@ class TagFormSet(forms.BaseInlineFormSet):
             handler.remove(obj.tag_key, category=obj.tag_category)
         for instance in instances:
             handler = get_handler(instance)
-            handler.add(instance.tag_key, category=instance.tag_category, data=instance.tag_data)
+            handler.add(
+                instance.tag_key, category=instance.tag_category, data=instance.tag_data
+            )
 
 
 class TagInline(admin.TabularInline):
@@ -142,7 +144,9 @@ class TagInline(admin.TabularInline):
     model = None
     form = TagForm
     formset = TagFormSet
-    related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
+    related_field = (
+        None
+    )  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
     # raw_id_fields = ('tag',)
     # readonly_fields = ('tag',)
     extra = 0
@@ -177,9 +181,14 @@ class AttributeForm(forms.ModelForm):
         label="Attribute Name", required=False, initial="Enter Attribute Name Here"
     )
     attr_category = forms.CharField(
-        label="Category", help_text="type of attribute, for sorting", required=False, max_length=128
+        label="Category",
+        help_text="type of attribute, for sorting",
+        required=False,
+        max_length=128,
     )
-    attr_value = PickledFormField(label="Value", help_text="Value to pickle/save", required=False)
+    attr_value = PickledFormField(
+        label="Value", help_text="Value to pickle/save", required=False
+    )
     attr_type = forms.CharField(
         label="Type",
         help_text='Internal use. Either unset (normal Attribute) or "nick"',
@@ -194,7 +203,13 @@ class AttributeForm(forms.ModelForm):
     )
 
     class Meta:
-        fields = ("attr_key", "attr_value", "attr_category", "attr_lockstring", "attr_type")
+        fields = (
+            "attr_key",
+            "attr_value",
+            "attr_category",
+            "attr_lockstring",
+            "attr_type",
+        )
 
     def __init__(self, *args, **kwargs):
         """
@@ -242,7 +257,9 @@ class AttributeForm(forms.ModelForm):
         """
         # we are spoofing an Attribute for the Handler that will be called
         instance = self.instance
-        instance.attr_key = self.cleaned_data["attr_key"] or "no_name_entered_for_attribute"
+        instance.attr_key = (
+            self.cleaned_data["attr_key"] or "no_name_entered_for_attribute"
+        )
         instance.attr_category = self.cleaned_data["attr_category"] or None
         instance.attr_value = self.cleaned_data["attr_value"]
         # convert the serialized string value into an object, if necessary, for AttributeHandler
@@ -320,7 +337,9 @@ class AttributeInline(admin.TabularInline):
     model = None
     form = AttributeForm
     formset = AttributeFormSet
-    related_field = None  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
+    related_field = (
+        None
+    )  # Must be 'objectdb', 'accountdb', 'msg', etc. Set when subclassing
     # raw_id_fields = ('attribute',)
     # readonly_fields = ('attribute',)
     extra = 0

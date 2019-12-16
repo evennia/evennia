@@ -18,7 +18,9 @@ from . import utils
 class TestEvscaperoomCommands(CommandTest):
     def setUp(self):
         super().setUp()
-        self.room1 = utils.create_evscaperoom_object("evscaperoom.room.EvscapeRoom", key="Testroom")
+        self.room1 = utils.create_evscaperoom_object(
+            "evscaperoom.room.EvscapeRoom", key="Testroom"
+        )
         self.char1.location = self.room1
         self.obj1.location = self.room1
 
@@ -151,19 +153,24 @@ class TestEvscaperoomCommands(CommandTest):
         cmd.room = self.room1
         cmd.focus = self.obj1
         self.assertEqual(
-            self.char1.attributes.get("focus", category=self.room1.tagcategory), self.obj1
+            self.char1.attributes.get("focus", category=self.room1.tagcategory),
+            self.obj1,
         )
 
     def test_focus(self):
         # don't focus on a non-room object
         self.call(commands.CmdFocus(), "obj")
-        self.assertEqual(self.char1.attributes.get("focus", category=self.room1.tagcategory), None)
+        self.assertEqual(
+            self.char1.attributes.get("focus", category=self.room1.tagcategory), None
+        )
         # should focus correctly
         myobj = utils.create_evscaperoom_object(
             objects.EvscaperoomObject, "mytestobj", location=self.room1
         )
         self.call(commands.CmdFocus(), "mytestobj")
-        self.assertEqual(self.char1.attributes.get("focus", category=self.room1.tagcategory), myobj)
+        self.assertEqual(
+            self.char1.attributes.get("focus", category=self.room1.tagcategory), myobj
+        )
 
     def test_look(self):
         self.call(commands.CmdLook(), "at obj", "Obj")
@@ -173,13 +180,19 @@ class TestEvscaperoomCommands(CommandTest):
     def test_speech(self):
         self.call(commands.CmdSpeak(), "", "What do you want to say?", cmdstring="")
         self.call(commands.CmdSpeak(), "Hello!", "You say: Hello!", cmdstring="")
-        self.call(commands.CmdSpeak(), "", "What do you want to whisper?", cmdstring="whisper")
+        self.call(
+            commands.CmdSpeak(), "", "What do you want to whisper?", cmdstring="whisper"
+        )
         self.call(commands.CmdSpeak(), "Hi.", "You whisper: Hi.", cmdstring="whisper")
         self.call(commands.CmdSpeak(), "Hi.", "You whisper: Hi.", cmdstring="whisper")
         self.call(commands.CmdSpeak(), "HELLO!", "You shout: HELLO!", cmdstring="shout")
 
-        self.call(commands.CmdSpeak(), "Hello to obj", "You say: Hello", cmdstring="say")
-        self.call(commands.CmdSpeak(), "Hello to obj", "You shout: Hello", cmdstring="shout")
+        self.call(
+            commands.CmdSpeak(), "Hello to obj", "You say: Hello", cmdstring="say"
+        )
+        self.call(
+            commands.CmdSpeak(), "Hello to obj", "You shout: Hello", cmdstring="shout"
+        )
 
     def test_emote(self):
         self.call(
@@ -194,7 +207,9 @@ class TestEvscaperoomCommands(CommandTest):
 
 class TestUtils(EvenniaTest):
     def test_overwrite(self):
-        room = utils.create_evscaperoom_object("evscaperoom.room.EvscapeRoom", key="Testroom")
+        room = utils.create_evscaperoom_object(
+            "evscaperoom.room.EvscapeRoom", key="Testroom"
+        )
         obj1 = utils.create_evscaperoom_object(
             objects.EvscaperoomObject, key="testobj", location=room
         )
@@ -212,11 +227,15 @@ class TestUtils(EvenniaTest):
 
     def test_parse_for_perspectives(self):
 
-        second, third = utils.parse_for_perspectives("~You ~look at the nice book", "TestGuy")
+        second, third = utils.parse_for_perspectives(
+            "~You ~look at the nice book", "TestGuy"
+        )
         self.assertTrue(second, "You look at the nice book")
         self.assertTrue(third, "TestGuy looks at the nice book")
         # irregular
-        second, third = utils.parse_for_perspectives("With a smile, ~you ~were gone", "TestGuy")
+        second, third = utils.parse_for_perspectives(
+            "With a smile, ~you ~were gone", "TestGuy"
+        )
         self.assertTrue(second, "With a smile, you were gone")
         self.assertTrue(third, "With a smile, TestGuy was gone")
 
@@ -224,8 +243,12 @@ class TestUtils(EvenniaTest):
 
         string = "Looking at *book and *key."
         self.assertEqual(utils.parse_for_things(string, 0), "Looking at book and key.")
-        self.assertEqual(utils.parse_for_things(string, 1), "Looking at |ybook|n and |ykey|n.")
-        self.assertEqual(utils.parse_for_things(string, 2), "Looking at |y[book]|n and |y[key]|n.")
+        self.assertEqual(
+            utils.parse_for_things(string, 1), "Looking at |ybook|n and |ykey|n."
+        )
+        self.assertEqual(
+            utils.parse_for_things(string, 2), "Looking at |y[book]|n and |y[key]|n."
+        )
 
 
 class TestEvScapeRoom(EvenniaTest):
@@ -248,10 +271,14 @@ class TestEvScapeRoom(EvenniaTest):
         self.assertEqual(list(room.get_all_characters()), [self.char1])
 
         room.tag_character(self.char1, "opened_door")
-        self.assertEqual(self.char1.tags.get("opened_door", category=self.roomtag), "opened_door")
+        self.assertEqual(
+            self.char1.tags.get("opened_door", category=self.roomtag), "opened_door"
+        )
 
         room.tag_all_characters("tagged_all")
-        self.assertEqual(self.char1.tags.get("tagged_all", category=self.roomtag), "tagged_all")
+        self.assertEqual(
+            self.char1.tags.get("tagged_all", category=self.roomtag), "tagged_all"
+        )
 
         room.character_cleanup(self.char1)
         self.assertEqual(self.char1.tags.get(category=self.roomtag), None)

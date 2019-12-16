@@ -15,7 +15,9 @@ settings.AUDIT_OUT = True
 settings.AUDIT_ALLOW_SPARSE = True
 
 # Configure settings to use custom session - TODO: This is bad practice, changing global settings
-settings.SERVER_SESSION_CLASS = "evennia.contrib.security.auditing.server.AuditedServerSession"
+settings.SERVER_SESSION_CLASS = (
+    "evennia.contrib.security.auditing.server.AuditedServerSession"
+)
 
 
 class AuditingTest(EvenniaTest):
@@ -55,13 +57,28 @@ class AuditingTest(EvenniaTest):
             ("connect johnny password123", "connect johnny ***********"),
             ("concnct johnny password123", "concnct johnny ***********"),
             ("concnct johnnypassword123", "concnct *****************"),
-            ('connect "johnny five" "password 123"', 'connect "johnny five" **************'),
+            (
+                'connect "johnny five" "password 123"',
+                'connect "johnny five" **************',
+            ),
             ('connect johnny "password 123"', "connect johnny **************"),
             ("create johnny password123", "create johnny ***********"),
-            ("@password password1234 = password2345", "@password ***************************"),
-            ("@password password1234 password2345", "@password *************************"),
-            ("@passwd password1234 = password2345", "@passwd ***************************"),
-            ("@userpassword johnny = password234", "@userpassword johnny = ***********"),
+            (
+                "@password password1234 = password2345",
+                "@password ***************************",
+            ),
+            (
+                "@password password1234 password2345",
+                "@password *************************",
+            ),
+            (
+                "@passwd password1234 = password2345",
+                "@passwd ***************************",
+            ),
+            (
+                "@userpassword johnny = password234",
+                "@userpassword johnny = ***********",
+            ),
             ("craete johnnypassword123", "craete *****************"),
             (
                 "Command 'conncect teddy teddy' is not available. Maybe you meant \"@encode\"?",
@@ -74,7 +91,9 @@ class AuditingTest(EvenniaTest):
         )
 
         for index, (unsafe, safe) in enumerate(unsafe_cmds):
-            self.assertEqual(re.sub(" <Masked: .+>", "", self.session.mask(unsafe)).strip(), safe)
+            self.assertEqual(
+                re.sub(" <Masked: .+>", "", self.session.mask(unsafe)).strip(), safe
+            )
 
         # Make sure scrubbing is not being abused to evade monitoring
         secrets = [
@@ -93,7 +112,9 @@ class AuditingTest(EvenniaTest):
         """
         log = self.session.audit(src="client", text=[["hello"]])
         obj = {
-            k: v for k, v in log.items() if k in ("direction", "protocol", "application", "text")
+            k: v
+            for k, v in log.items()
+            if k in ("direction", "protocol", "application", "text")
         }
         self.assertEqual(
             obj,
@@ -107,7 +128,10 @@ class AuditingTest(EvenniaTest):
 
         # Make sure OOB data is being recorded
         log = self.session.audit(
-            src="client", text="connect johnny password123", prompt="hp=20|st=10|ma=15", pane=2
+            src="client",
+            text="connect johnny password123",
+            prompt="hp=20|st=10|ma=15",
+            pane=2,
         )
         self.assertEqual(log["text"], "connect johnny ***********")
         self.assertEqual(log["data"]["prompt"], "hp=20|st=10|ma=15")

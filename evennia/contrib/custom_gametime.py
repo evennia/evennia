@@ -117,7 +117,9 @@ def gametime_to_realtime(format=False, **kwargs):
             name = name[:-1]
 
         if name not in UNITS:
-            raise ValueError("the unit {} isn't defined as a valid " "game time unit".format(name))
+            raise ValueError(
+                "the unit {} isn't defined as a valid " "game time unit".format(name)
+            )
         rtime += value * UNITS[name]
     rtime /= TIMEFACTOR
     if format:
@@ -125,7 +127,9 @@ def gametime_to_realtime(format=False, **kwargs):
     return rtime
 
 
-def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0, months=0, yrs=0, format=False):
+def realtime_to_gametime(
+    secs=0, mins=0, hrs=0, days=0, weeks=0, months=0, yrs=0, format=False
+):
     """
     This method calculates how much in-game time a real-world time
     interval would correspond to. This is usually a lot less

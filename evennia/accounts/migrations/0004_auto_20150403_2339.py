@@ -14,12 +14,15 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(name="DefaultGuest"),
         migrations.DeleteModel(name="DefaultAccount"),
         migrations.AlterModelManagers(
-            name="accountdb", managers=[("objects", evennia.accounts.manager.AccountDBManager())]
+            name="accountdb",
+            managers=[("objects", evennia.accounts.manager.AccountDBManager())],
         ),
         migrations.AlterField(
             model_name="accountdb",
             name="email",
-            field=models.EmailField(max_length=254, verbose_name="email address", blank=True),
+            field=models.EmailField(
+                max_length=254, verbose_name="email address", blank=True
+            ),
         ),
         migrations.AlterField(
             model_name="accountdb",
@@ -36,7 +39,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="accountdb",
             name="last_login",
-            field=models.DateTimeField(null=True, verbose_name="last login", blank=True),
+            field=models.DateTimeField(
+                null=True, verbose_name="last login", blank=True
+            ),
         ),
         migrations.AlterField(
             model_name="accountdb",

@@ -15,7 +15,12 @@ def update_nicks(apps, schema_editor):
         except (TypeError, ValueError):
             # old setup, we store it in the new format - old uses its own key
             # as regex to keep the old matching (and has no $-type args)
-            nick.db_value = (nick.db_key, nick.db_strvalue, nick.db_key, nick.db_strvalue)
+            nick.db_value = (
+                nick.db_key,
+                nick.db_strvalue,
+                nick.db_key,
+                nick.db_strvalue,
+            )
             nick.save()
 
 

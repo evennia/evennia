@@ -302,7 +302,9 @@ class SshProtocol(Manhole, session.Session):
         xterm256 = options.get("xterm256", flags.get("XTERM256", True))
         useansi = options.get("ansi", flags.get("ANSI", True))
         raw = options.get("raw", flags.get("RAW", False))
-        nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
+        nocolor = options.get(
+            "nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi)
+        )
         # echo = options.get("echo", None)  # DEBUG
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
 

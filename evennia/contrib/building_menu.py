@@ -162,7 +162,9 @@ def _menu_savefunc(caller, buf):
 def _menu_quitfunc(caller):
     caller.cmdset.add(
         BuildingMenuCmdSet,
-        permanent=caller.ndb._building_menu and caller.ndb._building_menu.persistent or False,
+        permanent=caller.ndb._building_menu
+        and caller.ndb._building_menu.persistent
+        or False,
     )
     if caller.ndb._building_menu:
         caller.ndb._building_menu.move(back=True)
@@ -209,7 +211,9 @@ def _call_or_get(value, menu=None, choice=None, string=None, obj=None, caller=No
         spec = getargspec(value)
         args = spec.args
         if spec.keywords:
-            kwargs.update(dict(menu=menu, choice=choice, string=string, obj=obj, caller=caller))
+            kwargs.update(
+                dict(menu=menu, choice=choice, string=string, obj=obj, caller=caller)
+            )
         else:
             if "menu" in args:
                 kwargs["menu"] = menu
@@ -343,7 +347,9 @@ class CmdNoInput(Command):
             self.menu.display()
         else:
             log_err("When CMDNOINPUT was called, the building menu couldn't be found")
-            self.caller.msg("|rThe building menu couldn't be found, remove the CmdSet.|n")
+            self.caller.msg(
+                "|rThe building menu couldn't be found, remove the CmdSet.|n"
+            )
             self.caller.cmdset.delete(BuildingMenuCmdSet)
 
 
@@ -363,7 +369,9 @@ class CmdNoMatch(Command):
         raw_string = self.args.rstrip()
         if self.menu is None:
             log_err("When CMDNOMATCH was called, the building menu couldn't be found")
-            self.caller.msg("|rThe building menu couldn't be found, remove the CmdSet.|n")
+            self.caller.msg(
+                "|rThe building menu couldn't be found, remove the CmdSet.|n"
+            )
             self.caller.cmdset.delete(BuildingMenuCmdSet)
             return
 
@@ -485,7 +493,12 @@ class Choice(object):
         text = ""
         if self.text:
             text = _call_or_get(
-                self.text, menu=self.menu, choice=self, string="", caller=self.caller, obj=self.obj
+                self.text,
+                menu=self.menu,
+                choice=self,
+                string="",
+                caller=self.caller,
+                obj=self.obj,
             )
             text = dedent(text.strip("\n"))
             text = text.format(obj=self.obj, caller=self.caller)
@@ -849,7 +862,9 @@ class BuildingMenu(object):
 
                         Current value: |c{{{obj_attr}}}|n
                 """.format(
-                    attr=attr, obj_attr="obj." + attr, back="|n or |y".join(self.keys_go_back)
+                    attr=attr,
+                    obj_attr="obj." + attr,
+                    back="|n or |y".join(self.keys_go_back),
                 )
 
         choice = Choice(
@@ -908,10 +923,18 @@ class BuildingMenu(object):
         """
         on_enter = on_enter or menu_edit
         return self.add_choice(
-            title, key=key, aliases=aliases, attr=attr, glance=glance, on_enter=on_enter, text=""
+            title,
+            key=key,
+            aliases=aliases,
+            attr=attr,
+            glance=glance,
+            on_enter=on_enter,
+            text="",
         )
 
-    def add_choice_quit(self, title="quit the menu", key="q", aliases=None, on_enter=None):
+    def add_choice_quit(
+        self, title="quit the menu", key="q", aliases=None, on_enter=None
+    ):
         """
         Add a simple choice just to quit the building menu.
 
@@ -975,7 +998,9 @@ class BuildingMenu(object):
                 menu_class = class_from_module(parent_class)
             except Exception:
                 log_trace(
-                    "BuildingMenu: attempting to load class {} failed".format(repr(parent_class))
+                    "BuildingMenu: attempting to load class {} failed".format(
+                        repr(parent_class)
+                    )
                 )
                 return
 
@@ -986,7 +1011,9 @@ class BuildingMenu(object):
                 )
             except Exception:
                 log_trace(
-                    "An error occurred while creating building menu {}".format(repr(parent_class))
+                    "An error occurred while creating building menu {}".format(
+                        repr(parent_class)
+                    )
                 )
                 return
             else:
@@ -1014,7 +1041,9 @@ class BuildingMenu(object):
         """
         parent_keys = parent_keys or []
         parents = list(self.parents)
-        parents.append((type(self).__module__ + "." + type(self).__name__, self.obj, parent_keys))
+        parents.append(
+            (type(self).__module__ + "." + type(self).__name__, self.obj, parent_keys)
+        )
         if self.caller.cmdset.has(BuildingMenuCmdSet):
             self.caller.cmdset.remove(BuildingMenuCmdSet)
 
@@ -1023,7 +1052,9 @@ class BuildingMenu(object):
             menu_class = class_from_module(submenu_class)
         except Exception:
             log_trace(
-                "BuildingMenu: attempting to load class {} failed".format(repr(submenu_class))
+                "BuildingMenu: attempting to load class {} failed".format(
+                    repr(submenu_class)
+                )
             )
             return
 
@@ -1032,7 +1063,9 @@ class BuildingMenu(object):
             building_menu = menu_class(self.caller, submenu_obj, parents=parents)
         except Exception:
             log_trace(
-                "An error occurred while creating building menu {}".format(repr(submenu_class))
+                "An error occurred while creating building menu {}".format(
+                    repr(submenu_class)
+                )
             )
             return
         else:
@@ -1068,7 +1101,9 @@ class BuildingMenu(object):
 
         if not back:  # Move forward
             if not key:
-                raise ValueError("you are asking to move forward, you should specify a key.")
+                raise ValueError(
+                    "you are asking to move forward, you should specify a key."
+                )
 
             self.keys.append(key)
         else:  # Move backward
@@ -1099,9 +1134,9 @@ class BuildingMenu(object):
     # Display methods.  Override for customization
     def display_title(self):
         """Return the menu title to be displayed."""
-        return _call_or_get(self.title, menu=self, obj=self.obj, caller=self.caller).format(
-            obj=self.obj
-        )
+        return _call_or_get(
+            self.title, menu=self, obj=self.obj, caller=self.caller
+        ).format(obj=self.obj)
 
     def display_choice(self, choice):
         """Display the specified choice.
@@ -1117,13 +1152,24 @@ class BuildingMenu(object):
         pos = clear_title.find(choice.key.lower())
         ret = " "
         if pos >= 0:
-            ret += title[:pos] + "[|y" + choice.key.title() + "|n]" + title[pos + len(choice.key) :]
+            ret += (
+                title[:pos]
+                + "[|y"
+                + choice.key.title()
+                + "|n]"
+                + title[pos + len(choice.key) :]
+            )
         else:
             ret += "[|y" + choice.key.title() + "|n] " + title
 
         if choice.glance:
             glance = _call_or_get(
-                choice.glance, menu=self, choice=choice, caller=self.caller, string="", obj=self.obj
+                choice.glance,
+                menu=self,
+                choice=choice,
+                caller=self.caller,
+                string="",
+                obj=self.obj,
             )
             glance = glance.format(obj=self.obj, caller=self.caller)
 
@@ -1161,7 +1207,9 @@ class BuildingMenu(object):
             if not class_name:
                 log_err(
                     "BuildingMenu: on caller {}, a persistent attribute holds building menu "
-                    "data, but no class could be found to restore the menu".format(caller)
+                    "data, but no class could be found to restore the menu".format(
+                        caller
+                    )
                 )
                 return
 
@@ -1169,7 +1217,9 @@ class BuildingMenu(object):
                 menu_class = class_from_module(class_name)
             except Exception:
                 log_trace(
-                    "BuildingMenu: attempting to load class {} failed".format(repr(class_name))
+                    "BuildingMenu: attempting to load class {} failed".format(
+                        repr(class_name)
+                    )
                 )
                 return
 
@@ -1181,11 +1231,18 @@ class BuildingMenu(object):
             persistent = menu.get("persistent", False)
             try:
                 building_menu = menu_class(
-                    caller, obj, title=title, keys=keys, parents=parents, persistent=persistent
+                    caller,
+                    obj,
+                    title=title,
+                    keys=keys,
+                    parents=parents,
+                    persistent=persistent,
                 )
             except Exception:
                 log_trace(
-                    "An error occurred while creating building menu {}".format(repr(class_name))
+                    "An error occurred while creating building menu {}".format(
+                        repr(class_name)
+                    )
                 )
                 return
 
@@ -1256,7 +1313,9 @@ class GenericBuildingCmd(Command):
 
     def func(self):
         if not self.args.strip():
-            self.msg("You should provide an argument to this function: the object to edit.")
+            self.msg(
+                "You should provide an argument to this function: the object to edit."
+            )
             return
 
         obj = self.caller.search(self.args.strip(), global_search=True)

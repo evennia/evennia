@@ -334,7 +334,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             commands (str): Representation of commands in Cmdset.
 
         """
-        return ", ".join([str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)])
+        return ", ".join(
+            [str(cmd) for cmd in sorted(self.commands, key=lambda o: o.key)]
+        )
 
     def __iter__(self):
         """
@@ -403,10 +405,16 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             # set changes the setting (i.e. has a non-None value). We don't pass through
             # the duplicates setting; that is per-merge
             cmdset_c.no_channels = (
-                self.no_channels if cmdset_a.no_channels is None else cmdset_a.no_channels
+                self.no_channels
+                if cmdset_a.no_channels is None
+                else cmdset_a.no_channels
             )
-            cmdset_c.no_exits = self.no_exits if cmdset_a.no_exits is None else cmdset_a.no_exits
-            cmdset_c.no_objs = self.no_objs if cmdset_a.no_objs is None else cmdset_a.no_objs
+            cmdset_c.no_exits = (
+                self.no_exits if cmdset_a.no_exits is None else cmdset_a.no_exits
+            )
+            cmdset_c.no_objs = (
+                self.no_objs if cmdset_a.no_objs is None else cmdset_a.no_objs
+            )
 
         else:
             # B higher priority than A
@@ -432,8 +440,12 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             cmdset_c.no_channels = (
                 cmdset_a.no_channels if self.no_channels is None else self.no_channels
             )
-            cmdset_c.no_exits = cmdset_a.no_exits if self.no_exits is None else self.no_exits
-            cmdset_c.no_objs = cmdset_a.no_objs if self.no_objs is None else self.no_objs
+            cmdset_c.no_exits = (
+                cmdset_a.no_exits if self.no_exits is None else self.no_exits
+            )
+            cmdset_c.no_objs = (
+                cmdset_a.no_objs if self.no_objs is None else self.no_objs
+            )
 
         # we store actual_mergetype since key_mergetypes
         # might be different from the main mergetype.
@@ -617,7 +629,11 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         """
         names = []
         if caller:
-            [names.extend(cmd._keyaliases) for cmd in self.commands if cmd.access(caller)]
+            [
+                names.extend(cmd._keyaliases)
+                for cmd in self.commands
+                if cmd.access(caller)
+            ]
         else:
             [names.extend(cmd._keyaliases) for cmd in self.commands]
         return names

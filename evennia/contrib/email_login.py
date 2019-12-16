@@ -56,7 +56,9 @@ MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 CONNECTION_SCREEN = ""
 try:
-    CONNECTION_SCREEN = ansi.parse_ansi(utils.random_string_from_module(CONNECTION_SCREEN_MODULE))
+    CONNECTION_SCREEN = ansi.parse_ansi(
+        utils.random_string_from_module(CONNECTION_SCREEN_MODULE)
+    )
 except Exception:
     # malformed connection screen or no screen given
     pass
@@ -176,18 +178,24 @@ class CmdUnconnectedCreate(MuxCommand):
         try:
             accountname, email, password = self.accountinfo
         except ValueError:
-            string = '\n\r Usage (without <>): create "<accountname>" <email> <password>'
+            string = (
+                '\n\r Usage (without <>): create "<accountname>" <email> <password>'
+            )
             session.msg(string)
             return
         if not email or not password:
-            session.msg("\n\r You have to supply an e-mail address followed by a password.")
+            session.msg(
+                "\n\r You have to supply an e-mail address followed by a password."
+            )
             return
         if not utils.validate_email_address(email):
             # check so the email at least looks ok.
             session.msg("'%s' is not a valid e-mail address." % email)
             return
         # sanity checks
-        if not re.findall(r"^[\w. @+\-']+$", accountname) or not (0 < len(accountname) <= 30):
+        if not re.findall(r"^[\w. @+\-']+$", accountname) or not (
+            0 < len(accountname) <= 30
+        ):
             # this echoes the restrictions made by django's auth
             # module (except not allowing spaces, for convenience of
             # logging in).
@@ -198,7 +206,9 @@ class CmdUnconnectedCreate(MuxCommand):
         accountname = re.sub(r"\s+", " ", accountname).strip()
         if AccountDB.objects.filter(username__iexact=accountname):
             # account already exists (we also ignore capitalization here)
-            session.msg("Sorry, there is already an account with the name '%s'." % accountname)
+            session.msg(
+                "Sorry, there is already an account with the name '%s'." % accountname
+            )
             return
         if AccountDB.objects.get_account_from_email(email):
             # email already set on an account
@@ -251,9 +261,7 @@ class CmdUnconnectedCreate(MuxCommand):
                 # tell the caller everything went well.
                 string = "A new account '%s' was created. Welcome!"
                 if " " in accountname:
-                    string += (
-                        "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
-                    )
+                    string += "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
                 else:
                     string += "\n\nYou can now log with the command 'connect %s <your password>'."
                 session.msg(string % (accountname, email))
@@ -262,7 +270,9 @@ class CmdUnconnectedCreate(MuxCommand):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            session.msg("An error occurred. Please e-mail an admin if the problem persists.")
+            session.msg(
+                "An error occurred. Please e-mail an admin if the problem persists."
+            )
             logger.log_trace()
             raise
 

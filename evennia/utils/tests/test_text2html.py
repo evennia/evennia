@@ -12,7 +12,9 @@ class TestText2Html(TestCase):
         self.assertEqual("foo", parser.re_color("foo"))
         self.assertEqual(
             '<span class="color-001">red</span>foo',
-            parser.re_color(ansi.ANSI_UNHILITE + ansi.ANSI_RED + "red" + ansi.ANSI_NORMAL + "foo"),
+            parser.re_color(
+                ansi.ANSI_UNHILITE + ansi.ANSI_RED + "red" + ansi.ANSI_NORMAL + "foo"
+            ),
         )
         self.assertEqual(
             '<span class="bgcolor-001">red</span>foo',
@@ -37,7 +39,9 @@ class TestText2Html(TestCase):
         self.assertEqual(
             # "a <strong>red</strong>foo",  # TODO: why not?
             "a <strong>redfoo</strong>",
-            parser.re_bold("a " + ansi.ANSI_HILITE + "red" + ansi.ANSI_UNHILITE + "foo"),
+            parser.re_bold(
+                "a " + ansi.ANSI_HILITE + "red" + ansi.ANSI_UNHILITE + "foo"
+            ),
         )
 
     @unittest.skip("parser issues")
@@ -145,7 +149,11 @@ class TestText2Html(TestCase):
         self.assertEqual("foo", parser.sub_text(mocked_match))
         mocked_match.groupdict.return_value = {"htmlchars": "", "lineend": "foo"}
         self.assertEqual("<br>", parser.sub_text(mocked_match))
-        mocked_match.groupdict.return_value = {"htmlchars": "", "lineend": "", "firstspace": "foo"}
+        mocked_match.groupdict.return_value = {
+            "htmlchars": "",
+            "lineend": "",
+            "firstspace": "foo",
+        }
         self.assertEqual(" &nbsp;", parser.sub_text(mocked_match))
         parser.tabstop = 2
         mocked_match.groupdict.return_value = {

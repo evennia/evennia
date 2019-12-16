@@ -20,10 +20,16 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.AutoField(
-                        verbose_name="ID", serialize=False, auto_created=True, primary_key=True
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
                     ),
                 ),
-                ("db_key", models.CharField(max_length=255, verbose_name="key", db_index=True)),
+                (
+                    "db_key",
+                    models.CharField(max_length=255, verbose_name="key", db_index=True),
+                ),
                 (
                     "db_typeclass_path",
                     models.CharField(
@@ -35,7 +41,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "db_date_created",
-                    models.DateTimeField(auto_now_add=True, verbose_name="creation date"),
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="creation date"
+                    ),
                 ),
                 (
                     "db_lock_storage",
@@ -45,7 +53,10 @@ class Migration(migrations.Migration):
                         blank=True,
                     ),
                 ),
-                ("db_desc", models.CharField(max_length=255, verbose_name="desc", blank=True)),
+                (
+                    "db_desc",
+                    models.CharField(max_length=255, verbose_name="desc", blank=True),
+                ),
                 (
                     "db_interval",
                     models.IntegerField(
@@ -65,14 +76,21 @@ class Migration(migrations.Migration):
                 (
                     "db_repeats",
                     models.IntegerField(
-                        default=0, help_text="0 means off.", verbose_name="number of repeats"
+                        default=0,
+                        help_text="0 means off.",
+                        verbose_name="number of repeats",
                     ),
                 ),
                 (
                     "db_persistent",
-                    models.BooleanField(default=False, verbose_name="survive server reboot"),
+                    models.BooleanField(
+                        default=False, verbose_name="survive server reboot"
+                    ),
                 ),
-                ("db_is_active", models.BooleanField(default=False, verbose_name="script active")),
+                (
+                    "db_is_active",
+                    models.BooleanField(default=False, verbose_name="script active"),
+                ),
                 (
                     "db_attributes",
                     models.ManyToManyField(

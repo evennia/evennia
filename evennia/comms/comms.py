@@ -301,7 +301,13 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         CHANNELHANDLER.update()
 
     def message_transform(
-        self, msgobj, emit=False, prefix=True, sender_strings=None, external=False, **kwargs
+        self,
+        msgobj,
+        emit=False,
+        prefix=True,
+        sender_strings=None,
+        external=False,
+        **kwargs,
     ):
         """
         Generates the formatted string sent to listeners on a channel.
@@ -355,7 +361,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 # note our addition of the from_channel keyword here. This could be checked
                 # by a custom account.msg() to treat channel-receives differently.
                 entity.msg(
-                    msgobj.message, from_obj=msgobj.senders, options={"from_channel": self.id}
+                    msgobj.message,
+                    from_obj=msgobj.senders,
+                    options={"from_channel": self.id},
                 )
             except AttributeError as e:
                 logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
@@ -363,7 +371,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         if msgobj.keep_log:
             # log to file
             logger.log_file(
-                msgobj.message, self.attributes.get("log_file") or "channel_%s.log" % self.key
+                msgobj.message,
+                self.attributes.get("log_file") or "channel_%s.log" % self.key,
             )
 
     def msg(
@@ -417,7 +426,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         senders = make_iter(senders) if senders else []
         if isinstance(msgobj, str):
             # given msgobj is a string - convert to msgobject (always TempMsg)
-            msgobj = TempMsg(senders=senders, header=header, message=msgobj, channels=[self])
+            msgobj = TempMsg(
+                senders=senders, header=header, message=msgobj, channels=[self]
+            )
         # we store the logging setting for use in distribute_message()
         msgobj.keep_log = keep_log if keep_log is not None else self.db.keep_log
 
@@ -678,7 +689,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         content_type = ContentType.objects.get_for_model(self.__class__)
         return reverse(
-            "admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,)
+            "admin:%s_%s_change" % (content_type.app_label, content_type.model),
+            args=(self.id,),
         )
 
     @classmethod

@@ -12,6 +12,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(model_name="channeldb", name="db_subscriptions"),
         migrations.AlterField(
-            model_name="msg", name="db_message", field=models.TextField(verbose_name="message")
+            model_name="msg",
+            name="db_message",
+            field=models.TextField(verbose_name="message"),
         ),
     ]

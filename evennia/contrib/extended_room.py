@@ -94,7 +94,9 @@ from evennia import utils
 from evennia import CmdSet
 
 # error return function, needed by Extended Look command
-_AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
+_AT_SEARCH_RESULT = utils.variable_from_module(
+    *settings.SEARCH_AT_RESULT.rsplit(".", 1)
+)
 
 # regexes for in-desc replacements
 RE_MORNING = re.compile(r"<morning>(.*?)</morning>", re.IGNORECASE)
@@ -444,7 +446,12 @@ class CmdExtendedRoomDesc(default_cmds.CmdDesc):
                 string += " |wgeneral:|n %s" % location.db.general_desc
                 caller.msg(string)
                 return
-        if self.switches and self.switches[0] in ("spring", "summer", "autumn", "winter"):
+        if self.switches and self.switches[0] in (
+            "spring",
+            "summer",
+            "autumn",
+            "winter",
+        ):
             # a seasonal switch was given
             if self.rhs:
                 caller.msg("Seasonal descs only work with rooms, not objects.")
@@ -519,9 +526,13 @@ class CmdExtendedRoomDetail(default_cmds.MuxCommand):
         if not self.args:
             details = location.db.details
             if not details:
-                self.msg("|rThe room {} doesn't have any detail set.|n".format(location))
+                self.msg(
+                    "|rThe room {} doesn't have any detail set.|n".format(location)
+                )
             else:
-                details = sorted(["|y{}|n: {}".format(key, desc) for key, desc in details.items()])
+                details = sorted(
+                    ["|y{}|n: {}".format(key, desc) for key, desc in details.items()]
+                )
                 self.msg("Details on Room:\n" + "\n".join(details))
             return
 

@@ -235,7 +235,8 @@ class ScriptDBManager(TypedObjectManager):
             # this is a dbref, try to find the script directly
             dbref_match = self.dbref_search(dbref)
             if dbref_match and not (
-                (obj and obj != dbref_match.obj) or (only_timed and dbref_match.interval)
+                (obj and obj != dbref_match.obj)
+                or (only_timed and dbref_match.interval)
             ):
                 return [dbref_match]
 
@@ -250,7 +251,10 @@ class ScriptDBManager(TypedObjectManager):
         timed_restriction = only_timed and Q(db_interval__gt=0) or Q()
         typeclass_restriction = typeclass and Q(db_typeclass_path=typeclass) or Q()
         scripts = self.filter(
-            timed_restriction & obj_restriction & typeclass_restriction & Q(db_key__iexact=ostring)
+            timed_restriction
+            & obj_restriction
+            & typeclass_restriction
+            & Q(db_key__iexact=ostring)
         )
         return scripts
 
@@ -275,7 +279,9 @@ class ScriptDBManager(TypedObjectManager):
         typeclass = original_script.typeclass_path
         new_key = new_key if new_key is not None else original_script.key
         new_obj = new_obj if new_obj is not None else original_script.obj
-        new_locks = new_locks if new_locks is not None else original_script.db_lock_storage
+        new_locks = (
+            new_locks if new_locks is not None else original_script.db_lock_storage
+        )
 
         from evennia.utils import create
 

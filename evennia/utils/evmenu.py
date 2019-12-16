@@ -173,7 +173,16 @@ from evennia import Command, CmdSet
 from evennia.utils import logger
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import mod_import, make_iter, pad, to_str, m_len, is_iter, dedent, crop
+from evennia.utils.utils import (
+    mod_import,
+    make_iter,
+    pad,
+    to_str,
+    m_len,
+    is_iter,
+    dedent,
+    crop,
+)
 from evennia.commands import cmdhandler
 
 # read from protocol NAWS later?
@@ -190,7 +199,8 @@ _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 from django.utils.translation import ugettext as _
 
 _ERR_NOT_IMPLEMENTED = _(
-    "Menu node '{nodename}' is either not implemented or " "caused an error. Make another choice."
+    "Menu node '{nodename}' is either not implemented or "
+    "caused an error. Make another choice."
 )
 _ERR_GENERAL = _("Error in menu node '{nodename}'.")
 _ERR_NO_OPTION_DESC = _("No description.")
@@ -523,10 +533,16 @@ class EvMenu(object):
             }
             calldict.update(kwargs)
             try:
-                caller.attributes.add("_menutree_saved", (self.__class__, (menudata,), calldict))
-                caller.attributes.add("_menutree_saved_startnode", (startnode, startnode_input))
+                caller.attributes.add(
+                    "_menutree_saved", (self.__class__, (menudata,), calldict)
+                )
+                caller.attributes.add(
+                    "_menutree_saved_startnode", (startnode, startnode_input)
+                )
             except Exception as err:
-                caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err), session=self._session)
+                caller.msg(
+                    _ERROR_PERSISTENT_SAVING.format(error=err), session=self._session
+                )
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
                 persistent = False
 
@@ -540,7 +556,9 @@ class EvMenu(object):
         if isinstance(startnode_input, (tuple, list)) and len(startnode_input) > 1:
             startnode_input, startnode_kwargs = startnode_input[:2]
             if not isinstance(startnode_kwargs, dict):
-                raise EvMenuError("startnode_input must be either a str or a tuple (str, dict).")
+                raise EvMenuError(
+                    "startnode_input must be either a str or a tuple (str, dict)."
+                )
         # start the menu
         self.goto(self._startnode, startnode_input, **startnode_kwargs)
 
@@ -610,10 +628,14 @@ class EvMenu(object):
             try:
                 nargs = len(getargspec(callback).args)
             except TypeError:
-                raise EvMenuError("Callable {} doesn't accept any arguments!".format(callback))
+                raise EvMenuError(
+                    "Callable {} doesn't accept any arguments!".format(callback)
+                )
             supports_kwargs = bool(getargspec(callback).keywords)
             if nargs <= 0:
-                raise EvMenuError("Callable {} doesn't accept any arguments!".format(callback))
+                raise EvMenuError(
+                    "Callable {} doesn't accept any arguments!".format(callback)
+                )
 
             if supports_kwargs:
                 if nargs > 1:
@@ -655,7 +677,9 @@ class EvMenu(object):
         try:
             node = self._menutree[nodename]
         except KeyError:
-            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
+            self.caller.msg(
+                _ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session
+            )
             raise EvMenuError
         try:
             ret = self._safe_call(node, raw_string, **kwargs)
@@ -664,11 +688,15 @@ class EvMenu(object):
             else:
                 nodetext, options = ret, None
         except KeyError:
-            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
+            self.caller.msg(
+                _ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session
+            )
             logger.log_trace()
             raise EvMenuError
         except Exception:
-            self.caller.msg(_ERR_GENERAL.format(nodename=nodename), session=self._session)
+            self.caller.msg(
+                _ERR_GENERAL.format(nodename=nodename), session=self._session
+            )
             logger.log_trace()
             raise
 
@@ -718,10 +746,16 @@ class EvMenu(object):
                 ret = self._execute_node(nodename, raw_string, **kwargs)
                 if isinstance(ret, (tuple, list)):
                     if not len(ret) > 1 and ret[1] and not isinstance(ret[1], dict):
-                        raise EvMenuError("exec node must return either None, str or (str, dict)")
+                        raise EvMenuError(
+                            "exec node must return either None, str or (str, dict)"
+                        )
                     ret, kwargs = ret[:2]
         except EvMenuError as err:
-            errmsg = "Error in exec '%s' (input: '%s'): %s" % (nodename, raw_string.rstrip(), err)
+            errmsg = "Error in exec '%s' (input: '%s'): %s" % (
+                nodename,
+                raw_string.rstrip(),
+                err,
+            )
             self.caller.msg("|r%s|n" % errmsg)
             logger.log_trace(errmsg)
             return
@@ -801,7 +835,9 @@ class EvMenu(object):
             if isinstance(nodename, (tuple, list)):
                 if not len(nodename) > 1 or not isinstance(nodename[1], dict):
                     raise EvMenuError(
-                        "{}: goto callable must return str or (str, dict)".format(inp_nodename)
+                        "{}: goto callable must return str or (str, dict)".format(
+                            inp_nodename
+                        )
                     )
                 nodename, kwargs = nodename[:2]
             if not nodename:
@@ -840,12 +876,16 @@ class EvMenu(object):
                 desc = dic.get("desc", dic.get("text", None))
                 if "_default" in keys:
                     keys = [key for key in keys if key != "_default"]
-                    goto, goto_kwargs, execute, exec_kwargs = self.extract_goto_exec(nodename, dic)
+                    goto, goto_kwargs, execute, exec_kwargs = self.extract_goto_exec(
+                        nodename, dic
+                    )
                     self.default = (goto, goto_kwargs, execute, exec_kwargs)
                 else:
                     # use the key (only) if set, otherwise use the running number
                     keys = list(make_iter(dic.get("key", str(inum + 1).strip())))
-                    goto, goto_kwargs, execute, exec_kwargs = self.extract_goto_exec(nodename, dic)
+                    goto, goto_kwargs, execute, exec_kwargs = self.extract_goto_exec(
+                        nodename, dic
+                    )
                 if keys:
                     display_options.append((keys[0], desc))
                     for key in keys:
@@ -867,13 +907,17 @@ class EvMenu(object):
         elif options:
             self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
         else:
-            self.helptext = _HELP_NO_OPTIONS if self.auto_quit else _HELP_NO_OPTIONS_NO_QUIT
+            self.helptext = (
+                _HELP_NO_OPTIONS if self.auto_quit else _HELP_NO_OPTIONS_NO_QUIT
+            )
 
         self.display_nodetext()
         if not options:
             self.close_menu()
 
-    def run_exec_then_goto(self, runexec, goto, raw_string, runexec_kwargs=None, goto_kwargs=None):
+    def run_exec_then_goto(
+        self, runexec, goto, raw_string, runexec_kwargs=None, goto_kwargs=None
+    ):
         """
         Call 'exec' callback and goto (which may also be a callable) in sequence.
 
@@ -921,12 +965,18 @@ class EvMenu(object):
 
         """
         all_props = inspect.getmembers(self)
-        all_methods = [name for name, _ in inspect.getmembers(self, predicate=inspect.ismethod)]
-        all_builtins = [name for name, _ in inspect.getmembers(self, predicate=inspect.isbuiltin)]
+        all_methods = [
+            name for name, _ in inspect.getmembers(self, predicate=inspect.ismethod)
+        ]
+        all_builtins = [
+            name for name, _ in inspect.getmembers(self, predicate=inspect.isbuiltin)
+        ]
         props = {
             prop: value
             for prop, value in all_props
-            if prop not in all_methods and prop not in all_builtins and not prop.endswith("__")
+            if prop not in all_methods
+            and prop not in all_builtins
+            and not prop.endswith("__")
         }
 
         local = {
@@ -944,11 +994,13 @@ class EvMenu(object):
                 debugtxt = (
                     "|yMENU DEBUG full ... |n\n"
                     + "\n".join(
-                        "|y *|n {}: {}".format(key, val) for key, val in sorted(props.items())
+                        "|y *|n {}: {}".format(key, val)
+                        for key, val in sorted(props.items())
                     )
                     + "\n |yLOCAL VARS:|n\n"
                     + "\n".join(
-                        "|y *|n {}: {}".format(key, val) for key, val in sorted(local.items())
+                        "|y *|n {}: {}".format(key, val)
+                        for key, val in sorted(local.items())
                     )
                     + "\n |y... END MENU DEBUG|n"
                 )
@@ -958,12 +1010,16 @@ class EvMenu(object):
             debugtxt = (
                 "|yMENU DEBUG properties ... |n\n"
                 + "\n".join(
-                    "|y *|n {}: {}".format(key, crop(to_str(val, force_string=True), width=50))
+                    "|y *|n {}: {}".format(
+                        key, crop(to_str(val, force_string=True), width=50)
+                    )
                     for key, val in sorted(props.items())
                 )
                 + "\n |yLOCAL VARS:|n\n"
                 + "\n".join(
-                    "|y *|n {}: {}".format(key, crop(to_str(val, force_string=True), width=50))
+                    "|y *|n {}: {}".format(
+                        key, crop(to_str(val, force_string=True), width=50)
+                    )
                     for key, val in sorted(local.items())
                 )
                 + "\n |y... END MENU DEBUG|n"
@@ -989,7 +1045,9 @@ class EvMenu(object):
             # this will take precedence over the default commands
             # below
             goto, goto_kwargs, execfunc, exec_kwargs = self.options[cmd]
-            self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
+            self.run_exec_then_goto(
+                execfunc, goto, raw_string, exec_kwargs, goto_kwargs
+            )
         elif self.auto_look and cmd in ("look", "l"):
             self.display_nodetext()
         elif self.auto_help and cmd in ("help", "h"):
@@ -1000,7 +1058,9 @@ class EvMenu(object):
             self.print_debug_info(cmd[9:].strip())
         elif self.default:
             goto, goto_kwargs, execfunc, exec_kwargs = self.default
-            self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
+            self.run_exec_then_goto(
+                execfunc, goto, raw_string, exec_kwargs, goto_kwargs
+            )
         else:
             self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
 
@@ -1077,7 +1137,9 @@ class EvMenu(object):
                     table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
                 else:
                     # add a default white color to key
-                    table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
+                    table.append(
+                        " |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string)
+                    )
         ncols = _MAX_TEXT_WIDTH // table_width_max  # number of ncols
 
         if ncols < 0:
@@ -1099,14 +1161,19 @@ class EvMenu(object):
             table.extend([" " for i in range(nrows - nlastcol)])
 
         # build the actual table grid
-        table = [table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)]
+        table = [
+            table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)
+        ]
 
         # adjust the width of each column
         for icol in range(len(table)):
             col_width = (
-                max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
+                max(max(m_len(p) for p in part.split("\n")) for part in table[icol])
+                + colsep
             )
-            table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
+            table[icol] = [
+                pad(part, width=col_width + colsep, align="l") for part in table[icol]
+            ]
 
         # format the table into columns
         return str(EvTable(table=table, border="none"))
@@ -1127,7 +1194,9 @@ class EvMenu(object):
         sep = self.node_border_char
 
         if self._session:
-            screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
+            screen_width = self._session.protocol_flags.get(
+                "SCREENWIDTH", {0: _MAX_TEXT_WIDTH}
+            )[0]
         else:
             screen_width = _MAX_TEXT_WIDTH
 
@@ -1194,7 +1263,9 @@ def list_node(option_generator, select=None, pagesize=10):
                 if callable(select):
                     try:
                         if bool(getargspec(select).keywords):
-                            return select(caller, selection, available_choices=available_choices)
+                            return select(
+                                caller, selection, available_choices=available_choices
+                            )
                         else:
                             return select(caller, selection)
                     except Exception:
@@ -1210,7 +1281,9 @@ def list_node(option_generator, select=None, pagesize=10):
         def _list_node(caller, raw_string, **kwargs):
 
             option_list = (
-                option_generator(caller) if callable(option_generator) else option_generator
+                option_generator(caller)
+                if callable(option_generator)
+                else option_generator
             )
 
             npages = 0
@@ -1221,7 +1294,8 @@ def list_node(option_generator, select=None, pagesize=10):
             if option_list:
                 nall_options = len(option_list)
                 pages = [
-                    option_list[ind : ind + pagesize] for ind in range(0, nall_options, pagesize)
+                    option_list[ind : ind + pagesize]
+                    for ind in range(0, nall_options, pagesize)
                 ]
                 npages = len(pages)
 
@@ -1255,14 +1329,20 @@ def list_node(option_generator, select=None, pagesize=10):
                     options.append(
                         {
                             "key": ("|wp|Wrevious page|n", "p"),
-                            "goto": (lambda caller: None, {"optionpage_index": page_index - 1}),
+                            "goto": (
+                                lambda caller: None,
+                                {"optionpage_index": page_index - 1},
+                            ),
                         }
                     )
                 if page_index < npages - 1:
                     options.append(
                         {
                             "key": ("|wn|Wext page|n", "n"),
-                            "goto": (lambda caller: None, {"optionpage_index": page_index + 1}),
+                            "goto": (
+                                lambda caller: None,
+                                {"optionpage_index": page_index + 1},
+                            ),
                         }
                     )
 
@@ -1295,7 +1375,9 @@ def list_node(option_generator, select=None, pagesize=10):
             if isinstance(decorated_options, dict):
                 decorated_options = [decorated_options]
             for eopt in decorated_options:
-                cback = ("goto" in eopt and "goto") or ("exec" in eopt and "exec") or None
+                cback = (
+                    ("goto" in eopt and "goto") or ("exec" in eopt and "exec") or None
+                )
                 if cback:
                     signature = eopt[cback]
                     if callable(signature):
@@ -1355,7 +1437,9 @@ class CmdGetInput(Command):
             prompt = caller.ndb._getinput._prompt
             args = caller.ndb._getinput._args
             kwargs = caller.ndb._getinput._kwargs
-            result = self.raw_string.rstrip()  # we strip the ending line break caused by sending
+            result = (
+                self.raw_string.rstrip()
+            )  # we strip the ending line break caused by sending
 
             ok = not callback(caller, prompt, result, *args, **kwargs)
             if ok:
@@ -1503,7 +1587,11 @@ def test_start_node(caller):
             "desc": "Look and see a custom message.",
             "goto": "test_look_node",
         },
-        {"key": ("|yV|niew", "v"), "desc": "View your own name", "goto": "test_view_node"},
+        {
+            "key": ("|yV|niew", "v"),
+            "desc": "View your own name",
+            "goto": "test_view_node",
+        },
         {
             "key": ("|yD|nynamic", "d"),
             "desc": "Dynamic node",
@@ -1633,7 +1721,10 @@ def test_dynamic_node(caller, **kwargs):
             "desc": "execute a func with kwargs",
             "exec": (_test_call, {"mode": "exec", "test_random": random.random()}),
         },
-        {"desc": "dynamic_goto", "goto": (_test_call, {"mode": "goto", "goto_input": "test"})},
+        {
+            "desc": "dynamic_goto",
+            "goto": (_test_call, {"mode": "goto", "goto_input": "test"}),
+        },
         {
             "desc": "exec test_view_node with kwargs",
             "exec": ("test_view_node", {"executed_from_dynamic_node": True}),
