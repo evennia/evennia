@@ -185,7 +185,9 @@ def client_options(session, *args, **kwargs):
     old_flags = session.protocol_flags
     if not kwargs or kwargs.get("get", False):
         # return current settings
-        options = dict((key, old_flags[key]) for key in old_flags if key.upper() in _CLIENT_OPTIONS)
+        options = dict(
+            (key, old_flags[key]) for key in old_flags if key.upper() in _CLIENT_OPTIONS
+        )
         session.msg(client_options=options)
         return
 
@@ -255,7 +257,9 @@ def client_options(session, *args, **kwargs):
 
     session.protocol_flags.update(flags)
     # we must update the protocol flags on the portal session copy as well
-    session.sessionhandler.session_portal_partial_sync({session.sessid: {"protocol_flags": flags}})
+    session.sessionhandler.session_portal_partial_sync(
+        {session.sessid: {"protocol_flags": flags}}
+    )
 
 
 def get_client_options(session, *args, **kwargs):
@@ -272,7 +276,8 @@ def get_inputfuncs(session, *args, **kwargs):
     So we get it from the sessionhandler.
     """
     inputfuncsdict = dict(
-        (key, func.__doc__) for key, func in session.sessionhandler.get_inputfuncs().items()
+        (key, func.__doc__)
+        for key, func in session.sessionhandler.get_inputfuncs().items()
     )
     session.msg(get_inputfuncs=inputfuncsdict)
 

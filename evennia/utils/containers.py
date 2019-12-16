@@ -113,7 +113,8 @@ class GlobalScriptContainer(Container):
         """
         self.typeclass_storage = None
         self.loaded_data = {
-            key: {} if data is None else data for key, data in settings.GLOBAL_SCRIPTS.items()
+            key: {} if data is None else data
+            for key, data in settings.GLOBAL_SCRIPTS.items()
         }
 
     def _get_scripts(self, key=None, default=None):

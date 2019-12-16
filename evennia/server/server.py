@@ -70,7 +70,9 @@ WEBSERVER_INTERFACES = settings.WEBSERVER_INTERFACES
 GUEST_ENABLED = settings.GUEST_ENABLED
 
 # server-channel mappings
-WEBSERVER_ENABLED = settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
+WEBSERVER_ENABLED = (
+    settings.WEBSERVER_ENABLED and WEBSERVER_PORTS and WEBSERVER_INTERFACES
+)
 IRC_ENABLED = settings.IRC_ENABLED
 RSS_ENABLED = settings.RSS_ENABLED
 GRAPEVINE_ENABLED = settings.GRAPEVINE_ENABLED
@@ -124,7 +126,9 @@ def _server_maintenance():
     if _MAINTENANCE_COUNT == 1:
         # first call after a reload
         _GAMETIME_MODULE.SERVER_START_TIME = now
-        _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf("runtime", default=0.0)
+        _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf(
+            "runtime", default=0.0
+        )
     else:
         _GAMETIME_MODULE.SERVER_RUNTIME += 60.0
     # update game time and save it across reloads
@@ -263,7 +267,9 @@ class Evennia(object):
             )
         )
         mismatches = [
-            i for i, tup in enumerate(settings_compare) if tup[0] and tup[1] and tup[0] != tup[1]
+            i
+            for i, tup in enumerate(settings_compare)
+            if tup[0] and tup[1] and tup[0] != tup[1]
         ]
         if len(
             mismatches
@@ -275,7 +281,9 @@ class Evennia(object):
 
             # from evennia.accounts.models import AccountDB
             for i, prev, curr in (
-                (i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches
+                (i, tup[0], tup[1])
+                for i, tup in enumerate(settings_compare)
+                if i in mismatches
             ):
                 # update the database
                 INFO_DICT["info"] = (
@@ -427,13 +435,22 @@ class Evennia(object):
         else:
             if mode == "reset":
                 # like shutdown but don't unset the is_connected flag and don't disconnect sessions
-                yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
-                yield [p.at_server_shutdown() for p in AccountDB.get_all_cached_instances()]
+                yield [
+                    o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()
+                ]
+                yield [
+                    p.at_server_shutdown() for p in AccountDB.get_all_cached_instances()
+                ]
                 if self.amp_protocol:
                     yield self.sessions.all_sessions_portal_sync()
             else:  # shutdown
-                yield [_SA(p, "is_connected", False) for p in AccountDB.get_all_cached_instances()]
-                yield [o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()]
+                yield [
+                    _SA(p, "is_connected", False)
+                    for p in AccountDB.get_all_cached_instances()
+                ]
+                yield [
+                    o.at_server_shutdown() for o in ObjectDB.get_all_cached_instances()
+                ]
                 yield [
                     (p.unpuppet_all(), p.at_server_shutdown())
                     for p in AccountDB.get_all_cached_instances()
@@ -612,7 +629,8 @@ application = service.Application("Evennia")
 if "--nodaemon" not in sys.argv:
     # custom logging, but only if we are not running in interactive mode
     logfile = logger.WeeklyLogFile(
-        os.path.basename(settings.SERVER_LOG_FILE), os.path.dirname(settings.SERVER_LOG_FILE)
+        os.path.basename(settings.SERVER_LOG_FILE),
+        os.path.dirname(settings.SERVER_LOG_FILE),
     )
     application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
 

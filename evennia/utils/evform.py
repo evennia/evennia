@@ -168,7 +168,9 @@ def _to_ansi(obj, regexable=False):
         # escape the |-structure twice.
         obj = _ANSI_ESCAPE.sub(r"||||", obj)
     if isinstance(obj, dict):
-        return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
+        return dict(
+            (key, _to_ansi(value, regexable=regexable)) for key, value in obj.items()
+        )
     elif is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
@@ -208,7 +210,9 @@ class EvForm(object):
             dict((to_str(key), value) for key, value in cells.items()) if cells else {}
         )
         self.tables_mapping = (
-            dict((to_str(key), value) for key, value in tables.items()) if tables else {}
+            dict((to_str(key), value) for key, value in tables.items())
+            if tables
+            else {}
         )
 
         self.cellchar = "x"
@@ -280,7 +284,9 @@ class EvForm(object):
             dy_up = 0
             if iy > 0:
                 for i in range(1, iy):
-                    if all(form[iy - i][ix] == cellchar for ix in range(leftix, rightix)):
+                    if all(
+                        form[iy - i][ix] == cellchar for ix in range(leftix, rightix)
+                    ):
                         dy_up += 1
                     else:
                         break
@@ -288,7 +294,9 @@ class EvForm(object):
             dy_down = 0
             if iy < nform - 1:
                 for i in range(1, nform - iy - 1):
-                    if all(form[iy + i][ix] == cellchar for ix in range(leftix, rightix)):
+                    if all(
+                        form[iy + i][ix] == cellchar for ix in range(leftix, rightix)
+                    ):
                         dy_down += 1
                     else:
                         break
@@ -330,7 +338,9 @@ class EvForm(object):
             dy_up = 0
             if iy > 0:
                 for i in range(1, iy):
-                    if all(form[iy - i][ix] == tablechar for ix in range(leftix, rightix)):
+                    if all(
+                        form[iy - i][ix] == tablechar for ix in range(leftix, rightix)
+                    ):
                         dy_up += 1
                     else:
                         break
@@ -338,7 +348,9 @@ class EvForm(object):
             dy_down = 0
             if iy < nform - 1:
                 for i in range(1, nform - iy - 1):
-                    if all(form[iy + i][ix] == tablechar for ix in range(leftix, rightix)):
+                    if all(
+                        form[iy + i][ix] == tablechar for ix in range(leftix, rightix)
+                    ):
                         dy_down += 1
                     else:
                         break
@@ -404,8 +416,14 @@ class EvForm(object):
         kwargs.pop("width", None)
         kwargs.pop("height", None)
 
-        new_cells = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
-        new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
+        new_cells = (
+            dict((to_str(key), value) for key, value in cells.items()) if cells else {}
+        )
+        new_tables = (
+            dict((to_str(key), value) for key, value in tables.items())
+            if tables
+            else {}
+        )
 
         self.cells_mapping.update(new_cells)
         self.tables_mapping.update(new_tables)
@@ -483,7 +501,9 @@ def _test():
         }
     )
     # create the EvTables
-    tableA = EvTable("HP", "MV", "MP", table=[["**"], ["*****"], ["***"]], border="incols")
+    tableA = EvTable(
+        "HP", "MV", "MP", table=[["**"], ["*****"], ["***"]], border="incols"
+    )
     tableB = EvTable(
         "Skill",
         "Value",

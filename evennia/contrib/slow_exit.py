@@ -81,7 +81,12 @@ class SlowExit(DefaultExit):
 # set speed - command
 #
 
-SPEED_DESCS = {"stroll": "strolling", "walk": "walking", "run": "running", "sprint": "sprinting"}
+SPEED_DESCS = {
+    "stroll": "strolling",
+    "walk": "walking",
+    "run": "running",
+    "sprint": "sprinting",
+}
 
 
 class CmdSetSpeed(Command):

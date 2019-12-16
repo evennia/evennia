@@ -114,7 +114,9 @@ def duration(entry, option_key="Duration", **kwargs):
         elif _re.match(r"^[\d]+y$", interval):
             days += int(interval.rstrip("y")) * 365
         else:
-            raise ValueError(f"Could not convert section '{interval}' to a {option_key}.")
+            raise ValueError(
+                f"Could not convert section '{interval}' to a {option_key}."
+            )
 
     return _dt.timedelta(days, seconds, 0, 0, minutes, hours, weeks)
 
@@ -122,7 +124,9 @@ def duration(entry, option_key="Duration", **kwargs):
 def future(entry, option_key="Future Datetime", from_tz=None, **kwargs):
     time = datetime(entry, option_key, from_tz=from_tz)
     if time < _dt.datetime.utcnow().replace(tzinfo=_dt.timezone.utc):
-        raise ValueError(f"That {option_key} is in the past! Must give a Future datetime!")
+        raise ValueError(
+            f"That {option_key} is in the past! Must give a Future datetime!"
+        )
     return time
 
 
@@ -132,7 +136,9 @@ def signed_integer(entry, option_key="Signed Integer", **kwargs):
     try:
         num = int(entry)
     except ValueError:
-        raise ValueError(f"Could not convert '{entry}' to a whole number for {option_key}!")
+        raise ValueError(
+            f"Could not convert '{entry}' to a whole number for {option_key}!"
+        )
     return num
 
 
@@ -146,7 +152,9 @@ def positive_integer(entry, option_key="Positive Integer", **kwargs):
 def unsigned_integer(entry, option_key="Unsigned Integer", **kwargs):
     num = signed_integer(entry, option_key)
     if not num >= 0:
-        raise ValueError(f"{option_key} must be a whole number greater than or equal to 0!")
+        raise ValueError(
+            f"{option_key} must be a whole number greater than or equal to 0!"
+        )
     return num
 
 
@@ -214,7 +222,9 @@ def lock(entry, option_key="locks", access_options=None, **kwargs):
             raise ValueError("Must enter an access type!")
         if access_options:
             if access_type not in access_options:
-                raise ValueError(f"Access type must be one of: {', '.join(access_options)}")
+                raise ValueError(
+                    f"Access type must be one of: {', '.join(access_options)}"
+                )
         if not lockfunc:
             raise ValueError("Lock func not entered.")
     return entry

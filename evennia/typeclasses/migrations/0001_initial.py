@@ -17,10 +17,16 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.AutoField(
-                        verbose_name="ID", serialize=False, auto_created=True, primary_key=True
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
                     ),
                 ),
-                ("db_key", models.CharField(max_length=255, verbose_name="key", db_index=True)),
+                (
+                    "db_key",
+                    models.CharField(max_length=255, verbose_name="key", db_index=True),
+                ),
                 (
                     "db_value",
                     evennia.utils.picklefield.PickledObjectField(
@@ -81,7 +87,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "db_date_created",
-                    models.DateTimeField(auto_now_add=True, verbose_name="date_created"),
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="date_created"
+                    ),
                 ),
             ],
             options={"verbose_name": "Evennia Attribute"},
@@ -93,7 +101,10 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.AutoField(
-                        verbose_name="ID", serialize=False, auto_created=True, primary_key=True
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
                     ),
                 ),
                 (

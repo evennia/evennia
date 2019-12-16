@@ -39,25 +39,25 @@ SERVERNAME = "testing_mygame"
 # Testing database types
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'evennia',
-        'USER': 'evennia',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',  # use default port
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': 'set collation_connection=utf8mb4_unicode_ci'
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "evennia",
+        "USER": "evennia",
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "",  # use default port
+        "OPTIONS": {
+            "charset": "utf8mb4",
+            "init_command": "set collation_connection=utf8mb4_unicode_ci",
         },
-        'TEST': {
-            'NAME': 'default',
-            'OPTIONS': {
-                'charset': 'utf8mb4',
+        "TEST": {
+            "NAME": "default",
+            "OPTIONS": {
+                "charset": "utf8mb4",
                 # 'init_command': 'set collation_connection=utf8mb4_unicode_ci'
-                'init_command': "SET NAMES 'utf8mb4'"
-            }
-        }
+                "init_command": "SET NAMES 'utf8mb4'",
+            },
+        },
     }
 }
 

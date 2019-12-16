@@ -99,7 +99,9 @@ class CommandTest(EvenniaTest):
         cmdobj.cmdset = cmdset
         cmdobj.session = SESSIONS.session_from_sessid(1)
         cmdobj.account = self.account
-        cmdobj.raw_string = raw_string if raw_string is not None else cmdobj.key + " " + args
+        cmdobj.raw_string = (
+            raw_string if raw_string is not None else cmdobj.key + " " + args
+        )
         cmdobj.obj = obj or (caller if caller else self.char1)
         # test
         old_msg = receiver.msg
@@ -140,14 +142,18 @@ class CommandTest(EvenniaTest):
             for name, args, kwargs in receiver.msg.mock_calls
         ]
         # Get the first element of a tuple if msg received a tuple instead of a string
-        stored_msg = [str(smsg[0]) if isinstance(smsg, tuple) else str(smsg) for smsg in stored_msg]
+        stored_msg = [
+            str(smsg[0]) if isinstance(smsg, tuple) else str(smsg)
+            for smsg in stored_msg
+        ]
         if msg is not None:
             msg = str(msg)  # to be safe, e.g. `py` command may return ints
             # set our separator for returned messages based on parsing ansi or not
             msg_sep = "|" if noansi else "||"
             # Have to strip ansi for each returned message for the regex to handle it correctly
             returned_msg = msg_sep.join(
-                _RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi)) for mess in stored_msg
+                _RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi))
+                for mess in stored_msg
             ).strip()
             if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
                 sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
@@ -202,8 +208,12 @@ class TestGeneral(CommandTest):
         self.assertEqual(
             "testaliasedstring2", self.char1.nicks.get("testalias", category="account")
         )
-        self.assertEqual(None, self.char1.account.nicks.get("testalias", category="account"))
-        self.assertEqual("testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
+        self.assertEqual(
+            None, self.char1.account.nicks.get("testalias", category="account")
+        )
+        self.assertEqual(
+            "testaliasedstring3", self.char1.nicks.get("testalias", category="object")
+        )
 
     def test_get_and_drop(self):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")
@@ -230,9 +240,13 @@ class TestGeneral(CommandTest):
             "Switches matched: ['test', 'testswitch', 'testswitch2']",
         )
         self.call(CmdTest(), "/test", "Switches matched: ['test']")
-        self.call(CmdTest(), "/test/testswitch", "Switches matched: ['test', 'testswitch']")
         self.call(
-            CmdTest(), "/testswitch/testswitch2", "Switches matched: ['testswitch', 'testswitch2']"
+            CmdTest(), "/test/testswitch", "Switches matched: ['test', 'testswitch']"
+        )
+        self.call(
+            CmdTest(),
+            "/testswitch/testswitch2",
+            "Switches matched: ['testswitch', 'testswitch2']",
         )
         self.call(CmdTest(), "/testswitch", "Switches matched: ['testswitch']")
         self.call(CmdTest(), "/testswitch2", "Switches matched: ['testswitch2']")
@@ -274,7 +288,9 @@ class TestHelp(CommandTest):
             "testhelp, General = This is a test",
             "Topic 'testhelp' was successfully created.",
         )
-        self.call(help.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet())
+        self.call(
+            help.CmdHelp(), "testhelp", "Help for testhelp", cmdset=CharacterCmdSet()
+        )
 
 
 class TestSystem(CommandTest):
@@ -332,7 +348,10 @@ class TestAccount(CommandTest):
     def test_ooc_look(self):
         if settings.MULTISESSION_MODE < 2:
             self.call(
-                account.CmdOOCLook(), "", "You are out-of-character (OOC).", caller=self.account
+                account.CmdOOCLook(),
+                "",
+                "You are out-of-character (OOC).",
+                caller=self.account,
             )
         if settings.MULTISESSION_MODE == 2:
             self.call(
@@ -348,7 +367,11 @@ class TestAccount(CommandTest):
     def test_ic(self):
         self.account.unpuppet_object(self.session)
         self.call(
-            account.CmdIC(), "Char", "You become Char.", caller=self.account, receiver=self.char1
+            account.CmdIC(),
+            "Char",
+            "You become Char.",
+            caller=self.account,
+            receiver=self.char1,
         )
 
     def test_password(self):
@@ -367,11 +390,16 @@ class TestAccount(CommandTest):
 
     def test_quit(self):
         self.call(
-            account.CmdQuit(), "", "Quitting. Hope to see you again, soon.", caller=self.account
+            account.CmdQuit(),
+            "",
+            "Quitting. Hope to see you again, soon.",
+            caller=self.account,
         )
 
     def test_sessions(self):
-        self.call(account.CmdSessions(), "", "Your current session(s):", caller=self.account)
+        self.call(
+            account.CmdSessions(), "", "Your current session(s):", caller=self.account
+        )
 
     def test_color_test(self):
         self.call(account.CmdColorTest(), "ansi", "ANSI colors:", caller=self.account)
@@ -456,7 +484,11 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
 
         self.char1.db.test = "testval"
-        self.call(building.CmdExamine(), "self/test", "Persistent attributes:\n test = testval")
+        self.call(
+            building.CmdExamine(),
+            "self/test",
+            "Persistent attributes:\n test = testval",
+        )
         self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
         self.call(building.CmdExamine(), "out", "Name/key: out")
 
@@ -476,7 +508,11 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetObjAlias(), "", "Usage: ")
         self.call(building.CmdSetObjAlias(), "NotFound =", "Could not find 'NotFound'.")
 
-        self.call(building.CmdSetObjAlias(), "Obj", "Aliases for Obj(#{}): 'testobj1b'".format(oid))
+        self.call(
+            building.CmdSetObjAlias(),
+            "Obj",
+            "Aliases for Obj(#{}): 'testobj1b'".format(oid),
+        )
         self.call(building.CmdSetObjAlias(), "Obj2 =", "Cleared aliases from Obj2")
         self.call(building.CmdSetObjAlias(), "Obj2 =", "No aliases to clear.")
 
@@ -487,7 +523,11 @@ class TestBuilding(CommandTest):
             "Copied Obj to 'TestObj3' (aliases: ['TestObj3b']",
         )
         self.call(building.CmdCopy(), "", "Usage: ")
-        self.call(building.CmdCopy(), "Obj", "Identical copy of Obj, named 'Obj_copy' was created.")
+        self.call(
+            building.CmdCopy(),
+            "Obj",
+            "Identical copy of Obj, named 'Obj_copy' was created.",
+        )
         self.call(building.CmdCopy(), "NotFound = Foo", "Could not find 'NotFound'.")
 
     def test_attribute_commands(self):
@@ -502,8 +542,14 @@ class TestBuilding(CommandTest):
             'Obj2/test2="value2"',
             "Created attribute Obj2/test2 = 'value2'",
         )
-        self.call(building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2")
-        self.call(building.CmdSetAttribute(), "Obj2/NotFound", "Obj2 has no attribute 'notfound'.")
+        self.call(
+            building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2"
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj2/NotFound",
+            "Obj2 has no attribute 'notfound'.",
+        )
 
         with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
@@ -527,35 +573,59 @@ class TestBuilding(CommandTest):
             "(value: 'value2')",
         )
         self.call(building.CmdMvAttr(), "", "Usage: ")
-        self.call(building.CmdMvAttr(), "Obj2/test2 = Obj/test3", "Moved Obj2.test2 -> Obj.test3")
+        self.call(
+            building.CmdMvAttr(),
+            "Obj2/test2 = Obj/test3",
+            "Moved Obj2.test2 -> Obj.test3",
+        )
         self.call(building.CmdCpAttr(), "", "Usage: ")
-        self.call(building.CmdCpAttr(), "Obj/test1 = Obj2/test3", "Copied Obj.test1 -> Obj2.test3")
+        self.call(
+            building.CmdCpAttr(),
+            "Obj/test1 = Obj2/test3",
+            "Copied Obj.test1 -> Obj2.test3",
+        )
 
         self.call(building.CmdWipe(), "", "Usage: ")
-        self.call(building.CmdWipe(), "Obj2/test2/test3", "Wiped attributes test2,test3 on Obj2.")
+        self.call(
+            building.CmdWipe(),
+            "Obj2/test2/test3",
+            "Wiped attributes test2,test3 on Obj2.",
+        )
         self.call(building.CmdWipe(), "Obj2", "Wiped all attributes on Obj2.")
 
     def test_nested_attribute_commands(self):
         # list - adding white space proves real parsing
         self.call(
-            building.CmdSetAttribute(), "Obj/test1=[1,2]", "Created attribute Obj/test1 = [1, 2]"
+            building.CmdSetAttribute(),
+            "Obj/test1=[1,2]",
+            "Created attribute Obj/test1 = [1, 2]",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 = [1, 2]")
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 1")
-        self.call(building.CmdSetAttribute(), "Obj/test1[1]", "Attribute Obj/test1[1] = 2")
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1", "Attribute Obj/test1 = [1, 2]"
+        )
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 1"
+        )
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1[1]", "Attribute Obj/test1[1] = 2"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0] = 99",
             "Modified attribute Obj/test1 = [99, 2]",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 99")
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 99"
+        )
         # list delete
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[0] =",
             "Deleted attribute 'test1[0]' (= nested) from Obj.",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 2")
+        self.call(
+            building.CmdSetAttribute(), "Obj/test1[0]", "Attribute Obj/test1[0] = 2"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test1[1]",
@@ -586,17 +656,35 @@ class TestBuilding(CommandTest):
             "Created attribute Obj/test2 = {'one': 1, 'two': 2}",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 1, 'two': 2}"
+            building.CmdSetAttribute(),
+            "Obj/test2",
+            "Attribute Obj/test2 = {'one': 1, 'two': 2}",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 1")
-        self.call(building.CmdSetAttribute(), "Obj/test2['one]", "Attribute Obj/test2['one] = 1")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one']",
+            "Attribute Obj/test2['one'] = 1",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one]",
+            "Attribute Obj/test2['one] = 1",
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2['one']=99",
             "Modified attribute Obj/test2 = {'one': 99, 'two': 2}",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test2['one']", "Attribute Obj/test2['one'] = 99")
-        self.call(building.CmdSetAttribute(), "Obj/test2['two']", "Attribute Obj/test2['two'] = 2")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['one']",
+            "Attribute Obj/test2['one'] = 99",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test2['two']",
+            "Attribute Obj/test2['two'] = 2",
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test2[+'three']",
@@ -629,7 +717,9 @@ class TestBuilding(CommandTest):
             "Obj has no attribute 'test2['two']'. (Nested lookups attempted)",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test2", "Attribute Obj/test2 = {'one': 99, 'three': 3}"
+            building.CmdSetAttribute(),
+            "Obj/test2",
+            "Attribute Obj/test2 = {'one': 99, 'three': 3}",
         )
         self.call(
             building.CmdSetAttribute(),
@@ -654,7 +744,9 @@ class TestBuilding(CommandTest):
 
         # tuple
         self.call(
-            building.CmdSetAttribute(), "Obj/tup = (1,2)", "Created attribute Obj/tup = (1, 2)"
+            building.CmdSetAttribute(),
+            "Obj/tup = (1,2)",
+            "Created attribute Obj/tup = (1, 2)",
         )
         self.call(
             building.CmdSetAttribute(),
@@ -685,15 +777,23 @@ class TestBuilding(CommandTest):
             "Created attribute Obj/test3 = [{'one': 1}]",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test3[0]['one']", "Attribute Obj/test3[0]['one'] = 1"
+            building.CmdSetAttribute(),
+            "Obj/test3[0]['one']",
+            "Attribute Obj/test3[0]['one'] = 1",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {'one': 1}")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test3[0]",
+            "Attribute Obj/test3[0] = {'one': 1}",
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test3[0]['one'] =",
             "Deleted attribute 'test3[0]['one']' (= nested) from Obj.",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {}")
+        self.call(
+            building.CmdSetAttribute(), "Obj/test3[0]", "Attribute Obj/test3[0] = {}"
+        )
         self.call(building.CmdSetAttribute(), "Obj/test3", "Attribute Obj/test3 = [{}]")
 
         # Naughty keys
@@ -702,23 +802,35 @@ class TestBuilding(CommandTest):
             "Obj/test4[0]='foo'",
             "Created attribute Obj/test4[0] = 'foo'",
         )
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
+        self.call(
+            building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4=[{'one': 1}]",
             "Created attribute Obj/test4 = [{'one': 1}]",
         )
         self.call(
-            building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1"
+            building.CmdSetAttribute(),
+            "Obj/test4[0]['one']",
+            "Attribute Obj/test4[0]['one'] = 1",
         )
         # Prefer nested items
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = {'one': 1}")
         self.call(
-            building.CmdSetAttribute(), "Obj/test4[0]['one']", "Attribute Obj/test4[0]['one'] = 1"
+            building.CmdSetAttribute(),
+            "Obj/test4[0]",
+            "Attribute Obj/test4[0] = {'one': 1}",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test4[0]['one']",
+            "Attribute Obj/test4[0]['one'] = 1",
         )
         # Restored access
         self.call(building.CmdWipe(), "Obj/test4", "Wiped attributes test4 on Obj.")
-        self.call(building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo")
+        self.call(
+            building.CmdSetAttribute(), "Obj/test4[0]", "Attribute Obj/test4[0] = foo"
+        )
         self.call(
             building.CmdSetAttribute(),
             "Obj/test4[0]['one']",
@@ -736,7 +848,11 @@ class TestBuilding(CommandTest):
             # duplicate keys don't cause issues
             "test5[0][0]": [("test5", [0, 0]), ("test5[0]", [0]), ("test5[0][0]", [])],
             # String ints preserved
-            'test6["0"][0]': [("test6", ["0", 0]), ('test6["0"]', [0]), ('test6["0"][0]', [])],
+            'test6["0"][0]': [
+                ("test6", ["0", 0]),
+                ('test6["0"]', [0]),
+                ('test6["0"][0]', []),
+            ],
             # Unmatched []
             "test7[dict": [("test7[dict", [])],
         }
@@ -776,16 +892,24 @@ class TestBuilding(CommandTest):
             "*TestAccount=TestAccountRenamed",
             "Account's name changed to 'TestAccountRenamed'.",
         )
-        self.call(building.CmdName(), "*NotFound=TestAccountRenamed", "Could not find '*NotFound'")
         self.call(
-            building.CmdName(), "Obj3=Obj4;foo;bar", "Object's name changed to 'Obj4' (foo, bar)."
+            building.CmdName(),
+            "*NotFound=TestAccountRenamed",
+            "Could not find '*NotFound'",
+        )
+        self.call(
+            building.CmdName(),
+            "Obj3=Obj4;foo;bar",
+            "Object's name changed to 'Obj4' (foo, bar).",
         )
         self.call(building.CmdName(), "Obj4=", "No names or aliases defined!")
 
     def test_desc(self):
         oid = self.obj2.id
         self.call(
-            building.CmdDesc(), "Obj2=TestDesc", "The description was set on Obj2(#{}).".format(oid)
+            building.CmdDesc(),
+            "Obj2=TestDesc",
+            "The description was set on Obj2(#{}).".format(oid),
         )
         self.call(building.CmdDesc(), "", "Usage: ")
 
@@ -807,7 +931,11 @@ class TestBuilding(CommandTest):
         oid = self.obj2.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2=", "The description was set on Obj2(#{}).".format(oid))
+        self.call(
+            building.CmdDesc(),
+            "Obj2=",
+            "The description was set on Obj2(#{}).".format(oid),
+        )
         assert self.obj2.db.desc == "" and self.obj2.db.desc != o2d
         assert self.room1.db.desc == r1d
 
@@ -816,7 +944,11 @@ class TestBuilding(CommandTest):
         rid = self.room1.id
         o2d = self.obj2.db.desc
         r1d = self.room1.db.desc
-        self.call(building.CmdDesc(), "Obj2", "The description was set on Room(#{}).".format(rid))
+        self.call(
+            building.CmdDesc(),
+            "Obj2",
+            "The description was set on Room(#{}).".format(rid),
+        )
         assert self.obj2.db.desc == o2d
         assert self.room1.db.desc == "Obj2" and self.room1.db.desc != r1d
 
@@ -858,14 +990,22 @@ class TestBuilding(CommandTest):
         )
 
     def test_dig(self):
-        self.call(building.CmdDig(), "TestRoom1=testroom;tr,back;b", "Created room TestRoom1")
+        self.call(
+            building.CmdDig(), "TestRoom1=testroom;tr,back;b", "Created room TestRoom1"
+        )
         self.call(building.CmdDig(), "", "Usage: ")
 
     def test_tunnel(self):
         self.call(building.CmdTunnel(), "n = TestRoom2;test2", "Created room TestRoom2")
         self.call(building.CmdTunnel(), "", "Usage: ")
-        self.call(building.CmdTunnel(), "foo = TestRoom2;test2", "tunnel can only understand the")
-        self.call(building.CmdTunnel(), "/tel e = TestRoom3;test3", "Created room TestRoom3")
+        self.call(
+            building.CmdTunnel(),
+            "foo = TestRoom2;test2",
+            "tunnel can only understand the",
+        )
+        self.call(
+            building.CmdTunnel(), "/tel e = TestRoom3;test3", "Created room TestRoom3"
+        )
         DefaultRoom.objects.get_family(db_key="TestRoom3")
         exits = DefaultExit.objects.filter_family(db_key__in=("east", "west"))
         self.assertEqual(len(exits), 2)
@@ -879,20 +1019,32 @@ class TestBuilding(CommandTest):
 
     def test_exit_commands(self):
         self.call(
-            building.CmdOpen(), "TestExit1=Room2", "Created new Exit 'TestExit1' from Room to Room2"
+            building.CmdOpen(),
+            "TestExit1=Room2",
+            "Created new Exit 'TestExit1' from Room to Room2",
         )
-        self.call(building.CmdLink(), "TestExit1=Room", "Link created TestExit1 -> Room (one way).")
+        self.call(
+            building.CmdLink(),
+            "TestExit1=Room",
+            "Link created TestExit1 -> Room (one way).",
+        )
         self.call(building.CmdUnLink(), "", "Usage: ")
         self.call(building.CmdLink(), "NotFound", "Could not find 'NotFound'.")
         self.call(building.CmdLink(), "TestExit", "TestExit1 is an exit to Room.")
-        self.call(building.CmdLink(), "Obj", "Obj is not an exit. Its home location is Room.")
         self.call(
-            building.CmdUnLink(), "TestExit1", "Former exit TestExit1 no longer links anywhere."
+            building.CmdLink(), "Obj", "Obj is not an exit. Its home location is Room."
+        )
+        self.call(
+            building.CmdUnLink(),
+            "TestExit1",
+            "Former exit TestExit1 no longer links anywhere.",
         )
 
         self.char1.location = self.room2
         self.call(
-            building.CmdOpen(), "TestExit2=Room", "Created new Exit 'TestExit2' from Room2 to Room."
+            building.CmdOpen(),
+            "TestExit2=Room",
+            "Created new Exit 'TestExit2' from Room2 to Room.",
         )
         self.call(
             building.CmdOpen(),
@@ -902,7 +1054,9 @@ class TestBuilding(CommandTest):
 
         # ensure it matches locally first
         self.call(
-            building.CmdLink(), "TestExit=Room2", "Link created TestExit2 -> Room2 (one way)."
+            building.CmdLink(),
+            "TestExit=Room2",
+            "Link created TestExit2 -> Room2 (one way).",
         )
         self.call(
             building.CmdLink(),
@@ -923,21 +1077,29 @@ class TestBuilding(CommandTest):
         # ensure can still match globally when not a local name
         self.call(building.CmdLink(), "TestExit1=Room2", "Note: TestExit1")
         self.call(
-            building.CmdLink(), "TestExit1=", "Former exit TestExit1 no longer links anywhere."
+            building.CmdLink(),
+            "TestExit1=",
+            "Former exit TestExit1 no longer links anywhere.",
         )
 
     def test_set_home(self):
         self.call(
-            building.CmdSetHome(), "Obj = Room2", "Home location of Obj was changed from Room"
+            building.CmdSetHome(),
+            "Obj = Room2",
+            "Home location of Obj was changed from Room",
         )
         self.call(building.CmdSetHome(), "", "Usage: ")
         self.call(building.CmdSetHome(), "self", "Char's current home is Room")
         self.call(building.CmdSetHome(), "Obj", "Obj's current home is Room2")
         self.obj1.home = None
-        self.call(building.CmdSetHome(), "Obj = Room2", "Home location of Obj was set to Room")
+        self.call(
+            building.CmdSetHome(), "Obj = Room2", "Home location of Obj was set to Room"
+        )
 
     def test_list_cmdsets(self):
-        self.call(building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:")
+        self.call(
+            building.CmdListCmdSets(), "", "<DefaultCharacter (Union, prio 0, perm)>:"
+        )
         self.call(building.CmdListCmdSets(), "NotFound", "Could not find 'NotFound'")
 
     def test_typeclass(self):
@@ -971,7 +1133,9 @@ class TestBuilding(CommandTest):
             "/force Obj = evennia.objects.objects.DefaultExit",
             "Obj updated its existing typeclass ",
         )
-        self.call(building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultObject")
+        self.call(
+            building.CmdTypeclass(), "Obj = evennia.objects.objects.DefaultObject"
+        )
         self.call(
             building.CmdTypeclass(),
             "/show Obj",
@@ -993,13 +1157,19 @@ class TestBuilding(CommandTest):
 
     def test_lock(self):
         self.call(building.CmdLock(), "", "Usage: ")
-        self.call(building.CmdLock(), "Obj = test:all()", "Added lock 'test:all()' to Obj.")
+        self.call(
+            building.CmdLock(), "Obj = test:all()", "Added lock 'test:all()' to Obj."
+        )
         self.call(
             building.CmdLock(),
             "*TestAccount = test:all()",
             "Added lock 'test:all()' to TestAccount",
         )
-        self.call(building.CmdLock(), "Obj/notfound", "Obj has no lock of access type 'notfound'.")
+        self.call(
+            building.CmdLock(),
+            "Obj/notfound",
+            "Obj has no lock of access type 'notfound'.",
+        )
         self.call(building.CmdLock(), "Obj/test", "test:all()")
         self.call(
             building.CmdLock(),
@@ -1020,7 +1190,9 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "", "Usage: ")
         self.call(building.CmdFind(), "oom2", "One Match")
         self.call(building.CmdFind(), "oom2 = 1-{}".format(rmax), "One Match")
-        self.call(building.CmdFind(), "oom2 = 1 {}".format(rmax), "One Match")  # space works too
+        self.call(
+            building.CmdFind(), "oom2 = 1 {}".format(rmax), "One Match"
+        )  # space works too
         self.call(building.CmdFind(), "Char2", "One Match", cmdstring="locate")
         self.call(
             building.CmdFind(),
@@ -1046,7 +1218,9 @@ class TestBuilding(CommandTest):
     def test_script(self):
         self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
         self.call(
-            building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added"
+            building.CmdScript(),
+            "Obj = scripts.Script",
+            "Script scripts.Script successfully added",
         )
         self.call(building.CmdScript(), "", "Usage: ")
         self.call(
@@ -1062,7 +1236,9 @@ class TestBuilding(CommandTest):
         self.call(building.CmdScript(), "/stop Obj", "Stopping script")
 
         self.call(
-            building.CmdScript(), "Obj = scripts.Script", "Script scripts.Script successfully added"
+            building.CmdScript(),
+            "Obj = scripts.Script",
+            "Script scripts.Script successfully added",
         )
         self.call(
             building.CmdScript(),
@@ -1093,12 +1269,18 @@ class TestBuilding(CommandTest):
                 oid, rid, rid2
             ),
         )
-        self.call(building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'.")
         self.call(
-            building.CmdTeleport(), "Obj = Obj", "You can't teleport an object inside of itself!"
+            building.CmdTeleport(), "NotFound = Room", "Could not find 'NotFound'."
+        )
+        self.call(
+            building.CmdTeleport(),
+            "Obj = Obj",
+            "You can't teleport an object inside of itself!",
         )
 
-        self.call(building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location.")
+        self.call(
+            building.CmdTeleport(), "/tonone Obj2", "Teleported Obj2 -> None-location."
+        )
         self.call(building.CmdTeleport(), "/quiet Room2", "Room2(#{})".format(rid2))
         self.call(
             building.CmdTeleport(),
@@ -1127,19 +1309,30 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdTag(),
             "Obj",
-            "Tags on Obj: 'testtag', 'testtag2', " "'testtag2' (category: category1), 'testtag3'",
+            "Tags on Obj: 'testtag', 'testtag2', "
+            "'testtag2' (category: category1), 'testtag3'",
         )
 
-        self.call(building.CmdTag(), "/search NotFound", "No objects found with tag 'NotFound'.")
-        self.call(building.CmdTag(), "/search testtag", "Found 1 object with tag 'testtag':")
-        self.call(building.CmdTag(), "/search testtag2", "Found 1 object with tag 'testtag2':")
+        self.call(
+            building.CmdTag(),
+            "/search NotFound",
+            "No objects found with tag 'NotFound'.",
+        )
+        self.call(
+            building.CmdTag(), "/search testtag", "Found 1 object with tag 'testtag':"
+        )
+        self.call(
+            building.CmdTag(), "/search testtag2", "Found 1 object with tag 'testtag2':"
+        )
         self.call(
             building.CmdTag(),
             "/search testtag2:category1",
             "Found 1 object with tag 'testtag2' (category: 'category1'):",
         )
 
-        self.call(building.CmdTag(), "/del Obj = testtag3", "Removed tag 'testtag3' from Obj.")
+        self.call(
+            building.CmdTag(), "/del Obj = testtag3", "Removed tag 'testtag3' from Obj."
+        )
         self.call(
             building.CmdTag(),
             "/del Obj",
@@ -1175,7 +1368,8 @@ class TestBuilding(CommandTest):
 
         self.call(
             building.CmdSpawn(),
-            "/save {'key':'Test Char', " "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+            "/save {'key':'Test Char', "
+            "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
             "To save a prototype it must have the 'prototype_key' set.",
         )
 
@@ -1285,7 +1479,9 @@ class TestBuilding(CommandTest):
 
         # spawn/edit with invalid prototype
         msg = self.call(
-            building.CmdSpawn(), "/edit NO_EXISTS", "No prototype 'NO_EXISTS' was found."
+            building.CmdSpawn(),
+            "/edit NO_EXISTS",
+            "No prototype 'NO_EXISTS' was found.",
         )
 
         # spawn/examine (missing prototype)
@@ -1300,7 +1496,11 @@ class TestBuilding(CommandTest):
 
         # spawn/examine with invalid prototype
         # shows error
-        self.call(building.CmdSpawn(), "/examine NO_EXISTS", "No prototype 'NO_EXISTS' was found.")
+        self.call(
+            building.CmdSpawn(),
+            "/examine NO_EXISTS",
+            "No prototype 'NO_EXISTS' was found.",
+        )
 
 
 class TestComms(CommandTest):

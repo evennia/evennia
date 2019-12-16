@@ -172,7 +172,9 @@ class Ttype(object):
                     # a number - determine the actual capabilities
                     option = int(option)
                     support = dict(
-                        (capability, True) for bitval, capability in MTTS if option & bitval > 0
+                        (capability, True)
+                        for bitval, capability in MTTS
+                        if option & bitval > 0
                     )
                     self.protocol.protocol_flags.update(support)
                 else:

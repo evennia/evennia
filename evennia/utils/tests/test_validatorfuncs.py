@@ -30,7 +30,9 @@ class TestValidatorFuncs(TestCase):
     def test_datetime_ok(self):
         for dt in ["Oct 12 1:00 1492", "Jan 2 12:00 2020", "Dec 31 00:00 2018"]:
             self.assertTrue(
-                isinstance(validatorfuncs.datetime(dt, from_tz=pytz.UTC), datetime.datetime)
+                isinstance(
+                    validatorfuncs.datetime(dt, from_tz=pytz.UTC), datetime.datetime
+                )
             )
 
     def test_datetime_raises_ValueError(self):
@@ -48,7 +50,9 @@ class TestValidatorFuncs(TestCase):
         )
         # values may be duplicated
         self.assertEqual(
-            datetime.timedelta((1 + 7) + (6 + 12) * 365, 2 + 8, 0, 0, 3 + 9, 4 + 10, 5 + 11),
+            datetime.timedelta(
+                (1 + 7) + (6 + 12) * 365, 2 + 8, 0, 0, 3 + 9, 4 + 10, 5 + 11
+            ),
             validatorfuncs.duration("1d 2s 3m 4h 5w 6y 7d 8s 9m 10h 11w 12y"),
         )
 
@@ -61,7 +65,9 @@ class TestValidatorFuncs(TestCase):
         year = int(datetime.datetime.utcnow().strftime("%Y"))
         for f in [f"Jan 2 12:00 {year+1}", f"Dec 31 00:00 {year+1}"]:
             self.assertTrue(
-                isinstance(validatorfuncs.future(f, from_tz=pytz.UTC), datetime.datetime)
+                isinstance(
+                    validatorfuncs.future(f, from_tz=pytz.UTC), datetime.datetime
+                )
             )
 
     def test_future_raises_ValueError(self):

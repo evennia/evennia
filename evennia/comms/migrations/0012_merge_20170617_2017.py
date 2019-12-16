@@ -7,6 +7,9 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [("comms", "0011_auto_20170606_1731"), ("comms", "0011_auto_20170217_2039")]
+    dependencies = [
+        ("comms", "0011_auto_20170606_1731"),
+        ("comms", "0011_auto_20170217_2039"),
+    ]
 
     operations = []

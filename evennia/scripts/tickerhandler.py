@@ -446,7 +446,9 @@ class TickerHandler(object):
                         continue
                     # we must rebuild the store_key here since obj must not be
                     # stored as the object itself for the store_key to be hashable.
-                    store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
+                    store_key = self._store_key(
+                        obj, path, interval, callfunc, idstring, persistent
+                    )
 
                     if obj and callfunc:
                         kwargs["_callback"] = callfunc
@@ -458,17 +460,24 @@ class TickerHandler(object):
                         kwargs["_obj"] = None
                     else:
                         # Neither object nor path - discard this ticker
-                        log_err("Tickerhandler: Removing malformed ticker: %s" % str(store_key))
+                        log_err(
+                            "Tickerhandler: Removing malformed ticker: %s"
+                            % str(store_key)
+                        )
                         continue
                 except Exception:
                     # this suggests a malformed save or missing objects
-                    log_trace("Tickerhandler: Removing malformed ticker: %s" % str(store_key))
+                    log_trace(
+                        "Tickerhandler: Removing malformed ticker: %s" % str(store_key)
+                    )
                     continue
                 # if we get here we should create a new ticker
                 self.ticker_storage[store_key] = (args, kwargs)
                 self.ticker_pool.add(store_key, *args, **kwargs)
 
-    def add(self, interval=60, callback=None, idstring="", persistent=True, *args, **kwargs):
+    def add(
+        self, interval=60, callback=None, idstring="", persistent=True, *args, **kwargs
+    ):
         """
         Add subscription to tickerhandler
 
@@ -519,7 +528,9 @@ class TickerHandler(object):
         self.save()
         return store_key
 
-    def remove(self, interval=60, callback=None, idstring="", persistent=True, store_key=None):
+    def remove(
+        self, interval=60, callback=None, idstring="", persistent=True, store_key=None
+    ):
         """
         Remove ticker subscription from handler.
 
@@ -547,7 +558,9 @@ class TickerHandler(object):
             )
         if not store_key:
             obj, path, callfunc = self._get_callback(callback)
-            store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
+            store_key = self._store_key(
+                obj, path, interval, callfunc, idstring, persistent
+            )
         to_remove = self.ticker_storage.pop(store_key, None)
         if to_remove:
             self.ticker_pool.remove(store_key)
@@ -620,7 +633,14 @@ class TickerHandler(object):
                 (args, kwargs),
             ) in ticker.subscriptions.items():
                 store_keys.append(
-                    (kwargs.get("_obj", None), callfunc, path, interval, idstring, persistent)
+                    (
+                        kwargs.get("_obj", None),
+                        callfunc,
+                        path,
+                        interval,
+                        idstring,
+                        persistent,
+                    )
                 )
         return store_keys
 

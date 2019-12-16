@@ -65,7 +65,9 @@ class EvenniaWebTest(EvenniaTest):
         self.assertTrue(logged_in, "Account failed to log in!")
 
         # Try accessing page while logged in
-        response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
+        response = self.client.get(
+            reverse(self.url_name, kwargs=self.get_kwargs()), follow=True
+        )
 
         self.assertEqual(response.status_code, self.authenticated_response)
 
@@ -225,7 +227,9 @@ class CharacterUpdateView(EvenniaWebTest):
         self.login()
 
         # Try to access update page for char1
-        response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
+        response = self.client.get(
+            reverse(self.url_name, kwargs=self.get_kwargs()), follow=True
+        )
         self.assertEqual(response.status_code, 200)
 
         # Try to update char1 desc
@@ -262,7 +266,9 @@ class CharacterDeleteView(EvenniaWebTest):
         self.login()
 
         # Try to access delete page for char1
-        response = self.client.get(reverse(self.url_name, kwargs=self.get_kwargs()), follow=True)
+        response = self.client.get(
+            reverse(self.url_name, kwargs=self.get_kwargs()), follow=True
+        )
         self.assertEqual(response.status_code, 200)
 
         # Proceed with deleting it

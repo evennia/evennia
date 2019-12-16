@@ -61,7 +61,13 @@ in your game and using it as-is.
 """
 
 from random import randint
-from evennia import DefaultCharacter, Command, default_cmds, DefaultScript, create_object
+from evennia import (
+    DefaultCharacter,
+    Command,
+    default_cmds,
+    DefaultScript,
+    create_object,
+)
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.default.help import CmdHelp
 
@@ -312,7 +318,9 @@ def spend_action(character, actions, action_name=None):
         character.db.combat_actionsleft -= actions  # Use up actions.
         if character.db.combat_actionsleft < 0:
             character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
-    character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
+    character.db.combat_turnhandler.turn_end_check(
+        character
+    )  # Signal potential end of turn.
 
 
 """
@@ -417,7 +425,9 @@ class TBMagicTurnHandler(DefaultScript):
         self.db.fighters = ordered_by_roll
 
         # Announce the turn order.
-        self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
+        self.obj.msg_contents(
+            "Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters)
+        )
 
         # Start first fighter's turn.
         self.start_turn(self.db.fighters[0])
@@ -432,7 +442,9 @@ class TBMagicTurnHandler(DefaultScript):
         """
         for fighter in self.db.fighters:
             combat_cleanup(fighter)  # Clean up the combat attributes for every fighter.
-        self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
+        self.obj.db.combat_turnhandler = (
+            None
+        )  # Remove reference to turn handler in location
 
     def at_repeat(self):
         """
@@ -450,7 +462,9 @@ class TBMagicTurnHandler(DefaultScript):
                 currentchar, "all", action_name="disengage"
             )  # Spend all remaining actions.
             return
-        elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
+        elif (
+            self.db.timer <= 10 and not self.db.timeout_warning_given
+        ):  # 10 seconds left
             # Warn the current character if they're about to time out.
             currentchar.msg("WARNING: About to time out!")
             self.db.timeout_warning_given = True
@@ -462,7 +476,9 @@ class TBMagicTurnHandler(DefaultScript):
         Args:
             character (obj): Character to initialize for combat.
         """
-        combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
+        combat_cleanup(
+            character
+        )  # Clean up leftover combat attributes beforehand, just in case.
         character.db.combat_actionsleft = (
             0
         )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
@@ -511,13 +527,17 @@ class TBMagicTurnHandler(DefaultScript):
         defeated_characters = 0
         for fighter in self.db.fighters:
             if fighter.db.HP == 0:
-                defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
+                defeated_characters += (
+                    1
+                )  # Add 1 for every fighter with 0 HP left (defeated)
         if defeated_characters == (
             len(self.db.fighters) - 1
         ):  # If only one character isn't defeated
             for fighter in self.db.fighters:
                 if fighter.db.HP != 0:
-                    LastStanding = fighter  # Pick the one fighter left with HP remaining
+                    LastStanding = (
+                        fighter
+                    )  # Pick the one fighter left with HP remaining
             self.obj.msg_contents("Only %s remains! Combat is over!" % LastStanding)
             self.stop()  # Stop this script and end combat.
             return
@@ -526,11 +546,15 @@ class TBMagicTurnHandler(DefaultScript):
         currentchar = self.db.fighters[self.db.turn]
         self.db.turn += 1  # Go to the next in the turn order.
         if self.db.turn > len(self.db.fighters) - 1:
-            self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
+            self.db.turn = (
+                0
+            )  # Go back to the first in the turn order once you reach the end.
         newchar = self.db.fighters[self.db.turn]  # Note the new character
         self.db.timer = TURN_TIMEOUT + self.time_until_next_repeat()  # Reset the timer.
         self.db.timeout_warning_given = False  # Reset the timeout warning.
-        self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
+        self.obj.msg_contents(
+            "%s's turn ends - %s's turn begins!" % (currentchar, newchar)
+        )
         self.start_turn(newchar)  # Start the new character's turn.
 
     def turn_end_check(self, character):
@@ -594,7 +618,9 @@ class CmdFight(Command):
         if is_in_combat(self.caller):  # Already in a fight
             self.caller.msg("You're already in a fight!")
             return
-        for thing in here.contents:  # Test everything in the room to add it to the fight.
+        for (
+            thing
+        ) in here.contents:  # Test everything in the room to add it to the fight.
             if thing.db.HP:  # If the object has HP...
                 fighters.append(thing)  # ...then add it to the fight.
         if len(fighters) <= 1:  # If you're the only able fighter in the room
@@ -689,7 +715,9 @@ class CmdPass(Command):
         self.caller.location.msg_contents(
             "%s takes no further action, passing the turn." % self.caller
         )
-        spend_action(self.caller, "all", action_name="pass")  # Spend all remaining actions.
+        spend_action(
+            self.caller, "all", action_name="pass"
+        )  # Spend all remaining actions.
 
 
 class CmdDisengage(Command):
@@ -720,8 +748,12 @@ class CmdDisengage(Command):
             self.caller.msg("You can only do that on your turn.")
             return
 
-        self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
-        spend_action(self.caller, "all", action_name="disengage")  # Spend all remaining actions.
+        self.caller.location.msg_contents(
+            "%s disengages, ready to stop fighting." % self.caller
+        )
+        spend_action(
+            self.caller, "all", action_name="disengage"
+        )  # Spend all remaining actions.
         """
         The action_name kwarg sets the character's last action to "disengage", which is checked by
         the turn handler script to see if all fighters have disengaged.
@@ -786,11 +818,17 @@ class CmdLearnSpell(Command):
         if len(spell_to_learn) == 1:  # If one match, extract the string
             spell_to_learn = spell_to_learn[0]
 
-        if spell_to_learn not in self.caller.db.spells_known:  # If the spell isn't known...
-            caller.db.spells_known.append(spell_to_learn)  # ...then add the spell to the character
+        if (
+            spell_to_learn not in self.caller.db.spells_known
+        ):  # If the spell isn't known...
+            caller.db.spells_known.append(
+                spell_to_learn
+            )  # ...then add the spell to the character
             caller.msg("You learn the spell '%s'!" % spell_to_learn)
             return
-        if spell_to_learn in self.caller.db.spells_known:  # Already has the spell specified
+        if (
+            spell_to_learn in self.caller.db.spells_known
+        ):  # Already has the spell specified
             caller.msg("You already know the spell '%s'!" % spell_to_learn)
         """
         You will almost definitely want to replace this with your own system
@@ -908,7 +946,9 @@ class CmdCast(MuxCommand):
 
         # If not in combat and the spell isn't a non-combat spell, error ms and return.
         if spelldata["noncombat_spell"] == False and is_in_combat(caller) == False:
-            caller.msg("You can't use the spell '%s' outside of combat." % spell_to_cast)
+            caller.msg(
+                "You can't use the spell '%s' outside of combat." % spell_to_cast
+            )
             return
 
         # If spell takes no targets and one is given, give error message and return
@@ -1014,7 +1054,9 @@ class CmdRest(Command):
 
         self.caller.db.hp = self.caller.db.max_hp  # Set current HP to maximum
         self.caller.db.mp = self.caller.db.max_mp  # Set current MP to maximum
-        self.caller.location.msg_contents("%s rests to recover HP and MP." % self.caller)
+        self.caller.location.msg_contents(
+            "%s rests to recover HP and MP." % self.caller
+        )
         # You'll probably want to replace this with your own system for recovering HP and MP.
 
 
@@ -1066,7 +1108,9 @@ class CmdCombatHelp(CmdHelp):
     # tips on combat when used in a fight with no arguments.
 
     def func(self):
-        if is_in_combat(self.caller) and not self.args:  # In combat and entered 'help' alone
+        if (
+            is_in_combat(self.caller) and not self.args
+        ):  # In combat and entered 'help' alone
             self.caller.msg(
                 "Available combat commands:|/"
                 + "|wAttack:|n Attack a target, attempting to deal damage.|/"

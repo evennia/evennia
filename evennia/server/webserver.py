@@ -104,7 +104,10 @@ class EvenniaReverseProxyResource(ReverseProxyResource):
             lambda f: logger.log_trace("%s\nCaught errback in webserver.py:75." % f)
         )
         return EvenniaReverseProxyResource(
-            self.host, self.port, self.path + "/" + urlquote(path, safe=""), self.reactor
+            self.host,
+            self.port,
+            self.path + "/" + urlquote(path, safe=""),
+            self.reactor,
         )
 
     def render(self, request):

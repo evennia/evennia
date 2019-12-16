@@ -84,7 +84,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="scriptdb",
             name="db_persistent",
-            field=models.BooleanField(default=False, verbose_name="survive server reboot"),
+            field=models.BooleanField(
+                default=False, verbose_name="survive server reboot"
+            ),
         ),
         migrations.AlterField(
             model_name="scriptdb",

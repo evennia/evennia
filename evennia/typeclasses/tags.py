@@ -63,7 +63,11 @@ class Tag(models.Model):
     )
     # this is "objectdb" etc. Required behind the scenes
     db_model = models.CharField(
-        "model", max_length=32, null=True, help_text="database model to Tag", db_index=True
+        "model",
+        max_length=32,
+        null=True,
+        help_text="database model to Tag",
+        db_index=True,
     )
     # this is None, alias or permission
     db_tagtype = models.CharField(
@@ -87,7 +91,10 @@ class Tag(models.Model):
     def __str__(self):
         return str(
             "<Tag: %s%s>"
-            % (self.db_key, "(category:%s)" % self.db_category if self.db_category else "")
+            % (
+                self.db_key,
+                "(category:%s)" % self.db_category if self.db_category else "",
+            )
         )
 
 
@@ -133,7 +140,9 @@ class TagHandler(object):
         }
         tags = [
             conn.tag
-            for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
+            for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(
+                **query
+            )
         ]
         self._cache = dict(
             (
@@ -190,7 +199,9 @@ class TagHandler(object):
                     "tag__db_key__iexact": key.lower(),
                     "tag__db_category__iexact": category.lower() if category else None,
                 }
-                conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
+                conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(
+                    **query
+                )
                 if conn:
                     tag = conn[0].tag
                     self._cache[cachekey] = tag
@@ -212,9 +223,9 @@ class TagHandler(object):
                 }
                 tags = [
                     conn.tag
-                    for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(
-                        **query
-                    )
+                    for conn in getattr(
+                        self.obj, self._m2m_fieldname
+                    ).through.objects.filter(**query)
                 ]
                 for tag in tags:
                     cachekey = "%s-%s" % (tag.db_key, category)
@@ -236,7 +247,10 @@ class TagHandler(object):
         """
         if not key:  # don't allow an empty key in cache
             return
-        key, category = key.strip().lower(), category.strip().lower() if category else category
+        key, category = (
+            key.strip().lower(),
+            category.strip().lower() if category else category,
+        )
         cachekey = "%s-%s" % (key, category)
         catkey = "-%s" % category
         self._cache[cachekey] = tag_obj
@@ -253,7 +267,10 @@ class TagHandler(object):
             category (str or None): A cleaned category name
 
         """
-        key, category = key.strip().lower(), category.strip().lower() if category else category
+        key, category = (
+            key.strip().lower(),
+            category.strip().lower() if category else category,
+        )
         catkey = "-%s" % category
         if key:
             cachekey = "%s-%s" % (key, category)
@@ -309,7 +326,14 @@ class TagHandler(object):
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             self._setcache(tagstr, category, tagobj)
 
-    def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False):
+    def get(
+        self,
+        key=None,
+        default=None,
+        category=None,
+        return_tagobj=False,
+        return_list=False,
+    ):
         """
         Get the tag for the given key, category or combination of the two.
 
@@ -374,7 +398,10 @@ class TagHandler(object):
             # that when no objects reference the tag anymore (but how to check)?
             # For now, tags are never deleted, only their connection to objects.
             tagobj = getattr(self.obj, self._m2m_fieldname).filter(
-                db_key=tagstr, db_category=category, db_model=self._model, db_tagtype=self._tagtype
+                db_key=tagstr,
+                db_category=category,
+                db_model=self._model,
+                db_tagtype=self._tagtype,
             )
             if tagobj:
                 getattr(self.obj, self._m2m_fieldname).remove(tagobj[0])

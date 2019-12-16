@@ -24,7 +24,11 @@ from django.conf import settings
 from evennia import Command, CmdSet
 from evennia import syscmdkeys
 from evennia.utils.evmenu import EvMenu
-from evennia.utils.utils import random_string_from_module, class_from_module, callables_from_module
+from evennia.utils.utils import (
+    random_string_from_module,
+    class_from_module,
+    callables_from_module,
+)
 
 _CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 _GUEST_ENABLED = settings.GUEST_ENABLED
@@ -32,7 +36,8 @@ _ACCOUNT = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 _GUEST = class_from_module(settings.BASE_GUEST_TYPECLASS)
 
 _ACCOUNT_HELP = (
-    "Enter the name you used to log into the game before, " "or a new account-name if you are new."
+    "Enter the name you used to log into the game before, "
+    "or a new account-name if you are new."
 )
 _PASSWORD_HELP = (
     "Password should be a minimum of 8 characters (preferably longer) and "
@@ -106,7 +111,10 @@ def node_enter_username(caller, raw_text, **kwargs):
     options = (
         {"key": "", "goto": "node_enter_username"},
         {"key": ("quit", "q"), "goto": "node_quit_or_login"},
-        {"key": ("help", "h"), "goto": (_show_help, {"help_entry": _ACCOUNT_HELP, **kwargs})},
+        {
+            "key": ("help", "h"),
+            "goto": (_show_help, {"help_entry": _ACCOUNT_HELP, **kwargs}),
+        },
         {"key": "_default", "goto": _check_input},
     )
     return text, options
@@ -150,7 +158,9 @@ def node_enter_password(caller, raw_string, **kwargs):
 
         if account:
             if new_user:
-                session.msg("|gA new account |c{}|g was created. Welcome!|n".format(username))
+                session.msg(
+                    "|gA new account |c{}|g was created. Welcome!|n".format(username)
+                )
             # pass login info to login node
             return "node_quit_or_login", {"login": True, "account": account}
         else:
@@ -170,15 +180,21 @@ def node_enter_password(caller, raw_string, **kwargs):
             # Attempting to fix password
             text = "Enter a new password:"
         else:
-            text = "Creating a new account |c{}|n. " "Enter a password (empty to abort):".format(
-                username
+            text = (
+                "Creating a new account |c{}|n. "
+                "Enter a password (empty to abort):".format(username)
             )
     else:
-        text = "Enter the password for account |c{}|n (empty to abort):".format(username)
+        text = "Enter the password for account |c{}|n (empty to abort):".format(
+            username
+        )
     options = (
         {"key": "", "goto": _restart_login},
         {"key": ("quit", "q"), "goto": "node_quit_or_login"},
-        {"key": ("help", "h"), "goto": (_show_help, {"help_entry": _PASSWORD_HELP, **kwargs})},
+        {
+            "key": ("help", "h"),
+            "goto": (_show_help, {"help_entry": _PASSWORD_HELP, **kwargs}),
+        },
         {"key": "_default", "goto": (_check_input, kwargs)},
     )
     return text, options

@@ -269,7 +269,9 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
                 "%s'%s' could not load. You have to supply python paths "
                 "from one of the defined batch-file directories\n (%s)."
             )
-            caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
+            caller.msg(
+                string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS))
+            )
             return
         if not commands:
             caller.msg("File %s seems empty of valid commands." % python_path)
@@ -292,7 +294,9 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
             # Set interactive state directly
             caller.cmdset.add(BatchInteractiveCmdSet)
 
-            caller.msg("\nBatch-command processor - Interactive mode for %s ..." % python_path)
+            caller.msg(
+                "\nBatch-command processor - Interactive mode for %s ..." % python_path
+            )
             show_curr(caller)
         else:
             caller.msg(
@@ -391,7 +395,9 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
                 "%s'%s' could not load. You have to supply python paths "
                 "from one of the defined batch-file directories\n (%s)."
             )
-            caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
+            caller.msg(
+                string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS))
+            )
             return
         if not codes:
             caller.msg("File %s seems empty of functional code." % python_path)
@@ -415,10 +421,14 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
             # Set interactive state directly
             caller.cmdset.add(BatchInteractiveCmdSet)
 
-            caller.msg("\nBatch-code processor - Interactive mode for %s ..." % python_path)
+            caller.msg(
+                "\nBatch-code processor - Interactive mode for %s ..." % python_path
+            )
             show_curr(caller)
         else:
-            caller.msg("Running Batch-code processor - Automatic mode for %s ..." % python_path)
+            caller.msg(
+                "Running Batch-code processor - Automatic mode for %s ..." % python_path
+            )
 
             procpool = False
             if "PythonProcPool" in utils.server_services():
@@ -479,7 +489,9 @@ class CmdStateAbort(_COMMAND_DEFAULT_CLASS):
     def func(self):
         """Exit back to default."""
         purge_processor(self.caller)
-        self.caller.msg("Exited processor and reset out active cmdset back to the default one.")
+        self.caller.msg(
+            "Exited processor and reset out active cmdset back to the default one."
+        )
 
 
 class CmdStateLL(_COMMAND_DEFAULT_CLASS):

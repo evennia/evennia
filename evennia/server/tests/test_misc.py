@@ -66,7 +66,9 @@ class TestDeprecations(TestCase):
             self.assertRaises(DeprecationWarning, check_errors, MockSettings(setting))
         # test check for WEBSERVER_PORTS having correct value
         self.assertRaises(
-            DeprecationWarning, check_errors, MockSettings("WEBSERVER_PORTS", value=["not a tuple"])
+            DeprecationWarning,
+            check_errors,
+            MockSettings("WEBSERVER_PORTS", value=["not a tuple"]),
         )
 
 
@@ -81,7 +83,9 @@ class ValidatorTest(EvenniaTest):
         # This password contains illegal characters and should raise an Exception.
         from django.core.exceptions import ValidationError
 
-        self.assertRaises(ValidationError, validator.validate, "(#)[#]<>", user=self.account)
+        self.assertRaises(
+            ValidationError, validator.validate, "(#)[#]<>", user=self.account
+        )
 
 
 class ThrottleTest(EvenniaTest):
@@ -123,4 +127,6 @@ class ThrottleTest(EvenniaTest):
         self.assertEqual(len(ips), len(cache.keys()))
 
         # There should only be (cache_size * num_ips) total in the Throttle cache
-        self.assertEqual(sum([len(cache[x]) for x in cache.keys()]), throttle.cache_size * len(ips))
+        self.assertEqual(
+            sum([len(cache[x]) for x in cache.keys()]), throttle.cache_size * len(ips)
+        )

@@ -44,7 +44,9 @@ SRESET = chr(19)  # server shutdown in reset mode
 NUL = b"\x00"
 NULNUL = b"\x00\x00"
 
-AMP_MAXLEN = amp.MAX_VALUE_LENGTH  # max allowed data length in AMP protocol (cannot be changed)
+AMP_MAXLEN = (
+    amp.MAX_VALUE_LENGTH
+)  # max allowed data length in AMP protocol (cannot be changed)
 
 # buffers
 _SENDBATCH = defaultdict(list)
@@ -314,7 +316,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _get_logger().log_trace("Discarded incoming partial data: {}".format(to_str(data)))
+                _get_logger().log_trace(
+                    "Discarded incoming partial data: {}".format(to_str(data))
+                )
         elif self.multibatches:
             # invalid AMP, but we have a pending multi-batch that is not yet complete
             if data[-2:] == NULNUL:
@@ -323,12 +327,17 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _get_logger().log_trace("Discarded incoming multi-batch data:".format(to_str(data)))
+                _get_logger().log_trace(
+                    "Discarded incoming multi-batch data:".format(to_str(data))
+                )
         else:
             # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
             self.transport.loseConnection()
-            print("HTTP received (the AMP port should not receive http, only AMP!) %s" % data)
+            print(
+                "HTTP received (the AMP port should not receive http, only AMP!) %s"
+                % data
+            )
 
     def makeConnection(self, transport):
         """
@@ -420,7 +429,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
         for protcl in self.factory.broadcasts:
             deferreds.append(
-                protcl.callRemote(command, **kwargs).addErrback(self.errback, command.key)
+                protcl.callRemote(command, **kwargs).addErrback(
+                    self.errback, command.key
+                )
             )
 
         return DeferredList(deferreds)

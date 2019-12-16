@@ -79,7 +79,9 @@ class CmdOOCLook(default_cmds.CmdLook):
             if self.args:
                 # Maybe the caller wants to look at a character
                 if not avail_chars:
-                    self.caller.msg("You have no characters to look at. Why not create one?")
+                    self.caller.msg(
+                        "You have no characters to look at. Why not create one?"
+                    )
                     return
                 objs = managers.objects.get_objs_with_key_and_typeclass(
                     self.args.strip(), CHARACTER_TYPECLASS
@@ -99,8 +101,12 @@ class CmdOOCLook(default_cmds.CmdLook):
                 charnames = [charobj.key for charobj in charobjs if charobj]
             if charnames:
                 charlist = "The following Character(s) are available:\n\n"
-                charlist += "\n\r".join(["|w    %s|n" % charname for charname in charnames])
-                charlist += "\n\n   Use |w@ic <character name>|n to switch to that Character."
+                charlist += "\n\r".join(
+                    ["|w    %s|n" % charname for charname in charnames]
+                )
+                charlist += (
+                    "\n\n   Use |w@ic <character name>|n to switch to that Character."
+                )
             else:
                 charlist = "You have no Characters."
             string = """   You, %s, are an |wOOC ghost|n without form. The world is hidden
@@ -155,7 +161,9 @@ class CmdOOCCharacterCreate(Command):
             self.caller.msg("Usage: create <character name>")
             return
         charname = self.args.strip()
-        old_char = managers.objects.get_objs_with_key_and_typeclass(charname, CHARACTER_TYPECLASS)
+        old_char = managers.objects.get_objs_with_key_and_typeclass(
+            charname, CHARACTER_TYPECLASS
+        )
         if old_char:
             self.caller.msg("Character |c%s|n already exists." % charname)
             return

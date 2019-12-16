@@ -48,11 +48,13 @@ from twisted.conch.telnet import IAC, SB, SE
 # pre-compiled regexes
 # returns 2-tuple
 msdp_regex_table = re.compile(
-    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)
+    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s"
+    % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)
 )
 # returns 2-tuple
 msdp_regex_array = re.compile(
-    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)
+    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s"
+    % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)
 )
 msdp_regex_var = re.compile(br"%s" % MSDP_VAR)
 msdp_regex_val = re.compile(br"%s" % MSDP_VAL)
@@ -188,7 +190,9 @@ class TelnetOOB(object):
                     "{msdp_array_close}".format(
                         msdp_array_open=MSDP_ARRAY_OPEN,
                         msdp_array_close=MSDP_ARRAY_CLOSE,
-                        msdp_args="".join("%s%s" % (MSDP_VAL, json.dumps(val)) for val in args),
+                        msdp_args="".join(
+                            "%s%s" % (MSDP_VAL, json.dumps(val)) for val in args
+                        ),
                     )
                 )
 

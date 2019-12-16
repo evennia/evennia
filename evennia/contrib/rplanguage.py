@@ -112,7 +112,9 @@ _VOWELS = "eaoiuy"
 # these must be able to be constructed from phonemes (so for example,
 # if you have v here, there must exist at least one single-character
 # vowel phoneme defined above)
-_GRAMMAR = "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv"
+_GRAMMAR = (
+    "v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv"
+)
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.DOTALL + re.UNICODE
 _RE_GRAMMAR = re.compile(r"vv|cc|v|c", _RE_FLAGS)
@@ -246,7 +248,9 @@ class LanguageHandler(DefaultScript):
         grammar2phonemes = defaultdict(list)
         for phoneme in phonemes.split():
             if re.search("\W", phoneme):
-                raise LanguageError("The phoneme '%s' contains an invalid character" % phoneme)
+                raise LanguageError(
+                    "The phoneme '%s' contains an invalid character" % phoneme
+                )
             gram = "".join(["v" if char in vowels else "c" for char in phoneme])
             grammar2phonemes[gram].append(phoneme)
 
@@ -272,7 +276,9 @@ class LanguageHandler(DefaultScript):
                 word = word.strip()
                 lword = len(word)
                 new_word = ""
-                wlen = max(0, lword + sum(randint(-1, 1) for i in range(word_length_variance)))
+                wlen = max(
+                    0, lword + sum(randint(-1, 1) for i in range(word_length_variance))
+                )
                 if wlen not in grammar:
                     # always create a translation, use random length
                     structure = choice(grammar[choice(list(grammar))])
@@ -286,7 +292,10 @@ class LanguageHandler(DefaultScript):
         if manual_translations:
             # update with manual translations
             translation.update(
-                dict((key.lower(), value.lower()) for key, value in manual_translations.items())
+                dict(
+                    (key.lower(), value.lower())
+                    for key, value in manual_translations.items()
+                )
             )
 
         # store data
@@ -338,7 +347,10 @@ class LanguageHandler(DefaultScript):
                 wlen = max(
                     0,
                     lword
-                    + sum(randint(-1, 1) for i in range(self.language["word_length_variance"])),
+                    + sum(
+                        randint(-1, 1)
+                        for i in range(self.language["word_length_variance"])
+                    ),
                 )
                 grammar = self.language["grammar"]
                 if wlen not in grammar:
@@ -368,7 +380,9 @@ class LanguageHandler(DefaultScript):
 
                 if word.istitle():
                     title_word = ""
-                    if not start_sentence and not self.language.get("noun_translate", False):
+                    if not start_sentence and not self.language.get(
+                        "noun_translate", False
+                    ):
                         # don't translate what we identify as proper nouns (names)
                         title_word = word
                     elif new_word:
@@ -511,7 +525,9 @@ _RE_WHISPER_OBSCURE = [
     re.compile(r"[ae]", _RE_FLAGS),  # This -s - Test! #1 add uy
     re.compile(r"[aeuy]", _RE_FLAGS),  # This -s - Test! #2 add oue
     re.compile(r"[aeiouy]", _RE_FLAGS),  # Th-s -s - T-st! #3 add all consonants
-    re.compile(r"[aeiouybdhjlmnpqrv]", _RE_FLAGS),  # T--s -s - T-st! #4 add hard consonants
+    re.compile(
+        r"[aeiouybdhjlmnpqrv]", _RE_FLAGS
+    ),  # T--s -s - T-st! #4 add hard consonants
     re.compile(r"[a-eg-rt-z]", _RE_FLAGS),  # T--s -s - T-s-! #5 add all capitals
     re.compile(r"[A-EG-RT-Za-eg-rt-z]", _RE_FLAGS),  # ---s -s - --s-! #6 add f
     re.compile(r"[A-EG-RT-Za-rt-z]", _RE_FLAGS),  # ---s -s - --s-! #7 add s
