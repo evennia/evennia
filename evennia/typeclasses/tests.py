@@ -2,8 +2,9 @@
 Unit tests for typeclass base system
 
 """
-
+from django.test import override_settings
 from evennia.utils.test_resources import EvenniaTest
+from mock import patch
 
 # ------------------------------------------------------------
 # Manager tests
@@ -18,6 +19,19 @@ class TestAttributes(EvenniaTest):
         self.assertEqual(self.obj1.attributes.get(key), value)
         self.obj1.db.testattr = value
         self.assertEqual(self.obj1.db.testattr, value)
+        
+    @override_settings(TYPECLASS_AGGRESSIVE_CACHE=False)
+    @patch('evennia.typeclasses.attributes._TYPECLASS_AGGRESSIVE_CACHE', False)
+    def test_attrhandler_nocache(self):
+        key = "testattr"
+        value = "test attr value "
+        self.obj1.attributes.add(key, value)
+        self.assertFalse(self.obj1.attributes._cache)
+        
+        self.assertEqual(self.obj1.attributes.get(key), value)
+        self.obj1.db.testattr = value
+        self.assertEqual(self.obj1.db.testattr, value)
+        self.assertFalse(self.obj1.attributes._cache)
 
     def test_weird_text_save(self):
         "test 'weird' text type (different in py2 vs py3)"

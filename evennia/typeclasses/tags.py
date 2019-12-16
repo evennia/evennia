@@ -121,6 +121,7 @@ class TagHandler(object):
 
     def _fullcache(self):
         "Cache all tags of this object"
+        if not _TYPECLASS_AGGRESSIVE_CACHE: return
         query = {
             "%s__id" % self._model: self._objid,
             "tag__db_model": self._model,
@@ -188,7 +189,8 @@ class TagHandler(object):
                 conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
                 if conn:
                     tag = conn[0].tag
-                    self._cache[cachekey] = tag
+                    if _TYPECLASS_AGGRESSIVE_CACHE:
+                        self._cache[cachekey] = tag
                     return [tag]
         else:
             # only category given (even if it's None) - we can't
@@ -211,11 +213,12 @@ class TagHandler(object):
                         **query
                     )
                 ]
-                for tag in tags:
-                    cachekey = "%s-%s" % (tag.db_key, category)
-                    self._cache[cachekey] = tag
-                # mark category cache as up-to-date
-                self._catcache[catkey] = True
+                if _TYPECLASS_AGGRESSIVE_CACHE:
+                    for tag in tags:
+                        cachekey = "%s-%s" % (tag.db_key, category)
+                        self._cache[cachekey] = tag
+                    # mark category cache as up-to-date
+                    self._catcache[catkey] = True
                 return tags
         return []
 
@@ -229,6 +232,7 @@ class TagHandler(object):
             tag_obj (tag): The newly saved tag
 
         """
+        if not _TYPECLASS_AGGRESSIVE_CACHE: return
         if not key:  # don't allow an empty key in cache
             return
         key, category = key.strip().lower(), category.strip().lower() if category else category
