@@ -124,7 +124,9 @@ class Bot(DefaultAccount):
         Evennia -> outgoing protocol
 
         """
-        super().msg(text=text, from_obj=from_obj, session=session, options=options, **kwargs)
+        super().msg(
+            text=text, from_obj=from_obj, session=session, options=options, **kwargs
+        )
 
     def execute_cmd(self, raw_string, session=None):
         """
@@ -325,8 +327,12 @@ class IRCBot(Bot):
         if kwargs["type"] == "nicklist":
             # the return of a nicklist request
             if hasattr(self, "_nicklist_callers") and self._nicklist_callers:
-                chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
-                nicklist = ", ".join(sorted(kwargs["nicklist"], key=lambda n: n.lower()))
+                chstr = (
+                    f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
+                )
+                nicklist = ", ".join(
+                    sorted(kwargs["nicklist"], key=lambda n: n.lower())
+                )
                 for obj in self._nicklist_callers:
                     obj.msg(f"Nicks at {chstr}:\n {nicklist}")
                 self._nicklist_callers = []
@@ -335,7 +341,9 @@ class IRCBot(Bot):
         elif kwargs["type"] == "ping":
             # the return of a ping
             if hasattr(self, "_ping_callers") and self._ping_callers:
-                chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
+                chstr = (
+                    f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
+                )
                 for obj in self._ping_callers:
                     obj.msg(f"IRC ping return from {chstr} took {kwargs['timing']}s.")
                 self._ping_callers = []
@@ -434,8 +442,14 @@ class RSSBot(Bot):
             self.db.rss_rate = rss_rate
         # instruct the server and portal to create a new session with
         # the stored configuration
-        configdict = {"uid": self.dbid, "url": self.db.rss_url, "rate": self.db.rss_rate}
-        _SESSIONS.start_bot_session("evennia.server.portal.rss.RSSBotFactory", configdict)
+        configdict = {
+            "uid": self.dbid,
+            "url": self.db.rss_url,
+            "rate": self.db.rss_rate,
+        }
+        _SESSIONS.start_bot_session(
+            "evennia.server.portal.rss.RSSBotFactory", configdict
+        )
 
     def execute_cmd(self, txt=None, session=None, **kwargs):
         """

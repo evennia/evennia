@@ -278,7 +278,11 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
     # Display current form data
     text = (
         display_formdata(
-            formtemplate, formdata, pretext=pretext, posttext=posttext, borderstyle=borderstyle
+            formtemplate,
+            formdata,
+            pretext=pretext,
+            posttext=posttext,
+            borderstyle=borderstyle,
         ),
         formhelptext,
     )
@@ -292,7 +296,10 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
             for field in formtemplate:
                 if "required" in field.keys():
                     # If field is required but current form data for field is blank
-                    if field["required"] is True and formdata[field["fieldname"]] is None:
+                    if (
+                        field["required"] is True
+                        and formdata[field["fieldname"]] is None
+                    ):
                         # Add to blank and required fields
                         blank_and_required.append(field["fieldname"])
             if len(blank_and_required) > 0:
@@ -428,22 +435,30 @@ def menunode_fieldfill(caller, raw_string, **kwargs):
             # Test for max/min
             if max_value is not None:
                 if newvalue > max_value:
-                    caller.msg("Field '%s' has a maximum value of %i." % (matched_field, max_value))
+                    caller.msg(
+                        "Field '%s' has a maximum value of %i."
+                        % (matched_field, max_value)
+                    )
                     text = (None, formhelptext)
                     return text, options
             if min_value is not None:
                 if newvalue < min_value:
                     caller.msg(
-                        "Field '%s' reqiures a minimum value of %i." % (matched_field, min_value)
+                        "Field '%s' reqiures a minimum value of %i."
+                        % (matched_field, min_value)
                     )
                     text = (None, formhelptext)
                     return text, options
 
         # Field type bool verification
         if fieldtype == "bool":
-            if newvalue.lower() != truestr.lower() and newvalue.lower() != falsestr.lower():
+            if (
+                newvalue.lower() != truestr.lower()
+                and newvalue.lower() != falsestr.lower()
+            ):
                 caller.msg(
-                    "Please enter '%s' or '%s' for field '%s'." % (truestr, falsestr, matched_field)
+                    "Please enter '%s' or '%s' for field '%s'."
+                    % (truestr, falsestr, matched_field)
                 )
                 text = (None, formhelptext)
                 return text, options
@@ -509,7 +524,9 @@ def form_template_to_dict(formtemplate):
     return formdata
 
 
-def display_formdata(formtemplate, formdata, pretext="", posttext="", borderstyle="cells"):
+def display_formdata(
+    formtemplate, formdata, pretext="", posttext="", borderstyle="cells"
+):
     """
     Displays a form's current data as a table. Used in the form menu.
 
@@ -660,9 +677,7 @@ class CmdTestMenu(Command):
         """
         This performs the actual command.
         """
-        pretext = (
-            "|cSend a delayed message to another player ---------------------------------------|n"
-        )
+        pretext = "|cSend a delayed message to another player ---------------------------------------|n"
         posttext = (
             "|c--------------------------------------------------------------------------------|n|/"
             "Syntax: type |c<field> = <new value>|n to change the values of the form. Given|/"

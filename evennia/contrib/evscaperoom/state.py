@@ -58,7 +58,9 @@ class StateHandler(object):
         except Exception as err:
             logger.log_trace()
             self.room.msg_room(None, f"|rBUG: Could not load state {statename}: {err}!")
-            self.room.msg_room(None, f"|rBUG: Falling back to {self.current_state_name}")
+            self.room.msg_room(
+                None, f"|rBUG: Falling back to {self.current_state_name}"
+            )
             return
 
         state = mod.State(self, self.room)
@@ -202,7 +204,9 @@ class BaseState(object):
         if cinematic:
             message = msg_cinematic(message, borders=borders)
         if target:
-            options = target.attributes.get("options", category=self.room.tagcategory, default={})
+            options = target.attributes.get(
+                "options", category=self.room.tagcategory, default={}
+            )
             style = options.get("things_style", 2)
             # we assume this is a char
             target.msg(parse_for_things(message, things_style=style))

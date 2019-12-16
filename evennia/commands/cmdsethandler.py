@@ -114,7 +114,9 @@ Replacing with fallback '{fallback_path}'.
 """
 )
 
-_ERROR_CMDSET_NO_FALLBACK = _("""Fallback path '{fallback_path}' failed to generate a cmdset.""")
+_ERROR_CMDSET_NO_FALLBACK = _(
+    """Fallback path '{fallback_path}' failed to generate a cmdset."""
+)
 
 
 class _ErrorCmdSet(CmdSet):
@@ -160,7 +162,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
 
     """
     python_paths = [path] + [
-        "%s.%s" % (prefix, path) for prefix in _CMDSET_PATHS if not path.startswith(prefix)
+        "%s.%s" % (prefix, path)
+        for prefix in _CMDSET_PATHS
+        if not path.startswith(prefix)
     ]
     errstring = ""
     for python_path in python_paths:
@@ -168,7 +172,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         if "." in path:
             modpath, classname = python_path.rsplit(".", 1)
         else:
-            raise ImportError("The path '%s' is not on the form modulepath.ClassName" % path)
+            raise ImportError(
+                "The path '%s' is not on the form modulepath.ClassName" % path
+            )
 
         try:
             # first try to get from cache
@@ -207,7 +213,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             errstring += _ERROR_CMDSET_IMPORT
             if _IN_GAME_ERRORS:
                 errstring = errstring.format(
-                    path=python_path, traceback=format_exc(), timestamp=logger.timeformat()
+                    path=python_path,
+                    traceback=format_exc(),
+                    timestamp=logger.timeformat(),
                 )
             else:
                 errstring = errstring.format(
@@ -226,7 +234,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             errstring += _ERROR_CMDSET_SYNTAXERROR
             if _IN_GAME_ERRORS:
                 errstring = errstring.format(
-                    path=python_path, traceback=format_exc(), timestamp=logger.timeformat()
+                    path=python_path,
+                    traceback=format_exc(),
+                    timestamp=logger.timeformat(),
                 )
             else:
                 errstring = errstring.format(
@@ -238,7 +248,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
             errstring += _ERROR_CMDSET_EXCEPTION
             if _IN_GAME_ERRORS:
                 errstring = errstring.format(
-                    path=python_path, traceback=format_exc(), timestamp=logger.timeformat()
+                    path=python_path,
+                    traceback=format_exc(),
+                    timestamp=logger.timeformat(),
                 )
             else:
                 errstring = errstring.format(
@@ -347,13 +359,17 @@ class CmdSetHandler(object):
             permstring = "non-perm"
             if self.current.permanent:
                 permstring = "perm"
-            tmpstring = _(" <{key} ({mergetype}, prio {prio}, {permstring})>:\n {keylist}")
+            tmpstring = _(
+                " <{key} ({mergetype}, prio {prio}, {permstring})>:\n {keylist}"
+            )
             string += tmpstring.format(
                 key=self.current.key,
                 mergetype=mergetype,
                 prio=self.current.priority,
                 permstring=permstring,
-                keylist=", ".join(cmd.key for cmd in sorted(self.current, key=lambda o: o.key)),
+                keylist=", ".join(
+                    cmd.key for cmd in sorted(self.current, key=lambda o: o.key)
+                ),
             )
         return string.strip()
 
@@ -491,7 +507,9 @@ class CmdSetHandler(object):
             permanent (bool, optional): The new Cmdset should survive a server reboot.
 
         """
-        self.add(cmdset, emit_to_obj=emit_to_obj, permanent=permanent, default_cmdset=True)
+        self.add(
+            cmdset, emit_to_obj=emit_to_obj, permanent=permanent, default_cmdset=True
+        )
 
     def remove(self, cmdset=None, default_cmdset=False):
         """
@@ -535,7 +553,9 @@ class CmdSetHandler(object):
         else:
             # try it as a callable
             if callable(cmdset) and hasattr(cmdset, "path"):
-                delcmdsets = [cset for cset in self.cmdset_stack[1:] if cset.path == cmdset.path]
+                delcmdsets = [
+                    cset for cset in self.cmdset_stack[1:] if cset.path == cmdset.path
+                ]
             else:
                 # try it as a path or key
                 delcmdsets = [
@@ -627,12 +647,15 @@ class CmdSetHandler(object):
             if must_be_default:
                 return self.cmdset_stack and (self.cmdset_stack[0].path == cmdset.path)
             else:
-                return any([cset for cset in self.cmdset_stack if cset.path == cmdset.path])
+                return any(
+                    [cset for cset in self.cmdset_stack if cset.path == cmdset.path]
+                )
         else:
             # try it as a path or key
             if must_be_default:
                 return self.cmdset_stack and (
-                    self.cmdset_stack[0].key == cmdset or self.cmdset_stack[0].path == cmdset
+                    self.cmdset_stack[0].key == cmdset
+                    or self.cmdset_stack[0].path == cmdset
                 )
             else:
                 return any(

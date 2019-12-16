@@ -73,10 +73,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         client_address = client_address[0] if client_address else None
         # this number is counted down for every handshake that completes.
         # when it reaches 0 the portal/server syncs their data
-        self.handshakes = 8  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
+        self.handshakes = (
+            8
+        )  # suppress-go-ahead, naws, ttype, mccp, mssp, msdp, gmcp, mxp
 
-        self.init_session(self.protocol_key, client_address, self.factory.sessionhandler)
-        self.protocol_flags["ENCODING"] = settings.ENCODINGS[0] if settings.ENCODINGS else "utf-8"
+        self.init_session(
+            self.protocol_key, client_address, self.factory.sessionhandler
+        )
+        self.protocol_flags["ENCODING"] = (
+            settings.ENCODINGS[0] if settings.ENCODINGS else "utf-8"
+        )
         # add this new connection to sessionhandler so
         # the Server becomes aware of it.
         self.sessionhandler.connect(self)
@@ -166,7 +172,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         if option == LINEMODE:
             # make sure to activate line mode with local editing for all clients
             self.requestNegotiation(
-                LINEMODE, MODE + bytes(chr(ord(LINEMODE_EDIT) + ord(LINEMODE_TRAPSIG)), "ascii")
+                LINEMODE,
+                MODE + bytes(chr(ord(LINEMODE_EDIT) + ord(LINEMODE_TRAPSIG)), "ascii"),
             )
             return True
         else:
@@ -275,7 +282,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         # escape IAC in line mode, and correctly add \r\n (the TELNET end-of-line)
         line = line.replace(IAC, IAC + IAC)
         line = line.replace(b"\n", b"\r\n")
-        if not line.endswith(b"\r\n") and self.protocol_flags.get("FORCEDENDLINE", True):
+        if not line.endswith(b"\r\n") and self.protocol_flags.get(
+            "FORCEDENDLINE", True
+        ):
             line += b"\r\n"
         if not self.protocol_flags.get("NOGOAHEAD", True):
             line += IAC + GA
@@ -349,13 +358,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         options = kwargs.get("options", {})
         flags = self.protocol_flags
         xterm256 = options.get(
-            "xterm256", flags.get("XTERM256", False) if flags.get("TTYPE", False) else True
+            "xterm256",
+            flags.get("XTERM256", False) if flags.get("TTYPE", False) else True,
         )
         useansi = options.get(
             "ansi", flags.get("ANSI", False) if flags.get("TTYPE", False) else True
         )
         raw = options.get("raw", flags.get("RAW", False))
-        nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
+        nocolor = options.get(
+            "nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi)
+        )
         echo = options.get("echo", None)
         mxp = options.get("mxp", flags.get("MXP", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))

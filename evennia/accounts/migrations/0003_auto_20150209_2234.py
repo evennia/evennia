@@ -10,7 +10,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="DefaultAccount", fields=[], options={"proxy": True}, bases=("accounts.accountdb",)
+            name="DefaultAccount",
+            fields=[],
+            options={"proxy": True},
+            bases=("accounts.accountdb",),
         ),
         migrations.CreateModel(
             name="DefaultGuest",
@@ -18,5 +21,7 @@ class Migration(migrations.Migration):
             options={"proxy": True},
             bases=("accounts.defaultaccount",),
         ),
-        migrations.AlterModelOptions(name="accountdb", options={"verbose_name": "Account"}),
+        migrations.AlterModelOptions(
+            name="accountdb", options={"verbose_name": "Account"}
+        ),
     ]

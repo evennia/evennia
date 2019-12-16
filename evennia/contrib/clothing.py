@@ -254,7 +254,8 @@ class Clothing(DefaultObject):
             for garment in get_worn_clothes(wearer):
                 if (
                     garment.db.clothing_type
-                    and garment.db.clothing_type in CLOTHING_TYPE_AUTOCOVER[self.db.clothing_type]
+                    and garment.db.clothing_type
+                    in CLOTHING_TYPE_AUTOCOVER[self.db.clothing_type]
                 ):
                     to_cover.append(garment)
                     garment.db.covered_by = self
@@ -394,13 +395,18 @@ class CmdWear(MuxCommand):
             return
 
         # Enforce overall clothing limit.
-        if CLOTHING_OVERALL_LIMIT and len(get_worn_clothes(self.caller)) >= CLOTHING_OVERALL_LIMIT:
+        if (
+            CLOTHING_OVERALL_LIMIT
+            and len(get_worn_clothes(self.caller)) >= CLOTHING_OVERALL_LIMIT
+        ):
             self.caller.msg("You can't wear any more clothes.")
             return
 
         # Apply individual clothing type limits.
         if clothing.db.clothing_type and not clothing.db.worn:
-            type_count = single_type_count(get_worn_clothes(self.caller), clothing.db.clothing_type)
+            type_count = single_type_count(
+                get_worn_clothes(self.caller), clothing.db.clothing_type
+            )
             if clothing.db.clothing_type in list(CLOTHING_TYPE_LIMIT.keys()):
                 if type_count >= CLOTHING_TYPE_LIMIT[clothing.db.clothing_type]:
                     self.caller.msg(
@@ -414,7 +420,9 @@ class CmdWear(MuxCommand):
             return
         if len(self.arglist) > 1:  # If wearstyle arguments given
             wearstyle_list = self.arglist  # Split arguments into a list of words
-            del wearstyle_list[0]  # Leave first argument (the clothing item) out of the wearstyle
+            del wearstyle_list[
+                0
+            ]  # Leave first argument (the clothing item) out of the wearstyle
             wearstring = " ".join(
                 str(e) for e in wearstyle_list
             )  # Join list of args back into one string
@@ -457,7 +465,9 @@ class CmdRemove(MuxCommand):
             self.caller.msg("You're not wearing that!")
             return
         if clothing.db.covered_by:
-            self.caller.msg("You have to take off %s first." % clothing.db.covered_by.name)
+            self.caller.msg(
+                "You have to take off %s first." % clothing.db.covered_by.name
+            )
             return
         clothing.remove(self.caller)
 
@@ -489,13 +499,17 @@ class CmdCover(MuxCommand):
         if self.arglist[1].lower() == "with" and len(self.arglist) > 2:
             del self.arglist[1]
         to_cover = self.caller.search(self.arglist[0], candidates=self.caller.contents)
-        cover_with = self.caller.search(self.arglist[1], candidates=self.caller.contents)
+        cover_with = self.caller.search(
+            self.arglist[1], candidates=self.caller.contents
+        )
         if not to_cover or not cover_with:
             return
         if not to_cover.is_typeclass("evennia.contrib.clothing.Clothing", exact=False):
             self.caller.msg("%s isn't clothes!" % to_cover.name)
             return
-        if not cover_with.is_typeclass("evennia.contrib.clothing.Clothing", exact=False):
+        if not cover_with.is_typeclass(
+            "evennia.contrib.clothing.Clothing", exact=False
+        ):
             self.caller.msg("%s isn't clothes!" % cover_with.name)
             return
         if cover_with.db.clothing_type:
@@ -513,7 +527,8 @@ class CmdCover(MuxCommand):
             return
         if to_cover.db.covered_by:
             self.caller.msg(
-                "%s is already covered by %s." % (cover_with.name, to_cover.db.covered_by.name)
+                "%s is already covered by %s."
+                % (cover_with.name, to_cover.db.covered_by.name)
             )
             return
         if not cover_with.db.worn:
@@ -562,9 +577,13 @@ class CmdUncover(MuxCommand):
             return
         covered_by = to_uncover.db.covered_by
         if covered_by.db.covered_by:
-            self.caller.msg("%s is under too many layers to uncover." % (to_uncover.name))
+            self.caller.msg(
+                "%s is under too many layers to uncover." % (to_uncover.name)
+            )
             return
-        self.caller.location.msg_contents("%s uncovers %s." % (self.caller, to_uncover.name))
+        self.caller.location.msg_contents(
+            "%s uncovers %s." % (self.caller, to_uncover.name)
+        )
         to_uncover.db.covered_by = None
 
 
@@ -605,7 +624,9 @@ class CmdDrop(MuxCommand):
         # This part is new!
         # You can't drop clothing items that are covered.
         if obj.db.covered_by:
-            caller.msg("You can't drop that because it's covered by %s." % obj.db.covered_by)
+            caller.msg(
+                "You can't drop that because it's covered by %s." % obj.db.covered_by
+            )
             return
         # Remove clothes if they're dropped.
         if obj.db.worn:
@@ -613,7 +634,9 @@ class CmdDrop(MuxCommand):
 
         obj.move_to(caller.location, quiet=True)
         caller.msg("You drop %s." % (obj.name,))
-        caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
+        caller.location.msg_contents(
+            "%s drops %s." % (caller.name, obj.name), exclude=caller
+        )
         # Call the object script's at_drop() method.
         obj.at_drop(caller)
 
@@ -658,7 +681,8 @@ class CmdGive(MuxCommand):
         # This is new! Can't give away something that's worn.
         if to_give.db.covered_by:
             caller.msg(
-                "You can't give that away because it's covered by %s." % to_give.db.covered_by
+                "You can't give that away because it's covered by %s."
+                % to_give.db.covered_by
             )
             return
         # Remove clothes if they're given.

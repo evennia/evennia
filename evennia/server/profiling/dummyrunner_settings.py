@@ -188,7 +188,10 @@ def c_creates_button(client):
     "creates example button, storing name on client"
     objname = TOBJ_TEMPLATE % client.counter()
     client.objs.append(objname)
-    cmds = ("@create %s:%s" % (objname, TOBJ_TYPECLASS), "@desc %s = test red button!" % objname)
+    cmds = (
+        "@create %s:%s" % (objname, TOBJ_TYPECLASS),
+        "@desc %s = test red button!" % objname,
+    )
     return cmds
 
 
@@ -265,7 +268,14 @@ def c_moves_s(client):
 #           c_logout,
 #           (1.0, c_idles))
 # "normal account" definition
-ACTIONS = (c_login, c_logout, (0.01, c_digs), (0.39, c_looks), (0.2, c_help), (0.4, c_moves))
+ACTIONS = (
+    c_login,
+    c_logout,
+    (0.01, c_digs),
+    (0.39, c_looks),
+    (0.2, c_help),
+    (0.4, c_moves),
+)
 # walking tester. This requires a pre-made
 # "loop" of multiple rooms that ties back
 # to limbo (using @tunnel and @open)

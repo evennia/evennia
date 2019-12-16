@@ -10,10 +10,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="DefaultObject", fields=[], options={"proxy": True}, bases=("objects.objectdb",)
+            name="DefaultObject",
+            fields=[],
+            options={"proxy": True},
+            bases=("objects.objectdb",),
         ),
         migrations.CreateModel(
-            name="DefaultExit", fields=[], options={"proxy": True}, bases=("objects.defaultobject",)
+            name="DefaultExit",
+            fields=[],
+            options={"proxy": True},
+            bases=("objects.defaultobject",),
         ),
         migrations.CreateModel(
             name="DefaultCharacter",
@@ -22,6 +28,9 @@ class Migration(migrations.Migration):
             bases=("objects.defaultobject",),
         ),
         migrations.CreateModel(
-            name="DefaultRoom", fields=[], options={"proxy": True}, bases=("objects.defaultobject",)
+            name="DefaultRoom",
+            fields=[],
+            options={"proxy": True},
+            bases=("objects.defaultobject",),
         ),
     ]

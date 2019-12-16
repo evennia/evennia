@@ -101,7 +101,12 @@ class CallbackHandler(object):
         if handler:
             return self.format_callback(
                 handler.add_callback(
-                    self.obj, callback_name, code, author=author, valid=valid, parameters=parameters
+                    self.obj,
+                    callback_name,
+                    code,
+                    author=author,
+                    valid=valid,
+                    parameters=parameters,
                 )
             )
 

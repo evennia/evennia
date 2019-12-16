@@ -85,7 +85,9 @@ class TestAMPClientSend(_TestAMP):
 
         self._connect_server(mocktransport)
         self.amp_server.dataReceived(wire_data)
-        self.portal.sessions.data_out.assert_called_with(self.portalsession, text={"foo": "bar"})
+        self.portal.sessions.data_out.assert_called_with(
+            self.portalsession, text={"foo": "bar"}
+        )
 
     def test_adminserver2portal(self, mocktransport):
         self._connect_client(mocktransport)
@@ -112,7 +114,9 @@ class TestAMPClientRecv(_TestAMP):
 
         self._connect_client(mocktransport)
         self.amp_client.dataReceived(wire_data)
-        self.server.sessions.data_in.assert_called_with(self.session, text={"foo": "bar"})
+        self.server.sessions.data_in.assert_called_with(
+            self.session, text={"foo": "bar"}
+        )
 
     def test_adminportal2server(self, mocktransport):
         self._connect_server(mocktransport)

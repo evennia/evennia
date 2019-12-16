@@ -13,7 +13,9 @@ def forwards(apps, schema_editor):
     ServerConfig = apps.get_model("server", "ServerConfig")
     for conf in ServerConfig.objects.all():
         # picklefield requires base64 encoding
-        value = loads(to_bytes(conf.db_value), encoding="bytes")  # py2->py3 byte encoding
+        value = loads(
+            to_bytes(conf.db_value), encoding="bytes"
+        )  # py2->py3 byte encoding
         conf.db_value = b64encode(dumps(deepcopy(value), protocol=4)).decode()
         conf.save(update_fields=["db_value"])
 

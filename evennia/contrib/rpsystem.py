@@ -137,7 +137,9 @@ _RE_PREFIX = re.compile(r"^%s" % _PREFIX, re.UNICODE)
 # separate multimatches from one another and word is the first word in the
 # marker. So entering "/tall man" will return groups ("", "tall")
 # and "/2-tall man" will return groups ("2", "tall").
-_RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" % (_PREFIX, _NUM_SEP), _RE_FLAGS)
+_RE_OBJ_REF_START = re.compile(
+    r"%s(?:([0-9]+)%s)*(\w+)" % (_PREFIX, _NUM_SEP), _RE_FLAGS
+)
 
 _RE_LEFT_BRACKETS = re.compile(r"\{+", _RE_FLAGS)
 _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
@@ -232,7 +234,8 @@ def ordered_permutation_regex(sentence):
         if comb:
             solution.append(
                 _PREFIX
-                + r"[0-9]*%s*%s(?=\W|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\"))
+                + r"[0-9]*%s*%s(?=\W|$)+"
+                % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\"))
             )
 
     # combine into a match regex, first matching the longest down to the shortest components
@@ -258,7 +261,10 @@ def regex_tuple_from_key_alias(obj):
 
     """
     return (
-        re.compile(ordered_permutation_regex(" ".join([obj.key] + obj.aliases.all())), _RE_FLAGS),
+        re.compile(
+            ordered_permutation_regex(" ".join([obj.key] + obj.aliases.all())),
+            _RE_FLAGS,
+        ),
         obj,
         obj.key,
     )
@@ -360,7 +366,11 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
     """
     # Load all candidate regex tuples [(regex, obj, sdesc/recog),...]
     candidate_regexes = (
-        ([(_RE_SELF_REF, sender, sender.sdesc.get())] if hasattr(sender, "sdesc") else [])
+        (
+            [(_RE_SELF_REF, sender, sender.sdesc.get())]
+            if hasattr(sender, "sdesc")
+            else []
+        )
         + (
             [sender.recog.get_regex_tuple(obj) for obj in candidates]
             if hasattr(sender, "recog")
@@ -395,19 +405,28 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         # start index forward for all candidates.
 
         # first see if there is a number given (e.g. 1-tall)
-        num_identifier, _ = marker_match.groups("")  # return "" if no match, rather than None
+        num_identifier, _ = marker_match.groups(
+            ""
+        )  # return "" if no match, rather than None
         istart0 = marker_match.start()
         istart = istart0
 
         # loop over all candidate regexes and match against the string following the match
-        matches = ((reg.match(string[istart:]), obj, text) for reg, obj, text in candidate_regexes)
+        matches = (
+            (reg.match(string[istart:]), obj, text)
+            for reg, obj, text in candidate_regexes
+        )
 
         # score matches by how long part of the string was matched
-        matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
+        matches = [
+            (match.end() if match else -1, obj, text) for match, obj, text in matches
+        ]
         maxscore = max(score for score, obj, text in matches)
 
         # we have a valid maxscore, extract all matches with this value
-        bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score != -1]
+        bestmatches = [
+            (obj, text) for score, obj, text in matches if maxscore == score != -1
+        ]
         nmatches = len(bestmatches)
 
         if not nmatches:
@@ -426,7 +445,11 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False):
         else:
             # multi-match.
             # was a numerical identifier given to help us separate the multi-match?
-            inum = min(max(0, int(num_identifier) - 1), nmatches - 1) if num_identifier else None
+            inum = (
+                min(max(0, int(num_identifier) - 1), nmatches - 1)
+                if num_identifier
+                else None
+            )
             if inum is not None:
                 # A valid inum is given. Use this to separate data.
                 obj = bestmatches[inum][0]
@@ -548,7 +571,8 @@ def send_emote(sender, receivers, emote, anonymous_add="first"):
         try:
             recog_get = receiver.recog.get
             receiver_sdesc_mapping = dict(
-                (ref, process_recog(recog_get(obj), obj)) for ref, obj in obj_mapping.items()
+                (ref, process_recog(recog_get(obj), obj))
+                for ref, obj in obj_mapping.items()
             )
         except AttributeError:
             receiver_sdesc_mapping = dict(
@@ -632,7 +656,9 @@ class SdescHandler(object):
             r"\1",
             _RE_REF_LANG.sub(
                 r"\1",
-                _RE_SELF_REF.sub(r"", _RE_LANGUAGE.sub(r"", _RE_OBJ_REF_START.sub(r"", sdesc))),
+                _RE_SELF_REF.sub(
+                    r"", _RE_LANGUAGE.sub(r"", _RE_OBJ_REF_START.sub(r"", sdesc))
+                ),
             ),
         )
 
@@ -714,7 +740,9 @@ class RecogHandler(object):
         obj2regex = self.obj.attributes.get("_recog_obj2regex", default={})
         obj2recog = self.obj.attributes.get("_recog_obj2recog", default={})
         self.obj2regex = dict(
-            (obj, re.compile(regex, _RE_FLAGS)) for obj, regex in obj2regex.items() if obj
+            (obj, re.compile(regex, _RE_FLAGS))
+            for obj, regex in obj2regex.items()
+            if obj
         )
         self.obj2recog = dict((obj, recog) for obj, recog in obj2recog.items() if obj)
 
@@ -746,7 +774,9 @@ class RecogHandler(object):
             r"\1",
             _RE_REF_LANG.sub(
                 r"\1",
-                _RE_SELF_REF.sub(r"", _RE_LANGUAGE.sub(r"", _RE_OBJ_REF_START.sub(r"", recog))),
+                _RE_SELF_REF.sub(
+                    r"", _RE_LANGUAGE.sub(r"", _RE_OBJ_REF_START.sub(r"", recog))
+                ),
             ),
         )
 
@@ -793,7 +823,9 @@ class RecogHandler(object):
             # check an eventual recog_masked lock on the object
             # to avoid revealing masked characters. If lock
             # does not exist, pass automatically.
-            return self.obj2recog.get(obj, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+            return self.obj2recog.get(
+                obj, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
+            )
         else:
             # recog_mask log not passed, disable recog
             return obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
@@ -1020,7 +1052,9 @@ class CmdPose(RPCommand):  # set current pose and default pose
             return
         else:
             # set the pose. We do one-time ref->sdesc mapping here.
-            parsed, mapping = parse_sdescs_and_recogs(caller, caller.location.contents, pose)
+            parsed, mapping = parse_sdescs_and_recogs(
+                caller, caller.location.contents, pose
+            )
             mapping = dict(
                 (ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
                 for ref, obj in mapping.items()
@@ -1059,11 +1093,15 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
     def parse(self):
         "Parse for the sdesc as alias structure"
         if " as " in self.args:
-            self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
+            self.sdesc, self.alias = [
+                part.strip() for part in self.args.split(" as ", 2)
+            ]
         elif self.args:
             # try to split by space instead
             try:
-                self.sdesc, self.alias = [part.strip() for part in self.args.split(None, 1)]
+                self.sdesc, self.alias = [
+                    part.strip() for part in self.args.split(None, 1)
+                ]
             except ValueError:
                 self.sdesc, self.alias = self.args.strip(), ""
 
@@ -1077,7 +1115,9 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
         alias = self.alias.rstrip(".?!")
         prefixed_sdesc = sdesc if sdesc.startswith(_PREFIX) else _PREFIX + sdesc
         candidates = caller.location.contents
-        matches = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, search_mode=True)
+        matches = parse_sdescs_and_recogs(
+            caller, candidates, prefixed_sdesc, search_mode=True
+        )
         nmatches = len(matches)
         # handle 0, 1 and >1 matches
         if nmatches == 0:
@@ -1094,7 +1134,11 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
                 )
                 for inum, obj in enumerate(matches)
             ]
-            caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc, reflist="\n    ".join(reflist)))
+            caller.msg(
+                _EMOTE_MULTIMATCH_ERROR.format(
+                    ref=sdesc, reflist="\n    ".join(reflist)
+                )
+            )
         else:
             obj = matches[0]
             if not obj.access(self.obj, "enable_recog", default=True):
@@ -1104,7 +1148,9 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             if self.cmdstring == "forget":
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will now know only '%s'." % (caller.key, obj.recog.get(obj)))
+                caller.msg(
+                    "%s will now know only '%s'." % (caller.key, obj.recog.get(obj))
+                )
             else:
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
                 try:
@@ -1112,7 +1158,10 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
                 except RecogError as err:
                     caller.msg(err)
                     return
-                caller.msg("%s will now remember |w%s|n as |w%s|n." % (caller.key, sdesc, alias))
+                caller.msg(
+                    "%s will now remember |w%s|n as |w%s|n."
+                    % (caller.key, sdesc, alias)
+                )
 
 
 class CmdMask(RPCommand):
@@ -1349,7 +1398,9 @@ class ContribRPObject(DefaultObject):
                 # in eventual error reporting later (not their keys). Doing
                 # it like this e.g. allows for use of the typeclass kwarg
                 # limiter.
-                results.extend([obj for obj in search_obj(candidate.key) if obj not in results])
+                results.extend(
+                    [obj for obj in search_obj(candidate.key) if obj not in results]
+                )
 
             if not results and is_builder:
                 # builders get a chance to search only by key+alias
@@ -1414,7 +1465,9 @@ class ContribRPObject(DefaultObject):
         if not looker:
             return ""
         # get and identify all objects
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        visible = (
+            con for con in self.contents if con != looker and con.access(looker, "view")
+        )
         exits, users, things = [], [], []
         for con in visible:
             key = con.get_display_name(looker, pose=True)

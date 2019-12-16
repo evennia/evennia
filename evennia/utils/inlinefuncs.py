@@ -235,7 +235,9 @@ except AttributeError:
 
 # regex definitions
 
-_RE_STARTTOKEN = re.compile(r"(?<!\\)\$(\w+)\(")  # unescaped $funcname( (start of function call)
+_RE_STARTTOKEN = re.compile(
+    r"(?<!\\)\$(\w+)\("
+)  # unescaped $funcname( (start of function call)
 
 # note: this regex can be experimented with at https://regex101.com/r/kGR3vE/2
 _RE_TOKEN = re.compile(
@@ -311,7 +313,9 @@ class InlinefuncError(RuntimeError):
     pass
 
 
-def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False, **kwargs):
+def parse_inlinefunc(
+    string, strip=False, available_funcs=None, stacktrace=False, **kwargs
+):
     """
     Parse the incoming string.
 
@@ -364,7 +368,9 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
             gdict = match.groupdict()
 
             if stacktrace:
-                out = " MATCH: {}".format({key: val for key, val in gdict.items() if val})
+                out = " MATCH: {}".format(
+                    {key: val for key, val in gdict.items() if val}
+                )
                 print(out)
                 logger.log_info(out)
 
@@ -529,10 +535,14 @@ def initialize_nick_templates(in_template, out_template):
     regex_string = fnmatch.translate(in_template)
     n_inargs = len(_RE_NICK_ARG.findall(regex_string))
     regex_string = _RE_NICK_SPACE.sub("\s+", regex_string)
-    regex_string = _RE_NICK_ARG.sub(lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string)
+    regex_string = _RE_NICK_ARG.sub(
+        lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string
+    )
 
     # create the out_template
-    template_string = _RE_NICK_TEMPLATE_ARG.sub(lambda m: "{arg%s}" % m.group(2), out_template)
+    template_string = _RE_NICK_TEMPLATE_ARG.sub(
+        lambda m: "{arg%s}" % m.group(2), out_template
+    )
 
     # validate the tempaltes - they should at least have the same number of args
     n_outargs = len(_RE_NICK_TEMPLATE_ARG.findall(out_template))

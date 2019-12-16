@@ -71,7 +71,9 @@ class ObjectSessionHandler(object):
         )
         if any(sessid for sessid in self._sessid_cache if sessid not in _SESSIONS):
             # cache is out of sync with sessionhandler! Only retain the ones in the handler.
-            self._sessid_cache = [sessid for sessid in self._sessid_cache if sessid in _SESSIONS]
+            self._sessid_cache = [
+                sessid for sessid in self._sessid_cache if sessid in _SESSIONS
+            ]
             self.obj.db_sessid = ",".join(str(val) for val in self._sessid_cache)
             self.obj.save(update_fields=["db_sessid"])
 
@@ -101,7 +103,8 @@ class ObjectSessionHandler(object):
             )
         else:
             sessions = [
-                _SESSIONS[ssid] if ssid in _SESSIONS else None for ssid in self._sessid_cache
+                _SESSIONS[ssid] if ssid in _SESSIONS else None
+                for ssid in self._sessid_cache
             ]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
@@ -206,7 +209,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "control:id({account_id}) or perm(Admin);" "delete:id({account_id}) or perm(Admin)"
+    lockstring = (
+        "control:id({account_id}) or perm(Admin);"
+        "delete:id({account_id}) or perm(Admin)"
+    )
 
     objects = ObjectManager()
 
@@ -340,7 +346,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             plural (str): The determined plural form of the key, including the count.
         """
         key = kwargs.get("key", self.key)
-        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
+        key = ansi.ANSIString(
+            key
+        )  # this is needed to allow inflection of colored names
         plural = _INFLECT.plural(key, 2)
         plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
         singular = _INFLECT.an(key)
@@ -658,7 +666,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         for obj in contents:
             func(obj, **kwargs)
 
-    def msg_contents(self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs):
+    def msg_contents(
+        self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs
+    ):
         """
         Emits a message to all objects inside this object.
 
@@ -717,7 +727,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         for obj in contents:
             if mapping:
                 substitutions = {
-                    t: sub.get_display_name(obj) if hasattr(sub, "get_display_name") else str(sub)
+                    t: sub.get_display_name(obj)
+                    if hasattr(sub, "get_display_name")
+                    else str(sub)
                     for t, sub in mapping.items()
                 }
                 outmessage = inmessage.format(**substitutions)
@@ -868,7 +880,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Destroys all of the exits and any exits pointing to this
         object as a destination.
         """
-        for out_exit in [exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination]:
+        for out_exit in [
+            exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination
+        ]:
             out_exit.delete()
         for in_exit in ObjectDB.objects.filter(db_destination=self):
             in_exit.delete()
@@ -902,7 +916,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 string = "Missing default home, '%s(#%d)' "
                 string += "now has a null location."
                 obj.location = None
-                obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
+                obj.msg(
+                    _(
+                        "Something went wrong! You are dumped into nowhere. Contact an admin."
+                    )
+                )
                 logger.log_err(string % (obj.name, obj.dbid))
                 return
 
@@ -1082,7 +1100,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         return True
 
     def access(
-        self, accessing_obj, access_type="read", default=False, no_superuser_bypass=False, **kwargs
+        self,
+        accessing_obj,
+        access_type="read",
+        default=False,
+        no_superuser_bypass=False,
+        **kwargs,
     ):
         """
         Determines if another object has permission to access this object
@@ -1417,7 +1440,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         location = self.location
         exits = [
-            o for o in location.contents if o.location is location and o.destination is destination
+            o
+            for o in location.contents
+            if o.location is location and o.destination is destination
         ]
         if not mapping:
             mapping = {}
@@ -1459,7 +1484,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not source_location and self.location.has_account:
             # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % self.get_display_name(self.location)
+            string = "You now have %s in your possession." % self.get_display_name(
+                self.location
+            )
             self.location.msg(string)
             return
 
@@ -1655,7 +1682,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not looker:
             return ""
         # get and identify all objects
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        visible = (
+            con for con in self.contents if con != looker and con.access(looker, "view")
+        )
         exits, users, things = [], [], defaultdict(list)
         for con in visible:
             key = con.get_display_name(looker)
@@ -1681,9 +1710,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 if nitem == 1:
                     key, _ = itemlist[0].get_numbered_name(nitem, looker, key=key)
                 else:
-                    key = [item.get_numbered_name(nitem, looker, key=key)[1] for item in itemlist][
-                        0
-                    ]
+                    key = [
+                        item.get_numbered_name(nitem, looker, key=key)[1]
+                        for item in itemlist
+                    ][0]
                 thing_strings.append(key)
 
             string += "\n|wYou see:|n " + list_to_string(users + thing_strings)
@@ -1936,7 +1966,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # whisper mode
             msg_type = "whisper"
             msg_self = (
-                '{self} whisper to {all_receivers}, "{speech}"' if msg_self is True else msg_self
+                '{self} whisper to {all_receivers}, "{speech}"'
+                if msg_self is True
+                else msg_self
             )
             msg_receivers = msg_receivers or '{object} whispers: "{speech}"'
             msg_location = None
@@ -1955,13 +1987,18 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 "object": self.get_display_name(self),
                 "location": location.get_display_name(self) if location else None,
                 "receiver": None,
-                "all_receivers": ", ".join(recv.get_display_name(self) for recv in receivers)
+                "all_receivers": ", ".join(
+                    recv.get_display_name(self) for recv in receivers
+                )
                 if receivers
                 else None,
                 "speech": message,
             }
             self_mapping.update(custom_mapping)
-            self.msg(text=(msg_self.format(**self_mapping), {"type": msg_type}), from_obj=self)
+            self.msg(
+                text=(msg_self.format(**self_mapping), {"type": msg_type}),
+                from_obj=self,
+            )
 
         if receivers and msg_receivers:
             receiver_mapping = {
@@ -1977,7 +2014,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     "object": self.get_display_name(receiver),
                     "location": location.get_display_name(receiver),
                     "receiver": receiver.get_display_name(receiver),
-                    "all_receivers": ", ".join(recv.get_display_name(recv) for recv in receivers)
+                    "all_receivers": ", ".join(
+                        recv.get_display_name(recv) for recv in receivers
+                    )
                     if receivers
                     else None,
                 }
@@ -1993,7 +2032,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 "self": "You",
                 "object": self,
                 "location": location,
-                "all_receivers": ", ".join(str(recv) for recv in receivers) if receivers else None,
+                "all_receivers": ", ".join(str(recv) for recv in receivers)
+                if receivers
+                else None,
                 "receiver": None,
                 "speech": message,
             }
@@ -2063,10 +2104,14 @@ class DefaultCharacter(DefaultObject):
         kwargs["key"] = key
 
         # Get home for character
-        kwargs["home"] = ObjectDB.objects.get_id(kwargs.get("home", settings.DEFAULT_HOME))
+        kwargs["home"] = ObjectDB.objects.get_id(
+            kwargs.get("home", settings.DEFAULT_HOME)
+        )
 
         # Get permissions
-        kwargs["permissions"] = kwargs.get("permissions", settings.PERMISSION_ACCOUNT_DEFAULT)
+        kwargs["permissions"] = kwargs.get(
+            "permissions", settings.PERMISSION_ACCOUNT_DEFAULT
+        )
 
         # Get description if provided
         description = kwargs.pop("description", "")
@@ -2078,7 +2123,9 @@ class DefaultCharacter(DefaultObject):
             # Check to make sure account does not have too many chars
             if account:
                 if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                    errors.append("There are too many characters associated with this account.")
+                    errors.append(
+                        "There are too many characters associated with this account."
+                    )
                     return obj, errors
 
             # Create the Character
@@ -2095,9 +2142,13 @@ class DefaultCharacter(DefaultObject):
             # Add locks
             if not locks and account:
                 # Allow only the character itself and the creator account to puppet this character (and Developers).
-                locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": account.id})
+                locks = cls.lockstring.format(
+                    **{"character_id": obj.id, "account_id": account.id}
+                )
             elif not locks and not account:
-                locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": -1})
+                locks = cls.lockstring.format(
+                    **{"character_id": obj.id, "account_id": -1}
+                )
 
             obj.locks.add(locks)
 
@@ -2147,12 +2198,16 @@ class DefaultCharacter(DefaultObject):
             self.location is None
         ):  # Make sure character's location is never None before being puppeted.
             # Return to last location (or home, which should always exist),
-            self.location = self.db.prelogout_location if self.db.prelogout_location else self.home
+            self.location = (
+                self.db.prelogout_location if self.db.prelogout_location else self.home
+            )
             self.location.at_object_receive(
                 self, None
             )  # and trigger the location's reception hook.
         if self.location:  # If the character is verified to be somewhere,
-            self.db.prelogout_location = self.location  # save location again to be sure.
+            self.db.prelogout_location = (
+                self.location
+            )  # save location again to be sure.
         else:
             account.msg(
                 "|r%s has no location and no home is set.|n" % self, session=session
@@ -2177,7 +2232,10 @@ class DefaultCharacter(DefaultObject):
         self.msg((self.at_look(self.location), {"type": "look"}), options=None)
 
         def message(obj, from_obj):
-            obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
+            obj.msg(
+                "%s has entered the game." % self.get_display_name(obj),
+                from_obj=from_obj,
+            )
 
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
@@ -2200,7 +2258,10 @@ class DefaultCharacter(DefaultObject):
             if self.location:
 
                 def message(obj, from_obj):
-                    obj.msg("%s has left the game." % self.get_display_name(obj), from_obj=from_obj)
+                    obj.msg(
+                        "%s has left the game." % self.get_display_name(obj),
+                        from_obj=from_obj,
+                    )
 
                 self.location.for_contents(message, exclude=[self], from_obj=self)
                 self.db.prelogout_location = self.location
@@ -2548,7 +2609,9 @@ class DefaultExit(DefaultObject):
 
         """
 
-        if "force_init" in kwargs or not self.cmdset.has_cmdset("ExitCmdSet", must_be_default=True):
+        if "force_init" in kwargs or not self.cmdset.has_cmdset(
+            "ExitCmdSet", must_be_default=True
+        ):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
             self.cmdset.add_default(self.create_exit_cmdset(self), permanent=False)
 

@@ -16,7 +16,9 @@ class Throttle(object):
     no recent failures have been recorded.
     """
 
-    error_msg = "Too many failed attempts; you must wait a few minutes before trying again."
+    error_msg = (
+        "Too many failed attempts; you must wait a few minutes before trying again."
+    )
 
     def __init__(self, **kwargs):
         """
