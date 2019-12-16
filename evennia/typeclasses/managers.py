@@ -5,7 +5,7 @@ all Attributes and TypedObjects).
 
 """
 import shlex
-from django.db.models import Q
+from django.db.models import Q, Count
 from evennia.utils import idmapper
 from evennia.utils.utils import make_iter, variable_from_module
 from evennia.typeclasses.attributes import Attribute
@@ -236,7 +236,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         return self.get_tag(key=key, category=category, obj=obj, tagtype="alias")
 
-    def get_by_tag(self, key=None, category=None, tagtype=None):
+    def get_by_tag(self, key=None, category=None, tagtype=None, **kwargs):
         """
         Return objects having tags with a given key or category or combination of the two.
         Also accepts multiple tags/category/tagtype
@@ -250,6 +250,12 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             tagtype (str, optional): 'type' of Tag, by default
                 this is either `None` (a normal Tag), `alias` or
                 `permission`. This always apply to all queried tags.
+                
+        Kwargs:
+            match (str): ALL or ANY, determines whether the target object must match
+                ALL of the provided tags/categories or ANY single one. ANY will perform
+                a weighted sort, so objects with more tag matches will outrank those
+                with fewer tag matches.
 
         Returns:
             objects (list): Objects with matching tag.
@@ -261,6 +267,12 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         if not (key or category):
             return []
+
+        global _Tag
+        if not _Tag:
+            from evennia.typeclasses.models import Tag as _Tag
+            
+        match = kwargs.get('match', 'all').lower().strip()
 
         keys = make_iter(key) if key else []
         categories = make_iter(category) if category else []
@@ -286,14 +298,27 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                     "get_by_tag needs a single category or a list of categories "
                     "the same length as the list of tags."
                 )
+            clauses = Q()
             for ikey, key in enumerate(keys):
-                query = query.filter(
-                    db_tags__db_key__iexact=key, db_tags__db_category__iexact=categories[ikey]
-                )
+                # Keep each key and category together, grouped by AND
+                clauses |= Q(db_key__iexact=key, db_category__iexact=categories[ikey])
+
         else:
             # only one or more categories given
-            for category in categories:
-                query = query.filter(db_tags__db_category__iexact=category)
+            clauses = Q()
+            uniq_categories = sorted(set(categories))
+            for category in uniq_categories:
+                clauses |= Q(db_category__iexact=category,)
+
+        tags = _Tag.objects.filter(clauses)
+        query = query.filter(db_tags__in=tags).annotate(matches=Count('db_tags__pk', filter=Q(db_tags__in=tags), distinct=True))
+        
+        # Default ALL: Match all of the tags and optionally more
+        if match == 'all':
+            query = query.filter(matches__gte=tags.count())
+        # ANY: Match any single tag, ordered by weight
+        elif match == 'any':
+            query = query.order_by('-matches')
 
         return query
 
