@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-VERSION_PATH = os.path.join('evennia', 'VERSION.txt')
+VERSION_PATH = os.path.join("evennia", "VERSION.txt")
 OS_WINDOWS = os.name == "nt"
 
 
@@ -12,12 +12,12 @@ def get_requirements():
     """
     To update the requirements for Evennia, edit the requirements.txt file.
     """
-    with open('requirements.txt', 'r') as f:
+    with open("requirements.txt", "r") as f:
         req_lines = f.readlines()
     reqs = []
     for line in req_lines:
         # Avoid adding comments.
-        line = line.split('#')[0].strip()
+        line = line.split("#")[0].strip()
         if line:
             reqs.append(line)
     return reqs
@@ -32,7 +32,7 @@ def get_scripts():
         batpath = os.path.join("bin", "windows", "evennia.bat")
         scriptpath = os.path.join(sys.prefix, "Scripts", "evennia_launcher.py")
         with open(batpath, "w") as batfile:
-            batfile.write("@\"%s\" \"%s\" %%*" % (sys.executable, scriptpath))
+            batfile.write('@"%s" "%s" %%*' % (sys.executable, scriptpath))
         return [batpath, os.path.join("bin", "windows", "evennia_launcher.py")]
     else:
         return [os.path.join("bin", "unix", "evennia")]
@@ -53,19 +53,19 @@ def package_data():
     Make sure we get everything.
     """
     file_set = []
-    for root, dirs, files in os.walk('evennia'):
+    for root, dirs, files in os.walk("evennia"):
         for f in files:
-            if '.git' in f.split(os.path.normpath(os.path.join(root, f))):
+            if ".git" in f.split(os.path.normpath(os.path.join(root, f))):
                 # Prevent the repo from being added.
                 continue
-            file_name = os.path.relpath(os.path.join(root, f), 'evennia')
+            file_name = os.path.relpath(os.path.join(root, f), "evennia")
             file_set.append(file_name)
     return file_set
 
 
 # setup the package
 setup(
-    name='evennia',
+    name="evennia",
     version=get_version(),
     author="The Evennia community",
     maintainer="Griatch",
@@ -84,7 +84,7 @@ setup(
     packages=find_packages(),
     scripts=get_scripts(),
     install_requires=get_requirements(),
-    package_data={'': package_data()},
+    package_data={"": package_data()},
     zip_safe=False,
     classifiers=[
         "Programming Language :: Python :: 3 :: Only",
@@ -111,13 +111,13 @@ setup(
         "Topic :: Software Development :: Libraries :: Application Frameworks",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Server",
     ],
-    python_requires='>=3.7',
+    python_requires=">=3.7",
     project_urls={
         "Source": "https://github.com/evennia/evennia",
         "Issue tracker": "https://github.com/evennia/evennia/issues",
         "Chat": "http://www.evennia.com/chat-redirect-3",
-        "Forum":  "https://groups.google.com/forum/#%21forum/evennia",
+        "Forum": "https://groups.google.com/forum/#%21forum/evennia",
         "Dev Blog": "http://evennia.blogspot.com/",
         "Patreon": "https://www.patreon.com/griatch",
-    }
+    },
 )

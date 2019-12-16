@@ -32,7 +32,27 @@ class ANSIStringTestCase(TestCase):
         clean = "This isA|r testTest"
         encoded = "\x1b[1m\x1b[32mThis is\x1b[1m\x1b[31mA|r test\x1b[0mTest\x1b[0m"
         target = ANSIString(r"|gThis is|rA||r test|nTest|n")
-        char_table = [9, 10, 11, 12, 13, 14, 15, 25, 26, 27, 28, 29, 30, 31, 32, 37, 38, 39, 40]
+        char_table = [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            37,
+            38,
+            39,
+            40,
+        ]
         code_table = [
             0,
             1,
@@ -82,7 +102,9 @@ class ANSIStringTestCase(TestCase):
         result = target[:4]
         self.checker(result, "\x1b[1m\x1b[32mTest\x1b[1m\x1b[31m", "Test")
         result = target[:]
-        self.checker(result, "\x1b[1m\x1b[32mTest\x1b[1m\x1b[31mTest\x1b[0m", "TestTest")
+        self.checker(
+            result, "\x1b[1m\x1b[32mTest\x1b[1m\x1b[31mTest\x1b[0m", "TestTest"
+        )
         result = target[:-1]
         self.checker(result, "\x1b[1m\x1b[32mTest\x1b[1m\x1b[31mTes", "TestTes")
         result = target[0:0]
@@ -163,7 +185,30 @@ class ANSIStringTestCase(TestCase):
         result = "\x1b[1m\x1b[32mTest\x1b[1m\x1b[36mString\x1b[0m"
         self.checker(c, result, "TestString")
         char_table = [9, 10, 11, 12, 22, 23, 24, 25, 26, 27]
-        code_table = [0, 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 29, 30, 31]
+        code_table = [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            28,
+            29,
+            30,
+            31,
+        ]
         self.table_check(c, char_table, code_table)
 
     def test_strip(self):
@@ -173,8 +218,12 @@ class ANSIStringTestCase(TestCase):
         a = ANSIString("   |r   Test of stuff |b with spaces   |n   ")
         b = ANSIString("|r|b")
         self.assertEqual(a.strip(), ANSIString("|rTest of stuff |b with spaces|n"))
-        self.assertEqual(a.lstrip(), ANSIString("|rTest of stuff |b with spaces   |n   "))
-        self.assertEqual(a.rstrip(), ANSIString("   |r   Test of stuff |b with spaces|n"))
+        self.assertEqual(
+            a.lstrip(), ANSIString("|rTest of stuff |b with spaces   |n   ")
+        )
+        self.assertEqual(
+            a.rstrip(), ANSIString("   |r   Test of stuff |b with spaces|n")
+        )
         self.assertEqual(b.strip(), b)
 
 
@@ -230,7 +279,9 @@ class TestTextToHTMLparser(TestCase):
 
     def test_url_chars_querystring(self):
         self.assertEqual(
-            self.parser.convert_urls("https://example.com/submitform?field1=val1+val3&field2=val2"),
+            self.parser.convert_urls(
+                "https://example.com/submitform?field1=val1+val3&field2=val2"
+            ),
             '<a href="https://example.com/submitform?field1=val1+val3&field2=val2" target="_blank">'
             "https://example.com/submitform?field1=val1+val3&field2=val2</a>",
         )
@@ -245,7 +296,8 @@ class TestTextToHTMLparser(TestCase):
     def test_url_chars_exclam(self):
         self.assertEqual(
             self.parser.convert_urls(
-                "https://groups.google.com/forum/" "?fromgroups#!categories/evennia/ainneve"
+                "https://groups.google.com/forum/"
+                "?fromgroups#!categories/evennia/ainneve"
             ),
             '<a href="https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve"'
             ' target="_blank">https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve</a>',
@@ -313,7 +365,9 @@ class TestInlineFuncs(TestCase):
 
     def test_single_func(self):
         self.assertEqual(
-            inlinefuncs.parse_inlinefunc("this is a test with $pad(centered, 20) text in it."),
+            inlinefuncs.parse_inlinefunc(
+                "this is a test with $pad(centered, 20) text in it."
+            ),
             "this is a test with       centered       text in it.",
         )
 

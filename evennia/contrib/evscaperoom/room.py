@@ -102,7 +102,9 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
         if achievement not in achievements:
             self.log(f"achievement: {caller} earned '{achievement}' - {subtext}")
             achievements[achievement] = subtext
-            caller.attributes.add("achievements", achievements, category=self.tagcategory)
+            caller.attributes.add(
+                "achievements", achievements, category=self.tagcategory
+            )
 
     def get_all_characters(self):
         """
@@ -224,7 +226,8 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
     def return_appearance(self, looker, **kwargs):
         obj, pos = self.get_position(looker)
         pos = (
-            f"\n|x[{self.position_prep_map[pos]} on " f"{obj.get_display_name(looker)}]|n"
+            f"\n|x[{self.position_prep_map[pos]} on "
+            f"{obj.get_display_name(looker)}]|n"
             if obj
             else ""
         )
@@ -232,7 +235,9 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
         admin_only = ""
         if self.check_perm(looker, "Admin"):
             # only for admins
-            objs = DefaultObject.objects.filter_family(db_location=self).exclude(id=looker.id)
+            objs = DefaultObject.objects.filter_family(db_location=self).exclude(
+                id=looker.id
+            )
             admin_only = "\n|xAdmin only: " + list_to_string(
                 [obj.get_display_name(looker) for obj in objs]
             )

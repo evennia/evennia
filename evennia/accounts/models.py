@@ -129,7 +129,11 @@ class AccountDB(TypedObject, AbstractUser):
         Setter. Allows for self.name = value. Stores as a comma-separated
         string.
         """
-        _SA(self, "db_cmdset_storage", ",".join(str(val).strip() for val in make_iter(value)))
+        _SA(
+            self,
+            "db_cmdset_storage",
+            ",".join(str(val).strip() for val in make_iter(value)),
+        )
         _GA(self, "save")()
 
     # @cmdset_storage.deleter
@@ -138,7 +142,9 @@ class AccountDB(TypedObject, AbstractUser):
         _SA(self, "db_cmdset_storage", None)
         _GA(self, "save")()
 
-    cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
+    cmdset_storage = property(
+        __cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del
+    )
 
     #
     # property/field access

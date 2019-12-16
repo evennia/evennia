@@ -45,7 +45,9 @@ __all__ = (
 
 # import objects this way to avoid circular import problems
 ObjectDB = ContentType.objects.get(app_label="objects", model="objectdb").model_class()
-AccountDB = ContentType.objects.get(app_label="accounts", model="accountdb").model_class()
+AccountDB = ContentType.objects.get(
+    app_label="accounts", model="accountdb"
+).model_class()
 ScriptDB = ContentType.objects.get(app_label="scripts", model="scriptdb").model_class()
 Msg = ContentType.objects.get(app_label="comms", model="msg").model_class()
 Channel = ContentType.objects.get(app_label="comms", model="channeldb").model_class()

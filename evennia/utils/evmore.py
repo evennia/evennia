@@ -51,7 +51,20 @@ class CmdMore(Command):
     """
 
     key = _CMD_NOINPUT
-    aliases = ["quit", "q", "abort", "a", "next", "n", "back", "b", "top", "t", "end", "e"]
+    aliases = [
+        "quit",
+        "q",
+        "abort",
+        "a",
+        "next",
+        "n",
+        "back",
+        "b",
+        "top",
+        "t",
+        "end",
+        "e",
+    ]
     auto_help = False
 
     def func(self):
@@ -176,7 +189,9 @@ class EvMore(object):
         self._session = session
 
         # set up individual pages for different sessions
-        height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
+        height = max(
+            4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4
+        )
         width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
 
         if "\f" in text:
@@ -205,7 +220,9 @@ class EvMore(object):
             # always limit number of chars to 10 000 per page
             height = min(10000 // max(1, width), height)
 
-            self._pages = ["\n".join(lines[i : i + height]) for i in range(0, len(lines), height)]
+            self._pages = [
+                "\n".join(lines[i : i + height]) for i in range(0, len(lines), height)
+            ]
             self._npages = len(self._pages)
             self._npos = 0
 

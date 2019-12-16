@@ -12,7 +12,9 @@ class Migration(migrations.Migration):
             model_name="helpentry",
             name="db_entrytext",
             field=models.TextField(
-                blank=True, help_text="the main body of help text", verbose_name="help entry"
+                blank=True,
+                help_text="the main body of help text",
+                verbose_name="help entry",
             ),
         ),
         migrations.AlterField(
@@ -29,7 +31,10 @@ class Migration(migrations.Migration):
             model_name="helpentry",
             name="db_key",
             field=models.CharField(
-                help_text="key to search for", max_length=255, unique=True, verbose_name="help key"
+                help_text="key to search for",
+                max_length=255,
+                unique=True,
+                verbose_name="help key",
             ),
         ),
         migrations.AlterField(

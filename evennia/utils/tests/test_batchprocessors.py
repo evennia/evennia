@@ -37,7 +37,8 @@ class TestBatchCommandProcessor(TestCase):
         )
         commands = batchprocessors.BATCHCMD.parse_file("foopath")
         self.assertEqual(
-            ["@create rock", "@set rock/desc =\nA big rock. You can tell is ancient."], commands
+            ["@create rock", "@set rock/desc =\nA big rock. You can tell is ancient."],
+            commands,
         )
 
     @mock.patch.object(batchprocessors, "read_batchfile")
@@ -63,10 +64,15 @@ class TestBatchCommandProcessor(TestCase):
             ),
         ]
         commands = batchprocessors.BATCHCMD.parse_file("foopath")
-        self.assertEqual(commands, ["@create sky", "@create bird", "@create cloud", "@create sun"])
+        self.assertEqual(
+            commands, ["@create sky", "@create bird", "@create cloud", "@create sun"]
+        )
         self.assertEqual(
             mocked_read.mock_calls,
-            [mock.call("foopath", file_ending=".ev"), mock.call("another.ev", file_ending=".ev")],
+            [
+                mock.call("foopath", file_ending=".ev"),
+                mock.call("another.ev", file_ending=".ev"),
+            ],
         )
 
     @mock.patch.object(batchprocessors, "read_batchfile")
@@ -88,7 +94,10 @@ class TestBatchCommandProcessor(TestCase):
             batchprocessors.BATCHCMD.parse_file("foopath")
         self.assertEqual(
             mocked_read.mock_calls,
-            [mock.call("foopath", file_ending=".ev"), mock.call("x", file_ending=".ev")],
+            [
+                mock.call("foopath", file_ending=".ev"),
+                mock.call("x", file_ending=".ev"),
+            ],
         )
 
 
@@ -178,7 +187,10 @@ class TestBatchCodeProcessor(TestCase):
         )
         self.assertEqual(
             mocked_read.mock_calls,
-            [mock.call("foopath", file_ending=".py"), mock.call("another.py", file_ending=".py")],
+            [
+                mock.call("foopath", file_ending=".py"),
+                mock.call("another.py", file_ending=".py"),
+            ],
         )
 
     @mock.patch.object(batchprocessors, "read_batchfile")
@@ -195,7 +207,10 @@ class TestBatchCodeProcessor(TestCase):
             batchprocessors.BATCHCODE.parse_file("foopath")
         self.assertEqual(
             mocked_read.mock_calls,
-            [mock.call("foopath", file_ending=".py"), mock.call("x", file_ending=".py")],
+            [
+                mock.call("foopath", file_ending=".py"),
+                mock.call("x", file_ending=".py"),
+            ],
         )
 
     @mock.patch("builtins.exec")
@@ -208,7 +223,8 @@ class TestBatchCodeProcessor(TestCase):
     @mock.patch("builtins.exec")
     def test_execs_codeblock_with_extra_environ(self, mocked_exec):
         err = batchprocessors.BATCHCODE.code_exec(
-            '# batchcode code:\n\nprint("Hello")\n', extra_environ={"foo": "bar", "baz": True}
+            '# batchcode code:\n\nprint("Hello")\n',
+            extra_environ={"foo": "bar", "baz": True},
         )
         self.assertIsNone(err)
 

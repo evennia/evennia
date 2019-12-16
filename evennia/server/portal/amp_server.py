@@ -98,7 +98,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         if self.factory.launcher_connection == self:
             self.factory.launcher_connection = None
 
-        callback, args, kwargs = self.factory.disconnect_callbacks.pop(self, (None, None, None))
+        callback, args, kwargs = self.factory.disconnect_callbacks.pop(
+            self, (None, None, None)
+        )
         if callback:
             try:
                 callback(*args, **kwargs)
@@ -115,13 +117,21 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         server_connected = bool(
-            self.factory.server_connection and self.factory.server_connection.transport.connected
+            self.factory.server_connection
+            and self.factory.server_connection.transport.connected
         )
         portal_info_dict = self.factory.portal.get_info_dict()
         server_info_dict = self.factory.portal.server_info_dict
         server_pid = self.factory.portal.server_process_id
         portal_pid = os.getpid()
-        return (True, server_connected, portal_pid, server_pid, portal_info_dict, server_info_dict)
+        return (
+            True,
+            server_connected,
+            portal_pid,
+            server_pid,
+            portal_info_dict,
+            server_info_dict,
+        )
 
     def data_to_server(self, command, sessid, **kwargs):
         """
@@ -147,7 +157,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             ).addErrback(self.errback, command.key)
         else:
             # if no server connection is available, broadcast
-            return self.broadcast(command, sessid, packed_data=amp.dumps((sessid, kwargs)))
+            return self.broadcast(
+                command, sessid, packed_data=amp.dumps((sessid, kwargs))
+            )
 
     def start_server(self, server_twistd_cmd):
         """
@@ -180,7 +192,11 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
                 else:
                     process = Popen(
-                        server_twistd_cmd, env=getenv(), bufsize=-1, stdout=logfile, stderr=STDOUT
+                        server_twistd_cmd,
+                        env=getenv(),
+                        bufsize=-1,
+                        stdout=logfile,
+                        stderr=STDOUT,
                     )
             except Exception:
                 logger.log_trace()
@@ -329,7 +345,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
         elif operation == amp.SRELOAD:  # reload server #14
             if server_connected:
                 # We let the launcher restart us once they get the signal
-                self.factory.server_connection.wait_for_disconnect(self.send_Status2Launcher)
+                self.factory.server_connection.wait_for_disconnect(
+                    self.send_Status2Launcher
+                )
                 self.stop_server(mode="reload")
             else:
                 self.wait_for_server_connect(self.send_Status2Launcher)
@@ -337,7 +355,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         elif operation == amp.SRESET:  # reload server #19
             if server_connected:
-                self.factory.server_connection.wait_for_disconnect(self.send_Status2Launcher)
+                self.factory.server_connection.wait_for_disconnect(
+                    self.send_Status2Launcher
+                )
                 self.stop_server(mode="reset")
             else:
                 self.wait_for_server_connect(self.send_Status2Launcher)
@@ -345,12 +365,16 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         elif operation == amp.SSHUTD:  # server-only shutdown #17
             if server_connected:
-                self.factory.server_connection.wait_for_disconnect(self.send_Status2Launcher)
+                self.factory.server_connection.wait_for_disconnect(
+                    self.send_Status2Launcher
+                )
                 self.stop_server(mode="shutdown")
 
         elif operation == amp.PSHUTD:  # portal + server shutdown  #16
             if server_connected:
-                self.factory.server_connection.wait_for_disconnect(self.factory.portal.shutdown)
+                self.factory.server_connection.wait_for_disconnect(
+                    self.factory.portal.shutdown
+                )
             else:
                 self.factory.portal.shutdown()
 
@@ -405,13 +429,17 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             # a session has authenticated; sync it.
             session = portal_sessionhandler.get(sessid)
             if session:
-                portal_sessionhandler.server_logged_in(session, kwargs.get("sessiondata"))
+                portal_sessionhandler.server_logged_in(
+                    session, kwargs.get("sessiondata")
+                )
 
         elif operation == amp.SDISCONN:  # server_session_disconnect
             # the server is ordering to disconnect the session
             session = portal_sessionhandler.get(sessid)
             if session:
-                portal_sessionhandler.server_disconnect(session, reason=kwargs.get("reason"))
+                portal_sessionhandler.server_disconnect(
+                    session, reason=kwargs.get("reason")
+                )
 
         elif operation == amp.SDISCONNALL:  # server_session_disconnect_all
             # server orders all sessions to disconnect
@@ -433,7 +461,9 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
             self.stop_server(mode="shutdown")
 
         elif operation == amp.PSHUTD:  # full server+server shutdown
-            self.factory.server_connection.wait_for_disconnect(self.factory.portal.shutdown)
+            self.factory.server_connection.wait_for_disconnect(
+                self.factory.portal.shutdown
+            )
             self.stop_server(mode="shutdown")
 
         elif operation == amp.PSYNC:  # portal sync

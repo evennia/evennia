@@ -15,7 +15,10 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.AutoField(
-                        verbose_name="ID", serialize=False, auto_created=True, primary_key=True
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
                     ),
                 ),
                 (
@@ -47,7 +50,9 @@ class Migration(migrations.Migration):
                 (
                     "db_lock_storage",
                     models.TextField(
-                        help_text="normally view:all().", verbose_name="locks", blank=True
+                        help_text="normally view:all().",
+                        verbose_name="locks",
+                        blank=True,
                     ),
                 ),
                 ("db_staff_only", models.BooleanField(default=False)),
@@ -60,7 +65,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"verbose_name": "Help Entry", "verbose_name_plural": "Help Entries"},
+            options={
+                "verbose_name": "Help Entry",
+                "verbose_name_plural": "Help Entries",
+            },
             bases=(models.Model,),
         )
     ]

@@ -32,12 +32,17 @@ def update_perms_and_locks(apps, schema_editor):
         ("comms", "ChannelDB"),
     ]
     p_reg = re.compile(
-        r"(?<=perm\()(\w+)(?=\))|(?<=perm_above\()(\w+)(?=\))", re.IGNORECASE + re.UNICODE
+        r"(?<=perm\()(\w+)(?=\))|(?<=perm_above\()(\w+)(?=\))",
+        re.IGNORECASE + re.UNICODE,
     )
 
     def _sub(match):
         perm = match.group(1)
-        return perm_map[perm.lower()].capitalize() if (perm and perm.lower() in perm_map) else perm
+        return (
+            perm_map[perm.lower()].capitalize()
+            if (perm and perm.lower() in perm_map)
+            else perm
+        )
 
     for app_tuple in apps_models:
         TClass = apps.get_model(*app_tuple)

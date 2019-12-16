@@ -17,7 +17,10 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.AutoField(
-                        verbose_name="ID", serialize=False, auto_created=True, primary_key=True
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
                     ),
                 ),
                 ("password", models.CharField(max_length=128, verbose_name="password")),
@@ -51,15 +54,21 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "first_name",
-                    models.CharField(max_length=30, verbose_name="first name", blank=True),
+                    models.CharField(
+                        max_length=30, verbose_name="first name", blank=True
+                    ),
                 ),
                 (
                     "last_name",
-                    models.CharField(max_length=30, verbose_name="last name", blank=True),
+                    models.CharField(
+                        max_length=30, verbose_name="last name", blank=True
+                    ),
                 ),
                 (
                     "email",
-                    models.EmailField(max_length=75, verbose_name="email address", blank=True),
+                    models.EmailField(
+                        max_length=75, verbose_name="email address", blank=True
+                    ),
                 ),
                 (
                     "is_staff",
@@ -83,7 +92,10 @@ class Migration(migrations.Migration):
                         default=django.utils.timezone.now, verbose_name="date joined"
                     ),
                 ),
-                ("db_key", models.CharField(max_length=255, verbose_name="key", db_index=True)),
+                (
+                    "db_key",
+                    models.CharField(max_length=255, verbose_name="key", db_index=True),
+                ),
                 (
                     "db_typeclass_path",
                     models.CharField(
@@ -95,7 +107,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "db_date_created",
-                    models.DateTimeField(auto_now_add=True, verbose_name="creation date"),
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="creation date"
+                    ),
                 ),
                 (
                     "db_lock_storage",

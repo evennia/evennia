@@ -52,7 +52,11 @@ class ContentsHandler(object):
 
         """
         self._pkcache.update(
-            dict((obj.pk, None) for obj in ObjectDB.objects.filter(db_location=self.obj) if obj.pk)
+            dict(
+                (obj.pk, None)
+                for obj in ObjectDB.objects.filter(db_location=self.obj)
+                if obj.pk
+            )
         )
 
     def get(self, exclude=None):
@@ -67,7 +71,11 @@ class ContentsHandler(object):
 
         """
         if exclude:
-            pks = [pk for pk in self._pkcache if pk not in [excl.pk for excl in make_iter(exclude)]]
+            pks = [
+                pk
+                for pk in self._pkcache
+                if pk not in [excl.pk for excl in make_iter(exclude)]
+            ]
         else:
             pks = self._pkcache
         try:
@@ -258,7 +266,9 @@ class ObjectDB(TypedObject):
         self.db_cmdset_storage = None
         self.save(update_fields=["db_cmdset_storage"])
 
-    cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del)
+    cmdset_storage = property(
+        __cmdset_storage_get, __cmdset_storage_set, __cmdset_storage_del
+    )
 
     # location getsetter
     def __location_get(self):
@@ -316,7 +326,10 @@ class ObjectDB(TypedObject):
                 self.db_location.contents_cache.add(self)
 
         except RuntimeError:
-            errmsg = "Error: %s.location = %s creates a location loop." % (self.key, location)
+            errmsg = "Error: %s.location = %s creates a location loop." % (
+                self.key,
+                location,
+            )
             raise RuntimeError(errmsg)
         except Exception as e:
             errmsg = "Error (%s): %s is not a valid location." % (str(e), location)
@@ -354,7 +367,10 @@ class ObjectDB(TypedObject):
                 logger.log_warn(
                     "db_location direct save triggered contents_cache.init() for all objects!"
                 )
-                [o.contents_cache.init() for o in self.__dbclass__.get_all_cached_instances()]
+                [
+                    o.contents_cache.init()
+                    for o in self.__dbclass__.get_all_cached_instances()
+                ]
 
     class Meta(object):
         """Define Django meta options"""

@@ -196,7 +196,9 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
 
         if account:
             # we have an account puppeting this object. We must check what perms it has
-            perms_account_single = [p[:-1] if p.endswith("s") else p for p in perms_account]
+            perms_account_single = [
+                p[:-1] if p.endswith("s") else p for p in perms_account
+            ]
             hpos_account = [
                 hpos
                 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
@@ -206,7 +208,9 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
 
         if not account or is_quell:
             # only get the object-level perms if there is no account or quelling
-            perms_object_single = [p[:-1] if p.endswith("s") else p for p in perms_object]
+            perms_object_single = [
+                p[:-1] if p.endswith("s") else p for p in perms_object
+            ]
             hpos_object = [
                 hpos
                 for hpos, hperm in enumerate(_PERMISSION_HIERARCHY)
@@ -322,7 +326,9 @@ def pid(accessing_obj, accessed_obj, *args, **kwargs):
 
 # this is more efficient than multiple if ... elif statments
 CF_MAPPING = {
-    "eq": lambda val1, val2: val1 == val2 or str(val1) == str(val2) or float(val1) == float(val2),
+    "eq": lambda val1, val2: val1 == val2
+    or str(val1) == str(val2)
+    or float(val1) == float(val2),
     "gt": lambda val1, val2: float(val1) > float(val2),
     "lt": lambda val1, val2: float(val1) < float(val2),
     "ge": lambda val1, val2: float(val1) >= float(val2),
@@ -588,7 +594,8 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
             (
                 True
                 for obj in contents
-                if obj.key.lower() == objid or objid in [al.lower() for al in obj.aliases.all()]
+                if obj.key.lower() == objid
+                or objid in [al.lower() for al in obj.aliases.all()]
             )
         )
 

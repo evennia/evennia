@@ -115,7 +115,10 @@ CURLY_COLOR_ANSI_EXTRA_MAP = [
     (r"{-", _ANSI_TAB),  # tab
     (r"{_", _ANSI_SPACE),  # space
     (r"{*", _ANSI_INVERSE),  # invert
-    (r"{^", _ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
+    (
+        r"{^",
+        _ANSI_BLINK,
+    ),  # blinking text (very annoying and not supported by all clients)
     (r"{u", _ANSI_UNDERLINE),  # underline
     (r"{r", _ANSI_HILITE + _ANSI_RED),
     (r"{g", _ANSI_HILITE + _ANSI_GREEN),
@@ -156,7 +159,9 @@ CURLY_COLOR_ANSI_EXTRA_MAP = [
 ]
 
 CURLY_COLOR_XTERM256_EXTRA_FG = [r"\{([0-5])([0-5])([0-5])"]  # |123 - foreground colour
-CURLY_COLOR_XTERM256_EXTRA_BG = [r"\{\[([0-5])([0-5])([0-5])"]  # |[123 - background colour
+CURLY_COLOR_XTERM256_EXTRA_BG = [
+    r"\{\[([0-5])([0-5])([0-5])"
+]  # |[123 - background colour
 CURLY_COLOR_XTERM256_EXTRA_GFG = [r"\{=([a-z])"]  # |=a - greyscale foreground
 CURLY_COLOR_XTERM256_EXTRA_GBG = [r"\{\[=([a-z])"]  # |[=a - greyscale background
 
@@ -215,7 +220,9 @@ MUX_COLOR_ANSI_EXTRA_MAP = [
 ]
 
 MUX_COLOR_XTERM256_EXTRA_FG = [r"%c([0-5])([0-5])([0-5])"]  # %c123 - foreground colour
-MUX_COLOR_XTERM256_EXTRA_BG = [r"%c\[([0-5])([0-5])([0-5])"]  # %c[123 - background colour
+MUX_COLOR_XTERM256_EXTRA_BG = [
+    r"%c\[([0-5])([0-5])([0-5])"
+]  # %c[123 - background colour
 MUX_COLOR_XTERM256_EXTRA_GFG = [r"%c=([a-z])"]  # %c=a - greyscale foreground
 MUX_COLOR_XTERM256_EXTRA_GBG = [r"%c\[=([a-z])"]  # %c[=a - greyscale background
 

@@ -142,7 +142,8 @@ class BlindedState(DefaultScript):
         """
         self.obj.msg("You blink feverishly as your eyesight slowly returns.")
         self.obj.location.msg_contents(
-            "%s seems to be recovering their eyesight." % self.obj.name, exclude=self.obj
+            "%s seems to be recovering their eyesight." % self.obj.name,
+            exclude=self.obj,
         )
         self.obj.cmdset.delete()  # this will clear the latest added cmdset,
         # (which is the blinded one).

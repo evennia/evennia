@@ -117,7 +117,9 @@ class ChannelAdmin(admin.ModelAdmin):
         from django.http import HttpResponseRedirect
         from django.urls import reverse
 
-        return HttpResponseRedirect(reverse("admin:comms_channeldb_change", args=[obj.id]))
+        return HttpResponseRedirect(
+            reverse("admin:comms_channeldb_change", args=[obj.id])
+        )
 
 
 admin.site.register(ChannelDB, ChannelAdmin)

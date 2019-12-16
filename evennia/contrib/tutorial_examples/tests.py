@@ -45,11 +45,14 @@ class TestBodyFunctions(EvenniaTest):
         mock_random.random = Mock(return_value=0.25)
         self.script.send_random_message()
         self.char1.msg.assert_called_with(
-            "You think you hear someone behind you. ... " "but when you look there's noone there."
+            "You think you hear someone behind you. ... "
+            "but when you look there's noone there."
         )
         mock_random.random = Mock(return_value=0.35)
         self.script.send_random_message()
-        self.char1.msg.assert_called_with("You inspect your fingernails. Nothing to report.")
+        self.char1.msg.assert_called_with(
+            "You inspect your fingernails. Nothing to report."
+        )
         mock_random.random = Mock(return_value=0.45)
         self.script.send_random_message()
         self.char1.msg.assert_called_with("You cough discreetly into your hand.")
@@ -58,14 +61,20 @@ class TestBodyFunctions(EvenniaTest):
         self.char1.msg.assert_called_with("You scratch your head, looking around.")
         mock_random.random = Mock(return_value=0.65)
         self.script.send_random_message()
-        self.char1.msg.assert_called_with("You blink, forgetting what it was you were going to do.")
+        self.char1.msg.assert_called_with(
+            "You blink, forgetting what it was you were going to do."
+        )
         mock_random.random = Mock(return_value=0.75)
         self.script.send_random_message()
         self.char1.msg.assert_called_with("You feel lonely all of a sudden.")
         mock_random.random = Mock(return_value=0.85)
         self.script.send_random_message()
-        self.char1.msg.assert_called_with("You get a great idea. Of course you won't tell anyone.")
+        self.char1.msg.assert_called_with(
+            "You get a great idea. Of course you won't tell anyone."
+        )
         mock_random.random = Mock(return_value=0.95)
         self.script.send_random_message()
-        self.char1.msg.assert_called_with("You suddenly realize how much you love Evennia!")
+        self.char1.msg.assert_called_with(
+            "You suddenly realize how much you love Evennia!"
+        )
         self.char1.msg = old_func

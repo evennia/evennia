@@ -70,7 +70,10 @@ class Attribute(SharedMemoryModel):
         "cannot be edited through the admin interface.",
     )
     db_strvalue = models.TextField(
-        "strvalue", null=True, blank=True, help_text="String-specific storage for quick look-up"
+        "strvalue",
+        null=True,
+        blank=True,
+        help_text="String-specific storage for quick look-up",
     )
     db_category = models.CharField(
         "category",
@@ -104,7 +107,9 @@ class Attribute(SharedMemoryModel):
         help_text="Subclass of Attribute (None or nick)",
     )
     # time stamp
-    db_date_created = models.DateTimeField("date_created", editable=False, auto_now_add=True)
+    db_date_created = models.DateTimeField(
+        "date_created", editable=False, auto_now_add=True
+    )
 
     # Database manager
     # objects = managers.AttributeManager()
@@ -204,7 +209,9 @@ class Attribute(SharedMemoryModel):
             result (bool): If the lock was passed or not.
 
         """
-        result = self.locks.check(accessing_obj, access_type=access_type, default=default)
+        result = self.locks.check(
+            accessing_obj, access_type=access_type, default=default
+        )
         return result
 
 
@@ -237,7 +244,8 @@ class AttributeHandler(object):
 
     def _fullcache(self):
         """Cache all attributes of this object"""
-        if not _TYPECLASS_AGGRESSIVE_CACHE: return
+        if not _TYPECLASS_AGGRESSIVE_CACHE:
+            return
         query = {
             "%s__id" % self._model: self._objid,
             "attribute__db_model__iexact": self._model,
@@ -245,7 +253,9 @@ class AttributeHandler(object):
         }
         attrs = [
             conn.attribute
-            for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
+            for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(
+                **query
+            )
         ]
         self._cache = dict(
             (
@@ -310,14 +320,18 @@ class AttributeHandler(object):
                     "attribute__db_model__iexact": self._model,
                     "attribute__db_attrtype": self._attrtype,
                     "attribute__db_key__iexact": key.lower(),
-                    "attribute__db_category__iexact": category.lower() if category else None,
+                    "attribute__db_category__iexact": category.lower()
+                    if category
+                    else None,
                 }
                 if not self.obj.pk:
                     return []
-                conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
+                conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(
+                    **query
+                )
                 if conn:
                     attr = conn[0].attribute
-                    if _TYPECLASS_AGGRESSIVE_CACHE: 
+                    if _TYPECLASS_AGGRESSIVE_CACHE:
                         self._cache[cachekey] = attr
                     return [attr] if attr.pk else []
                 else:
@@ -333,20 +347,26 @@ class AttributeHandler(object):
             # for this category before
             catkey = "-%s" % category
             if _TYPECLASS_AGGRESSIVE_CACHE and catkey in self._catcache:
-                return [attr for key, attr in self._cache.items() if key.endswith(catkey) and attr]
+                return [
+                    attr
+                    for key, attr in self._cache.items()
+                    if key.endswith(catkey) and attr
+                ]
             else:
                 # we have to query to make this category up-date in the cache
                 query = {
                     "%s__id" % self._model: self._objid,
                     "attribute__db_model__iexact": self._model,
                     "attribute__db_attrtype": self._attrtype,
-                    "attribute__db_category__iexact": category.lower() if category else None,
+                    "attribute__db_category__iexact": category.lower()
+                    if category
+                    else None,
                 }
                 attrs = [
                     conn.attribute
-                    for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(
-                        **query
-                    )
+                    for conn in getattr(
+                        self.obj, self._m2m_fieldname
+                    ).through.objects.filter(**query)
                 ]
                 if _TYPECLASS_AGGRESSIVE_CACHE:
                     for attr in attrs:
@@ -367,7 +387,8 @@ class AttributeHandler(object):
             attr_obj (Attribute): The newly saved attribute
 
         """
-        if not _TYPECLASS_AGGRESSIVE_CACHE: return
+        if not _TYPECLASS_AGGRESSIVE_CACHE:
+            return
         if not key:  # don't allow an empty key in cache
             return
         cachekey = "%s-%s" % (key, category)
@@ -616,11 +637,15 @@ class AttributeHandler(object):
         strattr = kwargs.get("strattr", False)
         for tup in args:
             if not is_iter(tup) or len(tup) < 2:
-                raise RuntimeError("batch_add requires iterables as arguments (got %r)." % tup)
+                raise RuntimeError(
+                    "batch_add requires iterables as arguments (got %r)." % tup
+                )
             ntup = len(tup)
             keystr = str(tup[0]).strip().lower()
             new_value = tup[1]
-            category = str(tup[2]).strip().lower() if ntup > 2 and tup[2] is not None else None
+            category = (
+                str(tup[2]).strip().lower() if ntup > 2 and tup[2] is not None else None
+            )
             lockstring = tup[3] if ntup > 3 else ""
 
             attr_objs = self._getcache(keystr, category)
@@ -695,7 +720,9 @@ class AttributeHandler(object):
 
         if key is None:
             self.clear(
-                category=category, accessing_obj=accessing_obj, default_access=default_access
+                category=category,
+                accessing_obj=accessing_obj,
+                default_access=default_access,
             )
             return
 
@@ -708,7 +735,9 @@ class AttributeHandler(object):
             for attr_obj in attr_objs:
                 if not (
                     accessing_obj
-                    and not attr_obj.access(accessing_obj, self._attredit, default=default_access)
+                    and not attr_obj.access(
+                        accessing_obj, self._attredit, default=default_access
+                    )
                 ):
                     try:
                         attr_obj.delete()
@@ -749,7 +778,8 @@ class AttributeHandler(object):
             [
                 attr.delete()
                 for attr in attrs
-                if attr and attr.access(accessing_obj, self._attredit, default=default_access)
+                if attr
+                and attr.access(accessing_obj, self._attredit, default=default_access)
             ]
         else:
             [attr.delete() for attr in attrs if attr and attr.pk]
@@ -776,7 +806,9 @@ class AttributeHandler(object):
         """
         if not self._cache_complete:
             self._fullcache()
-        attrs = sorted([attr for attr in self._cache.values() if attr], key=lambda o: o.id)
+        attrs = sorted(
+            [attr for attr in self._cache.values() if attr], key=lambda o: o.id
+        )
         if accessing_obj:
             return [
                 attr
@@ -855,14 +887,20 @@ def initialize_nick_templates(in_template, out_template):
 
     # validate the templates
     regex_args = [match.group(2) for match in _RE_NICK_ARG.finditer(regex_string)]
-    temp_args = [match.group(2) for match in _RE_NICK_TEMPLATE_ARG.finditer(out_template)]
+    temp_args = [
+        match.group(2) for match in _RE_NICK_TEMPLATE_ARG.finditer(out_template)
+    ]
     if set(regex_args) != set(temp_args):
         # We don't have the same $-tags in input/output.
         raise NickTemplateInvalid
 
     regex_string = _RE_NICK_SPACE.sub(r"\\s+", regex_string)
-    regex_string = _RE_NICK_ARG.sub(lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string)
-    template_string = _RE_NICK_TEMPLATE_ARG.sub(lambda m: "{arg%s}" % m.group(2), out_template)
+    regex_string = _RE_NICK_ARG.sub(
+        lambda m: "(?P<arg%s>.+?)" % m.group(2), regex_string
+    )
+    template_string = _RE_NICK_TEMPLATE_ARG.sub(
+        lambda m: "{arg%s}" % m.group(2), out_template
+    )
 
     return regex_string, template_string
 
@@ -958,10 +996,17 @@ class NickHandler(AttributeHandler):
 
         """
         if category == "channel":
-            nick_regex, nick_template = initialize_nick_templates(key + " $1", replacement + " $1")
+            nick_regex, nick_template = initialize_nick_templates(
+                key + " $1", replacement + " $1"
+            )
         else:
             nick_regex, nick_template = initialize_nick_templates(key, replacement)
-        super().add(key, (nick_regex, nick_template, key, replacement), category=category, **kwargs)
+        super().add(
+            key,
+            (nick_regex, nick_template, key, replacement),
+            category=category,
+            **kwargs
+        )
 
     def remove(self, key, category="inputline", **kwargs):
         """
@@ -977,7 +1022,9 @@ class NickHandler(AttributeHandler):
         """
         super().remove(key, category=category, **kwargs)
 
-    def nickreplace(self, raw_string, categories=("inputline", "channel"), include_account=True):
+    def nickreplace(
+        self, raw_string, categories=("inputline", "channel"), include_account=True
+    ):
         """
         Apply nick replacement of entries in raw_string with nick replacement.
 
@@ -1011,7 +1058,9 @@ class NickHandler(AttributeHandler):
                     {
                         nick.key: nick
                         for nick in make_iter(
-                            self.obj.account.nicks.get(category=category, return_obj=True)
+                            self.obj.account.nicks.get(
+                                category=category, return_obj=True
+                            )
                         )
                         if nick and nick.key
                     }
@@ -1023,7 +1072,9 @@ class NickHandler(AttributeHandler):
                 regex = re.compile(nick_regex, re.I + re.DOTALL + re.U)
                 self._regex_cache[nick_regex] = regex
 
-            is_match, raw_string = parse_nick_template(raw_string.strip(), regex, template)
+            is_match, raw_string = parse_nick_template(
+                raw_string.strip(), regex, template
+            )
             if is_match:
                 break
         return raw_string
@@ -1114,5 +1165,9 @@ class NAttributeHandler(object):
 
         """
         if return_tuples:
-            return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
+            return [
+                (key, value)
+                for (key, value) in self._store.items()
+                if not key.startswith("_")
+            ]
         return [key for key in self._store if not key.startswith("_")]

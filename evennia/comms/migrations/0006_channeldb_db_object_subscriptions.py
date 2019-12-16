@@ -6,7 +6,10 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [("objects", "0004_auto_20150118_1622"), ("comms", "0005_auto_20150223_1517")]
+    dependencies = [
+        ("objects", "0004_auto_20150118_1622"),
+        ("comms", "0005_auto_20150223_1517"),
+    ]
 
     operations = [
         migrations.AddField(

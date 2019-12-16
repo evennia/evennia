@@ -333,7 +333,10 @@ class DummyClient(telnet.StatefulTelnetProtocol):
                     # get the login commands
                     self._cmdlist = list(makeiter(self._login(self)))
                     NLOGGED_IN += 1  # this is for book-keeping
-                    print("connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS))
+                    print(
+                        "connecting client %s (%i/%i)..."
+                        % (self.key, NLOGGED_IN, NCLIENTS)
+                    )
                     self._loggedin = True
                 else:
                     # no login yet, so cmdlist not yet set

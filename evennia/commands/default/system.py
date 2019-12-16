@@ -150,7 +150,12 @@ def _py_code(caller, buf):
     string = "Executing code%s ..." % (" (measure timing)" if measure_time else "")
     caller.msg(string)
     _run_code_snippet(
-        caller, buf, mode="exec", measure_time=measure_time, client_raw=client_raw, show_input=False
+        caller,
+        buf,
+        mode="exec",
+        measure_time=measure_time,
+        client_raw=client_raw,
+        show_input=False,
     )
     return True
 
@@ -235,7 +240,9 @@ def _run_code_snippet(
 
     for session in sessions:
         try:
-            caller.msg(ret, session=session, options={"raw": True, "client_raw": client_raw})
+            caller.msg(
+                ret, session=session, options={"raw": True, "client_raw": client_raw}
+            )
         except TypeError:
             caller.msg(ret, options={"raw": True, "client_raw": client_raw})
 
@@ -477,7 +484,9 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 if new_script:
                     caller.msg("Global script %s was started successfully." % args)
                 else:
-                    caller.msg("Global script %s could not start correctly. See logs." % args)
+                    caller.msg(
+                        "Global script %s could not start correctly. See logs." % args
+                    )
                 return
 
             # test first if this is a script match
@@ -498,7 +507,10 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 return
 
         if not scripts:
-            string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
+            string = "No scripts found with a key '%s', or on an object named '%s'." % (
+                args,
+                args,
+            )
             caller.msg(string)
             return
 
@@ -585,7 +597,9 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
             nexits,
             "%.2f" % ((float(nexits) / nobjs) * 100),
         )
-        totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
+        totaltable.add_row(
+            "Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100)
+        )
 
         # typeclass table
         typetable = self.styled_table(
@@ -597,9 +611,16 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
             typetable.add_row(path, count, "%.2f" % ((float(count) / nobjs) * 100))
 
         # last N table
-        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim) :]
+        objs = ObjectDB.objects.all().order_by("db_date_created")[
+            max(0, nobjs - nlim) :
+        ]
         latesttable = self.styled_table(
-            "|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table"
+            "|wcreated|n",
+            "|wdbref|n",
+            "|wname|n",
+            "|wtypeclass|n",
+            align="l",
+            border="table",
         )
         latesttable.align = "l"
         for obj in objs:
@@ -607,7 +628,10 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
                 utils.datetime_format(obj.date_created), obj.dbref, obj.key, obj.path
             )
 
-        string = "\n|wObject subtype totals (out of %i Objects):|n\n%s" % (nobjs, totaltable)
+        string = "\n|wObject subtype totals (out of %i Objects):|n\n%s" % (
+            nobjs,
+            totaltable,
+        )
         string += "\n|wObject typeclass distribution:|n\n%s" % typetable
         string += "\n|wLast %s Objects created:|n\n%s" % (min(nobjs, nlim), latesttable)
         caller.msg(string)
@@ -660,7 +684,9 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
                 return
             if len(accounts) > 1:
                 string = "There were multiple matches:\n"
-                string += "\n".join(" %s %s" % (account.id, account.key) for account in accounts)
+                string += "\n".join(
+                    " %s %s" % (account.id, account.key) for account in accounts
+                )
                 self.msg(string)
                 return
             account = accounts.first()
@@ -709,9 +735,16 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
         for path, count in dbtotals.items():
             typetable.add_row(path, count, "%.2f" % ((float(count) / naccounts) * 100))
         # last N table
-        plyrs = AccountDB.objects.all().order_by("db_date_created")[max(0, naccounts - nlim) :]
+        plyrs = AccountDB.objects.all().order_by("db_date_created")[
+            max(0, naccounts - nlim) :
+        ]
         latesttable = self.styled_table(
-            "|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", border="cells", align="l"
+            "|wcreated|n",
+            "|wdbref|n",
+            "|wname|n",
+            "|wtypeclass|n",
+            border="cells",
+            align="l",
         )
         for ply in plyrs:
             latesttable.add_row(
@@ -719,7 +752,10 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
             )
 
         string = "\n|wAccount typeclass distribution:|n\n%s" % typetable
-        string += "\n|wLast %s Accounts created:|n\n%s" % (min(naccounts, nlim), latesttable)
+        string += "\n|wLast %s Accounts created:|n\n%s" % (
+            min(naccounts, nlim),
+            latesttable,
+        )
         caller.msg(string)
 
 
@@ -769,7 +805,9 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                 "|wService|n (use services/start|stop|delete)", "|wstatus", align="l"
             )
             for service in service_collection.services:
-                table.add_row(service.name, service.running and "|gRunning" or "|rNot Running")
+                table.add_row(
+                    service.name, service.running and "|gRunning" or "|rNot Running"
+                )
             caller.msg(str(table))
             return
 
@@ -779,7 +817,9 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             service = service_collection.getServiceNamed(self.args)
         except Exception:
             string = "Invalid service name. This command is case-sensitive. "
-            string += "See service/list for valid service name (enter the full name exactly)."
+            string += (
+                "See service/list for valid service name (enter the full name exactly)."
+            )
             caller.msg(string)
             return
 
@@ -793,7 +833,9 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                 return
             if service.name[:7] == "Evennia":
                 if delmode:
-                    caller.msg("You cannot remove a core Evennia service (named 'Evennia***').")
+                    caller.msg(
+                        "You cannot remove a core Evennia service (named 'Evennia***')."
+                    )
                     return
                 string = "You seem to be shutting down a core Evennia service (named 'Evennia***'). Note that"
                 string += "stopping some TCP port services will *not* disconnect users *already*"
@@ -885,7 +927,9 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
         table1.add_row("Current uptime", utils.time_format(gametime.uptime(), 3))
         table1.add_row("Portal uptime", utils.time_format(gametime.portal_uptime(), 3))
         table1.add_row("Total runtime", utils.time_format(gametime.runtime(), 2))
-        table1.add_row("First start", datetime.datetime.fromtimestamp(gametime.server_epoch()))
+        table1.add_row(
+            "First start", datetime.datetime.fromtimestamp(gametime.server_epoch())
+        )
         table1.add_row("Current time", datetime.datetime.now())
         table1.reformat_column(0, width=30)
         table2 = self.styled_table(
@@ -895,11 +939,14 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
             width=77,
             border_top=0,
         )
-        epochtxt = "Epoch (%s)" % ("from settings" if settings.TIME_GAME_EPOCH else "server start")
+        epochtxt = "Epoch (%s)" % (
+            "from settings" if settings.TIME_GAME_EPOCH else "server start"
+        )
         table2.add_row(epochtxt, datetime.datetime.fromtimestamp(gametime.game_epoch()))
         table2.add_row("Total time passed:", utils.time_format(gametime.gametime(), 2))
         table2.add_row(
-            "Current time ", datetime.datetime.fromtimestamp(gametime.gametime(absolute=True))
+            "Current time ",
+            datetime.datetime.fromtimestamp(gametime.gametime(absolute=True)),
         )
         table2.reformat_column(0, width=30)
         self.caller.msg(str(table1) + "\n" + str(table2))
@@ -996,7 +1043,9 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
                 # Display table
                 loadtable = self.styled_table("property", "statistic", align="l")
                 loadtable.add_row("Total CPU load", "%g %%" % loadavg)
-                loadtable.add_row("Total computer memory usage", "%g MB (%g%%)" % (rmem, pmem))
+                loadtable.add_row(
+                    "Total computer memory usage", "%g MB (%g%%)" % (rmem, pmem)
+                )
                 loadtable.add_row("Process ID", "%g" % pid),
             else:
                 loadtable = (
@@ -1013,10 +1062,12 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
             loadavg = os.getloadavg()[0]
             rmem = (
-                float(os.popen("ps -p %d -o %s | tail -1" % (pid, "rss")).read()) / 1000.0
+                float(os.popen("ps -p %d -o %s | tail -1" % (pid, "rss")).read())
+                / 1000.0
             )  # resident memory
             vmem = (
-                float(os.popen("ps -p %d -o %s | tail -1" % (pid, "vsz")).read()) / 1000.0
+                float(os.popen("ps -p %d -o %s | tail -1" % (pid, "vsz")).read())
+                / 1000.0
             )  # virtual memory
             pmem = float(
                 os.popen("ps -p %d -o %s | tail -1" % (pid, "%mem")).read()
@@ -1048,9 +1099,12 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
                 % (rusage.ru_majflt, rusage.ru_minflt, rusage.ru_nswap),
             )
             loadtable.add_row(
-                "Disk I/O", "%g reads, %g writes" % (rusage.ru_inblock, rusage.ru_oublock)
+                "Disk I/O",
+                "%g reads, %g writes" % (rusage.ru_inblock, rusage.ru_oublock),
             )
-            loadtable.add_row("Network I/O", "%g in, %g out" % (rusage.ru_msgrcv, rusage.ru_msgsnd))
+            loadtable.add_row(
+                "Network I/O", "%g in, %g out" % (rusage.ru_msgrcv, rusage.ru_msgsnd)
+            )
             loadtable.add_row(
                 "Context switching",
                 "%g vol, %g forced, %g signals"
@@ -1070,7 +1124,9 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
         )
         memtable = self.styled_table("entity name", "number", "idmapper %", align="l")
         for tup in sorted_cache:
-            memtable.add_row(tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100))
+            memtable.add_row(
+                tup[0], "%i" % tup[1], "%.2f" % (float(tup[1]) / total_num * 100)
+            )
 
         string += "\n|w Entity idmapper cache:|n %i items\n%s" % (total_num, memtable)
 
@@ -1102,14 +1158,18 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
         if not all_subs:
             self.caller.msg("No tickers are currently active.")
             return
-        table = self.styled_table("interval (s)", "object", "path/methodname", "idstring", "db")
+        table = self.styled_table(
+            "interval (s)", "object", "path/methodname", "idstring", "db"
+        )
         for sub in all_subs:
             table.add_row(
                 sub[3],
                 "%s%s"
                 % (
                     sub[0] or "[None]",
-                    sub[0] and " (#%s)" % (sub[0].id if hasattr(sub[0], "id") else "") or "",
+                    sub[0]
+                    and " (#%s)" % (sub[0].id if hasattr(sub[0], "id") else "")
+                    or "",
                 ),
                 sub[1] if sub[1] else sub[2],
                 sub[4] or "[Unset]",
