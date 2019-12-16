@@ -9,23 +9,37 @@ class DefaultObjectTest(EvenniaTest):
 
     def test_object_create(self):
         description = "A home for a grouch."
+        home = self.room1.dbref
+
         obj, errors = DefaultObject.create(
-            "trashcan", self.account, description=description, ip=self.ip
+            "trashcan", self.account, description=description, ip=self.ip, home=home
         )
         self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+        self.assertEqual(obj.db_home, self.room1)
 
     def test_character_create(self):
         description = "A furry green monster, reeking of garbage."
+        home = self.room1.dbref
+        
         obj, errors = DefaultCharacter.create(
-            "oscar", self.account, description=description, ip=self.ip
+            "oscar", self.account, description=description, ip=self.ip, home=home
         )
         self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+        self.assertEqual(obj.db_home, self.room1)
+        
+    def test_character_create_noaccount(self):
+        obj, errors = DefaultCharacter.create(
+            "oscar", None, home=self.room1.dbref
+        )
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertEqual(obj.db_home, self.room1)
 
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
