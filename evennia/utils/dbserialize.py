@@ -587,7 +587,15 @@ def to_pickle(data):
                 return [process_item(val) for val in item]
         elif hasattr(item, "sessid") and hasattr(item, "conn_time"):
             return pack_session(item)
-        return pack_dbobj(item)
+        try:
+            return pack_dbobj(item)
+        except TypeError:
+            return item
+        except Exception:
+            logger.log_error(
+                f"The object {item} of type {type(item)} could not be stored."
+            )
+            raise
 
     return process_item(data)
 
@@ -726,12 +734,20 @@ def from_pickle(data, db_obj=None):
 
 def do_pickle(data):
     """Perform pickle to string"""
-    return dumps(data, protocol=PICKLE_PROTOCOL)
+    try:
+        return dumps(data, protocol=PICKLE_PROTOCOL)
+    except Exception:
+        logger.log_error(f"Could not pickle data for storage: {data}")
+        raise
 
 
 def do_unpickle(data):
     """Retrieve pickle from pickled string"""
-    return loads(to_bytes(data))
+    try:
+        return loads(to_bytes(data))
+    except Exception:
+        logger.log_error(f"Could not unpickle data from storage: {data}")
+        raise
 
 
 def dbserialize(data):
