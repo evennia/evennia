@@ -258,19 +258,21 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
         Args:
             key (str or list, optional): Tag key or list of keys. Not case sensitive.
-            category (str or list, optional): Tag category. Not case sensitive. If `key` is
-                a list, a single category can either apply to all keys in that list or this
-                must be a list matching the `key` list element by element. If no `key` is given,
-                all objects with tags of this category are returned.
+            category (str or list, optional): Tag category. Not case sensitive.
+                If `key` is a list, a single category can either apply to all
+                keys in that list or this must be a list matching the `key`
+                list element by element. If no `key` is given, all objects with
+                tags of this category are returned.
             tagtype (str, optional): 'type' of Tag, by default
-                this is either `None` (a normal Tag), `alias` or
-                `permission`. This always apply to all queried tags.
-                
+                this is either `None` (a normal Tag), `alias` or `permission`.
+                This always apply to all queried tags.
+
         Kwargs:
-            match (str): ALL or ANY, determines whether the target object must match
-                ALL of the provided tags/categories or ANY single one. ANY will perform
-                a weighted sort, so objects with more tag matches will outrank those
-                with fewer tag matches.
+            match (str): "all" (default) or "any"; determines whether the
+                target object must be tagged with ALL of the provided
+                tags/categories or ANY single one. ANY will perform a weighted
+                sort, so objects with more tag matches will outrank those with
+                fewer tag matches.
 
         Returns:
             objects (list): Objects with matching tag.
@@ -293,6 +295,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         categories = make_iter(category) if category else []
         n_keys = len(keys)
         n_categories = len(categories)
+        unique_categories = sorted(set(categories))
+        n_unique_categories = len(unique_categories)
 
         dbmodel = self.model.__dbclass__.__name__.lower()
         query = (
@@ -322,9 +326,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
         else:
             # only one or more categories given
+            # import evennia;evennia.set_trace()
             clauses = Q()
-            uniq_categories = sorted(set(categories))
-            for category in uniq_categories:
+            for category in unique_categories:
                 clauses |= Q(db_category__iexact=category)
 
         tags = _Tag.objects.filter(clauses)
@@ -334,7 +338,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
         # Default ALL: Match all of the tags and optionally more
         if match == "all":
-            query = query.filter(matches__gte=tags.count())
+            n_req_tags = tags.count() if n_keys > 0 else n_unique_categories
+            query = query.filter(matches__gte=n_req_tags)
         # ANY: Match any single tag, ordered by weight
         elif match == "any":
             query = query.order_by("-matches")
