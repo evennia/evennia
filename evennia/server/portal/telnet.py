@@ -40,6 +40,22 @@ _RE_SCREENREADER_REGEX = re.compile(
 )
 _IDLE_COMMAND = str.encode(settings.IDLE_COMMAND + "\n")
 
+# identify HTTP indata
+_HTTP_REGEX = re.compile(
+    b"(GET|HEAD|POST|PUT|DELETE|TRACE|OPTIONS|CONNECT|PATCH) (.*? HTTP/[0-9]\.[0-9])",
+    re.I,
+)
+
+_HTTP_WARNING = bytes(
+    """
+    This is Evennia's Telnet port and cannot be used for regular HTTP traffic.
+    Use a telnet client to connect here and point your browser to the server's
+    dedicated web port instead.
+
+    """.strip(),
+    "utf-8",
+)
+
 
 class TelnetServerFactory(protocol.ServerFactory):
     "This is only to name this better in logs"
@@ -253,6 +269,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             data = [_IDLE_COMMAND]
         else:
             data = _RE_LINEBREAK.split(data)
+
+            if len(data) > 2 and _HTTP_REGEX.match(data[0]):
+                # guard against HTTP request on the Telnet port; we
+                # block and kill the connection.
+                self.transport.write(_HTTP_WARNING)
+                self.transport.loseConnection()
+                return
+
             if self.line_buffer and len(data) > 1:
                 # buffer exists, it is terminated by the first line feed
                 data[0] = self.line_buffer + data[0]
