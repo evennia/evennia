@@ -80,6 +80,9 @@ class TestTypedObjectManager(EvenniaTest):
         self.obj2.tags.add("tag6", "category3")
         self.obj2.tags.add("tag7", "category1")
         self.obj2.tags.add("tag7", "category5")
+        self.obj1.tags.add("tag8", "category6")
+        self.obj2.tags.add("tag9", "category6")
+
         self.assertEqual(
             self._manager("get_by_tag", "tag5", "category1"), [self.obj1, self.obj2]
         )
@@ -105,8 +108,14 @@ class TestTypedObjectManager(EvenniaTest):
         )
         self.assertEqual(
             self._manager("get_by_tag", category=["category1", "category2"]),
-            [self.obj2],
+            [self.obj1, self.obj2],
         )
         self.assertEqual(
             self._manager("get_by_tag", category=["category5", "category4"]), []
+        )
+        self.assertEqual(
+            self._manager("get_by_tag", category="category1"), [self.obj1, self.obj2]
+        )
+        self.assertEqual(
+            self._manager("get_by_tag", category="category6"), [self.obj1, self.obj2]
         )
