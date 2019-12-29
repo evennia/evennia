@@ -1,0 +1,6 @@
+@font-face {
+    font-family: 'DejaVu Sans Mono';
+    src: url('/static/webclient/fonts/DejaVuSansMono-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
