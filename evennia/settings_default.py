@@ -651,6 +651,12 @@ CLIENT_DEFAULT_HEIGHT = 45
 # (excluding webclient with separate help popups). If continuous scroll
 # is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
 HELP_MORE = True
+# Set rate limits per-IP on account creations and login attempts
+CREATION_THROTTLE_LIMIT = 2
+CREATION_THROTTLE_TIMEOUT = 10 * 60
+LOGIN_THROTTLE_LIMIT = 5
+LOGIN_THROTTLE_TIMEOUT = 5 * 60
+
 
 ######################################################################
 # Guest accounts
