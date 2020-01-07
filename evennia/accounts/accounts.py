@@ -57,8 +57,10 @@ _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _MUDINFO_CHANNEL = None
 
 # Create throttles for too many account-creations and login attempts
-CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
-LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
+CREATION_THROTTLE = Throttle(limit=settings.CREATION_THROTTLE_LIMIT, 
+                             timeout=settings.CREATION_THROTTLE_TIMEOUT)
+LOGIN_THROTTLE = Throttle(limit=settings.LOGIN_THROTTLE_LIMIT, 
+                          timeout=settings.LOGIN_THROTTLE_TIMEOUT)
 
 
 class AccountSessionHandler(object):
