@@ -611,7 +611,7 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
     if len(args) == 1:
         # command is holds(dbref/key) - check if given objname/dbref is held by accessing_ob
         return check_holds(args[0])
-    elif len(args=2):
+    elif len(args) > 1:
         # command is holds(attrname, value) check if any held object has the given attribute and value
         for obj in contents:
             if obj.attributes.get(args[0]) == args[1]:
