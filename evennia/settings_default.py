@@ -402,22 +402,23 @@ COLOR_NO_DEFAULT = False
 
 
 ######################################################################
-# Default command sets
+# Default command sets and commands
 ######################################################################
-# Note that with the exception of the unloggedin set (which is not
-# stored anywhere in the database), changing these paths will only affect
-# NEW created characters/objects, not those already in play. So if you plan to
-# change this, it's recommended you do it before having created a lot of objects
-# (or simply reset the database after the change for simplicity).
 
 # Command set used on session before account has logged in
 CMDSET_UNLOGGEDIN = "commands.default_cmdsets.UnloggedinCmdSet"
+# (Note that changing these three following cmdset paths will only affect NEW
+# created characters/objects, not those already in play. So if you want to
+# change this and have it apply to every object, it's recommended you do it
+# before having created a lot of objects (or simply reset the database after
+# the change for simplicity)).
 # Command set used on the logged-in session
 CMDSET_SESSION = "commands.default_cmdsets.SessionCmdSet"
 # Default set for logged in account with characters (fallback)
 CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 # Command set for accounts without a character (ooc)
 CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
+
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "evennia.contrib"]
 # Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
