@@ -1215,6 +1215,9 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "/exit Obj")
         self.call(building.CmdFind(), "/exact Obj", "One Match")
         
+        # Test null search
+        self.call(building.CmdFind(), "=", "Usage: ")
+        
         # Test bogus dbref range with no search term
         self.call(building.CmdFind(), "= obj", "Invalid dbref range provided (not a number).")
         self.call(building.CmdFind(), "= #1a", "Invalid dbref range provided (not a number).")

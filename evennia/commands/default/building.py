@@ -2768,7 +2768,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         switches = self.switches
 
-        if not self.args:
+        if not self.args or (not self.lhs and not self.rhs):
             caller.msg("Usage: find <string> [= low [-high]]")
             return
 
