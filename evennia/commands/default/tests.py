@@ -1214,6 +1214,18 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "/room Obj")
         self.call(building.CmdFind(), "/exit Obj")
         self.call(building.CmdFind(), "/exact Obj", "One Match")
+        
+        # Test bogus dbref range with no search term
+        self.call(building.CmdFind(), "= obj", "Invalid dbref range provided (not a number).")
+        self.call(building.CmdFind(), "= #1a", "Invalid dbref range provided (not a number).")
+        
+        # Test valid dbref ranges with no search term
+        self.call(building.CmdFind(), "=#1", "7 Matches(#1-#7)")
+        self.call(building.CmdFind(), "=1-2", "2 Matches(#1-#2):")
+        self.call(building.CmdFind(), "=1 - 2", "2 Matches(#1-#2):")
+        self.call(building.CmdFind(), "=1- #2", "2 Matches(#1-#2):")
+        self.call(building.CmdFind(), "=1-#2", "2 Matches(#1-#2):")
+        self.call(building.CmdFind(), "=#1-2", "2 Matches(#1-#2):")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
