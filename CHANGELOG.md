@@ -32,8 +32,10 @@ without arguments starts a full interactive Python console.
 - Make code auto-formatted with Black.
 - Make default `set` command able to edit nested structures (PR by Aaron McMillan)
 - Allow running Evennia test suite from core repo with `make test`.
-- Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to 
-  the `TickerHandler.remove` method. This makes it easier to manage tickers. 
+- Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to
+  the `TickerHandler.remove` method. This makes it easier to manage tickers.
+- EvMore `text` argument can now also be a list - each entry in the list is run
+  through str(eval()) and ends up on its own line. Good for paginated object lists.
 
 
 ## Evennia 0.9 (2018-2019)

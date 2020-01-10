@@ -30,7 +30,7 @@ caller.msg() construct every time the page is updated.
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
-from evennia.utils.utils import justify
+from evennia.utils.utils import justify, make_iter
 
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
@@ -149,7 +149,9 @@ class EvMore(object):
 
         Args:
             caller (Object or Account): Entity reading the text.
-            text (str): The text to put under paging.
+            text (str or iterator): The text to put under paging. If an iterator,
+                each iteration step is expected to be a line in the final display,
+                and each line will be run through repr().
             always_page (bool, optional): If `False`, the
                 pager will only kick in if `text` is too big
                 to fit the screen.
@@ -170,12 +172,21 @@ class EvMore(object):
             kwargs (any, optional): These will be passed on
                 to the `caller.msg` method.
 
+        Examples:
+            super_long_text = " ... "
+            EvMore(caller, super_long_text)
+
+            from django.core.paginator import Paginator
+            query = ObjectDB.objects.all()
+            pages = Paginator(query, 10)  # 10 objs per page
+            EvMore(caller, pages)   # will repr() each object per line, 10 to a page
+
         """
         self._caller = caller
         self._kwargs = kwargs
         self._pages = []
-        self._npages = []
-        self._npos = []
+        self._npages = 1
+        self._npos = 0
         self.exit_on_lastpage = exit_on_lastpage
         self.exit_cmd = exit_cmd
         self._exit_msg = "Exited |wmore|n pager."
@@ -194,6 +205,12 @@ class EvMore(object):
         )
         width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
 
+        # analyze text
+        if not isinstance(text, str):
+            # not a string - pre-set pages of some form
+            text = "\n".join(str(repr(element)) for element in make_iter(text))
+
+        # the normal case - a string we need to manually split.
         if "\f" in text:
             self._pages = text.split("\f")
             self._npages = len(self._pages)
@@ -242,7 +259,7 @@ class EvMore(object):
         """
         Pretty-print the page.
         """
-        pos = self._pos
+        pos = self._npos
         text = self._pages[pos]
         if show_footer:
             page = _DISPLAY.format(text=text, pageno=pos + 1, pagemax=self._npages)
@@ -262,14 +279,14 @@ class EvMore(object):
         """
         Display the top page
         """
-        self._pos = 0
+        self._npos = 0
         self.display()
 
     def page_end(self):
         """
         Display the bottom page.
         """
-        self._pos = self._npages - 1
+        self._npos = self._npages - 1
         self.display()
 
     def page_next(self):
@@ -277,12 +294,12 @@ class EvMore(object):
         Scroll the text to the next page. Quit if already at the end
         of the page.
         """
-        if self._pos >= self._npages - 1:
+        if self._npos >= self._npages - 1:
             # exit if we are already at the end
             self.page_quit()
         else:
-            self._pos += 1
-            if self.exit_on_lastpage and self._pos >= (self._npages - 1):
+            self._npos += 1
+            if self.exit_on_lastpage and self._npos >= (self._npages - 1):
                 self.display(show_footer=False)
                 self.page_quit(quiet=True)
             else:
@@ -292,7 +309,7 @@ class EvMore(object):
         """
         Scroll the text back up, at the most to the top.
         """
-        self._pos = max(0, self._pos - 1)
+        self._npos = max(0, self._npos - 1)
         self.display()
 
     def page_quit(self, quiet=False):
