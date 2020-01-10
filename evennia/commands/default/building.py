@@ -3,7 +3,7 @@ Building and world design commands
 """
 import re
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
@@ -2778,8 +2778,35 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             switches.append("loc")
 
         searchstring = self.lhs
-        low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
+        
+        try:
+            # Try grabbing the actual min/max id values by database aggregation
+            qs = ObjectDB.objects.values('id').aggregate(low=Min('id'), high=Max('id'))
+            low, high = sorted(qs.values())
+            if not (low and high):
+                raise ValueError(f"{self.__class__.__name__}: Min and max ID not returned by aggregation; falling back to queryset slicing.")
+        except Exception as e:
+            logger.log_trace(e)
+            # If that doesn't work for some reason (empty DB?), guess the lower 
+            # bound and do a less-efficient query to find the upper.
+            low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
+            
         if self.rhs:
+            # Check that rhs is either a valid dbref or dbref range
+            try:
+                # Get rid of # signs, split on hyphen or space and cast all to int.
+                # Then sort by number to get the lowest and highest values
+                # comprising the bounds.
+                bounds = sorted(int(x) for x in re.split('[-\s]+', self.rhs.strip().replace('#', '')))
+            except ValueError:
+                caller.msg("Invalid dbref range provided (not a number).")
+                return
+            
+            low = bounds[0]
+            if len(bounds) > 1:
+                high = bounds[-1]
+                
+            """
             if "-" in self.rhs:
                 # also support low-high syntax
                 limlist = [part.lstrip("#").strip() for part in self.rhs.split("-", 1)]
@@ -2790,6 +2817,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 low = max(low, int(limlist[0]))
             if len(limlist) > 1 and limlist[1].isdigit():
                 high = min(high, int(limlist[1]))
+            """
         low = min(low, high)
         high = max(low, high)
 
@@ -2868,51 +2896,45 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
 
             results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
             nresults = results.count()
-
+            
+            # Use iterator to minimize memory ballooning on large result sets
+            results = results.iterator()
+            
             if nresults:
-                # convert result to typeclasses.
-                results = [result for result in results]
+                # filter results by typeclasses, if requested
+                obj_ids = []
                 if "room" in switches:
-                    results = [
-                        obj for obj in results if inherits_from(obj, ROOM_TYPECLASS)
-                    ]
+                    obj_ids.extend([
+                        obj.id for obj in results if inherits_from(obj, ROOM_TYPECLASS)
+                    ])
                 if "exit" in switches:
-                    results = [
-                        obj for obj in results if inherits_from(obj, EXIT_TYPECLASS)
-                    ]
+                    obj_ids.extend([
+                        obj.id for obj in results if inherits_from(obj, EXIT_TYPECLASS)
+                    ])
                 if "char" in switches:
-                    results = [
-                        obj for obj in results if inherits_from(obj, CHAR_TYPECLASS)
-                    ]
-                nresults = len(results)
+                    obj_ids.extend([
+                        obj.id for obj in results if inherits_from(obj, CHAR_TYPECLASS)
+                    ])
+                if obj_ids:
+                    filtered_result_qs = ObjectDB.objects.filter(id__in=set(obj_ids)).distinct()
+                    nresults = filtered_result_qs.count()
+                    
+                    # Keep using iterator to minimize memory ballooning
+                    results = filtered_result_qs.iterator()
 
             # still results after type filtering?
             if nresults:
-                if nresults > 1:
-                    string = "|w%i Matches|n(#%i-#%i%s):" % (
-                        nresults,
-                        low,
-                        high,
-                        restrictions,
-                    )
-                    for res in results:
-                        string += "\n   |g%s - %s|n" % (
-                            res.get_display_name(caller),
-                            res.path,
-                        )
-                else:
-                    string = "|wOne Match|n(#%i-#%i%s):" % (low, high, restrictions)
-                    string += "\n   |g%s - %s|n" % (
-                        results[0].get_display_name(caller),
-                        results[0].path,
-                    )
-                    if "loc" in self.switches and nresults == 1 and results[0].location:
-                        string += " (|wlocation|n: |g{}|n)".format(
-                            results[0].location.get_display_name(caller)
-                        )
+                if nresults > 1: header = f'{nresults} Matches'
+                else: header = 'One Match'
+                
+                string = f"|w{header}|n(#{low}-#{high}{restrictions}):"
+                for res in results:
+                    string += f"\n   |g{res.get_display_name(caller)} - {res.path}|n"
+                if "loc" in self.switches and nresults == 1 and res and res.location:
+                    string += f" (|wlocation|n: |g{res.location.get_display_name(caller)}|n)"
             else:
-                string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
-                string += "\n   |RNo matches found for '%s'|n" % searchstring
+                string = "|wMatch|n(#{low}-#{high}{restrictions}):"
+                string += "\n   |RNo matches found for '{searchstring}'|n"
 
         # send result
         caller.msg(string.strip())
