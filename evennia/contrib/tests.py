@@ -77,9 +77,7 @@ class TestLanguage(EvenniaTest):
         )
 
     def test_available_languages(self):
-        self.assertEqual(
-            list(sorted(rplanguage.available_languages())), ["binary", "testlang"]
-        )
+        self.assertEqual(list(sorted(rplanguage.available_languages())), ["binary", "testlang"])
 
     def test_obfuscate_whisper(self):
         self.assertEqual(rplanguage.obfuscate_whisper(text, level=0.0), text)
@@ -113,9 +111,7 @@ class TestRPSystem(EvenniaTest):
     def setUp(self):
         super().setUp()
         self.room = create_object(rpsystem.ContribRPRoom, key="Location")
-        self.speaker = create_object(
-            rpsystem.ContribRPCharacter, key="Sender", location=self.room
-        )
+        self.speaker = create_object(rpsystem.ContribRPCharacter, key="Sender", location=self.room)
         self.receiver1 = create_object(
             rpsystem.ContribRPCharacter, key="Receiver1", location=self.room
         )
@@ -196,13 +192,9 @@ class TestRPSystem(EvenniaTest):
                 "#9": "A nice sender of emotes",
             },
         )
-        self.assertEqual(
-            rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote), result
-        )
+        self.assertEqual(rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote), result)
         self.speaker.recog.add(self.receiver1, recog01)
-        self.assertEqual(
-            rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote), result
-        )
+        self.assertEqual(rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote), result)
 
     def test_send_emote(self):
         speaker = self.speaker
@@ -300,9 +292,7 @@ class TestExtendedRoom(CommandTest):
         )
         self.call(extended_room.CmdExtendedRoomLook(), "testdetail", self.DETAIL_DESC)
         self.call(
-            extended_room.CmdExtendedRoomLook(),
-            "nonexistent",
-            "Could not find 'nonexistent'.",
+            extended_room.CmdExtendedRoomLook(), "nonexistent", "Could not find 'nonexistent'."
         )
 
     def test_cmdsetdetail(self):
@@ -312,22 +302,14 @@ class TestExtendedRoom(CommandTest):
             "thingie = newdetail with spaces",
             "Detail set 'thingie': 'newdetail with spaces'",
         )
-        self.call(
-            extended_room.CmdExtendedRoomDetail(),
-            "thingie",
-            "Detail 'thingie' on Room:\n",
-        )
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' on Room:\n")
         self.call(
             extended_room.CmdExtendedRoomDetail(),
             "/del thingie",
             "Detail thingie deleted, if it existed.",
             cmdstring="detail",
         )
-        self.call(
-            extended_room.CmdExtendedRoomDetail(),
-            "thingie",
-            "Detail 'thingie' not found.",
-        )
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' not found.")
 
         # Test with aliases
         self.call(extended_room.CmdExtendedRoomDetail(), "", "Details on Room")
@@ -336,35 +318,19 @@ class TestExtendedRoom(CommandTest):
             "thingie;other;stuff = newdetail with spaces",
             "Detail set 'thingie;other;stuff': 'newdetail with spaces'",
         )
-        self.call(
-            extended_room.CmdExtendedRoomDetail(),
-            "thingie",
-            "Detail 'thingie' on Room:\n",
-        )
-        self.call(
-            extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' on Room:\n"
-        )
-        self.call(
-            extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' on Room:\n"
-        )
+        self.call(extended_room.CmdExtendedRoomDetail(), "thingie", "Detail 'thingie' on Room:\n")
+        self.call(extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' on Room:\n")
+        self.call(extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' on Room:\n")
         self.call(
             extended_room.CmdExtendedRoomDetail(),
             "/del other;stuff",
             "Detail other;stuff deleted, if it existed.",
         )
-        self.call(
-            extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' not found."
-        )
-        self.call(
-            extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' not found."
-        )
+        self.call(extended_room.CmdExtendedRoomDetail(), "other", "Detail 'other' not found.")
+        self.call(extended_room.CmdExtendedRoomDetail(), "stuff", "Detail 'stuff' not found.")
 
     def test_cmdgametime(self):
-        self.call(
-            extended_room.CmdExtendedRoomGameTime(),
-            "",
-            "It's a spring day, in the evening.",
-        )
+        self.call(extended_room.CmdExtendedRoomGameTime(), "", "It's a spring day, in the evening.")
 
 
 # Test the contrib barter system
@@ -411,9 +377,7 @@ class TestBarter(CommandTest):
         self.assertFalse(handler.part_a_accepted)
         self.assertFalse(handler.part_b_accepted)
         handler.offer(self.char2, self.tradeitem3)
-        self.assertEqual(
-            handler.list(), ([self.tradeitem1, self.tradeitem2], [self.tradeitem3])
-        )
+        self.assertEqual(handler.list(), ([self.tradeitem1, self.tradeitem2], [self.tradeitem3]))
         self.assertEqual(handler.search("TradeItem2"), self.tradeitem2)
         self.assertEqual(handler.search("TradeItem3"), self.tradeitem3)
         self.assertEqual(handler.search("nonexisting"), None)
@@ -433,24 +397,14 @@ class TestBarter(CommandTest):
             'You say, "Hey wanna trade?"',
             caller=self.char1,
         )
-        self.call(
-            barter.CmdTrade(),
-            "Char decline : Nope!",
-            'You say, "Nope!"',
-            caller=self.char2,
-        )
+        self.call(barter.CmdTrade(), "Char decline : Nope!", 'You say, "Nope!"', caller=self.char2)
         self.call(
             barter.CmdTrade(),
             "Char2 : Hey wanna trade?",
             'You say, "Hey wanna trade?"',
             caller=self.char1,
         )
-        self.call(
-            barter.CmdTrade(),
-            "Char accept : Sure!",
-            'You say, "Sure!"',
-            caller=self.char2,
-        )
+        self.call(barter.CmdTrade(), "Char accept : Sure!", 'You say, "Sure!"', caller=self.char2)
         self.call(
             barter.CmdOffer(),
             "TradeItem3",
@@ -475,8 +429,7 @@ class TestBarter(CommandTest):
         self.call(
             barter.CmdAccept(),
             ": Sounds good.",
-            'You say, "Sounds good."\n'
-            "  [You accept the offer. Char must now also accept.",
+            'You say, "Sounds good."\n' "  [You accept the offer. Char must now also accept.",
             caller=self.char2,
         )
         self.call(
@@ -581,8 +534,7 @@ class TestWilderness(EvenniaTest):
         exits = [
             i
             for i in self.char1.location.contents
-            if i.destination
-            and (i.access(self.char1, "view") or i.access(self.char1, "traverse"))
+            if i.destination and (i.access(self.char1, "view") or i.access(self.char1, "traverse"))
         ]
 
         self.assertEqual(len(exits), 3)
@@ -596,8 +548,7 @@ class TestWilderness(EvenniaTest):
         exits = [
             i
             for i in self.char1.location.contents
-            if i.destination
-            and (i.access(self.char1, "view") or i.access(self.char1, "traverse"))
+            if i.destination and (i.access(self.char1, "view") or i.access(self.char1, "traverse"))
         ]
         self.assertEqual(len(exits), 8)
         exitsok = [
@@ -656,10 +607,7 @@ class TestWilderness(EvenniaTest):
             "west": (0, 1),
             "northwest": (0, 2),
         }
-        for (
-            direction,
-            correct_loc,
-        ) in directions.items():  # Not compatible with Python 3
+        for (direction, correct_loc) in directions.items():  # Not compatible with Python 3
             new_loc = wilderness.get_new_coordinates(loc, direction)
             self.assertEqual(new_loc, correct_loc, direction)
 
@@ -671,10 +619,7 @@ from evennia.contrib import chargen
 class TestChargen(CommandTest):
     def test_ooclook(self):
         self.call(
-            chargen.CmdOOCLook(),
-            "foo",
-            "You have no characters to look at",
-            caller=self.account,
+            chargen.CmdOOCLook(), "foo", "You have no characters to look at", caller=self.account
         )
         self.call(
             chargen.CmdOOCLook(),
@@ -726,9 +671,7 @@ class TestClothingCmd(CommandTest):
         test_scarf.db.clothing_type = "accessory"
         test_scarf.location = wearer
         # Test wear command
-        self.call(
-            clothing.CmdWear(), "", "Usage: wear <obj> [wear style]", caller=wearer
-        )
+        self.call(clothing.CmdWear(), "", "Usage: wear <obj> [wear style]", caller=wearer)
         self.call(clothing.CmdWear(), "hat", "Wearer puts on test hat.", caller=wearer)
         self.call(
             clothing.CmdWear(),
@@ -752,10 +695,7 @@ class TestClothingCmd(CommandTest):
         # Test remove command.
         self.call(clothing.CmdRemove(), "", "Could not find ''.", caller=wearer)
         self.call(
-            clothing.CmdRemove(),
-            "hat",
-            "You have to take off test scarf first.",
-            caller=wearer,
+            clothing.CmdRemove(), "hat", "You have to take off test scarf first.", caller=wearer
         )
         self.call(
             clothing.CmdRemove(),
@@ -766,15 +706,8 @@ class TestClothingCmd(CommandTest):
         # Test uncover command.
         test_scarf.wear(wearer, True)
         test_hat.db.covered_by = test_scarf
-        self.call(
-            clothing.CmdUncover(),
-            "",
-            "Usage: uncover <worn clothing object>",
-            caller=wearer,
-        )
-        self.call(
-            clothing.CmdUncover(), "hat", "Wearer uncovers test hat.", caller=wearer
-        )
+        self.call(clothing.CmdUncover(), "", "Usage: uncover <worn clothing object>", caller=wearer)
+        self.call(clothing.CmdUncover(), "hat", "Wearer uncovers test hat.", caller=wearer)
         # Test drop command.
         test_hat.db.covered_by = test_scarf
         self.call(clothing.CmdDrop(), "", "Drop what?", caller=wearer)
@@ -787,10 +720,7 @@ class TestClothingCmd(CommandTest):
         self.call(clothing.CmdDrop(), "scarf", "You drop test scarf.", caller=wearer)
         # Test give command.
         self.call(
-            clothing.CmdGive(),
-            "",
-            "Usage: give <inventory object> = <target>",
-            caller=wearer,
+            clothing.CmdGive(), "", "Usage: give <inventory object> = <target>", caller=wearer
         )
         self.call(
             clothing.CmdGive(),
@@ -800,10 +730,7 @@ class TestClothingCmd(CommandTest):
         )
         # Test inventory command.
         self.call(
-            clothing.CmdInventory(),
-            "",
-            "You are not carrying or wearing anything.",
-            caller=wearer,
+            clothing.CmdInventory(), "", "You are not carrying or wearing anything.", caller=wearer
         )
 
 
@@ -837,8 +764,7 @@ class TestClothingFunc(EvenniaTest):
 
         clothes_list = [test_shirt, test_hat, test_pants]
         self.assertEqual(
-            clothing.order_clothes_list(clothes_list),
-            [test_hat, test_shirt, test_pants],
+            clothing.order_clothes_list(clothes_list), [test_hat, test_shirt, test_pants]
         )
 
         test_hat.wear(wearer, True)
@@ -846,8 +772,7 @@ class TestClothingFunc(EvenniaTest):
         self.assertEqual(clothing.get_worn_clothes(wearer), [test_hat, test_pants])
 
         self.assertEqual(
-            clothing.clothing_type_count(clothes_list),
-            {"hat": 1, "top": 1, "bottom": 1},
+            clothing.clothing_type_count(clothes_list), {"hat": 1, "top": 1, "bottom": 1}
         )
 
         self.assertEqual(clothing.single_type_count(clothes_list, "hat"), 1)
@@ -868,50 +793,37 @@ class TestCustomGameTime(EvenniaTest):
             self.timescript.stop()
 
     def test_time_to_tuple(self):
-        self.assertEqual(
-            custom_gametime.time_to_tuple(10000, 34, 2, 4, 6, 1), (294, 2, 0, 0, 0, 0)
-        )
+        self.assertEqual(custom_gametime.time_to_tuple(10000, 34, 2, 4, 6, 1), (294, 2, 0, 0, 0, 0))
         self.assertEqual(custom_gametime.time_to_tuple(10000, 3, 3, 4), (3333, 0, 0, 1))
-        self.assertEqual(
-            custom_gametime.time_to_tuple(100000, 239, 24, 3), (418, 4, 0, 2)
-        )
+        self.assertEqual(custom_gametime.time_to_tuple(100000, 239, 24, 3), (418, 4, 0, 2))
 
     def test_gametime_to_realtime(self):
         self.assertEqual(custom_gametime.gametime_to_realtime(days=2, mins=4), 86520.0)
         self.assertEqual(
-            custom_gametime.gametime_to_realtime(format=True, days=2),
-            (0, 0, 0, 1, 0, 0, 0),
+            custom_gametime.gametime_to_realtime(format=True, days=2), (0, 0, 0, 1, 0, 0, 0)
         )
 
     def test_realtime_to_gametime(self):
-        self.assertEqual(
-            custom_gametime.realtime_to_gametime(days=2, mins=34), 349680.0
-        )
+        self.assertEqual(custom_gametime.realtime_to_gametime(days=2, mins=34), 349680.0)
         self.assertEqual(
             custom_gametime.realtime_to_gametime(days=2, mins=34, format=True),
             (0, 0, 0, 4, 1, 8, 0),
         )
         self.assertEqual(
-            custom_gametime.realtime_to_gametime(format=True, days=2, mins=4),
-            (0, 0, 0, 4, 0, 8, 0),
+            custom_gametime.realtime_to_gametime(format=True, days=2, mins=4), (0, 0, 0, 4, 0, 8, 0)
         )
 
     def test_custom_gametime(self):
         self.assertEqual(custom_gametime.custom_gametime(), (102, 5, 2, 6, 21, 8, 18))
-        self.assertEqual(
-            custom_gametime.custom_gametime(absolute=True), (102, 5, 2, 6, 21, 8, 18)
-        )
+        self.assertEqual(custom_gametime.custom_gametime(absolute=True), (102, 5, 2, 6, 21, 8, 18))
 
     def test_real_seconds_until(self):
         self.assertEqual(
-            custom_gametime.real_seconds_until(year=2300, month=11, day=6),
-            31911667199.77,
+            custom_gametime.real_seconds_until(year=2300, month=11, day=6), 31911667199.77
         )
 
     def test_schedule(self):
-        self.timescript = custom_gametime.schedule(
-            _testcallback, repeat=True, min=5, sec=0
-        )
+        self.timescript = custom_gametime.schedule(_testcallback, repeat=True, min=5, sec=0)
         self.assertEqual(self.timescript.interval, 1700.7699999809265)
 
 
@@ -924,9 +836,7 @@ class TestDice(CommandTest):
         # we must import dice here for the mocked randint to apply correctly.
         from evennia.contrib import dice
 
-        self.assertEqual(
-            dice.roll_dice(6, 6, modifier=("+", 4)), mocked_randint() * 6 + 4
-        )
+        self.assertEqual(dice.roll_dice(6, 6, modifier=("+", 4)), mocked_randint() * 6 + 4)
         self.assertEqual(dice.roll_dice(6, 6, conditional=("<", 35)), True)
         self.assertEqual(dice.roll_dice(6, 6, conditional=(">", 33)), False)
 
@@ -934,16 +844,10 @@ class TestDice(CommandTest):
         from evennia.contrib import dice
 
         self.call(
-            dice.CmdDice(),
-            "3d6 + 4",
-            "You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19.",
+            dice.CmdDice(), "3d6 + 4", "You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19."
         )
-        self.call(
-            dice.CmdDice(), "100000d1000", "The maximum roll allowed is 10000d10000."
-        )
-        self.call(
-            dice.CmdDice(), "/secret 3d6 + 4", "You roll 3d6 + 4 (secret, not echoed)."
-        )
+        self.call(dice.CmdDice(), "100000d1000", "The maximum roll allowed is 10000d10000.")
+        self.call(dice.CmdDice(), "/secret 3d6 + 4", "You roll 3d6 + 4 (secret, not echoed).")
 
 
 # Test email-login
@@ -972,22 +876,13 @@ class TestEmailLogin(CommandTest):
         )
 
     def test_quit(self):
-        self.call(
-            email_login.CmdUnconnectedQuit(),
-            "",
-            "",
-            caller=self.account.sessions.get()[0],
-        )
+        self.call(email_login.CmdUnconnectedQuit(), "", "", caller=self.account.sessions.get()[0])
 
     def test_unconnectedlook(self):
         self.call(email_login.CmdUnconnectedLook(), "", "==========")
 
     def test_unconnectedhelp(self):
-        self.call(
-            email_login.CmdUnconnectedHelp(),
-            "",
-            "You are not yet logged into the game.",
-        )
+        self.call(email_login.CmdUnconnectedHelp(), "", "You are not yet logged into the game.")
 
 
 # test gendersub contrib
@@ -999,19 +894,14 @@ from evennia.contrib import gendersub
 class TestGenderSub(CommandTest):
     def test_setgender(self):
         self.call(gendersub.SetGender(), "male", "Your gender was set to male.")
-        self.call(
-            gendersub.SetGender(), "ambiguous", "Your gender was set to ambiguous."
-        )
+        self.call(gendersub.SetGender(), "ambiguous", "Your gender was set to ambiguous.")
         self.call(gendersub.SetGender(), "Foo", "Usage: @gender")
 
     def test_gendercharacter(self):
-        char = create_object(
-            gendersub.GenderCharacter, key="Gendered", location=self.room1
-        )
+        char = create_object(gendersub.GenderCharacter, key="Gendered", location=self.room1)
         txt = "Test |p gender"
         self.assertEqual(
-            gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt),
-            "Test their gender",
+            gendersub._RE_GENDER_PRONOUN.sub(char._get_pronoun, txt), "Test their gender"
         )
 
 
@@ -1067,21 +957,9 @@ from evennia.contrib import mail
 
 class TestMail(CommandTest):
     def test_mail(self):
-        self.call(
-            mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account
-        )
-        self.call(
-            mail.CmdMail(),
-            "test",
-            "'test' is not a valid mail id.",
-            caller=self.account,
-        )
-        self.call(
-            mail.CmdMail(),
-            "",
-            "There are no messages in your inbox.",
-            caller=self.account,
-        )
+        self.call(mail.CmdMail(), "2", "'2' is not a valid mail id.", caller=self.account)
+        self.call(mail.CmdMail(), "test", "'test' is not a valid mail id.", caller=self.account)
+        self.call(mail.CmdMail(), "", "There are no messages in your inbox.", caller=self.account)
         self.call(
             mail.CmdMailCharacter(),
             "Char=Message 1",
@@ -1089,10 +967,7 @@ class TestMail(CommandTest):
             caller=self.char1,
         )
         self.call(
-            mail.CmdMailCharacter(),
-            "Char=Message 2",
-            "You sent your message.",
-            caller=self.char2,
+            mail.CmdMailCharacter(), "Char=Message 2", "You sent your message.", caller=self.char2
         )
         self.call(
             mail.CmdMail(),
@@ -1101,20 +976,12 @@ class TestMail(CommandTest):
             caller=self.account2,
         )
         self.call(
-            mail.CmdMail(),
-            "TestAccount=Message 1",
-            "You sent your message.",
-            caller=self.account2,
+            mail.CmdMail(), "TestAccount=Message 1", "You sent your message.", caller=self.account2
         )
         self.call(
-            mail.CmdMail(),
-            "TestAccount=Message 2",
-            "You sent your message.",
-            caller=self.account2,
+            mail.CmdMail(), "TestAccount=Message 2", "You sent your message.", caller=self.account2
         )
-        self.call(
-            mail.CmdMail(), "", "| ID    From              Subject", caller=self.account
-        )
+        self.call(mail.CmdMail(), "", "| ID    From              Subject", caller=self.account)
         self.call(mail.CmdMail(), "2", "From: TestAccount2", caller=self.account)
         self.call(
             mail.CmdMail(),
@@ -1123,10 +990,7 @@ class TestMail(CommandTest):
             caller=self.account,
         )
         self.call(
-            mail.CmdMail(),
-            "/reply 2=Reply Message2",
-            "You sent your message.",
-            caller=self.account,
+            mail.CmdMail(), "/reply 2=Reply Message2", "You sent your message.", caller=self.account
         )
         self.call(mail.CmdMail(), "/delete 2", "Message 2 deleted", caller=self.account)
 
@@ -1182,19 +1046,13 @@ class TestMultidescer(CommandTest):
     def test_cmdmultidesc(self):
         self.call(multidescer.CmdMultiDesc(), "/list", "Stored descs:\ncaller:")
         self.call(
-            multidescer.CmdMultiDesc(),
-            "test = Desc 1",
-            "Stored description 'test': \"Desc 1\"",
+            multidescer.CmdMultiDesc(), "test = Desc 1", "Stored description 'test': \"Desc 1\""
         )
         self.call(
-            multidescer.CmdMultiDesc(),
-            "test2 = Desc 2",
-            "Stored description 'test2': \"Desc 2\"",
+            multidescer.CmdMultiDesc(), "test2 = Desc 2", "Stored description 'test2': \"Desc 2\""
         )
         self.call(
-            multidescer.CmdMultiDesc(),
-            "/swap test-test2",
-            "Swapped descs 'test' and 'test2'.",
+            multidescer.CmdMultiDesc(), "/swap test-test2", "Swapped descs 'test' and 'test2'."
         )
         self.call(
             multidescer.CmdMultiDesc(),
@@ -1207,9 +1065,7 @@ class TestMultidescer(CommandTest):
             "Stored descs:\ntest3: Desc 3init\ntest: Desc 1\ntest2: Desc 2\ncaller:",
         )
         self.call(
-            multidescer.CmdMultiDesc(),
-            "test3 = Desc 3",
-            "Stored description 'test3': \"Desc 3\"",
+            multidescer.CmdMultiDesc(), "test3 = Desc 3", "Stored description 'test3': \"Desc 3\""
         )
         self.call(
             multidescer.CmdMultiDesc(),
@@ -1233,29 +1089,16 @@ class TestSimpleDoor(CommandTest):
             "Created new Exit 'newdoor' from Room to Room2 (aliases: door).|Note: A door-type exit was "
             "created - ignored eventual custom return-exit type.|Created new Exit 'newdoor' from Room2 to Room (aliases: door).",
         )
-        self.call(
-            simpledoor.CmdOpenCloseDoor(),
-            "newdoor",
-            "You close newdoor.",
-            cmdstring="close",
-        )
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "You close newdoor.", cmdstring="close")
         self.call(
             simpledoor.CmdOpenCloseDoor(),
             "newdoor",
             "newdoor is already closed.",
             cmdstring="close",
         )
+        self.call(simpledoor.CmdOpenCloseDoor(), "newdoor", "You open newdoor.", cmdstring="open")
         self.call(
-            simpledoor.CmdOpenCloseDoor(),
-            "newdoor",
-            "You open newdoor.",
-            cmdstring="open",
-        )
-        self.call(
-            simpledoor.CmdOpenCloseDoor(),
-            "newdoor",
-            "newdoor is already open.",
-            cmdstring="open",
+            simpledoor.CmdOpenCloseDoor(), "newdoor", "newdoor is already open.", cmdstring="open"
         )
 
 
@@ -1276,10 +1119,7 @@ class TestSlowExit(CommandTest):
     @patch("evennia.utils.delay", _cancellable_mockdelay)
     def test_exit(self):
         exi = create_object(
-            slow_exit.SlowExit,
-            key="slowexit",
-            location=self.room1,
-            destination=self.room2,
+            slow_exit.SlowExit, key="slowexit", location=self.room1, destination=self.room2
         )
         exi.at_traverse(self.char1, self.room2)
         self.call(slow_exit.CmdSetSpeed(), "walk", "You are now walking.")
@@ -1294,9 +1134,7 @@ from evennia.contrib import talking_npc
 
 class TestTalkingNPC(CommandTest):
     def test_talkingnpc(self):
-        npc = create_object(
-            talking_npc.TalkingNPC, key="npctalker", location=self.room1
-        )
+        npc = create_object(talking_npc.TalkingNPC, key="npctalker", location=self.room1)
         self.call(talking_npc.CmdTalk(), "", "(You walk up and talk to Char.)")
         npc.delete()
 
@@ -1339,18 +1177,12 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         self.assertEqual(obj1.location, obj1.home)
 
     def test_readable(self):
-        readable = create_object(
-            tutobjects.TutorialReadable, key="book", location=self.room1
-        )
+        readable = create_object(tutobjects.TutorialReadable, key="book", location=self.room1)
         readable.db.readable_text = "Text to read"
-        self.call(
-            tutobjects.CmdRead(), "book", "You read book:\n  Text to read", obj=readable
-        )
+        self.call(tutobjects.CmdRead(), "book", "You read book:\n  Text to read", obj=readable)
 
     def test_climbable(self):
-        climbable = create_object(
-            tutobjects.TutorialClimbable, key="tree", location=self.room1
-        )
+        climbable = create_object(tutobjects.TutorialClimbable, key="tree", location=self.room1)
         self.call(
             tutobjects.CmdClimb(),
             "tree",
@@ -1364,9 +1196,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
 
     def test_obelisk(self):
         obelisk = create_object(tutobjects.Obelisk, key="obelisk", location=self.room1)
-        self.assertEqual(
-            obelisk.return_appearance(self.char1).startswith("|cobelisk("), True
-        )
+        self.assertEqual(obelisk.return_appearance(self.char1).startswith("|cobelisk("), True)
 
     @patch("evennia.contrib.tutorial_world.objects.delay", mockdelay)
     @patch("evennia.scripts.taskhandler.deferLater", mockdeferLater)
@@ -1425,18 +1255,10 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
     def test_weapon(self):
         weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
         self.call(
-            tutobjects.CmdAttack(),
-            "Char",
-            "You stab with sword.",
-            obj=weapon,
-            cmdstring="stab",
+            tutobjects.CmdAttack(), "Char", "You stab with sword.", obj=weapon, cmdstring="stab"
         )
         self.call(
-            tutobjects.CmdAttack(),
-            "Char",
-            "You slash with sword.",
-            obj=weapon,
-            cmdstring="slash",
+            tutobjects.CmdAttack(), "Char", "You slash with sword.", obj=weapon, cmdstring="slash"
         )
 
     def test_weaponrack(self):
@@ -1453,11 +1275,7 @@ class TestTutorialWorldRooms(CommandTest):
     def test_cmdtutorial(self):
         room = create_object(tutrooms.TutorialRoom, key="tutroom")
         self.char1.location = room
-        self.call(
-            tutrooms.CmdTutorial(),
-            "",
-            "Sorry, there is no tutorial help available here.",
-        )
+        self.call(tutrooms.CmdTutorial(), "", "Sorry, there is no tutorial help available here.")
         self.call(
             tutrooms.CmdTutorialSetDetail(),
             "detail;foo;foo2 = A detail",
@@ -1523,22 +1341,10 @@ class TestTurnBattleBasicCmd(CommandTest):
 
     # Test basic combat commands
     def test_turnbattlecmd(self):
-        self.call(
-            tb_basic.CmdFight(), "", "You can't start a fight if you've been defeated!"
-        )
-        self.call(
-            tb_basic.CmdAttack(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
-        self.call(
-            tb_basic.CmdPass(), "", "You can only do that in combat. (see: help fight)"
-        )
-        self.call(
-            tb_basic.CmdDisengage(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
+        self.call(tb_basic.CmdFight(), "", "You can't start a fight if you've been defeated!")
+        self.call(tb_basic.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_basic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_basic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_basic.CmdRest(), "", "Char rests to recover HP.")
 
 
@@ -1558,22 +1364,10 @@ class TestTurnBattleEquipCmd(CommandTest):
         self.call(tb_equip.CmdDon(), "armor", "Char dons test armor.")
         self.call(tb_equip.CmdDoff(), "", "Char removes test armor.")
         # Also test the commands that are the same in the basic module
-        self.call(
-            tb_equip.CmdFight(), "", "You can't start a fight if you've been defeated!"
-        )
-        self.call(
-            tb_equip.CmdAttack(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
-        self.call(
-            tb_equip.CmdPass(), "", "You can only do that in combat. (see: help fight)"
-        )
-        self.call(
-            tb_equip.CmdDisengage(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
+        self.call(tb_equip.CmdFight(), "", "You can't start a fight if you've been defeated!")
+        self.call(tb_equip.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_equip.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_equip.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_equip.CmdRest(), "", "Char rests to recover HP.")
 
 
@@ -1581,35 +1375,15 @@ class TestTurnBattleRangeCmd(CommandTest):
     # Test range commands
     def test_turnbattlerangecmd(self):
         # Start with range module specific commands.
-        self.call(
-            tb_range.CmdShoot(), "", "You can only do that in combat. (see: help fight)"
-        )
-        self.call(
-            tb_range.CmdApproach(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
-        self.call(
-            tb_range.CmdWithdraw(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
+        self.call(tb_range.CmdShoot(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_range.CmdApproach(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_range.CmdWithdraw(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdStatus(), "", "HP Remaining: 100 / 100")
         # Also test the commands that are the same in the basic module
         self.call(tb_range.CmdFight(), "", "There's nobody here to fight!")
-        self.call(
-            tb_range.CmdAttack(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
-        self.call(
-            tb_range.CmdPass(), "", "You can only do that in combat. (see: help fight)"
-        )
-        self.call(
-            tb_range.CmdDisengage(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
+        self.call(tb_range.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_range.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_range.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_range.CmdRest(), "", "Char rests to recover HP.")
 
 
@@ -1623,22 +1397,10 @@ class TestTurnBattleItemsCmd(CommandTest):
     def test_turnbattleitemcmd(self):
         self.call(tb_items.CmdUse(), "item", "'Test item' is not a usable item.")
         # Also test the commands that are the same in the basic module
-        self.call(
-            tb_items.CmdFight(), "", "You can't start a fight if you've been defeated!"
-        )
-        self.call(
-            tb_items.CmdAttack(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
-        self.call(
-            tb_items.CmdPass(), "", "You can only do that in combat. (see: help fight)"
-        )
-        self.call(
-            tb_items.CmdDisengage(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
+        self.call(tb_items.CmdFight(), "", "You can't start a fight if you've been defeated!")
+        self.call(tb_items.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_items.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_items.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_items.CmdRest(), "", "Char rests to recover HP.")
 
 
@@ -1647,27 +1409,13 @@ class TestTurnBattleMagicCmd(CommandTest):
     # Test magic commands
     def test_turnbattlemagiccmd(self):
         self.call(tb_magic.CmdStatus(), "", "You have 100 / 100 HP and 20 / 20 MP.")
-        self.call(
-            tb_magic.CmdLearnSpell(), "test spell", "There is no spell with that name."
-        )
-        self.call(
-            tb_magic.CmdCast(), "", "Usage: cast <spell name> = <target>, <target2>"
-        )
+        self.call(tb_magic.CmdLearnSpell(), "test spell", "There is no spell with that name.")
+        self.call(tb_magic.CmdCast(), "", "Usage: cast <spell name> = <target>, <target2>")
         # Also test the commands that are the same in the basic module
         self.call(tb_magic.CmdFight(), "", "There's nobody here to fight!")
-        self.call(
-            tb_magic.CmdAttack(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
-        self.call(
-            tb_magic.CmdPass(), "", "You can only do that in combat. (see: help fight)"
-        )
-        self.call(
-            tb_magic.CmdDisengage(),
-            "",
-            "You can only do that in combat. (see: help fight)",
-        )
+        self.call(tb_magic.CmdAttack(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_magic.CmdPass(), "", "You can only do that in combat. (see: help fight)")
+        self.call(tb_magic.CmdDisengage(), "", "You can only do that in combat. (see: help fight)")
         self.call(tb_magic.CmdRest(), "", "Char rests to recover HP and MP.")
 
 
@@ -1681,9 +1429,7 @@ class TestTurnBattleBasicFunc(EvenniaTest):
         self.defender = create_object(
             tb_basic.TBBasicCharacter, key="Defender", location=self.testroom
         )
-        self.joiner = create_object(
-            tb_basic.TBBasicCharacter, key="Joiner", location=None
-        )
+        self.joiner = create_object(tb_basic.TBBasicCharacter, key="Joiner", location=None)
 
     def tearDown(self):
         super(TestTurnBattleBasicFunc, self).tearDown()
@@ -1713,9 +1459,7 @@ class TestTurnBattleBasicFunc(EvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_basic.resolve_attack(
-            self.attacker, self.defender, attack_value=20, defense_value=10
-        )
+        tb_basic.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
@@ -1765,9 +1509,7 @@ class TestTurnBattleBasicFunc(EvenniaTest):
         self.turnhandler.db.turn = 0
         self.turnhandler.join_fight(self.joiner)
         self.assertTrue(self.turnhandler.db.turn == 1)
-        self.assertTrue(
-            self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender]
-        )
+        self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
 
 
 class TestTurnBattleEquipFunc(EvenniaTest):
@@ -1780,9 +1522,7 @@ class TestTurnBattleEquipFunc(EvenniaTest):
         self.defender = create_object(
             tb_equip.TBEquipCharacter, key="Defender", location=self.testroom
         )
-        self.joiner = create_object(
-            tb_equip.TBEquipCharacter, key="Joiner", location=None
-        )
+        self.joiner = create_object(tb_equip.TBEquipCharacter, key="Joiner", location=None)
 
     def tearDown(self):
         super(TestTurnBattleEquipFunc, self).tearDown()
@@ -1812,9 +1552,7 @@ class TestTurnBattleEquipFunc(EvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_equip.resolve_attack(
-            self.attacker, self.defender, attack_value=20, defense_value=10
-        )
+        tb_equip.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
@@ -1863,9 +1601,7 @@ class TestTurnBattleEquipFunc(EvenniaTest):
         self.turnhandler.db.turn = 0
         self.turnhandler.join_fight(self.joiner)
         self.assertTrue(self.turnhandler.db.turn == 1)
-        self.assertTrue(
-            self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender]
-        )
+        self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
 
 
 class TestTurnBattleRangeFunc(EvenniaTest):
@@ -1878,9 +1614,7 @@ class TestTurnBattleRangeFunc(EvenniaTest):
         self.defender = create_object(
             tb_range.TBRangeCharacter, key="Defender", location=self.testroom
         )
-        self.joiner = create_object(
-            tb_range.TBRangeCharacter, key="Joiner", location=self.testroom
-        )
+        self.joiner = create_object(tb_range.TBRangeCharacter, key="Joiner", location=self.testroom)
 
     def tearDown(self):
         super(TestTurnBattleRangeFunc, self).tearDown()
@@ -1968,9 +1702,7 @@ class TestTurnBattleRangeFunc(EvenniaTest):
         self.turnhandler.db.turn = 0
         self.turnhandler.join_fight(self.joiner)
         self.assertTrue(self.turnhandler.db.turn == 1)
-        self.assertTrue(
-            self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender]
-        )
+        self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
         # Now, test for approach/withdraw functions
         self.assertTrue(tb_range.get_range(self.attacker, self.defender) == 1)
         # Approach
@@ -1992,12 +1724,8 @@ class TestTurnBattleItemsFunc(EvenniaTest):
         self.defender = create_object(
             tb_items.TBItemsCharacter, key="Defender", location=self.testroom
         )
-        self.joiner = create_object(
-            tb_items.TBItemsCharacter, key="Joiner", location=self.testroom
-        )
-        self.user = create_object(
-            tb_items.TBItemsCharacter, key="User", location=self.testroom
-        )
+        self.joiner = create_object(tb_items.TBItemsCharacter, key="Joiner", location=self.testroom)
+        self.user = create_object(tb_items.TBItemsCharacter, key="User", location=self.testroom)
         self.test_healpotion = create_object(key="healing potion")
         self.test_healpotion.db.item_func = "heal"
         self.test_healpotion.db.item_uses = 3
@@ -2031,9 +1759,7 @@ class TestTurnBattleItemsFunc(EvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_items.resolve_attack(
-            self.attacker, self.defender, attack_value=20, defense_value=10
-        )
+        tb_items.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
@@ -2082,9 +1808,7 @@ class TestTurnBattleItemsFunc(EvenniaTest):
         self.turnhandler.db.turn = 0
         self.turnhandler.join_fight(self.joiner)
         self.assertTrue(self.turnhandler.db.turn == 1)
-        self.assertTrue(
-            self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender]
-        )
+        self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
         # Now time to test item stuff.
         # Spend item use
         tb_items.spend_item_use(self.test_healpotion, self.user)
@@ -2123,9 +1847,7 @@ class TestTurnBattleMagicFunc(EvenniaTest):
         self.defender = create_object(
             tb_magic.TBMagicCharacter, key="Defender", location=self.testroom
         )
-        self.joiner = create_object(
-            tb_magic.TBMagicCharacter, key="Joiner", location=self.testroom
-        )
+        self.joiner = create_object(tb_magic.TBMagicCharacter, key="Joiner", location=self.testroom)
 
     def tearDown(self):
         super(TestTurnBattleMagicFunc, self).tearDown()
@@ -2155,9 +1877,7 @@ class TestTurnBattleMagicFunc(EvenniaTest):
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_magic.resolve_attack(
-            self.attacker, self.defender, attack_value=20, defense_value=10
-        )
+        tb_magic.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
@@ -2206,9 +1926,7 @@ class TestTurnBattleMagicFunc(EvenniaTest):
         self.turnhandler.db.turn = 0
         self.turnhandler.join_fight(self.joiner)
         self.assertTrue(self.turnhandler.db.turn == 1)
-        self.assertTrue(
-            self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender]
-        )
+        self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
 
 
 # Test tree select
@@ -2250,9 +1968,7 @@ class TestTreeSelectFunc(EvenniaTest):
             },
         ]
         self.assertTrue(
-            tree_select.optlist_to_menuoptions(
-                TREE_MENU_TESTSTR, test_optlist, 2, True, True
-            )
+            tree_select.optlist_to_menuoptions(TREE_MENU_TESTSTR, test_optlist, 2, True, True)
             == optlist_to_menu_expected_result
         )
 
@@ -2268,19 +1984,12 @@ FIELD_TEST_TEMPLATE = [
     {"fieldname": "DefaultNum", "fieldtype": "number", "default": 3},
 ]
 
-FIELD_TEST_DATA = {
-    "TextTest": None,
-    "NumberTest": None,
-    "DefaultText": "Test",
-    "DefaultNum": 3,
-}
+FIELD_TEST_DATA = {"TextTest": None, "NumberTest": None, "DefaultText": "Test", "DefaultNum": 3}
 
 
 class TestFieldFillFunc(EvenniaTest):
     def test_field_functions(self):
-        self.assertTrue(
-            fieldfill.form_template_to_dict(FIELD_TEST_TEMPLATE) == FIELD_TEST_DATA
-        )
+        self.assertTrue(fieldfill.form_template_to_dict(FIELD_TEST_TEMPLATE) == FIELD_TEST_DATA)
 
 
 # Test of the unixcommand module
@@ -2425,15 +2134,9 @@ from evennia.utils.utils import inherits_from
 class TestPuzzles(CommandTest):
     def setUp(self):
         super(TestPuzzles, self).setUp()
-        self.steel = create_object(
-            self.object_typeclass, key="steel", location=self.char1.location
-        )
-        self.flint = create_object(
-            self.object_typeclass, key="flint", location=self.char1.location
-        )
-        self.fire = create_object(
-            self.object_typeclass, key="fire", location=self.char1.location
-        )
+        self.steel = create_object(self.object_typeclass, key="steel", location=self.char1.location)
+        self.flint = create_object(self.object_typeclass, key="flint", location=self.char1.location)
+        self.fire = create_object(self.object_typeclass, key="fire", location=self.char1.location)
         self.steel.tags.add("tag-steel")
         self.steel.tags.add("tag-steel", category="tagcat")
         self.flint.tags.add("tag-flint")
@@ -2449,9 +2152,7 @@ class TestPuzzles(CommandTest):
             matches.append(m)
         return matches
 
-    def _assert_recipe(
-        self, name, parts, results, and_destroy_it=True, expected_count=1
-    ):
+    def _assert_recipe(self, name, parts, results, and_destroy_it=True, expected_count=1):
         def _keys(items):
             return [item["key"] for item in items]
 
@@ -2462,9 +2163,7 @@ class TestPuzzles(CommandTest):
         self.assertEqual(results, _keys(recipes[expected_count - 1].db.results))
         self.assertEqual(
             puzzles._PUZZLES_TAG_RECIPE,
-            recipes[expected_count - 1].tags.get(
-                category=puzzles._PUZZLES_TAG_CATEGORY
-            ),
+            recipes[expected_count - 1].tags.get(category=puzzles._PUZZLES_TAG_CATEGORY),
         )
         recipe_dbref = recipes[expected_count - 1].dbref
         if and_destroy_it:
@@ -2483,15 +2182,11 @@ class TestPuzzles(CommandTest):
             regexs.append(r"^Part %s\(#\d+\)$" % (p))
         for r in results:
             regexs.append(r"^Result %s\(#\d+\)$" % (r))
-        regexs.append(
-            r"^Puzzle '%s' %s\(#\d+\) has been created successfully.$" % (name, name)
-        )
+        regexs.append(r"^Puzzle '%s' %s\(#\d+\) has been created successfully.$" % (name, name))
         lhs = [name] + parts
         cmdstr = ",".join(lhs) + "=" + ",".join(results)
         msg = self.call(puzzles.CmdCreatePuzzleRecipe(), cmdstr, caller=self.char1)
-        recipe_dbref = self._assert_recipe(
-            name, parts, results, and_destroy_it, expected_count
-        )
+        recipe_dbref = self._assert_recipe(name, parts, results, and_destroy_it, expected_count)
         self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
         return recipe_dbref
 
@@ -2520,9 +2215,7 @@ class TestPuzzles(CommandTest):
             regexs.append(r"^Part %s\(#\d+\) spawned .*$" % (p))
         regexs.append(r"^Puzzle armed successfully.$")
         msg = self.call(puzzles.CmdArmPuzzle(), recipe_dbref, caller=self.char1)
-        matches = self._assert_msg_matched(
-            msg, regexs, re_flags=re.MULTILINE | re.DOTALL
-        )
+        matches = self._assert_msg_matched(msg, regexs, re_flags=re.MULTILINE | re.DOTALL)
 
     def test_cmdset_puzzle(self):
         self.char1.cmdset.add("evennia.contrib.puzzles.PuzzleSystemCmdSet")
@@ -2568,9 +2261,7 @@ class TestPuzzles(CommandTest):
 
         _bad_recipe("name", ["nothing"], ["neither"], r"Could not find 'nothing'.")
         _bad_recipe("name", ["steel"], ["nothing"], r"Could not find 'nothing'.")
-        _bad_recipe(
-            "", ["steel", "fire"], ["steel", "fire"], r"^Invalid puzzle name ''."
-        )
+        _bad_recipe("", ["steel", "fire"], ["steel", "fire"], r"^Invalid puzzle name ''.")
         self.steel.location = self.char1
         _bad_recipe("name", ["steel"], ["fire"], r"^Invalid location for steel$")
         _bad_recipe("name", ["flint"], ["steel"], r"^Invalid location for steel$")
@@ -2587,15 +2278,10 @@ class TestPuzzles(CommandTest):
             "A puzzle recipe's #dbref must be specified",
             caller=self.char1,
         )
-        self.call(
-            puzzles.CmdArmPuzzle(), "#1", "Invalid puzzle '#1'", caller=self.char1
-        )
+        self.call(puzzles.CmdArmPuzzle(), "#1", "Invalid puzzle '#1'", caller=self.char1)
 
         recipe_dbref = self._good_recipe(
-            "makefire",
-            ["steel", "flint"],
-            ["fire", "steel", "flint"],
-            and_destroy_it=False,
+            "makefire", ["steel", "flint"], ["fire", "steel", "flint"], and_destroy_it=False
         )
 
         # delete proto parts and proto result
@@ -2623,11 +2309,7 @@ class TestPuzzles(CommandTest):
             "makefire", ["steel", "flint"], ["fire"], and_destroy_it=False
         )
         recipe2_dbref = self._good_recipe(
-            "makefire2",
-            ["steel", "flint"],
-            ["fire"],
-            and_destroy_it=False,
-            expected_count=2,
+            "makefire2", ["steel", "flint"], ["fire"], and_destroy_it=False, expected_count=2
         )
 
         # although there is steel and flint
@@ -2664,9 +2346,7 @@ class TestPuzzles(CommandTest):
                 )
             ),
         )
-        self._check_room_contents(
-            {"steel": 0, "flint": 0, "fire": 1}, check_test_tags=True
-        )
+        self._check_room_contents({"steel": 0, "flint": 0, "fire": 1}, check_test_tags=True)
 
         # trying again will fail as it was resolved already
         # and the parts were destroyed
@@ -2676,21 +2356,16 @@ class TestPuzzles(CommandTest):
         # arm same puzzle twice so there are duplicated parts
         self._arm(recipe_dbref, "makefire", ["steel", "flint"])
         self._arm(recipe_dbref, "makefire", ["steel", "flint"])
-        self._check_room_contents(
-            {"steel": 2, "flint": 2, "fire": 1}, check_test_tags=True
-        )
+        self._check_room_contents({"steel": 2, "flint": 2, "fire": 1}, check_test_tags=True)
 
         # try solving with multiple parts but incomplete set
         self._use(
-            "1-steel, 2-steel",
-            "You try to utilize these but nothing happens ... something amiss?",
+            "1-steel, 2-steel", "You try to utilize these but nothing happens ... something amiss?"
         )
 
         # arm the other puzzle. Their parts are identical
         self._arm(recipe2_dbref, "makefire2", ["steel", "flint"])
-        self._check_room_contents(
-            {"steel": 3, "flint": 3, "fire": 1}, check_test_tags=True
-        )
+        self._check_room_contents({"steel": 3, "flint": 3, "fire": 1}, check_test_tags=True)
 
         # solve with multiple parts for
         # multiple puzzles. Both can be solved but
@@ -2699,9 +2374,7 @@ class TestPuzzles(CommandTest):
             "1-steel, 2-flint, 3-steel, 3-flint",
             "Your gears start turning and 2 different ideas come to your mind ... ",
         )
-        self._check_room_contents(
-            {"steel": 2, "flint": 2, "fire": 2}, check_test_tags=True
-        )
+        self._check_room_contents({"steel": 2, "flint": 2, "fire": 2}, check_test_tags=True)
 
         self.room1.msg_contents = Mock()
 
@@ -2712,9 +2385,7 @@ class TestPuzzles(CommandTest):
             exclude=(self.char1,),
         )
         self._use("steel, flint", "You are a Genius")
-        self._check_room_contents(
-            {"steel": 0, "flint": 0, "fire": 4}, check_test_tags=True
-        )
+        self._check_room_contents({"steel": 0, "flint": 0, "fire": 4}, check_test_tags=True)
 
     def test_puzzleedit(self):
         recipe_dbref = self._good_recipe(
@@ -2736,32 +2407,17 @@ class TestPuzzles(CommandTest):
         sid = self.script.id
         # bad syntax
         _puzzleedit(
-            None,
-            None,
-            None,
-            "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit",
+            None, None, None, "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit"
         )
-        _puzzleedit(
-            "",
-            "1",
-            "",
-            "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit",
-        )
-        _puzzleedit(
-            "",
-            "",
-            "",
-            "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit",
-        )
+        _puzzleedit("", "1", "", "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
+        _puzzleedit("", "", "", "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit")
         _puzzleedit(
             "",
             recipe_dbref,
             "dummy",
             "A puzzle recipe's #dbref must be specified.\nUsage: @puzzleedit",
         )
-        _puzzleedit(
-            "", self.script.dbref, "", "Script(#{}) is not a puzzle".format(sid)
-        )
+        _puzzleedit("", self.script.dbref, "", "Script(#{}) is not a puzzle".format(sid))
 
         # edit use_success_message and use_success_location_message
         _puzzleedit(
@@ -2806,9 +2462,7 @@ class TestPuzzles(CommandTest):
         )
 
         # delete
-        _puzzleedit(
-            "/delete", recipe_dbref, "", "makefire(%s) was deleted" % recipe_dbref
-        )
+        _puzzleedit("/delete", recipe_dbref, "", "makefire(%s) was deleted" % recipe_dbref)
         self._assert_no_recipes()
 
     def test_puzzleedit_add_remove_parts_results(self):
@@ -2823,36 +2477,20 @@ class TestPuzzles(CommandTest):
         red_steel = create_object(
             self.object_typeclass, key="red steel", location=self.char1.location
         )
-        smoke = create_object(
-            self.object_typeclass, key="smoke", location=self.char1.location
-        )
+        smoke = create_object(self.object_typeclass, key="smoke", location=self.char1.location)
 
+        _puzzleedit("/addresult", recipe_dbref, ["smoke"], "smoke were added to results")
         _puzzleedit(
-            "/addresult", recipe_dbref, ["smoke"], "smoke were added to results"
-        )
-        _puzzleedit(
-            "/addpart",
-            recipe_dbref,
-            ["red steel", "steel"],
-            "red steel, steel were added to parts",
+            "/addpart", recipe_dbref, ["red steel", "steel"], "red steel, steel were added to parts"
         )
 
         # create a box so we can put all objects in
         # so that they can't be found during puzzle resolution
-        self.box = create_object(
-            self.object_typeclass, key="box", location=self.char1.location
-        )
+        self.box = create_object(self.object_typeclass, key="box", location=self.char1.location)
 
         def _box_all():
             for o in self.room1.contents:
-                if o not in [
-                    self.char1,
-                    self.char2,
-                    self.exit,
-                    self.obj1,
-                    self.obj2,
-                    self.box,
-                ]:
+                if o not in [self.char1, self.char2, self.exit, self.obj1, self.obj2, self.box]:
                     o.location = self.box
 
         _box_all()
@@ -2860,8 +2498,7 @@ class TestPuzzles(CommandTest):
         self._arm(recipe_dbref, "makefire", ["steel", "flint", "red steel", "steel"])
         self._check_room_contents({"steel": 2, "red steel": 1, "flint": 1})
         self._use(
-            "1-steel, flint",
-            "You try to utilize these but nothing happens ... something amiss?",
+            "1-steel, flint", "You try to utilize these but nothing happens ... something amiss?"
         )
         self._use("1-steel, flint, red steel, 3-steel", "You are a Genius")
         self._check_room_contents({"smoke": 1, "fire": 1})
@@ -2870,14 +2507,9 @@ class TestPuzzles(CommandTest):
         self.fire.location = self.room1
         self.steel.location = self.room1
 
+        _puzzleedit("/delresult", recipe_dbref, ["fire"], "fire were removed from results")
         _puzzleedit(
-            "/delresult", recipe_dbref, ["fire"], "fire were removed from results"
-        )
-        _puzzleedit(
-            "/delpart",
-            recipe_dbref,
-            ["steel", "steel"],
-            "steel, steel were removed from parts",
+            "/delpart", recipe_dbref, ["steel", "steel"], "steel, steel were removed from parts"
         )
 
         _box_all()
@@ -2951,29 +2583,17 @@ class TestPuzzles(CommandTest):
 
         # parts don't survive resolution
         # but produce a large result set
-        tree = create_object(
-            self.object_typeclass, key="tree", location=self.char1.location
-        )
-        axe = create_object(
-            self.object_typeclass, key="axe", location=self.char1.location
-        )
-        sweat = create_object(
-            self.object_typeclass, key="sweat", location=self.char1.location
-        )
+        tree = create_object(self.object_typeclass, key="tree", location=self.char1.location)
+        axe = create_object(self.object_typeclass, key="axe", location=self.char1.location)
+        sweat = create_object(self.object_typeclass, key="sweat", location=self.char1.location)
         dull_axe = create_object(
             self.object_typeclass, key="dull axe", location=self.char1.location
         )
-        timber = create_object(
-            self.object_typeclass, key="timber", location=self.char1.location
-        )
-        log = create_object(
-            self.object_typeclass, key="log", location=self.char1.location
-        )
+        timber = create_object(self.object_typeclass, key="timber", location=self.char1.location)
+        log = create_object(self.object_typeclass, key="log", location=self.char1.location)
         parts = ["tree", "axe"]
         results = (["sweat"] * 10) + ["dull axe"] + (["timber"] * 20) + (["log"] * 50)
-        recipe_dbref = self._good_recipe(
-            "lumberjack", parts, results, and_destroy_it=False
-        )
+        recipe_dbref = self._good_recipe("lumberjack", parts, results, and_destroy_it=False)
 
         _destroy_objs_in_room(set(parts + results))
 
@@ -2993,15 +2613,9 @@ class TestPuzzles(CommandTest):
         # parts also appear in results
         # causing a new puzzle to be armed 'automatically'
         # i.e. the puzzle is self-sustaining
-        hole = create_object(
-            self.object_typeclass, key="hole", location=self.char1.location
-        )
-        shovel = create_object(
-            self.object_typeclass, key="shovel", location=self.char1.location
-        )
-        dirt = create_object(
-            self.object_typeclass, key="dirt", location=self.char1.location
-        )
+        hole = create_object(self.object_typeclass, key="hole", location=self.char1.location)
+        shovel = create_object(self.object_typeclass, key="shovel", location=self.char1.location)
+        dirt = create_object(self.object_typeclass, key="dirt", location=self.char1.location)
 
         parts = ["shovel", "hole"]
         results = ["dirt", "hole", "shovel"]
@@ -3027,9 +2641,7 @@ class TestPuzzles(CommandTest):
             self._check_room_contents(expected)
 
         # Uppercase puzzle name
-        balloon = create_object(
-            self.object_typeclass, key="Balloon", location=self.char1.location
-        )
+        balloon = create_object(self.object_typeclass, key="Balloon", location=self.char1.location)
         parts = ["Balloon"]
         results = ["Balloon"]
         recipe_dbref = self._good_recipe(
@@ -3062,9 +2674,7 @@ class TestPuzzles(CommandTest):
         flashlight_w_3 = create_object(
             self.object_typeclass, key="flashlight-w-3", location=self.char1.location
         )
-        battery = create_object(
-            self.object_typeclass, key="battery", location=self.char1.location
-        )
+        battery = create_object(self.object_typeclass, key="battery", location=self.char1.location)
 
         battery.tags.add("flashlight-1", category=puzzles._PUZZLES_TAG_CATEGORY)
         battery.tags.add("flashlight-2", category=puzzles._PUZZLES_TAG_CATEGORY)
@@ -3102,13 +2712,7 @@ class TestPuzzles(CommandTest):
         )
 
         # delete protoparts
-        for obj in [
-            battery,
-            flashlight,
-            flashlight_w_1,
-            flashlight_w_2,
-            flashlight_w_3,
-        ]:
+        for obj in [battery, flashlight, flashlight_w_1, flashlight_w_2, flashlight_w_3]:
             obj.delete()
 
         def _group_parts(parts, excluding=set()):
@@ -3166,9 +2770,7 @@ class TestPuzzles(CommandTest):
         assert set(["flashlight-1", "flashlight-2", "flashlight-3"]) == set(
             [p.db.puzzle_name for p in _puzzles]
         )
-        matched_puzzles = puzzles._matching_puzzles(
-            _puzzles, b1_puzzlenames, b1_protodefs
-        )
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, b1_puzzlenames, b1_protodefs)
         assert 0 == len(matched_puzzles)
 
         b2_parts_dict, b2_puzzlenames, b2_protodefs = puzzles._lookups_parts_puzzlenames_protodefs(
@@ -3178,9 +2780,7 @@ class TestPuzzles(CommandTest):
         assert set(["flashlight-1", "flashlight-2", "flashlight-3"]) == set(
             [p.db.puzzle_name for p in _puzzles]
         )
-        matched_puzzles = puzzles._matching_puzzles(
-            _puzzles, b2_puzzlenames, b2_protodefs
-        )
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, b2_puzzlenames, b2_protodefs)
         assert 0 == len(matched_puzzles)
         b3_parts_dict, b3_puzzlenames, b3_protodefs = puzzles._lookups_parts_puzzlenames_protodefs(
             [battery_3]
@@ -3189,9 +2789,7 @@ class TestPuzzles(CommandTest):
         assert set(["flashlight-1", "flashlight-2", "flashlight-3"]) == set(
             [p.db.puzzle_name for p in _puzzles]
         )
-        matched_puzzles = puzzles._matching_puzzles(
-            _puzzles, b3_puzzlenames, b3_protodefs
-        )
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, b3_puzzlenames, b3_protodefs)
         assert 0 == len(matched_puzzles)
 
         assert battery_1 == list(b1_parts_dict.values())[0]
@@ -3236,43 +2834,30 @@ class TestPuzzles(CommandTest):
         )
         _puzzles = puzzles._puzzles_by_names(f1_puzzlenames.keys())
         assert set(["flashlight-1"]) == set([p.db.puzzle_name for p in _puzzles])
-        matched_puzzles = puzzles._matching_puzzles(
-            _puzzles, f1_puzzlenames, f1_protodefs
-        )
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, f1_puzzlenames, f1_protodefs)
         assert 0 == len(matched_puzzles)
         f2_parts_dict, f2_puzzlenames, f2_protodefs = puzzles._lookups_parts_puzzlenames_protodefs(
             [flashlight_2]
         )
         _puzzles = puzzles._puzzles_by_names(f2_puzzlenames.keys())
         assert set(["flashlight-2"]) == set([p.db.puzzle_name for p in _puzzles])
-        matched_puzzles = puzzles._matching_puzzles(
-            _puzzles, f2_puzzlenames, f2_protodefs
-        )
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, f2_puzzlenames, f2_protodefs)
         assert 0 == len(matched_puzzles)
         f3_parts_dict, f3_puzzlenames, f3_protodefs = puzzles._lookups_parts_puzzlenames_protodefs(
             [flashlight_3]
         )
         _puzzles = puzzles._puzzles_by_names(f3_puzzlenames.keys())
         assert set(["flashlight-3"]) == set([p.db.puzzle_name for p in _puzzles])
-        matched_puzzles = puzzles._matching_puzzles(
-            _puzzles, f3_puzzlenames, f3_protodefs
-        )
+        matched_puzzles = puzzles._matching_puzzles(_puzzles, f3_puzzlenames, f3_protodefs)
         assert 0 == len(matched_puzzles)
 
         assert flashlight_1 == list(f1_parts_dict.values())[0]
         assert flashlight_2 == list(f2_parts_dict.values())[0]
         assert flashlight_3 == list(f3_parts_dict.values())[0]
         for puzzle_name in set(
-            list(f1_puzzlenames.keys())
-            + list(f2_puzzlenames.keys())
-            + list(f3_puzzlenames.keys())
+            list(f1_puzzlenames.keys()) + list(f2_puzzlenames.keys()) + list(f3_puzzlenames.keys())
         ):
-            assert puzzle_name in [
-                "flashlight-1",
-                "flashlight-2",
-                "flashlight-3",
-                "puzzle_member",
-            ]
+            assert puzzle_name in ["flashlight-1", "flashlight-2", "flashlight-3", "puzzle_member"]
         protodef_flashlight_1["key"] = "flashlight"
         assert list(f1_protodefs.values())[0] == protodef_flashlight_1
         protodef_flashlight_2["key"] = "flashlight-w-1"
@@ -3286,57 +2871,43 @@ class TestPuzzles(CommandTest):
             parts_dict, puzzlenames, protodefs = puzzles._lookups_parts_puzzlenames_protodefs(
                 [batt, flashlight_1]
             )
-            assert set([batt.dbref, flashlight_1.dbref]) == set(
-                puzzlenames["flashlight-1"]
-            )
+            assert set([batt.dbref, flashlight_1.dbref]) == set(puzzlenames["flashlight-1"])
             assert set([batt.dbref]) == set(puzzlenames["flashlight-2"])
             assert set([batt.dbref]) == set(puzzlenames["flashlight-3"])
             _puzzles = puzzles._puzzles_by_names(puzzlenames.keys())
             assert set(["flashlight-1", "flashlight-2", "flashlight-3"]) == set(
                 [p.db.puzzle_name for p in _puzzles]
             )
-            matched_puzzles = puzzles._matching_puzzles(
-                _puzzles, puzzlenames, protodefs
-            )
+            matched_puzzles = puzzles._matching_puzzles(_puzzles, puzzlenames, protodefs)
             assert 1 == len(matched_puzzles)
             parts_dict, puzzlenames, protodefs = puzzles._lookups_parts_puzzlenames_protodefs(
                 [batt, flashlight_2]
             )
             assert set([batt.dbref]) == set(puzzlenames["flashlight-1"])
-            assert set([batt.dbref, flashlight_2.dbref]) == set(
-                puzzlenames["flashlight-2"]
-            )
+            assert set([batt.dbref, flashlight_2.dbref]) == set(puzzlenames["flashlight-2"])
             assert set([batt.dbref]) == set(puzzlenames["flashlight-3"])
             _puzzles = puzzles._puzzles_by_names(puzzlenames.keys())
             assert set(["flashlight-1", "flashlight-2", "flashlight-3"]) == set(
                 [p.db.puzzle_name for p in _puzzles]
             )
-            matched_puzzles = puzzles._matching_puzzles(
-                _puzzles, puzzlenames, protodefs
-            )
+            matched_puzzles = puzzles._matching_puzzles(_puzzles, puzzlenames, protodefs)
             assert 1 == len(matched_puzzles)
             parts_dict, puzzlenames, protodefs = puzzles._lookups_parts_puzzlenames_protodefs(
                 [batt, flashlight_3]
             )
             assert set([batt.dbref]) == set(puzzlenames["flashlight-1"])
             assert set([batt.dbref]) == set(puzzlenames["flashlight-2"])
-            assert set([batt.dbref, flashlight_3.dbref]) == set(
-                puzzlenames["flashlight-3"]
-            )
+            assert set([batt.dbref, flashlight_3.dbref]) == set(puzzlenames["flashlight-3"])
             _puzzles = puzzles._puzzles_by_names(puzzlenames.keys())
             assert set(["flashlight-1", "flashlight-2", "flashlight-3"]) == set(
                 [p.db.puzzle_name for p in _puzzles]
             )
-            matched_puzzles = puzzles._matching_puzzles(
-                _puzzles, puzzlenames, protodefs
-            )
+            matched_puzzles = puzzles._matching_puzzles(_puzzles, puzzlenames, protodefs)
             assert 1 == len(matched_puzzles)
 
         # delete all parts
         for part in (
-            list(fl1_dbrefs.values())
-            + list(fl2_dbrefs.values())
-            + list(fl3_dbrefs.values())
+            list(fl1_dbrefs.values()) + list(fl2_dbrefs.values()) + list(fl3_dbrefs.values())
         ):
             part.delete()
 
@@ -3405,24 +2976,16 @@ class TestPuzzles(CommandTest):
 
     def test_e2e_interchangeable_parts_and_results(self):
         # Parts and Results can be used in multiple puzzles
-        egg = create_object(
-            self.object_typeclass, key="egg", location=self.char1.location
-        )
-        flour = create_object(
-            self.object_typeclass, key="flour", location=self.char1.location
-        )
+        egg = create_object(self.object_typeclass, key="egg", location=self.char1.location)
+        flour = create_object(self.object_typeclass, key="flour", location=self.char1.location)
         boiling_water = create_object(
             self.object_typeclass, key="boiling water", location=self.char1.location
         )
         boiled_egg = create_object(
             self.object_typeclass, key="boiled egg", location=self.char1.location
         )
-        dough = create_object(
-            self.object_typeclass, key="dough", location=self.char1.location
-        )
-        pasta = create_object(
-            self.object_typeclass, key="pasta", location=self.char1.location
-        )
+        dough = create_object(self.object_typeclass, key="dough", location=self.char1.location)
+        pasta = create_object(self.object_typeclass, key="pasta", location=self.char1.location)
 
         # Three recipes:
         # 1. breakfast: egg + boiling water = boiled egg & boiling water
@@ -3483,21 +3046,12 @@ class TestPuzzles(CommandTest):
 
         # create a box so we can put all objects in
         # so that they can't be found during puzzle resolution
-        self.box = create_object(
-            self.object_typeclass, key="box", location=self.char1.location
-        )
+        self.box = create_object(self.object_typeclass, key="box", location=self.char1.location)
 
         def _box_all():
             # print "boxing all\n", "-"*20
             for o in self.room1.contents:
-                if o not in [
-                    self.char1,
-                    self.char2,
-                    self.exit,
-                    self.obj1,
-                    self.obj2,
-                    self.box,
-                ]:
+                if o not in [self.char1, self.char2, self.exit, self.obj1, self.obj2, self.box]:
                     o.location = self.box
                     # print o.key, o.dbref, "boxed"
                 else:

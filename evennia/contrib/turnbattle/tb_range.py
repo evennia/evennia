@@ -101,13 +101,7 @@ in your game and using it as-is.
 """
 
 from random import randint
-from evennia import (
-    DefaultCharacter,
-    DefaultObject,
-    Command,
-    default_cmds,
-    DefaultScript,
-)
+from evennia import DefaultCharacter, DefaultObject, Command, default_cmds, DefaultScript
 from evennia.commands.default.help import CmdHelp
 
 """
@@ -265,9 +259,7 @@ def at_defeat(defeated):
     defeated.location.msg_contents("%s has been defeated!" % defeated)
 
 
-def resolve_attack(
-    attacker, defender, attack_type, attack_value=None, defense_value=None
-):
+def resolve_attack(attacker, defender, attack_type, attack_value=None, defense_value=None):
     """
     Resolves an attack and outputs the result.
 
@@ -490,9 +482,7 @@ def spend_action(character, actions, action_name=None):
         character.db.combat_actionsleft -= actions  # Use up actions.
         if character.db.combat_actionsleft < 0:
             character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
-    character.db.combat_turnhandler.turn_end_check(
-        character
-    )  # Signal potential end of turn.
+    character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
 
 
 def combat_status_message(fighter):
@@ -525,9 +515,7 @@ def combat_status_message(fighter):
                 range_obj.append(thing)
 
     if engaged_obj:
-        status_msg += "|/Engaged targets: %s" % ", ".join(
-            obj.key for obj in engaged_obj
-        )
+        status_msg += "|/Engaged targets: %s" % ", ".join(obj.key for obj in engaged_obj)
     if reach_obj:
         status_msg += "|/Reach targets: %s" % ", ".join(obj.key for obj in reach_obj)
     if range_obj:
@@ -586,9 +574,7 @@ class TBRangeTurnHandler(DefaultScript):
         self.db.fighters = ordered_by_roll
 
         # Announce the turn order.
-        self.obj.msg_contents(
-            "Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters)
-        )
+        self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
 
         # Start first fighter's turn.
         self.start_turn(self.db.fighters[0])
@@ -602,12 +588,8 @@ class TBRangeTurnHandler(DefaultScript):
         Called at script termination.
         """
         for thing in self.obj.contents:
-            combat_cleanup(
-                thing
-            )  # Clean up the combat attributes for every object in the room.
-        self.obj.db.combat_turnhandler = (
-            None
-        )  # Remove reference to turn handler in location
+            combat_cleanup(thing)  # Clean up the combat attributes for every object in the room.
+        self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
 
     def at_repeat(self):
         """
@@ -625,9 +607,7 @@ class TBRangeTurnHandler(DefaultScript):
                 currentchar, "all", action_name="disengage"
             )  # Spend all remaining actions.
             return
-        elif (
-            self.db.timer <= 10 and not self.db.timeout_warning_given
-        ):  # 10 seconds left
+        elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
             # Warn the current character if they're about to time out.
             currentchar.msg("WARNING: About to time out!")
             self.db.timeout_warning_given = True
@@ -692,9 +672,7 @@ class TBRangeTurnHandler(DefaultScript):
         Args:
             character (obj): Character to initialize for combat.
         """
-        combat_cleanup(
-            character
-        )  # Clean up leftover combat attributes beforehand, just in case.
+        combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
         character.db.combat_actionsleft = (
             0
         )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
@@ -742,17 +720,13 @@ class TBRangeTurnHandler(DefaultScript):
         defeated_characters = 0
         for fighter in self.db.fighters:
             if fighter.db.HP == 0:
-                defeated_characters += (
-                    1
-                )  # Add 1 for every fighter with 0 HP left (defeated)
+                defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
         if defeated_characters == (
             len(self.db.fighters) - 1
         ):  # If only one character isn't defeated
             for fighter in self.db.fighters:
                 if fighter.db.HP != 0:
-                    LastStanding = (
-                        fighter
-                    )  # Pick the one fighter left with HP remaining
+                    LastStanding = fighter  # Pick the one fighter left with HP remaining
             self.obj.msg_contents("Only %s remains! Combat is over!" % LastStanding)
             self.stop()  # Stop this script and end combat.
             return
@@ -761,15 +735,11 @@ class TBRangeTurnHandler(DefaultScript):
         currentchar = self.db.fighters[self.db.turn]
         self.db.turn += 1  # Go to the next in the turn order.
         if self.db.turn > len(self.db.fighters) - 1:
-            self.db.turn = (
-                0
-            )  # Go back to the first in the turn order once you reach the end.
+            self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
         newchar = self.db.fighters[self.db.turn]  # Note the new character
         self.db.timer = TURN_TIMEOUT + self.time_until_next_repeat()  # Reset the timer.
         self.db.timeout_warning_given = False  # Reset the timeout warning.
-        self.obj.msg_contents(
-            "%s's turn ends - %s's turn begins!" % (currentchar, newchar)
-        )
+        self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
         self.start_turn(newchar)  # Start the new character's turn.
 
     def turn_end_check(self, character):
@@ -906,9 +876,7 @@ class TBRangeObject(DefaultObject):
         if dropper.location.db.combat_turnhandler:
             # Object joins the range field
             self.db.combat_range = {}
-            dropper.location.db.combat_turnhandler.join_rangefield(
-                self, anchor_obj=dropper
-            )
+            dropper.location.db.combat_turnhandler.join_rangefield(self, anchor_obj=dropper)
 
     def at_before_get(self, getter):
         """
@@ -990,8 +958,7 @@ class TBRangeObject(DefaultObject):
                 return False
             if get_range(giver, getter) > 0:  # Too far away from target
                 giver.msg(
-                    "You aren't close enough to give things to %s! (see: help approach)"
-                    % getter
+                    "You aren't close enough to give things to %s! (see: help approach)" % getter
                 )
                 return False
         return True
@@ -1052,9 +1019,7 @@ class CmdFight(Command):
         if is_in_combat(self.caller):  # Already in a fight
             self.caller.msg("You're already in a fight!")
             return
-        for (
-            thing
-        ) in here.contents:  # Test everything in the room to add it to the fight.
+        for thing in here.contents:  # Test everything in the room to add it to the fight.
             if thing.db.HP:  # If the object has HP...
                 fighters.append(thing)  # ...then add it to the fight.
         if len(fighters) <= 1:  # If you're the only able fighter in the room
@@ -1179,11 +1144,7 @@ class CmdShoot(Command):
         in_melee = []
         for target in attacker.db.combat_range:
             # Object is engaged and has HP
-            if (
-                get_range(attacker, defender) == 0
-                and target.db.hp
-                and target != self.caller
-            ):
+            if get_range(attacker, defender) == 0 and target.db.hp and target != self.caller:
                 in_melee.append(target)  # Add to list of targets in melee
 
         if len(in_melee) > 0:
@@ -1333,9 +1294,7 @@ class CmdPass(Command):
         self.caller.location.msg_contents(
             "%s takes no further action, passing the turn." % self.caller
         )
-        spend_action(
-            self.caller, "all", action_name="pass"
-        )  # Spend all remaining actions.
+        spend_action(self.caller, "all", action_name="pass")  # Spend all remaining actions.
 
 
 class CmdDisengage(Command):
@@ -1366,12 +1325,8 @@ class CmdDisengage(Command):
             self.caller.msg("You can only do that on your turn.")
             return
 
-        self.caller.location.msg_contents(
-            "%s disengages, ready to stop fighting." % self.caller
-        )
-        spend_action(
-            self.caller, "all", action_name="disengage"
-        )  # Spend all remaining actions.
+        self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
+        spend_action(self.caller, "all", action_name="disengage")  # Spend all remaining actions.
         """
         The action_name kwarg sets the character's last action to "disengage", which is checked by
         the turn handler script to see if all fighters have disengaged.
@@ -1442,9 +1397,7 @@ class CmdCombatHelp(CmdHelp):
     # tips on combat when used in a fight with no arguments.
 
     def func(self):
-        if (
-            is_in_combat(self.caller) and not self.args
-        ):  # In combat and entered 'help' alone
+        if is_in_combat(self.caller) and not self.args:  # In combat and entered 'help' alone
             self.caller.msg(
                 "Available combat commands:|/"
                 + "|wAttack:|n Attack an engaged target, attempting to deal damage.|/"

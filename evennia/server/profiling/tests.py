@@ -87,9 +87,7 @@ class TestDummyrunnerSettings(TestCase):
         )
 
     def test_c_digs(self):
-        self.assertEqual(
-            c_digs(self.client), ("@dig/tel testing_room_1 = exit_1, exit_1")
-        )
+        self.assertEqual(c_digs(self.client), ("@dig/tel testing_room_1 = exit_1, exit_1"))
         self.assertEqual(self.client.exits, ["exit_1", "exit_1"])
         self.clear_client_lists()
 
@@ -112,10 +110,7 @@ class TestDummyrunnerSettings(TestCase):
         typeclass_name = "contrib.tutorial_examples.red_button.RedButton"
         self.assertEqual(
             c_creates_button(self.client),
-            (
-                "@create %s:%s" % (objname, typeclass_name),
-                "@desc %s = test red button!" % objname,
-            ),
+            ("@create %s:%s" % (objname, typeclass_name), "@desc %s = test red button!" % objname),
         )
         self.assertEqual(self.client.objs, [objname])
         self.clear_client_lists()
@@ -150,9 +145,7 @@ class TestMemPlot(TestCase):
     @patch.object(memplot, "os")
     @patch.object(memplot, "open", new_callable=mock_open, create=True)
     @patch.object(memplot, "time")
-    @patch(
-        "evennia.utils.idmapper.models.SharedMemoryModel.flush_from_cache", new=Mock()
-    )
+    @patch("evennia.utils.idmapper.models.SharedMemoryModel.flush_from_cache", new=Mock())
     def test_memplot(self, mock_time, mocked_open, mocked_os, mocked_idmapper):
         if isinstance(memplot, Mock):
             return

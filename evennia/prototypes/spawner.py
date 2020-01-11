@@ -149,12 +149,7 @@ from evennia.prototypes.prototypes import (
 
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
-_PROTOTYPE_META_NAMES = (
-    "prototype_key",
-    "prototype_desc",
-    "prototype_tags",
-    "prototype_locks",
-)
+_PROTOTYPE_META_NAMES = ("prototype_key", "prototype_desc", "prototype_tags", "prototype_locks")
 _PROTOTYPE_ROOT_NAMES = (
     "typeclass",
     "key",
@@ -216,16 +211,12 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
             new_prot["attrs"] = _inherit_attrs(
                 _workprot.get("attrs", {}), new_prot.get("attrs", {})
             )
-            new_prot["tags"] = _inherit_tags(
-                _workprot.get("tags", {}), new_prot.get("tags", {})
-            )
+            new_prot["tags"] = _inherit_tags(_workprot.get("tags", {}), new_prot.get("tags", {}))
 
             _workprot.update(new_prot)
     # the inprot represents a higher level (a child prot), which should override parents
 
-    inprot["attrs"] = _inherit_attrs(
-        _workprot.get("attrs", {}), inprot.get("attrs", {})
-    )
+    inprot["attrs"] = _inherit_attrs(_workprot.get("attrs", {}), inprot.get("attrs", {}))
     inprot["tags"] = _inherit_tags(_workprot.get("tags", {}), inprot.get("tags", {}))
     _workprot.update(inprot)
     if uninherited:
@@ -251,16 +242,12 @@ def flatten_prototype(prototype, validate=False):
 
     if prototype:
         prototype = protlib.homogenize_prototype(prototype)
-        protparents = {
-            prot["prototype_key"].lower(): prot for prot in protlib.search_prototype()
-        }
+        protparents = {prot["prototype_key"].lower(): prot for prot in protlib.search_prototype()}
         protlib.validate_prototype(
             prototype, None, protparents, is_prototype_base=validate, strict=validate
         )
         return _get_prototype(
-            prototype,
-            protparents,
-            uninherited={"prototype_key": prototype.get("prototype_key")},
+            prototype, protparents, uninherited={"prototype_key": prototype.get("prototype_key")}
         )
     return {}
 
@@ -297,9 +284,7 @@ def prototype_from_object(obj):
     else:
         prot = prot[0]
 
-    prot["key"] = (
-        obj.db_key or hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]
-    )
+    prot["key"] = obj.db_key or hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]
     prot["typeclass"] = obj.db_typeclass_path
 
     location = obj.db_location
@@ -321,10 +306,7 @@ def prototype_from_object(obj):
     if aliases:
         prot["aliases"] = aliases
     tags = sorted(
-        [
-            (tag.db_key, tag.db_category, tag.db_data)
-            for tag in obj.tags.all(return_objs=True)
-        ]
+        [(tag.db_key, tag.db_category, tag.db_data) for tag in obj.tags.all(return_objs=True)]
     )
     if tags:
         prot["tags"] = tags
@@ -374,18 +356,14 @@ def prototype_diff(prototype1, prototype2, maxdepth=2):
                     return {key: (part, None, "REMOVE") for key, part in old.items()}
                 elif depth < maxdepth and is_iter(old):
                     return {
-                        part[0] if is_iter(part) else part: (part, None, "REMOVE")
-                        for part in old
+                        part[0] if is_iter(part) else part: (part, None, "REMOVE") for part in old
                     }
                 return (old, new, "REMOVE")
             elif not old and new:
                 if depth < maxdepth and new_type == dict:
                     return {key: (None, part, "ADD") for key, part in new.items()}
                 elif depth < maxdepth and is_iter(new):
-                    return {
-                        part[0] if is_iter(part) else part: (None, part, "ADD")
-                        for part in new
-                    }
+                    return {part[0] if is_iter(part) else part: (None, part, "ADD") for part in new}
                 return (old, new, "ADD")
             else:
                 # this condition should not occur in a standard diff
@@ -401,9 +379,7 @@ def prototype_diff(prototype1, prototype2, maxdepth=2):
             new_map = {part[0] if is_iter(part) else part: part for part in new}
             all_keys = set(list(old_map.keys()) + list(new_map.keys()))
             return {
-                key: _recursive_diff(
-                    old_map.get(key), new_map.get(key), depth=depth + 1
-                )
+                key: _recursive_diff(old_map.get(key), new_map.get(key), depth=depth + 1)
                 for key in all_keys
             }
         elif old != new:
@@ -539,9 +515,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
     prototype_key = new_prototype["prototype_key"]
 
     if not objects:
-        objects = ObjectDB.objects.get_by_tag(
-            prototype_key, category=_PROTOTYPE_TAG_CATEGORY
-        )
+        objects = ObjectDB.objects.get_by_tag(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
 
     if not objects:
         return 0
@@ -588,15 +562,11 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
                 elif key == "permissions":
                     if directive == "REPLACE":
                         obj.permissions.clear()
-                    obj.permissions.batch_add(
-                        *(init_spawn_value(perm, str) for perm in val)
-                    )
+                    obj.permissions.batch_add(*(init_spawn_value(perm, str) for perm in val))
                 elif key == "aliases":
                     if directive == "REPLACE":
                         obj.aliases.clear()
-                    obj.aliases.batch_add(
-                        *(init_spawn_value(alias, str) for alias in val)
-                    )
+                    obj.aliases.batch_add(*(init_spawn_value(alias, str) for alias in val))
                 elif key == "tags":
                     if directive == "REPLACE":
                         obj.tags.clear()
@@ -762,16 +732,12 @@ def spawn(*prototypes, **kwargs):
     """
     # search string (=prototype_key) from input
     prototypes = [
-        protlib.search_prototype(prot, require_single=True)[0]
-        if isinstance(prot, str)
-        else prot
+        protlib.search_prototype(prot, require_single=True)[0] if isinstance(prot, str) else prot
         for prot in prototypes
     ]
 
     # get available protparents
-    protparents = {
-        prot["prototype_key"].lower(): prot for prot in protlib.search_prototype()
-    }
+    protparents = {prot["prototype_key"].lower(): prot for prot in protlib.search_prototype()}
 
     if not kwargs.get("only_validate"):
         # homogenization to be more lenient about prototype format when entering the prototype manually
@@ -794,9 +760,7 @@ def spawn(*prototypes, **kwargs):
 
         protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
         prot = _get_prototype(
-            prototype,
-            protparents,
-            uninherited={"prototype_key": prototype.get("prototype_key")},
+            prototype, protparents, uninherited={"prototype_key": prototype.get("prototype_key")}
         )
         if not prot:
             continue
@@ -808,9 +772,7 @@ def spawn(*prototypes, **kwargs):
         # chance this is not unique but it should usually not be a problem.
         val = prot.pop(
             "key",
-            "Spawned-{}".format(
-                hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]
-            ),
+            "Spawned-{}".format(hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]),
         )
         create_kwargs["db_key"] = init_spawn_value(val, str)
 

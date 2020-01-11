@@ -16,10 +16,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="DefaultObject",
-            fields=[],
-            options={"proxy": True},
-            bases=("objects.objectdb",),
+            name="DefaultObject", fields=[], options={"proxy": True}, bases=("objects.objectdb",)
         ),
         migrations.CreateModel(
             name="DefaultAccount",
@@ -29,10 +26,7 @@ class Migration(migrations.Migration):
             managers=[("objects", evennia.accounts.manager.AccountManager())],
         ),
         migrations.CreateModel(
-            name="ScriptBase",
-            fields=[],
-            options={"proxy": True},
-            bases=("scripts.scriptdb",),
+            name="ScriptBase", fields=[], options={"proxy": True}, bases=("scripts.scriptdb",)
         ),
         migrations.CreateModel(
             name="DefaultCharacter",
@@ -72,9 +66,6 @@ class Migration(migrations.Migration):
             bases=("typeclasses.defaultscript",),
         ),
         migrations.CreateModel(
-            name="Store",
-            fields=[],
-            options={"proxy": True},
-            bases=("typeclasses.defaultscript",),
+            name="Store", fields=[], options={"proxy": True}, bases=("typeclasses.defaultscript",)
         ),
     ]

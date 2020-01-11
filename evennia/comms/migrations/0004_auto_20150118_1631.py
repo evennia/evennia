@@ -6,9 +6,7 @@ from django.db import models, migrations
 
 def convert_defaults(apps, schema_editor):
     ChannelDB = apps.get_model("comms", "ChannelDB")
-    for channel in ChannelDB.objects.filter(
-        db_typeclass_path="src.comms.comms.Channel"
-    ):
+    for channel in ChannelDB.objects.filter(db_typeclass_path="src.comms.comms.Channel"):
         channel.db_typeclass_path = "typeclasses.channels.Channel"
         channel.save()
 

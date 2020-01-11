@@ -68,9 +68,7 @@ class HelpEntry(SharedMemoryModel):
         "help entry", blank=True, help_text="the main body of help text"
     )
     # lock string storage
-    db_lock_storage = models.TextField(
-        "locks", blank=True, help_text="normally view:all()."
-    )
+    db_lock_storage = models.TextField("locks", blank=True, help_text="normally view:all().")
     # tags are primarily used for permissions
     db_tags = models.ManyToManyField(
         Tag,
@@ -141,8 +139,7 @@ class HelpEntry(SharedMemoryModel):
         """
         content_type = ContentType.objects.get_for_model(self.__class__)
         return reverse(
-            "admin:%s_%s_change" % (content_type.app_label, content_type.model),
-            args=(self.id,),
+            "admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,)
         )
 
     @classmethod
@@ -205,10 +202,7 @@ class HelpEntry(SharedMemoryModel):
         try:
             return reverse(
                 "%s-detail" % slugify(self._meta.verbose_name),
-                kwargs={
-                    "category": slugify(self.db_help_category),
-                    "topic": slugify(self.db_key),
-                },
+                kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
         except Exception as e:
             print(e)
@@ -243,10 +237,7 @@ class HelpEntry(SharedMemoryModel):
         try:
             return reverse(
                 "%s-update" % slugify(self._meta.verbose_name),
-                kwargs={
-                    "category": slugify(self.db_help_category),
-                    "topic": slugify(self.db_key),
-                },
+                kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
         except:
             return "#"
@@ -279,10 +270,7 @@ class HelpEntry(SharedMemoryModel):
         try:
             return reverse(
                 "%s-delete" % slugify(self._meta.verbose_name),
-                kwargs={
-                    "category": slugify(self.db_help_category),
-                    "topic": slugify(self.db_key),
-                },
+                kwargs={"category": slugify(self.db_help_category), "topic": slugify(self.db_key)},
             )
         except:
             return "#"

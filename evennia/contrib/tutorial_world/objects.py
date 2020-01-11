@@ -124,7 +124,9 @@ class TutorialReadable(TutorialObject):
         Attribute and add the readable cmdset.
         """
         super().at_object_creation()
-        self.db.tutorial_info = "This is an object with a 'read' command defined in a command set on itself."
+        self.db.tutorial_info = (
+            "This is an object with a 'read' command defined in a command set on itself."
+        )
         self.db.readable_text = "There is no text written on %s." % self.key
         # define a command on the object.
         self.cmdset.add_default(CmdSetReadable, permanent=True)
@@ -171,10 +173,7 @@ class CmdClimb(Command):
             return
         ostring = self.obj.db.climb_text
         if not ostring:
-            ostring = (
-                "You climb %s. Having looked around, you climb down again."
-                % self.obj.name
-            )
+            ostring = "You climb %s. Having looked around, you climb down again." % self.obj.name
         self.caller.msg(ostring)
         # set a tag on the caller to remember that we climbed.
         self.caller.tags.add("tutorial_climbed_tree", category="tutorial_world")
@@ -228,7 +227,9 @@ class Obelisk(TutorialObject):
     def at_object_creation(self):
         """Called when object is created."""
         super().at_object_creation()
-        self.db.tutorial_info = "This object changes its desc randomly, and makes sure to remember which one you saw."
+        self.db.tutorial_info = (
+            "This object changes its desc randomly, and makes sure to remember which one you saw."
+        )
         self.db.puzzle_descs = ["You see a normal stone slab"]
         # make sure this can never be picked up
         self.locks.add("get:false()")
@@ -333,14 +334,14 @@ class LightSource(TutorialObject):
     def at_object_creation(self):
         """Called when object is first created."""
         super().at_object_creation()
-        self.db.tutorial_info = "This object can be lit to create light. It has a timeout for how long it burns."
+        self.db.tutorial_info = (
+            "This object can be lit to create light. It has a timeout for how long it burns."
+        )
         self.db.is_giving_light = False
         self.db.burntime = 60 * 3  # 3 minutes
         # this is the default desc, it can of course be customized
         # when created.
-        self.db.desc = (
-            "A splinter of wood with remnants of resin on it, enough for burning."
-        )
+        self.db.desc = "A splinter of wood with remnants of resin on it, enough for burning."
         # add the Light command
         self.cmdset.add_default(CmdSetLight, permanent=True)
 
@@ -353,16 +354,13 @@ class LightSource(TutorialObject):
         self.db.is_giving_light = False
         try:
             self.location.location.msg_contents(
-                "%s's %s flickers and dies." % (self.location, self.key),
-                exclude=self.location,
+                "%s's %s flickers and dies." % (self.location, self.key), exclude=self.location
             )
             self.location.msg("Your %s flickers and dies." % self.key)
             self.location.location.check_light_state()
         except AttributeError:
             try:
-                self.location.msg_contents(
-                    "A %s on the floor flickers and dies." % self.key
-                )
+                self.location.msg_contents("A %s on the floor flickers and dies." % self.key)
                 self.location.location.check_light_state()
             except AttributeError:
                 # Mainly happens if we happen to be in a None location
@@ -508,9 +506,7 @@ class CmdShiftRoot(Command):
         elif color == "blue":
             if direction == "left":
                 root_pos[color] = max(-1, root_pos[color] - 1)
-                self.caller.msg(
-                    "You shift the root with small blue flowers to the left."
-                )
+                self.caller.msg("You shift the root with small blue flowers to the left.")
                 if root_pos[color] != 0 and root_pos[color] == root_pos["red"]:
                     root_pos["red"] += 1
                     self.caller.msg(
@@ -518,9 +514,7 @@ class CmdShiftRoot(Command):
                     )
             elif direction == "right":
                 root_pos[color] = min(1, root_pos[color] + 1)
-                self.caller.msg(
-                    "You shove the root adorned with small blue flowers to the right."
-                )
+                self.caller.msg("You shove the root adorned with small blue flowers to the right.")
                 if root_pos[color] != 0 and root_pos[color] == root_pos["red"]:
                     root_pos["red"] -= 1
                     self.caller.msg(
@@ -541,18 +535,12 @@ class CmdShiftRoot(Command):
                     self.caller.msg("The green weedy root falls down.")
             elif direction == "down":
                 root_pos[color] = min(1, root_pos[color] + 1)
-                self.caller.msg(
-                    "You shove the root adorned with small yellow flowers downwards."
-                )
+                self.caller.msg("You shove the root adorned with small yellow flowers downwards.")
                 if root_pos[color] != 0 and root_pos[color] == root_pos["green"]:
                     root_pos["green"] -= 1
-                    self.caller.msg(
-                        "The weedy green root is shifted upwards to make room."
-                    )
+                    self.caller.msg("The weedy green root is shifted upwards to make room.")
             else:
-                self.caller.msg(
-                    "The root hangs across the wall - you can only move it up or down."
-                )
+                self.caller.msg("The root hangs across the wall - you can only move it up or down.")
         elif color == "green":
             if direction == "up":
                 root_pos[color] = max(-1, root_pos[color] - 1)
@@ -569,9 +557,7 @@ class CmdShiftRoot(Command):
                         "The root with yellow flowers gets in the way and is pushed upwards."
                     )
             else:
-                self.caller.msg(
-                    "The root hangs across the wall - you can only move it up or down."
-                )
+                self.caller.msg("The root hangs across the wall - you can only move it up or down.")
 
         # we have moved the root. Store new position
         self.obj.db.root_pos = root_pos
@@ -580,9 +566,7 @@ class CmdShiftRoot(Command):
         if list(root_pos.values()).count(0) == 0:  # no roots in middle position
             # This will affect the cmd: lock of CmdPressButton
             self.obj.db.button_exposed = True
-            self.caller.msg(
-                "Holding aside the root you think you notice something behind it ..."
-            )
+            self.caller.msg("Holding aside the root you think you notice something behind it ...")
 
 
 class CmdPressButton(Command):
@@ -623,9 +607,7 @@ class CmdPressButton(Command):
         )
         self.caller.location.msg_contents(string % self.caller.key, exclude=self.caller)
         if not self.obj.open_wall():
-            self.caller.msg(
-                "The exit leads nowhere, there's just more stone behind it ..."
-            )
+            self.caller.msg("The exit leads nowhere, there's just more stone behind it ...")
 
 
 class CmdSetCrumblingWall(CmdSet):
@@ -665,9 +647,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         """called when the object is first created."""
         super().at_object_creation()
 
-        self.aliases.add(
-            ["secret passage", "passage", "crack", "opening", "secret door"]
-        )
+        self.aliases.add(["secret passage", "passage", "crack", "opening", "secret door"])
 
         # starting root positions. H1/H2 are the horizontally hanging roots,
         # V1/V2 the vertically hanging ones. Each can have three positions:
@@ -781,9 +761,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
 
     def at_failed_traverse(self, traverser):
         """This is called if the account fails to pass the Exit."""
-        traverser.msg(
-            "No matter how you try, you cannot force yourself through %s." % self.key
-        )
+        traverser.msg("No matter how you try, you cannot force yourself through %s." % self.key)
 
     def reset(self):
         """
@@ -867,15 +845,15 @@ class CmdAttack(Command):
         cmdstring = self.cmdstring
 
         if cmdstring in ("attack", "fight"):
-            string = (
-                "How do you want to fight? Choose one of 'stab', 'slash' or 'defend'."
-            )
+            string = "How do you want to fight? Choose one of 'stab', 'slash' or 'defend'."
             self.caller.msg(string)
             return
 
         # parry mode
         if cmdstring in ("parry", "defend"):
-            string = "You raise your weapon in a defensive pose, ready to block the next enemy attack."
+            string = (
+                "You raise your weapon in a defensive pose, ready to block the next enemy attack."
+            )
             self.caller.msg(string)
             self.caller.db.combat_parry_mode = True
             self.caller.location.msg_contents(
@@ -895,22 +873,14 @@ class CmdAttack(Command):
             damage = self.obj.db.damage * 2  # modified due to stab
             string = "You stab with %s. " % self.obj.key
             tstring = "%s stabs at you with %s. " % (self.caller.key, self.obj.key)
-            ostring = "%s stabs at %s with %s. " % (
-                self.caller.key,
-                target.key,
-                self.obj.key,
-            )
+            ostring = "%s stabs at %s with %s. " % (self.caller.key, target.key, self.obj.key)
             self.caller.db.combat_parry_mode = False
         elif cmdstring in ("slash", "chop"):
             hit = float(self.obj.db.hit)  # un modified due to slash
             damage = self.obj.db.damage  # un modified due to slash
             string = "You slash with %s. " % self.obj.key
             tstring = "%s slash at you with %s. " % (self.caller.key, self.obj.key)
-            ostring = "%s slash at %s with %s. " % (
-                self.caller.key,
-                target.key,
-                self.obj.key,
-            )
+            ostring = "%s slash at %s with %s. " % (self.caller.key, target.key, self.obj.key)
             self.caller.db.combat_parry_mode = False
         else:
             self.caller.msg(
@@ -948,9 +918,7 @@ class CmdAttack(Command):
         else:
             self.caller.msg(string + "|rYou miss.|n")
             target.msg(tstring + "|gThey miss you.|n")
-            self.caller.location.msg_contents(
-                ostring + "They miss.", exclude=[target, self.caller]
-            )
+            self.caller.location.msg_contents(ostring + "They miss.", exclude=[target, self.caller])
 
 
 class CmdSetWeapon(CmdSet):
@@ -1201,9 +1169,7 @@ class WeaponRack(TutorialObject):
             prototype = random.choice(self.db.available_weapons)
             # use the spawner to create a new Weapon from the
             # spawner dictionary, tag the caller
-            wpn = spawn(
-                WEAPON_PROTOTYPES[prototype], prototype_parents=WEAPON_PROTOTYPES
-            )[0]
+            wpn = spawn(WEAPON_PROTOTYPES[prototype], prototype_parents=WEAPON_PROTOTYPES)[0]
             caller.tags.add(rack_id, category="tutorial_world")
             wpn.location = caller
             caller.msg(self.db.get_weapon_msg % wpn.key)

@@ -214,9 +214,7 @@ def read_batchfile(pythonpath, file_ending=".py"):
     """
 
     # find all possible absolute paths
-    abspaths = utils.pypath_to_realpath(
-        pythonpath, file_ending, settings.BASE_BATCHPROCESS_PATHS
-    )
+    abspaths = utils.pypath_to_realpath(pythonpath, file_ending, settings.BASE_BATCHPROCESS_PATHS)
     if not abspaths:
         raise IOError("Absolute batchcmd paths could not be found.")
     text = None
@@ -349,9 +347,7 @@ class BatchCodeProcessor(object):
             """Run parse_file on the import before sub:ing it into this file"""
             path = match.group(1)
             try:
-                return "# batchcode insert (%s):" % path + "\n".join(
-                    self.parse_file(path)
-                )
+                return "# batchcode insert (%s):" % path + "\n".join(self.parse_file(path))
             except IOError as err:
                 raise IOError("#INSERT {} failed.".format(path))
 

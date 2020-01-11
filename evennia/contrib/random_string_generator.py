@@ -168,9 +168,7 @@ class RandomStringGenerator(object):
         try:
             script = ScriptDB.objects.get(db_key="generator_script")
         except ScriptDB.DoesNotExist:
-            script = create_script(
-                "contrib.random_string_generator.RandomStringGeneratorScript"
-            )
+            script = create_script("contrib.random_string_generator.RandomStringGeneratorScript")
 
         type(self).script = script
         return script
@@ -202,9 +200,7 @@ class RandomStringGenerator(object):
                 # Either the beginning or end, we ignore it
                 continue
             elif name == "min_repeat":
-                raise RejectedRegex(
-                    "you have to provide a maximum number of this character class"
-                )
+                raise RejectedRegex("you have to provide a maximum number of this character class")
             elif name == "max_repeat":
                 desc["min"] = element[1][0]
                 desc["max"] = element[1][1]

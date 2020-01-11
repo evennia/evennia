@@ -87,11 +87,7 @@ class WeeklyLogFile(logfile.DailyLogFile):
         # all dates here are tuples (year, month, day)
         now = self.toDate()
         then = self.lastDate
-        return (
-            now[0] > then[0]
-            or now[1] > then[1]
-            or now[2] > (then[2] + self.day_rotation)
-        )
+        return now[0] > then[0] or now[1] > then[1] or now[2] > (then[2] + self.day_rotation)
 
     def suffix(self, tupledate):
         """Return the suffix given a (year, month, day) tuple or unixtime.
@@ -153,9 +149,7 @@ def log_msg(msg):
     try:
         log.msg(msg)
     except Exception:
-        print(
-            "Exception raised while writing message to log. Original message: %s" % msg
-        )
+        print("Exception raised while writing message to log. Original message: %s" % msg)
 
 
 def log_trace(errmsg=None):
@@ -390,9 +384,7 @@ def _open_log_file(filename):
             # return cached handle
             return _LOG_FILE_HANDLES[filename]
     try:
-        filehandle = EvenniaLogFile.fromFullPath(
-            filename, rotateLength=_LOG_ROTATE_SIZE
-        )
+        filehandle = EvenniaLogFile.fromFullPath(filename, rotateLength=_LOG_ROTATE_SIZE)
         # filehandle = open(filename, "a+")  # append mode + reading
         _LOG_FILE_HANDLES[filename] = filehandle
         _LOG_FILE_HANDLE_COUNTS[filename] = 0
@@ -486,9 +478,9 @@ def tail_log_file(filename, offset, nlines, callback=None):
     filehandle = _open_log_file(filename)
     if filehandle:
         if callback:
-            return deferToThread(
-                seek_file, filehandle, offset, nlines, callback
-            ).addErrback(errback)
+            return deferToThread(seek_file, filehandle, offset, nlines, callback).addErrback(
+                errback
+            )
         else:
             return seek_file(filehandle, offset, nlines, callback)
     else:

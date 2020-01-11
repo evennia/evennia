@@ -26,13 +26,7 @@ from evennia.commands import cmdhandler
 from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
 from evennia.utils import class_from_module, create, logger
-from evennia.utils.utils import (
-    lazy_property,
-    to_str,
-    make_iter,
-    is_iter,
-    variable_from_module,
-)
+from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter, variable_from_module
 from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_CREATE,
     SIGNAL_OBJECT_POST_PUPPET,
@@ -57,10 +51,12 @@ _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _MUDINFO_CHANNEL = None
 
 # Create throttles for too many account-creations and login attempts
-CREATION_THROTTLE = Throttle(limit=settings.CREATION_THROTTLE_LIMIT, 
-                             timeout=settings.CREATION_THROTTLE_TIMEOUT)
-LOGIN_THROTTLE = Throttle(limit=settings.LOGIN_THROTTLE_LIMIT, 
-                          timeout=settings.LOGIN_THROTTLE_TIMEOUT)
+CREATION_THROTTLE = Throttle(
+    limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
+)
+LOGIN_THROTTLE = Throttle(
+    limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
+)
 
 
 class AccountSessionHandler(object):
@@ -297,9 +293,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                     else:
-                        txt1 = (
-                            f"Taking over |c{obj.name}|n from another of your sessions."
-                        )
+                        txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
                         txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
@@ -354,9 +348,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 if not obj.sessions.count():
                     del obj.account
                 obj.at_post_unpuppet(self, session=session)
-                SIGNAL_OBJECT_POST_UNPUPPET.send(
-                    sender=obj, session=session, account=self
-                )
+                SIGNAL_OBJECT_POST_UNPUPPET.send(sender=obj, session=session, account=self)
             # Just to be sure we're always clear.
             session.puppet = None
             session.puid = None
@@ -392,9 +384,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 by this Account.
 
         """
-        return list(
-            set(session.puppet for session in self.sessions.all() if session.puppet)
-        )
+        return list(set(session.puppet for session in self.sessions.all() if session.puppet))
 
     def __get_single_puppet(self):
         """
@@ -737,11 +727,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         try:
             try:
                 account = create.create_account(
-                    username,
-                    email,
-                    password,
-                    permissions=permissions,
-                    typeclass=typeclass,
+                    username, email, password, permissions=permissions, typeclass=typeclass
                 )
                 logger.log_sec(f"Account Created: {account} (IP: {ip}).")
 
@@ -762,13 +748,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 account.db.creator_ip = ip
 
             # join the new account to the public channel
-            pchannel = ChannelDB.objects.get_channel(
-                settings.DEFAULT_CHANNELS[0]["key"]
-            )
+            pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
             if not pchannel or not pchannel.connect(account):
-                string = (
-                    f"New account '{account.key}' could not connect to public channel!"
-                )
+                string = f"New account '{account.key}' could not connect to public channel!"
                 errors.append(string)
                 logger.log_err(string)
 
@@ -803,9 +785,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append(
-                "An error occurred. Please e-mail an admin if the problem persists."
-            )
+            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
             logger.log_trace()
 
         # Update the throttle to indicate a new account was created from this IP
@@ -832,9 +812,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             except RuntimeError:
                 # no puppet to disconnect from
                 pass
-            session.sessionhandler.disconnect(
-                session, reason=_("Account being deleted.")
-            )
+            session.sessionhandler.disconnect(session, reason=_("Account being deleted."))
         self.scripts.stop()
         self.attributes.clear()
         self.nicks.clear()
@@ -994,12 +972,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         return matches
 
     def access(
-        self,
-        accessing_obj,
-        access_type="read",
-        default=False,
-        no_superuser_bypass=False,
-        **kwargs,
+        self, accessing_obj, access_type="read", default=False, no_superuser_bypass=False, **kwargs
     ):
         """
         Determines if another object has permission to access this
@@ -1079,9 +1052,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         # set an (empty) attribute holding the characters this account has
-        lockstring = (
-            "attrread:perm(Admins);attredit:perm(Admins);" "attrcreate:perm(Admins);"
-        )
+        lockstring = "attrread:perm(Admins);attredit:perm(Admins);" "attrcreate:perm(Admins);"
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
         self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 
@@ -1236,19 +1207,13 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         global _MUDINFO_CHANNEL
         if not _MUDINFO_CHANNEL:
             try:
-                _MUDINFO_CHANNEL = ChannelDB.objects.filter(
-                    db_key=settings.CHANNEL_MUDINFO["key"]
-                )[0]
+                _MUDINFO_CHANNEL = ChannelDB.objects.filter(db_key=settings.CHANNEL_MUDINFO["key"])[
+                    0
+                ]
             except Exception:
                 logger.log_trace()
         now = timezone.now()
-        now = "%02i-%02i-%02i(%02i:%02i)" % (
-            now.year,
-            now.month,
-            now.day,
-            now.hour,
-            now.minute,
-        )
+        now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
         if _MUDINFO_CHANNEL:
             _MUDINFO_CHANNEL.tempmsg(f"[{_MUDINFO_CHANNEL.key}, {now}]: {message}")
         else:
@@ -1300,12 +1265,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # screen. We execute look on the account.
             # we make sure to clean up the _playable_characters list in case
             # any was deleted in the interim.
-            self.db._playable_characters = [
-                char for char in self.db._playable_characters if char
-            ]
+            self.db._playable_characters = [char for char in self.db._playable_characters if char]
             self.msg(
-                self.at_look(target=self.db._playable_characters, session=session),
-                session=session,
+                self.at_look(target=self.db._playable_characters, session=session), session=session
             )
 
     def at_failed_login(self, session, **kwargs):
@@ -1463,9 +1425,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 csessid = sess.sessid
                 addr = "%s (%s)" % (
                     sess.protocol_key,
-                    isinstance(sess.address, tuple)
-                    and str(sess.address[0])
-                    or str(sess.address),
+                    isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address),
                 )
                 result.append(
                     "\n %s %s"
@@ -1488,18 +1448,14 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                         "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
                     )
                 else:
-                    result.append(
-                        "\n |w@charcreate <name> [=description]|n - create new character"
-                    )
+                    result.append("\n |w@charcreate <name> [=description]|n - create new character")
                     result.append(
                         "\n |w@chardelete <name>|n - delete a character (cannot be undone!)"
                     )
 
             if characters:
                 string_s_ending = len(characters) > 1 and "s" or ""
-                result.append(
-                    "\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)"
-                )
+                result.append("\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)")
                 if is_su:
                     result.append(
                         f"\n\nAvailable character{string_s_ending} ({len(characters)}/unlimited):"
@@ -1509,9 +1465,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                         "\n\nAvailable character%s%s:"
                         % (
                             string_s_ending,
-                            charmax > 1
-                            and " (%i/%i)" % (len(characters), charmax)
-                            or "",
+                            charmax > 1 and " (%i/%i)" % (len(characters), charmax) or "",
                         )
                     )
 
@@ -1531,9 +1485,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                                 )
                     else:
                         # character is "free to puppet"
-                        result.append(
-                            f"\n - {char.key} [{', '.join(char.permissions.all())}]"
-                        )
+                        result.append(f"\n - {char.key} [{', '.join(char.permissions.all())}]")
             look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
             return look_string
 
@@ -1611,9 +1563,7 @@ class DefaultGuest(DefaultAccount):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append(
-                "An error occurred. Please e-mail an admin if the problem persists."
-            )
+            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
             logger.log_trace()
             return None, errors
 

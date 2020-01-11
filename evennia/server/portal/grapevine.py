@@ -15,11 +15,7 @@ from django.conf import settings
 from evennia.server.session import Session
 from evennia.utils import get_evennia_version
 from evennia.utils.logger import log_info, log_err
-from autobahn.twisted.websocket import (
-    WebSocketClientProtocol,
-    WebSocketClientFactory,
-    connectWS,
-)
+from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory, connectWS
 
 # There is only one at this time
 GRAPEVINE_URI = "wss://grapevine.haus/socket"
@@ -34,9 +30,7 @@ GRAPEVINE_AUTH_ERROR = 4000
 GRAPEVINE_HEARTBEAT_FAILURE = 4001
 
 
-class RestartingWebsocketServerFactory(
-    WebSocketClientFactory, protocol.ReconnectingClientFactory
-):
+class RestartingWebsocketServerFactory(WebSocketClientFactory, protocol.ReconnectingClientFactory):
     """
     A variant of the websocket-factory that auto-reconnects.
 

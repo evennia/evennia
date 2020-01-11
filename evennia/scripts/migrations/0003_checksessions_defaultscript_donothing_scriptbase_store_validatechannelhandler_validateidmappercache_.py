@@ -10,22 +10,13 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="ScriptBase",
-            fields=[],
-            options={"proxy": True},
-            bases=("scripts.scriptdb",),
+            name="ScriptBase", fields=[], options={"proxy": True}, bases=("scripts.scriptdb",)
         ),
         migrations.CreateModel(
-            name="DefaultScript",
-            fields=[],
-            options={"proxy": True},
-            bases=("scripts.scriptbase",),
+            name="DefaultScript", fields=[], options={"proxy": True}, bases=("scripts.scriptbase",)
         ),
         migrations.CreateModel(
-            name="DoNothing",
-            fields=[],
-            options={"proxy": True},
-            bases=("scripts.defaultscript",),
+            name="DoNothing", fields=[], options={"proxy": True}, bases=("scripts.defaultscript",)
         ),
         migrations.CreateModel(
             name="CheckSessions",
@@ -34,10 +25,7 @@ class Migration(migrations.Migration):
             bases=("scripts.defaultscript",),
         ),
         migrations.CreateModel(
-            name="Store",
-            fields=[],
-            options={"proxy": True},
-            bases=("scripts.defaultscript",),
+            name="Store", fields=[], options={"proxy": True}, bases=("scripts.defaultscript",)
         ),
         migrations.CreateModel(
             name="ValidateChannelHandler",

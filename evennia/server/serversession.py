@@ -140,11 +140,7 @@ class NAttributeHandler(object):
 
         """
         if return_tuples:
-            return [
-                (key, value)
-                for (key, value) in self._store.items()
-                if not key.startswith("_")
-            ]
+            return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
         return [key for key in self._store if not key.startswith("_")]
 
 
@@ -175,9 +171,7 @@ class ServerSession(Session):
         return [path.strip() for path in self.cmdset_storage_string.split(",")]
 
     def __cmdset_storage_set(self, value):
-        self.cmdset_storage_string = ",".join(
-            str(val).strip() for val in make_iter(value)
-        )
+        self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
 
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
 
@@ -514,9 +508,7 @@ class ServerSession(Session):
         try:
             return self._ndb_holder
         except AttributeError:
-            self._ndb_holder = NDbHolder(
-                self, "nattrhandler", manager_name="nattributes"
-            )
+            self._ndb_holder = NDbHolder(self, "nattrhandler", manager_name="nattributes")
             return self._ndb_holder
 
     # @ndb.setter

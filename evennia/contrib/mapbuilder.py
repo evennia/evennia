@@ -237,19 +237,11 @@ def example2_build_verticle_exit(x, y, **kwargs):
 
     # create exits in the rooms
     create_object(
-        exits.Exit,
-        key="south",
-        aliases=["s"],
-        location=north_room,
-        destination=south_room,
+        exits.Exit, key="south", aliases=["s"], location=north_room, destination=south_room
     )
 
     create_object(
-        exits.Exit,
-        key="north",
-        aliases=["n"],
-        location=south_room,
-        destination=north_room,
+        exits.Exit, key="north", aliases=["n"], location=south_room, destination=north_room
     )
 
     kwargs["caller"].msg("Connected: " + north_room.key + " & " + south_room.key)
@@ -264,13 +256,9 @@ def example2_build_horizontal_exit(x, y, **kwargs):
     west_room = kwargs["room_dict"][(x - 1, y)]
     east_room = kwargs["room_dict"][(x + 1, y)]
 
-    create_object(
-        exits.Exit, key="east", aliases=["e"], location=west_room, destination=east_room
-    )
+    create_object(exits.Exit, key="east", aliases=["e"], location=west_room, destination=east_room)
 
-    create_object(
-        exits.Exit, key="west", aliases=["w"], location=east_room, destination=west_room
-    )
+    create_object(exits.Exit, key="west", aliases=["w"], location=east_room, destination=west_room)
 
     kwargs["caller"].msg("Connected: " + west_room.key + " & " + east_room.key)
 
@@ -340,11 +328,7 @@ def build_map(caller, game_map, legend, iterations=1, build_exits=True):
                     # obs - we must use == for strings
                     if game_map[y][x] == key:
                         room = legend[key](
-                            x,
-                            y,
-                            iteration=iteration,
-                            room_dict=room_dict,
-                            caller=caller,
+                            x, y, iteration=iteration, room_dict=room_dict, caller=caller
                         )
                         if iteration == 0:
                             room_dict[(x, y)] = room
@@ -448,10 +432,7 @@ class CmdMapBuilder(COMMAND_DEFAULT_CLASS):
 
         # Check if arguments passed.
         if not self.args or (len(args) != 2):
-            caller.msg(
-                "Usage: @mapbuilder <path.to.module.VARNAME> "
-                "<path.to.module.MAP_LEGEND>"
-            )
+            caller.msg("Usage: @mapbuilder <path.to.module.VARNAME> " "<path.to.module.MAP_LEGEND>")
             return
 
         # Set up base variables.

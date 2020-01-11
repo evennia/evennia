@@ -18,9 +18,7 @@ MSSP_VAR = b"\x01"
 MSSP_VAL = b"\x02"
 
 # try to get the customized mssp info, if it exists.
-MSSPTable_CUSTOM = utils.variable_from_module(
-    settings.MSSP_META_MODULE, "MSSPTable", default={}
-)
+MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
 
 
 class Mssp(object):
@@ -121,18 +119,10 @@ class Mssp(object):
             if utils.is_iter(value):
                 for partval in value:
                     varlist += (
-                        MSSP_VAR
-                        + bytes(variable, "utf-8")
-                        + MSSP_VAL
-                        + bytes(partval, "utf-8")
+                        MSSP_VAR + bytes(variable, "utf-8") + MSSP_VAL + bytes(partval, "utf-8")
                     )
             else:
-                varlist += (
-                    MSSP_VAR
-                    + bytes(variable, "utf-8")
-                    + MSSP_VAL
-                    + bytes(value, "utf-8")
-                )
+                varlist += MSSP_VAR + bytes(variable, "utf-8") + MSSP_VAL + bytes(value, "utf-8")
 
         # send to crawler by subnegotiation
         self.protocol.requestNegotiation(MSSP, varlist)

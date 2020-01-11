@@ -136,9 +136,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         self.is_validator = validator
         self.autovalid = autovalid
         if self.handler is None:
-            caller.msg(
-                "The event handler is not running, can't " "access the event system."
-            )
+            caller.msg("The event handler is not running, can't " "access the event system.")
             return
 
         # Before the equal sign, there is an object name or nothing
@@ -166,9 +164,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         elif switch in ["tasks", "task"]:
             self.list_tasks()
         else:
-            caller.msg(
-                "Mutually exclusive or invalid switches were " "used, cannot proceed."
-            )
+            caller.msg("Mutually exclusive or invalid switches were " "used, cannot proceed.")
 
     def list_callbacks(self):
         """Display the list of callbacks connected to the object."""
@@ -182,9 +178,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
             # Check that the callback name can be found in this object
             created = callbacks.get(callback_name)
             if created is None:
-                self.msg(
-                    "No callback {} has been set on {}.".format(callback_name, obj)
-                )
+                self.msg("No callback {} has been set on {}.".format(callback_name, obj))
                 return
 
             if parameters:
@@ -208,15 +202,11 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
                 updated_by = updated_by.key if updated_by else "|gUnknown|n"
                 created_on = callback.get("created_on")
                 created_on = (
-                    created_on.strftime("%Y-%m-%d %H:%M:%S")
-                    if created_on
-                    else "|gUnknown|n"
+                    created_on.strftime("%Y-%m-%d %H:%M:%S") if created_on else "|gUnknown|n"
                 )
                 updated_on = callback.get("updated_on")
                 updated_on = (
-                    updated_on.strftime("%Y-%m-%d %H:%M:%S")
-                    if updated_on
-                    else "|gUnknown|n"
+                    updated_on.strftime("%Y-%m-%d %H:%M:%S") if updated_on else "|gUnknown|n"
                 )
                 msg = "Callback {} {} of {}:".format(callback_name, parameters, obj)
                 msg += "\nCreated by {} on {}.".format(author, created_on)
@@ -264,17 +254,13 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
             self.msg(str(table))
         else:
             names = list(set(list(types.keys()) + list(callbacks.keys())))
-            table = EvTable(
-                "Callback name", "Number", "Description", valign="t", width=78
-            )
+            table = EvTable("Callback name", "Number", "Description", valign="t", width=78)
             table.reformat_column(0, width=20)
             table.reformat_column(1, width=10, align="r")
             table.reformat_column(2, width=48)
             for name in sorted(names):
                 number = len(callbacks.get(name, []))
-                lines = sum(
-                    len(e["code"].splitlines()) for e in callbacks.get(name, [])
-                )
+                lines = sum(len(e["code"].splitlines()) for e in callbacks.get(name, []))
                 no = "{} ({})".format(number, lines)
                 description = types.get(name, (None, "Chained event."))[1]
                 description = description.strip("\n").splitlines()[0]
@@ -335,9 +321,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
 
         # Check that the callback exists
         if callback_name not in callbacks:
-            self.msg(
-                "The callback name {} can't be found in {}.".format(callback_name, obj)
-            )
+            self.msg("The callback name {} can't be found in {}.".format(callback_name, obj))
             return
 
         # If there's only one callback, just edit it
@@ -409,9 +393,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
 
         # Check that the callback exists
         if callback_name not in callbacks:
-            self.msg(
-                "The callback name {} can't be found in {}.".format(callback_name, obj)
-            )
+            self.msg("The callback name {} can't be found in {}.".format(callback_name, obj))
             return
 
         # If there's only one callback, just delete it
@@ -450,11 +432,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
 
         # Delete the callback
         self.handler.del_callback(obj, callback_name, number)
-        self.msg(
-            "The callback {}[{}] of {} was deleted.".format(
-                callback_name, number + 1, obj
-            )
-        )
+        self.msg("The callback {}[{}] of {} was deleted.".format(callback_name, number + 1, obj))
 
     def accept_callback(self):
         """Accept a callback."""
@@ -464,9 +442,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
 
         # If no object, display the list of callbacks to be checked
         if obj is None:
-            table = EvTable(
-                "ID", "Type", "Object", "Name", "Updated by", "On", width=78
-            )
+            table = EvTable("ID", "Type", "Object", "Name", "Updated by", "On", width=78)
             table.reformat_column(0, align="r")
             now = datetime.now()
             for obj, name, number in self.handler.db.to_valid:
@@ -508,9 +484,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
 
         # Check that the callback exists
         if callback_name not in callbacks:
-            self.msg(
-                "The callback name {} can't be found in {}.".format(callback_name, obj)
-            )
+            self.msg("The callback name {} can't be found in {}.".format(callback_name, obj))
             return
 
         if not parameters:
@@ -525,9 +499,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
             callback = callbacks[callback_name][number]
         except (ValueError, AssertionError, IndexError):
             self.msg(
-                "The callback {} {} cannot be found in {}.".format(
-                    callback_name, parameters, obj
-                )
+                "The callback {} {} cannot be found in {}.".format(callback_name, parameters, obj)
             )
             return
 
@@ -537,9 +509,7 @@ class CmdCallback(COMMAND_DEFAULT_CLASS):
         else:
             self.handler.accept_callback(obj, callback_name, number)
             self.msg(
-                "The callback {} {} of {} has been accepted.".format(
-                    callback_name, parameters, obj
-                )
+                "The callback {} {} of {} has been accepted.".format(callback_name, parameters, obj)
             )
 
     def list_tasks(self):
@@ -587,17 +557,10 @@ def _ev_save(caller, buf):
         return False
 
     if (callback["obj"], callback["name"], callback["number"]) in handler.db.locked:
-        handler.db.locked.remove(
-            (callback["obj"], callback["name"], callback["number"])
-        )
+        handler.db.locked.remove((callback["obj"], callback["name"], callback["number"]))
 
     handler.edit_callback(
-        callback["obj"],
-        callback["name"],
-        callback["number"],
-        buf,
-        caller,
-        valid=autovalid,
+        callback["obj"], callback["name"], callback["number"], buf, caller, valid=autovalid
     )
     return True
 
@@ -614,9 +577,7 @@ def _ev_quit(caller):
         return False
 
     if (callback["obj"], callback["name"], callback["number"]) in handler.db.locked:
-        handler.db.locked.remove(
-            (callback["obj"], callback["name"], callback["number"])
-        )
+        handler.db.locked.remove((callback["obj"], callback["name"], callback["number"]))
 
     del caller.db._callback
     caller.msg("Exited the code editor.")

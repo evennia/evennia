@@ -7,12 +7,7 @@ from twisted.internet.defer import Deferred
 from django.conf import settings
 from django.test import TestCase
 from mock import Mock, patch
-from evennia.objects.objects import (
-    DefaultObject,
-    DefaultCharacter,
-    DefaultRoom,
-    DefaultExit,
-)
+from evennia.objects.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.server.serversession import ServerSession

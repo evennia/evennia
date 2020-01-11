@@ -218,9 +218,7 @@ class LockHandler(object):
                 continue
             lock_funcs = []
             try:
-                access_type, rhs = (
-                    part.strip() for part in raw_lockstring.split(":", 1)
-                )
+                access_type, rhs = (part.strip() for part in raw_lockstring.split(":", 1))
             except ValueError:
                 logger.log_trace()
                 return locks
@@ -232,21 +230,13 @@ class LockHandler(object):
                 evalstring = re.sub(r"\b%s\b" % pattern, pattern.lower(), evalstring)
             nfuncs = len(funclist)
             for funcstring in funclist:
-                funcname, rest = (
-                    part.strip().strip(")") for part in funcstring.split("(", 1)
-                )
+                funcname, rest = (part.strip().strip(")") for part in funcstring.split("(", 1))
                 func = _LOCKFUNCS.get(funcname, None)
                 if not callable(func):
-                    elist.append(
-                        _("Lock: lock-function '%s' is not available.") % funcstring
-                    )
+                    elist.append(_("Lock: lock-function '%s' is not available.") % funcstring)
                     continue
-                args = list(
-                    arg.strip() for arg in rest.split(",") if arg and "=" not in arg
-                )
-                kwargs = dict(
-                    [arg.split("=", 1) for arg in rest.split(",") if arg and "=" in arg]
-                )
+                args = list(arg.strip() for arg in rest.split(",") if arg and "=" not in arg)
+                kwargs = dict([arg.split("=", 1) for arg in rest.split(",") if arg and "=" in arg])
                 lock_funcs.append((func, args, kwargs))
                 evalstring = evalstring.replace(funcstring, "%s")
             if len(lock_funcs) < nfuncs:
@@ -256,9 +246,7 @@ class LockHandler(object):
                 evalstring = " ".join(_RE_OK.findall(evalstring))
                 eval(evalstring % tuple(True for func in funclist), {}, {})
             except Exception:
-                elist.append(
-                    _("Lock: definition '%s' has syntax errors.") % raw_lockstring
-                )
+                elist.append(_("Lock: definition '%s' has syntax errors.") % raw_lockstring)
                 continue
             if access_type in locks:
                 duplicates += 1
@@ -338,9 +326,7 @@ class LockHandler(object):
         # sanity checks
         for lockdef in lockdefs:
             if ":" not in lockdef:
-                err = _("Lock: '{lockdef}' contains no colon (:).").format(
-                    lockdef=lockdef
-                )
+                err = _("Lock: '{lockdef}' contains no colon (:).").format(lockdef=lockdef)
                 if validate_only:
                     return False, err
                 else:
@@ -349,8 +335,7 @@ class LockHandler(object):
             access_type, rhs = [part.strip() for part in lockdef.split(":", 1)]
             if not access_type:
                 err = _(
-                    "Lock: '{lockdef}' has no access_type "
-                    "(left-side of colon is empty)."
+                    "Lock: '{lockdef}' has no access_type " "(left-side of colon is empty)."
                 ).format(lockdef=lockdef)
                 if validate_only:
                     return False, err
@@ -358,18 +343,14 @@ class LockHandler(object):
                     self._log_error(err)
                     return False
             if rhs.count("(") != rhs.count(")"):
-                err = _("Lock: '{lockdef}' has mismatched parentheses.").format(
-                    lockdef=lockdef
-                )
+                err = _("Lock: '{lockdef}' has mismatched parentheses.").format(lockdef=lockdef)
                 if validate_only:
                     return False, err
                 else:
                     self._log_error(err)
                     return False
             if not _RE_FUNCS.findall(rhs):
-                err = _("Lock: '{lockdef}' has no valid lock functions.").format(
-                    lockdef=lockdef
-                )
+                err = _("Lock: '{lockdef}' has no valid lock functions.").format(lockdef=lockdef)
                 if validate_only:
                     return False, err
                 else:
@@ -511,9 +492,7 @@ class LockHandler(object):
             )
             self.add(lockstring)
 
-    def check(
-        self, accessing_obj, access_type, default=False, no_superuser_bypass=False
-    ):
+    def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
         """
         Checks a lock of the correct type by passing execution off to
         the lock function(s).
@@ -561,8 +540,7 @@ class LockHandler(object):
                 or (
                     hasattr(accessing_obj, "get_account")
                     and (
-                        not accessing_obj.get_account()
-                        or accessing_obj.get_account().is_superuser
+                        not accessing_obj.get_account() or accessing_obj.get_account().is_superuser
                     )
                 )
             ):
@@ -574,8 +552,7 @@ class LockHandler(object):
             evalstring, func_tup, raw_string = self.locks[access_type]
             # execute all lock funcs in the correct order, producing a tuple of True/False results.
             true_false = tuple(
-                bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2]))
-                for tup in func_tup
+                bool(tup[0](accessing_obj, self.obj, *tup[1], **tup[2])) for tup in func_tup
             )
             # the True/False tuple goes into evalstring, which combines them
             # with AND/OR/NOT in order to get the final result.
@@ -594,18 +571,11 @@ class LockHandler(object):
 
         """
         evalstring, func_tup, raw_string = locks[access_type]
-        true_false = tuple(
-            tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup
-        )
+        true_false = tuple(tup[0](accessing_obj, self.obj, *tup[1], **tup[2]) for tup in func_tup)
         return eval(evalstring % true_false)
 
     def check_lockstring(
-        self,
-        accessing_obj,
-        lockstring,
-        no_superuser_bypass=False,
-        default=False,
-        access_type=None,
+        self, accessing_obj, lockstring, no_superuser_bypass=False, default=False, access_type=None
     ):
         """
         Do a direct check against a lockstring ('atype:func()..'),
@@ -644,8 +614,7 @@ class LockHandler(object):
                 or (
                     hasattr(accessing_obj, "get_account")
                     and (
-                        not accessing_obj.get_account()
-                        or accessing_obj.get_account().is_superuser
+                        not accessing_obj.get_account() or accessing_obj.get_account().is_superuser
                     )
                 )
             ):
@@ -664,8 +633,7 @@ class LockHandler(object):
             # if no access types was given and multiple locks were
             # embedded in the lockstring we assume all must be true
             return all(
-                self._eval_access_type(accessing_obj, locks, access_type)
-                for access_type in locks
+                self._eval_access_type(accessing_obj, locks, access_type) for access_type in locks
             )
 
 
@@ -679,11 +647,7 @@ class _ObjDummy:
 
 
 def check_lockstring(
-    accessing_obj,
-    lockstring,
-    no_superuser_bypass=False,
-    default=False,
-    access_type=None,
+    accessing_obj, lockstring, no_superuser_bypass=False, default=False, access_type=None
 ):
     """
     Do a direct check against a lockstring ('atype:func()..'),
@@ -774,10 +738,7 @@ def _test():
 
     # obj1.locks.add("edit:attr(test)")
 
-    print(
-        "comparing obj2.permissions (%s) vs obj1.locks (%s)"
-        % (obj2.permissions, obj1.locks)
-    )
+    print("comparing obj2.permissions (%s) vs obj1.locks (%s)" % (obj2.permissions, obj1.locks))
     print(obj1.locks.check(obj2, "owner"))
     print(obj1.locks.check(obj2, "edit"))
     print(obj1.locks.check(obj2, "examine"))

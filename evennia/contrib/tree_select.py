@@ -422,10 +422,7 @@ def optlist_to_menuoptions(treestr, optlist, index, mark_category, go_back):
         gobackitem = {
             "key": ["<< Go Back", "go back", "back"],
             "desc": "Return to the previous menu.",
-            "goto": [
-                "menunode_treeselect",
-                {"newindex": go_up_one_category(treestr, index)},
-            ],
+            "goto": ["menunode_treeselect", {"newindex": go_up_one_category(treestr, index)}],
         }
         menuoptions.append(gobackitem)
     return menuoptions
@@ -464,9 +461,7 @@ def menunode_treeselect(caller, raw_string, **kwargs):
 
     # Otherwise, convert optlist to a list of menu options.
     else:
-        options = optlist_to_menuoptions(
-            treestr, optlist, index, mark_category, go_back
-        )
+        options = optlist_to_menuoptions(treestr, optlist, index, mark_category, go_back)
         if index == None:
             # Use start_text for the menu text on the top level
             text = start_text
@@ -530,10 +525,7 @@ class CmdNameColor(Command):
     def func(self):
         # This is all you have to do to initialize a menu!
         init_tree_selection(
-            NAMECOLOR_MENU,
-            self.caller,
-            change_name_color,
-            start_text="Name color options:",
+            NAMECOLOR_MENU, self.caller, change_name_color, start_text="Name color options:"
         )
 
 
@@ -581,7 +573,5 @@ def change_name_color(caller, treestr, index, selection):
         caller.msg("Name color removed.")
     elif selection in colordict:
         newcolor = colordict[selection]  # Retrieve color code based on menu selection
-        caller.key = (
-            newcolor + caller.db.uncolored_name + "|n"
-        )  # Add color code to caller's name
+        caller.key = newcolor + caller.db.uncolored_name + "|n"  # Add color code to caller's name
         caller.msg(newcolor + ("Name color changed to %s!" % selection) + "|n")

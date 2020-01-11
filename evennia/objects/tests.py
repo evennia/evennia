@@ -41,9 +41,7 @@ class DefaultObjectTest(EvenniaTest):
 
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
-        obj, errors = DefaultRoom.create(
-            "alley", self.account, description=description, ip=self.ip
-        )
+        obj, errors = DefaultRoom.create("alley", self.account, description=description, ip=self.ip)
         self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
@@ -52,12 +50,7 @@ class DefaultObjectTest(EvenniaTest):
     def test_exit_create(self):
         description = "The steaming depths of the dumpster, ripe with refuse in various states of decomposition."
         obj, errors = DefaultExit.create(
-            "in",
-            self.account,
-            self.room1,
-            self.room2,
-            description=description,
-            ip=self.ip,
+            "in", self.account, self.room1, self.room2, description=description, ip=self.ip
         )
         self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
@@ -108,9 +101,7 @@ class TestObjectManager(EvenniaTest):
         )
         self.assertFalse(query)
         query = ObjectDB.objects.get_objs_with_key_and_typeclass(
-            "Char",
-            "evennia.objects.objects.DefaultCharacter",
-            candidates=[self.char1, self.char2],
+            "Char", "evennia.objects.objects.DefaultCharacter", candidates=[self.char1, self.char2]
         )
         self.assertEqual(list(query), [self.char1])
 
@@ -118,13 +109,9 @@ class TestObjectManager(EvenniaTest):
         self.obj1.db.testattr = "testval1"
         query = ObjectDB.objects.get_objs_with_attr("testattr")
         self.assertEqual(list(query), [self.obj1])
-        query = ObjectDB.objects.get_objs_with_attr(
-            "testattr", candidates=[self.char1, self.obj1]
-        )
+        query = ObjectDB.objects.get_objs_with_attr("testattr", candidates=[self.char1, self.obj1])
         self.assertEqual(list(query), [self.obj1])
-        query = ObjectDB.objects.get_objs_with_attr(
-            "NotFound", candidates=[self.char1, self.obj1]
-        )
+        query = ObjectDB.objects.get_objs_with_attr("NotFound", candidates=[self.char1, self.obj1])
         self.assertFalse(query)
 
     def test_copy_object(self):
@@ -148,9 +135,5 @@ class TestObjectManager(EvenniaTest):
 
         # Make sure each of the attributes were replicated
         self.assertEqual(obj2.attributes.get(key="phrase"), "xyzzy")
-        self.assertEqual(
-            self.obj1.attributes.get(key="phrase", category="adventure"), "plugh"
-        )
-        self.assertEqual(
-            obj2.attributes.get(key="phrase", category="adventure"), "plugh"
-        )
+        self.assertEqual(self.obj1.attributes.get(key="phrase", category="adventure"), "plugh")
+        self.assertEqual(obj2.attributes.get(key="phrase", category="adventure"), "plugh")

@@ -64,12 +64,7 @@ class EvscaperoomObject(DefaultObject):
 
     # this mapping allows for prettier descriptions of our current
     # position
-    position_prep_map = {
-        "sit": "sitting",
-        "kneel": "kneeling",
-        "lie": "lying",
-        "climb": "standing",
-    }
+    position_prep_map = {"sit": "sitting", "kneel": "kneeling", "lie": "lying", "climb": "standing"}
 
     def at_object_creation(self):
         """
@@ -166,9 +161,7 @@ class EvscaperoomObject(DefaultObject):
         you = caller.key if caller else "they"
         first_person, third_person = parse_for_perspectives(string, you=you)
         for char in self.room.get_all_characters():
-            options = char.attributes.get(
-                "options", category=self.room.tagcategory, default={}
-            )
+            options = char.attributes.get("options", category=self.room.tagcategory, default={})
             style = options.get("things_style", 2)
             if char == caller:
                 if not skip_caller:
@@ -185,9 +178,7 @@ class EvscaperoomObject(DefaultObject):
         """
         # we must clean away markers
         first_person, _ = parse_for_perspectives(string)
-        options = caller.attributes.get(
-            "options", category=self.room.tagcategory, default={}
-        )
+        options = caller.attributes.get("options", category=self.room.tagcategory, default={})
         style = options.get("things_style", 2)
         txt = parse_for_things(first_person, things_style=style)
         caller.msg((txt, {"type": client_type}))
@@ -285,9 +276,7 @@ class EvscaperoomObject(DefaultObject):
 
         """
         args = re.sub(
-            r"|".join(r"^{}\s".format(prep) for prep in self.action_prepositions),
-            "",
-            args,
+            r"|".join(r"^{}\s".format(prep) for prep in self.action_prepositions), "", args
         )
         return args
 
@@ -318,8 +307,7 @@ class EvscaperoomObject(DefaultObject):
             helpstr = f"It looks like {self.key} may be " "suitable to {callsigns}."
         else:
             helpstr = (
-                f"At first glance, it looks like {self.key} might be "
-                "suitable to {callsigns}."
+                f"At first glance, it looks like {self.key} might be " "suitable to {callsigns}."
             )
         return command_signatures, helpstr
 
@@ -342,14 +330,10 @@ class EvscaperoomObject(DefaultObject):
         # custom-created signatures. We don't sort these
         command_signatures, helpstr = self.get_cmd_signatures()
 
-        callsigns = list_to_string(
-            ["*" + sig for sig in command_signatures], endsep="or"
-        )
+        callsigns = list_to_string(["*" + sig for sig in command_signatures], endsep="or")
 
         # parse for *thing markers (use these as items)
-        options = caller.attributes.get(
-            "options", category=self.room.tagcategory, default={}
-        )
+        options = caller.attributes.get("options", category=self.room.tagcategory, default={})
         style = options.get("things_style", 2)
 
         helpstr = helpstr.format(callsigns=callsigns)
@@ -537,11 +521,7 @@ class IndexReadable(Readable):
     """
 
     # keys should be lower-key
-    index = {
-        "page1": "This is page1",
-        "page2": "This is page2",
-        "page two": "page2",
-    }  # alias
+    index = {"page1": "This is page1", "page2": "This is page2", "page two": "page2"}  # alias
 
     def at_focus_read(self, caller, **kwargs):
 
@@ -820,8 +800,7 @@ class Combinable(BaseApplicable):
         new_obj = create_evscaperoom_object(**create_dict)
         if new_obj and self.destroy_components:
             self.msg_char(
-                caller,
-                f"You combine *{self.key} with {other_obj.key} to make {new_obj.key}!",
+                caller, f"You combine *{self.key} with {other_obj.key} to make {new_obj.key}!"
             )
             other_obj.delete()
             self.delete()
@@ -1041,8 +1020,7 @@ class BasePositionable(EvscaperoomObject):
 
     def at_again_position(self, caller, position):
         self.msg_char(
-            caller,
-            f"But you are already {self.position_prep_map[position]} on *{self.key}?",
+            caller, f"But you are already {self.position_prep_map[position]} on *{self.key}?"
         )
 
     def at_position(self, caller, position):

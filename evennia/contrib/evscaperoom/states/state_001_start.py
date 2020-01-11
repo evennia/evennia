@@ -117,9 +117,7 @@ class HelpButton(objects.EvscaperoomObject):
             self.msg_char(caller, "There are no more hints to be had.")
         else:
             self.msg_room(
-                caller,
-                f"{caller.key} pushes *button and gets the "
-                f'hint:\n "{hint.strip()}"|n',
+                caller, f"{caller.key} pushes *button and gets the " f'hint:\n "{hint.strip()}"|n'
             )
 
 

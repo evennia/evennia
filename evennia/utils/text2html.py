@@ -68,9 +68,7 @@ class TextToHTMLparser(object):
         ("bgcolor-013", hilite + ANSI_BACK_MAGENTA),
         ("bgcolor-014", hilite + ANSI_BACK_CYAN),
         ("bgcolor-015", hilite + ANSI_BACK_WHITE),  # pure white
-    ] + [
-        ("bgcolor-%03i" % (i + 16), XTERM256_BG % ("%i" % (i + 16))) for i in range(240)
-    ]
+    ] + [("bgcolor-%03i" % (i + 16), XTERM256_BG % ("%i" % (i + 16))) for i in range(240)]
 
     # make sure to escape [
     # colorcodes = [(c, code.replace("[", r"\[")) for c, code in colorcodes]
@@ -85,9 +83,7 @@ class TextToHTMLparser(object):
 
     fgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[3[0-8].*?m)"
     bgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[4[0-8].*?m)"
-    bgfgstart = (
-        bgstart + r"(\s*)" + "((?:\033\[1m|\033\[22m){0,1}\033\[[3-4][0-8].*?m){0,1}"
-    )
+    bgfgstart = bgstart + r"(\s*)" + "((?:\033\[1m|\033\[22m){0,1}\033\[[3-4][0-8].*?m){0,1}"
 
     # extract color markers, tagging the start marker and the text marked
     re_fgs = re.compile(fgstart + "(.*?)(?=" + fgstop + ")")
@@ -95,21 +91,11 @@ class TextToHTMLparser(object):
     re_bgfg = re.compile(bgfgstart + "(.*?)(?=" + bgfgstop + ")")
 
     re_normal = re.compile(normal.replace("[", r"\["))
-    re_hilite = re.compile(
-        "(?:%s)(.*)(?=%s|%s)" % (hilite.replace("[", r"\["), fgstop, bgstop)
-    )
-    re_unhilite = re.compile(
-        "(?:%s)(.*)(?=%s|%s)" % (unhilite.replace("[", r"\["), fgstop, bgstop)
-    )
-    re_uline = re.compile(
-        "(?:%s)(.*?)(?=%s|%s)" % (underline.replace("[", r"\["), fgstop, bgstop)
-    )
-    re_blink = re.compile(
-        "(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop)
-    )
-    re_inverse = re.compile(
-        "(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop)
-    )
+    re_hilite = re.compile("(?:%s)(.*)(?=%s|%s)" % (hilite.replace("[", r"\["), fgstop, bgstop))
+    re_unhilite = re.compile("(?:%s)(.*)(?=%s|%s)" % (unhilite.replace("[", r"\["), fgstop, bgstop))
+    re_uline = re.compile("(?:%s)(.*?)(?=%s|%s)" % (underline.replace("[", r"\["), fgstop, bgstop))
+    re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
+    re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
     re_string = re.compile(
         r"(?P<htmlchars>[<&>])|(?P<firstspace>(?<=\S)  )|(?P<space> [ \t]+)|"
         r"(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)",
@@ -143,17 +129,11 @@ class TextToHTMLparser(object):
 
     def _sub_fg(self, colormatch):
         code, text = colormatch.groups()
-        return r"""<span class="%s">%s</span>""" % (
-            self.fg_colormap.get(code, "err"),
-            text,
-        )
+        return r"""<span class="%s">%s</span>""" % (self.fg_colormap.get(code, "err"), text)
 
     def _sub_bg(self, colormatch):
         code, text = colormatch.groups()
-        return r"""<span class="%s">%s</span>""" % (
-            self.bg_colormap.get(code, "err"),
-            text,
-        )
+        return r"""<span class="%s">%s</span>""" % (self.bg_colormap.get(code, "err"), text)
 
     def re_color(self, text):
         """
@@ -186,9 +166,7 @@ class TextToHTMLparser(object):
 
         """
         text = self.re_hilite.sub(r"<strong>\1</strong>", text)
-        return self.re_unhilite.sub(
-            r"\1", text
-        )  # strip unhilite - there is no equivalent in css.
+        return self.re_unhilite.sub(r"\1", text)  # strip unhilite - there is no equivalent in css.
 
     def re_underline(self, text):
         """

@@ -35,8 +35,7 @@ class EvenniaUsernameAvailabilityValidator:
         exists = AccountDB.objects.filter(username__iexact=username).exists()
         if exists:
             raise ValidationError(
-                _("Sorry, that username is already taken."),
-                code="evennia_username_taken",
+                _("Sorry, that username is already taken."), code="evennia_username_taken"
             )
 
 

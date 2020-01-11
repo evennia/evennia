@@ -418,9 +418,7 @@ class AjaxWebClientSession(session.Session):
         raw = options.get("raw", flags.get("RAW", False))
         xterm256 = options.get("xterm256", flags.get("XTERM256", True))
         useansi = options.get("ansi", flags.get("ANSI", True))
-        nocolor = options.get(
-            "nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi)
-        )
+        nocolor = options.get("nocolor", flags.get("NOCOLOR") or not (xterm256 or useansi))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
 

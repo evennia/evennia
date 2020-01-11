@@ -7,13 +7,7 @@ import time
 from collections import deque, namedtuple
 from twisted.internet import reactor
 from django.conf import settings
-from evennia.server.sessionhandler import (
-    SessionHandler,
-    PCONN,
-    PDISCONN,
-    PCONNSYNC,
-    PDISCONNALL,
-)
+from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
 
 # module import
@@ -256,9 +250,7 @@ class PortalSessionHandler(SessionHandler):
         path, clsname = protocol_path.rsplit(".", 1)
         cls = _MOD_IMPORT(path, clsname)
         if not cls:
-            raise RuntimeError(
-                "ServerConnect: protocol factory '%s' not found." % protocol_path
-            )
+            raise RuntimeError("ServerConnect: protocol factory '%s' not found." % protocol_path)
         protocol = cls(self, **config)
         protocol.start()
 

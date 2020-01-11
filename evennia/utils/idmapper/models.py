@@ -40,10 +40,7 @@ PROC_MODIFIED_OBJS = WeakValueDictionary()
 # subprocess or not)
 _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
-_IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and _SELF_PID not in (
-    _SERVER_PID,
-    _PORTAL_PID,
-)
+_IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and _SELF_PID not in (_SERVER_PID, _PORTAL_PID)
 _IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
 
 
@@ -111,9 +108,7 @@ class SharedMemoryModelBase(ModelBase):
         attrs["_is_deleted"] = False
 
         # set up the typeclass handling only if a variable _is_typeclass is set on the class
-        def create_wrapper(
-            cls, fieldname, wrappername, editable=True, foreignkey=False
-        ):
+        def create_wrapper(cls, fieldname, wrappername, editable=True, foreignkey=False):
             "Helper method to create property wrappers with unique names (must be in separate call)"
 
             def _get(cls, fname):
@@ -140,16 +135,13 @@ class SharedMemoryModelBase(ModelBase):
                 "Wrapper for setting database field"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist(
-                        "Cannot set %s to %s: Hosting object was already deleted!"
-                        % (fname, value)
+                        "Cannot set %s to %s: Hosting object was already deleted!" % (fname, value)
                     )
                 _SA(cls, fname, value)
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be set when first creating object)
                 update_fields = (
-                    [fname]
-                    if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None
-                    else None
+                    [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 )
                 _GA(cls, "save")(update_fields=update_fields)
 
@@ -157,8 +149,7 @@ class SharedMemoryModelBase(ModelBase):
                 "Setter only used on foreign key relations, allows setting with #dbref"
                 if _GA(cls, "_is_deleted"):
                     raise ObjectDoesNotExist(
-                        "Cannot set %s to %s: Hosting object was already deleted!"
-                        % (fname, value)
+                        "Cannot set %s to %s: Hosting object was already deleted!" % (fname, value)
                     )
                 if isinstance(value, (str, int)):
                     value = to_str(value)
@@ -178,9 +169,7 @@ class SharedMemoryModelBase(ModelBase):
                 # only use explicit update_fields in save if we actually have a
                 # primary key assigned already (won't be set when first creating object)
                 update_fields = (
-                    [fname]
-                    if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None
-                    else None
+                    [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 )
                 _GA(cls, "save")(update_fields=update_fields)
 
@@ -192,9 +181,7 @@ class SharedMemoryModelBase(ModelBase):
                 "Wrapper for clearing database field - sets it to None"
                 _SA(cls, fname, None)
                 update_fields = (
-                    [fname]
-                    if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None
-                    else None
+                    [fname] if _GA(cls, "_get_pk_val")(_GA(cls, "_meta")) is not None else None
                 )
                 _GA(cls, "save")(update_fields=update_fields)
 
@@ -224,15 +211,11 @@ class SharedMemoryModelBase(ModelBase):
                     return _set(cls, fieldname, val)
 
             def fdel(cls):
-                return (
-                    _del(cls, fieldname) if editable else _del_nonedit(cls, fieldname)
-                )
+                return _del(cls, fieldname) if editable else _del_nonedit(cls, fieldname)
 
             # set docstrings for auto-doc
             fget.__doc__ = "A wrapper for getting database field `%s`." % fieldname
-            fset.__doc__ = (
-                "A wrapper for setting (and saving) database field `%s`." % fieldname
-            )
+            fset.__doc__ = "A wrapper for setting (and saving) database field `%s`." % fieldname
             fdel.__doc__ = "A wrapper for deleting database field `%s`." % fieldname
             # assigning
             attrs[wrappername] = property(fget, fset, fdel)
@@ -249,17 +232,11 @@ class SharedMemoryModelBase(ModelBase):
             if fname.startswith("db_") and type(field).__name__ != "ManyToManyField"
         ):
             foreignkey = type(field).__name__ == "ForeignKey"
-            wrappername = (
-                "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
-            )
+            wrappername = "dbid" if fieldname == "id" else fieldname.replace("db_", "", 1)
             if wrappername not in attrs:
                 # makes sure not to overload manually created wrappers on the model
                 create_wrapper(
-                    cls,
-                    fieldname,
-                    wrappername,
-                    editable=field.editable,
-                    foreignkey=foreignkey,
+                    cls, fieldname, wrappername, editable=field.editable, foreignkey=foreignkey
                 )
 
         return super().__new__(cls, name, bases, attrs)
@@ -450,9 +427,7 @@ class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
         """
         global _MONITOR_HANDLER
         if not _MONITOR_HANDLER:
-            from evennia.scripts.monitorhandler import (
-                MONITOR_HANDLER as _MONITOR_HANDLER,
-            )
+            from evennia.scripts.monitorhandler import MONITOR_HANDLER as _MONITOR_HANDLER
 
         if _IS_SUBPROCESS:
             # we keep a store of objects modified in subprocesses so
@@ -490,8 +465,7 @@ class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
         if "update_fields" in kwargs and kwargs["update_fields"]:
             # get field objects from their names
             update_fields = (
-                self._meta.get_field(fieldname)
-                for fieldname in kwargs.get("update_fields")
+                self._meta.get_field(fieldname) for fieldname in kwargs.get("update_fields")
             )
         else:
             # meta.fields are already field objects; get them all
@@ -645,8 +619,7 @@ def conditional_flush(max_rmem, force=False):
         # too soon after last flush.
         logger.log_warn(
             "Warning: Idmapper flush called more than "
-            "once in %s min interval. Check memory usage."
-            % (AUTO_FLUSH_MIN_INTERVAL / 60.0)
+            "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL / 60.0)
         )
         return
 
@@ -658,8 +631,7 @@ def conditional_flush(max_rmem, force=False):
     Ncache_max = mem2cachesize(max_rmem)
     Ncache, _ = cache_size()
     actual_rmem = (
-        float(os.popen("ps -p %d -o %s | tail -1" % (os.getpid(), "rss")).read())
-        / 1000.0
+        float(os.popen("ps -p %d -o %s | tail -1" % (os.getpid(), "rss")).read()) / 1000.0
     )  # resident memory
 
     if Ncache >= Ncache_max and actual_rmem > max_rmem * 0.9:

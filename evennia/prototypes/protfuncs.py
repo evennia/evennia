@@ -300,9 +300,7 @@ def _obj_search(*args, **kwargs):
         if len(targets) > 1:
             raise ValueError(
                 "$obj: Query '{query}' gave {nmatches} matches. Limit your "
-                "query or use $objlist instead.".format(
-                    query=query, nmatches=len(targets)
-                )
+                "query or use $objlist instead.".format(query=query, nmatches=len(targets))
             )
         target = targets[0]
         if account:
@@ -334,9 +332,7 @@ def objlist(*args, **kwargs):
     Returns list with one or more Objects searched globally by key, alias or #dbref.
 
     """
-    return [
-        "#{}".format(obj.id) for obj in _obj_search(return_list=True, *args, **kwargs)
-    ]
+    return ["#{}".format(obj.id) for obj in _obj_search(return_list=True, *args, **kwargs)]
 
 
 def dbref(*args, **kwargs):

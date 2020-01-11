@@ -53,9 +53,9 @@ def _get_flat_menu_prototype(caller, refresh=False, validate=False):
         flat_prototype = caller.ndb._menutree.olc_flat_prototype
     if not flat_prototype:
         prot = _get_menu_prototype(caller)
-        caller.ndb._menutree.olc_flat_prototype = (
-            flat_prototype
-        ) = spawner.flatten_prototype(prot, validate=validate)
+        caller.ndb._menutree.olc_flat_prototype = flat_prototype = spawner.flatten_prototype(
+            prot, validate=validate
+        )
     return flat_prototype
 
 
@@ -110,9 +110,7 @@ def _format_option_value(prop, required=False, prototype=None, cropper=None):
     if not out and required:
         out = "|runset"
     if out:
-        return " ({}|n)".format(
-            cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH)
-        )
+        return " ({}|n)".format(cropper(out) if cropper else utils.crop(out, _MENU_CROP_WIDTH))
     return ""
 
 
@@ -155,9 +153,7 @@ def _set_property(caller, raw_string, **kwargs):
         except Exception as err:
             caller.msg(
                 "Could not set {prop} to {value} ({err})".format(
-                    prop=prop.replace("_", "-").capitalize(),
-                    value=raw_string,
-                    err=str(err),
+                    prop=prop.replace("_", "-").capitalize(), value=raw_string, err=str(err)
                 )
             )
             # this means we'll re-run the current node.
@@ -177,11 +173,7 @@ def _set_property(caller, raw_string, **kwargs):
     except Exception:
         repr_value = value
 
-    out = [
-        " Set {prop} to {value} ({typ}).".format(
-            prop=prop, value=repr_value, typ=type(value)
-        )
-    ]
+    out = [" Set {prop} to {value} ({typ}).".format(prop=prop, value=repr_value, typ=type(value))]
 
     if kwargs.get("test_parse", True):
         out.append(" Simulating prototype-func parsing ...")
@@ -190,9 +182,7 @@ def _set_property(caller, raw_string, **kwargs):
             out.append(" |yPython `literal_eval` warning: {}|n".format(err))
         if parsed_value != value:
             out.append(
-                " |g(Example-)value when parsed ({}):|n {}".format(
-                    type(parsed_value), parsed_value
-                )
+                " |g(Example-)value when parsed ({}):|n {}".format(type(parsed_value), parsed_value)
             )
         else:
             out.append(" |gNo change when parsed.")
@@ -209,9 +199,7 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W", search=False):
         options.append(
             {
                 "key": ("|wB|Wack", "b"),
-                "desc": "{color}({node})|n".format(
-                    color=color, node=prev_node.replace("_", "-")
-                ),
+                "desc": "{color}({node})|n".format(color=color, node=prev_node.replace("_", "-")),
                 "goto": "node_{}".format(prev_node),
             }
         )
@@ -219,9 +207,7 @@ def _wizard_options(curr_node, prev_node, next_node, color="|W", search=False):
         options.append(
             {
                 "key": ("|wF|Worward", "f"),
-                "desc": "{color}({node})|n".format(
-                    color=color, node=next_node.replace("_", "-")
-                ),
+                "desc": "{color}({node})|n".format(color=color, node=next_node.replace("_", "-")),
                 "goto": "node_{}".format(next_node),
             }
         )
@@ -278,16 +264,13 @@ def _validate_prototype(prototype):
 def _format_protfuncs():
     out = []
     sorted_funcs = [
-        (key, func)
-        for key, func in sorted(protlib.PROT_FUNCS.items(), key=lambda tup: tup[0])
+        (key, func) for key, func in sorted(protlib.PROT_FUNCS.items(), key=lambda tup: tup[0])
     ]
     for protfunc_name, protfunc in sorted_funcs:
         out.append(
             "- |c${name}|n - |W{docs}".format(
                 name=protfunc_name,
-                docs=utils.justify(
-                    protfunc.__doc__.strip(), align="l", indent=10
-                ).strip(),
+                docs=utils.justify(protfunc.__doc__.strip(), align="l", indent=10).strip(),
             )
         )
     return "\n       ".join(out)
@@ -296,15 +279,13 @@ def _format_protfuncs():
 def _format_lockfuncs():
     out = []
     sorted_funcs = [
-        (key, func)
-        for key, func in sorted(get_all_lockfuncs().items(), key=lambda tup: tup[0])
+        (key, func) for key, func in sorted(get_all_lockfuncs().items(), key=lambda tup: tup[0])
     ]
     for lockfunc_name, lockfunc in sorted_funcs:
         doc = (lockfunc.__doc__ or "").strip()
         out.append(
             "- |c${name}|n - |W{docs}".format(
-                name=lockfunc_name,
-                docs=utils.justify(doc, align="l", indent=10).strip(),
+                name=lockfunc_name, docs=utils.justify(doc, align="l", indent=10).strip()
             )
         )
     return "\n".join(out)
@@ -329,9 +310,7 @@ def _format_list_actions(*args, **kwargs):
     return prefix + " |W|||n ".join(actions)
 
 
-def _get_current_value(
-    caller, keyname, comparer=None, formatter=str, only_inherit=False
-):
+def _get_current_value(caller, keyname, comparer=None, formatter=str, only_inherit=False):
     """
     Return current value, marking if value comes from parent or set in this prototype.
 
@@ -494,8 +473,7 @@ def _search_object(caller):
     else:
         keyquery = Q(db_key__istartswith=searchstring)
         aliasquery = Q(
-            db_tags__db_key__istartswith=searchstring,
-            db_tags__db_tagtype__iexact="alias",
+            db_tags__db_key__istartswith=searchstring, db_tags__db_tagtype__iexact="alias"
         )
         results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
 
@@ -524,10 +502,7 @@ def _object_search_actions(caller, raw_inp, **kwargs):
     "All this does is to queue a search query"
     choices = kwargs["available_choices"]
     obj_entry, action = _default_parse(
-        raw_inp,
-        choices,
-        ("examine", "e"),
-        ("create prototype from object", "create", "c"),
+        raw_inp, choices, ("examine", "e"), ("create prototype from object", "create", "c")
     )
 
     raw_inp = raw_inp.strip()
@@ -589,9 +564,7 @@ def node_search_object(caller, raw_inp, **kwargs):
         )
         _set_actioninfo(
             caller,
-            _format_list_actions(
-                "examine", "create prototype from object", prefix="Actions: "
-            ),
+            _format_list_actions("examine", "create prototype from object", prefix="Actions: "),
         )
     else:
         text = "Enter search criterion."
@@ -609,9 +582,7 @@ def node_search_object(caller, raw_inp, **kwargs):
     text = (text, helptext)
 
     options = _wizard_options(None, prev_node, None)
-    options.append(
-        {"key": "_default", "goto": (_object_search_actions, {"back": prev_node})}
-    )
+    options.append({"key": "_default", "goto": (_object_search_actions, {"back": prev_node})})
 
     return text, options
 
@@ -679,9 +650,7 @@ def node_index(caller):
     options.append(
         {
             "desc": "|WPrototype-Key|n|n{}".format(
-                _format_option_value(
-                    "Key", "prototype_key" not in prototype, prototype, None
-                )
+                _format_option_value("Key", "prototype_key" not in prototype, prototype, None)
             ),
             "goto": "node_prototype_key",
         }
@@ -702,9 +671,7 @@ def node_index(caller):
         required = False
         cropper = None
         if key in ("Prototype_Parent", "Typeclass"):
-            required = ("prototype_parent" not in prototype) and (
-                "typeclass" not in prototype
-            )
+            required = ("prototype_parent" not in prototype) and ("typeclass" not in prototype)
         if key == "Typeclass":
             cropper = _path_cropper
         options.append(
@@ -730,26 +697,11 @@ def node_index(caller):
 
     options.extend(
         (
-            {
-                "key": ("|wV|Walidate prototype", "validate", "v"),
-                "goto": "node_validate_prototype",
-            },
-            {
-                "key": ("|wSA|Wve prototype", "save", "sa"),
-                "goto": "node_prototype_save",
-            },
-            {
-                "key": ("|wSP|Wawn prototype", "spawn", "sp"),
-                "goto": "node_prototype_spawn",
-            },
-            {
-                "key": ("|wLO|Wad prototype", "load", "lo"),
-                "goto": "node_prototype_load",
-            },
-            {
-                "key": ("|wSE|Warch objects|n", "search", "se"),
-                "goto": "node_search_object",
-            },
+            {"key": ("|wV|Walidate prototype", "validate", "v"), "goto": "node_validate_prototype"},
+            {"key": ("|wSA|Wve prototype", "save", "sa"), "goto": "node_prototype_save"},
+            {"key": ("|wSP|Wawn prototype", "spawn", "sp"), "goto": "node_prototype_spawn"},
+            {"key": ("|wLO|Wad prototype", "load", "lo"), "goto": "node_prototype_load"},
+            {"key": ("|wSE|Warch objects|n", "search", "se"), "goto": "node_search_object"},
         )
     )
 
@@ -827,11 +779,7 @@ def _prototype_parent_actions(caller, raw_inp, **kwargs):
     """Parse the default Convert prototype to a string representation for closer inspection"""
     choices = kwargs.get("available_choices", [])
     prototype_parent, action = _default_parse(
-        raw_inp,
-        choices,
-        ("examine", "e", "l"),
-        ("add", "a"),
-        ("remove", "r", "delete", "d"),
+        raw_inp, choices, ("examine", "e", "l"), ("add", "a"), ("remove", "r", "delete", "d")
     )
 
     if prototype_parent:
@@ -853,11 +801,7 @@ def _prototype_parent_actions(caller, raw_inp, **kwargs):
             if current_prot_parent:
                 current_prot_parent = utils.make_iter(current_prot_parent)
                 if prototype_parent_key in current_prot_parent:
-                    caller.msg(
-                        "Prototype_parent {} is already used.".format(
-                            prototype_parent_key
-                        )
-                    )
+                    caller.msg("Prototype_parent {} is already used.".format(prototype_parent_key))
                     return "node_prototype_parent"
                 else:
                     current_prot_parent.append(prototype_parent_key)
@@ -885,18 +829,12 @@ def _prototype_parent_actions(caller, raw_inp, **kwargs):
                 current_prot_parent = utils.make_iter(current_prot_parent)
                 try:
                     current_prot_parent.remove(prototype_parent_key)
-                    _set_prototype_value(
-                        caller, "prototype_parent", current_prot_parent
-                    )
+                    _set_prototype_value(caller, "prototype_parent", current_prot_parent)
                     _get_flat_menu_prototype(caller, refresh=True)
-                    caller.msg(
-                        "Removed prototype parent {}.".format(prototype_parent_key)
-                    )
+                    caller.msg("Removed prototype parent {}.".format(prototype_parent_key))
                 except ValueError:
                     caller.msg(
-                        "|rPrototype-parent {} could not be removed.".format(
-                            prototype_parent_key
-                        )
+                        "|rPrototype-parent {} could not be removed.".format(prototype_parent_key)
                     )
         return "node_prototype_parent"
 
@@ -912,8 +850,7 @@ def _prototype_parent_select(caller, new_parent):
             raise RuntimeError("Not found.")
     except RuntimeError as err:
         caller.msg(
-            "Selected prototype-parent {} "
-            "caused Error(s):\n|r{}|n".format(new_parent, err)
+            "Selected prototype-parent {} " "caused Error(s):\n|r{}|n".format(new_parent, err)
         )
     else:
         ret = _set_property(
@@ -964,9 +901,7 @@ def node_prototype_parent(caller):
                     )
                 )
             else:
-                ptexts.append(
-                    "Prototype parent |r{pkey} was not found.".format(pkey=pkey)
-                )
+                ptexts.append("Prototype parent |r{pkey} was not found.".format(pkey=pkey))
 
     if not ptexts:
         ptexts.append("[No prototype_parent set]")
@@ -975,9 +910,7 @@ def node_prototype_parent(caller):
 
     text = (text, helptext)
 
-    options = _wizard_options(
-        "prototype_parent", "prototype_key", "typeclass", color="|W"
-    )
+    options = _wizard_options("prototype_parent", "prototype_key", "typeclass", color="|W")
     options.append({"key": "_default", "goto": _prototype_parent_actions})
 
     return text, options
@@ -990,9 +923,7 @@ def _all_typeclasses(caller):
     """Get name of available typeclasses."""
     return list(
         name
-        for name in sorted(
-            utils.get_all_typeclasses("evennia.objects.models.ObjectDB").keys()
-        )
+        for name in sorted(utils.get_all_typeclasses("evennia.objects.models.ObjectDB").keys())
         if name != "evennia.objects.models.ObjectDB"
     )
 
@@ -1169,18 +1100,13 @@ def node_aliases(caller):
         current=_get_current_value(
             caller,
             "aliases",
-            comparer=lambda propval, flatval: [
-                al for al in flatval if al not in propval
-            ],
+            comparer=lambda propval, flatval: [al for al in flatval if al not in propval],
             formatter=lambda lst: "\n" + ", ".join(lst),
             only_inherit=True,
         )
     )
     _set_actioninfo(
-        caller,
-        _format_list_actions(
-            "remove", prefix="|w<text>|W to add new alias. Other action: "
-        ),
+        caller, _format_list_actions("remove", prefix="|w<text>|W to add new alias. Other action: ")
     )
 
     helptext = """
@@ -1309,10 +1235,7 @@ def _attr_select(caller, attrstr):
 
     attr_tup = _get_tup_by_attrname(caller, attrname)
     if attr_tup:
-        return (
-            "node_examine_entity",
-            {"text": _display_attribute(attr_tup), "back": "attrs"},
-        )
+        return ("node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"})
     else:
         caller.msg("Attribute not found.")
         return "node_attrs"
@@ -1337,10 +1260,7 @@ def _attrs_actions(caller, raw_inp, **kwargs):
 
     if action and attr_tup:
         if action == "examine":
-            return (
-                "node_examine_entity",
-                {"text": _display_attribute(attr_tup), "back": "attrs"},
-            )
+            return ("node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"})
         elif action == "remove":
             res = _add_attr(caller, attrname, delete=True)
             caller.msg(res)
@@ -1377,14 +1297,11 @@ def node_attrs(caller):
             caller,
             "attrs",
             comparer=_currentcmp,
-            formatter=lambda lst: "\n"
-            + "\n".join(_display_attribute(tup) for tup in lst),
+            formatter=lambda lst: "\n" + "\n".join(_display_attribute(tup) for tup in lst),
             only_inherit=True,
         )
     )
-    _set_actioninfo(
-        caller, _format_list_actions("examine", "remove", prefix="Actions: ")
-    )
+    _set_actioninfo(caller, _format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Most commonly, Attributes don't need any categories or locks. If using locks, the lock-types
@@ -1522,10 +1439,7 @@ def _tags_actions(caller, raw_inp, **kwargs):
 
     if tag_tup:
         if action == "examine":
-            return (
-                "node_examine_entity",
-                {"text": _display_tag(tag_tup), "back": "tags"},
-            )
+            return ("node_examine_entity", {"text": _display_tag(tag_tup), "back": "tags"})
         elif action == "remove":
             res = _add_tag(caller, tagname, delete=True)
             caller.msg(res)
@@ -1563,9 +1477,7 @@ def node_tags(caller):
             only_inherit=True,
         )
     )
-    _set_actioninfo(
-        caller, _format_list_actions("examine", "remove", prefix="Actions: ")
-    )
+    _set_actioninfo(caller, _format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Tags are shared between all objects with that tag. So the 'data' field (which is not
@@ -1598,10 +1510,7 @@ def _locks_display(caller, lock):
 
 
 def _lock_select(caller, lockstr):
-    return (
-        "node_examine_entity",
-        {"text": _locks_display(caller, lockstr), "back": "locks"},
-    )
+    return ("node_examine_entity", {"text": _locks_display(caller, lockstr), "back": "locks"})
 
 
 def _lock_add(caller, lock, **kwargs):
@@ -1643,10 +1552,7 @@ def _locks_actions(caller, raw_inp, **kwargs):
 
     if lock:
         if action == "examine":
-            return (
-                "node_examine_entity",
-                {"text": _locks_display(caller, lock), "back": "locks"},
-            )
+            return ("node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"})
         elif action == "remove":
             ret = _lock_add(caller, lock, delete=True)
             caller.msg(ret)
@@ -1662,9 +1568,7 @@ def node_locks(caller):
     def _currentcmp(propval, flatval):
         "match by locktype"
         cmp1 = [lck.split(":", 1)[0] for lck in propval.split(";")]
-        return ";".join(
-            lstr for lstr in flatval.split(";") if lstr.split(":", 1)[0] not in cmp1
-        )
+        return ";".join(lstr for lstr in flatval.split(";") if lstr.split(":", 1)[0] not in cmp1)
 
     text = """
         The |cLock string|n defines limitations for accessing various properties of the object once
@@ -1730,9 +1634,7 @@ def _display_perm(caller, permission, only_hierarchy=False):
         txt = "Permission (in hieararchy): {}".format(
             ", ".join(
                 [
-                    "|w[{}]|n".format(prm)
-                    if prm.lower() == perm_low
-                    else "|W{}|n".format(prm)
+                    "|w[{}]|n".format(prm) if prm.lower() == perm_low else "|W{}|n".format(prm)
                     for prm in hierarchy
                 ]
             )
@@ -1815,9 +1717,7 @@ def node_permissions(caller):
             only_inherit=True,
         )
     )
-    _set_actioninfo(
-        caller, _format_list_actions("examine", "remove", prefix="Actions: ")
-    )
+    _set_actioninfo(caller, _format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Any string can act as a permission as long as a lock is set to look for it. Depending on the
@@ -1872,10 +1772,7 @@ def node_location(caller):
     options.append(
         {
             "key": "_default",
-            "goto": (
-                _set_property,
-                dict(prop="location", processor=lambda s: s.strip()),
-            ),
+            "goto": (_set_property, dict(prop="location", processor=lambda s: s.strip())),
         }
     )
     return text, options
@@ -1952,10 +1849,7 @@ def node_destination(caller):
     options.append(
         {
             "key": "_default",
-            "goto": (
-                _set_property,
-                dict(prop="destination", processor=lambda s: s.strip()),
-            ),
+            "goto": (_set_property, dict(prop="destination", processor=lambda s: s.strip())),
         }
     )
     return text, options
@@ -2088,10 +1982,7 @@ def node_prototype_tags(caller):
         )
     )
     _set_actioninfo(
-        caller,
-        _format_list_actions(
-            "remove", prefix="|w<text>|n|W to add Tag. Other Action:|n "
-        ),
+        caller, _format_list_actions("remove", prefix="|w<text>|n|W to add Tag. Other Action:|n ")
     )
     helptext = """
         Using prototype-tags is a good way to organize and group large numbers of prototypes by
@@ -2138,9 +2029,7 @@ def _prototype_lock_add(caller, lock, **kwargs):
         try:
             ind = locks.index(lock)
             locks.pop(ind)
-            _set_prototype_value(
-                caller, "prototype_locks", ";".join(locks), parse=False
-            )
+            _set_prototype_value(caller, "prototype_locks", ";".join(locks), parse=False)
             ret = "Prototype-lock {} deleted.".format(lock)
         except ValueError:
             ret = "No Prototype-lock found to delete."
@@ -2165,10 +2054,7 @@ def _prototype_locks_actions(caller, raw_inp, **kwargs):
 
     if lock:
         if action == "examine":
-            return (
-                "node_examine_entity",
-                {"text": _locks_display(caller, lock), "back": "locks"},
-            )
+            return ("node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"})
         elif action == "remove":
             ret = _prototype_lock_add(caller, lock.strip(), delete=True)
             caller.msg(ret)
@@ -2204,9 +2090,7 @@ def node_prototype_locks(caller):
             only_inherit=True,
         )
     )
-    _set_actioninfo(
-        caller, _format_list_actions("examine", "remove", prefix="Actions: ")
-    )
+    _set_actioninfo(caller, _format_list_actions("examine", "remove", prefix="Actions: "))
 
     helptext = """
         Prototype locks can be used to vary access for different tiers of builders. It also allows
@@ -2231,9 +2115,7 @@ def _apply_diff(caller, **kwargs):
     objects = kwargs["objects"]
     back_node = kwargs["back_node"]
     diff = kwargs.get("diff", None)
-    num_changed = spawner.batch_update_objects_with_prototype(
-        prototype, diff=diff, objects=objects
-    )
+    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects)
     caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
     return back_node
 
@@ -2284,18 +2166,12 @@ def _format_diff_text_and_options(diff, **kwargs):
             rootname = args[0]
             old, new, instruction = diffpart
             if instruction == "KEEP":
-                texts.append(
-                    "   |gKEEP|W:|n {old}".format(old=_visualize(old, rootname))
-                )
+                texts.append("   |gKEEP|W:|n {old}".format(old=_visualize(old, rootname)))
             else:
                 vold = _visualize(old, rootname)
                 vnew = _visualize(new, rootname)
                 vsep = "" if len(vold) < 78 else "\n"
-                vinst = (
-                    "|rREMOVE|n"
-                    if instruction == "REMOVE"
-                    else "|y{}|n".format(instruction)
-                )
+                vinst = "|rREMOVE|n" if instruction == "REMOVE" else "|y{}|n".format(instruction)
                 texts.append(
                     "   |c[{num}] {inst}|W:|n {old} |W->|n{sep} {new}".format(
                         inst=vinst, num=optnum, old=vold, sep=vsep, new=vnew
@@ -2307,19 +2183,14 @@ def _format_diff_text_and_options(diff, **kwargs):
                         "desc": "|gKEEP|n ({}) {}".format(
                             rootname, _visualize(old, args[-1], get_name=True)
                         ),
-                        "goto": (
-                            _keep_diff,
-                            dict((("path", args), ("diff", diff)), **kwargs),
-                        ),
+                        "goto": (_keep_diff, dict((("path", args), ("diff", diff)), **kwargs)),
                     }
                 )
                 optnum += 1
         else:
             for key in sorted(list(diffpart.keys())):
                 subdiffpart = diffpart[key]
-                text, option, optnum = _parse_diffpart(
-                    subdiffpart, optnum, *(args + (key,))
-                )
+                text, option, optnum = _parse_diffpart(subdiffpart, optnum, *(args + (key,)))
                 texts.extend(text)
                 options.extend(option)
         return texts, options, optnum
@@ -2350,9 +2221,7 @@ def _format_diff_text_and_options(diff, **kwargs):
 def node_apply_diff(caller, **kwargs):
     """Offer options for updating objects"""
 
-    def _keep_option(
-        keyname, prototype, base_obj, obj_prototype, diff, objects, back_node
-    ):
+    def _keep_option(keyname, prototype, base_obj, obj_prototype, diff, objects, back_node):
         """helper returning an option dict"""
         options = {
             "desc": "Keep {} as-is".format(keyname),
@@ -2408,9 +2277,7 @@ def node_apply_diff(caller, **kwargs):
     if not custom_location:
         diff.pop("location", None)
 
-    txt, options = _format_diff_text_and_options(
-        diff, objects=update_objects, base_obj=base_obj
-    )
+    txt, options = _format_diff_text_and_options(diff, objects=update_objects, base_obj=base_obj)
 
     if options:
         text = [
@@ -2422,11 +2289,7 @@ def node_apply_diff(caller, **kwargs):
         options.extend(
             [
                 {
-                    "key": (
-                        "|wu|Wpdate {} objects".format(len(update_objects)),
-                        "update",
-                        "u",
-                    ),
+                    "key": ("|wu|Wpdate {} objects".format(len(update_objects)), "update", "u"),
                     "desc": "Update {} objects".format(len(update_objects)),
                     "goto": (
                         _apply_diff,
@@ -2443,11 +2306,7 @@ def node_apply_diff(caller, **kwargs):
                     "key": ("|wr|Weset changes", "reset", "r"),
                     "goto": (
                         "node_apply_diff",
-                        {
-                            "prototype": prototype,
-                            "back_node": back_node,
-                            "objects": update_objects,
-                        },
+                        {"prototype": prototype, "back_node": back_node, "objects": update_objects},
                     ),
                 },
             ]
@@ -2512,11 +2371,7 @@ def node_prototype_save(caller, **kwargs):
                         },
                     ),
                 },
-                {
-                    "key": ("[|wN|Wo|n]", "n"),
-                    "desc": "Return to index",
-                    "goto": "node_index",
-                },
+                {"key": ("[|wN|Wo|n]", "n"), "desc": "Return to index", "goto": "node_index"},
                 {"key": "_default", "goto": "node_index"},
             )
         else:
@@ -2561,11 +2416,7 @@ def node_prototype_save(caller, **kwargs):
             )
         )
     else:
-        text.append(
-            "\nDo you want to save the prototype as '{name}'?".format(
-                name=prototype_key
-            )
-        )
+        text.append("\nDo you want to save the prototype as '{name}'?".format(name=prototype_key))
 
     text = "\n".join(text)
 
@@ -2583,22 +2434,12 @@ def node_prototype_save(caller, **kwargs):
         {
             "key": ("[|wY|Wes|n]", "yes", "y"),
             "desc": "Save prototype",
-            "goto": (
-                "node_prototype_save",
-                {"accept_save": True, "prototype": prototype},
-            ),
+            "goto": ("node_prototype_save", {"accept_save": True, "prototype": prototype}),
         },
-        {
-            "key": ("|wN|Wo|n", "n"),
-            "desc": "Abort and return to Index",
-            "goto": "node_index",
-        },
+        {"key": ("|wN|Wo|n", "n"), "desc": "Abort and return to Index", "goto": "node_index"},
         {
             "key": "_default",
-            "goto": (
-                "node_prototype_save",
-                {"accept_save": True, "prototype": prototype},
-            ),
+            "goto": ("node_prototype_save", {"accept_save": True, "prototype": prototype}),
         },
     )
 
@@ -2642,9 +2483,7 @@ def node_prototype_spawn(caller, **kwargs):
         text = [text]
 
     if error:
-        text.append(
-            "\n|rPrototype validation failed. Correct the errors before spawning.|n"
-        )
+        text.append("\n|rPrototype validation failed. Correct the errors before spawning.|n")
         options = _wizard_options("prototype_spawn", "index", None)
         return "\n".join(text), options
 
@@ -2667,9 +2506,7 @@ def node_prototype_spawn(caller, **kwargs):
     if location:
         options.append(
             {
-                "desc": "Spawn in prototype's defined location ({loc})".format(
-                    loc=location
-                ),
+                "desc": "Spawn in prototype's defined location ({loc})".format(loc=location),
                 "goto": (
                     _spawn,
                     dict(prototype=prototype, location=location, custom_location=True),
@@ -2699,9 +2536,7 @@ def node_prototype_spawn(caller, **kwargs):
     if spawned_objects:
         options.append(
             {
-                "desc": "Update {num} existing objects with this prototype".format(
-                    num=nspawned
-                ),
+                "desc": "Update {num} existing objects with this prototype".format(num=nspawned),
                 "goto": (
                     "node_apply_diff",
                     {

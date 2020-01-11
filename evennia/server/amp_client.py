@@ -87,9 +87,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
 
         """
         logger.log_msg("Attempting to reconnect to Portal ...")
-        protocol.ReconnectingClientFactory.clientConnectionFailed(
-            self, connector, reason
-        )
+        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 
 class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
@@ -135,9 +133,9 @@ class AMPServerClientProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # print("server data_to_portal: {}, {}, {}".format(command, sessid, kwargs))
-        return self.callRemote(
-            command, packed_data=amp.dumps((sessid, kwargs))
-        ).addErrback(self.errback, command.key)
+        return self.callRemote(command, packed_data=amp.dumps((sessid, kwargs))).addErrback(
+            self.errback, command.key
+        )
 
     def send_MsgServer2Portal(self, session, **kwargs):
         """

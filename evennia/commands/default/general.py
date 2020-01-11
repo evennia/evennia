@@ -157,24 +157,14 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         switches = self.switches
-        nicktypes = [
-            switch
-            for switch in switches
-            if switch in ("object", "account", "inputline")
-        ]
+        nicktypes = [switch for switch in switches if switch in ("object", "account", "inputline")]
         specified_nicktype = bool(nicktypes)
         nicktypes = nicktypes if specified_nicktype else ["inputline"]
 
         nicklist = (
-            utils.make_iter(
-                caller.nicks.get(category="inputline", return_obj=True) or []
-            )
-            + utils.make_iter(
-                caller.nicks.get(category="object", return_obj=True) or []
-            )
-            + utils.make_iter(
-                caller.nicks.get(category="account", return_obj=True) or []
-            )
+            utils.make_iter(caller.nicks.get(category="inputline", return_obj=True) or [])
+            + utils.make_iter(caller.nicks.get(category="object", return_obj=True) or [])
+            + utils.make_iter(caller.nicks.get(category="account", return_obj=True) or [])
         )
 
         if "list" in switches or self.cmdstring in ("nicks",):
@@ -186,10 +176,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for inum, nickobj in enumerate(nicklist):
                     _, _, nickvalue, replacement = nickobj.value
                     table.add_row(
-                        str(inum + 1),
-                        nickobj.db_category,
-                        _cy(nickvalue),
-                        _cy(replacement),
+                        str(inum + 1), nickobj.db_category, _cy(nickvalue), _cy(replacement)
                     )
                 string = "|wDefined Nicks:|n\n%s" % table
             caller.msg(string)
@@ -220,9 +207,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 if not specified_nicktype:
                     nicktypes = ("object", "account", "inputline")
                 for nicktype in nicktypes:
-                    oldnicks.append(
-                        caller.nicks.get(arg, category=nicktype, return_obj=True)
-                    )
+                    oldnicks.append(caller.nicks.get(arg, category=nicktype, return_obj=True))
 
             oldnicks = [oldnick for oldnick in oldnicks if oldnick]
             if oldnicks:
@@ -256,9 +241,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
                         strings.append(
-                            "{}-nick: '{}' -> '{}'".format(
-                                nicktype.capitalize(), nick, repl
-                            )
+                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
                         )
             if strings:
                 caller.msg("\n".join(strings))
@@ -276,16 +259,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     obj = account
                 else:
                     obj = caller
-                nicks = utils.make_iter(
-                    obj.nicks.get(category=nicktype, return_obj=True)
-                )
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
                         strings.append(
-                            "{}-nick: '{}' -> '{}'".format(
-                                nicktype.capitalize(), nick, repl
-                            )
+                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
                         )
             if strings:
                 caller.msg("\n".join(strings))
@@ -303,16 +282,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     obj = account
                 else:
                     obj = caller
-                nicks = utils.make_iter(
-                    obj.nicks.get(category=nicktype, return_obj=True)
-                )
+                nicks = utils.make_iter(obj.nicks.get(category=nicktype, return_obj=True))
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
                         strings.append(
-                            "{}-nick: '{}' -> '{}'".format(
-                                nicktype.capitalize(), nick, repl
-                            )
+                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
                         )
             if strings:
                 caller.msg("\n".join(strings))
@@ -341,9 +316,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             old_nickstring = None
             old_replstring = None
 
-            oldnick = caller.nicks.get(
-                key=nickstring, category=nicktype, return_obj=True
-            )
+            oldnick = caller.nicks.get(key=nickstring, category=nicktype, return_obj=True)
             if oldnick:
                 _, _, old_nickstring, old_replstring = oldnick.value
             if replstring:
@@ -455,9 +428,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
 
         obj.move_to(caller, quiet=True)
         caller.msg("You pick up %s." % obj.name)
-        caller.location.msg_contents(
-            "%s picks up %s." % (caller.name, obj.name), exclude=caller
-        )
+        caller.location.msg_contents("%s picks up %s." % (caller.name, obj.name), exclude=caller)
         # calling at_get hook method
         obj.at_get(caller)
 
@@ -502,9 +473,7 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
 
         obj.move_to(caller.location, quiet=True)
         caller.msg("You drop %s." % (obj.name,))
-        caller.location.msg_contents(
-            "%s drops %s." % (caller.name, obj.name), exclude=caller
-        )
+        caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
         # Call the object script's at_drop() method.
         obj.at_drop(caller)
 
@@ -706,9 +675,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             self.caller.msg(msg)
         else:
             msg = "%s%s" % (self.caller.name, self.args)
-            self.caller.location.msg_contents(
-                text=(msg, {"type": "pose"}), from_obj=self.caller
-            )
+            self.caller.location.msg_contents(text=(msg, {"type": "pose"}), from_obj=self.caller)
 
 
 class CmdAccess(COMMAND_DEFAULT_CLASS):
@@ -732,9 +699,7 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         hierarchy_full = settings.PERMISSION_HIERARCHY
-        string = "\n|wPermission Hierarchy|n (climbing):\n %s" % ", ".join(
-            hierarchy_full
-        )
+        string = "\n|wPermission Hierarchy|n (climbing):\n %s" % ", ".join(hierarchy_full)
 
         if self.caller.account.is_superuser:
             cperms = "<Superuser>"

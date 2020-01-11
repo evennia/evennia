@@ -33,9 +33,7 @@ SIG = signal.SIGINT
 CTRL_C_EVENT = 0  # Windows SIGINT-like signal
 
 # Set up the main python paths to Evennia
-EVENNIA_ROOT = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import evennia  # noqa
 
@@ -537,19 +535,11 @@ def _get_twistd_cmdline(pprofiler, sprofiler):
 
     if pprofiler:
         portal_cmd.extend(
-            [
-                "--savestats",
-                "--profiler=cprofile",
-                "--profile={}".format(PPROFILER_LOGFILE),
-            ]
+            ["--savestats", "--profiler=cprofile", "--profile={}".format(PPROFILER_LOGFILE)]
         )
     if sprofiler:
         server_cmd.extend(
-            [
-                "--savestats",
-                "--profiler=cprofile",
-                "--profile={}".format(SPROFILER_LOGFILE),
-            ]
+            ["--savestats", "--profiler=cprofile", "--profile={}".format(SPROFILER_LOGFILE)]
         )
 
     return portal_cmd, server_cmd
@@ -696,13 +686,9 @@ def query_status(callback=None):
             print(
                 "Portal: {}{}\nServer: {}{}".format(
                     wmap[pstatus],
-                    " (pid {})".format(get_pid(PORTAL_PIDFILE, ppid))
-                    if pstatus
-                    else "",
+                    " (pid {})".format(get_pid(PORTAL_PIDFILE, ppid)) if pstatus else "",
                     wmap[sstatus],
-                    " (pid {})".format(get_pid(SERVER_PIDFILE, spid))
-                    if sstatus
-                    else "",
+                    " (pid {})".format(get_pid(SERVER_PIDFILE, spid)) if sstatus else "",
                 )
             )
             _reactor_stop()
@@ -726,12 +712,7 @@ def wait_for_status_reply(callback):
 
 
 def wait_for_status(
-    portal_running=True,
-    server_running=True,
-    callback=None,
-    errback=None,
-    rate=0.5,
-    retries=20,
+    portal_running=True, server_running=True, callback=None, errback=None, rate=0.5, retries=20
 ):
     """
     Repeat the status ping until the desired state combination is achieved.
@@ -852,22 +833,12 @@ def start_evennia(pprofiler=False, sprofiler=False):
 
     def _portal_running(response):
         prun, srun, ppid, spid, _, _ = _parse_status(response)
-        print(
-            "Portal is already running as process {pid}. Not restarted.".format(
-                pid=ppid
-            )
-        )
+        print("Portal is already running as process {pid}. Not restarted.".format(pid=ppid))
         if srun:
-            print(
-                "Server is already running as process {pid}. Not restarted.".format(
-                    pid=spid
-                )
-            )
+            print("Server is already running as process {pid}. Not restarted.".format(pid=spid))
             _reactor_stop()
         else:
-            print(
-                "Server starting {}...".format("(under cProfile)" if sprofiler else "")
-            )
+            print("Server starting {}...".format("(under cProfile)" if sprofiler else ""))
             send_instruction(SSTART, server_cmd, _server_started, _fail)
 
     def _portal_not_running(fail):
@@ -876,9 +847,7 @@ def start_evennia(pprofiler=False, sprofiler=False):
             if _is_windows():
                 # Windows requires special care
                 create_no_window = 0x08000000
-                Popen(
-                    portal_cmd, env=getenv(), bufsize=-1, creationflags=create_no_window
-                )
+                Popen(portal_cmd, env=getenv(), bufsize=-1, creationflags=create_no_window)
             else:
                 Popen(portal_cmd, env=getenv(), bufsize=-1)
         except Exception as e:
@@ -1057,12 +1026,7 @@ def start_portal_interactive():
         if _is_windows():
             # Windows requires special care
             create_no_window = 0x08000000
-            Popen(
-                server_twistd_cmd,
-                env=getenv(),
-                bufsize=-1,
-                creationflags=create_no_window,
-            )
+            Popen(server_twistd_cmd, env=getenv(), bufsize=-1, creationflags=create_no_window)
         else:
             Popen(server_twistd_cmd, env=getenv(), bufsize=-1)
 
@@ -1075,9 +1039,7 @@ def start_portal_interactive():
             print("... Portal stopped (leaving interactive mode).")
 
     def _portal_running(response):
-        print(
-            "Evennia must be shut down completely before running Portal in interactive mode."
-        )
+        print("Evennia must be shut down completely before running Portal in interactive mode.")
         _reactor_stop()
 
     send_instruction(PSTATUS, None, _portal_running, _iportal)
@@ -1121,9 +1083,7 @@ def stop_server_only(when_stopped=None, interactive=False):
     def _portal_not_running(fail):
         print("Evennia is not running.")
         if interactive:
-            print(
-                "Start Evennia normally first, then use `istart` to switch to interactive mode."
-            )
+            print("Start Evennia normally first, then use `istart` to switch to interactive mode.")
         _reactor_stop()
 
     send_instruction(PSTATUS, None, _portal_running, _portal_not_running)
@@ -1247,9 +1207,7 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
                 sys.stdout.flush()
 
         # set up the next poll
-        reactor.callLater(
-            rate, _tail_file, filename, file_size, line_count, max_lines=100
-        )
+        reactor.callLater(rate, _tail_file, filename, file_size, line_count, max_lines=100)
 
     reactor.callLater(0, _tail_file, filename1, 0, 0, max_lines=start_lines1)
     reactor.callLater(0, _tail_file, filename2, 0, 0, max_lines=start_lines2)
@@ -1277,12 +1235,7 @@ def evennia_version():
         pass
     try:
         rev = (
-            check_output(
-                "git rev-parse --short HEAD",
-                shell=True,
-                cwd=EVENNIA_ROOT,
-                stderr=STDOUT,
-            )
+            check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT)
             .strip()
             .decode()
         )
@@ -1318,9 +1271,7 @@ def check_main_evennia_dependencies():
 
         tversion = twisted.version.short()
         if LooseVersion(tversion) < LooseVersion(TWISTED_MIN):
-            print(
-                ERROR_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN)
-            )
+            print(ERROR_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN))
             error = True
     except ImportError:
         print(ERROR_NOTWISTED)
@@ -1331,15 +1282,9 @@ def check_main_evennia_dependencies():
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:3])
         if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
-            print(
-                ERROR_DJANGO_MIN.format(dversion=dversion_main, django_min=DJANGO_MIN)
-            )
+            print(ERROR_DJANGO_MIN.format(dversion=dversion_main, django_min=DJANGO_MIN))
             error = True
-        elif (
-            LooseVersion(DJANGO_MIN)
-            <= LooseVersion(dversion)
-            < LooseVersion(DJANGO_REC)
-        ):
+        elif LooseVersion(DJANGO_MIN) <= LooseVersion(dversion) < LooseVersion(DJANGO_REC):
             print(NOTE_DJANGO_MIN.format(dversion=dversion_main, django_rec=DJANGO_REC))
         elif LooseVersion(DJANGO_REC) < LooseVersion(dversion_main):
             print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_REC))
@@ -1422,12 +1367,7 @@ def create_settings_file(init=True, secret_settings=False):
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = eval(
-                input(
-                    "%s already exists. Do you want to reset it? y/[N]> "
-                    % settings_path
-                )
-            )
+            inp = eval(input("%s already exists. Do you want to reset it? y/[N]> " % settings_path))
             if not inp.lower() == "y":
                 print("Aborted.")
                 return
@@ -1439,9 +1379,7 @@ def create_settings_file(init=True, secret_settings=False):
                 EVENNIA_TEMPLATE, "server", "conf", "secret_settings.py"
             )
         else:
-            default_settings_path = os.path.join(
-                EVENNIA_TEMPLATE, "server", "conf", "settings.py"
-            )
+            default_settings_path = os.path.join(EVENNIA_TEMPLATE, "server", "conf", "settings.py")
         shutil.copy(default_settings_path, settings_path)
 
     with open(settings_path, "r") as f:
@@ -1528,9 +1466,7 @@ def check_database():
             other = other_superuser[0]
             other_id = other.id
             other_key = other.username
-            print(
-                WARNING_MOVING_SUPERUSER.format(other_key=other_key, other_id=other_id)
-            )
+            print(WARNING_MOVING_SUPERUSER.format(other_key=other_key, other_id=other_id))
             res = ""
             while res.upper() != "Y":
                 # ask for permission
@@ -1836,8 +1772,7 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     # verify existence of log file dir (this can be missing e.g.
     # if the game dir itself was cloned since log files are in .gitignore)
     logdirs = [
-        logfile.rsplit(os.path.sep, 1)
-        for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)
+        logfile.rsplit(os.path.sep, 1) for logfile in (SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE)
     ]
     if not all(os.path.isdir(pathtup[0]) for pathtup in logdirs):
         errstr = "\n    ".join(
@@ -1884,13 +1819,7 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
             # of its executable from 'twistd.py' to 'twistd.exe'.
             twistd_path = os.path.abspath(
                 os.path.join(
-                    twistd_dir,
-                    os.pardir,
-                    os.pardir,
-                    os.pardir,
-                    os.pardir,
-                    "scripts",
-                    "twistd.exe",
+                    twistd_dir, os.pardir, os.pardir, os.pardir, os.pardir, "scripts", "twistd.exe"
                 )
             )
 
@@ -1962,9 +1891,7 @@ def list_settings(keys):
         # a specific key
         table = evtable.EvTable(width=131)
         keys = [key.upper() for key in keys]
-        confs = dict(
-            (key, var) for key, var in evsettings.__dict__.items() if key in keys
-        )
+        confs = dict((key, var) for key, var in evsettings.__dict__.items() if key in keys)
         for key, val in confs.items():
             table.add_row(key, str(val))
     print(table)
@@ -2041,8 +1968,7 @@ def run_menu():
         elif inp == 12:
             print("Running 'evennia --settings settings.py test .' ...")
             Popen(
-                [sys.executable, __file__, "--settings", "settings.py", "test", "."],
-                env=getenv(),
+                [sys.executable, __file__, "--settings", "settings.py", "test", "."], env=getenv()
             ).wait()
         elif inp == 13:
             print("Running 'evennia test evennia' ...")
@@ -2060,9 +1986,7 @@ def main():
     """
     # set up argument parser
 
-    parser = ArgumentParser(
-        description=CMDLINE_HELP, formatter_class=argparse.RawTextHelpFormatter
-    )
+    parser = ArgumentParser(description=CMDLINE_HELP, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
         "--gamedir",
         nargs=1,
@@ -2217,17 +2141,13 @@ def main():
             settings_path = os.path.join(CONFDIR, "secret_settings.py")
             if not os.path.exists(settings_path):
                 create_settings_file(init=False, secret_settings=True)
-                print(
-                    f"    ... Created missing secret_settings.py file as {settings_path}."
-                )
+                print(f"    ... Created missing secret_settings.py file as {settings_path}.")
                 created = True
 
             if created:
                 print(RECREATED_MISSING)
             else:
-                print(
-                    "    ... No missing resources to create/init. You are good to go."
-                )
+                print("    ... No missing resources to create/init. You are good to go.")
         except IOError:
             print(ERROR_INITMISSING)
         sys.exit()

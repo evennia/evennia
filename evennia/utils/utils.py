@@ -97,9 +97,7 @@ def wrap(text, width=None, indent=0):
     if not text:
         return ""
     indent = " " * indent
-    return to_str(
-        textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent)
-    )
+    return to_str(textwrap.fill(text, width, initial_indent=indent, subsequent_indent=indent))
 
 
 # alias - fill
@@ -156,11 +154,7 @@ def crop(text, width=None, suffix="[...]"):
         return text
     else:
         lsuffix = len(suffix)
-        text = (
-            text[:width]
-            if lsuffix >= width
-            else "%s%s" % (text[: width - lsuffix], suffix)
-        )
+        text = text[:width] if lsuffix >= width else "%s%s" % (text[: width - lsuffix], suffix)
         return to_str(text)
 
 
@@ -193,8 +187,7 @@ def dedent(text, baseline_index=None):
         baseline = lines[baseline_index]
         spaceremove = len(baseline) - len(baseline.lstrip(" "))
         return "\n".join(
-            line[min(spaceremove, len(line) - len(line.lstrip(" "))) :]
-            for line in lines
+            line[min(spaceremove, len(line) - len(line.lstrip(" "))) :] for line in lines
         )
 
 
@@ -230,9 +223,7 @@ def justify(text, width=None, align="f", indent=0):
         if line_rest > 0:
             if align == "l":
                 if line[-1] == "\n\n":
-                    line[-1] = (
-                        " " * (line_rest - 1) + "\n" + " " * width + "\n" + " " * width
-                    )
+                    line[-1] = " " * (line_rest - 1) + "\n" + " " * width + "\n" + " " * width
                 else:
                     line[-1] += " " * line_rest
             elif align == "r":
@@ -242,12 +233,7 @@ def justify(text, width=None, align="f", indent=0):
                 line[0] = pad + line[0]
                 if line[-1] == "\n\n":
                     line[-1] += (
-                        pad
-                        + " " * (line_rest % 2 - 1)
-                        + "\n"
-                        + " " * width
-                        + "\n"
-                        + " " * width
+                        pad + " " * (line_rest % 2 - 1) + "\n" + " " * width + "\n" + " " * width
                     )
                 else:
                     line[-1] = line[-1] + pad + " " * (line_rest % 2)
@@ -391,10 +377,7 @@ def list_to_string(inlist, endsep="and", addquote=False):
     if addquote:
         if len(inlist) == 1:
             return '"%s"' % inlist[0]
-        return ", ".join('"%s"' % v for v in inlist[:-1]) + "%s %s" % (
-            endsep,
-            '"%s"' % inlist[-1],
-        )
+        return ", ".join('"%s"' % v for v in inlist[:-1]) + "%s %s" % (endsep, '"%s"' % inlist[-1])
     else:
         if len(inlist) == 1:
             return str(inlist[0])
@@ -718,11 +701,7 @@ def dbref(inp, reqhash=True):
     if reqhash:
         num = (
             int(inp.lstrip("#"))
-            if (
-                isinstance(inp, str)
-                and inp.startswith("#")
-                and inp.lstrip("#").isdigit()
-            )
+            if (isinstance(inp, str) and inp.startswith("#") and inp.lstrip("#").isdigit())
             else None
         )
         return num if isinstance(num, int) and num > 0 else None
@@ -873,9 +852,7 @@ def to_bytes(text, session=None):
         except Exception:
             text = repr(text)
 
-    default_encoding = (
-        session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
-    )
+    default_encoding = session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
     try:
         return text.encode(default_encoding)
     except (LookupError, UnicodeEncodeError):
@@ -914,9 +891,7 @@ def to_str(text, session=None):
         except Exception:
             return repr(text)
 
-    default_encoding = (
-        session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
-    )
+    default_encoding = session.protocol_flags.get("ENCODING", "utf-8") if session else "utf-8"
     try:
         return text.decode(default_encoding)
     except (LookupError, UnicodeDecodeError):
@@ -1021,9 +996,7 @@ def inherits_from(obj, parent):
         # this is a class
         obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.mro()]
     else:
-        obj_paths = [
-            "%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()
-        ]
+        obj_paths = ["%s.%s" % (mod.__module__, mod.__name__) for mod in obj.__class__.mro()]
 
     if isinstance(parent, str):
         # a given string path, for direct matching
@@ -1120,9 +1093,7 @@ def delay(timedelay, callback, *args, **kwargs):
 
 _PPOOL = None
 _PCMD = None
-_PROC_ERR = (
-    "A process has ended with a probable error condition: process ended by signal 9."
-)
+_PROC_ERR = "A process has ended with a probable error condition: process ended by signal 9."
 
 
 def run_async(to_execute, *args, **kwargs):
@@ -1272,9 +1243,7 @@ def mod_import_from_path(path):
     try:
         return importlib.machinery.SourceFileLoader(modname, path).load_module()
     except OSError:
-        logger.log_trace(
-            f"Could not find module '{modname}' ({modname}.py) at path '{dirpath}'"
-        )
+        logger.log_trace(f"Could not find module '{modname}' ({modname}.py) at path '{dirpath}'")
         return None
 
 
@@ -1355,9 +1324,7 @@ def callables_from_module(module):
     if not mod:
         return {}
     # make sure to only return callables actually defined in this module (not imports)
-    members = getmembers(
-        mod, predicate=lambda obj: callable(obj) and getmodule(obj) == mod
-    )
+    members = getmembers(mod, predicate=lambda obj: callable(obj) and getmodule(obj) == mod)
     return dict((key, val) for key, val in members if not key.startswith("_"))
 
 
@@ -1397,9 +1364,7 @@ def variable_from_module(module, variable=None, default=None):
     else:
         # get all
         result = [
-            val
-            for key, val in mod.__dict__.items()
-            if not (key.startswith("_") or ismodule(val))
+            val for key, val in mod.__dict__.items() if not (key.startswith("_") or ismodule(val))
         ]
 
     if len(result) == 1:
@@ -1513,9 +1478,7 @@ def class_from_module(path, defaultpaths=None):
         if "." in path:
             testpath, clsname = testpath.rsplit(".", 1)
         else:
-            raise ImportError(
-                "the path '%s' is not on the form modulepath.Classname." % path
-            )
+            raise ImportError("the path '%s' is not on the form modulepath.Classname." % path)
 
         try:
             if not importlib.util.find_spec(testpath, package="evennia"):
@@ -1559,9 +1522,7 @@ def init_new_account(account):
     """
     from evennia.utils import logger
 
-    logger.log_dep(
-        "evennia.utils.utils.init_new_account is DEPRECATED and should not be used."
-    )
+    logger.log_dep("evennia.utils.utils.init_new_account is DEPRECATED and should not be used.")
 
 
 def string_similarity(string1, string2):
@@ -1586,8 +1547,7 @@ def string_similarity(string1, string2):
     vec2 = [string2.count(v) for v in vocabulary]
     try:
         return float(sum(vec1[i] * vec2[i] for i in range(len(vocabulary)))) / (
-            math.sqrt(sum(v1 ** 2 for v1 in vec1))
-            * math.sqrt(sum(v2 ** 2 for v2 in vec2))
+            math.sqrt(sum(v1 ** 2 for v1 in vec1)) * math.sqrt(sum(v2 ** 2 for v2 in vec2))
         )
     except ZeroDivisionError:
         # can happen if empty-string cmdnames appear for some reason.
@@ -1960,11 +1920,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
 
         for num, result in enumerate(matches):
             # we need to consider Commands, where .aliases is a list
-            aliases = (
-                result.aliases.all()
-                if hasattr(result.aliases, "all")
-                else result.aliases
-            )
+            aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
             error += _MULTIMATCH_TEMPLATE.format(
                 number=num + 1,
                 name=result.get_display_name(caller)
@@ -2055,9 +2011,7 @@ def get_game_dir_path():
                 return gpath
         else:
             os.chdir(os.pardir)
-    raise RuntimeError(
-        "server/conf/settings.py not found: Must start from inside game dir."
-    )
+    raise RuntimeError("server/conf/settings.py not found: Must start from inside game dir.")
 
 
 def get_all_typeclasses(parent=None):
@@ -2142,9 +2096,7 @@ def interactive(func):
                     )
                 get_input(caller, value, _process_input, generator=generator)
             else:
-                raise ValueError(
-                    "yield(val) in a @pausable method must have an int/float as arg."
-                )
+                raise ValueError("yield(val) in a @pausable method must have an int/float as arg.")
 
     def decorator(*args, **kwargs):
         argnames = inspect.getfullargspec(func).args

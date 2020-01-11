@@ -53,9 +53,7 @@ class MonitorHandler(object):
                         fieldname
                     ].items():
                         path = "%s.%s" % (callback.__module__, callback.__name__)
-                        savedata.append(
-                            (obj, fieldname, idstring, path, persistent, kwargs)
-                        )
+                        savedata.append((obj, fieldname, idstring, path, persistent, kwargs))
             savedata = dbserialize(savedata)
             ServerConfig.objects.conf(key=self.savekey, value=savedata)
 
@@ -74,14 +72,7 @@ class MonitorHandler(object):
         restored_monitors = ServerConfig.objects.conf(key=self.savekey)
         if restored_monitors:
             restored_monitors = dbunserialize(restored_monitors)
-            for (
-                obj,
-                fieldname,
-                idstring,
-                path,
-                persistent,
-                kwargs,
-            ) in restored_monitors:
+            for (obj, fieldname, idstring, path, persistent, kwargs) in restored_monitors:
                 try:
                     if not server_reload and not persistent:
                         # this monitor will not be restarted
@@ -94,11 +85,7 @@ class MonitorHandler(object):
                     callback = variable_from_module(modname, varname)
 
                     if obj and hasattr(obj, fieldname):
-                        self.monitors[obj][fieldname][idstring] = (
-                            callback,
-                            persistent,
-                            kwargs,
-                        )
+                        self.monitors[obj][fieldname][idstring] = (callback, persistent, kwargs)
                 except Exception:
                     continue
         # make sure to clean data from database
@@ -111,9 +98,7 @@ class MonitorHandler(object):
         """
         to_delete = []
         if obj in self.monitors and fieldname in self.monitors[obj]:
-            for idstring, (callback, persistent, kwargs) in self.monitors[obj][
-                fieldname
-            ].items():
+            for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].items():
                 try:
                     callback(obj=obj, fieldname=fieldname, **kwargs)
                 except Exception:

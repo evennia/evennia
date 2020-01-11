@@ -134,10 +134,7 @@ class Msg(SharedMemoryModel):
         help_text="script_receivers",
     )
     db_receivers_channels = models.ManyToManyField(
-        "ChannelDB",
-        related_name="channel_set",
-        blank=True,
-        help_text="channel recievers",
+        "ChannelDB", related_name="channel_set", blank=True, help_text="channel recievers"
     )
 
     # header could be used for meta-info about the message if your system needs
@@ -487,8 +484,7 @@ class TempMsg(object):
         """
         senders = ",".join(obj.key for obj in self.senders)
         receivers = ",".join(
-            ["[%s]" % obj.key for obj in self.channels]
-            + [obj.key for obj in self.receivers]
+            ["[%s]" % obj.key for obj in self.channels] + [obj.key for obj in self.receivers]
         )
         return "%s->%s: %s" % (senders, receivers, crop(self.message, width=40))
 

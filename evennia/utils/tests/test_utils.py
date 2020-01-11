@@ -26,9 +26,7 @@ class TestCrop(TestCase):
         # No text, return no text
         self.assertEqual("", utils.crop("", width=10, suffix="[...]"))
         # Input length equal to max width, no crop
-        self.assertEqual(
-            "0123456789", utils.crop("0123456789", width=10, suffix="[...]")
-        )
+        self.assertEqual("0123456789", utils.crop("0123456789", width=10, suffix="[...]"))
         # Input length greater than max width, crop (suffix included in width)
         self.assertEqual("0123[...]", utils.crop("0123456789", width=9, suffix="[...]"))
         # Input length less than desired width, no crop
@@ -68,13 +66,10 @@ class TestListToString(TestCase):
 
     def test_list_to_string(self):
         self.assertEqual("1, 2, 3", utils.list_to_string([1, 2, 3], endsep=""))
-        self.assertEqual(
-            '"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True)
-        )
+        self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep="", addquote=True))
         self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3]))
         self.assertEqual(
-            '"1", "2" and "3"',
-            utils.list_to_string([1, 2, 3], endsep="and", addquote=True),
+            '"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
         )
 
 
@@ -162,15 +157,9 @@ class TestTimeformat(TestCase):
         self.assertEqual(utils.time_format(3600, 3), "1 hour, 0 minutes")
         self.assertEqual(utils.time_format(3725, 3), "1 hour, 2 minutes 5 seconds")
         self.assertEqual(utils.time_format(86350, 3), "23 hours, 59 minutes 10 seconds")
-        self.assertEqual(
-            utils.time_format(86800, 3), "1 day, 0 hours, 6 minutes 40 seconds"
-        )
-        self.assertEqual(
-            utils.time_format(130800, 3), "1 day, 12 hours, 20 minutes 0 seconds"
-        )
-        self.assertEqual(
-            utils.time_format(530800, 3), "6 days, 3 hours, 26 minutes 40 seconds"
-        )
+        self.assertEqual(utils.time_format(86800, 3), "1 day, 0 hours, 6 minutes 40 seconds")
+        self.assertEqual(utils.time_format(130800, 3), "1 day, 12 hours, 20 minutes 0 seconds")
+        self.assertEqual(utils.time_format(530800, 3), "6 days, 3 hours, 26 minutes 40 seconds")
 
     def test_style_4(self):
         """Test the style 4 of time_format."""

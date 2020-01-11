@@ -32,14 +32,7 @@ from django.utils.safestring import SafeString, SafeBytes
 from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
 from evennia.utils import logger
 
-__all__ = (
-    "to_pickle",
-    "from_pickle",
-    "do_pickle",
-    "do_unpickle",
-    "dbserialize",
-    "dbunserialize",
-)
+__all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
 PICKLE_PROTOCOL = 2
 
@@ -123,9 +116,7 @@ def _init_globals():
     global _FROM_MODEL_MAP, _TO_MODEL_MAP, _SESSION_HANDLER, _IGNORE_DATETIME_MODELS
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
-        _FROM_MODEL_MAP.update(
-            dict((c.model, c.natural_key()) for c in ContentType.objects.all())
-        )
+        _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
     if not _TO_MODEL_MAP:
         from django.conf import settings
 
@@ -210,9 +201,7 @@ class _SaverMutable(object):
                 return dat
             elif dtype == dict:
                 dat = _SaverDict(_parent=parent)
-                dat._data.update(
-                    (key, process_tree(val, dat)) for key, val in item.items()
-                )
+                dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
             elif dtype == set:
                 dat = _SaverSet(_parent=parent)
@@ -567,15 +556,11 @@ def to_pickle(data):
         elif dtype in (list, _SaverList):
             return [process_item(val) for val in item]
         elif dtype in (dict, _SaverDict):
-            return dict(
-                (process_item(key), process_item(val)) for key, val in item.items()
-            )
+            return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype in (set, _SaverSet):
             return set(process_item(val) for val in item)
         elif dtype in (OrderedDict, _SaverOrderedDict):
-            return OrderedDict(
-                (process_item(key), process_item(val)) for key, val in item.items()
-            )
+            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype in (deque, _SaverDeque):
             return deque(process_item(val) for val in item)
 
@@ -592,9 +577,7 @@ def to_pickle(data):
         except TypeError:
             return item
         except Exception:
-            logger.log_error(
-                f"The object {item} of type {type(item)} could not be stored."
-            )
+            logger.log_error(f"The object {item} of type {type(item)} could not be stored.")
             raise
 
     return process_item(data)
@@ -636,15 +619,11 @@ def from_pickle(data, db_obj=None):
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
         elif dtype == dict:
-            return dict(
-                (process_item(key), process_item(val)) for key, val in item.items()
-            )
+            return dict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == set:
             return set(process_item(val) for val in item)
         elif dtype == OrderedDict:
-            return OrderedDict(
-                (process_item(key), process_item(val)) for key, val in item.items()
-            )
+            return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == deque:
             return deque(process_item(val) for val in item)
         elif hasattr(item, "__iter__"):

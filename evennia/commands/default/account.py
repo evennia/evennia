@@ -72,9 +72,9 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
                 self.account.db._playable_characters = playable
         # store playable property
         if self.args:
-            self.playable = dict(
-                (utils.to_str(char.key.lower()), char) for char in playable
-            ).get(self.args.lower(), None)
+            self.playable = dict((utils.to_str(char.key.lower()), char) for char in playable).get(
+                self.args.lower(), None
+            )
         else:
             self.playable = playable
 
@@ -113,9 +113,7 @@ class CmdOOCLook(MuxAccountLookCommand):
 
         if _MULTISESSION_MODE < 2:
             # only one character allowed
-            self.msg(
-                "You are out-of-character (OOC).\nUse |wic|n to get back into the game."
-            )
+            self.msg("You are out-of-character (OOC).\nUse |wic|n to get back into the game.")
             return
 
         # call on-account look helper method
@@ -154,8 +152,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         charmax = _MAX_NR_CHARACTERS
 
         if not account.is_superuser and (
-            account.db._playable_characters
-            and len(account.db._playable_characters) >= charmax
+            account.db._playable_characters and len(account.db._playable_characters) >= charmax
         ):
             self.msg("You may only create a maximum of %i characters." % charmax)
             return
@@ -175,11 +172,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
         permissions = settings.PERMISSION_ACCOUNT_DEFAULT
         new_character = create.create_object(
-            typeclass,
-            key=key,
-            location=start_location,
-            home=default_home,
-            permissions=permissions,
+            typeclass, key=key, location=start_location, home=default_home, permissions=permissions
         )
         # only allow creator (and developers) to puppet this char
         new_character.locks.add(
@@ -266,7 +259,9 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                 self.msg("You do not have permission to delete this character.")
                 return
 
-            prompt = "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
+            prompt = (
+                "|rThis will permanently destroy '%s'. This cannot be undone.|n Continue yes/[no]?"
+            )
             get_input(account, prompt % match.key, _callback)
 
 
@@ -313,9 +308,7 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
         if not new_character:
             # search for a matching character
             new_character = [
-                char
-                for char in search.object_search(self.args)
-                if char.access(account, "puppet")
+                char for char in search.object_search(self.args) if char.access(account, "puppet")
             ]
             if not new_character:
                 self.msg("That is not a valid character choice.")
@@ -386,9 +379,7 @@ class CmdOOC(MuxAccountLookCommand):
 
             if _MULTISESSION_MODE < 2:
                 # only one character allowed
-                self.msg(
-                    "You are out-of-character (OOC).\nUse |wic|n to get back into the game."
-                )
+                self.msg("You are out-of-character (OOC).\nUse |wic|n to get back into the game.")
                 return
 
             self.msg(account.at_look(target=self.playable, session=session))
@@ -466,9 +457,9 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
         if self.cmdstring == "doing":
             show_session_data = False
         else:
-            show_session_data = account.check_permstring(
-                "Developer"
-            ) or account.check_permstring("Admins")
+            show_session_data = account.check_permstring("Developer") or account.check_permstring(
+                "Admins"
+            )
 
         naccounts = SESSIONS.account_count()
         if show_session_data:
@@ -495,15 +486,11 @@ class CmdWho(COMMAND_DEFAULT_CLASS):
                     utils.crop(account.get_display_name(account), width=25),
                     utils.time_format(delta_conn, 0),
                     utils.time_format(delta_cmd, 1),
-                    utils.crop(
-                        puppet.get_display_name(account) if puppet else "None", width=25
-                    ),
+                    utils.crop(puppet.get_display_name(account) if puppet else "None", width=25),
                     utils.crop(location, width=25),
                     session.cmd_total,
                     session.protocol_key,
-                    isinstance(session.address, tuple)
-                    and session.address[0]
-                    or session.address,
+                    isinstance(session.address, tuple) and session.address[0] or session.address,
                 )
         else:
             # unprivileged
@@ -575,9 +562,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 self.msg("|gCleared all saved options.")
 
             options = dict(flags)  # make a copy of the flag dict
-            saved_options = dict(
-                self.caller.attributes.get("_saved_protocol_flags", default={})
-            )
+            saved_options = dict(self.caller.attributes.get("_saved_protocol_flags", default={}))
 
             if "SCREENWIDTH" in options:
                 if len(options["SCREENWIDTH"]) == 1:
@@ -604,15 +589,11 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 if saved_options:
                     saved = " |YYes|n" if key in saved_options else ""
                     changed = (
-                        "|y*|n"
-                        if key in saved_options and flags[key] != saved_options[key]
-                        else ""
+                        "|y*|n" if key in saved_options and flags[key] != saved_options[key] else ""
                     )
                     row.append("%s%s" % (saved, changed))
                 table.add_row(*row)
-            self.msg(
-                "|wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table)
-            )
+            self.msg("|wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
 
             return
 
@@ -642,9 +623,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 old_val = flags.get(new_name, False)
                 new_val = validator(new_val)
                 if old_val == new_val:
-                    self.msg(
-                        "Option |w%s|n was kept as '|w%s|n'." % (new_name, old_val)
-                    )
+                    self.msg("Option |w%s|n was kept as '|w%s|n'." % (new_name, old_val))
                 else:
                     flags[new_name] = new_val
                     self.msg(
@@ -688,9 +667,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             # a valid setting
             if "save" in self.switches:
                 # save this option only
-                saved_options = self.account.attributes.get(
-                    "_saved_protocol_flags", default={}
-                )
+                saved_options = self.account.attributes.get("_saved_protocol_flags", default={})
                 saved_options.update(optiondict)
                 self.account.attributes.add("_saved_protocol_flags", saved_options)
                 for key in optiondict:
@@ -698,9 +675,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             if "clear" in self.switches:
                 # clear this save
                 for key in optiondict:
-                    self.account.attributes.get("_saved_protocol_flags", {}).pop(
-                        key, None
-                    )
+                    self.account.attributes.get("_saved_protocol_flags", {}).pop(key, None)
                     self.msg("|gCleared saved %s." % key)
             self.session.update_flags(**optiondict)
 
@@ -777,8 +752,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
 
         if "all" in self.switches:
             account.msg(
-                "|RQuitting|n all sessions. Hope to see you soon again.",
-                session=self.session,
+                "|RQuitting|n all sessions. Hope to see you soon again.", session=self.session
             )
             reason = "quit/all"
             for session in account.sessions.all():
@@ -787,10 +761,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
             nsess = len(account.sessions.all())
             reason = "quit"
             if nsess == 2:
-                account.msg(
-                    "|RQuitting|n. One session is still connected.",
-                    session=self.session,
-                )
+                account.msg("|RQuitting|n. One session is still connected.", session=self.session)
             elif nsess > 2:
                 account.msg(
                     "|RQuitting|n. %i sessions are still connected." % (nsess - 1),
@@ -798,9 +769,7 @@ class CmdQuit(COMMAND_DEFAULT_CLASS):
                 )
             else:
                 # we are quitting the last available session
-                account.msg(
-                    "|RQuitting|n. Hope to see you again, soon.", session=self.session
-                )
+                account.msg("|RQuitting|n. Hope to see you again, soon.", session=self.session)
             account.disconnect_session_from_account(self.session, reason)
 
 
@@ -872,13 +841,11 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                 for code, _ in ap.ansi_map[self.slice_dark_fg]
             ]
             dark_bg = [
-                "%s%s|n"
-                % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                "%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
                 for code, _ in ap.ansi_map[self.slice_dark_bg]
             ]
             bright_bg = [
-                "%s%s|n"
-                % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
+                "%s%s|n" % (code.replace("\\", ""), code.replace("|", "||").replace("\\", ""))
                 for code, _ in ap.ansi_xterm256_bright_bg_map[self.slice_bright_bg]
             ]
             dark_fg.extend(["" for _ in range(len(bright_fg) - len(dark_fg))])
@@ -900,21 +867,11 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                 for ig in range(6):
                     for ib in range(6):
                         # foreground table
-                        table[ir].append(
-                            "|%i%i%i%s|n" % (ir, ig, ib, "||%i%i%i" % (ir, ig, ib))
-                        )
+                        table[ir].append("|%i%i%i%s|n" % (ir, ig, ib, "||%i%i%i" % (ir, ig, ib)))
                         # background table
                         table[6 + ir].append(
                             "|%i%i%i|[%i%i%i%s|n"
-                            % (
-                                5 - ir,
-                                5 - ig,
-                                5 - ib,
-                                ir,
-                                ig,
-                                ib,
-                                "||[%i%i%i" % (ir, ig, ib),
-                            )
+                            % (5 - ir, 5 - ig, 5 - ib, ir, ig, ib, "||[%i%i%i" % (ir, ig, ib))
                         )
             table = self.table_format(table)
             string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
@@ -925,9 +882,7 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                     letter = chr(97 + (ibatch * 6 + igray))
                     inverse = chr(122 - (ibatch * 6 + igray))
                     table[0 + igray].append("|=%s%s |n" % (letter, "||=%s" % letter))
-                    table[6 + igray].append(
-                        "|=%s|[=%s%s |n" % (inverse, letter, "||[=%s" % letter)
-                    )
+                    table[6 + igray].append("|=%s|[=%s%s |n" % (inverse, letter, "||[=%s" % letter))
             for igray in range(6):
                 # the last row (y, z) has empty columns
                 if igray < 2:
@@ -1013,10 +968,7 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
                 cpermstr += "\nUse unquell to return to normal permission usage."
                 self.msg(cpermstr)
             else:
-                self.msg(
-                    "Quelling Account permissions%s. Use unquell to get them back."
-                    % permstr
-                )
+                self.msg("Quelling Account permissions%s. Use unquell to get them back." % permstr)
         self._recache_locks(account)
 
 
@@ -1047,10 +999,7 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         for op_key in self.account.options.options_dict.keys():
             op_found = self.account.options.get(op_key, return_obj=True)
             table.add_row(
-                op_key,
-                op_found.description,
-                op_found.__class__.__name__,
-                op_found.display(),
+                op_key, op_found.description, op_found.__class__.__name__, op_found.display()
             )
         self.msg(str(table))
 

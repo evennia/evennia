@@ -36,6 +36,9 @@ without arguments starts a full interactive Python console.
   the `TickerHandler.remove` method. This makes it easier to manage tickers.
 - EvMore `text` argument can now also be a list - each entry in the list is run
   through str(eval()) and ends up on its own line. Good for paginated object lists.
+- EvMore auto-justify now defaults to False since this works better with all types
+  of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
+  but is now only used to pass extra kwargs into the justify function.
 
 
 ## Evennia 0.9 (2018-2019)

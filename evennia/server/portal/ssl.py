@@ -93,9 +93,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
             subprocess.call(exestring)
         except OSError as err:
             raise OSError(
-                NO_AUTOCERT.format(
-                    err=err, certfile=certfile, keyfile=keyfile, exestring=exestring
-                )
+                NO_AUTOCERT.format(err=err, certfile=certfile, keyfile=keyfile, exestring=exestring)
             )
         print("done.")
 

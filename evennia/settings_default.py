@@ -253,9 +253,7 @@ IN_GAME_ERRORS = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.getenv(
-            "TEST_DB_PATH", os.path.join(GAME_DIR, "server", "evennia.db3")
-        ),
+        "NAME": os.getenv("TEST_DB_PATH", os.path.join(GAME_DIR, "server", "evennia.db3")),
         "USER": "",
         "PASSWORD": "",
         "HOST": "",
@@ -465,12 +463,7 @@ SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
 # immediately entered path fail to find a typeclass. It allows for
 # shorter input strings. They must either base off the game directory
 # or start from the evennia library.
-TYPECLASS_PATHS = [
-    "typeclasses",
-    "evennia",
-    "evennia.contrib",
-    "evennia.contrib.tutorial_examples",
-]
+TYPECLASS_PATHS = ["typeclasses", "evennia", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 # Typeclass for account objects (linked to a character) (fallback)
 BASE_ACCOUNT_TYPECLASS = "typeclasses.accounts.Account"
@@ -548,11 +541,7 @@ VALIDATOR_FUNC_MODULES = ["evennia.utils.validatorfuncs"]
 
 # Python path to a directory to be searched for batch scripts
 # for the batch processors (.ev and/or .py files).
-BASE_BATCHPROCESS_PATHS = [
-    "world",
-    "evennia.contrib",
-    "evennia.contrib.tutorial_examples",
-]
+BASE_BATCHPROCESS_PATHS = ["world", "evennia.contrib", "evennia.contrib.tutorial_examples"]
 
 ######################################################################
 # Game Time setup
@@ -863,9 +852,7 @@ TEMPLATES = [
             os.path.join(GAME_DIR, "web", "template_overrides"),
             os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
             os.path.join(EVENNIA_DIR, "web", "website", "templates"),
-            os.path.join(
-                EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE
-            ),
+            os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
             os.path.join(EVENNIA_DIR, "web", "webclient", "templates"),
         ],
         "APP_DIRS": True,
@@ -935,9 +922,7 @@ AUTH_USER_MODEL = "accounts.AccountDB"
 # Password validation plugins
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {"min_length": 8},
@@ -950,14 +935,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Username validation plugins
 AUTH_USERNAME_VALIDATORS = [
     {"NAME": "django.contrib.auth.validators.ASCIIUsernameValidator"},
-    {
-        "NAME": "django.core.validators.MinLengthValidator",
-        "OPTIONS": {"limit_value": 3},
-    },
-    {
-        "NAME": "django.core.validators.MaxLengthValidator",
-        "OPTIONS": {"limit_value": 30},
-    },
+    {"NAME": "django.core.validators.MinLengthValidator", "OPTIONS": {"limit_value": 3}},
+    {"NAME": "django.core.validators.MaxLengthValidator", "OPTIONS": {"limit_value": 30}},
     {"NAME": "evennia.server.validators.EvenniaUsernameAvailabilityValidator"},
 ]
 

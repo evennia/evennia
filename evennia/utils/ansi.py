@@ -96,10 +96,7 @@ class ANSIParser(object):
         (r"|-", ANSI_TAB),  # tab
         (r"|_", ANSI_SPACE),  # space
         (r"|*", ANSI_INVERSE),  # invert
-        (
-            r"|^",
-            ANSI_BLINK,
-        ),  # blinking text (very annoying and not supported by all clients)
+        (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
         (r"|u", ANSI_UNDERLINE),  # underline
         (r"|r", ANSI_HILITE + ANSI_RED),
         (r"|g", ANSI_HILITE + ANSI_GREEN),
@@ -181,9 +178,7 @@ class ANSIParser(object):
 
     # prepare regex matching
     brightbg_sub = re.compile(
-        r"|".join(
-            [r"(?<!\|)%s" % re.escape(tup[0]) for tup in ansi_xterm256_bright_bg_map]
-        ),
+        r"|".join([r"(?<!\|)%s" % re.escape(tup[0]) for tup in ansi_xterm256_bright_bg_map]),
         re.DOTALL,
     )
     xterm256_fg_sub = re.compile(r"|".join(xterm256_fg), re.DOTALL)
@@ -264,9 +259,7 @@ class ANSIParser(object):
         if not grayscale:
             # 6x6x6 color-cube (xterm indexes 16-231)
             try:
-                red, green, blue = [
-                    int(val) for val in rgbmatch.groups() if val is not None
-                ]
+                red, green, blue = [int(val) for val in rgbmatch.groups() if val is not None]
             except (IndexError, ValueError):
                 logger.log_trace()
                 return rgbmatch.group(0)
@@ -647,14 +640,7 @@ class ANSIMeta(type):
             "__len__",
         ]:
             setattr(cls, func_name, _query_super(func_name))
-        for func_name in [
-            "__mod__",
-            "expandtabs",
-            "decode",
-            "replace",
-            "format",
-            "encode",
-        ]:
+        for func_name in ["__mod__", "expandtabs", "decode", "replace", "format", "encode"]:
             setattr(cls, func_name, _on_raw(func_name))
         for func_name in ["capitalize", "translate", "lower", "upper", "swapcase"]:
             setattr(cls, func_name, _transform(func_name))
@@ -994,9 +980,7 @@ class ANSIString(str, metaclass=ANSIMeta):
             # Plain string, no ANSI codes.
             return code_indexes, list(range(0, len(self._raw_string)))
         # all indexes not occupied by ansi codes are normal characters
-        char_indexes = [
-            i for i in range(len(self._raw_string)) if i not in code_indexes
-        ]
+        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes]
         return code_indexes, char_indexes
 
     def _get_interleving(self, index):
@@ -1032,12 +1016,8 @@ class ANSIString(str, metaclass=ANSIMeta):
         code_indexes = self._code_indexes[:]
         char_indexes = self._char_indexes[:]
         for i in range(1, other + 1):
-            code_indexes.extend(
-                self._shifter(self._code_indexes, i * len(self._raw_string))
-            )
-            char_indexes.extend(
-                self._shifter(self._char_indexes, i * len(self._raw_string))
-            )
+            code_indexes.extend(self._shifter(self._code_indexes, i * len(self._raw_string)))
+            char_indexes.extend(self._shifter(self._char_indexes, i * len(self._raw_string)))
         return ANSIString(
             raw_string,
             code_indexes=code_indexes,
@@ -1311,10 +1291,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         char_indexes = self._shifter(list(range(0, len(line))), len(prefix))
         raw_string = prefix + line + postfix
         return ANSIString(
-            raw_string,
-            clean_string=line,
-            char_indexes=char_indexes,
-            code_indexes=code_indexes,
+            raw_string, clean_string=line, char_indexes=char_indexes, code_indexes=code_indexes
         )
 
     # The following methods should not be called with the '_difference' argument explicitly. This is

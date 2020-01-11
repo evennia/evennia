@@ -13,18 +13,9 @@ class TestGeneralContext(TestCase):
         "evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED",
         "websocket_client_enabled_testvalue",
     )
-    @patch(
-        "evennia.web.utils.general_context.WEBCLIENT_ENABLED",
-        "webclient_enabled_testvalue",
-    )
-    @patch(
-        "evennia.web.utils.general_context.WEBSOCKET_PORT",
-        "websocket_client_port_testvalue",
-    )
-    @patch(
-        "evennia.web.utils.general_context.WEBSOCKET_URL",
-        "websocket_client_url_testvalue",
-    )
+    @patch("evennia.web.utils.general_context.WEBCLIENT_ENABLED", "webclient_enabled_testvalue")
+    @patch("evennia.web.utils.general_context.WEBSOCKET_PORT", "websocket_client_port_testvalue")
+    @patch("evennia.web.utils.general_context.WEBSOCKET_URL", "websocket_client_url_testvalue")
     def test_general_context(self):
         request = RequestFactory().get("/")
         request.user = AnonymousUser()

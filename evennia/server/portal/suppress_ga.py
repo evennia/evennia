@@ -39,9 +39,7 @@ class SuppressGA(object):
 
         self.protocol.protocol_flags["NOGOAHEAD"] = True
         # tell the client that we prefer to suppress GA ...
-        self.protocol.will(SUPPRESS_GA).addCallbacks(
-            self.will_suppress_ga, self.wont_suppress_ga
-        )
+        self.protocol.will(SUPPRESS_GA).addCallbacks(self.will_suppress_ga, self.wont_suppress_ga)
 
     def wont_suppress_ga(self, option):
         """

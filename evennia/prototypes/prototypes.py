@@ -135,26 +135,20 @@ for mod in settings.PROTOTYPE_MODULES:
                 prot["prototype_key"] = variable_name.lower()
             prots.append((prot["prototype_key"], homogenize_prototype(prot)))
     # assign module path to each prototype_key for easy reference
-    _MODULE_PROTOTYPE_MODULES.update(
-        {prototype_key.lower(): mod for prototype_key, _ in prots}
-    )
+    _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
     # make sure the prototype contains all meta info
     for prototype_key, prot in prots:
         actual_prot_key = prot.get("prototype_key", prototype_key).lower()
         prot.update(
             {
                 "prototype_key": actual_prot_key,
-                "prototype_desc": prot["prototype_desc"]
-                if "prototype_desc" in prot
-                else mod,
+                "prototype_desc": prot["prototype_desc"] if "prototype_desc" in prot else mod,
                 "prototype_locks": (
                     prot["prototype_locks"]
                     if "prototype_locks" in prot
                     else "use:all();edit:false()"
                 ),
-                "prototype_tags": list(
-                    set(make_iter(prot.get("prototype_tags", [])) + ["module"])
-                ),
+                "prototype_tags": list(set(make_iter(prot.get("prototype_tags", [])) + ["module"])),
             }
         )
         _MODULE_PROTOTYPES[actual_prot_key] = prot
@@ -225,8 +219,7 @@ def save_prototype(prototype):
     if prototype_key in _MODULE_PROTOTYPES:
         mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
         raise PermissionError(
-            "{} is a read-only prototype "
-            "(defined as code in {}).".format(prototype_key, mod)
+            "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
         )
 
     # make sure meta properties are included with defaults
@@ -237,8 +230,7 @@ def save_prototype(prototype):
         "prototype_desc", prototype.get("prototype_desc", "")
     )
     prototype_locks = in_prototype.get(
-        "prototype_locks",
-        prototype.get("prototype_locks", "spawn:all();edit:perm(Admin)"),
+        "prototype_locks", prototype.get("prototype_locks", "spawn:all();edit:perm(Admin)")
     )
     is_valid, err = validate_lockstring(prototype_locks)
     if not is_valid:
@@ -298,8 +290,7 @@ def delete_prototype(prototype_key, caller=None):
     if prototype_key in _MODULE_PROTOTYPES:
         mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key.lower(), "N/A")
         raise PermissionError(
-            "{} is a read-only prototype "
-            "(defined as code in {}).".format(prototype_key, mod)
+            "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
         )
 
     stored_prototype = DbPrototype.objects.filter(db_key__iexact=prototype_key)
@@ -396,9 +387,7 @@ def search_prototype(key=None, tags=None, require_single=False):
         key = key.lower()
         # avoid duplicates if an exact match exist between the two types
         filter_matches = [
-            mta
-            for mta in matches
-            if mta.get("prototype_key") and mta["prototype_key"] == key
+            mta for mta in matches if mta.get("prototype_key") and mta["prototype_key"] == key
         ]
         if filter_matches and len(filter_matches) < nmatches:
             matches = filter_matches
@@ -421,14 +410,10 @@ def search_objects_with_prototype(prototype_key):
         matches (Queryset): All matching objects spawned from this prototype.
 
     """
-    return ObjectDB.objects.get_by_tag(
-        key=prototype_key, category=_PROTOTYPE_TAG_CATEGORY
-    )
+    return ObjectDB.objects.get_by_tag(key=prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
 
 
-def list_prototypes(
-    caller, key=None, tags=None, show_non_use=False, show_non_edit=True
-):
+def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
     """
     Collate a list of found prototypes based on search criteria and access.
 
@@ -453,10 +438,7 @@ def list_prototypes(
     display_tuples = []
     for prototype in sorted(prototypes, key=lambda d: d.get("prototype_key", "")):
         lock_use = caller.locks.check_lockstring(
-            caller,
-            prototype.get("prototype_locks", ""),
-            access_type="spawn",
-            default=True,
+            caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
         )
         if not show_non_use and not lock_use:
             continue
@@ -464,10 +446,7 @@ def list_prototypes(
             lock_edit = False
         else:
             lock_edit = caller.locks.check_lockstring(
-                caller,
-                prototype.get("prototype_locks", ""),
-                access_type="edit",
-                default=True,
+                caller, prototype.get("prototype_locks", ""), access_type="edit", default=True
             )
         if not show_non_edit and not lock_edit:
             continue
@@ -497,9 +476,7 @@ def list_prototypes(
     width = 78
     for i in range(len(display_tuples[0])):
         table.append([str(display_tuple[i]) for display_tuple in display_tuples])
-    table = EvTable(
-        "Key", "Desc", "Spawn/Edit", "Tags", table=table, crop=True, width=width
-    )
+    table = EvTable("Key", "Desc", "Spawn/Edit", "Tags", table=table, crop=True, width=width)
     table.reformat_column(0, width=22)
     table.reformat_column(1, width=29)
     table.reformat_column(2, width=11, align="c")
@@ -508,12 +485,7 @@ def list_prototypes(
 
 
 def validate_prototype(
-    prototype,
-    protkey=None,
-    protparents=None,
-    is_prototype_base=True,
-    strict=True,
-    _flags=None,
+    prototype, protkey=None, protparents=None, is_prototype_base=True, strict=True, _flags=None
 ):
     """
     Run validation on a prototype, checking for inifinite regress.
@@ -539,13 +511,7 @@ def validate_prototype(
     assert isinstance(prototype, dict)
 
     if _flags is None:
-        _flags = {
-            "visited": [],
-            "depth": 0,
-            "typeclass": False,
-            "errors": [],
-            "warnings": [],
-        }
+        _flags = {"visited": [], "depth": 0, "typeclass": False, "errors": [], "warnings": []}
 
     if not protparents:
         protparents = {
@@ -565,8 +531,7 @@ def validate_prototype(
     if strict and not (typeclass or prototype_parent):
         if is_prototype_base:
             _flags["errors"].append(
-                "Prototype {} requires `typeclass` "
-                "or 'prototype_parent'.".format(protkey)
+                "Prototype {} requires `typeclass` " "or 'prototype_parent'.".format(protkey)
             )
         else:
             _flags["warnings"].append(
@@ -589,15 +554,11 @@ def validate_prototype(
     for protstring in make_iter(prototype_parent):
         protstring = protstring.lower()
         if protkey is not None and protstring == protkey:
-            _flags["errors"].append(
-                "Prototype {} tries to parent itself.".format(protkey)
-            )
+            _flags["errors"].append("Prototype {} tries to parent itself.".format(protkey))
         protparent = protparents.get(protstring)
         if not protparent:
             _flags["errors"].append(
-                "Prototype {}'s prototype_parent '{}' was not found.".format(
-                    (protkey, protstring)
-                )
+                "Prototype {}'s prototype_parent '{}' was not found.".format((protkey, protstring))
             )
         if id(prototype) in _flags["visited"]:
             _flags["errors"].append(
@@ -609,11 +570,7 @@ def validate_prototype(
         _flags["visited"].append(id(prototype))
         _flags["depth"] += 1
         validate_prototype(
-            protparent,
-            protstring,
-            protparents,
-            is_prototype_base=is_prototype_base,
-            _flags=_flags,
+            protparent, protstring, protparents, is_prototype_base=is_prototype_base, _flags=_flags
         )
         _flags["visited"].pop()
         _flags["depth"] -= 1
@@ -622,12 +579,7 @@ def validate_prototype(
         _flags["typeclass"] = typeclass
 
     # if we get back to the current level without a typeclass it's an error.
-    if (
-        strict
-        and is_prototype_base
-        and _flags["depth"] <= 0
-        and not _flags["typeclass"]
-    ):
+    if strict and is_prototype_base and _flags["depth"] <= 0 and not _flags["typeclass"]:
         _flags["errors"].append(
             "Prototype {} has no `typeclass` defined anywhere in its parent\n "
             "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
@@ -666,9 +618,7 @@ for mod in settings.PROT_FUNC_MODULES:
         raise
 
 
-def protfunc_parser(
-    value, available_functions=None, testing=False, stacktrace=False, **kwargs
-):
+def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, **kwargs):
     """
     Parse a prototype value string for a protfunc and process it.
 
@@ -704,16 +654,10 @@ def protfunc_parser(
     if not isinstance(value, str):
         return value
 
-    available_functions = (
-        PROT_FUNCS if available_functions is None else available_functions
-    )
+    available_functions = PROT_FUNCS if available_functions is None else available_functions
 
     result = inlinefuncs.parse_inlinefunc(
-        value,
-        available_funcs=available_functions,
-        stacktrace=stacktrace,
-        testing=testing,
-        **kwargs
+        value, available_funcs=available_functions, stacktrace=stacktrace, testing=testing, **kwargs
     )
 
     err = None
@@ -802,9 +746,7 @@ def prototype_to_str(prototype):
         for (tagkey, category, data) in tags:
             out.append(
                 "{tagkey} (category: {category}{dat})".format(
-                    tagkey=tagkey,
-                    category=category,
-                    dat=", data: {}".format(data) if data else "",
+                    tagkey=tagkey, category=category, dat=", data: {}".format(data) if data else ""
                 )
             )
         tags = "|ctags:|n\n {tags}".format(tags=", ".join(out))
@@ -826,17 +768,7 @@ def prototype_to_str(prototype):
 
     body = "\n".join(
         part
-        for part in (
-            key,
-            aliases,
-            attrs,
-            tags,
-            locks,
-            permissions,
-            location,
-            home,
-            destination,
-        )
+        for part in (key, aliases, attrs, tags, locks, permissions, location, home, destination)
         if part
     )
 
@@ -860,8 +792,7 @@ def check_permission(prototype_key, action, default=True):
         if prototype_key in _MODULE_PROTOTYPES:
             mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
             logger.log_err(
-                "{} is a read-only prototype "
-                "(defined as code in {}).".format(prototype_key, mod)
+                "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
             )
             return False
 
@@ -911,8 +842,7 @@ def value_to_obj_or_any(value):
     if is_iter(value):
         if stype == dict:
             return {
-                value_to_obj_or_any(key): value_to_obj_or_any(val)
-                for key, val in value.items()
+                value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.items()
             }
         else:
             return stype([value_to_obj_or_any(val) for val in value])
@@ -925,10 +855,7 @@ def value_to_obj(value, force=True):
     stype = type(value)
     if is_iter(value):
         if stype == dict:
-            return {
-                value_to_obj_or_any(key): value_to_obj_or_any(val)
-                for key, val in value.iter()
-            }
+            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.iter()}
         else:
             return stype([value_to_obj_or_any(val) for val in value])
     return dbid_to_obj(value, ObjectDB)
