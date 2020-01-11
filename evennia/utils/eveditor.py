@@ -332,9 +332,7 @@ def _load_editor(caller):
     Load persistent editor from storage.
     """
     saved_options = caller.attributes.get("_eveditor_saved")
-    saved_buffer, saved_undo = caller.attributes.get(
-        "_eveditor_buffer_temp", (None, None)
-    )
+    saved_buffer, saved_undo = caller.attributes.get("_eveditor_buffer_temp", (None, None))
     unsaved = caller.attributes.get("_eveditor_unsaved", False)
     indent = caller.attributes.get("_eveditor_indent", 0)
     if saved_options:
@@ -461,9 +459,7 @@ class CmdEditorGroup(CmdEditorBase):
             # Echo buffer without the line numbers and syntax parsing
             if self.linerange:
                 buf = linebuffer[lstart:lend]
-                editor.display_buffer(
-                    buf=buf, offset=lstart, linenums=False, options={"raw": True}
-                )
+                editor.display_buffer(buf=buf, offset=lstart, linenums=False, options={"raw": True})
             else:
                 editor.display_buffer(linenums=False, options={"raw": True})
         elif cmd == ":::":
@@ -515,16 +511,11 @@ class CmdEditorGroup(CmdEditorBase):
                 if not self.linerange:
                     lstart = 0
                     lend = self.cline + 1
-                    caller.msg(
-                        "Removed %s for lines %i-%i."
-                        % (self.arg1, lstart + 1, lend + 1)
-                    )
+                    caller.msg("Removed %s for lines %i-%i." % (self.arg1, lstart + 1, lend + 1))
                 else:
                     caller.msg("Removed %s for %s." % (self.arg1, self.lstr))
                 sarea = "\n".join(linebuffer[lstart:lend])
-                sarea = re.sub(
-                    r"%s" % self.arg1.strip("'").strip('"'), "", sarea, re.MULTILINE
-                )
+                sarea = re.sub(r"%s" % self.arg1.strip("'").strip('"'), "", sarea, re.MULTILINE)
                 buf = linebuffer[:lstart] + sarea.split("\n") + linebuffer[lend:]
                 editor.update_buffer(buf)
         elif cmd == ":DD":
@@ -566,9 +557,7 @@ class CmdEditorGroup(CmdEditorBase):
             else:
                 buf = linebuffer[:lstart] + new_lines + linebuffer[lstart:]
                 editor.update_buffer(buf)
-                caller.msg(
-                    "Inserted %i new line(s) at %s." % (len(new_lines), self.lstr)
-                )
+                caller.msg("Inserted %i new line(s) at %s." % (len(new_lines), self.lstr))
         elif cmd == ":r":
             # :r <l> <txt> - replace lines
             new_lines = self.args.split("\n")
@@ -606,9 +595,7 @@ class CmdEditorGroup(CmdEditorBase):
             # :s <li> <w> <txt> - search and replace words
             # in entire buffer or on certain lines
             if not self.arg1 or not self.arg2:
-                caller.msg(
-                    "You must give a search word and something to replace it with."
-                )
+                caller.msg("You must give a search word and something to replace it with.")
             else:
                 if not self.linerange:
                     lstart = 0
@@ -619,8 +606,7 @@ class CmdEditorGroup(CmdEditorBase):
                     )
                 else:
                     caller.msg(
-                        "Search-replaced %s -> %s for %s."
-                        % (self.arg1, self.arg2, self.lstr)
+                        "Search-replaced %s -> %s for %s." % (self.arg1, self.arg2, self.lstr)
                     )
                 sarea = "\n".join(linebuffer[lstart:lend])
 
@@ -673,9 +659,7 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                self.caller.msg(
-                    "%s-justified lines %i-%i." % (align_name[align], lstart + 1, lend)
-                )
+                self.caller.msg("%s-justified lines %i-%i." % (align_name[align], lstart + 1, lend))
             else:
                 self.caller.msg("%s-justified %s." % (align_name[align], self.lstr))
             jbuf = "\n".join(linebuffer[lstart:lend])
@@ -699,9 +683,7 @@ class CmdEditorGroup(CmdEditorBase):
             if not self.linerange:
                 lstart = 0
                 lend = self.cline + 1
-                caller.msg(
-                    "Removed left margin (dedented) lines %i-%i." % (lstart + 1, lend)
-                )
+                caller.msg("Removed left margin (dedented) lines %i-%i." % (lstart + 1, lend))
             else:
                 caller.msg("Removed left margin (dedented) %s." % self.lstr)
             fbuf = "\n".join(linebuffer[lstart:lend])
@@ -723,9 +705,7 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.decrease_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg(
-                        "Decreased indentation: new indentation is {}.".format(indent)
-                    )
+                    caller.msg("Decreased indentation: new indentation is {}.".format(indent))
                 else:
                     caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
             else:
@@ -736,9 +716,7 @@ class CmdEditorGroup(CmdEditorBase):
                 editor.increase_indent()
                 indent = editor._indent
                 if indent >= 0:
-                    caller.msg(
-                        "Increased indentation: new indentation is {}.".format(indent)
-                    )
+                    caller.msg("Increased indentation: new indentation is {}.".format(indent))
                 else:
                     caller.msg("|rManual indentation is OFF.|n Use := to turn it on.")
             else:
@@ -880,9 +858,7 @@ class EvEditor(object):
                         dict(_pristine_buffer=self._pristine_buffer, _sep=self._sep),
                     ),
                 )
-                caller.attributes.add(
-                    "_eveditor_buffer_temp", (self._buffer, self._undo_buffer)
-                )
+                caller.attributes.add("_eveditor_buffer_temp", (self._buffer, self._undo_buffer))
                 caller.attributes.add("_eveditor_unsaved", False)
                 caller.attributes.add("_eveditor_indent", 0)
             except Exception as err:
@@ -1001,15 +977,11 @@ class EvEditor(object):
                 self._caller.msg(_MSG_UNDO)
         elif step and step > 0:
             # redo
-            if (
-                self._undo_pos >= len(self._undo_buffer) - 1
-                or self._undo_pos + 1 >= self._undo_max
-            ):
+            if self._undo_pos >= len(self._undo_buffer) - 1 or self._undo_pos + 1 >= self._undo_max:
                 self._caller.msg(_MSG_NO_REDO)
             else:
                 self._undo_pos = min(
-                    self._undo_pos + step,
-                    min(len(self._undo_buffer), self._undo_max) - 1,
+                    self._undo_pos + step, min(len(self._undo_buffer), self._undo_max) - 1
                 )
                 self._buffer = self._undo_buffer[self._undo_pos]
                 self._caller.msg(_MSG_REDO)

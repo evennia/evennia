@@ -38,9 +38,7 @@ class TestLockCheck(EvenniaTest):
         self.assertEqual(True, self.obj1.locks.check(self.obj2, "get"))
         self.obj1.locks.add("get:false()")
         self.assertEqual(False, self.obj1.locks.check(self.obj2, "get"))
-        self.assertEqual(
-            True, self.obj1.locks.check(self.obj2, "not_exist", default=True)
-        )
+        self.assertEqual(True, self.obj1.locks.check(self.obj2, "not_exist", default=True))
 
 
 class TestLockfuncs(EvenniaTest):
@@ -146,9 +144,7 @@ class TestLockfuncs(EvenniaTest):
         self.assertEqual(False, lockfuncs.id(self.obj2, None, "%s" % (dbref + "1")))
         dbref = self.account2.dbref
         self.assertEqual(True, lockfuncs.pdbref(self.account2, None, "%s" % dbref))
-        self.assertEqual(
-            False, lockfuncs.pid(self.account2, None, "%s" % (dbref + "1"))
-        )
+        self.assertEqual(False, lockfuncs.pid(self.account2, None, "%s" % (dbref + "1")))
 
     def test_attr(self):
         self.obj2.db.testattr = 45
@@ -160,9 +156,7 @@ class TestLockfuncs(EvenniaTest):
 
         self.assertEqual(True, lockfuncs.objattr(None, self.obj2, "testattr", "45"))
         self.assertEqual(True, lockfuncs.objattr(None, self.obj2, "testattr", "45"))
-        self.assertEqual(
-            False, lockfuncs.objattr(None, self.obj2, "testattr", "45", compare="lt")
-        )
+        self.assertEqual(False, lockfuncs.objattr(None, self.obj2, "testattr", "45", compare="lt"))
 
     def test_locattr(self):
         self.obj2.location.db.locattr = "test"
@@ -192,13 +186,7 @@ class TestLockfuncs(EvenniaTest):
 
     @override_settings(IRC_ENABLED=True, TESTVAL=[1, 2, 3])
     def test_serversetting(self):
-        self.assertEqual(
-            True, lockfuncs.serversetting(None, None, "IRC_ENABLED", "True")
-        )
-        self.assertEqual(
-            True, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 3]")
-        )
-        self.assertEqual(
-            False, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 4]")
-        )
+        self.assertEqual(True, lockfuncs.serversetting(None, None, "IRC_ENABLED", "True"))
+        self.assertEqual(True, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 3]"))
+        self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 4]"))
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "123"))

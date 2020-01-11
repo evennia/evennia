@@ -22,9 +22,7 @@ class BaseOption(object):
     """
 
     def __str__(self):
-        return "<Option {key}: {value}>".format(
-            key=self.key, value=crop(str(self.value), width=10)
-        )
+        return "<Option {key}: {value}>".format(key=self.key, value=crop(str(self.value), width=10))
 
     def __repr__(self):
         return str(self)
@@ -309,9 +307,7 @@ class Datetime(BaseOption):
     def deserialize(self, save_data):
         if isinstance(save_data, int):
             return datetime.datetime.utcfromtimestamp(save_data)
-        raise ValueError(
-            f"{self.key} expected UTC Datetime in EPOCH format, got '{save_data}'"
-        )
+        raise ValueError(f"{self.key} expected UTC Datetime in EPOCH format, got '{save_data}'")
 
     def serialize(self):
         return int(self.value_storage.strftime("%s"))

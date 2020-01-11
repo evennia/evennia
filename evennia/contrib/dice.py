@@ -177,9 +177,7 @@ class CmdDice(default_cmds.MuxCommand):
         ndicelimit = 10000  # Maximum number of dice
         nsidelimit = 10000  # Maximum number of sides
         if int(parts[0]) > ndicelimit or int(parts[2]) > nsidelimit:
-            self.caller.msg(
-                "The maximum roll allowed is %sd%s." % (ndicelimit, nsidelimit)
-            )
+            self.caller.msg("The maximum roll allowed is %sd%s." % (ndicelimit, nsidelimit))
             return
 
         ndice, nsides = parts[0], parts[2]
@@ -203,11 +201,7 @@ class CmdDice(default_cmds.MuxCommand):
         # do the roll
         try:
             result, outcome, diff, rolls = roll_dice(
-                ndice,
-                nsides,
-                modifier=modifier,
-                conditional=conditional,
-                return_tuple=True,
+                ndice, nsides, modifier=modifier, conditional=conditional, return_tuple=True
             )
         except ValueError:
             self.caller.msg(
@@ -217,9 +211,7 @@ class CmdDice(default_cmds.MuxCommand):
             return
         # format output
         if len(rolls) > 1:
-            rolls = (
-                ", ".join(str(roll) for roll in rolls[:-1]) + " and " + str(rolls[-1])
-            )
+            rolls = ", ".join(str(roll) for roll in rolls[:-1]) + " and " + str(rolls[-1])
         else:
             rolls = rolls[0]
         if outcome is None:

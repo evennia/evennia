@@ -53,7 +53,6 @@ class EvenniaGameIndexService(Service):
         Stop the service so we're not wasting resources.
         """
         logger.log_infomsg(
-            "Shutting down Evennia Game Index client service due to "
-            "invalid configuration."
+            "Shutting down Evennia Game Index client service due to " "invalid configuration."
         )
         self.stopService()

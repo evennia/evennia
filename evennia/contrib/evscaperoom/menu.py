@@ -151,9 +151,7 @@ def node_set_desc(caller, raw_string, **kwargs):
     current_desc = kwargs.get("desc", caller.db.desc)
 
     text = (
-        "Your current description is\n\n "
-        f'   "{current_desc}"'
-        "\n\nEnter your new description!"
+        "Your current description is\n\n " f'   "{current_desc}"' "\n\nEnter your new description!"
     )
 
     def _temp_description(caller, raw_string, **kwargs):
@@ -171,10 +169,7 @@ def node_set_desc(caller, raw_string, **kwargs):
 
     options = (
         {"key": "_default", "goto": _temp_description},
-        {
-            "key": ("|g[a]ccept", "a"),
-            "goto": (_set_description, {"desc": current_desc}),
-        },
+        {"key": ("|g[a]ccept", "a"), "goto": (_set_description, {"desc": current_desc})},
         {"key": ("|r[c]ancel", "c"), "goto": "node_start"},
     )
     return text, options
@@ -185,10 +180,7 @@ def node_create_room(caller, raw_string, **kwargs):
     text = _CREATE_ROOM_TEXT
 
     options = (
-        {
-            "key": ("|g[c]reate new room and start game|n", "c"),
-            "goto": _create_new_room,
-        },
+        {"key": ("|g[c]reate new room and start game|n", "c"), "goto": _create_new_room},
         {"key": ("|r[a]bort and go back|n", "a"), "goto": "node_start"},
     )
 
@@ -229,10 +221,7 @@ def node_quit(caller, raw_string, **kwargs):
             from evennia import default_cmds
 
             cmdhandler.cmdhandler(
-                caller.ndb._menutree._session,
-                "",
-                cmdobj=default_cmds.CmdQuit(),
-                cmdobj_key="@quit",
+                caller.ndb._menutree._session, "", cmdobj=default_cmds.CmdQuit(), cmdobj_key="@quit"
             )
 
     return text, None  # empty options exit the menu
@@ -259,9 +248,7 @@ class EvscaperoomMenu(EvMenu):
                 main_options.append(key)
         main_options = " | ".join(main_options)
         room_choices = super().options_formatter(room_choices)
-        return "{}{}{}".format(
-            main_options, "\n\n" if room_choices else "", room_choices
-        )
+        return "{}{}{}".format(main_options, "\n\n" if room_choices else "", room_choices)
 
 
 # access function
@@ -278,9 +265,7 @@ def run_evscaperoom_menu(caller):
         "node_join_room": node_join_room,
     }
 
-    EvscaperoomMenu(
-        caller, menutree, startnode="node_start", cmd_on_exit=None, auto_quit=True
-    )
+    EvscaperoomMenu(caller, menutree, startnode="node_start", cmd_on_exit=None, auto_quit=True)
 
 
 # ------------------------------------------------------------
@@ -300,9 +285,7 @@ def _toggle_screen_reader(caller, raw_string, **kwargs):
 
     session = kwargs["session"]
     # flip old setting
-    session.protocol_flags["SCREENREADER"] = not session.protocol_flags.get(
-        "SCREENREADER", False
-    )
+    session.protocol_flags["SCREENREADER"] = not session.protocol_flags.get("SCREENREADER", False)
     # sync setting with portal
     session.sessionhandler.session_portal_sync(session)
     return None, kwargs  # rerun node

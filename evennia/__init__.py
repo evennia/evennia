@@ -142,9 +142,7 @@ def _create_version():
         print(err)
     try:
         rev = (
-            check_output(
-                "git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT
-            )
+            check_output("git rev-parse --short HEAD", shell=True, cwd=root, stderr=STDOUT)
             .strip()
             .decode()
         )
@@ -264,9 +262,7 @@ def _init():
 
         def _help(self):
             "Returns list of contents"
-            names = [
-                name for name in self.__class__.__dict__ if not name.startswith("_")
-            ]
+            names = [name for name in self.__class__.__dict__ if not name.startswith("_")]
             names += [name for name in self.__dict__ if not name.startswith("_")]
             print(self.__doc__ + "-" * 60 + "\n" + ", ".join(names))
 

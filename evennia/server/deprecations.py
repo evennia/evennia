@@ -27,21 +27,14 @@ def check_errors(settings):
         raise DeprecationWarning(deprstring % ("CMDSET_DEFAULT", "CMDSET_CHARACTER"))
     if hasattr(settings, "CMDSET_OOC"):
         raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_ACCOUNT"))
-    if settings.WEBSERVER_ENABLED and not isinstance(
-        settings.WEBSERVER_PORTS[0], tuple
-    ):
+    if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
         raise DeprecationWarning(
-            "settings.WEBSERVER_PORTS must be on the form "
-            "[(proxyport, serverport), ...]"
+            "settings.WEBSERVER_PORTS must be on the form " "[(proxyport, serverport), ...]"
         )
     if hasattr(settings, "BASE_COMM_TYPECLASS"):
-        raise DeprecationWarning(
-            deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS")
-        )
+        raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
     if hasattr(settings, "COMM_TYPECLASS_PATHS"):
-        raise DeprecationWarning(
-            deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS")
-        )
+        raise DeprecationWarning(deprstring % ("COMM_TYPECLASS_PATHS", "CHANNEL_TYPECLASS_PATHS"))
     if hasattr(settings, "CHARACTER_DEFAULT_HOME"):
         raise DeprecationWarning(
             "settings.CHARACTER_DEFAULT_HOME should be renamed to "
@@ -49,8 +42,7 @@ def check_errors(settings):
             "(see evennia/settings_default.py)."
         )
     deprstring = (
-        "settings.%s is now merged into settings.TYPECLASS_PATHS. "
-        "Update your settings file."
+        "settings.%s is now merged into settings.TYPECLASS_PATHS. " "Update your settings file."
     )
     if hasattr(settings, "OBJECT_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "OBJECT_TYPECLASS_PATHS")

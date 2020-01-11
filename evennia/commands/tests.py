@@ -99,116 +99,68 @@ class TestCmdSetMergers(TestCase):
         a, c = self.cmdset_a, self.cmdset_c
         cmdset_f = a + c  # same-prio
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2)
         cmdset_f = c + a  # same-prio, inverse order
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
         a.priority = 1
         cmdset_f = a + c  # high prio A
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
 
     def test_intersect(self):
         a, c = self.cmdset_a, self.cmdset_c
         a.mergetype = "Intersect"
         cmdset_f = a + c  # same-prio - c's Union kicks in
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2)
         cmdset_f = c + a  # same-prio - a's Intersect kicks in
         self.assertEqual(len(cmdset_f.commands), 2)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
         a.priority = 1
         cmdset_f = a + c  # high prio A, intersect kicks in
         self.assertEqual(len(cmdset_f.commands), 2)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
 
     def test_replace(self):
         a, c = self.cmdset_a, self.cmdset_c
         c.mergetype = "Replace"
         cmdset_f = a + c  # same-prio. C's Replace kicks in
         self.assertEqual(len(cmdset_f.commands), 2)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 0
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 0)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2)
         cmdset_f = c + a  # same-prio. A's Union kicks in
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
         c.priority = 1
         cmdset_f = c + a  # c higher prio. C's Replace kicks in
         self.assertEqual(len(cmdset_f.commands), 2)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 0
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 0)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 2)
 
     def test_remove(self):
         a, c = self.cmdset_a, self.cmdset_c
         c.mergetype = "Remove"
         cmdset_f = a + c  # same-prio. C's Remove kicks in
         self.assertEqual(len(cmdset_f.commands), 2)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
         cmdset_f = c + a  # same-prio. A's Union kicks in
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 4)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
         c.priority = 1
         cmdset_f = c + a  # c higher prio. C's Remove kicks in
         self.assertEqual(len(cmdset_f.commands), 2)
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2
-        )
-        self.assertEqual(
-            sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0
-        )
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
+        self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
 
     def test_order(self):
         "Merge in reverse- and forward orders, same priorities"
@@ -217,18 +169,12 @@ class TestCmdSetMergers(TestCase):
         self.assertEqual(cmdset_f.priority, 0)
         self.assertEqual(cmdset_f.mergetype, "Union")
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertTrue(
-            all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "A")
-        )
+        self.assertTrue(all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "A"))
         cmdset_f = a + b + c + d  # merge in order of priority
         self.assertEqual(cmdset_f.priority, 0)
         self.assertEqual(cmdset_f.mergetype, "Union")
-        self.assertEqual(
-            len(cmdset_f.commands), 4
-        )  # duplicates setting from A transfers
-        self.assertTrue(
-            all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "D")
-        )
+        self.assertEqual(len(cmdset_f.commands), 4)  # duplicates setting from A transfers
+        self.assertTrue(all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "D"))
 
     def test_priority_order(self):
         "Merge in reverse- and forward order with well-defined prioritities"
@@ -241,16 +187,12 @@ class TestCmdSetMergers(TestCase):
         self.assertEqual(cmdset_f.priority, 2)
         self.assertEqual(cmdset_f.mergetype, "Union")
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertTrue(
-            all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "A")
-        )
+        self.assertTrue(all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "A"))
         cmdset_f = a + b + c + d  # merge in order of priority
         self.assertEqual(cmdset_f.priority, 2)
         self.assertEqual(cmdset_f.mergetype, "Union")
         self.assertEqual(len(cmdset_f.commands), 4)
-        self.assertTrue(
-            all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "A")
-        )
+        self.assertTrue(all(True for cmd in cmdset_f.commands if cmd.from_cmdset == "A"))
 
     def test_option_transfer(self):
         "Test transfer of cmdset options"
@@ -283,9 +225,7 @@ class TestCmdSetMergers(TestCase):
         self.assertTrue(cmdset_f.no_channels)
         self.assertTrue(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 4)
-        cmdset_f = (
-            a + b + c + d
-        )  # forward, A top priority. This never happens in practice.
+        cmdset_f = a + b + c + d  # forward, A top priority. This never happens in practice.
         self.assertTrue(cmdset_f.no_exits)
         self.assertTrue(cmdset_f.no_objs)
         self.assertTrue(cmdset_f.no_channels)
@@ -391,9 +331,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
 
     def test_from_object(self):
         self.set_cmdsets(self.obj1, self.cmdset_a)
-        deferred = cmdhandler.get_and_merge_cmdsets(
-            self.obj1, None, None, self.obj1, "object", ""
-        )
+        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
         # get_and_merge_cmdsets converts  to lower-case internally.
 
         def _callback(cmdset):
@@ -410,9 +348,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         a.no_channels = True
         self.set_cmdsets(self.obj1, a, b, c, d)
 
-        deferred = cmdhandler.get_and_merge_cmdsets(
-            self.obj1, None, None, self.obj1, "object", ""
-        )
+        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
 
         def _callback(cmdset):
             self.assertTrue(cmdset.no_exits)
@@ -427,9 +363,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         from evennia.commands.default.cmdset_account import AccountCmdSet
         from evennia.comms.channelhandler import CHANNEL_HANDLER
 
-        testchannel = evennia.create_channel(
-            "channeltest", locks="listen:all();send:all()"
-        )
+        testchannel = evennia.create_channel("channeltest", locks="listen:all();send:all()")
         CHANNEL_HANDLER.add(testchannel)
         CHANNEL_HANDLER.update()
         self.assertTrue(testchannel.connect(self.account))
@@ -443,14 +377,9 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         def _callback(cmdset):
             pcmdset = AccountCmdSet()
             pcmdset.at_cmdset_creation()
-            pcmds = (
-                [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"] + ["out"]
-            )
+            pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"] + ["out"]
             self.assertTrue(
-                all(
-                    cmd.key or hasattr(cmd, "is_channel") in pcmds
-                    for cmd in cmdset.commands
-                )
+                all(cmd.key or hasattr(cmd, "is_channel") in pcmds for cmd in cmdset.commands)
             )
             self.assertTrue(any(hasattr(cmd, "is_channel") for cmd in cmdset.commands))
 
@@ -464,9 +393,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         b.duplicates = True
         d.duplicates = True
         self.set_cmdsets(self.obj1, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(
-            self.obj1, None, None, self.obj1, "object", ""
-        )
+        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
 
         def _callback(cmdset):
             self.assertEqual(len(cmdset.commands), 9)
@@ -539,9 +466,7 @@ class TestCmdParser(TestCase):
         # test prefix exclusion on the cmd class
         bcmd = [cmd for cmd in a_cmdset.commands if cmd.key == "&the third command"][0]
         self.assertEqual(
-            cmdparser.build_matches(
-                "the third command", a_cmdset, include_prefixes=False
-            ),
+            cmdparser.build_matches("the third command", a_cmdset, include_prefixes=False),
             [("the third command", "", bcmd, 17, 1.0, "&the third command")],
         )
 
@@ -552,8 +477,7 @@ class TestCmdParser(TestCase):
         self.assertEqual(cmdparser.try_num_prefixes("567-look me"), ("567", "look me"))
 
     @override_settings(
-        SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)",
-        CMD_IGNORE_PREFIXES="@&/+",
+        SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)", CMD_IGNORE_PREFIXES="@&/+"
     )
     def test_cmdparser(self):
         a_cmdset = _CmdSetTest()

@@ -11,11 +11,7 @@ from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia import ScriptDB
 from evennia.utils.utils import delay, inherits_from, lazy_property
 from evennia.contrib.ingame_python.callbackhandler import CallbackHandler
-from evennia.contrib.ingame_python.utils import (
-    register_events,
-    time_event,
-    phrase_event,
-)
+from evennia.contrib.ingame_python.utils import register_events, time_event, phrase_event
 
 # Character help
 CHARACTER_CAN_DELETE = """
@@ -174,11 +170,7 @@ class EventCharacter(DefaultCharacter):
         "can_delete": (["character"], CHARACTER_CAN_DELETE),
         "can_move": (["character", "origin", "destination"], CHARACTER_CAN_MOVE),
         "can_part": (["character", "departing"], CHARACTER_CAN_PART),
-        "can_say": (
-            ["speaker", "character", "message"],
-            CHARACTER_CAN_SAY,
-            phrase_event,
-        ),
+        "can_say": (["speaker", "character", "message"], CHARACTER_CAN_SAY, phrase_event),
         "delete": (["character"], CHARACTER_DELETE),
         "greet": (["character", "newcomer"], CHARACTER_GREET),
         "move": (["character", "origin", "destination"], CHARACTER_MOVE),
@@ -221,9 +213,7 @@ class EventCharacter(DefaultCharacter):
         # Get the exit from location to destination
         location = self.location
         exits = [
-            o
-            for o in location.contents
-            if o.location is location and o.destination is destination
+            o for o in location.contents if o.location is location and o.destination is destination
         ]
         mapping = mapping or {}
         mapping.update({"character": self})
@@ -265,9 +255,7 @@ class EventCharacter(DefaultCharacter):
         if not source_location and self.location.has_account:
             # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % self.get_display_name(
-                self.location
-            )
+            string = "You now have %s in your possession." % self.get_display_name(self.location)
             self.location.msg(string)
             return
 
@@ -363,9 +351,7 @@ class EventCharacter(DefaultCharacter):
 
             # Call the 'greet' event of characters in the location
             for present in [
-                o
-                for o in destination.contents
-                if isinstance(o, DefaultCharacter) and o is not self
+                o for o in destination.contents if isinstance(o, DefaultCharacter) and o is not self
             ]:
                 present.callbacks.call("greet", present, self)
 
@@ -450,14 +436,11 @@ class EventCharacter(DefaultCharacter):
         location = getattr(self, "location", None)
         location = (
             location
-            if location
-            and inherits_from(location, "evennia.objects.objects.DefaultRoom")
+            if location and inherits_from(location, "evennia.objects.objects.DefaultRoom")
             else None
         )
         if location and not kwargs.get("whisper", False):
-            allow = location.callbacks.call(
-                "can_say", self, location, message, parameters=message
-            )
+            allow = location.callbacks.call("can_say", self, location, message, parameters=message)
             message = location.callbacks.get_variable("message")
             if not allow or not message:
                 return
@@ -469,9 +452,7 @@ class EventCharacter(DefaultCharacter):
                 ):
                     continue
 
-                allow = obj.callbacks.call(
-                    "can_say", self, obj, message, parameters=message
-                )
+                allow = obj.callbacks.call("can_say", self, obj, message, parameters=message)
                 message = obj.callbacks.get_variable("message")
                 if not allow or not message:
                     return
@@ -524,8 +505,7 @@ class EventCharacter(DefaultCharacter):
         location = getattr(self, "location", None)
         location = (
             location
-            if location
-            and inherits_from(location, "evennia.objects.objects.DefaultRoom")
+            if location and inherits_from(location, "evennia.objects.objects.DefaultRoom")
             else None
         )
 
@@ -540,9 +520,7 @@ class EventCharacter(DefaultCharacter):
                 and inherits_from(obj, "evennia.objects.objects.DefaultCharacter")
             ]
             for present in presents:
-                present.callbacks.call(
-                    "say", self, present, message, parameters=message
-                )
+                present.callbacks.call("say", self, present, message, parameters=message)
 
 
 # Exit help
@@ -679,9 +657,7 @@ class EventExit(DefaultExit):
         """
         is_character = inherits_from(traversing_object, DefaultCharacter)
         if is_character:
-            allow = self.callbacks.call(
-                "can_traverse", traversing_object, self, self.location
-            )
+            allow = self.callbacks.call("can_traverse", traversing_object, self, self.location)
             if not allow:
                 return
 

@@ -87,9 +87,7 @@ def create_objects():
     # Create the in-game god-character for account #1 and set
     # it to exist in Limbo.
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS
-    god_character = create.create_object(
-        character_typeclass, key=god_account.username, nohome=True
-    )
+    god_character = create.create_object(character_typeclass, key=god_account.username, nohome=True)
 
     god_character.id = 1
     god_character.save()
@@ -212,13 +210,7 @@ def handle_setup(last_step):
     last_step = last_step or 0
 
     # setting up the list of functions to run
-    setup_queue = [
-        create_objects,
-        create_channels,
-        at_initial_setup,
-        collectstatic,
-        reset_server,
-    ]
+    setup_queue = [create_objects, create_channels, at_initial_setup, collectstatic, reset_server]
 
     # step through queue, from last completed function
     for num, setup_func in enumerate(setup_queue[last_step:]):

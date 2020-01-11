@@ -12,8 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelManagers(
-            name="accountdb",
-            managers=[("objects", evennia.accounts.manager.AccountDBManager())],
+            name="accountdb", managers=[("objects", evennia.accounts.manager.AccountDBManager())]
         ),
         migrations.AlterField(
             model_name="accountdb",
@@ -42,9 +41,7 @@ class Migration(migrations.Migration):
             model_name="accountdb",
             name="db_is_bot",
             field=models.BooleanField(
-                default=False,
-                help_text="Used to identify irc/rss bots",
-                verbose_name="is_bot",
+                default=False, help_text="Used to identify irc/rss bots", verbose_name="is_bot"
             ),
         ),
         migrations.AlterField(

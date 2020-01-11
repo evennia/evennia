@@ -87,22 +87,16 @@ IRC_COLOR_MAP = dict(
     )
 )
 # ansi->irc
-RE_ANSI_COLOR = re.compile(
-    r"|".join([re.escape(key) for key in IRC_COLOR_MAP.keys()]), re.DOTALL
-)
+RE_ANSI_COLOR = re.compile(r"|".join([re.escape(key) for key in IRC_COLOR_MAP.keys()]), re.DOTALL)
 RE_MXP = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
 RE_ANSI_ESCAPES = re.compile(r"(%s)" % "|".join(("{{", "%%", "\\\\")), re.DOTALL)
 # irc->ansi
 _CLR_LIST = [
-    re.escape(val)
-    for val in sorted(IRC_COLOR_MAP.values(), key=len, reverse=True)
-    if val.strip()
+    re.escape(val) for val in sorted(IRC_COLOR_MAP.values(), key=len, reverse=True) if val.strip()
 ]
 _CLR_LIST = _CLR_LIST[-2:] + _CLR_LIST[:-2]
 RE_IRC_COLOR = re.compile(r"|".join(_CLR_LIST), re.DOTALL)
-ANSI_COLOR_MAP = dict(
-    (tup[1], tup[0]) for tup in IRC_COLOR_MAP.items() if tup[1].strip()
-)
+ANSI_COLOR_MAP = dict((tup[1], tup[0]) for tup in IRC_COLOR_MAP.items() if tup[1].strip())
 
 
 def parse_ansi_to_irc(string):
@@ -262,11 +256,7 @@ class IRCBot(irc.IRCClient, Session):
         if channel != self.channel.lower():
             return
         self.data_in(
-            text="",
-            type="nicklist",
-            user="server",
-            channel=channel,
-            nicklist=self.nicklist,
+            text="", type="nicklist", user="server", channel=channel, nicklist=self.nicklist
         )
         self.nicklist = []
 
@@ -279,9 +269,7 @@ class IRCBot(irc.IRCClient, Session):
             time (float): Ping time in secs.
 
         """
-        self.data_in(
-            text="", type="ping", user="server", channel=self.channel, timing=time
-        )
+        self.data_in(text="", type="ping", user="server", channel=self.channel, timing=time)
 
     def data_in(self, text=None, **kwargs):
         """
@@ -484,9 +472,7 @@ class IRCBotFactory(protocol.ReconnectingClientFactory):
                         self.network, int(self.port), self, ssl.ClientContextFactory()
                     )
                 except ImportError:
-                    logger.log_err(
-                        "To use SSL, the PyOpenSSL module must be installed."
-                    )
+                    logger.log_err("To use SSL, the PyOpenSSL module must be installed.")
             else:
                 service = internet.TCPClient(self.network, int(self.port), self)
             self.sessionhandler.portal.services.addService(service)

@@ -15,16 +15,10 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.AutoField(
-                        verbose_name="ID",
-                        serialize=False,
-                        auto_created=True,
-                        primary_key=True,
+                        verbose_name="ID", serialize=False, auto_created=True, primary_key=True
                     ),
                 ),
-                (
-                    "db_key",
-                    models.CharField(max_length=255, verbose_name="key", db_index=True),
-                ),
+                ("db_key", models.CharField(max_length=255, verbose_name="key", db_index=True)),
                 (
                     "db_typeclass_path",
                     models.CharField(
@@ -36,9 +30,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "db_date_created",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="creation date"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="creation date"),
                 ),
                 (
                     "db_lock_storage",
@@ -58,10 +50,7 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.AutoField(
-                        verbose_name="ID",
-                        serialize=False,
-                        auto_created=True,
-                        primary_key=True,
+                        verbose_name="ID", serialize=False, auto_created=True, primary_key=True
                     ),
                 ),
                 (
@@ -74,10 +63,7 @@ class Migration(migrations.Migration):
                         db_index=True,
                     ),
                 ),
-                (
-                    "db_header",
-                    models.TextField(null=True, verbose_name="header", blank=True),
-                ),
+                ("db_header", models.TextField(null=True, verbose_name="header", blank=True)),
                 ("db_message", models.TextField(verbose_name="messsage")),
                 (
                     "db_date_sent",
@@ -88,17 +74,13 @@ class Migration(migrations.Migration):
                 (
                     "db_lock_storage",
                     models.TextField(
-                        help_text="access locks on this message.",
-                        verbose_name="locks",
-                        blank=True,
+                        help_text="access locks on this message.", verbose_name="locks", blank=True
                     ),
                 ),
                 (
                     "db_hide_from_channels",
                     models.ManyToManyField(
-                        related_name="hide_from_channels_set",
-                        null=True,
-                        to="comms.ChannelDB",
+                        related_name="hide_from_channels_set", null=True, to="comms.ChannelDB"
                     ),
                 ),
             ],

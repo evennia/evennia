@@ -63,8 +63,7 @@ class AccountForm(UserCreationForm):
     # Username is collected as part of the core UserCreationForm, so we just need
     # to add a field to (optionally) capture email.
     email = forms.EmailField(
-        help_text="A valid email address. Optional; used for password resets.",
-        required=False,
+        help_text="A valid email address. Optional; used for password resets.", required=False
     )
 
 

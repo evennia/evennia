@@ -205,30 +205,24 @@ class MsgManager(TypedObjectManager):
             # explicitly exclude channel recipients
             if typ == "account":
                 return list(
-                    self.filter(
-                        db_sender_accounts=obj, db_receivers_channels__isnull=True
-                    ).exclude(db_hide_from_accounts=obj)
+                    self.filter(db_sender_accounts=obj, db_receivers_channels__isnull=True).exclude(
+                        db_hide_from_accounts=obj
+                    )
                 )
             elif typ == "object":
                 return list(
-                    self.filter(
-                        db_sender_objects=obj, db_receivers_channels__isnull=True
-                    ).exclude(db_hide_from_objects=obj)
+                    self.filter(db_sender_objects=obj, db_receivers_channels__isnull=True).exclude(
+                        db_hide_from_objects=obj
+                    )
                 )
             else:
                 raise CommError
         else:
             # get everything, channel or not
             if typ == "account":
-                return list(
-                    self.filter(db_sender_accounts=obj).exclude(
-                        db_hide_from_accounts=obj
-                    )
-                )
+                return list(self.filter(db_sender_accounts=obj).exclude(db_hide_from_accounts=obj))
             elif typ == "object":
-                return list(
-                    self.filter(db_sender_objects=obj).exclude(db_hide_from_objects=obj)
-                )
+                return list(self.filter(db_sender_objects=obj).exclude(db_hide_from_objects=obj))
             else:
                 raise CommError
 
@@ -248,21 +242,11 @@ class MsgManager(TypedObjectManager):
         """
         obj, typ = identify_object(recipient)
         if typ == "account":
-            return list(
-                self.filter(db_receivers_accounts=obj).exclude(
-                    db_hide_from_accounts=obj
-                )
-            )
+            return list(self.filter(db_receivers_accounts=obj).exclude(db_hide_from_accounts=obj))
         elif typ == "object":
-            return list(
-                self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj)
-            )
+            return list(self.filter(db_receivers_objects=obj).exclude(db_hide_from_objects=obj))
         elif typ == "channel":
-            return list(
-                self.filter(db_receivers_channels=obj).exclude(
-                    db_hide_from_channels=obj
-                )
-            )
+            return list(self.filter(db_receivers_channels=obj).exclude(db_hide_from_channels=obj))
         else:
             raise CommError
 
@@ -277,9 +261,7 @@ class MsgManager(TypedObjectManager):
             messages (list): Persistent Msg objects saved for this channel.
 
         """
-        return self.filter(db_receivers_channels=channel).exclude(
-            db_hide_from_channels=channel
-        )
+        return self.filter(db_receivers_channels=channel).exclude(db_hide_from_channels=channel)
 
     def search_message(self, sender=None, receiver=None, freetext=None, dbref=None):
         """
@@ -315,13 +297,9 @@ class MsgManager(TypedObjectManager):
         # filter by sender
         sender, styp = identify_object(sender)
         if styp == "account":
-            sender_restrict = Q(db_sender_accounts=sender) & ~Q(
-                db_hide_from_accounts=sender
-            )
+            sender_restrict = Q(db_sender_accounts=sender) & ~Q(db_hide_from_accounts=sender)
         elif styp == "object":
-            sender_restrict = Q(db_sender_objects=sender) & ~Q(
-                db_hide_from_objects=sender
-            )
+            sender_restrict = Q(db_sender_objects=sender) & ~Q(db_hide_from_objects=sender)
         else:
             sender_restrict = Q()
         # filter by receiver
@@ -331,9 +309,7 @@ class MsgManager(TypedObjectManager):
                 db_hide_from_accounts=receiver
             )
         elif rtyp == "object":
-            receiver_restrict = Q(db_receivers_objects=receiver) & ~Q(
-                db_hide_from_objects=receiver
-            )
+            receiver_restrict = Q(db_receivers_objects=receiver) & ~Q(db_hide_from_objects=receiver)
         elif rtyp == "channel":
             receiver_restrict = Q(db_receivers_channels=receiver) & ~Q(
                 db_hide_from_channels=receiver
@@ -342,15 +318,11 @@ class MsgManager(TypedObjectManager):
             receiver_restrict = Q()
         # filter by full text
         if freetext:
-            fulltext_restrict = Q(db_header__icontains=freetext) | Q(
-                db_message__icontains=freetext
-            )
+            fulltext_restrict = Q(db_header__icontains=freetext) | Q(db_message__icontains=freetext)
         else:
             fulltext_restrict = Q()
         # execute the query
-        return list(
-            self.filter(sender_restrict & receiver_restrict & fulltext_restrict)
-        )
+        return list(self.filter(sender_restrict & receiver_restrict & fulltext_restrict))
 
     # back-compatibility alias
     message_search = search_message
@@ -447,17 +419,12 @@ class ChannelDBManager(TypedObjectManager):
         if exact:
             channels = self.filter(
                 Q(db_key__iexact=ostring)
-                | Q(
-                    db_tags__db_tagtype__iexact="alias", db_tags__db_key__iexact=ostring
-                )
+                | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__iexact=ostring)
             ).distinct()
         else:
             channels = self.filter(
                 Q(db_key__icontains=ostring)
-                | Q(
-                    db_tags__db_tagtype__iexact="alias",
-                    db_tags__db_key__icontains=ostring,
-                )
+                | Q(db_tags__db_tagtype__iexact="alias", db_tags__db_key__icontains=ostring)
             ).distinct()
         return channels
 

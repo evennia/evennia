@@ -132,9 +132,7 @@ class TestLauncher(TwistedTestCase):
     @patch("evennia.server.evennia_launcher.print")
     def test_query_status_run(self, mprint):
         evennia_launcher.query_status()
-        mprint.assert_called_with(
-            "Portal: RUNNING (pid 100)\nServer: RUNNING (pid 100)"
-        )
+        mprint.assert_called_with("Portal: RUNNING (pid 100)\nServer: RUNNING (pid 100)")
 
     @patch("evennia.server.evennia_launcher.send_instruction", _msend_status_err)
     @patch("evennia.server.evennia_launcher.NO_REACTOR_STOP", True)

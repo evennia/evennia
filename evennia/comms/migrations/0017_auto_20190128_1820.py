@@ -80,9 +80,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="msg",
             name="db_date_created",
-            field=models.DateTimeField(
-                auto_now_add=True, db_index=True, verbose_name="date sent"
-            ),
+            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="date sent"),
         ),
         migrations.AlterField(
             model_name="msg",
@@ -93,15 +91,11 @@ class Migration(migrations.Migration):
             model_name="msg",
             name="db_lock_storage",
             field=models.TextField(
-                blank=True,
-                help_text="access locks on this message.",
-                verbose_name="locks",
+                blank=True, help_text="access locks on this message.", verbose_name="locks"
             ),
         ),
         migrations.AlterField(
-            model_name="msg",
-            name="db_message",
-            field=models.TextField(verbose_name="message"),
+            model_name="msg", name="db_message", field=models.TextField(verbose_name="message")
         ),
         migrations.AlterField(
             model_name="msg",

@@ -396,9 +396,7 @@ class IntroRoom(TutorialRoom):
 
         if character.is_superuser:
             string = "-" * 78 + SUPERUSER_WARNING + "-" * 78
-            character.msg(
-                "|r%s|n" % string.format(name=character.key, quell="|w@quell|r")
-            )
+            character.msg("|r%s|n" % string.format(name=character.key, quell="|w@quell|r"))
 
 
 # -------------------------------------------------------------
@@ -573,23 +571,15 @@ class CmdLookBridge(Command):
             random.choice(BRIDGE_MOODS),
         )
 
-        chars = [
-            obj for obj in self.obj.contents_get(exclude=caller) if obj.has_account
-        ]
+        chars = [obj for obj in self.obj.contents_get(exclude=caller) if obj.has_account]
         if chars:
             # we create the You see: message manually here
-            message += "\n You see: %s" % ", ".join(
-                "|c%s|n" % char.key for char in chars
-            )
+            message += "\n You see: %s" % ", ".join("|c%s|n" % char.key for char in chars)
         self.caller.msg(message)
 
         # there is a chance that we fall if we are on the western or central
         # part of the bridge.
-        if (
-            bridge_position < 3
-            and random.random() < 0.05
-            and not self.caller.is_superuser
-        ):
+        if bridge_position < 3 and random.random() < 0.05 and not self.caller.is_superuser:
             # we fall 5% of time.
             fall_exit = search_object(self.obj.db.fall_exit)
             if fall_exit:
@@ -816,9 +806,7 @@ class CmdLookDark(Command):
             caller.ndb.dark_searches += 1
         else:
             # we could have found something!
-            if any(
-                obj for obj in caller.contents if utils.inherits_from(obj, LightSource)
-            ):
+            if any(obj for obj in caller.contents if utils.inherits_from(obj, LightSource)):
                 #  we already carry a LightSource object.
                 caller.msg(ALREADY_LIGHTSOURCE)
             else:
@@ -971,9 +959,7 @@ class DarkRoom(TutorialRoom):
             self.cmdset.add(DarkCmdSet, permanent=True)
             for char in (obj for obj in self.contents if obj.has_account):
                 if char.is_superuser:
-                    char.msg(
-                        "You are Superuser, so you are not affected by the dark state."
-                    )
+                    char.msg("You are Superuser, so you are not affected by the dark state.")
                 else:
                     # put players in darkness
                     char.msg("The room is completely dark.")
@@ -1053,9 +1039,7 @@ class TeleportRoom(TutorialRoom):
             return
         # determine if the puzzle is a success or not
         is_success = str(character.db.puzzle_clue) == str(self.db.puzzle_value)
-        teleport_to = (
-            self.db.success_teleport_to if is_success else self.db.failure_teleport_to
-        )
+        teleport_to = self.db.success_teleport_to if is_success else self.db.failure_teleport_to
         # note that this returns a list
         results = search_object(teleport_to)
         if not results or len(results) > 1:
@@ -1064,9 +1048,7 @@ class TeleportRoom(TutorialRoom):
             return
         if character.is_superuser:
             # superusers don't get teleported
-            character.msg(
-                "Superuser block: You would have been teleported to %s." % results[0]
-            )
+            character.msg("Superuser block: You would have been teleported to %s." % results[0])
             return
         # perform the teleport
         if is_success:

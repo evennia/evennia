@@ -129,16 +129,11 @@ class ChannelCommand(command.Command):
             return
         if self.history_start is not None:
             # Try to view history
-            log_file = channel.attributes.get(
-                "log_file", default="channel_%s.log" % channel.key
-            )
+            log_file = channel.attributes.get("log_file", default="channel_%s.log" % channel.key)
 
             def send_msg(lines):
                 return self.msg(
-                    "".join(
-                        line.split("[-]", 1)[1] if "[-]" in line else line
-                        for line in lines
-                    )
+                    "".join(line.split("[-]", 1)[1] if "[-]" in line else line for line in lines)
                 )
 
             tail_log_file(log_file, self.history_start, 20, callback=send_msg)

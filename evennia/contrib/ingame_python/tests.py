@@ -31,21 +31,15 @@ class TestEventHandler(EvenniaTest):
     def setUp(self):
         """Create the event handler."""
         super().setUp()
-        self.handler = create_script(
-            "evennia.contrib.ingame_python.scripts.EventHandler"
-        )
+        self.handler = create_script("evennia.contrib.ingame_python.scripts.EventHandler")
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass(
-            "evennia.contrib.ingame_python.typeclasses.EventCharacter"
-        )
-        self.char2.swap_typeclass(
-            "evennia.contrib.ingame_python.typeclasses.EventCharacter"
-        )
+        self.char1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
         self.room1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
         self.room2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
         self.exit.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventExit")
@@ -70,11 +64,7 @@ class TestEventHandler(EvenniaTest):
         """Add a callback while needing validation."""
         author = self.char1
         self.handler.add_callback(
-            self.room1,
-            "dummy",
-            "character.db.strength = 40",
-            author=author,
-            valid=False,
+            self.room1, "dummy", "character.db.strength = 40", author=author, valid=False
         )
         callback = self.handler.get_callbacks(self.room1).get("dummy")
         callback = callback[0]
@@ -100,12 +90,7 @@ class TestEventHandler(EvenniaTest):
 
         # Edit it right away
         self.handler.edit_callback(
-            self.room1,
-            "dummy",
-            0,
-            "character.db.strength = 65",
-            author=self.char2,
-            valid=True,
+            self.room1, "dummy", 0, "character.db.strength = 65", author=self.char2, valid=True
         )
 
         # Check that the callback was written
@@ -131,12 +116,7 @@ class TestEventHandler(EvenniaTest):
 
         # Edit it right away
         self.handler.edit_callback(
-            self.room1,
-            "dummy",
-            0,
-            "character.db.strength = 80",
-            author=self.char2,
-            valid=False,
+            self.room1, "dummy", 0, "character.db.strength = 80", author=self.char2, valid=False
         )
 
         # Run this dummy callback (shouldn't do anything)
@@ -149,25 +129,13 @@ class TestEventHandler(EvenniaTest):
         """Try to delete a callback."""
         # Add 3 callbacks
         self.handler.add_callback(
-            self.room1,
-            "dummy",
-            "character.db.strength = 5",
-            author=self.char1,
-            valid=True,
+            self.room1, "dummy", "character.db.strength = 5", author=self.char1, valid=True
         )
         self.handler.add_callback(
-            self.room1,
-            "dummy",
-            "character.db.strength = 8",
-            author=self.char2,
-            valid=False,
+            self.room1, "dummy", "character.db.strength = 8", author=self.char2, valid=False
         )
         self.handler.add_callback(
-            self.room1,
-            "dummy",
-            "character.db.strength = 9",
-            author=self.char1,
-            valid=True,
+            self.room1, "dummy", "character.db.strength = 9", author=self.char1, valid=True
         )
 
         # Note that the second callback isn't valid
@@ -203,18 +171,10 @@ class TestEventHandler(EvenniaTest):
         """Accept an callback."""
         # Add 2 callbacks
         self.handler.add_callback(
-            self.room1,
-            "dummy",
-            "character.db.strength = 5",
-            author=self.char1,
-            valid=True,
+            self.room1, "dummy", "character.db.strength = 5", author=self.char1, valid=True
         )
         self.handler.add_callback(
-            self.room1,
-            "dummy",
-            "character.db.strength = 8",
-            author=self.char2,
-            valid=False,
+            self.room1, "dummy", "character.db.strength = 8", author=self.char2, valid=False
         )
 
         # Note that the second callback isn't valid
@@ -249,18 +209,12 @@ class TestEventHandler(EvenniaTest):
                 "\n"
             )
         )
-        self.handler.add_callback(
-            self.room1, "dummy", code, author=self.char1, valid=True
-        )
+        self.handler.add_callback(self.room1, "dummy", code, author=self.char1, valid=True)
 
         # Call the dummy callback
-        self.assertTrue(
-            self.handler.call(self.room1, "dummy", locals={"character": self.char1})
-        )
+        self.assertTrue(self.handler.call(self.room1, "dummy", locals={"character": self.char1}))
         self.assertEqual(self.char1.db.health, 50)
-        self.assertTrue(
-            self.handler.call(self.room1, "dummy", locals={"character": self.char2})
-        )
+        self.assertTrue(self.handler.call(self.room1, "dummy", locals={"character": self.char2}))
         self.assertEqual(self.char2.db.health, 0)
 
     def test_handler(self):
@@ -268,9 +222,7 @@ class TestEventHandler(EvenniaTest):
         self.assertIsNotNone(self.char1.callbacks)
 
         # Add an callback
-        callback = self.room1.callbacks.add(
-            "dummy", "pass", author=self.char1, valid=True
-        )
+        callback = self.room1.callbacks.add("dummy", "pass", author=self.char1, valid=True)
         self.assertEqual(callback.obj, self.room1)
         self.assertEqual(callback.name, "dummy")
         self.assertEqual(callback.code, "pass")
@@ -286,9 +238,7 @@ class TestEventHandler(EvenniaTest):
         self.assertNotIn([callback], list(self.room1.callbacks.all().values()))
 
         # Try to call this callback
-        self.assertTrue(
-            self.room1.callbacks.call("dummy", locals={"character": self.char2})
-        )
+        self.assertTrue(self.room1.callbacks.call("dummy", locals={"character": self.char2}))
         self.assertTrue(self.char2.db.say)
 
         # Delete the callback
@@ -303,21 +253,15 @@ class TestCmdCallback(CommandTest):
     def setUp(self):
         """Create the callback handler."""
         super().setUp()
-        self.handler = create_script(
-            "evennia.contrib.ingame_python.scripts.EventHandler"
-        )
+        self.handler = create_script("evennia.contrib.ingame_python.scripts.EventHandler")
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass(
-            "evennia.contrib.ingame_python.typeclasses.EventCharacter"
-        )
-        self.char2.swap_typeclass(
-            "evennia.contrib.ingame_python.typeclasses.EventCharacter"
-        )
+        self.char1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
         self.room1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
         self.room2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
         self.exit.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventExit")
@@ -347,9 +291,7 @@ class TestCmdCallback(CommandTest):
             self.assertIn(cols[2].strip(), ("0 (0)", ""))
 
         # Add some callback
-        self.handler.add_callback(
-            self.exit, "traverse", "pass", author=self.char1, valid=True
-        )
+        self.handler.add_callback(self.exit, "traverse", "pass", author=self.char1, valid=True)
 
         # Try to obtain more details on a specific callback on exit
         table = self.call(CmdCallback(), "out = traverse")
@@ -428,22 +370,16 @@ class TestCmdCallback(CommandTest):
 
     def test_del(self):
         """Add and remove an callback."""
-        self.handler.add_callback(
-            self.exit, "traverse", "pass", author=self.char1, valid=True
-        )
+        self.handler.add_callback(self.exit, "traverse", "pass", author=self.char1, valid=True)
 
         # Try to delete the callback
         # char2 shouldn't be allowed to do so (that's not HIS callback)
         self.call(CmdCallback(), "/del out = traverse 1", caller=self.char2)
-        self.assertTrue(
-            len(self.handler.get_callbacks(self.exit).get("traverse", [])) == 1
-        )
+        self.assertTrue(len(self.handler.get_callbacks(self.exit).get("traverse", [])) == 1)
 
         # Now, char1 should be allowed to delete it
         self.call(CmdCallback(), "/del out = traverse 1")
-        self.assertTrue(
-            len(self.handler.get_callbacks(self.exit).get("traverse", [])) == 0
-        )
+        self.assertTrue(len(self.handler.get_callbacks(self.exit).get("traverse", [])) == 0)
 
     def test_lock(self):
         """Test the lock of multiple editing."""
@@ -496,21 +432,15 @@ class TestDefaultCallbacks(CommandTest):
     def setUp(self):
         """Create the callback handler."""
         super().setUp()
-        self.handler = create_script(
-            "evennia.contrib.ingame_python.scripts.EventHandler"
-        )
+        self.handler = create_script("evennia.contrib.ingame_python.scripts.EventHandler")
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass(
-            "evennia.contrib.ingame_python.typeclasses.EventCharacter"
-        )
-        self.char2.swap_typeclass(
-            "evennia.contrib.ingame_python.typeclasses.EventCharacter"
-        )
+        self.char1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
+        self.char2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventCharacter")
         self.room1.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
         self.room2.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventRoom")
         self.exit.swap_typeclass("evennia.contrib.ingame_python.typeclasses.EventExit")
@@ -541,28 +471,20 @@ class TestDefaultCallbacks(CommandTest):
         self.exit.destination = self.room2
 
         # Try the can_traverse callback
-        self.handler.add_callback(
-            self.exit, "can_traverse", code, author=self.char1, valid=True
-        )
+        self.handler.add_callback(self.exit, "can_traverse", code, author=self.char1, valid=True)
 
         # Have char1 move through the exit
         self.call(ExitCommand(), "", "You can leave.", obj=self.exit)
         self.assertIs(self.char1.location, self.room2)
 
         # Have char2 move through this exit
-        self.call(
-            ExitCommand(), "", "You cannot leave.", obj=self.exit, caller=self.char2
-        )
+        self.call(ExitCommand(), "", "You cannot leave.", obj=self.exit, caller=self.char2)
         self.assertIs(self.char2.location, self.room1)
 
         # Try the traverse callback
         self.handler.del_callback(self.exit, "can_traverse", 0)
         self.handler.add_callback(
-            self.exit,
-            "traverse",
-            "character.msg('Fine!')",
-            author=self.char1,
-            valid=True,
+            self.exit, "traverse", "character.msg('Fine!')", author=self.char1, valid=True
         )
 
         # Have char2 move through the exit
@@ -576,9 +498,7 @@ class TestDefaultCallbacks(CommandTest):
 
         # Test msg_arrive and msg_leave
         code = 'message = "{character} goes out."'
-        self.handler.add_callback(
-            self.exit, "msg_leave", code, author=self.char1, valid=True
-        )
+        self.handler.add_callback(self.exit, "msg_leave", code, author=self.char1, valid=True)
 
         # Have char1 move through the exit
         old_msg = self.char2.msg
@@ -586,15 +506,11 @@ class TestDefaultCallbacks(CommandTest):
             self.char2.msg = Mock()
             self.call(ExitCommand(), "", obj=self.exit)
             stored_msg = [
-                args[0]
-                if args and args[0]
-                else kwargs.get("text", utils.to_str(kwargs))
+                args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                 for name, args, kwargs in self.char2.msg.mock_calls
             ]
             # Get the first element of a tuple if msg received a tuple instead of a string
-            stored_msg = [
-                smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg
-            ]
+            stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             returned_msg = ansi.parse_ansi("\n".join(stored_msg), strip_ansi=True)
             self.assertEqual(returned_msg, "char1 goes out.")
         finally:
@@ -608,9 +524,7 @@ class TestDefaultCallbacks(CommandTest):
             destination=self.room1,
         )
         code = 'message = "{character} goes in."'
-        self.handler.add_callback(
-            self.exit, "msg_arrive", code, author=self.char1, valid=True
-        )
+        self.handler.add_callback(self.exit, "msg_arrive", code, author=self.char1, valid=True)
 
         # Have char1 move through the exit
         old_msg = self.char2.msg
@@ -618,15 +532,11 @@ class TestDefaultCallbacks(CommandTest):
             self.char2.msg = Mock()
             self.call(ExitCommand(), "", obj=back)
             stored_msg = [
-                args[0]
-                if args and args[0]
-                else kwargs.get("text", utils.to_str(kwargs))
+                args[0] if args and args[0] else kwargs.get("text", utils.to_str(kwargs))
                 for name, args, kwargs in self.char2.msg.mock_calls
             ]
             # Get the first element of a tuple if msg received a tuple instead of a string
-            stored_msg = [
-                smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg
-            ]
+            stored_msg = [smsg[0] if isinstance(smsg, tuple) else smsg for smsg in stored_msg]
             returned_msg = ansi.parse_ansi("\n".join(stored_msg), strip_ansi=True)
             self.assertEqual(returned_msg, "char1 goes in.")
         finally:

@@ -122,9 +122,7 @@ class Session(object):
 
         """
         return dict(
-            (key, value)
-            for key, value in self.__dict__.items()
-            if key in self._attrs_to_sync
+            (key, value) for key, value in self.__dict__.items() if key in self._attrs_to_sync
         )
 
     def load_sync_data(self, sessdata):

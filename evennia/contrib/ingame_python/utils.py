@@ -79,13 +79,9 @@ def register_events(path_or_typeclass):
             variables = help_text = custom_call = custom_add = None
 
         if isinstance(storage, list):
-            storage.append(
-                (typeclass_name, name, variables, help_text, custom_call, custom_add)
-            )
+            storage.append((typeclass_name, name, variables, help_text, custom_call, custom_add))
         else:
-            storage.add_event(
-                typeclass_name, name, variables, help_text, custom_call, custom_add
-            )
+            storage.add_event(typeclass_name, name, variables, help_text, custom_call, custom_add)
 
     return typeclass
 
@@ -143,8 +139,7 @@ def get_next_wait(format):
 
         if not piece.isdigit():
             logger.log_trace(
-                "The time specified '{}' in {} isn't "
-                "a valid number".format(piece, format)
+                "The time specified '{}' in {} isn't " "a valid number".format(piece, format)
             )
             return
 
@@ -181,9 +176,7 @@ def time_event(obj, event_name, number, parameters):
     """
     seconds, usual, key = get_next_wait(parameters)
     script = create_script(
-        "evennia.contrib.ingame_python.scripts.TimeEventScript",
-        interval=seconds,
-        obj=obj,
+        "evennia.contrib.ingame_python.scripts.TimeEventScript", interval=seconds, obj=obj
     )
     script.key = key
     script.desc = "event on {}".format(key)

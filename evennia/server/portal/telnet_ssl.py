@@ -150,8 +150,6 @@ def getSSLContext():
     """
 
     if verify_or_create_SSL_key_and_cert(_PRIVATE_KEY_FILE, _CERTIFICATE_FILE):
-        return twisted_ssl.DefaultOpenSSLContextFactory(
-            _PRIVATE_KEY_FILE, _CERTIFICATE_FILE
-        )
+        return twisted_ssl.DefaultOpenSSLContextFactory(_PRIVATE_KEY_FILE, _CERTIFICATE_FILE)
     else:
         return None

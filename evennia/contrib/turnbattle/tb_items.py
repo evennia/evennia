@@ -360,9 +360,7 @@ def spend_action(character, actions, action_name=None):
         character.db.combat_actionsleft -= actions  # Use up actions.
         if character.db.combat_actionsleft < 0:
             character.db.combat_actionsleft = 0  # Can't have fewer than 0 actions
-    character.db.combat_turnhandler.turn_end_check(
-        character
-    )  # Signal potential end of turn.
+    character.db.combat_turnhandler.turn_end_check(character)  # Signal potential end of turn.
 
 
 def spend_item_use(item, user):
@@ -383,9 +381,7 @@ def spend_item_use(item, user):
 
     if item.db.item_uses > 0:  # Has uses remaining
         # Inform the player
-        user.msg(
-            "%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses)
-        )
+        user.msg("%s has %i uses remaining." % (item.key.capitalize(), item.db.item_uses))
 
     else:  # All uses spent
 
@@ -394,19 +390,13 @@ def spend_item_use(item, user):
             user.msg("%s has no uses remaining." % item.key.capitalize())
 
         else:  # If item is consumable
-            if (
-                item.db.item_consumable == True
-            ):  # If the value is 'True', just destroy the item
+            if item.db.item_consumable == True:  # If the value is 'True', just destroy the item
                 user.msg("%s has been consumed." % item.key.capitalize())
                 item.delete()  # Delete the spent item
 
             else:  # If a string, use value of item_consumable to spawn an object in its place
-                residue = spawn({"prototype": item.db.item_consumable})[
-                    0
-                ]  # Spawn the residue
-                residue.location = (
-                    item.location
-                )  # Move the residue to the same place as the item
+                residue = spawn({"prototype": item.db.item_consumable})[0]  # Spawn the residue
+                residue.location = item.location  # Move the residue to the same place as the item
                 user.msg("After using %s, you are left with %s." % (item, residue))
                 item.delete()  # Delete the spent item
 
@@ -501,9 +491,7 @@ def add_condition(character, turnchar, condition, duration):
     # The first value is the remaining turns - the second value is whose turn to count down on.
     character.db.conditions.update({condition: [duration, turnchar]})
     # Tell everyone!
-    character.location.msg_contents(
-        "%s gains the '%s' condition." % (character, condition)
-    )
+    character.location.msg_contents("%s gains the '%s' condition." % (character, condition))
 
 
 """
@@ -589,17 +577,13 @@ class TBItemsCharacter(DefaultCharacter):
             if self.db.hp + to_heal > self.db.max_hp:
                 to_heal = self.db.max_hp - self.db.hp  # Cap healing to max HP
             self.db.hp += to_heal
-            self.location.msg_contents(
-                "%s regains %i HP from Regeneration." % (self, to_heal)
-            )
+            self.location.msg_contents("%s regains %i HP from Regeneration." % (self, to_heal))
 
         # Poisoned: does 4 to 8 damage at the start of character's turn
         if "Poisoned" in self.db.conditions:
             to_hurt = randint(POISON_RATE[0], POISON_RATE[1])  # Deal damage
             apply_damage(self, to_hurt)
-            self.location.msg_contents(
-                "%s takes %i damage from being Poisoned." % (self, to_hurt)
-            )
+            self.location.msg_contents("%s takes %i damage from being Poisoned." % (self, to_hurt))
             if self.db.hp <= 0:
                 # Call at_defeat if poison defeats the character
                 at_defeat(self)
@@ -612,9 +596,7 @@ class TBItemsCharacter(DefaultCharacter):
         # Paralyzed: Have no actions in combat.
         if is_in_combat(self) and "Paralyzed" in self.db.conditions:
             self.db.combat_actionsleft = 0
-            self.location.msg_contents(
-                "%s is Paralyzed, and can't act this turn!" % self
-            )
+            self.location.msg_contents("%s is Paralyzed, and can't act this turn!" % self)
             self.db.combat_turnhandler.turn_end_check(self)
 
     def at_update(self):
@@ -689,9 +671,7 @@ class TBItemsTurnHandler(DefaultScript):
         self.db.fighters = ordered_by_roll
 
         # Announce the turn order.
-        self.obj.msg_contents(
-            "Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters)
-        )
+        self.obj.msg_contents("Turn order is: %s " % ", ".join(obj.key for obj in self.db.fighters))
 
         # Start first fighter's turn.
         self.start_turn(self.db.fighters[0])
@@ -706,9 +686,7 @@ class TBItemsTurnHandler(DefaultScript):
         """
         for fighter in self.db.fighters:
             combat_cleanup(fighter)  # Clean up the combat attributes for every fighter.
-        self.obj.db.combat_turnhandler = (
-            None
-        )  # Remove reference to turn handler in location
+        self.obj.db.combat_turnhandler = None  # Remove reference to turn handler in location
 
     def at_repeat(self):
         """
@@ -726,9 +704,7 @@ class TBItemsTurnHandler(DefaultScript):
                 currentchar, "all", action_name="disengage"
             )  # Spend all remaining actions.
             return
-        elif (
-            self.db.timer <= 10 and not self.db.timeout_warning_given
-        ):  # 10 seconds left
+        elif self.db.timer <= 10 and not self.db.timeout_warning_given:  # 10 seconds left
             # Warn the current character if they're about to time out.
             currentchar.msg("WARNING: About to time out!")
             self.db.timeout_warning_given = True
@@ -740,9 +716,7 @@ class TBItemsTurnHandler(DefaultScript):
         Args:
             character (obj): Character to initialize for combat.
         """
-        combat_cleanup(
-            character
-        )  # Clean up leftover combat attributes beforehand, just in case.
+        combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
         character.db.combat_actionsleft = (
             0
         )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
@@ -791,17 +765,13 @@ class TBItemsTurnHandler(DefaultScript):
         defeated_characters = 0
         for fighter in self.db.fighters:
             if fighter.db.HP == 0:
-                defeated_characters += (
-                    1
-                )  # Add 1 for every fighter with 0 HP left (defeated)
+                defeated_characters += 1  # Add 1 for every fighter with 0 HP left (defeated)
         if defeated_characters == (
             len(self.db.fighters) - 1
         ):  # If only one character isn't defeated
             for fighter in self.db.fighters:
                 if fighter.db.HP != 0:
-                    LastStanding = (
-                        fighter
-                    )  # Pick the one fighter left with HP remaining
+                    LastStanding = fighter  # Pick the one fighter left with HP remaining
             self.obj.msg_contents("Only %s remains! Combat is over!" % LastStanding)
             self.stop()  # Stop this script and end combat.
             return
@@ -810,17 +780,13 @@ class TBItemsTurnHandler(DefaultScript):
         currentchar = self.db.fighters[self.db.turn]
         self.db.turn += 1  # Go to the next in the turn order.
         if self.db.turn > len(self.db.fighters) - 1:
-            self.db.turn = (
-                0
-            )  # Go back to the first in the turn order once you reach the end.
+            self.db.turn = 0  # Go back to the first in the turn order once you reach the end.
 
         newchar = self.db.fighters[self.db.turn]  # Note the new character
 
         self.db.timer = TURN_TIMEOUT + self.time_until_next_repeat()  # Reset the timer.
         self.db.timeout_warning_given = False  # Reset the timeout warning.
-        self.obj.msg_contents(
-            "%s's turn ends - %s's turn begins!" % (currentchar, newchar)
-        )
+        self.obj.msg_contents("%s's turn ends - %s's turn begins!" % (currentchar, newchar))
         self.start_turn(newchar)  # Start the new character's turn.
 
         # Count down condition timers.
@@ -888,9 +854,7 @@ class CmdFight(Command):
         if is_in_combat(self.caller):  # Already in a fight
             self.caller.msg("You're already in a fight!")
             return
-        for (
-            thing
-        ) in here.contents:  # Test everything in the room to add it to the fight.
+        for thing in here.contents:  # Test everything in the room to add it to the fight.
             if thing.db.HP:  # If the object has HP...
                 fighters.append(thing)  # ...then add it to the fight.
         if len(fighters) <= 1:  # If you're the only able fighter in the room
@@ -989,9 +953,7 @@ class CmdPass(Command):
         self.caller.location.msg_contents(
             "%s takes no further action, passing the turn." % self.caller
         )
-        spend_action(
-            self.caller, "all", action_name="pass"
-        )  # Spend all remaining actions.
+        spend_action(self.caller, "all", action_name="pass")  # Spend all remaining actions.
 
 
 class CmdDisengage(Command):
@@ -1022,12 +984,8 @@ class CmdDisengage(Command):
             self.caller.msg("You can only do that on your turn.")
             return
 
-        self.caller.location.msg_contents(
-            "%s disengages, ready to stop fighting." % self.caller
-        )
-        spend_action(
-            self.caller, "all", action_name="disengage"
-        )  # Spend all remaining actions.
+        self.caller.location.msg_contents("%s disengages, ready to stop fighting." % self.caller)
+        spend_action(self.caller, "all", action_name="disengage")  # Spend all remaining actions.
         """
         The action_name kwarg sets the character's last action to "disengage", which is checked by
         the turn handler script to see if all fighters have disengaged.
@@ -1079,9 +1037,7 @@ class CmdCombatHelp(CmdHelp):
     # tips on combat when used in a fight with no arguments.
 
     def func(self):
-        if (
-            is_in_combat(self.caller) and not self.args
-        ):  # In combat and entered 'help' alone
+        if is_in_combat(self.caller) and not self.args:  # In combat and entered 'help' alone
             self.caller.msg(
                 "Available combat commands:|/"
                 + "|wAttack:|n Attack a target, attempting to deal damage.|/"
@@ -1219,9 +1175,7 @@ def itemfunc_heal(item, user, target, **kwargs):
         to_heal = target.db.max_hp - target.db.hp  # Cap healing to max HP
     target.db.hp += to_heal
 
-    user.location.msg_contents(
-        "%s uses %s! %s regains %i HP!" % (user, item, target, to_heal)
-    )
+    user.location.msg_contents("%s uses %s! %s regains %i HP!" % (user, item, target, to_heal))
 
 
 def itemfunc_add_condition(item, user, target, **kwargs):
@@ -1281,10 +1235,7 @@ def itemfunc_cure_condition(item, user, target, **kwargs):
     for key in target.db.conditions:
         if key in to_cure:
             # If condition specified in to_cure, remove it.
-            item_msg += "%s no longer has the '%s' condition. " % (
-                str(target),
-                str(key),
-            )
+            item_msg += "%s no longer has the '%s' condition. " % (str(target), str(key))
             del target.db.conditions[key]
 
     user.location.msg_contents(item_msg)
@@ -1310,9 +1261,7 @@ def itemfunc_attack(item, user, target, **kwargs):
         return False  # Returning false aborts the item use
 
     if not target:
-        user.msg(
-            "You have to specify a target to use %s! (use <item> = <target>)" % item
-        )
+        user.msg("You have to specify a target to use %s! (use <item> = <target>)" % item)
         return False
 
     if target == user:
@@ -1496,9 +1445,7 @@ AMULET_OF_MIGHT = {
     "desc": "The one who holds this amulet can call upon its power to gain great strength.",
     "item_func": "add_condition",
     "item_selfonly": True,
-    "item_kwargs": {
-        "conditions": [("Damage Up", 3), ("Accuracy Up", 3), ("Defense Up", 3)]
-    },
+    "item_kwargs": {"conditions": [("Damage Up", 3), ("Accuracy Up", 3), ("Defense Up", 3)]},
 }
 
 AMULET_OF_WEAKNESS = {
@@ -1506,7 +1453,5 @@ AMULET_OF_WEAKNESS = {
     "desc": "The one who holds this amulet can call upon its power to gain great weakness. It's not a terribly useful artifact.",
     "item_func": "add_condition",
     "item_selfonly": True,
-    "item_kwargs": {
-        "conditions": [("Damage Down", 3), ("Accuracy Down", 3), ("Defense Down", 3)]
-    },
+    "item_kwargs": {"conditions": [("Damage Down", 3), ("Accuracy Down", 3), ("Defense Down", 3)]},
 }

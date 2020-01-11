@@ -30,10 +30,7 @@ def menu_start_node(caller):
     text = "'Hello there, how can I help you?'"
 
     options = (
-        {
-            "desc": "Hey, do you know what this 'Evennia' thing is all about?",
-            "goto": "info1",
-        },
+        {"desc": "Hey, do you know what this 'Evennia' thing is all about?", "goto": "info1"},
         {"desc": "What's your name, little NPC?", "goto": "info2"},
     )
 
@@ -44,10 +41,7 @@ def info1(caller):
     text = "'Oh, Evennia is where you are right now! Don't you feel the power?'"
 
     options = (
-        {
-            "desc": "Sure, *I* do, not sure how you do though. You are just an NPC.",
-            "goto": "info3",
-        },
+        {"desc": "Sure, *I* do, not sure how you do though. You are just an NPC.", "goto": "info3"},
         {"desc": "Sure I do. What's yer name, NPC?", "goto": "info2"},
         {"desc": "Ok, bye for now then.", "goto": "END"},
     )

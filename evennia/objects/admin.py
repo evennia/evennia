@@ -190,9 +190,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
         from django.http import HttpResponseRedirect
         from django.urls import reverse
 
-        return HttpResponseRedirect(
-            reverse("admin:objects_objectdb_change", args=[obj.id])
-        )
+        return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.id]))
 
 
 admin.site.register(ObjectDB, ObjectDBAdmin)

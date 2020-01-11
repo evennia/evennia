@@ -160,9 +160,7 @@ class Mob(tut_objects.TutorialObject):
         self.db.hit_msg = "%s wails, shudders and writhes." % self.key
         self.db.irregular_msgs = ["the enemy looks about.", "the enemy changes stance."]
 
-        self.db.tutorial_info = (
-            "This is an object with simple state AI, using a ticker to move."
-        )
+        self.db.tutorial_info = "This is an object with simple state AI, using a ticker to move."
 
     def _set_ticker(self, interval, hook_key, stop=False):
         """
@@ -194,9 +192,7 @@ class Mob(tut_objects.TutorialObject):
         if last_interval and last_hook_key:
             # we have a previous subscription, kill this first.
             TICKER_HANDLER.remove(
-                interval=last_interval,
-                callback=getattr(self, last_hook_key),
-                idstring=idstring,
+                interval=last_interval, callback=getattr(self, last_hook_key), idstring=idstring
             )
         self.db.last_ticker_interval = interval
         self.db.last_hook_key = hook_key
@@ -386,16 +382,13 @@ class Mob(tut_objects.TutorialObject):
             # we reduced the target to <= 0 health. Move them to the
             # defeated room
             target.msg(self.db.defeat_msg)
-            self.location.msg_contents(
-                self.db.defeat_msg_room % target.key, exclude=target
-            )
+            self.location.msg_contents(self.db.defeat_msg_room % target.key, exclude=target)
             send_defeated_to = search_object(self.db.send_defeated_to)
             if send_defeated_to:
                 target.move_to(send_defeated_to[0], quiet=True)
             else:
                 logger.log_err(
-                    "Mob: mob.db.send_defeated_to not found: %s"
-                    % self.db.send_defeated_to
+                    "Mob: mob.db.send_defeated_to not found: %s" % self.db.send_defeated_to
                 )
 
     # response methods - called by other objects

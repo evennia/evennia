@@ -269,18 +269,10 @@ def main():
         help="Portal in interactive mode",
     )
     parser.add_argument(
-        "--pserver",
-        action="store_true",
-        dest="pserver",
-        default=False,
-        help="Profile Server",
+        "--pserver", action="store_true", dest="pserver", default=False, help="Profile Server"
     )
     parser.add_argument(
-        "--pportal",
-        action="store_true",
-        dest="pportal",
-        default=False,
-        help="Profile Portal",
+        "--pportal", action="store_true", dest="pportal", default=False, help="Profile Portal"
     )
     parser.add_argument(
         "--nologcycle",
@@ -341,24 +333,15 @@ def main():
 
     # Profiling settings (read file from python shell e.g with
     # p = pstats.Stats('server.prof')
-    pserver_argv = [
-        "--savestats",
-        "--profiler=cprofile",
-        "--profile=%s" % SPROFILER_LOGFILE,
-    ]
-    pportal_argv = [
-        "--savestats",
-        "--profiler=cprofile",
-        "--profile=%s" % PPROFILER_LOGFILE,
-    ]
+    pserver_argv = ["--savestats", "--profiler=cprofile", "--profile=%s" % SPROFILER_LOGFILE]
+    pportal_argv = ["--savestats", "--profiler=cprofile", "--profile=%s" % PPROFILER_LOGFILE]
 
     # Server
 
     pid = get_pid(SERVER_PIDFILE)
     if pid and not args.noserver:
         print(
-            "\nEvennia Server is already running as process %(pid)s. Not restarted."
-            % {"pid": pid}
+            "\nEvennia Server is already running as process %(pid)s. Not restarted." % {"pid": pid}
         )
         args.noserver = True
     if args.noserver:
@@ -382,8 +365,7 @@ def main():
     pid = get_pid(PORTAL_PIDFILE)
     if pid and not args.noportal:
         print(
-            "\nEvennia Portal is already running as process %(pid)s. Not restarted."
-            % {"pid": pid}
+            "\nEvennia Portal is already running as process %(pid)s. Not restarted." % {"pid": pid}
         )
         args.noportal = True
     if args.noportal:
@@ -399,9 +381,7 @@ def main():
                 cycle_logfile(PORTAL_LOGFILE)
                 cycle_logfile(HTTP_LOGFILE)
             set_restart_mode(PORTAL_RESTART, False)
-            print(
-                "\nStarting Evennia Portal in Daemon mode (output to portal logfile)."
-            )
+            print("\nStarting Evennia Portal in Daemon mode (output to portal logfile).")
         if args.pportal:
             portal_argv.extend(pportal_argv)
             print("\nRunning Evennia Portal under cProfile.")

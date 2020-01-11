@@ -32,8 +32,7 @@ class AccountDBChangeForm(UserChangeForm):
             "invalid": "This value may contain only letters, spaces, numbers "
             "and @/./+/-/_ characters."
         },
-        help_text="30 characters or fewer. Letters, spaces, digits and "
-        "@/./+/-/_ only.",
+        help_text="30 characters or fewer. Letters, spaces, digits and " "@/./+/-/_ only.",
     )
 
     def clean_username(self):
@@ -67,8 +66,7 @@ class AccountDBCreationForm(UserCreationForm):
             "invalid": "This value may contain only letters, spaces, numbers "
             "and @/./+/-/_ characters."
         },
-        help_text="30 characters or fewer. Letters, spaces, digits and "
-        "@/./+/-/_ only.",
+        help_text="30 characters or fewer. Letters, spaces, digits and " "@/./+/-/_ only.",
     )
 
     def clean_username(self):
@@ -230,13 +228,7 @@ class AccountDBAdmin(BaseUserAdmin):
         (
             "Website Permissions",
             {
-                "fields": (
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                    "user_permissions",
-                    "groups",
-                ),
+                "fields": ("is_active", "is_staff", "is_superuser", "user_permissions", "groups"),
                 "description": "<i>These are permissions/permission groups for "
                 "accessing the admin site. They are unrelated to "
                 "in-game access rights.</i>",
@@ -246,8 +238,7 @@ class AccountDBAdmin(BaseUserAdmin):
             "Game Options",
             {
                 "fields": ("db_typeclass_path", "db_cmdset_storage", "db_lock_storage"),
-                "description": "<i>These are attributes that are more relevant "
-                "to gameplay.</i>",
+                "description": "<i>These are attributes that are more relevant " "to gameplay.</i>",
             },
         ),
     )
@@ -290,9 +281,7 @@ class AccountDBAdmin(BaseUserAdmin):
         from django.http import HttpResponseRedirect
         from django.urls import reverse
 
-        return HttpResponseRedirect(
-            reverse("admin:accounts_accountdb_change", args=[obj.id])
-        )
+        return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
 
 
 admin.site.register(AccountDB, AccountDBAdmin)

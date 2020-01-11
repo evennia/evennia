@@ -335,9 +335,7 @@ class WildernessScript(DefaultScript):
             self._destroy_room(old_room)
         except KeyError:
             # There is no room yet at new_location
-            if (old_room and not inherits_from(old_room, WildernessRoom)) or (
-                not old_room
-            ):
+            if (old_room and not inherits_from(old_room, WildernessRoom)) or (not old_room):
                 # Obj doesn't originally come from a wilderness room.
                 # We'll create a new one then.
                 room = self._create_room(new_coordinates, obj)
@@ -392,9 +390,7 @@ class WildernessScript(DefaultScript):
 
             # First, create the room
             room = create_object(
-                typeclass=self.mapprovider.room_typeclass,
-                key="Wilderness",
-                report_to=report_to,
+                typeclass=self.mapprovider.room_typeclass, key="Wilderness", report_to=report_to
             )
 
             # Then the exits
@@ -657,9 +653,7 @@ class WildernessExit(DefaultExit):
         """
         return self.wilderness.mapprovider
 
-    def at_traverse_coordinates(
-        self, traversing_object, current_coordinates, new_coordinates
-    ):
+    def at_traverse_coordinates(self, traversing_object, current_coordinates, new_coordinates):
         """
         Called when an object wants to travel from one place inside the
         wilderness to another place inside the wilderness.

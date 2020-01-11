@@ -37,14 +37,10 @@ def _init_command(cls, **kwargs):
     cls.key = cls.key.lower()
     if cls.aliases and not is_iter(cls.aliases):
         try:
-            cls.aliases = [
-                str(alias).strip().lower() for alias in cls.aliases.split(",")
-            ]
+            cls.aliases = [str(alias).strip().lower() for alias in cls.aliases.split(",")]
         except Exception:
             cls.aliases = []
-    cls.aliases = list(
-        set(alias for alias in cls.aliases if alias and alias != cls.key)
-    )
+    cls.aliases = list(set(alias for alias in cls.aliases if alias and alias != cls.key))
 
     # optimization - a set is much faster to match against than a list
     cls._matchset = set([cls.key] + cls.aliases)
@@ -414,8 +410,7 @@ class Command(object, metaclass=CommandMeta):
 
         """
         variables = "\n".join(
-            " |w{}|n ({}): {}".format(key, type(val), val)
-            for key, val in self.__dict__.items()
+            " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
         )
         string = f"""
 Command {self} has no defined `func()` - showing on-command variables:
@@ -431,10 +426,7 @@ Command {self} has no defined `func()` - showing on-command variables:
         string += "\nname of cmd (self.key): |w%s|n\n" % self.key
         string += "cmd aliases (self.aliases): |w%s|n\n" % self.aliases
         string += "cmd locks (self.locks): |w%s|n\n" % self.locks
-        string += (
-            "help category (self.help_category): |w%s|n\n"
-            % self.help_category.capitalize()
-        )
+        string += "help category (self.help_category): |w%s|n\n" % self.help_category.capitalize()
         string += "object calling (self.caller): |w%s|n\n" % self.caller
         string += "object storing cmdset (self.obj): |w%s|n\n" % self.obj
         string += "command string given (self.cmdstring): |w%s|n\n" % self.cmdstring
@@ -585,21 +577,15 @@ Command {self} has no defined `func()` - showing on-command variables:
         if header_text:
             if color_header:
                 header_text = ANSIString(header_text).clean()
-                header_text = ANSIString(
-                    "|n|%s%s|n" % (colors["headertext"], header_text)
-                )
+                header_text = ANSIString("|n|%s%s|n" % (colors["headertext"], header_text))
             if mode == "header":
                 begin_center = ANSIString(
                     "|n|%s<|%s* |n" % (colors["border"], colors["headerstar"])
                 )
-                end_center = ANSIString(
-                    "|n |%s*|%s>|n" % (colors["headerstar"], colors["border"])
-                )
+                end_center = ANSIString("|n |%s*|%s>|n" % (colors["headerstar"], colors["border"]))
                 center_string = ANSIString(begin_center + header_text + end_center)
             else:
-                center_string = ANSIString(
-                    "|n |%s%s |n" % (colors["headertext"], header_text)
-                )
+                center_string = ANSIString("|n |%s%s |n" % (colors["headertext"], header_text))
         else:
             center_string = ""
 
@@ -613,22 +599,14 @@ Command {self} has no defined `func()` - showing on-command variables:
             right_width = math.floor(remain_fill / 2)
             left_width = math.ceil(remain_fill / 2)
 
-        right_fill = ANSIString(
-            "|n|%s%s|n" % (colors["border"], fill_character * int(right_width))
-        )
-        left_fill = ANSIString(
-            "|n|%s%s|n" % (colors["border"], fill_character * int(left_width))
-        )
+        right_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(right_width)))
+        left_fill = ANSIString("|n|%s%s|n" % (colors["border"], fill_character * int(left_width)))
 
         if edge_character:
             edge_fill = ANSIString("|n|%s%s|n" % (colors["border"], edge_character))
             main_string = ANSIString(center_string)
             final_send = (
-                ANSIString(edge_fill)
-                + left_fill
-                + main_string
-                + right_fill
-                + ANSIString(edge_fill)
+                ANSIString(edge_fill) + left_fill + main_string + right_fill + ANSIString(edge_fill)
             )
         else:
             final_send = left_fill + ANSIString(center_string) + right_fill

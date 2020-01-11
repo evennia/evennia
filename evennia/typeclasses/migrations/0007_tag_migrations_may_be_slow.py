@@ -100,12 +100,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterUniqueTogether(
-            name="tag",
-            unique_together=set([("db_key", "db_category", "db_tagtype", "db_model")]),
+            name="tag", unique_together=set([("db_key", "db_category", "db_tagtype", "db_model")])
         ),
         migrations.AlterIndexTogether(
-            name="tag",
-            index_together=set([("db_key", "db_category", "db_tagtype", "db_model")]),
+            name="tag", index_together=set([("db_key", "db_category", "db_tagtype", "db_model")])
         ),
         migrations.RunPython(update_tags_with_dbmodel),
     ]

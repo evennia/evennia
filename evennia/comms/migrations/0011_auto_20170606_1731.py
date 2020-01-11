@@ -67,9 +67,7 @@ class Migration(migrations.Migration):
             model_name="msg",
             name="db_hide_from_accounts",
             field=models.ManyToManyField(
-                blank=True,
-                related_name="hide_from_accounts_set",
-                to=settings.AUTH_USER_MODEL,
+                blank=True, related_name="hide_from_accounts_set", to=settings.AUTH_USER_MODEL
             ),
         ),
         migrations.AlterField(

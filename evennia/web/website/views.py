@@ -39,9 +39,7 @@ def _gamestats():
     fpage_account_limit = 4
 
     # A QuerySet of the most recently connected accounts.
-    recent_users = AccountDB.objects.get_recently_connected_accounts()[
-        :fpage_account_limit
-    ]
+    recent_users = AccountDB.objects.get_recently_connected_accounts()[:fpage_account_limit]
     nplyrs_conn_recent = len(recent_users) or "none"
     nplyrs = AccountDB.objects.num_total_accounts() or "none"
     nplyrs_reg_recent = len(AccountDB.objects.get_recently_created_accounts()) or "none"
@@ -355,9 +353,7 @@ class ObjectDetailView(EvenniaDetailView):
         # Check if the requestor account has permissions to access object
         account = self.request.user
         if not obj.access(account, self.access_type):
-            raise PermissionDenied(
-                "You are not authorized to %s this object." % self.access_type
-            )
+            raise PermissionDenied("You are not authorized to %s this object." % self.access_type)
 
         # Get the object, if it is in the specified queryset
         obj = super(ObjectDetailView, self).get_object(queryset)
@@ -490,18 +486,12 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
 
         """
         # Get the attributes after they've been cleaned and validated
-        data = {
-            k: v
-            for k, v in form.cleaned_data.items()
-            if k not in self.form_class.Meta.fields
-        }
+        data = {k: v for k, v in form.cleaned_data.items() if k not in self.form_class.Meta.fields}
 
         # Update the object attributes
         for key, value in data.items():
             self.object.attributes.add(key, value)
-            messages.success(
-                self.request, "Successfully updated '%s' for %s." % (key, self.object)
-            )
+            messages.success(self.request, "Successfully updated '%s' for %s." % (key, self.object))
 
         # Do not return super().form_valid; we don't want to update the model
         # instance, just its attributes.
@@ -553,9 +543,7 @@ class AccountCreateView(AccountMixin, EvenniaCreateView):
         email = form.cleaned_data.get("email", "")
 
         # Create account
-        account, errs = self.typeclass.create(
-            username=username, password=password, email=email
-        )
+        account, errs = self.typeclass.create(username=username, password=password, email=email)
 
         # If unsuccessful, display error messages to user
         if not account:
@@ -645,17 +633,13 @@ class CharacterListView(LoginRequiredMixin, CharacterMixin, ListView):
         # Return a queryset consisting of characters the user is allowed to
         # see.
         ids = [
-            obj.id
-            for obj in self.typeclass.objects.all()
-            if obj.access(account, self.access_type)
+            obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)
         ]
 
         return self.typeclass.objects.filter(id__in=ids).order_by(Lower("db_key"))
 
 
-class CharacterPuppetView(
-    LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView
-):
+class CharacterPuppetView(LoginRequiredMixin, CharacterMixin, RedirectView, ObjectDetailView):
     """
     This view provides a mechanism by which a logged-in player can "puppet" one
     of their characters within the context of the website.
@@ -752,9 +736,7 @@ class CharacterDetailView(CharacterMixin, ObjectDetailView):
         # Return a queryset consisting of characters the user is allowed to
         # see.
         ids = [
-            obj.id
-            for obj in self.typeclass.objects.all()
-            if obj.access(account, self.access_type)
+            obj.id for obj in self.typeclass.objects.all() if obj.access(account, self.access_type)
         ]
 
         return self.typeclass.objects.filter(id__in=ids).order_by(Lower("db_key"))
@@ -799,9 +781,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
         charname = self.attributes.pop("db_key")
         description = self.attributes.pop("desc")
         # Create a character
-        character, errors = self.typeclass.create(
-            charname, account, description=description
-        )
+        character, errors = self.typeclass.create(charname, account, description=description)
 
         if errors:
             # Echo error messages to the user
@@ -813,9 +793,7 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
                 setattr(character.db, key, value)
 
             # Return the user to the character management page, unless overridden
-            messages.success(
-                self.request, "Your character '%s' was created!" % character.name
-            )
+            messages.success(self.request, "Your character '%s' was created!" % character.name)
             return HttpResponseRedirect(self.success_url)
 
         else:
@@ -863,14 +841,10 @@ class ChannelMixin(TypeclassMixin):
         channels = self.typeclass.objects.all().iterator()
 
         # Now figure out which ones the current user is allowed to see
-        bucket = [
-            channel.id for channel in channels if channel.access(account, "listen")
-        ]
+        bucket = [channel.id for channel in channels if channel.access(account, "listen")]
 
         # Re-query and set a sorted list
-        filtered = self.typeclass.objects.filter(id__in=bucket).order_by(
-            Lower("db_key")
-        )
+        filtered = self.typeclass.objects.filter(id__in=bucket).order_by(Lower("db_key"))
 
         return filtered
 
@@ -1132,8 +1106,7 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
             (
                 x
                 for x in queryset
-                if slugify(x.db_help_category) == category
-                and slugify(x.db_key) == topic
+                if slugify(x.db_help_category) == category and slugify(x.db_key) == topic
             ),
             None,
         )

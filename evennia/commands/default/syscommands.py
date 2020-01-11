@@ -103,9 +103,7 @@ class SystemMultimatch(COMMAND_DEFAULT_CLASS):
         # evennia.commands.cmdparse.create_match for more details.
         matches = self.matches
         # at_search_result will itself msg the multimatch options to the caller.
-        at_search_result(
-            [match[2] for match in matches], self.caller, query=matches[0][0]
-        )
+        at_search_result([match[2] for match in matches], self.caller, query=matches[0][0])
 
 
 # Command called when the command given at the command line

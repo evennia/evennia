@@ -86,9 +86,7 @@ _PUZZLES_TAG_RECIPE = "puzzle_recipe"
 # puzzle part and puzzle result
 _PUZZLES_TAG_MEMBER = "puzzle_member"
 
-_PUZZLE_DEFAULT_FAIL_USE_MESSAGE = (
-    "You try to utilize %s but nothing happens ... something amiss?"
-)
+_PUZZLE_DEFAULT_FAIL_USE_MESSAGE = "You try to utilize %s but nothing happens ... something amiss?"
 _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = "You are a Genius!!!"
 _PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE = "|c{caller}|n performs some kind of tribal dance and |y{result_names}|n seems to appear from thin air"
 
@@ -142,9 +140,7 @@ def _colorize_message(msg):
     return msg
 
 
-_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = _colorize_message(
-    _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE
-)
+_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE = _colorize_message(_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE)
 
 # ------------------------------------------
 
@@ -161,9 +157,7 @@ class PuzzleRecipe(DefaultScript):
         self.db.mask = tuple()
         self.tags.add(_PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
         self.db.use_success_message = _PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE
-        self.db.use_success_location_message = (
-            _PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE
-        )
+        self.db.use_success_location_message = _PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE
 
 
 class CmdCreatePuzzleRecipe(MuxCommand):
@@ -307,9 +301,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         caller.msg(
             "You may now dispose of all parts and results. \n"
             "Use @puzzleedit #{dbref} to customize this puzzle further. \n"
-            "Use @armpuzzle #{dbref} to arm a new puzzle instance.".format(
-                dbref=puzzle.dbref
-            )
+            "Use @armpuzzle #{dbref} to arm a new puzzle instance.".format(dbref=puzzle.dbref)
         )
 
 
@@ -372,9 +364,7 @@ class CmdEditPuzzle(MuxCommand):
         puzzle_name_id = "%s(%s)" % (puzzle.name, puzzle.dbref)
 
         if "delete" in self.switches:
-            if not (
-                puzzle.access(caller, "control") or puzzle.access(caller, "delete")
-            ):
+            if not (puzzle.access(caller, "control") or puzzle.access(caller, "delete")):
                 caller.msg("You don't have permission to delete %s." % puzzle_name_id)
                 return
 
@@ -656,9 +646,7 @@ class CmdUsePuzzleParts(MuxCommand):
         # Create lookup dict of puzzles by dbref
         puzzles_dict = dict((puzzle.dbref, puzzle) for puzzle in puzzles)
         # Check if parts can be combined to solve a puzzle
-        matched_puzzles = _matching_puzzles(
-            puzzles, puzzlename_tags_dict, puzzle_ingredients
-        )
+        matched_puzzles = _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients)
 
         if len(matched_puzzles) == 0:
             # TODO: we could use part.fail_message instead, if there was one
@@ -667,9 +655,7 @@ class CmdUsePuzzleParts(MuxCommand):
             caller.msg(_PUZZLE_DEFAULT_FAIL_USE_MESSAGE % (many))
             return
 
-        puzzletuples = sorted(
-            matched_puzzles.items(), key=lambda t: len(t[1]), reverse=True
-        )
+        puzzletuples = sorted(matched_puzzles.items(), key=lambda t: len(t[1]), reverse=True)
 
         logger.log_info("MATCHED PUZZLES %r" % (puzzletuples))
 
@@ -677,9 +663,7 @@ class CmdUsePuzzleParts(MuxCommand):
         puzzledbref, matched_dbrefparts = puzzletuples[0]
         nparts = len(matched_dbrefparts)
         puzzle = puzzles_dict[puzzledbref]
-        largest_puzzles = list(
-            itertools.takewhile(lambda t: len(t[1]) == nparts, puzzletuples)
-        )
+        largest_puzzles = list(itertools.takewhile(lambda t: len(t[1]) == nparts, puzzletuples))
 
         # if there are more than one, choose one at random.
         # we could show the names of all those that can be resolved
@@ -710,9 +694,7 @@ class CmdUsePuzzleParts(MuxCommand):
         result_names = ", ".join(result_names)
         caller.msg(puzzle.db.use_success_message)
         caller.location.msg_contents(
-            puzzle.db.use_success_location_message.format(
-                caller=caller, result_names=result_names
-            ),
+            puzzle.db.use_success_location_message.format(caller=caller, result_names=result_names),
             exclude=(caller,),
         )
 
@@ -732,25 +714,17 @@ class CmdListPuzzleRecipes(MuxCommand):
     def func(self):
         caller = self.caller
 
-        recipes = search.search_script_tag(
-            _PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY
-        )
+        recipes = search.search_script_tag(_PUZZLES_TAG_RECIPE, category=_PUZZLES_TAG_CATEGORY)
 
         div = "-" * 60
         text = [div]
         msgf_recipe = "Puzzle |y'%s' %s(%s)|n"
         msgf_item = "%2s|c%15s|n: |w%s|n"
         for recipe in recipes:
+            text.append(msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref))
+            text.append("Success Caller message:\n" + recipe.db.use_success_message + "\n")
             text.append(
-                msgf_recipe % (recipe.db.puzzle_name, recipe.name, recipe.dbref)
-            )
-            text.append(
-                "Success Caller message:\n" + recipe.db.use_success_message + "\n"
-            )
-            text.append(
-                "Success Location message:\n"
-                + recipe.db.use_success_location_message
-                + "\n"
+                "Success Location message:\n" + recipe.db.use_success_location_message + "\n"
             )
             text.append("Mask:\n" + str(recipe.db.mask) + "\n")
             text.append("Parts")
@@ -787,13 +761,10 @@ class CmdListArmedPuzzles(MuxCommand):
     def func(self):
         caller = self.caller
 
-        armed_puzzles = search.search_tag(
-            _PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY
-        )
+        armed_puzzles = search.search_tag(_PUZZLES_TAG_MEMBER, category=_PUZZLES_TAG_CATEGORY)
 
         armed_puzzles = dict(
-            (k, list(g))
-            for k, g in itertools.groupby(armed_puzzles, lambda ap: ap.db.puzzle_name)
+            (k, list(g)) for k, g in itertools.groupby(armed_puzzles, lambda ap: ap.db.puzzle_name)
         )
 
         div = "-" * 60
@@ -804,8 +775,7 @@ class CmdListArmedPuzzles(MuxCommand):
             text.append(msgf_pznm % (pzname))
             for item in items:
                 text.append(
-                    msgf_item
-                    % (item.name, item.dbref, item.location.name, item.location.dbref)
+                    msgf_item % (item.name, item.dbref, item.location.name, item.location.dbref)
                 )
         else:
             text.append(div)

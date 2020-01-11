@@ -81,9 +81,7 @@ class TestEvMenu(TestCase):
                 node_text = menu.test_nodetext
                 self.assertIsNotNone(
                     bool(node_text),
-                    "node: {}: node-text is None, which was not expected.".format(
-                        nodename
-                    ),
+                    "node: {}: node-text is None, which was not expected.".format(nodename),
                 )
                 if isinstance(node_text, tuple):
                     node_text, helptext = node_text
@@ -99,9 +97,7 @@ class TestEvMenu(TestCase):
                 self.assertEqual(
                     len(options),
                     compare_options_count,
-                    "Not the right number of options returned from node {}.".format(
-                        nodename
-                    ),
+                    "Not the right number of options returned from node {}.".format(nodename),
                 )
             compare_options = self.expected_node_options.get(nodename, None)
             if compare_options:
@@ -147,9 +143,7 @@ class TestEvMenu(TestCase):
 
                     if menu.close_menu.called:
                         # this was an end node
-                        self._debug_output(
-                            indent, "    .. menu exited! Back to previous node."
-                        )
+                        self._debug_output(indent, "    .. menu exited! Back to previous node.")
                         menu = backup_menu
                         menu.close_menu = MagicMock()
                         visited.append(nodename)
@@ -162,9 +156,7 @@ class TestEvMenu(TestCase):
                     else:
                         subtree.append(nodename)
                         # self._debug_output( indent, "    -> arrived at {} (circular call)".format(nodename))
-                    self._debug_output(
-                        indent, "-- {} ({}) -> {}".format(key, desc, goto)
-                    )
+                    self._debug_output(indent, "-- {} ({}) -> {}".format(key, desc, goto))
 
             if subtree:
                 tree.append(subtree)

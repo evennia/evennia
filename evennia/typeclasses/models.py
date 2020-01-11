@@ -36,11 +36,7 @@ from django.urls import reverse
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
 
-from evennia.typeclasses.attributes import (
-    Attribute,
-    AttributeHandler,
-    NAttributeHandler,
-)
+from evennia.typeclasses.attributes import Attribute, AttributeHandler, NAttributeHandler
 from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
 
 from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
@@ -198,9 +194,7 @@ class TypedObject(SharedMemoryModel):
         db_index=True,
     )
     # Creation date. This is not changed once the object is created.
-    db_date_created = models.DateTimeField(
-        "creation date", editable=False, auto_now_add=True
-    )
+    db_date_created = models.DateTimeField("creation date", editable=False, auto_now_add=True)
     # Lock storage
     db_lock_storage = models.TextField(
         "locks",
@@ -255,10 +249,7 @@ class TypedObject(SharedMemoryModel):
                     log_trace()
                     self.__dbclass__ = self._meta.concrete_model or self.__class__
         else:
-            self.db_typeclass_path = "%s.%s" % (
-                self.__module__,
-                self.__class__.__name__,
-            )
+            self.db_typeclass_path = "%s.%s" % (self.__module__, self.__class__.__name__)
         # important to put this at the end since _meta is based on the set __class__
         try:
             self.__dbclass__ = self._meta.concrete_model or self.__class__
@@ -373,9 +364,7 @@ class TypedObject(SharedMemoryModel):
         self.db_key = value
         self.save(update_fields=["db_key"])
         self.at_rename(oldname, value)
-        SIGNAL_TYPED_OBJECT_POST_RENAME.send(
-            sender=self, old_key=oldname, new_key=value
-        )
+        SIGNAL_TYPED_OBJECT_POST_RENAME.send(sender=self, old_key=oldname, new_key=value)
 
     #
     #
@@ -503,8 +492,7 @@ class TypedObject(SharedMemoryModel):
         else:
             # check parent chain
             return any(
-                hasattr(cls, "path") and cls.path in typeclass
-                for cls in self.__class__.mro()
+                hasattr(cls, "path") and cls.path in typeclass for cls in self.__class__.mro()
             )
 
     def swap_typeclass(
@@ -553,9 +541,7 @@ class TypedObject(SharedMemoryModel):
 
         if not callable(new_typeclass):
             # this is an actual class object - build the path
-            new_typeclass = class_from_module(
-                new_typeclass, defaultpaths=settings.TYPECLASS_PATHS
-            )
+            new_typeclass = class_from_module(new_typeclass, defaultpaths=settings.TYPECLASS_PATHS)
 
         # if we get to this point, the class is ok.
 
@@ -598,12 +584,7 @@ class TypedObject(SharedMemoryModel):
     #
 
     def access(
-        self,
-        accessing_obj,
-        access_type="read",
-        default=False,
-        no_superuser_bypass=False,
-        **kwargs
+        self, accessing_obj, access_type="read", default=False, no_superuser_bypass=False, **kwargs
     ):
         """
         Determines if another object has permission to access this one.
@@ -750,9 +731,7 @@ class TypedObject(SharedMemoryModel):
         try:
             return self._ndb_holder
         except AttributeError:
-            self._ndb_holder = DbHolder(
-                self, "nattrhandler", manager_name="nattributes"
-            )
+            self._ndb_holder = DbHolder(self, "nattrhandler", manager_name="nattributes")
             return self._ndb_holder
 
     # @db.setter
@@ -846,8 +825,7 @@ class TypedObject(SharedMemoryModel):
         """
         content_type = ContentType.objects.get_for_model(self.__class__)
         return reverse(
-            "admin:%s_%s_change" % (content_type.app_label, content_type.model),
-            args=(self.id,),
+            "admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,)
         )
 
     @classmethod

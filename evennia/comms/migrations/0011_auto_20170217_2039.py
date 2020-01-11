@@ -7,10 +7,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ("scripts", "0007_auto_20150403_2339"),
-        ("comms", "0010_auto_20161206_1912"),
-    ]
+    dependencies = [("scripts", "0007_auto_20150403_2339"), ("comms", "0010_auto_20161206_1912")]
 
     operations = [
         migrations.AddField(

@@ -54,9 +54,7 @@ class TestAccountSessionHandler(TestCase):
         evennia.server.sessionhandler.SESSIONS[s3.uid] = s3
 
         self.assertEqual([s.uid for s in self.handler.get()], [s1.uid])
-        self.assertEqual(
-            [s.uid for s in [self.handler.get(self.account.uid)]], [s1.uid]
-        )
+        self.assertEqual([s.uid for s in [self.handler.get(self.account.uid)]], [s1.uid])
         self.assertEqual([s.uid for s in self.handler.get(self.account.uid + 1)], [])
 
     def test_all(self):
@@ -88,8 +86,7 @@ class TestDefaultGuest(EvenniaTest):
         # Create a second guest account
         account, errors = DefaultGuest.authenticate(ip=self.ip)
         self.assertFalse(
-            account,
-            "Two guest accounts were created with a single entry on the guest list!",
+            account, "Two guest accounts were created with a single entry on the guest list!"
         )
 
     @patch("evennia.accounts.accounts.ChannelDB.objects.get_channel")
@@ -150,17 +147,13 @@ class TestDefaultAccountAuth(EvenniaTest):
 
         # Try creating a duplicate account
         account2, errors = DefaultAccount.create(username="Ziggy", password="starman11")
-        self.assertFalse(
-            account2, "Duplicate account name should not have been allowed."
-        )
+        self.assertFalse(account2, "Duplicate account name should not have been allowed.")
         account.delete()
 
     def test_throttle(self):
         "Confirm throttle activates on too many failures."
         for x in range(20):
-            obj, errors = DefaultAccount.authenticate(
-                self.account.name, "xyzzy", ip="12.24.36.48"
-            )
+            obj, errors = DefaultAccount.authenticate(self.account.name, "xyzzy", ip="12.24.36.48")
             self.assertFalse(
                 obj,
                 "Authentication was provided a bogus password; this should NOT have returned an account!",
@@ -183,9 +176,7 @@ class TestDefaultAccountAuth(EvenniaTest):
 
         # Should not allow duplicate username
         result, error = DefaultAccount.validate_username(self.account.name)
-        self.assertFalse(
-            result, "Duplicate username should not have passed validation."
-        )
+        self.assertFalse(result, "Duplicate username should not have passed validation.")
 
         # Should not allow username too short
         result, error = DefaultAccount.validate_username("xx")
@@ -301,9 +292,7 @@ class TestDefaultAccount(TestCase):
         account.puppet_object(self.s1, obj)
 
         self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].startswith(
-                "You don't have permission to puppet"
-            )
+            self.s1.data_out.call_args[1]["text"].startswith("You don't have permission to puppet")
         )
         self.assertIsNone(obj.at_post_puppet.call_args)
 
@@ -334,9 +323,7 @@ class TestDefaultAccount(TestCase):
         account.puppet_object(self.s1, obj)
         # works because django.conf.settings.MULTISESSION_MODE is not in (1, 3)
         self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].endswith(
-                "from another of your sessions.|n"
-            )
+            self.s1.data_out.call_args[1]["text"].endswith("from another of your sessions.|n")
         )
         self.assertTrue(obj.at_post_puppet.call_args[1] == {})
 
@@ -378,15 +365,12 @@ class TestAccountPuppetDeletion(EvenniaTest):
     def test_puppet_deletion(self):
         # Check for existing chars
         self.assertFalse(
-            self.account.db._playable_characters,
-            "Account should not have any chars by default.",
+            self.account.db._playable_characters, "Account should not have any chars by default."
         )
 
         # Add char1 to account's playable characters
         self.account.db._playable_characters.append(self.char1)
-        self.assertTrue(
-            self.account.db._playable_characters, "Char was not added to account."
-        )
+        self.assertTrue(self.account.db._playable_characters, "Char was not added to account.")
 
         # See what happens when we delete char1.
         self.char1.delete()
@@ -414,9 +398,7 @@ class TestDefaultAccountEv(EvenniaTest):
         self.account.msg = MagicMock()
         with patch("evennia.accounts.accounts._MULTISESSION_MODE", 2):
             self.account.puppet_object(self.session, self.char1)
-            self.account.msg.assert_called_with(
-                "You are already puppeting this object."
-            )
+            self.account.msg.assert_called_with("You are already puppeting this object.")
 
     @patch("evennia.accounts.accounts.time.time", return_value=10000)
     def test_idle_time(self, mock_time):
@@ -450,15 +432,8 @@ class TestDefaultAccountEv(EvenniaTest):
             "test@test.com",
             "testpassword123",
             locks="test:all()",
-            tags=[
-                ("tag1", "category1"),
-                ("tag2", "category2", "data1"),
-                ("tag3", None),
-            ],
-            attributes=[
-                ("key1", "value1", "category1", "edit:false()", True),
-                ("key2", "value2"),
-            ],
+            tags=[("tag1", "category1"), ("tag2", "category2", "data1"), ("tag3", None)],
+            attributes=[("key1", "value1", "category1", "edit:false()", True), ("key2", "value2")],
         )
         acct.save()
         self.assertTrue(acct.pk)

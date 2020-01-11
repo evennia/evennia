@@ -25,10 +25,7 @@ from evennia.utils.utils import (
     callables_from_module,
 )
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
-from evennia.server.signals import (
-    SIGNAL_ACCOUNT_POST_FIRST_LOGIN,
-    SIGNAL_ACCOUNT_POST_LAST_LOGOUT,
-)
+from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
 from evennia.utils.inlinefuncs import parse_inlinefunc
 from codecs import decode as codecs_decode
 
@@ -224,15 +221,9 @@ class SessionHandler(dict):
             elif isinstance(data, (str, bytes)):
                 data = _utf8(data)
 
-                if (
-                    _INLINEFUNC_ENABLED
-                    and not raw
-                    and isinstance(self, ServerSessionHandler)
-                ):
+                if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
                     # only parse inlinefuncs on the outgoing path (sessionhandler->)
-                    data = parse_inlinefunc(
-                        data, strip=strip_inlinefunc, session=session
-                    )
+                    data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
 
                 return str(data)
             elif (
@@ -460,10 +451,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(
-            DUMMYSESSION,
-            operation=SCONN,
-            protocol_path=protocol_path,
-            config=configdict,
+            DUMMYSESSION, operation=SCONN, protocol_path=protocol_path, config=configdict
         )
 
     def portal_restart_server(self):
@@ -471,9 +459,7 @@ class ServerSessionHandler(SessionHandler):
         Called by server when reloading. We tell the portal to start a new server instance.
 
         """
-        self.server.amp_protocol.send_AdminServer2Portal(
-            DUMMYSESSION, operation=SRELOAD
-        )
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SRELOAD)
 
     def portal_reset_server(self):
         """
@@ -530,17 +516,13 @@ class ServerSessionHandler(SessionHandler):
 
         nsess = len(self.sessions_from_account(account))
         string = "Logged in: {account} {address} ({nsessions} session(s) total)"
-        string = string.format(
-            account=account, address=session.address, nsessions=nsess
-        )
+        string = string.format(account=account, address=session.address, nsessions=nsess)
         session.log(string)
         session.logged_in = True
         # sync the portal to the session
         if not testmode:
             self.server.amp_protocol.send_AdminServer2Portal(
-                session,
-                operation=SLOGIN,
-                sessiondata={"logged_in": True, "uid": session.uid},
+                session, operation=SLOGIN, sessiondata={"logged_in": True, "uid": session.uid}
             )
         account.at_post_login(session=session)
         if nsess < 2:
@@ -570,17 +552,12 @@ class ServerSessionHandler(SessionHandler):
             sreason = " ({})".format(reason) if reason else ""
             string = "Logged out: {account} {address} ({nsessions} sessions(s) remaining){reason}"
             string = string.format(
-                reason=sreason,
-                account=session.account,
-                address=session.address,
-                nsessions=nsess,
+                reason=sreason, account=session.account, address=session.address, nsessions=nsess
             )
             session.log(string)
 
             if nsess == 0:
-                SIGNAL_ACCOUNT_POST_LAST_LOGOUT.send(
-                    sender=session.account, session=session
-                )
+                SIGNAL_ACCOUNT_POST_LAST_LOGOUT.send(sender=session.account, session=session)
 
         session.at_disconnect(reason)
         SIGNAL_ACCOUNT_POST_LOGOUT.send(sender=session.account, session=session)
@@ -660,9 +637,7 @@ class ServerSessionHandler(SessionHandler):
         # mean connecting from the same host would not catch duplicates
         sid = id(curr_session)
         doublet_sessions = [
-            sess
-            for sess in self.values()
-            if sess.logged_in and sess.uid == uid and id(sess) != sid
+            sess for sess in self.values() if sess.logged_in and sess.uid == uid and id(sess) != sid
         ]
 
         for session in doublet_sessions:
@@ -762,11 +737,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         uid = account.uid
-        return [
-            session
-            for session in self.values()
-            if session.logged_in and session.uid == uid
-        ]
+        return [session for session in self.values() if session.logged_in and session.uid == uid]
 
     def sessions_from_puppet(self, puppet):
         """
@@ -799,9 +770,7 @@ class ServerSessionHandler(SessionHandler):
         if csessid:
             return []
         return [
-            session
-            for session in self.values()
-            if session.csessid and session.csessid == csessid
+            session for session in self.values() if session.csessid and session.csessid == csessid
         ]
 
     def announce_all(self, message):

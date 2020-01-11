@@ -17,9 +17,7 @@ from evennia.utils import create, logger
 __all__ = ["DefaultScript", "DoNothing", "Store"]
 
 
-FLUSHING_INSTANCES = (
-    False
-)  # whether we're in the process of flushing scripts from the cache
+FLUSHING_INSTANCES = False  # whether we're in the process of flushing scripts from the cache
 SCRIPT_FLUSH_TIMERS = {}  # stores timers for scripts that are currently being flushed
 
 
@@ -71,9 +69,7 @@ class ExtendedLoopingCall(LoopingCall):
             steps if we want.
 
         """
-        assert not self.running, (
-            "Tried to start an already running " "ExtendedLoopingCall."
-        )
+        assert not self.running, "Tried to start an already running " "ExtendedLoopingCall."
         if interval < 0:
             raise ValueError("interval must be >= 0")
         self.running = True
@@ -122,9 +118,7 @@ class ExtendedLoopingCall(LoopingCall):
                 running.
 
         """
-        assert self.running, (
-            "Tried to fire an ExtendedLoopingCall " "that was not running."
-        )
+        assert self.running, "Tried to fire an ExtendedLoopingCall " "that was not running."
         self.call.cancel()
         self.call = None
         self.starttime = self.clock.seconds()
@@ -175,10 +169,7 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
             # the script was paused; restarting
             callcount = self.db._paused_callcount or 0
             self.ndb._task.start(
-                self.db_interval,
-                now=False,
-                start_delay=self.db._paused_time,
-                count_start=callcount,
+                self.db_interval, now=False, start_delay=self.db._paused_time, count_start=callcount
             )
             del self.db._paused_time
             del self.db._paused_repeats
@@ -203,12 +194,7 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         cname = self.__class__.__name__
         estring = _(
             "Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
-        ) % {
-            "key": self.key,
-            "dbid": self.dbid,
-            "cname": cname,
-            "err": e.getErrorMessage(),
-        }
+        ) % {"key": self.key, "dbid": self.dbid, "cname": cname, "err": e.getErrorMessage()}
         try:
             self.db_obj.msg(estring)
         except Exception:
@@ -352,9 +338,7 @@ class DefaultScript(ScriptBase):
         try:
             obj = create.create_script(**kwargs)
         except Exception as e:
-            errors.append(
-                "The script '%s' encountered errors and could not be created." % key
-            )
+            errors.append("The script '%s' encountered errors and could not be created." % key)
             logger.log_err(e)
 
         return obj, errors
@@ -456,10 +440,7 @@ class DefaultScript(ScriptBase):
                     start_delay = None
                     callcount = 0
                 self.ndb._task.start(
-                    self.db_interval,
-                    now=now,
-                    start_delay=start_delay,
-                    count_start=callcount,
+                    self.db_interval, now=now, start_delay=start_delay, count_start=callcount
                 )
             return 0
 

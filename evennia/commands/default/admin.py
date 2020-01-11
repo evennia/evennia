@@ -89,9 +89,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
                 boot_list.append(match)
 
         if not boot_list:
-            caller.msg(
-                "No matching sessions found. The Account does not seem to be online."
-            )
+            caller.msg("No matching sessions found. The Account does not seem to be online.")
             return
 
         # Carry out the booting of the sessions in the boot list.
@@ -192,8 +190,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
             banlist = []
 
         if not self.args or (
-            self.switches
-            and not any(switch in ("ip", "name") for switch in self.switches)
+            self.switches and not any(switch in ("ip", "name") for switch in self.switches)
         ):
             self.caller.msg(list_bans(self, banlist))
             return
@@ -402,12 +399,9 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
         account.save()
         self.msg("%s - new password set to '%s'." % (account.name, newpass))
         if account.character != caller:
-            account.msg(
-                "%s has changed your password to '%s'." % (caller.name, newpass)
-            )
+            account.msg("%s has changed your password to '%s'." % (caller.name, newpass))
         logger.log_sec(
-            "Password Changed: %s (Caller: %s, IP: %s)."
-            % (account, caller, self.session.address)
+            "Password Changed: %s (Caller: %s, IP: %s)." % (account, caller, self.session.address)
         )
 
 
@@ -492,17 +486,14 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 obj.permissions.remove(perm)
                 if obj.permissions.get(perm):
                     caller_result.append(
-                        "\nPermissions %s could not be removed from %s."
-                        % (perm, obj.name)
+                        "\nPermissions %s could not be removed from %s." % (perm, obj.name)
                     )
                 else:
                     caller_result.append(
-                        "\nPermission %s removed from %s (if they existed)."
-                        % (perm, obj.name)
+                        "\nPermission %s removed from %s (if they existed)." % (perm, obj.name)
                     )
                     target_result.append(
-                        "\n%s revokes the permission(s) %s from you."
-                        % (caller.name, perm)
+                        "\n%s revokes the permission(s) %s from you." % (caller.name, perm)
                     )
                     logger.log_sec(
                         "Permissions Deleted: %s, %s (Caller: %s, IP: %s)."
@@ -532,8 +523,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                     obj.permissions.add(perm)
                     plystring = "the Account" if accountmode else "the Object/Character"
                     caller_result.append(
-                        "\nPermission '%s' given to %s (%s)."
-                        % (perm, obj.name, plystring)
+                        "\nPermission '%s' given to %s (%s)." % (perm, obj.name, plystring)
                     )
                     target_result.append(
                         "\n%s gives you (%s, %s) the permission '%s'."
@@ -593,17 +583,13 @@ class CmdForce(COMMAND_DEFAULT_CLASS):
     def func(self):
         """Implements the force command"""
         if not self.lhs or not self.rhs:
-            self.caller.msg(
-                "You must provide a target and a command string to execute."
-            )
+            self.caller.msg("You must provide a target and a command string to execute.")
             return
         targ = self.caller.search(self.lhs)
         if not targ:
             return
         if not targ.access(self.caller, self.perm_used):
-            self.caller.msg(
-                "You don't have permission to force them to execute commands."
-            )
+            self.caller.msg("You don't have permission to force them to execute commands.")
             return
         targ.execute_cmd(self.rhs)
         self.caller.msg("You have forced %s to: %s" % (targ, self.rhs))

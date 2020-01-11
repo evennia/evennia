@@ -89,8 +89,7 @@ def server_epoch():
     global _SERVER_EPOCH
     if not _SERVER_EPOCH:
         _SERVER_EPOCH = (
-            ServerConfig.objects.conf("server_epoch", default=None)
-            or time.time() - runtime()
+            ServerConfig.objects.conf("server_epoch", default=None) or time.time() - runtime()
         )
     return _SERVER_EPOCH
 
@@ -212,14 +211,7 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None, month=None, year
 
 
 def schedule(
-    callback,
-    repeat=False,
-    sec=None,
-    min=None,
-    hour=None,
-    day=None,
-    month=None,
-    year=None,
+    callback, repeat=False, sec=None, min=None, hour=None, day=None, month=None, year=None
 ):
     """
     Call a callback at a given in-game time.
@@ -244,9 +236,7 @@ def schedule(
         schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.
         schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.
     """
-    seconds = real_seconds_until(
-        sec=sec, min=min, hour=hour, day=day, month=month, year=year
-    )
+    seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day, month=month, year=year)
     script = create_script(
         "evennia.utils.gametime.TimeScript",
         key="TimeScript",

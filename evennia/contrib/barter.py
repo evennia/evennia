@@ -414,13 +414,9 @@ class CmdTradeBase(Command):
             self.args, self.emote = [part.strip() for part in self.args.rsplit(":", 1)]
             self.str_caller = 'You say, "' + self.emote + '"\n  [%s]'
             if self.caller.has_account:
-                self.str_other = (
-                    '|c%s|n says, "' % self.caller.key + self.emote + '"\n  [%s]'
-                )
+                self.str_other = '|c%s|n says, "' % self.caller.key + self.emote + '"\n  [%s]'
             else:
-                self.str_other = (
-                    '%s says, "' % self.caller.key + self.emote + '"\n  [%s]'
-                )
+                self.str_other = '%s says, "' % self.caller.key + self.emote + '"\n  [%s]'
 
 
 # trade help
@@ -570,9 +566,7 @@ class CmdAccept(CmdTradeBase):
             )
             self.msg_other(
                 caller,
-                self.str_other
-                % "%s |Gaccepts|n the offer. You must now also accept."
-                % caller.key,
+                self.str_other % "%s |Gaccepts|n the offer. You must now also accept." % caller.key,
             )
 
 
@@ -608,10 +602,7 @@ class CmdDecline(CmdTradeBase):
             return
         if self.tradehandler.decline(self.caller):
             # changed a previous accept
-            caller.msg(
-                self.str_caller
-                % "You change your mind, |Rdeclining|n the current offer."
-            )
+            caller.msg(self.str_caller % "You change your mind, |Rdeclining|n the current offer.")
             self.msg_other(
                 caller,
                 self.str_other
@@ -621,9 +612,7 @@ class CmdDecline(CmdTradeBase):
         else:
             # no acceptance to change
             caller.msg(self.str_caller % "You |Rdecline|n the current offer.")
-            self.msg_other(
-                caller, self.str_other % "%s declines the current offer." % caller.key
-            )
+            self.msg_other(caller, self.str_other % "%s declines the current offer." % caller.key)
 
 
 # evaluate
@@ -757,8 +746,7 @@ class CmdFinish(CmdTradeBase):
         self.tradehandler.finish(force=True)
         caller.msg(self.str_caller % "You |raborted|n trade. No deal was made.")
         self.msg_other(
-            caller,
-            self.str_other % "%s |raborted|n trade. No deal was made." % caller.key,
+            caller, self.str_other % "%s |raborted|n trade. No deal was made." % caller.key
         )
 
 
@@ -814,13 +802,8 @@ class CmdTrade(Command):
         """Initiate trade"""
 
         if not self.args:
-            if (
-                self.caller.ndb.tradehandler
-                and self.caller.ndb.tradeevent.trade_started
-            ):
-                self.caller.msg(
-                    "You are already in a trade. Use 'end trade' to abort it."
-                )
+            if self.caller.ndb.tradehandler and self.caller.ndb.tradeevent.trade_started:
+                self.caller.msg("You are already in a trade. Use 'end trade' to abort it.")
             else:
                 self.caller.msg("Usage: trade <other party> [accept|decline] [:emote]")
             return
@@ -869,9 +852,7 @@ class CmdTrade(Command):
             if self.caller.ndb.tradehandler:
                 # trying to start trade without stopping a previous one
                 if self.caller.ndb.tradehandler.trade_started:
-                    string = (
-                        "You are already in trade with %s. You need to end trade first."
-                    )
+                    string = "You are already in trade with %s. You need to end trade first."
                 else:
                     string = "You are already trying to initiate trade with %s. You need to decline that trade first."
                 self.caller.msg(string % part_b.key)
@@ -884,9 +865,7 @@ class CmdTrade(Command):
                 # initiate a new trade
                 TradeHandler(part_a, part_b)
                 part_a.msg(selfemote + str_init_a % (part_b.key, TRADE_TIMEOUT))
-                part_b.msg(
-                    theiremote + str_init_b % (part_a.key, part_a.key, TRADE_TIMEOUT)
-                )
+                part_b.msg(theiremote + str_init_b % (part_a.key, part_a.key, TRADE_TIMEOUT))
                 part_a.scripts.add(TradeTimeout)
             return
         elif accept:
@@ -894,8 +873,7 @@ class CmdTrade(Command):
             if part_a.ndb.tradehandler:
                 # already in a trade
                 part_a.msg(
-                    "You are already in trade with %s. You need to end that first."
-                    % part_b.key
+                    "You are already in trade with %s. You need to end that first." % part_b.key
                 )
                 return
             if part_b.ndb.tradehandler.join(part_a):
@@ -910,9 +888,7 @@ class CmdTrade(Command):
                 # stopping an invite
                 part_a.ndb.tradehandler.finish(force=True)
                 part_b.msg(theiremote + "%s aborted trade attempt with you." % part_a)
-                part_a.msg(
-                    selfemote + "You aborted the trade attempt with %s." % part_b
-                )
+                part_a.msg(selfemote + "You aborted the trade attempt with %s." % part_b)
             elif part_b.ndb.tradehandler and part_b.ndb.tradehandler.unjoin(part_a):
                 part_b.msg(theiremote + str_noinit_a % part_a.key)
                 part_a.msg(selfemote + str_noinit_b % part_b.key)

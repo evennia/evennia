@@ -56,9 +56,7 @@ class EvenniaGameIndexClient(object):
         status_code, response_body = yield self._form_and_send_request()
         if status_code == 200:
             if not self.logged_first_connect:
-                logger.log_infomsg(
-                    "Successfully sent game details to Evennia Game Index."
-                )
+                logger.log_infomsg("Successfully sent game details to Evennia Game Index.")
                 self.logged_first_connect = True
             return
         # At this point, either EGD is having issues or the payload we sent

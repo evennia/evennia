@@ -129,14 +129,10 @@ class MuxCommand(Command):
             if switches and self.switch_options:
                 valid_switches, unused_switches, extra_switches = [], [], []
                 for element in switches:
-                    option_check = [
-                        opt for opt in self.switch_options if opt == element
-                    ]
+                    option_check = [opt for opt in self.switch_options if opt == element]
                     if not option_check:
                         option_check = [
-                            opt
-                            for opt in self.switch_options
-                            if opt.startswith(element)
+                            opt for opt in self.switch_options if opt.startswith(element)
                         ]
                     match_count = len(option_check)
                     if match_count > 1:
@@ -144,13 +140,9 @@ class MuxCommand(Command):
                             option_check
                         )  # Either the option provided is ambiguous,
                     elif match_count == 1:
-                        valid_switches.extend(
-                            option_check
-                        )  # or it is a valid option abbreviation,
+                        valid_switches.extend(option_check)  # or it is a valid option abbreviation,
                     elif match_count == 0:
-                        unused_switches.append(
-                            element
-                        )  # or an extraneous option to be ignored.
+                        unused_switches.append(element)  # or an extraneous option to be ignored.
                 if extra_switches:  # User provided switches
                     self.msg(
                         "|g%s|n: |wAmbiguous switch supplied: Did you mean /|C%s|w?"
@@ -162,17 +154,13 @@ class MuxCommand(Command):
                         '|g%s|n: |wExtra switch%s "/|C%s|w" ignored.'
                         % (self.cmdstring, plural, "|n, /|C".join(unused_switches))
                     )
-                switches = (
-                    valid_switches
-                )  # Only include valid_switches in command function call
+                switches = valid_switches  # Only include valid_switches in command function call
         arglist = [arg.strip() for arg in args.split()]
 
         # check for arg1, arg2, ... = argA, argB, ... constructs
         lhs, rhs = args.strip(), None
         if lhs:
-            if delimiters and hasattr(
-                delimiters, "__iter__"
-            ):  # If delimiter is iterable,
+            if delimiters and hasattr(delimiters, "__iter__"):  # If delimiter is iterable,
                 best_split = delimiters[0]  # (default to first delimiter)
                 for this_split in delimiters:  # try each delimiter
                     if this_split in lhs:  # to find first successful split
@@ -204,15 +192,11 @@ class MuxCommand(Command):
         # a special property "character" for the puppeted object, if any. This
         # is convenient for commands defined on the Account only.
         if self.account_caller:
-            if utils.inherits_from(
-                self.caller, "evennia.objects.objects.DefaultObject"
-            ):
+            if utils.inherits_from(self.caller, "evennia.objects.objects.DefaultObject"):
                 # caller is an Object/Character
                 self.character = self.caller
                 self.caller = self.caller.account
-            elif utils.inherits_from(
-                self.caller, "evennia.accounts.accounts.DefaultAccount"
-            ):
+            elif utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount"):
                 # caller was already an Account
                 self.character = self.caller.get_puppet(self.session)
             else:
@@ -225,8 +209,7 @@ class MuxCommand(Command):
          to all the variables defined therein.
         """
         variables = "\n".join(
-            " |w{}|n ({}): {}".format(key, type(val), val)
-            for key, val in self.__dict__.items()
+            " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
         )
         string = f"""
 Command {self} has no defined `func()` - showing on-command variables: No child func() defined for {self} - available variables:
@@ -253,9 +236,7 @@ Command {self} has no defined `func()` - showing on-command variables: No child 
         string += "cmd args (self.args): |w%s|n\n" % self.args
         string += "cmd switches (self.switches): |w%s|n\n" % self.switches
         string += "cmd options (self.switch_options): |w%s|n\n" % self.switch_options
-        string += (
-            "cmd parse left/right using (self.rhs_split): |w%s|n\n" % self.rhs_split
-        )
+        string += "cmd parse left/right using (self.rhs_split): |w%s|n\n" % self.rhs_split
         string += "space-separated arg list (self.arglist): |w%s|n\n" % self.arglist
         string += "lhs, left-hand side of '=' (self.lhs): |w%s|n\n" % self.lhs
         string += "lhs, comma separated (self.lhslist): |w%s|n\n" % self.lhslist
@@ -280,6 +261,4 @@ class MuxAccountCommand(MuxCommand):
     character is actually attached to this Account and Session.
     """
 
-    account_caller = (
-        True
-    )  # Using MuxAccountCommand explicitly defaults the caller to an account
+    account_caller = True  # Using MuxAccountCommand explicitly defaults the caller to an account

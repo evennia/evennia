@@ -151,15 +151,11 @@ class OptionHandler(object):
         """
         if not key:
             raise ValueError("Option field blank!")
-        match = string_partial_matching(
-            list(self.options_dict.keys()), key, ret_index=False
-        )
+        match = string_partial_matching(list(self.options_dict.keys()), key, ret_index=False)
         if not match:
             raise ValueError("Option not found!")
         if len(match) > 1:
-            raise ValueError(
-                f"Multiple matches: {', '.join(match)}. Please be more specific."
-            )
+            raise ValueError(f"Multiple matches: {', '.join(match)}. Please be more specific.")
         match = match[0]
         op = self.get(match, return_obj=True)
         op.set(value, **kwargs)

@@ -28,13 +28,9 @@ def _drop_table(db_cursor, table_name):
             db_cursor.execute("DROP TABLE {table};".format(table=table_name))
             db_cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
         elif _ENGINE == "postgresql_psycopg2":
-            db_cursor.execute(
-                "ALTER TABLE {table} DISABLE TRIGGER ALL;".format(table=table_name)
-            )
+            db_cursor.execute("ALTER TABLE {table} DISABLE TRIGGER ALL;".format(table=table_name))
             db_cursor.execute("DROP TABLE {table};".format(table=table_name))
-            db_cursor.execute(
-                "ALTER TABLE {table} ENABLE TRIGGER ALL;".format(table=table_name)
-            )
+            db_cursor.execute("ALTER TABLE {table} ENABLE TRIGGER ALL;".format(table=table_name))
         else:  # sqlite3, other databases
             db_cursor.execute("DROP TABLE {table};".format(table=table_name))
 

@@ -113,9 +113,7 @@ class CmdSmashGlass(Command):
             string = "You smash your hand against the glass"
             string += " with all your might. The lid won't budge"
             string += " but you cause quite the tremor through the button's mount."
-            string += (
-                "\nIt looks like the button's lamp stopped working for the time being."
-            )
+            string += "\nIt looks like the button's lamp stopped working for the time being."
             self.obj.lamp_works = False
         elif rand < 0.6:
             string = "You hit the lid hard. It doesn't move an inch."
@@ -125,8 +123,7 @@ class CmdSmashGlass(Command):
             string += " you should just try to open the lid instead?"
         self.caller.msg(string)
         self.caller.location.msg_contents(
-            "%s tries to smash the glass of the button." % (self.caller.name),
-            exclude=self.caller,
+            "%s tries to smash the glass of the button." % (self.caller.name), exclude=self.caller
         )
 
 

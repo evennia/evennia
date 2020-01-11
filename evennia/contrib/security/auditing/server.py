@@ -26,9 +26,7 @@ AUDIT_MASKS = [
     {"connect": r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w]+)"},
     {"create": r"^[^@]?[create]{5,6}\s+(\w+|\".+?\")\s+(?P<secret>[\w]+)"},
     {"create": r"^[^@]?[create]{5,6}\s+(?P<secret>[\w]+)"},
-    {
-        "userpassword": r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w]+)"
-    },
+    {"userpassword": r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w]+)"},
     {"userpassword": r"^.*new password set to '(?P<secret>[^']+)'\."},
     {"userpassword": r"^.* has changed your password to '(?P<secret>[^']+)'\."},
     {"password": r"^[@\s]*[password]{6,9}\s+(?P<secret>.*)"},
@@ -38,8 +36,7 @@ AUDIT_MASKS = [
 if AUDIT_CALLBACK:
     try:
         AUDIT_CALLBACK = getattr(
-            mod_import(".".join(AUDIT_CALLBACK.split(".")[:-1])),
-            AUDIT_CALLBACK.split(".")[-1],
+            mod_import(".".join(AUDIT_CALLBACK.split(".")[:-1])), AUDIT_CALLBACK.split(".")[-1]
         )
         logger.log_sec("Auditing module online.")
         logger.log_sec(
@@ -185,9 +182,7 @@ class AuditedServerSession(ServerSession):
         # Check to see if the command is embedded within server output
         _msg = msg
         is_embedded = False
-        match = re.match(
-            ".*Command.*'(.+)'.*is not available.*", msg, flags=re.IGNORECASE
-        )
+        match = re.match(".*Command.*'(.+)'.*is not available.*", msg, flags=re.IGNORECASE)
         if match:
             msg = match.group(1).replace("\\", "")
             submsg = msg
@@ -208,10 +203,7 @@ class AuditedServerSession(ServerSession):
 
                     if is_embedded:
                         msg = re.sub(
-                            submsg,
-                            "%s <Masked: %s>" % (masked, command),
-                            _msg,
-                            flags=re.IGNORECASE,
+                            submsg, "%s <Masked: %s>" % (masked, command), _msg, flags=re.IGNORECASE
                         )
                     else:
                         msg = masked

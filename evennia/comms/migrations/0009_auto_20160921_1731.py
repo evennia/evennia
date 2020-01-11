@@ -15,20 +15,14 @@ class Migration(migrations.Migration):
             model_name="msg",
             name="db_hide_from_channels",
             field=models.ManyToManyField(
-                blank=True,
-                null=True,
-                related_name="hide_from_channels_set",
-                to="comms.ChannelDB",
+                blank=True, null=True, related_name="hide_from_channels_set", to="comms.ChannelDB"
             ),
         ),
         migrations.AlterField(
             model_name="msg",
             name="db_hide_from_objects",
             field=models.ManyToManyField(
-                blank=True,
-                null=True,
-                related_name="hide_from_objects_set",
-                to="objects.ObjectDB",
+                blank=True, null=True, related_name="hide_from_objects_set", to="objects.ObjectDB"
             ),
         ),
         migrations.AlterField(

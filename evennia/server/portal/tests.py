@@ -28,12 +28,7 @@ from .mssp import MSSP
 from .mxp import MXP
 from .telnet_oob import MSDP, MSDP_VAL, MSDP_VAR
 
-from .amp import (
-    AMPMultiConnectionProtocol,
-    MsgServer2Portal,
-    MsgPortal2Server,
-    AMP_MAXLEN,
-)
+from .amp import AMPMultiConnectionProtocol, MsgServer2Portal, MsgPortal2Server, AMP_MAXLEN
 from .amp_server import AMPServerFactory
 
 
@@ -61,9 +56,7 @@ class TestAMPServer(TwistedTestCase):
             b"\x8bK\xa6x3\x15\xb7M\xd1\x03\x00V:\x07t\x00\x00"
         )
         self.transport.write.assert_called_with(byte_out)
-        with mock.patch(
-            "evennia.server.portal.amp.amp.AMP.dataReceived"
-        ) as mocked_amprecv:
+        with mock.patch("evennia.server.portal.amp.amp.AMP.dataReceived") as mocked_amprecv:
             self.proto.dataReceived(byte_out)
             mocked_amprecv.assert_called_with(byte_out)
 
@@ -77,9 +70,7 @@ class TestAMPServer(TwistedTestCase):
             b"\x8bK\xa6x3\x15\xb7M\xd1\x03\x00V:\x07t\x00\x00"
         )
         self.transport.write.assert_called_with(byte_out)
-        with mock.patch(
-            "evennia.server.portal.amp.amp.AMP.dataReceived"
-        ) as mocked_amprecv:
+        with mock.patch("evennia.server.portal.amp.amp.AMP.dataReceived") as mocked_amprecv:
             self.proto.dataReceived(byte_out)
             mocked_amprecv.assert_called_with(byte_out)
 
@@ -221,9 +212,7 @@ class TestTelnet(TwistedTestCase):
         self.assertEqual(self.proto.protocol_flags["SCREENWIDTH"], {0: DEFAULT_WIDTH})
         self.assertEqual(self.proto.protocol_flags["SCREENHEIGHT"], {0: DEFAULT_HEIGHT})
         self.proto.dataReceived(IAC + WILL + NAWS)
-        self.proto.dataReceived(
-            b"".join([IAC, SB, NAWS, b"", b"x", b"", b"d", IAC, SE])
-        )
+        self.proto.dataReceived(b"".join([IAC, SB, NAWS, b"", b"x", b"", b"d", IAC, SE]))
         self.assertEqual(self.proto.protocol_flags["SCREENWIDTH"][0], 78)
         self.assertEqual(self.proto.protocol_flags["SCREENHEIGHT"][0], 45)
         self.assertEqual(self.proto.handshakes, 6)
