@@ -102,6 +102,9 @@ WEBSOCKET_CLIENT_INTERFACE = "0.0.0.0"
 # the client will itself figure out this url based on the server's hostname.
 # e.g. ws://external.example.com or wss://external.example.com:443
 WEBSOCKET_CLIENT_URL = None
+# Number of trusted web servers (reverse proxies) in front of this server which
+# set the X-Forwarded-For header.
+WEBSOCKET_TRUST_X_FORWARDED_FOR = None
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
 EVENNIA_ADMIN = True

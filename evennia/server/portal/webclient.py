@@ -73,8 +73,13 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         This is called when the WebSocket connection is fully established.
 
         """
-        client_address = self.transport.client
-        client_address = client_address[0] if client_address else None
+        if 'x-forwarded-for' in self.http_headers and self.trustXForwardedFor:
+            addresses = [x.strip() for x in self.http_headers['x-forwarded-for'].split(',')]
+            trusted_addresses = addresses[-self.trustXForwardedFor:]
+            client_address = trusted_addresses[0]
+        else:
+             client_address = self.transport.client
+             client_address = client_address[0] if client_address else None
         self.init_session("websocket", client_address, self.factory.sessionhandler)
 
         csession = self.get_client_session()  # this sets self.csessid
