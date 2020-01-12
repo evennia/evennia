@@ -673,6 +673,9 @@ class ANSIString(str, metaclass=ANSIMeta):
     and taken literally the second time around.
 
     """
+    re_format = re.compile(r"(?i)(?P<just>(?P<fill>.)?(?P<align>\<|\>|\=|\^))?(?P<sign>\+|\-| )?(?P<alt>\#)?"
+                           r"(?P<zero>0)?(?P<width>\d+)?(?P<grouping>\_|\,)?(?:\.(?P<precision>\d+))?"
+                           r"(?P<type>b|c|d|e|E|f|F|g|G|n|o|s|x|X|%)?")
 
     def __new__(cls, *args, **kwargs):
         """
@@ -732,6 +735,23 @@ class ANSIString(str, metaclass=ANSIMeta):
 
     def __str__(self):
         return self._raw_string
+
+    def __format__(self, format_spec):
+        format_data = self.re_format.match(format_spec).groupdict()
+        align = format_data.get('align', '<')
+        fill = format_data.get('fill', ' ')
+        width = int(format_data.get('width', len(self)))
+        base_output = ANSIString(self.raw())
+        if align == '<':
+            base_output = base_output.ljust(width, fill)
+        elif align == '>':
+            base_output = base_output.rjust(width, fill)
+        elif align == '^':
+            base_output = base_output.center(width, fill)
+        elif align == '=':
+            pass
+        return base_output.raw()
+
 
     def __repr__(self):
         """
