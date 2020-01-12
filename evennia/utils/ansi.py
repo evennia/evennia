@@ -673,6 +673,7 @@ class ANSIString(str, metaclass=ANSIMeta):
     and taken literally the second time around.
 
     """
+    # A compiled Regex for the format mini-language: https://docs.python.org/3/library/string.html#formatspec
     re_format = re.compile(r"(?i)(?P<just>(?P<fill>.)?(?P<align>\<|\>|\=|\^))?(?P<sign>\+|\-| )?(?P<alt>\#)?"
                            r"(?P<zero>0)?(?P<width>\d+)?(?P<grouping>\_|\,)?(?:\.(?P<precision>\d+))?"
                            r"(?P<type>b|c|d|e|E|f|F|g|G|n|o|s|x|X|%)?")
@@ -737,21 +738,41 @@ class ANSIString(str, metaclass=ANSIMeta):
         return self._raw_string
 
     def __format__(self, format_spec):
+        """
+        This magic method covers ANSIString's behavior within a str.format() or f-string.
+
+        Current features supported: fill, align, width.
+
+        Args:
+            format_spec (str): The format specification passed by f-string or str.format(). This is a string such as
+                "0<30" which would mean "left justify to 30, filling with zeros". The full specification can be found
+                at https://docs.python.org/3/library/string.html#formatspec
+
+        Returns:
+            ansi_str (str): The formatted ANSIString's .raw() form, for display.
+        """
+        # This calls the compiled regex stored on ANSIString's class to analyze the format spec.
+        # It returns a dictionary.
         format_data = self.re_format.match(format_spec).groupdict()
+
         align = format_data.get('align', '<')
         fill = format_data.get('fill', ' ')
+
+        # Need to coerce width into an integer. We can be certain that it's numeric thanks to regex.
         width = int(format_data.get('width', len(self)))
+
         base_output = ANSIString(self.raw())
         if align == '<':
-            base_output = base_output.ljust(width, fill)
+            base_output = self.ljust(width, fill)
         elif align == '>':
-            base_output = base_output.rjust(width, fill)
+            base_output = self.rjust(width, fill)
         elif align == '^':
-            base_output = base_output.center(width, fill)
+            base_output = self.center(width, fill)
         elif align == '=':
             pass
-        return base_output.raw()
 
+        # Return the raw string with ANSI markup, ready to be displayed.
+        return base_output.raw()
 
     def __repr__(self):
         """
