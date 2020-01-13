@@ -1210,10 +1210,16 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), self.char1.dbref, "Exact dbref match")
         self.call(building.CmdFind(), "*TestAccount", "Match")
 
-        self.call(building.CmdFind(), "/char Obj")
-        self.call(building.CmdFind(), "/room Obj")
-        self.call(building.CmdFind(), "/exit Obj")
+        self.call(building.CmdFind(), "/char Obj", "No Matches")
+        self.call(building.CmdFind(), "/room Obj", "No Matches")
+        self.call(building.CmdFind(), "/exit Obj", "No Matches")
         self.call(building.CmdFind(), "/exact Obj", "One Match")
+        
+        # Test multitype filtering
+        with mock.patch('evennia.commands.default.building.CHAR_TYPECLASS', 'evennia.objects.objects.DefaultCharacter'):
+            self.call(building.CmdFind(), "/char/room Obj", "No Matches")
+            self.call(building.CmdFind(), "/char/room/exit Char", "2 Matches")
+            self.call(building.CmdFind(), "/char/room/exit/startswith Cha", "2 Matches")
         
         # Test null search
         self.call(building.CmdFind(), "=", "Usage: ")
@@ -1229,7 +1235,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "=1- #2", "2 Matches(#1-#2):")
         self.call(building.CmdFind(), "=1-#2", "2 Matches(#1-#2):")
         self.call(building.CmdFind(), "=#1-2", "2 Matches(#1-#2):")
-
+        
     def test_script(self):
         self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
         self.call(
