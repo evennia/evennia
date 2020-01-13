@@ -2789,7 +2789,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             logger.log_trace(e)
             # If that doesn't work for some reason (empty DB?), guess the lower 
             # bound and do a less-efficient query to find the upper.
-            low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
+            low, high = 1, ObjectDB.objects.all().order_by("-id").first().id
             
         if self.rhs:
             # Check that rhs is either a valid dbref or dbref range
@@ -2817,7 +2817,6 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             restrictions = ", %s" % (", ".join(self.switches))
 
         if is_dbref or is_account:
-
             if is_dbref:
                 # a dbref search
                 result = caller.search(searchstring, global_search=True, quiet=True)
@@ -2854,7 +2853,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                     )
         else:
             # Not an account/dbref search but a wider search; build a queryset.
-            # Searchs for key and aliases
+            # Searches for key and aliases
             if "exact" in switches:
                 keyquery = Q(db_key__iexact=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(
@@ -2917,8 +2916,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 if "loc" in self.switches and nresults == 1 and res and getattr(res, 'location', None):
                     string += f" (|wlocation|n: |g{res.location.get_display_name(caller)}|n)"
             else:
-                string = "|wMatch|n(#{low}-#{high}{restrictions}):"
-                string += "\n   |RNo matches found for '{searchstring}'|n"
+                string = f"|wNo Matches|n(#{low}-#{high}{restrictions}):"
+                string += f"\n   |RNo matches found for '{searchstring}'|n"
 
         # send result
         caller.msg(string.strip())
