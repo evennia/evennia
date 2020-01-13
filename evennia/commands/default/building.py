@@ -13,6 +13,7 @@ from evennia.utils.utils import (
     class_from_module,
     get_all_typeclasses,
     variable_from_module,
+    dbref,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
@@ -2792,19 +2793,25 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             low, high = 1, ObjectDB.objects.all().order_by("-id").first().id
             
         if self.rhs:
-            # Check that rhs is either a valid dbref or dbref range
             try:
-                # Get rid of # signs, split on hyphen or space and cast all to int.
-                # Then sort by number to get the lowest and highest values
-                # comprising the bounds.
-                bounds = sorted(int(x) for x in re.split('[-\s]+', self.rhs.strip().replace('#', '')))
-            except ValueError:
+                # Check that rhs is either a valid dbref or dbref range
+                bounds = tuple(sorted(dbref(x, False) for x in re.split('[-\s]+', self.rhs.strip())))
+                
+                # dbref() will return either a valid int or None
+                assert bounds
+                # None should not exist in the bounds list
+                assert None not in bounds
+                
+                low = bounds[0]
+                if len(bounds) > 1:
+                    high = bounds[-1]
+                    
+            except AssertionError:
                 caller.msg("Invalid dbref range provided (not a number).")
                 return
-            
-            low = bounds[0]
-            if len(bounds) > 1:
-                high = bounds[-1]
+            except IndexError as e:
+                logger.log_err(f"{self.__class__.__name__}: Error parsing upper and lower bounds of query.")
+                logger.log_trace(e)
                 
         low = min(low, high)
         high = max(low, high)
@@ -2901,7 +2908,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 filtered_qs = result_qs.filter(id__in=obj_ids).distinct()
                 nresults = filtered_qs.count()
                 
-                # Keep using iterator to minimize memory ballooning
+                # Use iterator again to minimize memory ballooning
                 results = filtered_qs.iterator()
 
             # still results after type filtering?
