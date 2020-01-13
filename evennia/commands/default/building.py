@@ -2806,18 +2806,6 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             if len(bounds) > 1:
                 high = bounds[-1]
                 
-            """
-            if "-" in self.rhs:
-                # also support low-high syntax
-                limlist = [part.lstrip("#").strip() for part in self.rhs.split("-", 1)]
-            else:
-                # otherwise split by space
-                limlist = [part.lstrip("#") for part in self.rhs.split(None, 1)]
-            if limlist and limlist[0].isdigit():
-                low = max(low, int(limlist[0]))
-            if len(limlist) > 1 and limlist[1].isdigit():
-                high = min(high, int(limlist[1]))
-            """
         low = min(low, high)
         high = max(low, high)
 
@@ -2894,33 +2882,28 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                     id__lte=high,
                 )
 
-            results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
-            nresults = results.count()
+            # Keep the initial queryset handy for later reuse
+            result_qs = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
+            nresults = result_qs.count()
             
             # Use iterator to minimize memory ballooning on large result sets
-            results = results.iterator()
+            results = result_qs.iterator()
             
-            if nresults:
-                # filter results by typeclasses, if requested
-                obj_ids = []
-                if "room" in switches:
-                    obj_ids.extend([
-                        obj.id for obj in results if inherits_from(obj, ROOM_TYPECLASS)
-                    ])
-                if "exit" in switches:
-                    obj_ids.extend([
-                        obj.id for obj in results if inherits_from(obj, EXIT_TYPECLASS)
-                    ])
-                if "char" in switches:
-                    obj_ids.extend([
-                        obj.id for obj in results if inherits_from(obj, CHAR_TYPECLASS)
-                    ])
-                if obj_ids:
-                    filtered_result_qs = ObjectDB.objects.filter(id__in=set(obj_ids)).distinct()
-                    nresults = filtered_result_qs.count()
-                    
-                    # Keep using iterator to minimize memory ballooning
-                    results = filtered_result_qs.iterator()
+            # Check and see if type filtering was requested; skip it if not
+            if any(x in switches for x in ("room", "exit", "char")):
+                obj_ids = set()
+                for obj in results:
+                    if ("room" in switches and inherits_from(obj, ROOM_TYPECLASS)) \
+                    or ("exit" in switches and inherits_from(obj, EXIT_TYPECLASS)) \
+                    or ("char" in switches and inherits_from(obj, CHAR_TYPECLASS)):
+                        obj_ids.add(obj.id)
+                
+                # Filter previous queryset instead of requesting another
+                filtered_qs = result_qs.filter(id__in=obj_ids).distinct()
+                nresults = filtered_qs.count()
+                
+                # Keep using iterator to minimize memory ballooning
+                results = filtered_qs.iterator()
 
             # still results after type filtering?
             if nresults:
@@ -2928,9 +2911,10 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                 else: header = 'One Match'
                 
                 string = f"|w{header}|n(#{low}-#{high}{restrictions}):"
+                res = None
                 for res in results:
                     string += f"\n   |g{res.get_display_name(caller)} - {res.path}|n"
-                if "loc" in self.switches and nresults == 1 and res and res.location:
+                if "loc" in self.switches and nresults == 1 and res and getattr(res, 'location', None):
                     string += f" (|wlocation|n: |g{res.location.get_display_name(caller)}|n)"
             else:
                 string = "|wMatch|n(#{low}-#{high}{restrictions}):"
