@@ -58,7 +58,6 @@ SSL_PORTS = settings.SSL_PORTS
 SSH_PORTS = settings.SSH_PORTS
 WEBSERVER_PORTS = settings.WEBSERVER_PORTS
 WEBSOCKET_CLIENT_PORT = settings.WEBSOCKET_CLIENT_PORT
-WEBSOCKET_TRUST_X_FORWARDED_FOR = settings.WEBSOCKET_TRUST_X_FORWARDED_FOR
 
 TELNET_INTERFACES = ["127.0.0.1"] if LOCKDOWN_MODE else settings.TELNET_INTERFACES
 SSL_INTERFACES = ["127.0.0.1"] if LOCKDOWN_MODE else settings.SSL_INTERFACES
@@ -387,7 +386,6 @@ if WEBSERVER_ENABLED:
                     factory.noisy = False
                     factory.protocol = webclient.WebSocketClient
                     factory.sessionhandler = PORTAL_SESSIONS
-                    factory.setProtocolOptions(trustXForwardedFor=WEBSOCKET_TRUST_X_FORWARDED_FOR)
                     websocket_service = internet.TCPServer(
                         port, factory, interface=w_interface
                     )
