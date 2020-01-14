@@ -208,6 +208,12 @@ class MuxCommand(Command):
          by the cmdhandler right after self.parser() finishes, and so has access
          to all the variables defined therein.
         """
+        self.get_command_info()
+
+    def get_command_info(self):
+        """
+        Update of parent class's get_command_info() for MuxCommand.
+        """
         variables = "\n".join(
             " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
         )
