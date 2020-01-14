@@ -30,14 +30,23 @@ _RE_SCREENREADER_REGEX = re.compile(
 )
 _CLIENT_SESSIONS = mod_import(settings.SESSION_ENGINE).SessionStore
 
-
+# Status Code 1000: Normal Closure
+#   called when the connection was closed through JavaScript
 CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
+
+# Status Code 1001: Going Away
+#   called when the browser is navigating away from the page
+GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
 
 
 class WebSocketClient(WebSocketServerProtocol, Session):
     """
     Implements the server-side of the Websocket connection.
     """
+
+    # nonce value, used to prevent the webclient from erasing the
+    # webclient_authenticated_uid value of csession on disconnect
+    nonce = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -80,9 +89,11 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         csession = self.get_client_session()  # this sets self.csessid
         csessid = self.csessid
         uid = csession and csession.get("webclient_authenticated_uid", None)
+        nonce = csession and csession.get("webclient_authenticated_nonce", 0)
         if uid:
             # the client session is already logged in.
             self.uid = uid
+            self.nonce = nonce
             self.logged_in = True
 
             for old_session in self.sessionhandler.sessions_from_csessid(csessid):
@@ -111,12 +122,20 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         csession = self.get_client_session()
 
         if csession:
-            csession["webclient_authenticated_uid"] = None
-            csession.save()
+            # if the nonce is different, webclient_authenticated_uid has been
+            # set *before* this disconnect (disconnect called after a new client
+            # connects, which occurs in some 'fast' browsers like Google Chrome
+            # and Mobile Safari)
+            if csession.get("webclient_authenticated_nonce", None) == self.nonce:
+                csession["webclient_authenticated_uid"] = None
+                csession["webclient_authenticated_nonce"] = 0
+                csession.save()
             self.logged_in = False
 
         self.sessionhandler.disconnect(self)
-        # autobahn-python: 1000 for a normal close, 3000-4999 for app. specific,
+        # autobahn-python:
+        # 1000 for a normal close, 1001 if the browser window is closed,
+        # 3000-4999 for app. specific,
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
@@ -134,7 +153,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             reason (str or None): Close reason as sent by the WebSocket peer.
 
         """
-        if code == CLOSE_NORMAL:
+        if code == CLOSE_NORMAL or code == GOING_AWAY:
             self.disconnect(reason)
         else:
             self.websocket_close_code = code
