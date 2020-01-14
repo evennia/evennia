@@ -606,9 +606,9 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
             "|wtypeclass|n", "|wcount|n", "|w%|n", border="table", align="l"
         )
         typetable.align = "l"
-        dbtotals = ObjectDB.objects.object_totals()
-        for path, count in dbtotals.items():
-            typetable.add_row(path, count, "%.2f" % ((float(count) / nobjs) * 100))
+        dbtotals = ObjectDB.objects.get_typeclass_totals()
+        for stat in dbtotals:
+            typetable.add_row(stat.get('typeclass', '<error>'), stat.get('count', -1), "%.2f" % stat.get('percent', -1))
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[
