@@ -409,6 +409,15 @@ class Command(object, metaclass=CommandMeta):
         set in self.parse())
 
         """
+        self.get_command_info()
+
+    def get_command_info(self):
+        """
+        This is the default output of func() if no func() overload is done.
+        Provided here as a separate method so that it can be called for debugging
+        purposes when making commands.
+
+        """
         variables = "\n".join(
             " |w{}|n ({}): {}".format(key, type(val), val) for key, val in self.__dict__.items()
         )
