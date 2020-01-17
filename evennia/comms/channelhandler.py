@@ -29,6 +29,10 @@ from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module
 from django.utils.translation import ugettext as _
 
+# we must late-import these since any overloads are likely to
+# themselves be using these classes leading to a circular import.
+
+_CHANNEL_HANDLER_CLASS = None
 _CHANNEL_COMMAND_CLASS = None
 _CHANNELDB = None
 
@@ -314,5 +318,6 @@ class ChannelHandler(object):
             return chan_cmdset
 
 
-CHANNEL_HANDLER = ChannelHandler()
+# set up the singleton
+CHANNEL_HANDLER = class_from_module(settings.CHANNEL_HANDLER_CLASS)()
 CHANNELHANDLER = CHANNEL_HANDLER  # legacy

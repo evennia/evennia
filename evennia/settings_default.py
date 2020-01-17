@@ -446,10 +446,17 @@ COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
 COMMAND_DEFAULT_HELP_CATEGORY = "general"
 # The default lockstring of a command.
 COMMAND_DEFAULT_LOCKS = ""
-# The Channel Handler will create a command to represent each channel,
-# creating it with the key of the channel, its aliases, locks etc. The
-# default class logs channel messages to a file and allows for /history.
-# This setting allows to override the command class used with your own.
+# The Channel Handler is responsible for managing all available channels. By
+# default it builds the current channels into a channel-cmdset that it feeds
+# to the cmdhandler. Overloading this can completely change how Channels
+# are identified and called.
+CHANNEL_HANDLER_CLASS = "evennia.comms.channelhandler.ChannelHandler"
+# The (default) Channel Handler will create a command to represent each
+# channel, creating it with the key of the channel, its aliases, locks etc. The
+# default class logs channel messages to a file and allows for /history.  This
+# setting allows to override the command class used with your own.
+# If you implement CHANNEL_HANDLER_CLASS, you can change this directly and will
+# likely not need this setting.
 CHANNEL_COMMAND_CLASS = "evennia.comms.channelhandler.ChannelCommand"
 
 ######################################################################
