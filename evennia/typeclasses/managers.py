@@ -5,7 +5,8 @@ all Attributes and TypedObjects).
 
 """
 import shlex
-from django.db.models import Q, Count
+from django.db.models import F, Q, Count, ExpressionWrapper, FloatField
+from django.db.models.functions import Cast
 from evennia.utils import idmapper
 from evennia.utils.utils import make_iter, variable_from_module
 from evennia.typeclasses.attributes import Attribute
@@ -249,8 +250,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 list element by element. If no `key` is given, all objects with
                 tags of this category are returned.
             tagtype (str, optional): 'type' of Tag, by default
-                this is either `None` (a normal Tag), `alias` or `permission`.
-                This always apply to all queried tags.
+                this is either `None` (a normal Tag), `alias` or
+                `permission`. This always apply to all queried tags.
 
         Kwargs:
             match (str): "all" (default) or "any"; determines whether the
@@ -483,7 +484,29 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         if max_dbref is not None:
             retval = retval.filter(id__lte=self.dbref(max_dbref, reqhash=False))
         return retval
-
+        
+    def get_typeclass_totals(self, *args, **kwargs) -> object:
+        """
+        Returns a queryset of typeclass composition statistics.
+        
+        Returns:
+            qs (Queryset): A queryset of dicts containing the typeclass (name), 
+                the count of objects with that typeclass and a float representing
+                the percentage of objects associated with the typeclass.
+            
+        """
+        return self.values('db_typeclass_path').distinct().annotate(
+            # Get count of how many objects for each typeclass exist
+            count=Count('db_typeclass_path')
+        ).annotate(
+            # Rename db_typeclass_path field to something more human
+            typeclass=F('db_typeclass_path'),
+            # Calculate this class' percentage of total composition
+            percent=ExpressionWrapper(
+                ((F('count') / float(self.count())) * 100.0), output_field=FloatField()
+            ),
+        ).values('typeclass', 'count', 'percent')
+        
     def object_totals(self):
         """
         Get info about database statistics.
@@ -495,11 +518,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 object having that typeclass set on themselves).
 
         """
-        dbtotals = {}
-        typeclass_paths = set(self.values_list("db_typeclass_path", flat=True))
-        for typeclass_path in typeclass_paths:
-            dbtotals[typeclass_path] = self.filter(db_typeclass_path=typeclass_path).count()
-        return dbtotals
+        stats = self.get_typeclass_totals().order_by('typeclass')
+        return {x.get('typeclass'):x.get('count') for x in stats}
 
     def typeclass_search(self, typeclass, include_children=False, include_parents=False):
         """
