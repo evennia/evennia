@@ -401,16 +401,6 @@ class Command(object, metaclass=CommandMeta):
         """
         pass
 
-    def func(self):
-        """
-        This is the actual executing part of the command.  It is
-        called directly after self.parse(). See the docstring of this
-        module for which object properties are available (beyond those
-        set in self.parse())
-
-        """
-        self.get_command_info()
-
     def get_command_info(self):
         """
         This is the default output of func() if no func() overload is done.
@@ -446,6 +436,16 @@ Command {self} has no defined `func()` - showing on-command variables:
         )
 
         self.caller.msg(string)
+
+    def func(self):
+        """
+        This is the actual executing part of the command.  It is
+        called directly after self.parse(). See the docstring of this
+        module for which object properties are available (beyond those
+        set in self.parse())
+
+        """
+        self.get_command_info()
 
     def get_extra_info(self, caller, **kwargs):
         """

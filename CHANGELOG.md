@@ -7,6 +7,9 @@
 
 ### Already in master
 
+- Moved behavior of default `Command` and `MuxCommand` `.func()` to new `.get_command_info()`
+method so the debug info can be called even if `.func()` is overloaded. `.func()` now calls 
+this new method by default. (Volund)
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
 - Webclient default to a single input pane instead of two. Now defaults to no help-popup.
