@@ -202,14 +202,6 @@ class MuxCommand(Command):
             else:
                 self.character = None
 
-    def func(self):
-        """
-        This is the hook function that actually does all the work. It is called
-         by the cmdhandler right after self.parser() finishes, and so has access
-         to all the variables defined therein.
-        """
-        self.get_command_info()
-
     def get_command_info(self):
         """
         Update of parent class's get_command_info() for MuxCommand.
@@ -250,6 +242,14 @@ Command {self} has no defined `func()` - showing on-command variables: No child 
         string += "rhs, comma separated (self.rhslist): |w%s|n\n" % self.rhslist
         string += "-" * 50
         self.caller.msg(string)
+
+    def func(self):
+        """
+        This is the hook function that actually does all the work. It is called
+         by the cmdhandler right after self.parser() finishes, and so has access
+         to all the variables defined therein.
+        """
+        self.get_command_info()
 
 
 class MuxAccountCommand(MuxCommand):
