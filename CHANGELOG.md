@@ -39,7 +39,7 @@ without arguments starts a full interactive Python console.
 - EvMore auto-justify now defaults to False since this works better with all types
   of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
   but is now only used to pass extra kwargs into the justify function.
-- Improve performance of `find` command on large data sets (strikaco)
+- Improve performance of `find` and `objects` commands on large data sets (strikaco)
 
 
 ## Evennia 0.9 (2018-2019)
