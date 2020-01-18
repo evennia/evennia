@@ -255,11 +255,11 @@ def create_script(
     if obj:
         kwarg["db_obj"] = dbid_to_obj(obj, _ObjectDB)
     if interval:
-        kwarg["db_interval"] = interval
+        kwarg["db_interval"] = max(0, interval)
     if start_delay:
         kwarg["db_start_delay"] = start_delay
     if repeats:
-        kwarg["db_repeats"] = repeats
+        kwarg["db_repeats"] = max(0, repeats)
     if persistent:
         kwarg["db_persistent"] = persistent
     if desc:

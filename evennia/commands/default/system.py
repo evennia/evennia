@@ -308,7 +308,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
       clientraw - turn off all client-specific escaping. Note that this may
         lead to different output depending on prototocol (such as angular brackets
         being parsed as HTML in the webclient but not in telnet clients)
-      noecho - in Python console mode, turn off the input echo (e.g. if your client 
+      noecho - in Python console mode, turn off the input echo (e.g. if your client
         does this for you already)
 
     Without argument, open a Python console in-game. This is a full console,
@@ -429,13 +429,14 @@ def format_script_list(scripts):
 
         nextrep = script.time_until_next_repeat()
         if nextrep is None:
-            nextrep = "PAUS" if script.db._paused_time else "--"
+            nextrep = "PAUSED" if script.db._paused_time else "--"
         else:
             nextrep = "%ss" % nextrep
 
         maxrepeat = script.repeats
+        remaining = script.remaining_repeats() or 0
         if maxrepeat:
-            rept = "%i/%i" % (maxrepeat - script.remaining_repeats(), maxrepeat)
+            rept = "%i/%i" % (maxrepeat - remaining, maxrepeat)
         else:
             rept = "-/-"
 
