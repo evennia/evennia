@@ -341,8 +341,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         key = kwargs.get("key", self.key)
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
-        plural = _INFLECT.plural(key, 2)
-        plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
+        try:
+            plural = _INFLECT.plural(key, 2)
+            plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
+        except IndexError:
+            # this is raised by inflect if the input is not a proper noun
+            plural = key
         singular = _INFLECT.an(key)
         if not self.aliases.get(plural, category="plural_key"):
             # we need to wipe any old plurals/an/a in case key changed in the interrim
