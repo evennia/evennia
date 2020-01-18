@@ -69,7 +69,7 @@ class ExtendedLoopingCall(LoopingCall):
             steps if we want.
 
         """
-        assert not self.running, "Tried to start an already running " "ExtendedLoopingCall."
+        assert not self.running, "Tried to start an already running ExtendedLoopingCall."
         if interval < 0:
             raise ValueError("interval must be >= 0")
         self.running = True
@@ -107,7 +107,8 @@ class ExtendedLoopingCall(LoopingCall):
         if self.start_delay:
             self.start_delay = None
             self.starttime = self.clock.seconds()
-        LoopingCall.__call__(self)
+        if self._deferred:
+            LoopingCall.__call__(self)
 
     def force_repeat(self):
         """
@@ -118,7 +119,7 @@ class ExtendedLoopingCall(LoopingCall):
                 running.
 
         """
-        assert self.running, "Tried to fire an ExtendedLoopingCall " "that was not running."
+        assert self.running, "Tried to fire an ExtendedLoopingCall that was not running."
         self.call.cancel()
         self.call = None
         self.starttime = self.clock.seconds()
@@ -173,7 +174,8 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
             )
             del self.db._paused_time
             del self.db._paused_repeats
-        else:
+
+        elif not self.ndb._task.running:
             # starting script anew
             self.ndb._task.start(self.db_interval, now=not self.db_start_delay)
 
@@ -185,6 +187,7 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         task = self.ndb._task
         if task and task.running:
             task.stop()
+        self.ndb._task = None
 
     def _step_errback(self, e):
         """
@@ -266,13 +269,13 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
                 self.db_key = cdict["key"]
                 updates.append("db_key")
             if cdict.get("interval") and self.interval != cdict["interval"]:
-                self.db_interval = cdict["interval"]
+                self.db_interval = max(0, cdict["interval"])
                 updates.append("db_interval")
             if cdict.get("start_delay") and self.start_delay != cdict["start_delay"]:
                 self.db_start_delay = cdict["start_delay"]
                 updates.append("db_start_delay")
             if cdict.get("repeats") and self.repeats != cdict["repeats"]:
-                self.db_repeats = cdict["repeats"]
+                self.db_repeats = max(0, cdict["repeats"])
                 updates.append("db_repeats")
             if cdict.get("persistent") and self.persistent != cdict["persistent"]:
                 self.db_persistent = cdict["persistent"]
