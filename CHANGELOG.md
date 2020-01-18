@@ -41,6 +41,7 @@ without arguments starts a full interactive Python console.
   but is now only used to pass extra kwargs into the justify function.
 - Improve performance of `find` and `objects` commands on large data sets (strikaco)
 - New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
+- Made `py` interactive mode support regular quit() and more verbose.
 
 
 ## Evennia 0.9 (2018-2019)
