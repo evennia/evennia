@@ -285,8 +285,6 @@ class EvenniaPythonConsole(code.InteractiveConsole):
         result = None
         try:
             result = super().push(line)
-        except SystemExit:
-            pass
         finally:
             sys.stdout = old_stdout
             sys.stderr = old_stderr
@@ -302,6 +300,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
       py/edit
       py/time <cmd>
       py/clientraw <cmd>
+      py/noecho
 
     Switches:
       time - output an approximate execution time for <cmd>
@@ -309,6 +308,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
       clientraw - turn off all client-specific escaping. Note that this may
         lead to different output depending on prototocol (such as angular brackets
         being parsed as HTML in the webclient but not in telnet clients)
+      noecho - in Python console mode, turn off the input echo (e.g. if your client 
+        does this for you already)
 
     Without argument, open a Python console in-game. This is a full console,
     accepting multi-line Python code for testing and debugging. Type `exit()` to
@@ -340,7 +341,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
     key = "py"
     aliases = ["!"]
-    switch_options = ("time", "edit", "clientraw")
+    switch_options = ("time", "edit", "clientraw", "noecho")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
 
@@ -349,6 +350,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         pycode = self.args
+
+        noecho = "noecho" in self.switches
 
         if "edit" in self.switches:
             caller.db._py_measure_time = "time" in self.switches
@@ -368,15 +371,26 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
             # Run in interactive mode
             console = EvenniaPythonConsole(self.caller)
             banner = (
-                f"|gPython {sys.version} on {sys.platform}\n"
-                "Evennia interactive console mode - type 'exit()' to leave.|n"
+                "|gEvennia Interactive Python mode{echomode}\n"
+                "Python {version} on {platform}".format(
+                    echomode=" (no echoing of prompts)" if noecho else "",
+                    version=sys.version,
+                    platform=sys.platform,
+                )
             )
             self.msg(banner)
             line = ""
-            prompt = ">>>"
+            main_prompt = "|x[py mode - quit() to exit]|n"
+            prompt = main_prompt
             while line.lower() not in ("exit", "exit()"):
-                line = yield (prompt)
-                prompt = "..." if console.push(line) else ">>>"
+                try:
+                    line = yield (prompt)
+                    if noecho:
+                        prompt = "..." if console.push(line) else main_prompt
+                    else:
+                        prompt = line if console.push(line) else f"{line}\n{main_prompt}"
+                except SystemExit:
+                    break
             self.msg("|gClosing the Python console.|n")
             return
 
