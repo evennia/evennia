@@ -1428,12 +1428,17 @@ def create_superuser():
     django.core.management.call_command("createsuperuser", interactive=True)
 
 
-def check_database():
+def check_database(always_return=False):
     """
     Check so the database exists.
 
+    Args:
+        always_return (bool, optional): If set, will always return True/False
+            also on critical errors. No output will be printed.
     Returns:
         exists (bool): `True` if the database exists, otherwise `False`.
+
+
     """
     # Check so a database exists and is accessible
     from django.db import connection
@@ -1450,6 +1455,8 @@ def check_database():
     try:
         AccountDB.objects.get(id=1)
     except django.db.utils.OperationalError as e:
+        if always_return:
+            return False
         print(ERROR_DATABASE.format(traceback=e))
         sys.exit()
     except AccountDB.DoesNotExist:
@@ -1484,7 +1491,7 @@ def check_database():
             new.save()
         else:
             create_superuser()
-            check_database()
+            check_database(always_return=always_return)
     return True
 
 
@@ -2246,14 +2253,15 @@ def main():
         # pass-through to django manager, but set things up first
         check_db = False
         need_gamedir = True
-        # some commands don't require the presence of a game directory to work
-        if option in ("makemessages", "compilemessages"):
-            need_gamedir = False
 
         # handle special django commands
         if option in ("runserver", "testserver"):
+            # we don't want the django test-webserver
             print(WARNING_RUNSERVER)
-        if option in ("shell", "check"):
+        if option in ("makemessages", "compilemessages"):
+            # some commands don't require the presence of a game directory to work
+            need_gamedir = False
+        if option in ("shell", "check", "makemigrations"):
             # some django commands requires the database to exist,
             # or evennia._init to have run before they work right.
             check_db = True
@@ -2263,16 +2271,17 @@ def main():
 
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
-        if option in ("migrate", "makemigrations"):
-            # we have to launch migrate within the program to make sure migrations
-            # run within the scope of the launcher (otherwise missing a db will cause errors)
-            django.core.management.call_command(*([option] + unknown_args))
-        else:
-            # pass on to the core django manager - re-parse the entire input line
-            # but keep 'evennia' as the name instead of django-admin. This is
-            # an exit condition.
-            sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
-            sys.exit(execute_from_command_line())
+        if option == "migrate":
+            # we need to bypass some checks here for the first db creation
+            if not check_database(always_return=True):
+                django.core.management.call_command(*([option] + unknown_args))
+                sys.exit(0)
+
+        # pass on to the core django manager - re-parse the entire input line
+        # but keep 'evennia' as the name instead of django-admin. This is
+        # an exit condition.
+        sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
+        sys.exit(execute_from_command_line())
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)
