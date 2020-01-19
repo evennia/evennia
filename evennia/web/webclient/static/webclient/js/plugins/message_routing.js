@@ -63,7 +63,7 @@ let spawns = (function () {
 	    onNewRegexRow(div, regex, spawnmap[regex] );
 	}
 
-	parentdiv.append('<h3>Message Routing:</h3>');
+	parentdiv.append('<div style="font-weight: bold">Message Routing:</div>');
 	parentdiv.append(div);
     }
 

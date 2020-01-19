@@ -4,6 +4,8 @@
  */
 let options2 = (function () {
 
+    var options_container = null ;
+
     var onGagPrompt = function () { console.log('gagprompt') }
     var onNotifyPopup = function () { console.log('notifypopup') }
     var onNotifySound = function () { console.log('notifysound') }
@@ -30,6 +32,7 @@ let options2 = (function () {
 
         myLayout.registerComponent( "options", function (container, componentState) {
             var plugins = window.plugins;
+            options_container = container.getElement();
 
             // build the buttons
             var div = $("<div class='accordion' style='overflow-y:scroll; height:inherit;'>");
@@ -46,13 +49,13 @@ let options2 = (function () {
                 }
             }
 
-            div.appendTo( container.getElement() );
+            div.appendTo( options_container );
         });
     }
 
 
     // handler for the "Options" button
-    var onOpenOptions = function () {
+    var onOpenCloseOptions = function () {
         var optionsComponent = {
             title: "Options",
             type: "component",
@@ -63,8 +66,27 @@ let options2 = (function () {
 
         // Create a new GoldenLayout tab filled with the optionsComponent above
         var myLayout = window.plugins["goldenlayout"].getGL();
-        var main = myLayout.root.getItemsByType("stack")[0].getActiveContentItem();
-        main.parent.addChild( optionsComponent ); 
+        if( ! options_container ) {
+            // open new optionsComponent
+            var main = myLayout.root.getItemsByType("stack")[0].getActiveContentItem();
+
+            myLayout.on( 'tabCreated', function( tab ) {
+                if( tab.contentItem.componentName == "options" ) {
+                    tab
+                    .closeElement
+                    .off('click')
+                    .click( function () {
+                        options_container = null;
+                        tab.contentItem.remove();
+                    });
+                    options_container = tab.contentItem;
+                }
+            });
+            main.parent.addChild( optionsComponent );
+        } else {
+            options_container.remove();
+            options_container = null;
+        }
     }
 
     // Public
@@ -88,7 +110,7 @@ let options2 = (function () {
         if( window.plugins["goldenlayout"] ) {
             createOptionsComponent();
 
-            $("#optionsbutton").bind("click", onOpenOptions);
+            $("#optionsbutton").bind("click", onOpenCloseOptions);
         }
         console.log('Options2 Loaded');
     }
