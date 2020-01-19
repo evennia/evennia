@@ -6,18 +6,44 @@ let options2 = (function () {
 
     var options_container = null ;
 
-    var onGagPrompt = function () { console.log('gagprompt') }
-    var onNotifyPopup = function () { console.log('notifypopup') }
-    var onNotifySound = function () { console.log('notifysound') }
+    //
+    // When the user changes a setting from the interface
+    var onOptionCheckboxChanged = function (evnt) {
+        var name = $(evnt.target).data("setting");
+        var value = $(evnt.target).is(":checked");
+        options[name] = value;
+        Evennia.msg("webclient_options", [], options);
+    }
 
+    //
+    // Callback to display our basic OptionsUI
     var onOptionsUI = function (parentdiv) {
-        var gagprompt = $('<label><input type="checkbox" data-setting="gagprompt" value="value">Don\'t echo prompts to the main text area</label>');
-        var notifypopup = $('<label><input type="checkbox" data-setting="notification_popup" value="value">Popup notification</label>');
-        var notifysound = $('<label><input type="checkbox" data-setting="notification_sound" value="value">Play a sound</label>');
+        var checked;
 
-        gagprompt.on("change", onGagPrompt);
-        notifypopup.on("change", onNotifyPopup);
-        notifysound.on("change", onNotifySound);
+        checked = options["gagprompt"] ? "checked='checked'" : "";
+        var gagprompt   = $( [ "<label>",
+                               "<input type='checkbox' data-setting='gagprompt' " + checked + "'>",
+                               " Don't echo prompts to the main text area",
+                               "</label>"
+                             ].join("") );
+
+        checked = options["notification_popup"] ? "checked='checked'" : "";
+        var notifypopup = $( [ "<label>",
+                               "<input type='checkbox' data-setting='notification_popup' " + checked + "'>",
+                               " Popup notification",
+                               "</label>"
+                             ].join("") );
+
+        checked = options["notification_sound"] ? "checked='checked'" : "";
+        var notifysound = $( [ "<label>",
+                               "<input type='checkbox' data-setting='notification_sound' " + checked + "'>",
+                               " Play a sound",
+                               "</label>"
+                             ].join("") );
+
+        gagprompt.on("change", onOptionCheckboxChanged);
+        notifypopup.on("change", onOptionCheckboxChanged);
+        notifysound.on("change", onOptionCheckboxChanged);
 
         parentdiv.append(gagprompt);
         parentdiv.append(notifypopup);
@@ -38,7 +64,7 @@ let options2 = (function () {
             var div = $("<div class='accordion' style='overflow-y:scroll; height:inherit;'>");
 
             for( let plugin in plugins ) {
-                if( 'onOptionsUI' in plugins[plugin] ) {
+                if( "onOptionsUI" in plugins[plugin] ) {
                     var card = $("<div class='card'>");
                     var body = $("<div>");
 
@@ -70,11 +96,11 @@ let options2 = (function () {
             // open new optionsComponent
             var main = myLayout.root.getItemsByType("stack")[0].getActiveContentItem();
 
-            myLayout.on( 'tabCreated', function( tab ) {
+            myLayout.on( "tabCreated", function( tab ) {
                 if( tab.contentItem.componentName == "options" ) {
                     tab
                     .closeElement
-                    .off('click')
+                    .off("click")
                     .click( function () {
                         options_container = null;
                         tab.contentItem.remove();
@@ -92,15 +118,39 @@ let options2 = (function () {
     // Public
 
     //
-    // Handle the Webclient_Options event
-    var onGotOptions = function(args, kwargs) {
-        // Pressing the settings button
+    // Called when options settings are sent from server
+    var onGotOptions = function (args, kwargs) {
+        $.each(kwargs, function(key, value) {
+            options[key] = value;
+        });
     }
 
+    //
+    // Called when the user logged in
+    var onLoggedIn = function (args, kwargs) {
+        Evennia.msg("webclient_options", [], {});
+    }
+
+    //
+    // Display a "prompt" command from the server
+    var onPrompt = function (args, kwargs) {
+        // display the prompt in the output window if gagging is disabled
+        if( options["gagprompt"] == false ) {
+            plugin_handler.onText(args, kwargs);
+        }
+
+        // don't claim this Prompt as completed.
+        return false;
+    }
+
+    //
+    //
     var init = function() {
-        var optionsbutton = $('<button id="optionsbutton">&#x2699;</button>');
-        $('#toolbar').append( optionsbutton );
-        // Pressing the settings button
+        var optionsbutton = $("<button id='optionsbutton'>&#x2699;</button>");
+        $("#toolbar").append( optionsbutton );
+        options["gagprompt"] = true;
+        options["notification_popup"] = true;
+        options["notification_sound"] = true;
     }
 
     //
@@ -112,14 +162,16 @@ let options2 = (function () {
 
             $("#optionsbutton").bind("click", onOpenCloseOptions);
         }
-        console.log('Options2 Loaded');
+        console.log("Options 2.0 Loaded");
     }
 
     return {
         init: init,
         postInit: postInit,
         onGotOptions: onGotOptions,
+        onLoggedIn: onLoggedIn,
         onOptionsUI: onOptionsUI,
+        onPrompt: onPrompt,
     }
 })();
 window.plugin_handler.add("options2", options2);
