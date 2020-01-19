@@ -40,10 +40,10 @@ let iframe = (function () {
     // Public
 
     var onOptionsUI = function (parentdiv) {
-        var iframebutton = $('<input type="button" value="open new iframe" />');
+        var iframebutton = $('<input type="button" value="Open Game Website" />');
 	iframebutton.on('click', onOpenIframe);
 
-        parentdiv.append( '<h3>Browser iFrame:</h3>' );
+        parentdiv.append( '<div style="font-weight: bold">Restricted Browser-in-Browser:</div>' );
         parentdiv.append( iframebutton );
     }
 

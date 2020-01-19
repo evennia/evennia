@@ -37,7 +37,7 @@ let font_plugin = (function () {
         }
 
         fontselect.val('DejaVu Sans Mono'); // default value
-        sizeselect.val('9'); // default value
+        sizeselect.val('0.9'); // default scaling factor
 
         // font-family change callback
         fontselect.on('change', function () {
@@ -50,7 +50,7 @@ let font_plugin = (function () {
         });
 
         // add the font selection dialog control to our parentdiv
-        parentdiv.append('<h3>Font Selection:</h3>');
+        parentdiv.append('<div style="font-weight: bold">Font Selection:</div>');
         parentdiv.append(fontselect);
         parentdiv.append(sizeselect);
     }
