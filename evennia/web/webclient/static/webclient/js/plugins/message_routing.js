@@ -8,19 +8,25 @@ let spawns = (function () {
 
     var spawnmap = {};	// Mapping of regex/tag-pair
 
-    var onAlterRegex = function (evnt) {
-        var regex = $(evnt.target);
-        var siblings = regex.siblings();
-        spawnmap[regex.val()] = siblings.val();
-        localStorage.setItem( "evenniaMessageRoutingSavedState", JSON.stringify(spawnmap) );
+    var onAlterTag = function (evnt) {
+        var children = $(evnt.target).parent().children();
+        var regex = $(children[0]).val();
+        var myval = $(children[1]).val();
+
+        if( myval != "" && regex != "" ) {
+            spawnmap[regex] = myval;
+            localStorage.setItem( "evenniaMessageRoutingSavedState", JSON.stringify(spawnmap) );
+            window.plugins["goldenlayout"].addKnownType( myval );
+        }
     }
 
-    var onAlterTag = function (evnt) {
-        var tag = $(evnt.target);
-        var siblings = tag.siblings();
-        spawnmap[siblings.val()] = tag.val();
-        window.plugins["goldenlayout"].addKnownType( tag.val() );
+    var onDeleteTag = function (evnt) {
+        var adult = $(evnt.target).parent();
+        var children = adult.children();
+        var regex = $(children[0]).val();
+        delete spawnmap[regex];
         localStorage.setItem( "evenniaMessageRoutingSavedState", JSON.stringify(spawnmap) );
+        adult.remove(); // remove this set of input boxes/etc from the DOM
     }
 
     var onFocusIn = function (evnt) {
@@ -35,14 +41,17 @@ let spawns = (function () {
         var div = $('<div>');
 	var regex = $('<input class="regex" type=text value="'+regexstring+'"/>');
 	var tag = $('<input class="tag" type=text value="'+tagstring+'"/>'); 
-        regex.on('change', onAlterRegex );
+	var del = $('<input class="delete-regex" type=button value="X"/>'); 
+        regex.on('change', onAlterTag );
         regex.on('focusin', onFocusIn );
         regex.on('focusout', onFocusOut );
         tag.on('change', onAlterTag );
         tag.on('focusin', onFocusIn );
         tag.on('focusout', onFocusOut );
+        del.on('click', onDeleteTag );
         div.append(regex);
         div.append(tag);
+        div.append(del);
 	formdiv.append(div);
     }
 
