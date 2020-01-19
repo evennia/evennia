@@ -383,6 +383,14 @@ let goldenlayout = (function () {
     // Public
     //
 
+    //
+    // helper accessor for other plugins to add new known-message types
+    var addKnownType = function (newtype) {
+        if( knownTypes.includes(newtype) == false ) {
+            knownTypes.push(newtype);
+        }
+    }
+
 
     //
     //
@@ -526,7 +534,7 @@ let goldenlayout = (function () {
         onKeydown: onKeydown,
         onText: onText,
         getGL: function () { return myLayout; },
-        addKnownType: function (newtype) { knownTypes.push(newtype); },
+        addKnownType: addKnownType,
     }
 }());
 window.plugin_handler.add("goldenlayout", goldenlayout);
