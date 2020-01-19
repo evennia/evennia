@@ -6,39 +6,53 @@ let spawns = (function () {
 
     var ignoreDefaultKeydown = false;
 
-    var spawnmap = {};	// Mapping of regex/tag-pair
+    var spawnmap = {};	// { id1: { r:regex, t:tag } } pseudo-array of regex-tag pairs
 
+    //
+    // changes the spawnmap row's contents to the new regex/tag provided,
+    // this avoids leaving stale regex/tag definitions in the spawnmap
     var onAlterTag = function (evnt) {
-        var children = $(evnt.target).parent().children();
-        var regex = $(children[0]).val();
-        var myval = $(children[1]).val();
+        var adult = $(evnt.target).parent();
+        var children = adult.children();
+        var id = $(adult).data('id');
+        var regex = $(children[0]).val();// spaces before/after are valid regex syntax, unfortunately
+        var mytag = $(children[1]).val().trim();
 
-        if( myval != "" && regex != "" ) {
-            spawnmap[regex] = myval;
+        if( mytag != "" && regex != "" ) {
+            if( !(id in spawnmap) ) {
+                spawnmap[id] = {};
+            }
+            spawnmap[id]["r"] = regex;
+            spawnmap[id]["t"] = mytag;
             localStorage.setItem( "evenniaMessageRoutingSavedState", JSON.stringify(spawnmap) );
-            window.plugins["goldenlayout"].addKnownType( myval );
+            window.plugins["goldenlayout"].addKnownType( mytag );
         }
     }
 
+    //
+    // deletes the entire regex/tag/delete button row.
     var onDeleteTag = function (evnt) {
         var adult = $(evnt.target).parent();
         var children = adult.children();
-        var regex = $(children[0]).val();
-        delete spawnmap[regex];
+        var id = $(adult).data('id');
+        delete spawnmap[id];
         localStorage.setItem( "evenniaMessageRoutingSavedState", JSON.stringify(spawnmap) );
         adult.remove(); // remove this set of input boxes/etc from the DOM
     }
 
+    //
     var onFocusIn = function (evnt) {
         ignoreDefaultKeydown = true;
     }
 
+    //
     var onFocusOut = function (evnt) {
         ignoreDefaultKeydown = false;
     }
 
-    var onNewRegexRow = function (formdiv, regexstring, tagstring) {
-        var div = $('<div>');
+    //
+    // display a row with proper editting hooks
+    var displayRow = function (formdiv, div, regexstring, tagstring) {
 	var regex = $('<input class="regex" type=text value="'+regexstring+'"/>');
 	var tag = $('<input class="tag" type=text value="'+tagstring+'"/>'); 
 	var del = $('<input class="delete-regex" type=button value="X"/>'); 
@@ -55,25 +69,37 @@ let spawns = (function () {
 	formdiv.append(div);
     }
 
+    //
+    // generate a whole new regex/tag/delete button row
+    var onNewRegexRow = function (formdiv) {
+        var nextid = 1;
+        while( nextid in spawnmap ) { // pseudo-index spawnmap with id reuse
+            nextid++;
+        }
+        var div = $("<div data-id='"+nextid+"'>");
+        displayRow(formdiv, div, "", "");
+    }
+
+
     // Public
 
     //
-    // onOptionsUI -- create an expandable/deletable row of regex/tag mapping pairs
-    //            
-    //            If there isn't a window with that tag mapped already, open a new one
+    // onOptionsUI -- display the existing spawnmap and a button to create more entries.
     //
     var onOptionsUI = function (parentdiv) {
-        var div = $('<div>');
+        var formdiv = $('<div>');
         var button= $('<input type="button" value="New Regex/Tag Pair" />');
-	button.on('click', function () { onNewRegexRow(div, '', ''); });
-	div.append(button);
+	button.on('click', function () { onNewRegexRow(formdiv) });
+	formdiv.append(button);
 
-	for( regex in spawnmap ) {
-	    onNewRegexRow(div, regex, spawnmap[regex] );
+        // display the existing spawnmap
+	for( var id in spawnmap ) {
+            var div = $("<div data-id='"+id+"'>");
+	    displayRow(formdiv, div, spawnmap[id]["r"], spawnmap[id]["t"] );
 	}
 
 	parentdiv.append('<div style="font-weight: bold">Message Routing:</div>');
-	parentdiv.append(div);
+	parentdiv.append(formdiv);
     }
 
     //
@@ -83,10 +109,10 @@ let spawns = (function () {
     //
     var onText = function (args, kwargs) {
         var txt = args[0];
-
-	for( regex in spawnmap ) {
+	for( var id in spawnmap ) {
+            var regex = spawnmap[id]["r"];
             if ( txt.match(regex) != null ) {
-                kwargs['type'] = spawnmap[regex];
+                kwargs['type'] = spawnmap[id]["t"];
 	    }
 	}
     }
@@ -107,8 +133,8 @@ let spawns = (function () {
         var ls_spawnmap = localStorage.getItem( "evenniaMessageRoutingSavedState" );
         if( ls_spawnmap ) {
             spawnmap = JSON.parse(ls_spawnmap);
-	    for( regex in spawnmap ) {
-                window.plugins["goldenlayout"].addKnownType( spawnmap[regex] );
+	    for( var id in spawnmap ) {
+                window.plugins["goldenlayout"].addKnownType( spawnmap[id]["t"] );
 	    }
 	}
 
