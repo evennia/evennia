@@ -489,7 +489,8 @@ Command {self} has no defined `func()` - showing on-command variables:
 
         """
         if self.session:
-            return self.session.protocol_flags["SCREENWIDTH"][0]
+            return self.session.protocol_flags.get(
+                "SCREENWIDTH", (settings.CLIENT_DEFAULT_WIDTH, ))[0]
 
     def styled_table(self, *args, **kwargs):
         """
