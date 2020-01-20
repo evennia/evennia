@@ -148,13 +148,17 @@ def _server_maintenance():
     # handle idle timeouts
     if _IDLE_TIMEOUT > 0:
         reason = _("idle timeout exceeded")
+        to_disconnect = []
         for session in (
             sess for sess in SESSIONS.values() if (now - sess.cmd_last) > _IDLE_TIMEOUT
         ):
             if not session.account or not session.account.access(
                 session.account, "noidletimeout", default=False
             ):
-                SESSIONS.disconnect(session, reason=reason)
+                to_disconnect.append(session)
+
+        for session in to_disconnect:
+            SESSIONS.disconnect(session, reason=reason)
 
 
 # ------------------------------------------------------------
