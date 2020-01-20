@@ -42,6 +42,8 @@ without arguments starts a full interactive Python console.
 - Improve performance of `find` and `objects` commands on large data sets (strikaco)
 - New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
 - Made `py` interactive mode support regular quit() and more verbose.
+- Made `Account.options.get` accept `default=None` kwarg to mimic other uses of get. Set
+  the new `raise_exception` boolean if ranting to raise KeyError on a missing key.
 
 
 ## Evennia 0.9 (2018-2019)
