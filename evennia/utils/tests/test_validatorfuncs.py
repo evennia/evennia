@@ -32,6 +32,11 @@ class TestValidatorFuncs(TestCase):
             self.assertTrue(
                 isinstance(validatorfuncs.datetime(dt, from_tz=pytz.UTC), datetime.datetime)
             )
+        account = mock.MagicMock()
+        account.options.get = mock.MagicMock(return_value="America/Chicago")
+        expected = datetime.datetime(1492, 10, 12, 6, 51, tzinfo=pytz.UTC)
+        self.assertEqual(expected, validatorfuncs.datetime("Oct 12 1:00 1492", account=account))
+        account.options.get.assert_called_with("timezone", "UTC")
 
     def test_datetime_raises_ValueError(self):
         for dt in ["", "January 1, 2019", "1/1/2019", "Jan 1 2019"]:
@@ -121,6 +126,7 @@ class TestValidatorFuncs(TestCase):
                 validatorfuncs.boolean(b)
 
     def test_timezone_ok(self):
+
         for tz in ["America/Chicago", "GMT", "UTC"]:
             self.assertEqual(tz, validatorfuncs.timezone(tz).zone)
 
