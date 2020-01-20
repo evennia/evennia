@@ -124,19 +124,23 @@ class TagHandler(object):
         # full cache was run on all tags
         self._cache_complete = False
 
-    def _fullcache(self):
-        "Cache all tags of this object"
-        if not _TYPECLASS_AGGRESSIVE_CACHE:
-            return
+    def _query_all(self):
+        "Get all tags for this objects"
         query = {
             "%s__id" % self._model: self._objid,
             "tag__db_model": self._model,
             "tag__db_tagtype": self._tagtype,
         }
-        tags = [
+        return [
             conn.tag
             for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
         ]
+
+    def _fullcache(self):
+        "Cache all tags of this object"
+        if not _TYPECLASS_AGGRESSIVE_CACHE:
+            return
+        tags = self._query_all()
         self._cache = dict(
             (
                 "%s-%s"
@@ -425,9 +429,13 @@ class TagHandler(object):
                 `return_key_and_category` is set.
 
         """
-        if not self._cache_complete:
-            self._fullcache()
-        tags = sorted(self._cache.values())
+        if _TYPECLASS_AGGRESSIVE_CACHE:
+            if not self._cache_complete:
+                self._fullcache()
+            tags = sorted(self._cache.values())
+        else:
+            tags = sorted(self._query_all())
+
         if return_key_and_category:
             # return tuple (key, category)
             return [(to_str(tag.db_key), tag.db_category) for tag in tags]

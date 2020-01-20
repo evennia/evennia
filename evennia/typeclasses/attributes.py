@@ -235,19 +235,23 @@ class AttributeHandler(object):
         # full cache was run on all attributes
         self._cache_complete = False
 
-    def _fullcache(self):
-        """Cache all attributes of this object"""
-        if not _TYPECLASS_AGGRESSIVE_CACHE:
-            return
+    def _query_all(self):
+        "Fetch all Attributes on this object"
         query = {
             "%s__id" % self._model: self._objid,
             "attribute__db_model__iexact": self._model,
             "attribute__db_attrtype": self._attrtype,
         }
-        attrs = [
+        return [
             conn.attribute
             for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
         ]
+
+    def _fullcache(self):
+        """Cache all attributes of this object"""
+        if not _TYPECLASS_AGGRESSIVE_CACHE:
+            return
+        attrs = self._query_all()
         self._cache = dict(
             (
                 "%s-%s"
@@ -776,9 +780,13 @@ class AttributeHandler(object):
                 their values!) in the handler.
 
         """
-        if not self._cache_complete:
-            self._fullcache()
-        attrs = sorted([attr for attr in self._cache.values() if attr], key=lambda o: o.id)
+        if _TYPECLASS_AGGRESSIVE_CACHE:
+            if not self._cache_complete:
+                self._fullcache()
+            attrs = sorted([attr for attr in self._cache.values() if attr], key=lambda o: o.id)
+        else:
+            attrs = sorted([attr for attr in self._query_all() if attr], key=lambda o: o.id)
+
         if accessing_obj:
             return [
                 attr
