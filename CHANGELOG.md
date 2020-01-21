@@ -7,9 +7,6 @@
 
 ### Already in master
 
-- Moved behavior of default `Command` and `MuxCommand` `.func()` to new `.get_command_info()`
-method so the debug info can be called even if `.func()` is overloaded. `.func()` now calls 
-this new method by default. (Volund)
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
 - Webclient default to a single input pane instead of two. Now defaults to no help-popup.
@@ -30,7 +27,7 @@ without arguments starts a full interactive Python console.
 - `AttributeHandler.get(return_list=True)` will return `[]` if there are no
   Attributes instead of `[None]`.
 - Remove `pillow` requirement (install especially if using imagefield)
-- Add Simplified Korean translation (user aceamro)
+- Add Simplified Korean translation (aceamro)
 - Show warning on `start -l` if settings contains values unsafe for production.
 - Make code auto-formatted with Black.
 - Make default `set` command able to edit nested structures (PR by Aaron McMillan)
@@ -47,6 +44,8 @@ without arguments starts a full interactive Python console.
 - Made `py` interactive mode support regular quit() and more verbose.
 - Made `Account.options.get` accept `default=None` kwarg to mimic other uses of get. Set
   the new `raise_exception` boolean if ranting to raise KeyError on a missing key.
+- Moved behavior of unmodified `Command` and `MuxCommand` `.func()` to new
+  `.get_command_info()` method for easier overloading and access. (Volund)
 
 
 ## Evennia 0.9 (2018-2019)
