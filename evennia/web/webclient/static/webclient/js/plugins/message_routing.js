@@ -48,6 +48,7 @@ let spawns = (function () {
     //
     var onFocusOut = function (evnt) {
         ignoreDefaultKeydown = false;
+        onAlterTag(evnt); // percolate event so closing the pane, etc saves any last changes.
     }
 
     //
@@ -108,13 +109,15 @@ let spawns = (function () {
     //           If it does, rewrite the Text Type to be our tag value instead.
     //
     var onText = function (args, kwargs) {
-        var txt = args[0];
+        var div = $("<div>" + args[0] + "</div>");
+        var txt = div.text();
 	for( var id in spawnmap ) {
             var regex = spawnmap[id]["r"];
             if ( txt.match(regex) != null ) {
                 kwargs['type'] = spawnmap[id]["t"];
 	    }
 	}
+        return false;
     }
 
 
