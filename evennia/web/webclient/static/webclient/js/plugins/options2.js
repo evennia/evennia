@@ -120,8 +120,15 @@ let options2 = (function () {
     //
     // Called when options settings are sent from server
     var onGotOptions = function (args, kwargs) {
+        var addKnownType = window.plugins["goldenlayout"].addKnownType;
+
         $.each(kwargs, function(key, value) {
             options[key] = value;
+
+            // for "available_server_tags", addKnownType for each value ["tag1", "tag2", ... ]
+            if( (key === "available_server_tags") && addKnownType ) {
+                $.each( value, addKnownType );
+            }
         });
     }
 
