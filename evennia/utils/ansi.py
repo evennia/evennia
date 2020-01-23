@@ -754,14 +754,18 @@ class ANSIString(str, metaclass=ANSIMeta):
         # This calls the compiled regex stored on ANSIString's class to analyze the format spec.
         # It returns a dictionary.
         format_data = self.re_format.match(format_spec).groupdict()
-
+        clean = self.clean()
+        base_output = ANSIString(self.raw())
         align = format_data.get('align', '<')
         fill = format_data.get('fill', ' ')
 
         # Need to coerce width into an integer. We can be certain that it's numeric thanks to regex.
-        width = int(format_data.get('width', len(self)))
+        width = format_data.get('width', None)
+        if width is None:
+            width = len(clean)
+        else:
+            width = int(width)
 
-        base_output = ANSIString(self.raw())
         if align == '<':
             base_output = self.ljust(width, fill)
         elif align == '>':
