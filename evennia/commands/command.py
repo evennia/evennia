@@ -502,13 +502,13 @@ Command {self} has no defined `func()` - showing on-command variables:
         Get the client screenwidth for the session using this command.
 
         Returns:
-            client width (int or None): The width (in characters) of the client window. None
-                if this command is run without a Session (such as by an NPC).
+            client width (int): The width (in characters) of the client window.
 
         """
         if self.session:
             return self.session.protocol_flags.get(
-                "SCREENWIDTH", (settings.CLIENT_DEFAULT_WIDTH, ))[0]
+                "SCREENWIDTH", {0: settings.CLIENT_DEFAULT_WIDTH})[0]
+        return settings.CLIENT_DEFAULT_WIDTH
 
     def styled_table(self, *args, **kwargs):
         """
