@@ -136,7 +136,7 @@ class ExtendedLoopingCall(LoopingCall):
                 the task is not running.
 
         """
-        if self.running:
+        if self.running and self.interval > 0:
             total_runtime = self.clock.seconds() - self.starttime
             interval = self.start_delay or self.interval
             return interval - (total_runtime % self.interval)
@@ -564,11 +564,9 @@ class DefaultScript(ScriptBase):
         Restarts an already existing/running Script from the
         beginning, optionally using different settings. This will
         first call the stop hooks, and then the start hooks again.
-
         Args:
             interval (int, optional): Allows for changing the interval
-                of the Script. Given in seconds.  if `None`, will use the
-                already stored interval.
+                of the Script. Given in seconds.  if `None`, will use the already stored interval.
             repeats (int, optional): The number of repeats. If unset, will
                 use the previous setting.
             start_delay (bool, optional): If we should wait `interval` seconds
@@ -587,6 +585,8 @@ class DefaultScript(ScriptBase):
         del self.db._paused_callcount
         # set new flags and start over
         if interval is not None:
+            if interval < 0:
+                interval = 0
             self.interval = interval
         if repeats is not None:
             self.repeats = repeats
