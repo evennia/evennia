@@ -136,12 +136,9 @@ class ExtendedLoopingCall(LoopingCall):
                 the task is not running.
 
         """
-        if self.running:
+        if self.running and self.interval > 0:
             total_runtime = self.clock.seconds() - self.starttime
             interval = self.start_delay or self.interval
-            # Fairly naive ZeroDivision error bug workaround, see ticket: https://github.com/evennia/evennia/issues/2039#issue-555828740
-            if self.interval == 0:
-                self.interval = 1
             return interval - (total_runtime % self.interval)
         return None
 
@@ -586,7 +583,6 @@ it should not accept 0 at alln seconds.  if `None`, will use the
         del self.db._manual_pause
         del self.db._paused_callcount
         # set new flags and start over
-        # Avoid intervals lower than zero
         if interval is not None and interval >= 0:
             self.interval = interval
         if repeats is not None:
