@@ -140,7 +140,6 @@ class ExtendedLoopingCall(LoopingCall):
             total_runtime = self.clock.seconds() - self.starttime
             interval = self.start_delay or self.interval
             return interval - (total_runtime % self.interval)
-        return None
 
 
 class ScriptBase(ScriptDB, metaclass=TypeclassBase):
@@ -585,8 +584,7 @@ class DefaultScript(ScriptBase):
         del self.db._paused_callcount
         # set new flags and start over
         if interval is not None:
-            if interval < 0:
-                interval = 0
+            interval = max(0, interval)
             self.interval = interval
         if repeats is not None:
             self.repeats = repeats
