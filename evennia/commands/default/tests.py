@@ -19,7 +19,7 @@ from anything import Anything
 from django.conf import settings
 from mock import Mock, mock
 
-from evennia import DefaultRoom, DefaultExit
+from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import (
@@ -1060,12 +1060,18 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "= #1a", "Invalid dbref range provided (not a number).")
 
         # Test valid dbref ranges with no search term
-        self.call(building.CmdFind(), "=#1", "7 Matches(#1-")
-        self.call(building.CmdFind(), "=1-2", "2 Matches(#1-")
-        self.call(building.CmdFind(), "=1 - 2", "2 Matches(#1-")
-        self.call(building.CmdFind(), "=1- #2", "2 Matches(#1-")
-        self.call(building.CmdFind(), "=1-#2", "2 Matches(#1-")
-        self.call(building.CmdFind(), "=#1-2", "2 Matches(#1-")
+        id1 = self.obj1.id
+        id2 = self.obj2.id
+        maxid = ObjectDB.objects.latest('id').id
+        maxdiff = maxid - id1 + 1
+        mdiff = id2 - id1 + 1
+
+        self.call(building.CmdFind(), f"=#{id1}", f"{maxdiff} Matches(#{id1}-#{maxid}")
+        self.call(building.CmdFind(), f"={id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1} - {id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1}- #{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1}-#{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"=#{id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")
