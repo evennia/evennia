@@ -566,7 +566,7 @@ class DefaultScript(ScriptBase):
         first call the stop hooks, and then the start hooks again.
         Args:
             interval (int, optional): Allows for changing the interval
-                of the Script. Given in seconds.  if `None`, will use the
+                of the Script. Given in seconds.  if `None`, will use the already stored interval.
             repeats (int, optional): The number of repeats. If unset, will
                 use the previous setting.
             start_delay (bool, optional): If we should wait `interval` seconds
