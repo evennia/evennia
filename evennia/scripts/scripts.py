@@ -139,6 +139,9 @@ class ExtendedLoopingCall(LoopingCall):
         if self.running:
             total_runtime = self.clock.seconds() - self.starttime
             interval = self.start_delay or self.interval
+            # Fairly naive ZeroDivision error bug workaround, see ticket: https://github.com/evennia/evennia/issues/2039#issue-555828740
+            if self.interval == 0:
+                self.interval = 1
             return interval - (total_runtime % self.interval)
         return None
 
@@ -564,10 +567,7 @@ class DefaultScript(ScriptBase):
         Restarts an already existing/running Script from the
         beginning, optionally using different settings. This will
         first call the stop hooks, and then the start hooks again.
-
-        Args:
-            interval (int, optional): Allows for changing the interval
-                of the Script. Given in seconds.  if `None`, will use the
+it should not accept 0 at alln seconds.  if `None`, will use the
                 already stored interval.
             repeats (int, optional): The number of repeats. If unset, will
                 use the previous setting.
@@ -586,7 +586,8 @@ class DefaultScript(ScriptBase):
         del self.db._manual_pause
         del self.db._paused_callcount
         # set new flags and start over
-        if interval is not None:
+        # Avoid intervals lower than zero
+        if interval is not None and interval >= 0:
             self.interval = interval
         if repeats is not None:
             self.repeats = repeats
