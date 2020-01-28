@@ -583,7 +583,9 @@ it should not accept 0 at alln seconds.  if `None`, will use the
         del self.db._manual_pause
         del self.db._paused_callcount
         # set new flags and start over
-        if interval is not None and interval >= 0:
+        if interval is not None:
+            if interval < 0:
+                interval = 0
             self.interval = interval
         if repeats is not None:
             self.repeats = repeats
