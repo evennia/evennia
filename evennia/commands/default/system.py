@@ -233,6 +233,10 @@ def _run_code_snippet(
 
     if ret is None:
         return
+    elif isinstance(ret, tuple):
+        # we must convert here to allow msg to pass it (a tuple is confused
+        # with a outputfunc structure)
+        ret = str(ret)
 
     for session in sessions:
         try:
