@@ -27,6 +27,7 @@ from twisted.protocols import amp
 from twisted.internet import reactor, endpoints
 import django
 from django.core.management import execute_from_command_line
+from django.db.utils import ProgrammingError
 
 # Signal processing
 SIG = signal.SIGINT
@@ -1454,7 +1455,7 @@ def check_database(always_return=False):
 
     try:
         AccountDB.objects.get(id=1)
-    except django.db.utils.OperationalError as e:
+    except (django.db.utils.OperationalError, ProgrammingError) as e:
         if always_return:
             return False
         print(ERROR_DATABASE.format(traceback=e))
