@@ -616,8 +616,10 @@ application = service.Application("Evennia")
 if "--nodaemon" not in sys.argv:
     # custom logging, but only if we are not running in interactive mode
     logfile = logger.WeeklyLogFile(
-        os.path.basename(settings.SERVER_LOG_FILE), os.path.dirname(settings.SERVER_LOG_FILE),
-        day_rotation=settings.SERVER_LOG_DAY_ROTATION, max_size=settings.SERVER_LOG_MAX_SIZE
+        os.path.basename(settings.SERVER_LOG_FILE),
+        os.path.dirname(settings.SERVER_LOG_FILE),
+        day_rotation=settings.SERVER_LOG_DAY_ROTATION,
+        max_size=settings.SERVER_LOG_MAX_SIZE,
     )
     application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
 

@@ -107,10 +107,12 @@ class WeeklyLogFile(logfile.DailyLogFile):
         # all dates here are tuples (year, month, day)
         now = self.toDate()
         then = self.lastDate
-        return (now[0] > then[0] or
-                now[1] > then[1] or
-                now[2] > (then[2] + self.day_rotation) or
-                self.size >= self.max_size)
+        return (
+            now[0] > then[0]
+            or now[1] > then[1]
+            or now[2] > (then[2] + self.day_rotation)
+            or self.size >= self.max_size
+        )
 
     def suffix(self, tupledate):
         """Return the suffix given a (year, month, day) tuple or unixtime.
@@ -142,7 +144,6 @@ class WeeklyLogFile(logfile.DailyLogFile):
             else:
                 break
         return suffix
-
 
     def write(self, data):
         "Write data to log file"
