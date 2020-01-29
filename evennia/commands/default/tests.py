@@ -1062,7 +1062,7 @@ class TestBuilding(CommandTest):
         # Test valid dbref ranges with no search term
         id1 = self.obj1.id
         id2 = self.obj2.id
-        maxid = ObjectDB.objects.latest('id').id
+        maxid = ObjectDB.objects.latest("id").id
         maxdiff = maxid - id1 + 1
         mdiff = id2 - id1 + 1
 

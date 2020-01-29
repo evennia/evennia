@@ -135,17 +135,19 @@ else:
                 break
         os.chdir(os.pardir)
 
-# Place to put log files
+# Place to put log files, how often to rotate the log and how big each log file
+# may become before rotating.
 LOG_DIR = os.path.join(GAME_DIR, "server", "logs")
 SERVER_LOG_FILE = os.path.join(LOG_DIR, "server.log")
+SERVER_LOG_DAY_ROTATION = 7
+SERVER_LOG_MAX_SIZE = 1000000
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, "portal.log")
+PORTAL_LOG_DAY_ROTATION = 7
+PORTAL_LOG_MAX_SIZE = 1000000
+# The http log is usually only for debugging since it's very spammy
 HTTP_LOG_FILE = os.path.join(LOG_DIR, "http_requests.log")
 # if this is set to the empty string, lockwarnings will be turned off.
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, "lockwarnings.log")
-# Rotate log files when server and/or portal stops. This will keep log
-# file sizes down. Turn off to get ever growing log files and never
-# lose log info.
-CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
 # Max size (in bytes) of channel log files before they rotate
