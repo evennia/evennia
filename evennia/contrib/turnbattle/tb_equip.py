@@ -438,11 +438,11 @@ class TBEquipTurnHandler(DefaultScript):
         """
         combat_cleanup(character)  # Clean up leftover combat attributes beforehand, just in case.
         character.db.combat_actionsleft = (
-            0
-        )  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+            0  # Actions remaining - start of turn adds to this, turn ends when it reaches 0
+        )
         character.db.combat_turnhandler = (
-            self
-        )  # Add a reference to this turn handler script to the character
+            self  # Add a reference to this turn handler script to the character
+        )
         character.db.combat_lastaction = "null"  # Track last action taken in combat
 
     def start_turn(self, character):
@@ -553,8 +553,8 @@ class TBEWeapon(DefaultObject):
         self.db.damage_range = (15, 25)  # Minimum and maximum damage on hit
         self.db.accuracy_bonus = 0  # Bonus to attack rolls (or penalty if negative)
         self.db.weapon_type_name = (
-            "weapon"
-        )  # Single word for weapon - I.E. "dagger", "staff", "scimitar"
+            "weapon"  # Single word for weapon - I.E. "dagger", "staff", "scimitar"
+        )
 
     def at_drop(self, dropper):
         """

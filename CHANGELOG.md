@@ -46,6 +46,8 @@ without arguments starts a full interactive Python console.
   the new `raise_exception` boolean if ranting to raise KeyError on a missing key.
 - Moved behavior of unmodified `Command` and `MuxCommand` `.func()` to new
   `.get_command_info()` method for easier overloading and access. (Volund)
+- Removed unused `CYCLE_LOGFILES` setting. Added `SERVER_LOG_DAY_ROTATION`
+  and `SERVER_LOG_MAX_SIZE` (and equivalent for PORTAL) to control log rotation.
 
 
 ## Evennia 0.9 (2018-2019)

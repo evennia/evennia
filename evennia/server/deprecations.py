@@ -96,6 +96,12 @@ def check_errors(settings):
             "must now be either None or a dict "
             "specifying the properties of the channel to create."
         )
+    if hasattr(settings, "CYCLE_LOGFILES"):
+        raise DeprecationWarning(
+            "settings.CYCLE_LOGFILES is unused and should be removed. "
+            "Use PORTAL/SERVER_LOG_DAY_ROTATION and PORTAL/SERVER_LOG_MAX_SIZE "
+            "to control log cycling."
+        )
 
 
 def check_warnings(settings):

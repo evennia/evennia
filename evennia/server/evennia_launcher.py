@@ -1153,7 +1153,7 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
             # this happens if the file was cycled or manually deleted/edited.
             print(
                 " ** Log file {filename} has cycled or been edited. "
-                "Restarting log. ".format(filehandle.name)
+                "Restarting log. ".format(filename=filehandle.name)
             )
             new_linecount = 0
             old_linecount = 0
