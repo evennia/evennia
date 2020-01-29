@@ -98,6 +98,30 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len({"hello": True, "Goodbye": False}), 2)
 
 
+class TestANSIString(TestCase):
+    """
+    Verifies that ANSIString's string-API works as intended.
+    """
+
+    def setUp(self):
+        self.example_raw = "|relectric |cboogaloo|n"
+        self.example_ansi = ANSIString(self.example_raw)
+        self.example_str = "electric boogaloo"
+        self.example_output = "\x1b[1m\x1b[31melectric \x1b[1m\x1b[36mboogaloo\x1b[0m"
+
+    def test_length(self):
+        self.assertEqual(len(self.example_ansi), 17)
+
+    def test_clean(self):
+        self.assertEqual(self.example_ansi.clean(), self.example_str)
+
+    def test_raw(self):
+        self.assertEqual(self.example_ansi.raw(), self.example_output)
+
+    def test_format(self):
+        self.assertEqual(f"{self.example_ansi:0<20}", self.example_output + "000")
+
+
 class TestTimeformat(TestCase):
     """
     Default function header from utils.py:
