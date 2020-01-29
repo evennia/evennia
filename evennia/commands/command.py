@@ -415,11 +415,8 @@ class Command(object, metaclass=CommandMeta):
 Command {self} has no defined `func()` - showing on-command variables:
 {variables}
         """
-        self.caller.msg(string)
-        return
-
         # a simple test command to show the available properties
-        string = "-" * 50
+        string += "-" * 50
         string += "\n|w%s|n - Command variables from evennia:\n" % self.key
         string += "-" * 50
         string += "\nname of cmd (self.key): |w%s|n\n" % self.key
