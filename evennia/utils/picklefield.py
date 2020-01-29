@@ -133,8 +133,9 @@ class PickledWidget(Textarea):
         try:
             # necessary to convert it back after repr(), otherwise validation errors will mutate it
             value = literal_eval(repr_value)
-        except ValueError:
-            pass
+        except (ValueError, SyntaxError):
+            # we could not eval it, just show its prepresentation
+            value = repr_value
         return super().render(name, value, attrs=attrs, renderer=renderer)
 
     def value_from_datadict(self, data, files, name):
