@@ -213,8 +213,10 @@ application = service.Application("Portal")
 
 if "--nodaemon" not in sys.argv:
     logfile = logger.WeeklyLogFile(
-        os.path.basename(settings.PORTAL_LOG_FILE), os.path.dirname(settings.PORTAL_LOG_FILE),
-        day_rotation=settings.PORTAL_LOG_DAY_ROTATION, max_size=settings.PORTAL_LOG_MAX_SIZE
+        os.path.basename(settings.PORTAL_LOG_FILE),
+        os.path.dirname(settings.PORTAL_LOG_FILE),
+        day_rotation=settings.PORTAL_LOG_DAY_ROTATION,
+        max_size=settings.PORTAL_LOG_MAX_SIZE,
     )
     application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
 
