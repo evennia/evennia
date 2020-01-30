@@ -225,7 +225,11 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.mccp.no_mccp(option)
             return True
         else:
-            return super().disableLocal(option)
+            try:
+                return super().disableLocal(option)
+            except Exception:
+                from evennia.utils import logger
+                logger.log_trace()
 
     def connectionLost(self, reason):
         """
