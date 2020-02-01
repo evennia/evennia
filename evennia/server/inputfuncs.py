@@ -606,6 +606,7 @@ def msdp_send(session, *args, **kwargs):
             out[varname] = _monitorable[varname.lower()]
     session.msg(send=((), out))
 
+
 # client specific
 
 

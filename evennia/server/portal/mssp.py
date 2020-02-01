@@ -86,8 +86,8 @@ class Mssp(object):
             "NAME": settings.SERVERNAME,
             "PLAYERS": self.get_player_count,
             "UPTIME": self.get_uptime,
-            "PORT": list(str(port) for port in
-                reversed(settings.TELNET_PORTS)
+            "PORT": list(
+                str(port) for port in reversed(settings.TELNET_PORTS)
             ),  # most important port should be last in list
             # Evennia auto-filled
             "CRAWL DELAY": "-1",
@@ -120,10 +120,15 @@ class Mssp(object):
             if utils.is_iter(value):
                 for partval in value:
                     varlist += (
-                        MSSP_VAR + bytes(str(variable), "utf-8") + MSSP_VAL + bytes(str(partval), "utf-8")
+                        MSSP_VAR
+                        + bytes(str(variable), "utf-8")
+                        + MSSP_VAL
+                        + bytes(str(partval), "utf-8")
                     )
             else:
-                varlist += MSSP_VAR + bytes(str(variable), "utf-8") + MSSP_VAL + bytes(str(value), "utf-8")
+                varlist += (
+                    MSSP_VAR + bytes(str(variable), "utf-8") + MSSP_VAL + bytes(str(value), "utf-8")
+                )
 
         # send to crawler by subnegotiation
         self.protocol.requestNegotiation(MSSP, varlist)

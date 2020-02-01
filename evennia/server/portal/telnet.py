@@ -197,8 +197,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         if option == LINEMODE:
             # make sure to activate line mode with local editing for all clients
             self.requestNegotiation(
-                LINEMODE, MODE + bytes(chr(ord(LINEMODE_EDIT) +
-                                           ord(LINEMODE_TRAPSIG)), "ascii")
+                LINEMODE, MODE + bytes(chr(ord(LINEMODE_EDIT) + ord(LINEMODE_TRAPSIG)), "ascii")
             )
             return True
         else:
@@ -258,6 +257,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 return super().disableLocal(option)
             except Exception:
                 from evennia.utils import logger
+
                 logger.log_trace()
 
     def connectionLost(self, reason):
