@@ -76,18 +76,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         super().__init__(*args, **kwargs)
 
     def dataReceived(self, data):
-        print(f"indata: {data}")
+        """
+        Unused by default, but a good place to put debug printouts
+        of incoming data.
+        """
+        # print(f"telnet dataReceived: {data}")
         super().dataReceived(data)
-
-    def wont_no_true(self, state, option):
-        from evennia.utils import logger
-        logger.log_err(f"wont_no_true {self}, {state}, {option}")
-        super().wont_no_true(state, options)
-
-    def dont_no_true(self, state, option):
-        from evennia.utils import logger
-        logger.log_err(f"dont_no_true {self}, {state}, {option}")
-        super().dont_no_true(state, options)
 
     def connectionMade(self):
         """
@@ -95,7 +89,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         """
         # important in order to work normally with standard telnet
-        self.do(LINEMODE)
+        self.do(LINEMODE).addErrback(self._wont_linemode)
         # initialize the session
         self.line_buffer = b""
         client_address = self.transport.client
@@ -139,6 +133,15 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.protocol_flags["NOPKEEPALIVE"] = True
         self.nop_keep_alive = None
         self.toggle_nop_keepalive()
+
+    def _wont_linemode(self, *args):
+        """
+        Client refuses do(linemode). This is common for MUD-specific
+        clients, but we must ask for the sake of raw telnet. We ignore
+        this error.
+        """
+        print("client refuses line mode")
+        pass
 
     def _send_nop_keepalive(self):
         """Send NOP keepalive unless flag is set"""
@@ -195,7 +198,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         if option == LINEMODE:
             # make sure to activate line mode with local editing for all clients
             self.requestNegotiation(
-                LINEMODE, MODE + bytes(chr(ord(LINEMODE_EDIT) + ord(LINEMODE_TRAPSIG)), "ascii")
+                LINEMODE, MODE + bytes(chr(ord(LINEMODE_EDIT) +
+                                           ord(LINEMODE_TRAPSIG)), "ascii")
             )
             return True
         else:
@@ -206,6 +210,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 or option == mssp.MSSP
                 or option == suppress_ga.SUPPRESS_GA
             )
+
+    def disableRemote(self, option):
+        return (
+            option == LINEMODE
+            or option == ttype.TTYPE
+            or option == naws.NAWS
+            or option == MCCP
+            or option == mssp.MSSP
+            or option == suppress_ga.SUPPRESS_GA
+        )
 
     def enableLocal(self, option):
         """
@@ -233,6 +247,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             option (char): The telnet option to disable locally.
 
         """
+        if option == LINEMODE:
+            return True
         if option == ECHO:
             return True
         if option == MCCP:
