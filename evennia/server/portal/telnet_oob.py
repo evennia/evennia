@@ -29,6 +29,7 @@ import re
 import json
 from evennia.utils.utils import is_iter
 from twisted.python.compat import _bytesChr as bchr
+
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
 
@@ -44,7 +45,6 @@ MSDP_ARRAY_CLOSE = bchr(6)
 
 # GMCP
 GMCP = bchr(201)
-
 
 
 # pre-compiled regexes
