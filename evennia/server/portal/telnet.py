@@ -140,7 +140,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         clients, but we must ask for the sake of raw telnet. We ignore
         this error.
         """
-        print("client refuses line mode")
         pass
 
     def _send_nop_keepalive(self):
