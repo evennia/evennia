@@ -75,6 +75,20 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.protocol_key = "telnet"
         super().__init__(*args, **kwargs)
 
+    def dataReceived(self, data):
+        print(f"indata: {data}")
+        super().dataReceived(data)
+
+    def wont_no_true(self, state, option):
+        from evennia.utils import logger
+        logger.log_err(f"wont_no_true {self}, {state}, {option}")
+        super().wont_no_true(state, options)
+
+    def dont_no_true(self, state, option):
+        from evennia.utils import logger
+        logger.log_err(f"dont_no_true {self}, {state}, {option}")
+        super().dont_no_true(state, options)
+
     def connectionMade(self):
         """
         This is called when the connection is first established.
