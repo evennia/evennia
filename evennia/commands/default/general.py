@@ -44,11 +44,11 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         home = caller.home
         if not home:
-            caller.msg("You have no home!")
+            caller.msg(_STRING.get("HOME_NOHOME"))
         elif home == caller.location:
-            caller.msg("You are already home!")
+            caller.msg(_STRING.get("HOME_ALREADY"))
         else:
-            caller.msg("There's no place like home ...")
+            caller.msg(_STRING.get("HOME_SUCCESS"))
             caller.move_to(home)
 
 

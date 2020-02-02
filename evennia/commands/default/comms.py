@@ -58,12 +58,20 @@ def find_channel(caller, channelname, silent=False, noaliases=False):
         if channels:
             return channels[0]
         if not silent:
-            caller.msg("Channel '%s' not found." % channelname)
+            caller.msg(
+                "{message} ({channel})".format(
+                    message=_STRING.get("CHANNEL_NOTFOUND"), channel=channelname
+                )
+            )
         return None
     elif len(channels) > 1:
         matches = ", ".join(["%s(%s)" % (chan.key, chan.id) for chan in channels])
         if not silent:
-            caller.msg("Multiple channels match (be more specific): \n%s" % matches)
+            caller.msg(
+                "{message} ({matches})".format(
+                    message=_STRING.get("CHANNEL_DUPE"), matches=matches
+                )
+            )
         return None
     return channels[0]
 
@@ -115,7 +123,8 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
 
         # check permissions
         if not channel.access(account, "listen"):
-            self.msg("%s: You are not allowed to listen to this channel." % channel.key)
+            # self.msg("%s: You are not allowed to listen to this channel." % channel.key)
+            self.msg(_STRING.get("AUTH_PERMISSION_FAILURE"))
             return
 
         string = ""
@@ -123,15 +132,18 @@ class CmdAddCom(COMMAND_DEFAULT_CLASS):
             # we want to connect as well.
             if not channel.connect(account):
                 # if this would have returned True, the account is connected
-                self.msg("%s: You are not allowed to join this channel." % channel.key)
+                # self.msg("%s: You are not allowed to join this channel." % channel.key)
+                self.msg(_STRING.get("AUTH_PERMISSION_FAILURE"))
+
                 return
             else:
-                string += "You now listen to the channel %s. " % channel.key
+                string += _STRING.get("CHANNEL_LISTEN")
         else:
             if channel.unmute(account):
-                string += "You unmute channel %s." % channel.key
+                string += _STRING.get("CHANNEL_UNMUTE")
             else:
-                string += "You are already connected to channel %s." % channel.key
+                #string += "You are already connected to channel %s." % channel.key
+                string += _STRING.get("CHANNEL_ALREADY")
 
         if alias:
             # create a nick and add it to the caller.
@@ -188,14 +200,18 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
             if delnicks:
                 for nick in [
                     nick
-                    for nick in make_iter(caller.nicks.get(category="channel", return_obj=True))
+                    for nick in make_iter(
+                        caller.nicks.get(category="channel", return_obj=True)
+                    )
                     if nick and nick.pk and nick.value[3].lower() == chkey
                 ]:
                     nick.delete()
             disconnect = channel.disconnect(account)
             if disconnect:
                 wipednicks = " Eventual aliases were removed." if delnicks else ""
-                self.msg("You stop listening to channel '%s'.%s" % (channel.key, wipednicks))
+                self.msg(
+                    "You stop listening to channel '%s'.%s" % (channel.key, wipednicks)
+                )
             return
         else:
             # we are removing a channel nick
@@ -206,7 +222,10 @@ class CmdDelCom(COMMAND_DEFAULT_CLASS):
             else:
                 if caller.nicks.get(ostring, category="channel"):
                     caller.nicks.remove(ostring, category="channel")
-                    self.msg("Your alias '%s' for channel %s was cleared." % (ostring, channel.key))
+                    self.msg(
+                        "Your alias '%s' for channel %s was cleared."
+                        % (ostring, channel.key)
+                    )
                 else:
                     self.msg("You had no such alias defined for this channel.")
 
@@ -340,7 +359,9 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                         "%s%s"
                         % (
                             chan.key,
-                            chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or "",
+                            chan.aliases.all()
+                            and "(%s)" % ",".join(chan.aliases.all())
+                            or "",
                         ),
                         "%s"
                         % ",".join(
@@ -381,7 +402,9 @@ class CmdChannels(COMMAND_DEFAULT_CLASS):
                         "%s%s"
                         % (
                             chan.key,
-                            chan.aliases.all() and "(%s)" % ",".join(chan.aliases.all()) or "",
+                            chan.aliases.all()
+                            and "(%s)" % ",".join(chan.aliases.all())
+                            or "",
                         ),
                         "%s"
                         % ",".join(
@@ -433,7 +456,9 @@ class CmdCdestroy(COMMAND_DEFAULT_CLASS):
             self.msg("You are not allowed to do that.")
             return
         channel_key = channel.key
-        message = "%s is being destroyed. Make sure to change your aliases." % channel_key
+        message = (
+            "%s is being destroyed. Make sure to change your aliases." % channel_key
+        )
         msgobj = create.create_message(caller, message, channel)
         channel.msg(msgobj)
         channel.delete()
@@ -494,7 +519,10 @@ class CmdCBoot(COMMAND_DEFAULT_CLASS):
             self.msg(string)
             return
         if not channel.subscriptions.has(account):
-            string = "Account %s is not connected to channel %s." % (account.key, channel.key)
+            string = "Account %s is not connected to channel %s." % (
+                account.key,
+                channel.key,
+            )
             self.msg(string)
             return
         if "quiet" not in self.switches:
@@ -645,7 +673,9 @@ class CmdChannelCreate(COMMAND_DEFAULT_CLASS):
             return
         # Create and set the channel up
         lockstring = "send:all();listen:all();control:id(%s)" % caller.id
-        new_chan = create.create_channel(channame.strip(), aliases, description, locks=lockstring)
+        new_chan = create.create_channel(
+            channame.strip(), aliases, description, locks=lockstring
+        )
         new_chan.connect(caller)
         CHANNELHANDLER.update()
         self.msg("Created channel %s and connected to it." % new_chan.key)
@@ -777,7 +807,9 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         # get the messages we've sent (not to channels)
-        pages_we_sent = Msg.objects.get_messages_by_sender(caller, exclude_channel_messages=True)
+        pages_we_sent = Msg.objects.get_messages_by_sender(
+            caller, exclude_channel_messages=True
+        )
         # get last messages we've got
         pages_we_got = Msg.objects.get_messages_by_receiver(caller)
 
@@ -895,7 +927,10 @@ def _list_bots(cmd):
 
     """
     ircbots = [
-        bot for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="ircbot-")
+        bot
+        for bot in AccountDB.objects.filter(
+            db_is_bot=True, username__startswith="ircbot-"
+        )
     ]
     if ircbots:
         table = cmd.styled_table(
@@ -964,7 +999,9 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         """Setup the irc-channel mapping"""
 
         if not settings.IRC_ENABLED:
-            string = """IRC is not enabled. You need to activate it in game/settings.py."""
+            string = (
+                """IRC is not enabled. You need to activate it in game/settings.py."""
+            )
             self.msg(string)
             return
 
@@ -973,7 +1010,11 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             self.msg(_list_bots(self))
             return
 
-        if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
+        if (
+            "disconnect" in self.switches
+            or "remove" in self.switches
+            or "delete" in self.switches
+        ):
             botname = "ircbot-%s" % self.lhs
             matches = AccountDB.objects.filter(db_is_bot=True, username=botname)
             dbref = utils.dbref(self.lhs)
@@ -1103,7 +1144,9 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         elif option in ("users", "nicklist", "who"):
             # retrieve user list. The bot must handles the echo since it's
             # an asynchronous call.
-            self.caller.msg("Requesting nicklist from %s (%s:%s)." % (channel, network, port))
+            self.caller.msg(
+                "Requesting nicklist from %s (%s:%s)." % (channel, network, port)
+            )
             ircbot.get_nicklist(self.caller)
         elif self.caller.locks.check_lockstring(
             self.caller, "dummy:perm(ircstatus) or perm(Developer)"
@@ -1151,7 +1194,9 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
 
         # checking we have all we need
         if not settings.RSS_ENABLED:
-            string = """RSS is not enabled. You need to activate it in game/settings.py."""
+            string = (
+                """RSS is not enabled. You need to activate it in game/settings.py."""
+            )
             self.msg(string)
             return
         try:
@@ -1170,7 +1215,9 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             # show all connections
             rssbots = [
                 bot
-                for bot in AccountDB.objects.filter(db_is_bot=True, username__startswith="rssbot-")
+                for bot in AccountDB.objects.filter(
+                    db_is_bot=True, username__startswith="rssbot-"
+                )
             ]
             if rssbots:
                 table = self.styled_table(
@@ -1183,19 +1230,28 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
                 )
                 for rssbot in rssbots:
                     table.add_row(
-                        rssbot.id, rssbot.db.rss_rate, rssbot.db.ev_channel, rssbot.db.rss_url
+                        rssbot.id,
+                        rssbot.db.rss_rate,
+                        rssbot.db.ev_channel,
+                        rssbot.db.rss_url,
                     )
                 self.msg(table)
             else:
                 self.msg("No rss bots found.")
             return
 
-        if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
+        if (
+            "disconnect" in self.switches
+            or "remove" in self.switches
+            or "delete" in self.switches
+        ):
             botname = "rssbot-%s" % self.lhs
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
             if not matches:
                 # try dbref match
-                matches = AccountDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
+                matches = AccountDB.objects.filter(
+                    db_is_bot=True, id=self.args.lstrip("#")
+                )
             if matches:
                 matches[0].delete()
                 self.msg("RSS connection destroyed.")
@@ -1277,24 +1333,34 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
                     maxwidth=_DEFAULT_WIDTH,
                 )
                 for gwbot in gwbots:
-                    table.add_row(gwbot.id, gwbot.db.ev_channel, gwbot.db.grapevine_channel)
+                    table.add_row(
+                        gwbot.id, gwbot.db.ev_channel, gwbot.db.grapevine_channel
+                    )
                 self.msg(table)
             else:
                 self.msg("No grapevine bots found.")
             return
 
-        if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
+        if (
+            "disconnect" in self.switches
+            or "remove" in self.switches
+            or "delete" in self.switches
+        ):
             botname = "grapevinebot-%s" % self.lhs
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
 
             if not matches:
                 # try dbref match
-                matches = AccountDB.objects.filter(db_is_bot=True, id=self.args.lstrip("#"))
+                matches = AccountDB.objects.filter(
+                    db_is_bot=True, id=self.args.lstrip("#")
+                )
             if matches:
                 matches[0].delete()
                 self.msg("Grapevine connection destroyed.")
             else:
-                self.msg("Grapevine connection/bot could not be removed, does it exist?")
+                self.msg(
+                    "Grapevine connection/bot could not be removed, does it exist?"
+                )
             return
 
         if not self.args or not self.rhs:
@@ -1317,7 +1383,9 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
                 self.msg("Reusing bot '%s' (%s)" % (botname, bot.dbref))
         else:
             # create a new bot
-            bot = create.create_account(botname, None, None, typeclass=bots.GrapevineBot)
+            bot = create.create_account(
+                botname, None, None, typeclass=bots.GrapevineBot
+            )
 
         bot.start(ev_channel=channel, grapevine_channel=grapevine_channel)
         self.msg(f"Grapevine connection created {channel} <-> {grapevine_channel}.")
