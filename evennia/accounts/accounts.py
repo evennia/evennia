@@ -26,7 +26,13 @@ from evennia.commands import cmdhandler
 from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
 from evennia.utils import class_from_module, create, logger
-from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter, variable_from_module
+from evennia.utils.utils import (
+    lazy_property,
+    to_str,
+    make_iter,
+    is_iter,
+    variable_from_module,
+)
 from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_CREATE,
     SIGNAL_OBJECT_POST_PUPPET,
@@ -38,6 +44,8 @@ from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.utils.optionhandler import OptionHandler
 
 from django.utils.translation import ugettext as _
+from django.utils.translation import ngettext as _s
+from evennia.utils.commonstrings import _STRING
 from random import getrandbits
 
 __all__ = ("DefaultAccount",)
@@ -270,16 +278,20 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         # safety checks
         if not obj:
-            raise RuntimeError("Object not found")
+            raise RuntimeError(_("Object not found"))
         if not session:
-            raise RuntimeError("Session not found")
+            raise RuntimeError(_("Session not found"))
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg("You are already puppeting this object.")
+            self.msg(_STRING.get("PUPPET_FAILURE_DUPE"))
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(f"You don't have permission to puppet '{obj.key}'.")
+            self.msg(
+                "{message} '{key}'".format(
+                    message=_STRING.get("PUPPET_FAILURE_AUTH"), key=obj.key
+                )
+            )
             return
         if obj.account:
             # object already puppeted
@@ -288,19 +300,38 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     # we may take over another of our sessions
                     # output messages to the affected sessions
                     if _MULTISESSION_MODE in (1, 3):
-                        txt1 = f"Sharing |c{obj.name}|n with another of your sessions."
-                        txt2 = f"|c{obj.name}|n|G is now shared from another of your sessions.|n"
+                        txt1, txt2 = "|c{name}|n {message}".format(
+                            name=obj.name,
+                            message=_STRING.get("PUPPET_MULTISESSION_SHARED"),
+                        )  # TODO: txt2 is redundant
+                        # txt2 = _(
+                        #    "|c{name}|n|G is now shared from another of your sessions.|n".format(
+                        #        name=obj.name
+                        #    )
+                        # )
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                     else:
-                        txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
-                        txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
+                        txt1 = "c{name}|n {message}".format(
+                            name=obj.name,
+                            message=_STRING.get("PUPPET_MULTISESSION_TAKER"),
+                        )
+
+                        txt2 = "|c{name}|n|R {message}|n".format(
+                            name=obj.name,
+                            message=_STRING.get("PUPPET_MULTISESSION_TAKEE"),
+                        )
+
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
             elif obj.account.is_connected:
                 # controlled by another account
-                self.msg(f"|c{obj.key}|R is already puppeted by another Account.")
+                self.msg(
+                    "|c{key}|R {message}".format(
+                        key=obj.key, message=_STRING.get("PUPPET_FAILURE_SECOND")
+                    )
+                )
                 return
 
         # do the puppeting
@@ -348,7 +379,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 if not obj.sessions.count():
                     del obj.account
                 obj.at_post_unpuppet(self, session=session)
-                SIGNAL_OBJECT_POST_UNPUPPET.send(sender=obj, session=session, account=self)
+                SIGNAL_OBJECT_POST_UNPUPPET.send(
+                    sender=obj, session=session, account=self
+                )
             # Just to be sure we're always clear.
             session.puppet = None
             session.puid = None
@@ -384,7 +417,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 by this Account.
 
         """
-        return list(set(session.puppet for session in self.sessions.all() if session.puppet))
+        return list(
+            set(session.puppet for session in self.sessions.all() if session.puppet)
+        )
 
     def __get_single_puppet(self):
         """
@@ -452,9 +487,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             try:
                 klass = import_string(validator["NAME"])
             except ImportError:
-                msg = (
-                    f"The module in NAME could not be imported: {validator['NAME']}. "
-                    "Check your AUTH_USERNAME_VALIDATORS setting."
+                msg = "{name} : {message}".format(
+                    message=_STRING.get("ERR_IMPORT"), name=validator["NAME"]
                 )
                 raise ImproperlyConfigured(msg)
             objs.append(klass(**validator.get("OPTIONS", {})))
@@ -490,13 +524,14 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             errors (list): Error messages of any failures.
 
         """
+
         errors = []
         if ip:
             ip = str(ip)
 
         # See if authentication is currently being throttled
         if ip and LOGIN_THROTTLE.check(ip):
-            errors.append("Too many login failures; please try again in a few minutes.")
+            errors.append(_STRING.get("LOGIN_FAILURE_THROTTLE"))
 
             # With throttle active, do not log continued hits-- it is a
             # waste of storage and can be abused to make your logs harder to
@@ -507,26 +542,36 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         banned = cls.is_banned(username=username, ip=ip)
         if banned:
             # this is a banned IP or name!
-            errors.append(
-                "|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x"
+            errors.append(_STRING.get("LOGIN_FAILURE_BANNED"))
+            logger.log_sec(
+                "{result} ({reason}): {username} (IP: {ip})".format(
+                    result=_STRING.get("AUTH_FAILURE"),
+                    reason="Banned",
+                    username=username,
+                    ip=ip,
+                )
             )
-            logger.log_sec(f"Authentication Denied (Banned): {username} (IP: {ip}).")
-            LOGIN_THROTTLE.update(ip, "Too many sightings of banned artifact.")
+            LOGIN_THROTTLE.update(ip, _STRING.get("ERR_BANNED_THROTTLE"))
             return None, errors
 
         # Authenticate and get Account object
         account = authenticate(username=username, password=password)
         if not account:
             # User-facing message
-            errors.append("Username and/or password is incorrect.")
+            errors.append(_STRING.get("LOGIN_FAILURE_INVALID_USERPASS"))
 
             # Log auth failures while throttle is inactive
-            logger.log_sec(f"Authentication Failure: {username} (IP: {ip}).")
-
+            logger.log_sec(
+                "{result} ({reason}): {username} (IP: {ip})".format(
+                    result=_STRING.get("AUTH_FAILURE"),
+                    reason=_STRING.get("LOGIN_FAILURE_INVALID_USERPASS"),
+                    username=username,
+                    ip=ip,
+                )
+            )
             # Update throttle
             if ip:
-                LOGIN_THROTTLE.update(ip, "Too many authentication failures.")
+                LOGIN_THROTTLE.update(ip, _STRING.get("LOGIN_FAILURE_THROTTLE"))
 
             # Try to call post-failure hook
             session = kwargs.get("session", None)
@@ -538,7 +583,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             return None, errors
 
         # Account successfully authenticated
-        logger.log_sec(f"Authentication Success: {account} (IP: {ip}).")
+        logger.log_sec(
+            "{result} : {username} (IP: {ip})".format(
+                result=_STRING.get("AUTH_SUCCESS"), username=account, ip=ip,
+            )
+        )
         return account, errors
 
     @classmethod
@@ -646,7 +695,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         super(DefaultAccount, self).set_password(password)
-        logger.log_sec(f"Password successfully changed for {self}.")
+        logger.log_sec(
+            "{result} : {user}".format(
+                result=_STRING.get("PASSWORD_CHANGE_SUCCESS"), user=self,
+            )
+        )
         self.at_password_change()
 
     @classmethod
@@ -687,9 +740,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         ip = kwargs.get("ip", "")
         if ip and CREATION_THROTTLE.check(ip):
-            errors.append(
-                "You are creating too many accounts. Please log into an existing account."
-            )
+            errors.append(_STRING.get("ERR_CREATION_THROTTLE"))
             return None, errors
 
         # Normalize username
@@ -716,25 +767,30 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         banned = cls.is_banned(username=username, ip=ip)
         if banned:
             # this is a banned IP or name!
-            string = (
-                "|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x"
-            )
-            errors.append(string)
+
+            errors.append(_STRING.get("LOGIN_FAILURE_BANNED"))
             return None, errors
 
         # everything's ok. Create the new account.
         try:
             try:
                 account = create.create_account(
-                    username, email, password, permissions=permissions, typeclass=typeclass
+                    username,
+                    email,
+                    password,
+                    permissions=permissions,
+                    typeclass=typeclass,
                 )
-                logger.log_sec(f"Account Created: {account} (IP: {ip}).")
+                logger.log_sec(
+                    "{result} : {account} (IP: {ip})".format(
+                        result=_STRING.get("ACCOUNT_CREATION_SUCCESS"),
+                        account=account,
+                        ip=ip,
+                    )
+                )
 
             except Exception as e:
-                errors.append(
-                    "There was an error creating the Account. If this problem persists, contact an admin."
-                )
+                errors.append(_STRING.get("ACCOUNT_CREATION_FAILURE"))
                 logger.log_trace()
                 return None, errors
 
@@ -748,10 +804,18 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 account.db.creator_ip = ip
 
             # join the new account to the public channel
-            pchannel = ChannelDB.objects.get_channel(settings.DEFAULT_CHANNELS[0]["key"])
+            pchannel = ChannelDB.objects.get_channel(
+                settings.DEFAULT_CHANNELS[0]["key"]
+            )
             if not pchannel or not pchannel.connect(account):
-                string = f"New account '{account.key}' could not connect to public channel!"
-                errors.append(string)
+
+                errors.append(
+                    "{user} {message}: {channel}".format(
+                        user=account.key,
+                        message=_STRING.get("CHANNEL_NOCONNECT"),
+                        channel=pchannel,
+                    )
+                )
                 logger.log_err(string)
 
             if account and settings.MULTISESSION_MODE < 2:
@@ -785,12 +849,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            errors.append(_STRING.get("ERR_UNSPECIFIED"))
             logger.log_trace()
 
         # Update the throttle to indicate a new account was created from this IP
         if ip and not guest:
-            CREATION_THROTTLE.update(ip, "Too many accounts being created.")
+            CREATION_THROTTLE.update(ip, _STRING.get("ERR_CREATION_THROTTLE"))
         SIGNAL_ACCOUNT_POST_CREATE.send(sender=account, ip=ip)
         return account, errors
 
@@ -812,7 +876,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             except RuntimeError:
                 # no puppet to disconnect from
                 pass
-            session.sessionhandler.disconnect(session, reason=_("Account being deleted."))
+            session.sessionhandler.disconnect(
+                session, reason=_STRING.get("ACCOUNT_DELETED")
+            )
         self.scripts.stop()
         self.attributes.clear()
         self.nicks.clear()
@@ -945,7 +1011,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # handle me, self and *me, *self
         if isinstance(searchdata, str):
             # handle wrapping of common terms
-            if searchdata.lower() in ("me", "*me", "self", "*self"):
+            if searchdata.lower() in (
+                "me",
+                "*me",
+                "self",
+                "*self",
+            ):  # TODO: IMPLEMENT i18N for Self-Referencing variables
                 return self
         if search_object:
             matches = ObjectDB.objects.object_search(
@@ -972,7 +1043,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         return matches
 
     def access(
-        self, accessing_obj, access_type="read", default=False, no_superuser_bypass=False, **kwargs
+        self,
+        accessing_obj,
+        access_type="read",
+        default=False,
+        no_superuser_bypass=False,
+        **kwargs,
     ):
         """
         Determines if another object has permission to access this
@@ -1052,7 +1128,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         # set an (empty) attribute holding the characters this account has
-        lockstring = "attrread:perm(Admins);attredit:perm(Admins);" "attrcreate:perm(Admins);"
+        lockstring = (
+            "attrread:perm(Admins);attredit:perm(Admins);" "attrcreate:perm(Admins);"
+        )
         self.attributes.add("_playable_characters", [], lockstring=lockstring)
         self.attributes.add("_saved_protocol_flags", {}, lockstring=lockstring)
 
@@ -1207,13 +1285,19 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         global _MUDINFO_CHANNEL
         if not _MUDINFO_CHANNEL:
             try:
-                _MUDINFO_CHANNEL = ChannelDB.objects.filter(db_key=settings.CHANNEL_MUDINFO["key"])[
-                    0
-                ]
+                _MUDINFO_CHANNEL = ChannelDB.objects.filter(
+                    db_key=settings.CHANNEL_MUDINFO["key"]
+                )[0]
             except Exception:
                 logger.log_trace()
         now = timezone.now()
-        now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
+        now = "%02i-%02i-%02i(%02i:%02i)" % (
+            now.year,
+            now.month,
+            now.day,
+            now.hour,
+            now.minute,
+        )
         if _MUDINFO_CHANNEL:
             _MUDINFO_CHANNEL.tempmsg(f"[{_MUDINFO_CHANNEL.key}, {now}]: {message}")
         else:
@@ -1244,30 +1328,37 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if session:
             session.msg(logged_in={})
 
-        self._send_to_connect_channel(f"|G{self.key} connected|n")
+        self._send_to_connect_channel(
+            "|G{key} {message}|n".format(
+                key=self.key, message=_STRING.get("CONNECT_SUCCESS")
+            )
+        )
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
             # try to auto-connect to our last conneted object, if any
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
-                self.msg("The Character does not exist.")
+                self.msg(_STRING.get("PUPPET_FAILURE_DOESNOTEXIST"))
                 return
         elif _MULTISESSION_MODE == 1:
             # in this mode all sessions connect to the same puppet.
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
-                self.msg("The Character does not exist.")
+                self.msg(_STRING.get("PUPPET_FAILURE_DOESNOTEXIST"))
                 return
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
             # screen. We execute look on the account.
             # we make sure to clean up the _playable_characters list in case
             # any was deleted in the interim.
-            self.db._playable_characters = [char for char in self.db._playable_characters if char]
+            self.db._playable_characters = [
+                char for char in self.db._playable_characters if char
+            ]
             self.msg(
-                self.at_look(target=self.db._playable_characters, session=session), session=session
+                self.at_look(target=self.db._playable_characters, session=session),
+                session=session,
             )
 
     def at_failed_login(self, session, **kwargs):
@@ -1296,7 +1387,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         reason = f" ({reason if reason else ''})"
-        self._send_to_connect_channel(f"|R{self.key} disconnected{reason}|n")
+        self._send_to_connect_channel(
+            "|R{key} {message} {reason}|n".format(
+                key=self.key, message=_STRING.get("DISCONNECT_SUCCESS"), reason=reason
+            )
+        )
 
     def at_post_disconnect(self, **kwargs):
         """
@@ -1402,7 +1497,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if hasattr(target, "return_appearance"):
                 return target.return_appearance(self)
             else:
-                return "{} has no in-game appearance.".format(target)
+                return "{target} {message}.".format(
+                    target=target, message=_STRING.get("NOT_IN_GAME")
+                )
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
@@ -1413,19 +1510,23 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             is_su = self.is_superuser
 
             # text shown when looking in the ooc area
-            result = [f"Account |g{self.key}|n (you are Out-of-Character)"]
+            result = "|g {key} ({message})".format(
+                key=self.key, message=_STRING.get("CHARACTER_OOC")
+            )
 
             nsess = len(sessions)
             result.append(
                 nsess == 1
-                and "\n\n|wConnected session:|n"
+                and "\n\n|wConnected session:|n"  # TODO: Swap to ngettext for i18n pluralization
                 or f"\n\n|wConnected sessions ({nsess}):|n"
             )
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
                 addr = "%s (%s)" % (
                     sess.protocol_key,
-                    isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address),
+                    isinstance(sess.address, tuple)
+                    and str(sess.address[0])
+                    or str(sess.address),
                 )
                 result.append(
                     "\n %s %s"
@@ -1437,7 +1538,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                         addr,
                     )
                 )
-            result.append("\n\n |whelp|n - more commands")
+            result.append(
+                "\n\n |whelp|n - more commands"
+            )  # TODO: Perhaps a refactor is in order for commands for i18n?
             result.append("\n |wooc <Text>|n - talk on public channel")
 
             charmax = _MAX_NR_CHARACTERS
@@ -1445,18 +1548,22 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if is_su or len(characters) < charmax:
                 if not characters:
                     result.append(
-                        "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
+                        "\n\n{message}".format(message=_STRING.get("CHARACTERS_NONE"))
                     )
                 else:
-                    result.append("\n |w@charcreate <name> [=description]|n - create new character")
+                    result.append(
+                        "\n |w@charcreate <name> [=description]|n - create new character"
+                    )
                     result.append(
                         "\n |w@chardelete <name>|n - delete a character (cannot be undone!)"
                     )
 
             if characters:
                 string_s_ending = len(characters) > 1 and "s" or ""
-                result.append("\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)")
-                if is_su:
+                result.append(
+                    "\n |w@ic <character>|n - enter the game (|w@ooc|n to get back here)"
+                )
+                if is_su:  # TODO: implement ngettext for i18n pluralization
                     result.append(
                         f"\n\nAvailable character{string_s_ending} ({len(characters)}/unlimited):"
                     )
@@ -1465,7 +1572,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                         "\n\nAvailable character%s%s:"
                         % (
                             string_s_ending,
-                            charmax > 1 and " (%i/%i)" % (len(characters), charmax) or "",
+                            charmax > 1
+                            and " (%i/%i)" % (len(characters), charmax)
+                            or "",
                         )
                     )
 
@@ -1477,15 +1586,26 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                             sid = sess in sessions and sessions.index(sess) + 1
                             if sess and sid:
                                 result.append(
-                                    f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] (played by you in session {sid})"
+                                    f"\n - |G{key}|n [{', '.join(char.permissions.all())}] ({message} {sid})".format(
+                                        key=char.key,
+                                        message=_STRING.get("CHARACTERS_PLAYED_BY_YOU"),
+                                        sid=sid,
+                                    )
                                 )
                             else:
                                 result.append(
-                                    f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] (played by someone else)"
+                                    f"\n - |R{key}|n [{', '.join(char.permissions.all())}] ({message})".format(
+                                        key=char.key,
+                                        message=_STRING.get(
+                                            "CHARACTERS_PLAYED_BY_OTHER"
+                                        ),
+                                    )
                                 )
                     else:
                         # character is "free to puppet"
-                        result.append(f"\n - {char.key} [{', '.join(char.permissions.all())}]")
+                        result.append(
+                            f"\n - {char.key} [{', '.join(char.permissions.all())}]"
+                        )
             look_string = ("-" * 68) + "\n" + "".join(result) + "\n" + ("-" * 68)
             return look_string
 
@@ -1525,7 +1645,7 @@ class DefaultGuest(DefaultAccount):
 
         # check if guests are enabled.
         if not settings.GUEST_ENABLED:
-            errors.append("Guest accounts are not enabled on this server.")
+            errors.append(_STRING.get("GUEST_NOT_ENABLED"))
             return None, errors
 
         try:
@@ -1535,9 +1655,9 @@ class DefaultGuest(DefaultAccount):
                     username = name
                     break
             if not username:
-                errors.append("All guest accounts are in use. Please try again later.")
+                errors.append(_STRING.get("GUEST_FULL"))
                 if ip:
-                    LOGIN_THROTTLE.update(ip, "Too many requests for Guest access.")
+                    LOGIN_THROTTLE.update(ip, _STRING.get("GUEST_FULL"))
                 return None, errors
             else:
                 # build a new account with the found guest username
@@ -1563,7 +1683,7 @@ class DefaultGuest(DefaultAccount):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            errors.append(_STRING.get("ERR_UNSPECIFIED"))
             logger.log_trace()
             return None, errors
 
@@ -1580,7 +1700,11 @@ class DefaultGuest(DefaultAccount):
                 overriding the call (unused by default).
 
         """
-        self._send_to_connect_channel(f"|G{self.key} connected|n")
+        self._send_to_connect_channel(
+            "|G{key} {message}|n".format(
+                key=self.key, message=_STRING.get("CONNECT_SUCCESS")
+            )
+        )
         self.puppet_object(session, self.db._last_puppet)
 
     def at_server_shutdown(self):

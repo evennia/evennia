@@ -10,7 +10,7 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from evennia.accounts.models import AccountDB
 from evennia.typeclasses.admin import AttributeInline, TagInline
 from evennia.utils import create
-
+from evennia.utils.commonstrings import _STRING
 
 # handle the custom User editor
 class AccountDBChangeForm(UserChangeForm):
@@ -24,15 +24,20 @@ class AccountDBChangeForm(UserChangeForm):
         fields = "__all__"
 
     username = forms.RegexField(
-        label="Username",
+        label=_STRING.get("LBL_USERNAME"),
         max_length=30,
         regex=r"^[\w. @+-]+$",
         widget=forms.TextInput(attrs={"size": "30"}),
         error_messages={
-            "invalid": "This value may contain only letters, spaces, numbers "
-            "and @/./+/-/_ characters."
+            "invalid": "{message} {extra_chars}".format(
+                message=_STRING.get("ERR_INVALID_TXT"), extra_chars="@/./+/-/_"
+            )
         },
-        help_text="30 characters or fewer. Letters, spaces, digits and " "@/./+/-/_ only.",
+        help_text="{message} {extra_chars}, {max_length}: 30".format(
+            message=_STRING.get("ERR_INVALID_TXT"),
+            extra_chars="@/./+/-/_",
+            max_length=_STRING.get("ERR_MAX_LENGTH"),
+        ),
     )
 
     def clean_username(self):
@@ -44,7 +49,12 @@ class AccountDBChangeForm(UserChangeForm):
         if username.upper() == self.instance.username.upper():
             return username
         elif AccountDB.objects.filter(username__iexact=username):
-            raise forms.ValidationError("An account with that name " "already exists.")
+            raise forms.ValidationError(
+                "{error} : {reason}".format(
+                    error=_STRING.get("ACCOUNT_CREATION_FAILURE"),
+                    reason=_STRING.get("ACCOUNT_CREATION_DUPLICATE"),
+                )
+            )
         return self.cleaned_data["username"]
 
 
@@ -58,15 +68,20 @@ class AccountDBCreationForm(UserCreationForm):
         fields = "__all__"
 
     username = forms.RegexField(
-        label="Username",
+        label=_STRING.get("LBL_USERNAME"),
         max_length=30,
         regex=r"^[\w. @+-]+$",
         widget=forms.TextInput(attrs={"size": "30"}),
         error_messages={
-            "invalid": "This value may contain only letters, spaces, numbers "
-            "and @/./+/-/_ characters."
+            "invalid": "{message} {extra_chars}".format(
+                message=_STRING.get("ERR_INVALID_TXT"), extra_chars="@/./+/-/_"
+            )
         },
-        help_text="30 characters or fewer. Letters, spaces, digits and " "@/./+/-/_ only.",
+        help_text="{message} {extra_chars}, {max_length}: 30".format(
+            message=_STRING.get("ERR_INVALID_TXT"),
+            extra_chars="@/./+/-/_",
+            max_length=_STRING.get("ERR_MAX_LENGTH"),
+        ),
     )
 
     def clean_username(self):
@@ -228,7 +243,13 @@ class AccountDBAdmin(BaseUserAdmin):
         (
             "Website Permissions",
             {
-                "fields": ("is_active", "is_staff", "is_superuser", "user_permissions", "groups"),
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "user_permissions",
+                    "groups",
+                ),
                 "description": "<i>These are permissions/permission groups for "
                 "accessing the admin site. They are unrelated to "
                 "in-game access rights.</i>",
@@ -238,7 +259,8 @@ class AccountDBAdmin(BaseUserAdmin):
             "Game Options",
             {
                 "fields": ("db_typeclass_path", "db_cmdset_storage", "db_lock_storage"),
-                "description": "<i>These are attributes that are more relevant " "to gameplay.</i>",
+                "description": "<i>These are attributes that are more relevant "
+                "to gameplay.</i>",
             },
         ),
     )
@@ -281,7 +303,9 @@ class AccountDBAdmin(BaseUserAdmin):
         from django.http import HttpResponseRedirect
         from django.urls import reverse
 
-        return HttpResponseRedirect(reverse("admin:accounts_accountdb_change", args=[obj.id]))
+        return HttpResponseRedirect(
+            reverse("admin:accounts_accountdb_change", args=[obj.id])
+        )
 
 
 admin.site.register(AccountDB, AccountDBAdmin)
