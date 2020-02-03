@@ -673,10 +673,13 @@ class ANSIString(str, metaclass=ANSIMeta):
     and taken literally the second time around.
 
     """
+
     # A compiled Regex for the format mini-language: https://docs.python.org/3/library/string.html#formatspec
-    re_format = re.compile(r"(?i)(?P<just>(?P<fill>.)?(?P<align>\<|\>|\=|\^))?(?P<sign>\+|\-| )?(?P<alt>\#)?"
-                           r"(?P<zero>0)?(?P<width>\d+)?(?P<grouping>\_|\,)?(?:\.(?P<precision>\d+))?"
-                           r"(?P<type>b|c|d|e|E|f|F|g|G|n|o|s|x|X|%)?")
+    re_format = re.compile(
+        r"(?i)(?P<just>(?P<fill>.)?(?P<align>\<|\>|\=|\^))?(?P<sign>\+|\-| )?(?P<alt>\#)?"
+        r"(?P<zero>0)?(?P<width>\d+)?(?P<grouping>\_|\,)?(?:\.(?P<precision>\d+))?"
+        r"(?P<type>b|c|d|e|E|f|F|g|G|n|o|s|x|X|%)?"
+    )
 
     def __new__(cls, *args, **kwargs):
         """
@@ -756,23 +759,23 @@ class ANSIString(str, metaclass=ANSIMeta):
         format_data = self.re_format.match(format_spec).groupdict()
         clean = self.clean()
         base_output = ANSIString(self.raw())
-        align = format_data.get('align', '<')
-        fill = format_data.get('fill', ' ')
+        align = format_data.get("align", "<")
+        fill = format_data.get("fill", " ")
 
         # Need to coerce width into an integer. We can be certain that it's numeric thanks to regex.
-        width = format_data.get('width', None)
+        width = format_data.get("width", None)
         if width is None:
             width = len(clean)
         else:
             width = int(width)
 
-        if align == '<':
+        if align == "<":
             base_output = self.ljust(width, fill)
-        elif align == '>':
+        elif align == ">":
             base_output = self.rjust(width, fill)
-        elif align == '^':
+        elif align == "^":
             base_output = self.center(width, fill)
-        elif align == '=':
+        elif align == "=":
             pass
 
         # Return the raw string with ANSI markup, ready to be displayed.
