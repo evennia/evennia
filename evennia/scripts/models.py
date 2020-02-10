@@ -108,7 +108,8 @@ class ScriptDB(TypedObject):
         "start delay", default=False, help_text="pause interval seconds before starting."
     )
     # how many times this script is to be repeated, if interval!=0.
-    db_repeats = models.IntegerField("number of repeats", default=0, help_text="0 means off.")
+    db_repeats = models.IntegerField(
+        "number of repeats", default=0, help_text="0 means off.")
     # defines if this script should survive a reboot or not
     db_persistent = models.BooleanField("survive server reboot", default=False)
     # defines if this script has already been started in this session
@@ -125,7 +126,7 @@ class ScriptDB(TypedObject):
     class Meta(object):
         "Define Django meta options"
         verbose_name = "Script"
-
+        ordering = ["db_key"]
     #
     #
     # ScriptDB class properties
