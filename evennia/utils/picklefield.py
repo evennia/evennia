@@ -268,7 +268,7 @@ class PickledObjectField(models.Field):
         """
         if value is not None and not isinstance(value, PickledObject):
             # We call force_str here explicitly, so that the encoded string
-            # isn't rejected by the postgresql_psycopg2 backend. Alternatively,
+            # isn't rejected by the postgresql backend. Alternatively,
             # we could have just registered PickledObject with the psycopg
             # marshaller (telling it to store it like it would a string), but
             # since both of these methods result in the same value being stored,
