@@ -356,8 +356,6 @@ PORTAL_SERVICES_PLUGIN_MODULES = ["server.conf.portal_services_plugins"]
 MSSP_META_MODULE = "server.conf.mssp"
 # Module for web plugins.
 WEB_PLUGINS_MODULE = "server.conf.web_plugins"
-# Module for Proxy plugins
-PROXY_PLUGIN_MODULES = ["server.conf.proxy_plugins"]
 # Tuple of modules implementing lock functions. All callable functions
 # inside these modules will be available as lock functions.
 LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs")
