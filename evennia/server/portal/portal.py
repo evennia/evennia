@@ -41,6 +41,11 @@ except Exception:
 PORTAL_SERVICES_PLUGIN_MODULES = [
     mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)
 ]
+
+PROXY_PLUGIN_MODULES = [
+    mod_import(module) for module in make_iter(settings.PROXY_PLUGIN_MODULES)
+]
+
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE
 
 # -------------------------------------------------------------
@@ -350,6 +355,9 @@ if WEBSERVER_ENABLED:
                 ajax_webclient.sessionhandler = PORTAL_SESSIONS
                 web_root.putChild(b"webclientdata", ajax_webclient)
                 webclientstr = "webclient (ajax only)"
+
+                for plugin_module in PROXY_PLUGIN_MODULES:
+                    web_root = plugin_module.start_proxy_service(web_root)
 
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
