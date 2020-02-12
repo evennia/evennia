@@ -28,12 +28,11 @@ except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from django.utils.safestring import SafeString
+from django.utils.safestring import SafeString, SafeBytes
 from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
 from evennia.utils import logger
 
-__all__ = ("to_pickle", "from_pickle", "do_pickle",
-           "do_unpickle", "dbserialize", "dbunserialize")
+__all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
 PICKLE_PROTOCOL = 2
 
@@ -117,15 +116,13 @@ def _init_globals():
     global _FROM_MODEL_MAP, _TO_MODEL_MAP, _SESSION_HANDLER, _IGNORE_DATETIME_MODELS
     if not _FROM_MODEL_MAP:
         _FROM_MODEL_MAP = defaultdict(str)
-        _FROM_MODEL_MAP.update(dict((c.model, c.natural_key())
-                                    for c in ContentType.objects.all()))
+        _FROM_MODEL_MAP.update(dict((c.model, c.natural_key()) for c in ContentType.objects.all()))
     if not _TO_MODEL_MAP:
         from django.conf import settings
 
         _TO_MODEL_MAP = defaultdict(str)
         _TO_MODEL_MAP.update(
-            dict((c.natural_key(), c.model_class())
-                 for c in ContentType.objects.all())
+            dict((c.natural_key(), c.model_class()) for c in ContentType.objects.all())
         )
         _IGNORE_DATETIME_MODELS = []
         for src_key, dst_key in settings.ATTRIBUTE_STORED_MODEL_RENAME:
@@ -188,8 +185,7 @@ class _SaverMutable(object):
                 )
             self._db_obj.value = self
         else:
-            logger.log_err(
-                "_SaverMutable %s has no root Attribute to save to." % self)
+            logger.log_err("_SaverMutable %s has no root Attribute to save to." % self)
 
     def _convert_mutables(self, data):
         """converts mutables to Saver* variants and assigns ._parent property"""
@@ -205,8 +201,7 @@ class _SaverMutable(object):
                 return dat
             elif dtype == dict:
                 dat = _SaverDict(_parent=parent)
-                dat._data.update((key, process_tree(val, dat))
-                                 for key, val in item.items())
+                dat._data.update((key, process_tree(val, dat)) for key, val in item.items())
                 return dat
             elif dtype == set:
                 dat = _SaverSet(_parent=parent)
@@ -554,7 +549,7 @@ def to_pickle(data):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString):
+        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
@@ -582,8 +577,7 @@ def to_pickle(data):
         except TypeError:
             return item
         except Exception:
-            logger.log_error(
-                f"The object {item} of type {type(item)} could not be stored.")
+            logger.log_error(f"The object {item} of type {type(item)} could not be stored.")
             raise
 
     return process_item(data)
@@ -615,7 +609,7 @@ def from_pickle(data, db_obj=None):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString):
+        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -644,7 +638,7 @@ def from_pickle(data, db_obj=None):
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString):
+        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
