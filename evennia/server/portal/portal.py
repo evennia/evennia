@@ -42,15 +42,6 @@ PORTAL_SERVICES_PLUGIN_MODULES = [
     mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)
 ]
 
-try:
-    WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
-except ImportError:
-    WEB_PLUGINS_MODULE = None
-    INFO_DICT["errors"] = (
-        "WARNING: settings.WEB_PLUGINS_MODULE not found - "
-        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
-    )
-
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE
 
 # -------------------------------------------------------------
@@ -104,6 +95,15 @@ INFO_DICT = {
     "webserver_proxy": [],
     "webserver_internal": [],
 }
+
+try:
+    WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
+except ImportError:
+    WEB_PLUGINS_MODULE = None
+    INFO_DICT["errors"] = (
+        "WARNING: settings.WEB_PLUGINS_MODULE not found - "
+        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
+    )
 
 # -------------------------------------------------------------
 # Portal Service object
