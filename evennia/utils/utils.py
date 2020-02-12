@@ -1036,7 +1036,7 @@ def uses_database(name="sqlite3"):
     shortcut to having to use the full backend name.
 
     Args:
-        name (str): One of 'sqlite3', 'mysql', 'postgresql'
+        name (str): One of 'sqlite3', 'mysql', 'postgresql_psycopg2'
         or 'oracle'.
 
     Returns:
