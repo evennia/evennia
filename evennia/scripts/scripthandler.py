@@ -9,7 +9,7 @@ from evennia.scripts.models import ScriptDB
 from evennia.utils import create
 from evennia.utils import logger
 
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 
 
 class ScriptHandler(object):

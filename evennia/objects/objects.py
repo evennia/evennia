@@ -31,7 +31,7 @@ from evennia.utils.utils import (
     list_to_string,
     to_str,
 )
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE

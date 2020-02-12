@@ -187,7 +187,7 @@ _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 # Return messages
 
 # i18n
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 
 _ERR_NOT_IMPLEMENTED = _(
     "Menu node '{nodename}' is either not implemented or " "caused an error. Make another choice."

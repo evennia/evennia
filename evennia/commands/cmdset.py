@@ -27,7 +27,7 @@ Set theory.
 
 """
 from weakref import WeakKeyDictionary
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 from evennia.utils.utils import inherits_from, is_iter
 
 __all__ = ("CmdSet",)

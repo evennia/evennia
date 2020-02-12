@@ -72,7 +72,7 @@ from evennia.utils import logger, utils
 from evennia.commands.cmdset import CmdSet
 from evennia.server.models import ServerConfig
 
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 
 __all__ = ("import_cmdset", "CmdSetHandler")
 
