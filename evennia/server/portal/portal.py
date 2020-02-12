@@ -42,10 +42,6 @@ PORTAL_SERVICES_PLUGIN_MODULES = [
     mod_import(module) for module in make_iter(settings.PORTAL_SERVICES_PLUGIN_MODULES)
 ]
 
-PROXY_PLUGIN_MODULES = [
-    mod_import(module) for module in make_iter(settings.PROXY_PLUGIN_MODULES)
-]
-
 LOCKDOWN_MODE = settings.LOCKDOWN_MODE
 
 # -------------------------------------------------------------
@@ -357,9 +353,6 @@ if WEBSERVER_ENABLED:
                 web_root.putChild(b"webclientdata", ajax_webclient)
                 webclientstr = "webclient (ajax only)"
 
-                for plugin_module in PROXY_PLUGIN_MODULES:
-                    web_root = plugin_module.start_proxy_service(web_root)
-
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
                     # we only support one websocket client
@@ -389,6 +382,13 @@ if WEBSERVER_ENABLED:
 
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             web_root.is_portal = True
+
+            if WEB_PLUGINS_MODULE:
+                try:
+                    web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)
+                except NameError: # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
+                    pass
+
             proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)
             proxy_service.setName("EvenniaWebProxy%s:%s" % (ifacestr, proxyport))
             PORTAL.services.addService(proxy_service)
