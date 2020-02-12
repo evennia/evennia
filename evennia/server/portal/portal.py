@@ -395,7 +395,7 @@ if WEBSERVER_ENABLED:
             if WEB_PLUGINS_MODULE:
                 try:
                     web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)
-                except NameError: # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
+                except Exception as e: # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
                     INFO_DICT["errors"] = (
                         "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() not found - "
                         "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
