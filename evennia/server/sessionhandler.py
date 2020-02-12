@@ -67,7 +67,7 @@ PSTATUS = chr(18)  # ping server or portal status
 SRESET = chr(19)  # server shutdown in reset mode
 
 # i18n
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 _SERVERNAME = settings.SERVERNAME
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
