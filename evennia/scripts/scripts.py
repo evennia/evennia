@@ -209,6 +209,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         Step task runner. No try..except needed due to defer wrap.
 
         """
+        if not self.ndb._task:
+            # if there is no task, we have no business using this method
+            return
 
         if not self.is_valid():
             self.stop()
