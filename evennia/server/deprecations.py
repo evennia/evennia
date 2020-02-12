@@ -115,7 +115,10 @@ def check_warnings(settings):
         print(" [Devel: settings.IN_GAME_ERRORS is True. Turn off in production.]")
     if settings.ALLOWED_HOSTS == ["*"]:
         print(" [Devel: settings.ALLOWED_HOSTS set to '*' (all). Limit in production.]")
-    for k,v in settings.DATABASES.items():
-        if "psycopg" in v.get("ENGINE",None):
-            print(" [Devel: postgresql_psycopg2 backend is deprecated. This module is now called postgresql")
-            print("  Switch settings.DATABASES to use \"ENGINE\": \"django.db.backends.postgresql\"")
+    for dbentry in settings.DATABASES.values():
+        if "psycopg" in dbentry.get("ENGINE", ""):
+            print(
+                'Deprecation: postgresql_psycopg2 backend is deprecated". '
+                "Switch settings.DATABASES to use "
+                '"ENGINE": "django.db.backends.postgresql instead"'
+            )
