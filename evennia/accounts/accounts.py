@@ -37,7 +37,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.utils.optionhandler import OptionHandler
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from random import getrandbits
 
 __all__ = ("DefaultAccount",)
