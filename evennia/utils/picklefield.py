@@ -43,7 +43,7 @@ from django.forms.fields import CharField
 from django.forms.widgets import Textarea
 
 from pickle import loads, dumps
-from django.utils.encoding import force_str
+from django.utils.encoding import force_text
 
 
 DEFAULT_PROTOCOL = 4
@@ -210,10 +210,10 @@ class PickledObjectField(models.Field):
         """
         Returns the default value for this field.
 
-        The default implementation on models.Field calls force_str
+        The default implementation on models.Field calls force_text
         on the default, which means you can't set arbitrary Python
         objects as the default. To fix this, we just return the value
-        without calling force_str on it. Note that if you set a
+        without calling force_text on it. Note that if you set a
         callable as a default, the field will still call it. It will
         *not* try to pickle and encode it.
 
@@ -267,13 +267,13 @@ class PickledObjectField(models.Field):
 
         """
         if value is not None and not isinstance(value, PickledObject):
-            # We call force_str here explicitly, so that the encoded string
+            # We call force_text here explicitly, so that the encoded string
             # isn't rejected by the postgresql_psycopg2 backend. Alternatively,
             # we could have just registered PickledObject with the psycopg
             # marshaller (telling it to store it like it would a string), but
             # since both of these methods result in the same value being stored,
             # doing things this way is much easier.
-            value = force_str(dbsafe_encode(value, self.compress, self.protocol))
+            value = force_text(dbsafe_encode(value, self.compress, self.protocol))
         return value
 
     def value_to_string(self, obj):
