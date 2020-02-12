@@ -190,7 +190,6 @@ class Portal(object):
         self.sessions.disconnect_all()
         if _stop_server:
             self.amp_protocol.stop_server(mode="shutdown")
-
         if not _reactor_stopping:
             # shutting down the reactor will trigger another signal. We set
             # a flag to avoid loops.
