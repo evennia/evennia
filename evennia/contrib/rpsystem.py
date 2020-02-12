@@ -896,10 +896,9 @@ class CmdSay(RPCommand):  # replaces standard say
             caller.msg("Say what?")
             return
 
-        # calling the speech hook on the location
-        speech = caller.location.at_before_say(self.args)
+        # calling the speech modifying hook
+        speech = caller.at_before_say(self.args)
         # preparing the speech with sdesc/speech parsing.
-        speech = '/me says, "{speech}"'.format(speech=speech)
         targets = self.caller.location.contents
         send_emote(self.caller, targets, speech, anonymous_add=None)
 
@@ -1508,6 +1507,20 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         self.cmdset.add(RPSystemCmdSet, permanent=True)
         # initializing sdesc
         self.sdesc.add("A normal person")
+
+    def at_before_say(self, message, **kwargs):
+        """
+        Called before the object says or whispers anything, return modified message.
+
+        Args:
+            message (str): The suggested say/whisper text spoken by self.
+        Kwargs:
+            whisper (bool): If True, this is a whisper rather than a say.
+
+        """
+        if kwargs.get("whisper"):
+            return f'/me whispers "{message}"'
+        return f'/me says, "{message}"'
 
     def process_sdesc(self, sdesc, obj, **kwargs):
         """
