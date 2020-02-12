@@ -38,7 +38,7 @@ from evennia.utils import logger
 from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
 
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 
 _SA = object.__setattr__
 

@@ -23,7 +23,7 @@ _ObjectDB = None
 _ANSI = None
 
 # i18n
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 
 # Handlers for Session.db/ndb operation
 
