@@ -18,7 +18,10 @@ To list your game, go to your game dir and run
 
     evennia connections 
 
-Follow the prompts to add details to the listing. 
+Follow the prompts to add details to the listing. Use `evennia reload`. In your log (visible with `evennia --log`
+you should see a note that info has been sent to the game index. 
+
+## Detailed settings
 
 If you don't want to use the wizard you can configure your game listing by opening up `server/conf/settings.py` and
  using the following as a starting point:
