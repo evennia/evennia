@@ -1930,9 +1930,12 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       list - show available typeclasses. Only typeclasses in modules actually
              imported or used from somewhere in the code will show up here
              (those typeclasses are still available if you know the path)
+      prototype - clean and overwrite the object with the specified
+               prototype key - effectively making a whole new object.
 
     Example:
       type button = examples.red_button.RedButton
+      type/prototype button=a red button
 
     If the typeclass_path is not given, the current object's typeclass is
     assumed.
@@ -1954,7 +1957,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     key = "typeclass"
     aliases = ["type", "parent", "swap", "update"]
-    switch_options = ("show", "examine", "update", "reset", "force", "list")
+    switch_options = ("show", "examine", "update", "reset", "force", "list", "prototype")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
 
@@ -2038,6 +2041,28 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         new_typeclass = self.rhs or obj.path
 
+        prototype = None
+        if "prototype" in self.switches:
+            key = self.rhs
+            prototype = protlib.search_prototype(key=key)
+            if len(prototype) > 1:
+                caller.msg(
+                    "More than one match for {}:\n{}".format(
+                        key, "\n".join(proto.get("prototype_key", "") for proto in prototype)
+                    )
+                )
+                return
+            elif prototype:
+                # one match
+                prototype = prototype[0]
+            else:
+                # no match
+                caller.msg("No prototype '{}' was found.".format(key))
+                return
+            new_typeclass = prototype["typeclass"]
+            self.switches.append("force")
+            self.switches.append("reset")
+
         if "show" in self.switches or "examine" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
             caller.msg(string)
@@ -2074,6 +2099,9 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             obj.swap_typeclass(
                 new_typeclass, clean_attributes=reset, clean_cmdsets=reset, run_start_hooks=hooks
             )
+
+            if "prototype" in self.switches:
+                spawner.batch_update_objects_with_prototype(prototype, objects=[obj])
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
