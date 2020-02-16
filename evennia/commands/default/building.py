@@ -19,6 +19,7 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw
+from evennia.prototypes.menus import _format_diff_text_and_options
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -2061,7 +2062,6 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 return
             new_typeclass = prototype["typeclass"]
             self.switches.append("force")
-            self.switches.append("reset")
 
         if "show" in self.switches or "examine" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
@@ -2094,6 +2094,31 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             reset = "reset" in self.switches
             hooks = "at_object_creation" if update else "all"
             old_typeclass_path = obj.typeclass_path
+
+            # special prompt for the user in cases where we want
+            # to confirm changes.
+            if "prototype" in self.switches:
+                diff, _ = spawner.prototype_diff_from_object(prototype, obj)
+                txt, options = _format_diff_text_and_options(diff, objects=[obj])
+                prompt = "Applying prototype '%s' over '%s' will cause the follow changes:\n%s\n" % \
+                         (
+                             prototype["key"],
+                             obj.name,
+                             "\n".join(txt)
+                         )
+                if not reset:
+                    prompt += "\n|yWARNING:|n Use the /reset switch to apply the prototype over a blank state."
+                prompt += "\nAre you sure you want to apply these changes [yes]/no?"
+                answer = yield (prompt)
+                answer = "yes" if answer == "" else answer
+                if answer and answer not in ("yes", "y", "no", "n"):
+                    caller.msg(
+                        "Canceled: Either accept the default by pressing return or specify yes/no."
+                    )
+                    return
+                elif answer.strip().lower() in ("n", "no"):
+                    caller.msg("Canceled: No object was modified.")
+                    return
 
             # we let this raise exception if needed
             obj.swap_typeclass(
