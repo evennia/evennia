@@ -2102,7 +2102,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
             if "prototype" in self.switches:
                 modified = spawner.batch_update_objects_with_prototype(prototype, objects=[obj])
-                if modified == 0:
+                prototype_success = modified > 0
+                if not prototype_success:
                     caller.msg("Prototype %s failed to apply." % prototype["key"])
 
             if is_same:
@@ -2121,7 +2122,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 string += " All old attributes where deleted before the swap."
             else:
                 string += " Attributes set before swap were not removed."
-            if "prototype" in self.switches:
+            if "prototype" in self.switches and prototype_success:
                 string += " Prototype '%s' was successfully applied over the object type." % prototype["key"]
 
         caller.msg(string)
