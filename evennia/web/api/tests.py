@@ -1,0 +1,93 @@
+"""Tests for the REST API"""
+from evennia.utils.test_resources import EvenniaTest
+from evennia.web.api import serializers
+from rest_framework.test import APIClient
+from django.urls import reverse
+from django.test import override_settings
+from collections import namedtuple
+from django.conf.urls import url, include
+from django.core.exceptions import ObjectDoesNotExist
+
+urlpatterns = [
+    url(r"^", include("evennia.web.website.urls")),
+    url(r"^api/", include("evennia.web.api.urls", namespace="api")),
+]
+
+
+@override_settings(
+    REST_API_ENABLED=True, ROOT_URLCONF=__name__, AUTH_USERNAME_VALIDATORS=[]
+)
+class TestEvenniaRESTApi(EvenniaTest):
+    client_class = APIClient
+
+    def setUp(self):
+        super().setUp()
+        self.account.is_superuser = True
+        self.account.save()
+        self.client.force_login(self.account)
+
+    def tearDown(self):
+        try:
+            super().tearDown()
+        except ObjectDoesNotExist:
+            pass
+
+    def get_view_details(self, action):
+        """Helper function for generating list of named tuples"""
+        View = namedtuple("View", ["view_name", "obj", "list", "serializer"])
+        views = [
+            View("object-%s" % action, self.obj1, [self.obj1, self.char1, self.exit, self.room1, self.room2, self.obj2,
+                                                   self.char2], serializers.ObjectDBSerializer),
+            View("character-%s" % action, self.char1, [self.char1, self.char2], serializers.ObjectDBSerializer),
+            View("exit-%s" % action, self.exit, [self.exit], serializers.ObjectDBSerializer),
+            View("room-%s" % action, self.room1, [self.room1, self.room2], serializers.ObjectDBSerializer),
+            View("script-%s" % action, self.script, [self.script], serializers.ScriptDBSerializer),
+            View("account-%s" % action, self.account2, [self.account, self.account2], serializers.AccountDBSerializer),
+        ]
+        return views
+
+    def test_retrieve(self):
+        views = self.get_view_details("detail")
+        for view in views:
+            with self.subTest(msg="Testing {} retrieve".format(view.view_name)):
+                view_url = reverse(
+                    "api:{}".format(view.view_name), kwargs={"pk": view.obj.pk}
+                )
+                response = self.client.get(view_url)
+                self.assertEqual(response.status_code, 200)
+
+    def test_update(self):
+        views = self.get_view_details("detail")
+        for view in views:
+            with self.subTest(msg="Testing {} update".format(view.view_name)):
+                view_url = reverse(
+                    "api:{}".format(view.view_name), kwargs={"pk": view.obj.pk}
+                )
+                # test both PUT (update) and PATCH (partial update) here
+                for new_key, method in (("foobar", "put"), ("fizzbuzz", "patch")):
+                    field = "username" if "account" in view.view_name else "db_key"
+                    data = {field: new_key}
+                    response = getattr(self.client, method)(view_url, data=data)
+                    self.assertEqual(response.status_code, 200)
+                    view.obj.refresh_from_db()
+                    self.assertEqual(getattr(view.obj, field), new_key)
+
+    def test_delete(self):
+        views = self.get_view_details("detail")
+        for view in views:
+            with self.subTest(msg="Testing {} delete".format(view.view_name)):
+                view_url = reverse(
+                    "api:{}".format(view.view_name), kwargs={"pk": view.obj.pk}
+                )
+                response = self.client.delete(view_url)
+                self.assertEqual(response.status_code, 204)
+                with self.assertRaises(ObjectDoesNotExist):
+                    view.obj.refresh_from_db()
+
+    def test_list(self):
+        views = self.get_view_details("list")
+        for view in views:
+            with self.subTest(msg=f"Testing {view.view_name} "):
+                view_url = reverse(f"api:{view.view_name}")
+                response = self.client.get(view_url)
+                self.assertCountEqual(response.data['results'], [view.serializer(obj).data for obj in view.list])
