@@ -2832,8 +2832,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                reference. A puppeted object cannot be moved to None.
       loc - teleport object to the target's location instead of its contents
 
-    Teleports an object somewhere. If no object is given, you yourself
-    is teleported to the target location.
+    Teleports an object somewhere. If no object is given, you yourself are
+    teleported to the target location.
     """
 
     key = "tel"
