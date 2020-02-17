@@ -314,7 +314,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _get_logger().log_trace("Discarded incoming partial (packed) data (len {})".format(len(data)))
+                _get_logger().log_trace(
+                    "Discarded incoming partial (packed) data (len {})".format(len(data))
+                )
         elif self.multibatches:
             # invalid AMP, but we have a pending multi-batch that is not yet complete
             if data[-2:] == NULNUL:
@@ -323,7 +325,9 @@ class AMPMultiConnectionProtocol(amp.AMP):
             try:
                 super(AMPMultiConnectionProtocol, self).dataReceived(data)
             except KeyError:
-                _get_logger().log_trace("Discarded incoming multi-batch (packed) data (len {})".format(len(data)))
+                _get_logger().log_trace(
+                    "Discarded incoming multi-batch (packed) data (len {})".format(len(data))
+                )
         else:
             # not an AMP communication, return warning
             self.transport.write(_HTTP_WARNING)
