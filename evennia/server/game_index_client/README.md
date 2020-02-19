@@ -1,8 +1,8 @@
 # Evennia Game Index Client
 
-Greg Taylor 2016
+Greg Taylor 2016, Griatch 2020
 
-This contrib features a client for the [Evennia Game Index]
+This is a client for the [Evennia Game Index]
 (http://evennia-game-index.appspot.com/), a listing of games built on
 Evennia. By listing your game on the index, you make it easy for other
 people in the community to discover your creation.
@@ -14,74 +14,24 @@ on remedying this.*
 
 ## Listing your Game
 
-To list your game, you'll need to enable the Evennia Game Index client.
-Start by `cd`'ing to your game directory. From there, open up
-`server/conf/server_services_plugins.py`. It might look something like this
-if you don't have any other optional add-ons enabled:
+To list your game, go to your game dir and run 
 
-```python
-"""
-Server plugin services
+    evennia connections 
 
-This plugin module can define user-created services for the Server to
-start.
+Follow the prompts to add details to the listing. Use `evennia reload`. In your log (visible with `evennia --log`
+you should see a note that info has been sent to the game index. 
 
-This module must handle all imports and setups required to start a
-twisted service (see examples in evennia.server.server). It must also
-contain a function start_plugin_services(application). Evennia will
-call this function with the main Server application (so your services
-can be added to it). The function should not return anything. Plugin
-services are started last in the Server startup process.
-"""
+## Detailed settings
 
-
-def start_plugin_services(server):
-    """
-    This hook is called by Evennia, last in the Server startup process.
-
-    server - a reference to the main server application.
-    """
-    pass
-```
-
-To enable the client, import `EvenniaGameIndexService` and fire it up after the
-Evennia server has finished starting:
-
-```python
-"""
-Server plugin services
-
-This plugin module can define user-created services for the Server to
-start.
-
-This module must handle all imports and setups required to start a
-twisted service (see examples in evennia.server.server). It must also
-contain a function start_plugin_services(application). Evennia will
-call this function with the main Server application (so your services
-can be added to it). The function should not return anything. Plugin
-services are started last in the Server startup process.
-"""
-
-from evennia.contrib.egi_client import EvenniaGameIndexService
-
-def start_plugin_services(server):
-    """
-    This hook is called by Evennia, last in the Server startup process.
-
-    server - a reference to the main server application.
-    """
-    egi_service = EvenniaGameIndexService()
-    server.services.addService(egi_service)
-```
-
-Next, configure your game listing by opening up `server/conf/settings.py` and
+If you don't want to use the wizard you can configure your game listing by opening up `server/conf/settings.py` and
  using the following as a starting point:
 
 ```python
 ######################################################################
-# Contrib config
+# Game index
 ######################################################################
 
+GAME_INDEX_ENABLED = True
 GAME_INDEX_LISTING = {
     'game_status': 'pre-alpha',
     # Optional, comment out or remove if N/A

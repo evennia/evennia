@@ -577,7 +577,7 @@ def to_pickle(data):
         except TypeError:
             return item
         except Exception:
-            logger.log_error(f"The object {item} of type {type(item)} could not be stored.")
+            logger.log_err(f"The object {item} of type {type(item)} could not be stored.")
             raise
 
     return process_item(data)
@@ -716,7 +716,7 @@ def do_pickle(data):
     try:
         return dumps(data, protocol=PICKLE_PROTOCOL)
     except Exception:
-        logger.log_error(f"Could not pickle data for storage: {data}")
+        logger.log_err(f"Could not pickle data for storage: {data}")
         raise
 
 
@@ -725,7 +725,7 @@ def do_unpickle(data):
     try:
         return loads(to_bytes(data))
     except Exception:
-        logger.log_error(f"Could not unpickle data from storage: {data}")
+        logger.log_err(f"Could not unpickle data from storage: {data}")
         raise
 
 
