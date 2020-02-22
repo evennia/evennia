@@ -110,3 +110,24 @@ class TestEvenniaRESTApi(EvenniaTest):
                 # check success when sending the required data
                 response = self.client.post(view_url, data=view.create_data)
                 self.assertEqual(response.status_code, 201, f"Response was {response.data}")
+
+    def test_set_attribute(self):
+        views = self.get_view_details("set-attribute")
+        for view in views:
+            with self.subTest(msg=f"Testing {view.view_name}"):
+                view_url = reverse(f"api:{view.view_name}", kwargs={"pk": view.obj.pk})
+                # check failures from not sending required fields
+                response = self.client.post(view_url)
+                self.assertEqual(response.status_code, 400, f"Response was: {response.data}")
+                # test adding an attribute
+                self.assertEqual(view.obj.db.some_test_attr, None)
+                attr_name = "some_test_attr"
+                attr_data = {"db_key": attr_name, "db_value": "test_value"}
+                response = self.client.post(view_url, data=attr_data)
+                self.assertEqual(response.status_code, 200, f"Response was: {response.data}")
+                self.assertEquals(view.obj.attributes.get(attr_name), "test_value")
+                # now test removing it
+                attr_data = {"db_key": attr_name}
+                response = self.client.post(view_url, data=attr_data)
+                self.assertEqual(response.status_code, 200, f"Response was: {response.data}")
+                self.assertEquals(view.obj.attributes.get(attr_name), None)
