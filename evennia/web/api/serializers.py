@@ -1,3 +1,14 @@
+"""
+Serializers in the Django Rest Framework are similar to Forms in normal django.
+They're used for transmitting and validating data, both going to clients and
+coming to the server. However, where forms often contained presentation logic,
+such as specifying widgets to use for selection, serializers typically leave
+those decisions in the hands of clients, and are more focused on converting
+data from the server to JSON (serialization) for a response, and validating
+and converting JSON data sent from clients to our enpoints into python objects,
+often django model instances, that we can use (deserialization).
+"""
+
 from rest_framework import serializers
 
 from evennia.objects.models import ObjectDB
