@@ -34,15 +34,21 @@ class TestEvenniaRESTApi(EvenniaTest):
 
     def get_view_details(self, action):
         """Helper function for generating list of named tuples"""
-        View = namedtuple("View", ["view_name", "obj", "list", "serializer"])
+        View = namedtuple("View", ["view_name", "obj", "list", "serializer", "create_data"])
         views = [
             View("object-%s" % action, self.obj1, [self.obj1, self.char1, self.exit, self.room1, self.room2, self.obj2,
-                                                   self.char2], serializers.ObjectDBSerializer),
-            View("character-%s" % action, self.char1, [self.char1, self.char2], serializers.ObjectDBSerializer),
-            View("exit-%s" % action, self.exit, [self.exit], serializers.ObjectDBSerializer),
-            View("room-%s" % action, self.room1, [self.room1, self.room2], serializers.ObjectDBSerializer),
-            View("script-%s" % action, self.script, [self.script], serializers.ScriptDBSerializer),
-            View("account-%s" % action, self.account2, [self.account, self.account2], serializers.AccountDBSerializer),
+                                                   self.char2], serializers.ObjectDBSerializer,
+                 {"db_key": "object-create-test-name"}),
+            View("character-%s" % action, self.char1, [self.char1, self.char2], serializers.ObjectDBSerializer,
+                 {"db_key": "character-create-test-name"}),
+            View("exit-%s" % action, self.exit, [self.exit], serializers.ObjectDBSerializer,
+                 {"db_key": "exit-create-test-name"}),
+            View("room-%s" % action, self.room1, [self.room1, self.room2], serializers.ObjectDBSerializer,
+                 {"db_key": "room-create-test-name"}),
+            View("script-%s" % action, self.script, [self.script], serializers.ScriptDBSerializer,
+                 {"db_key": "script-create-test-name"}),
+            View("account-%s" % action, self.account2, [self.account, self.account2], serializers.AccountDBSerializer,
+                 {"username": "account-create-test-name"}),
         ]
         return views
 
@@ -91,3 +97,16 @@ class TestEvenniaRESTApi(EvenniaTest):
                 view_url = reverse(f"api:{view.view_name}")
                 response = self.client.get(view_url)
                 self.assertCountEqual(response.data['results'], [view.serializer(obj).data for obj in view.list])
+
+    def test_create(self):
+        views = self.get_view_details("list")
+        for view in views:
+            with self.subTest(msg=f"Testing {view.view_name} create"):
+                # create is a POST request off of <type>-list
+                view_url = reverse(f"api:{view.view_name}")
+                # check failures from not sending required fields
+                response = self.client.post(view_url)
+                self.assertEqual(response.status_code, 400)
+                # check success when sending the required data
+                response = self.client.post(view_url, data=view.create_data)
+                self.assertEqual(response.status_code, 201, f"Response was {response.data}")
