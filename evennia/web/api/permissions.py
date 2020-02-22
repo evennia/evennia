@@ -54,6 +54,6 @@ class EvenniaPermission(permissions.BasePermission):
         if view.action == "destroy":
             # access type based on the destroy command
             return self.check_locks(obj, request.user, self.destroy_locks)
-        if view.action in ("update", "partial_update"):
+        if view.action in ("update", "partial_update", "set_attribute"):
             # access type based on set command
             return self.check_locks(obj, request.user, self.update_locks)
