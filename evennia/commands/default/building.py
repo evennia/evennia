@@ -2310,7 +2310,7 @@ class CmdExamine(ObjManipCommand):
 
     account_mode = False
 
-    def list_attribute(self, crop, attr, category, value, indent=False):
+    def list_attribute(self, crop, attr, category, value, indent):
         """
         Formats a single attribute line.
         """
