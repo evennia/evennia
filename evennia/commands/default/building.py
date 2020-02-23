@@ -2,6 +2,8 @@
 Building and world design commands
 """
 import re
+import json
+from evennia.utils.dbserialize import SaverDictEncoder
 from django.conf import settings
 from django.db.models import Q, Min, Max
 from evennia.objects.models import ObjectDB
@@ -2308,10 +2310,12 @@ class CmdExamine(ObjManipCommand):
 
     account_mode = False
 
-    def list_attribute(self, crop, attr, category, value):
+    def list_attribute(self, crop, attr, category, value, indent=False):
         """
         Formats a single attribute line.
         """
+        if indent:
+            return "\n %s = %s" % (attr, json.dumps(value, cls=SaverDictEncoder, indent=2))
         if crop:
             if not isinstance(value, str):
                 value = utils.to_str(value)
@@ -2322,6 +2326,7 @@ class CmdExamine(ObjManipCommand):
             string = "\n %s = %s" % (attr, value)
         string = raw(string)
         return string
+
 
     def format_attributes(self, obj, attrname=None, crop=True):
         """
@@ -2342,14 +2347,15 @@ class CmdExamine(ObjManipCommand):
             except Exception:
                 ndb_attr = None
         string = ""
+        indented = attrname is not None
         if db_attr and db_attr[0]:
             string += "\n|wPersistent attributes|n:"
             for attr, value, category in db_attr:
-                string += self.list_attribute(crop, attr, category, value)
+                string += self.list_attribute(crop, attr, category, value, indented)
         if ndb_attr and ndb_attr[0]:
             string += "\n|wNon-Persistent attributes|n:"
             for attr, value in ndb_attr:
-                string += self.list_attribute(crop, attr, None, value)
+                string += self.list_attribute(crop, attr, None, value, indented)
         return string
 
     def format_output(self, obj, avail_cmdset):
