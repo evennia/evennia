@@ -31,7 +31,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import SafeString
 from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
 from evennia.utils import logger
-import json
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
@@ -289,15 +288,6 @@ class _SaverDict(_SaverMutable, MutableMapping):
         return key in self._data
 
 
-class SaverDictEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, _SaverMutable) or isinstance(o, _SaverDict):
-            return o._data
-        if hasattr(o, 'db_key') and hasattr(o, 'dbref'):
-            return "(ref) %s [%s]" % (o.db_key, o.dbref)
-        return json.JSONEncoder.default(self, o)
-
-
 class _SaverSet(_SaverMutable, MutableSet):
     """
     A set that saves to an Attribute when updated
@@ -317,9 +307,6 @@ class _SaverSet(_SaverMutable, MutableSet):
     @_save
     def discard(self, value):
         self._data.discard(value)
-
-    def default(self, o):
-        return self._data
 
 
 class _SaverOrderedDict(_SaverMutable, MutableMapping):
