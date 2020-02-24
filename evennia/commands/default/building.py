@@ -19,6 +19,8 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw
+from datetime import datetime
+from evennia.utils.dbserialize import _SaverMutable
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -2308,10 +2310,104 @@ class CmdExamine(ObjManipCommand):
 
     account_mode = False
 
-    def list_attribute(self, crop, attr, category, value):
+    def list_attribute(self, crop, attr, category, value, verbose):
         """
         Formats a single attribute line.
         """
+        def recursive_print(attrname, value, depth=0, indent=2, references=dict()):
+            def is_primitive(value):
+                return isinstance(value, (int, float, datetime, bool, str, dict, tuple, list)) or value is None
+
+            def get_class_name(value):
+                if value.__class__.__name__[0] == '_' or is_primitive(value):
+                    return ": "
+                return " <%s>: " % value.__class__.__name__
+
+            def get_data(value):
+                if is_primitive(value):
+                    return value
+                if isinstance(value, _SaverMutable):
+                    return value._data
+                return value.__dict__
+
+            inner_indent = ' ' * (depth * indent)
+            output = ""
+            if isinstance(value, (int, float, datetime)):
+                if attrname:
+                    return "\n%s\"%s\": %s" % (inner_indent, attrname, value)
+                else:
+                    return "\n%s%s" % (inner_indent, value)
+            elif isinstance(value, str):
+                if attrname:
+                    return "\n%s\"%s\": \"%s\"" % (inner_indent, attrname, value)
+                else:
+                    return "\n%s\"%s\"" % (inner_indent, value)
+            elif isinstance(get_data(value), (list, tuple, set)):
+                if attrname:
+                    output += "\n%s\"%s\"%s" % (inner_indent, attrname, get_class_name(value))
+                else:
+                    output += "\n%s%s" % (inner_indent, get_class_name(value))
+
+                # handling for sets
+                if value is set:
+                    output += "{"
+                else:
+                    output += "["
+
+                index = 0
+                for inner_value in value:
+                    output += recursive_print(None, inner_value, depth + 1, indent, references)
+                    index += 1
+                    if index < len(value):
+                        output += ","
+                output += "\n%s" % inner_indent
+
+                # more handling for sets
+                if value is set:
+                    output += "}"
+                else:
+                    output += "]"
+            elif hasattr(value, 'db_key') and hasattr(value, 'dbref'):
+                # This is an ObjectDB thing.
+                if attrname:
+                    return "\n%s\"%s\"%s<%s (%s)>" % (
+                        inner_indent,
+                        attrname,
+                        get_class_name(value),
+                        value.db_key,
+                        value.dbref
+                    )
+                else:
+                    return "\n%s%s <%s (%s)>" % (inner_indent, get_class_name(value), value.db_key, value.dbref)
+            elif value is None:
+                if attrname:
+                    return "\n%s\"%s\": None" % (inner_indent, attrname)
+                else:
+                    return "\n%sNone" % inner_indent
+            else:
+                # Non-primitive type.
+                references[id(value)] = value
+                output += "\n%s\"%s\"%s{" % (inner_indent, attrname, get_class_name(value))
+                data = get_data(value)
+                index = 0
+
+                try:
+                    for key in data.keys():
+                        index += 1
+                        if id(data[key]) in references:
+                            output += "\n%s%s: (ref: %s)" % (inner_indent, key, id(data[key]))
+                            if index < len(data.keys()):
+                                output += ","
+                            continue
+                        output += recursive_print(key, data[key], depth + 1, indent, references)
+                        if index < len(data.keys()):
+                            output += ","
+                except AttributeError:
+                    return "\n%s\"%s\"%s #-1 Cannot Render" % (inner_indent, attrname, get_class_name(value))
+                output += "\n%s}" % inner_indent
+            return output
+        if verbose:
+            return recursive_print(attr, value)
         if crop:
             if not isinstance(value, str):
                 value = utils.to_str(value)
@@ -2342,14 +2438,15 @@ class CmdExamine(ObjManipCommand):
             except Exception:
                 ndb_attr = None
         string = ""
+        verbose = attrname is not None
         if db_attr and db_attr[0]:
             string += "\n|wPersistent attributes|n:"
             for attr, value, category in db_attr:
-                string += self.list_attribute(crop, attr, category, value)
+                string += self.list_attribute(crop, attr, category, value, verbose)
         if ndb_attr and ndb_attr[0]:
             string += "\n|wNon-Persistent attributes|n:"
             for attr, value in ndb_attr:
-                string += self.list_attribute(crop, attr, None, value)
+                string += self.list_attribute(crop, attr, None, value, verbose)
         return string
 
     def format_output(self, obj, avail_cmdset):
