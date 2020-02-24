@@ -1913,8 +1913,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     Usage:
       typeclass[/switch] <object> [= typeclass.path]
-      type                     ''
-      parent                   ''
+      typeclass/prototype <object> = prototype_key
+
       typeclass/list/show [typeclass.path]
       swap - this is a shorthand for using /force/reset flags.
       update - this is a shorthand for using the /force/reload flag.
@@ -2110,14 +2110,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                     prompt += "\n|yWARNING:|n Use the /reset switch to apply the prototype over a blank state."
                 prompt += "\nAre you sure you want to apply these changes [yes]/no?"
                 answer = yield (prompt)
-                answer = "yes" if answer == "" else answer
-                if answer and answer not in ("yes", "y", "no", "n"):
+                if answer and answer in ("no", "n"):
                     caller.msg(
-                        "Canceled: Either accept the default by pressing return or specify yes/no."
+                        "Canceled: No changes were applied."
                     )
-                    return
-                elif answer.strip().lower() in ("n", "no"):
-                    caller.msg("Canceled: No object was modified.")
                     return
 
             # we let this raise exception if needed
