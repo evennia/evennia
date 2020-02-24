@@ -1,16 +1,67 @@
 """
-This plugin migrates the Web-based portion of Evennia,
-namely images, javascript, and other items located
-inside staticfiles into Amazon AWS (S3) for hosting.
+ABOUT THIS PLUGIN:
+
+This plugin migrates the Web-based portion of Evennia, namely images,
+javascript, and other items located inside staticfiles into Amazon AWS (S3) for hosting.
+
+Files hosted on S3 are "in the cloud," and while your personal
+server may be sufficient for serving multimedia to a minimal number of users,
+the perfect use case for this plugin would be:
+
+1) Servers supporting heavy web-based traffic (webclient, etc)
+2) With a sizeable number of users
+3) Where the users are globally distributed
+4) Where multimedia files are served to users as a part of gameplay
+
+Bottom line - if you're sending an image to a player every time they traverse a
+map, the bandwidth reduction will be substantial. If not, probably skip
+this one.
+
+Note that storing and serving files via S3 is not technically free outside of
+Amazon's "free tier" offering, which you may or may not be eligible for;
+evennia's base install currently requires 1.5MB of storage space on S3,
+making the current total cost to install this plugin ~$0.0005 per year. If
+you have substantial media assets and intend to serve them to many users,
+caveat emptor on a total cost of ownership - check AWS's pricing structure.
+
+
+TECHNICAL DETAILS:
+
+This is a drop-in replacement that operates deeper than all of Evennia's code,
+so your existing code does not need to change at all to support it.
+
+For example, when Evennia (or Django), tries to save a file permanently
+(say, an image uploaded by a user), the save (or load) communication follows the path:
+
+Evennia -> Django
+Django -> Storage backend
+Storage backend -> file storage location (e.g. hard drive)
+
+https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-STATICFILES_STORAGE
+
+This plugin, when enabled, overrides the default storage backend,
+which defaults to saving files at mygame/website/, instead,
+sending the files to S3 via the storage backend defined herein.
+
+There is no way (or need) to directly access or use the functions here with
+other contributions or custom code. Simply work how you would normally, Django
+will handle the rest.
 
 INSTALLATION:
 
-1) If you don't have an AWS S3 account, you should create one now.
+1) If you don't have an AWS S3 account, you should create one at
+https://aws.amazon.com/ - documentation for AWS S3 is available at:
+https://docs.aws.amazon.com/AmazonS3/latest/gsg/GetStartedWithS3.html
 
-Credentials required are an AWS IAM Access Key and Secret Keys,
+Credentials required within the app are AWS IAM Access Key and Secret Keys,
 which can be generated/found in the AWS Console.
 
-Example IAM Control Policy Permissions, if desired:
+The following example IAM Control Policy Permissions can be added to
+the IAM service inside AWS. Documentation for this can be found here:
+https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html
+
+Note that this is only required if you want to tightly secure the roles
+that this plugin has access to.
 
 {
     "Version": "2012-10-17",
@@ -50,24 +101,39 @@ Advanced Users: The second IAM statement, CreateBucket, is only needed
 for initial installation. You can remove it later, or you can
 create the bucket and set the ACL yourself before you continue.
 
-2) This package requires the dependency "boto3," the official
+2) This package requires the dependency "boto3 >= 1.4.4" the official
 AWS python package. You can install it with 'pip install boto3'
 while inside your evennia virtual environment (or, simply
 in your shell if you don't use a virtual environment).
 
 3) Customize the variables defined below in secret_settings.py,
 then run 'evennia stop', 'evennia start', 'evennia collectstatic'
+No further configuration is needed.
 
-AWS_ACCESS_KEY_ID = 'EUHUB20BU08AEU7' # CHANGE ME!
-AWS_SECRET_ACCESS_KEY = 'a/uoexauodabuq4j;kmw;kvka0d2' # CHANGE ME!
+4) Confirm that web assets are being served from S3 by visiting your
+website, then checking the source of any image (for instance, the logo).
+It should read https://your-bucket-name.s3.amazonaws.com/path/to/file
+
+START OF SECRET_SETTINGS.PY COPY/PASTE >>>
+
+AWS_ACCESS_KEY_ID = 'THIS_IS_PROVIDED_BY_AMAZON'
+AWS_SECRET_ACCESS_KEY = 'THIS_IS_PROVIDED_BY_AMAZON'
 AWS_STORAGE_BUCKET_NAME = 'mygame-evennia' # CHANGE ME!
+
+The settings below need to go in secret_settings,py as well, but will
+not need customization unless you want to do something particularly fancy.
+
 AWS_S3_REGION_NAME = 'us-east-1' # N. Virginia
 AWS_S3_OBJECT_PARAMETERS = { 'Expires': 'Thu, 31 Dec 2099 20:00:00 GMT', 'CacheControl': 'max-age=94608000', }
 AWS_DEFAULT_ACL = 'public-read'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % settings.AWS_BUCKET_NAME
 AWS_AUTO_CREATE_BUCKET = True
 STATICFILES_STORAGE = 'evennia.contrib.aws-s3-cdn.S3Boto3Storage'
-You may also store these as environment variables of the same name.
+
+<<< END OF SECRET_SETTINGS.PY COPY/PASTE
+
+You may also store these keys as environment variables of the same name.
+For advanced configuration, refer to the docs for django-storages.
 
 UNINSTALLATION:
 
@@ -79,40 +145,59 @@ directory.
 
 LICENSE:
 
-aws-s3-cdn contrib is (c) 2020, trhr and released under BSD 3-Clause
-License except where this license conflicts with the Evennia license.
-Thank you to github.com/jschneier for contributions on django/boto3 classes.
+Draws heavily from code provided by django-storages, for which these contributors
+are authors:
 
-BSD 3-Clause License
+Marty Alchin (S3)
+David Larlet (S3)
+Arne Brodowski (S3)
+Sebastian Serrano (S3)
+Andrew McClain (MogileFS)
+Rafal Jonca (FTP)
+Chris McCormick (S3 with Boto)
+Ivanov E. (Database)
+Ariel Núñez (packaging)
+Wim Leers (SymlinkOrCopy + patches)
+Michael Elsdörfer (Overwrite + PEP8 compatibility)
+Christian Klein (CouchDB)
+Rich Leland (Mosso Cloud Files)
+Jason Christa (patches)
+Adam Nelson (patches)
+Erik CW (S3 encryption)
+Axel Gembe (Hash path)
+Waldemar Kornewald (MongoDB)
+Russell Keith-Magee (Apache LibCloud patches)
+Jannis Leidel (S3 and GS with Boto)
+Andrei Coman (Azure)
+Chris Streeter (S3 with Boto)
+Josh Schneier (Fork maintainer, Bugfixes, Py3K)
+Anthony Monthe (Dropbox)
+EunPyo (Andrew) Hong (Azure)
+Michael Barrientos (S3 with Boto3)
+piglei (patches)
+Matt Braymer-Hayes (S3 with Boto3)
+Eirik Martiniussen Sylliaas (Google Cloud Storage native support)
+Jody McIntyre (Google Cloud Storage native support)
+Stanislav Kaledin (Bug fixes in SFTPStorage)
+Filip Vavera (Google Cloud MIME types support)
+Max Malysh (Dropbox large file support)
+Scott White (Google Cloud updates)
+Alex Watt (Google Cloud Storage patch)
+Jumpei Yoshimura (S3 docs)
+Jon Dufresne
+Rodrigo Gadea (Dropbox fixes)
+Martey Dodoo
+Chris Rink
+Shaung Cheng (S3 docs)
+Andrew Perry (Bug fixes in SFTPStorage)
 
-Copyright (c) 2008 - 2020, See AUTHORS file.
-All rights reserved.
+The repurposed code from django-storages is released under BSD 3-Clause,
+same as Evennia, so for detailed licensing, refer to the Evennia license.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+VERSIONING:
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-3. Neither the name of the copyright holder nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+This is confirmed to work for Django 2 and Django 3.
+'
 """
 
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation, SuspiciousFileOperation
@@ -133,7 +218,6 @@ import mimetypes
 import os
 import posixpath
 import threading
-import warnings
 from gzip import GzipFile
 from tempfile import SpooledTemporaryFile
 from django.core.files.base import File
@@ -160,45 +244,35 @@ boto3_version_info = tuple([int(i) for i in boto3_version.split('.')])
 
 def setting(name, default=None):
     """
-    Helper function to get a Django setting by name. If setting doesn't exists
+    Helper function to get a Django setting by name. If setting doesn't exist
     it will return a default.
-    :param name: Name of setting
-    :type name: str
-    :param default: Value if setting is unfound
-    :returns: Setting's value
+
+    Args:
+        name (str): A Django setting name
+
+    Returns:
+        The value of the setting variable by that name
+
     """
     return getattr(ev_settings, name, default)
 
 
-def clean_name(name):
-    """
-    Cleans the name so that Windows style paths work
-    """
-    # Normalize Windows style paths
-    clean_name = posixpath.normpath(name).replace('\\', '/')
-
-    # os.path.normpath() can strip trailing slashes so we implement
-    # a workaround here.
-    if name.endswith('/') and not clean_name.endswith('/'):
-        # Add a trailing slash as it was stripped.
-        clean_name = clean_name + '/'
-
-    # Given an empty string, os.path.normpath() will return ., which we don't want
-    if clean_name == '.':
-        clean_name = ''
-
-    return clean_name
-
-
 def safe_join(base, *paths):
     """
-    A version of django.utils._os.safe_join for S3 paths.
+    Helper function, a version of django.utils._os.safe_join for S3 paths.
     Joins one or more path components to the base path component
     intelligently. Returns a normalized version of the final path.
     The final path must be located inside of the base path component
-    (otherwise a ValueError is raised).
-    Paths outside the base path indicate a possible security
-    sensitive operation.
+    (otherwise a ValueError is raised). Paths outside the base path
+    indicate a possible security sensitive operation.
+
+    Args:
+        base (str): A path string to the base of the staticfiles
+        *paths (list): A list of paths as referenced from the base path
+
+    Returns:
+        final_path (str): A joined path, base + filepath
+
     """
     base_path = force_text(base)
     base_path = base_path.rstrip('/')
@@ -225,6 +299,17 @@ def safe_join(base, *paths):
 
 
 def check_location(storage):
+    """
+    Helper function to make sure that the storage location is configured correctly.
+
+    Args:
+        storage (Storage): A Storage object (Django)
+
+    Raises:
+        ImproperlyConfigured: If the storage location is not configured correctly,
+            this is raised.
+
+    """
     if storage.location.startswith('/'):
         correct = storage.location.lstrip('/')
         raise ImproperlyConfigured(
@@ -238,8 +323,14 @@ def check_location(storage):
 
 def lookup_env(names):
     """
-    Look up for names in environment. Returns the first element
-    found.
+    Helper function for looking up names in env vars. Returns the first element found.
+
+    Args:
+        names (str): A list of environment variables
+
+    Returns:
+        value (str): The value of the found environment variable.
+
     """
     for name in names:
         value = os.environ.get(name)
@@ -248,6 +339,16 @@ def lookup_env(names):
 
 
 def get_available_overwrite_name(name, max_length):
+    """
+    Helper function indicating files that will be overwritten during trunc.
+
+    Args:
+        name (str): The name of the file
+        max_length (int): The maximum length of a filename
+
+    Returns:
+        joined (path): A joined path including directory, file, and extension
+    """
     if max_length is None or len(name) <= max_length:
         return name
 
@@ -285,6 +386,15 @@ class S3Boto3StorageFile(File):
     buffer_size = setting('AWS_S3_FILE_BUFFER_SIZE', 5242880)
 
     def __init__(self, name, mode, storage, buffer_size=None):
+        """
+        Initializes the File object.
+
+        Args:
+            name (str): The name of the file
+            mode (str): The access mode ('r' or 'w')
+            storage (Storage): The Django Storage object
+            buffer_size (int): The buffer size, for multipart uploads
+        """
         if 'r' in mode and 'w' in mode:
             raise ValueError("Can't combine 'r' and 'w' in mode.")
         self._storage = storage
@@ -309,9 +419,15 @@ class S3Boto3StorageFile(File):
 
     @property
     def size(self):
+        """
+        Helper property to return filesize
+        """
         return self.obj.content_length
 
     def _get_file(self):
+        """
+        Helper function to manage zipping and temporary files
+        """
         if self._file is None:
             self._file = SpooledTemporaryFile(
                 max_size=self._storage.max_memory_size,
@@ -332,16 +448,26 @@ class S3Boto3StorageFile(File):
     file = property(_get_file, _set_file)
 
     def read(self, *args, **kwargs):
+        """
+        Checks if file is in read mode; then continues to boto3 operation
+        """
         if 'r' not in self._mode:
             raise AttributeError("File was not opened in read mode.")
-        return self._force_mode(super(S3Boto3StorageFile, self).read(*args, **kwargs))
+        return self._force_mode(super().read(*args, **kwargs))
 
     def readline(self, *args, **kwargs):
+        """
+        Checks if file is in read mode; then continues to boto3 operation
+        """
         if 'r' not in self._mode:
             raise AttributeError("File was not opened in read mode.")
-        return self._force_mode(super(S3Boto3StorageFile, self).readline(*args, **kwargs))
+        return self._force_mode(super().readline(*args, **kwargs))
 
     def write(self, content):
+        """
+        Checks if file is in write mode or needs multipart handling,
+        then continues to boto3 operation.
+        """
         if 'w' not in self._mode:
             raise AttributeError("File was not opened in write mode.")
         self._is_dirty = True
@@ -353,7 +479,7 @@ class S3Boto3StorageFile(File):
             self._flush_write_buffer()
         bstr = force_bytes(content)
         self._raw_bytes_written += len(bstr)
-        return super(S3Boto3StorageFile, self).write(bstr)
+        return super().write(bstr)
 
     @property
     def _buffer_file_size(self):
@@ -383,6 +509,9 @@ class S3Boto3StorageFile(File):
         where files are always created after they are opened in write mode:
             f = storage.open("file.txt", mode="w")
             f.close()
+
+            Raises:
+                Exception: Raised if a 404 error occurs
         """
         assert "w" in self._mode
         assert self._raw_bytes_written == 0
@@ -399,11 +528,11 @@ class S3Boto3StorageFile(File):
                 raise
 
     def close(self):
+        """
+        Manages file closing after multipart uploads
+        """
         if self._is_dirty:
             self._flush_write_buffer()
-            # TODO: Possibly cache the part ids as they're being uploaded
-            # instead of requesting parts from server. For now, emulating
-            # s3boto's behavior.
             parts = [{'ETag': part.e_tag, 'PartNumber': part.part_number}
                      for part in self._multipart.parts.all()]
             self._multipart.complete(
@@ -472,8 +601,10 @@ class S3Boto3Storage(Storage):
     max_memory_size = setting('AWS_S3_MAX_MEMORY_SIZE', 0)
 
     def __init__(self, acl=None, bucket=None, **settings):
-        # check if some of the settings we've provided as class attributes
-        # need to be overwritten with values passed in here
+        """
+        Check if some of the settings we've provided as class attributes
+        need to be overwritten with values passed in here.
+        """
         for name, value in settings.items():
             if hasattr(self, name):
                 setattr(self, name, value)
@@ -501,13 +632,7 @@ class S3Boto3Storage(Storage):
 
             if boto3_version_info >= (1, 4, 4):
                 kwargs['proxies'] = self.proxies
-            else:
-                warnings.warn(
-                    "In version 1.10 of django-storages the minimum required version of "
-                    "boto3 will be 1.4.4. You have %s " % boto3_version_info
-                )
             self.config = Config(**kwargs)
-
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -522,6 +647,9 @@ class S3Boto3Storage(Storage):
 
     @property
     def connection(self):
+        """
+        Creates the actual connection to S3
+        """
         connection = getattr(self._connections, 'connection', None)
         if connection is None:
             session = boto3.session.Session()
@@ -673,6 +801,9 @@ class S3Boto3Storage(Storage):
         return zbuf
 
     def _open(self, name, mode='rb'):
+        """
+        Opens the file, if it exists.
+        """
         name = self._normalize_name(self._clean_name(name))
         try:
             f = S3Boto3StorageFile(name, mode, self)
@@ -683,6 +814,9 @@ class S3Boto3Storage(Storage):
         return f
 
     def _save(self, name, content):
+        """
+        Stitches and cleans multipart uploads; normalizes file paths.
+        """
         cleaned_name = self._clean_name(name)
         name = self._normalize_name(cleaned_name)
         params = self._get_write_parameters(name, content)
@@ -703,6 +837,9 @@ class S3Boto3Storage(Storage):
         return cleaned_name
 
     def delete(self, name):
+        """
+        Deletes a file from S3.
+        """
         name = self._normalize_name(self._clean_name(name))
         self.bucket.Object(self._encode_name(name)).delete()
 
@@ -710,6 +847,9 @@ class S3Boto3Storage(Storage):
             del self._entries[name]
 
     def exists(self, name):
+        """
+        Checks if file exists.
+        """
         name = self._normalize_name(self._clean_name(name))
         if self.entries:
             return name in self.entries
@@ -720,6 +860,10 @@ class S3Boto3Storage(Storage):
             return False
 
     def listdir(self, name):
+        """
+        Translational function to go from S3 file paths to the format
+        Django's listdir expects.
+        """
         path = self._normalize_name(self._clean_name(name))
         # The path needs to end with a slash, but if the root is empty, leave
         # it.
@@ -738,6 +882,9 @@ class S3Boto3Storage(Storage):
         return directories, files
 
     def size(self, name):
+        """
+        Gets the filesize of a remote file.
+        """
         name = self._normalize_name(self._clean_name(name))
         if self.entries:
             entry = self.entries.get(name)
@@ -794,19 +941,22 @@ class S3Boto3Storage(Storage):
             return make_naive(entry.last_modified)
 
     def modified_time(self, name):
-        """Returns a naive datetime object containing the last modified time."""
-        # If USE_TZ=False then get_modified_time will return a naive datetime
-        # so we just return that, else we have to localize and strip the tz
+        """Returns a naive datetime object containing the last modified time.
+        If USE_TZ=False then get_modified_time will return a naive datetime
+        so we just return that, else we have to localize and strip the tz
+        """
         mtime = self.get_modified_time(name)
         return mtime if is_naive(mtime) else make_naive(mtime)
 
     def _strip_signing_parameters(self, url):
-        # Boto3 does not currently support generating URLs that are unsigned. Instead we
-        # take the signed URLs and strip any querystring params related to signing and expiration.
-        # Note that this may end up with URLs that are still invalid, especially if params are
-        # passed in that only work with signed URLs, e.g. response header params.
-        # The code attempts to strip all query parameters that match names of known parameters
-        # from v2 and v4 signatures, regardless of the actual signature version used.
+        """
+        Boto3 does not currently support generating URLs that are unsigned. Instead we
+        take the signed URLs and strip any querystring params related to signing and expiration.
+        Note that this may end up with URLs that are still invalid, especially if params are
+        passed in that only work with signed URLs, e.g. response header params.
+        The code attempts to strip all query parameters that match names of known parameters
+        from v2 and v4 signatures, regardless of the actual signature version used.
+        """
         split_url = urlparse.urlsplit(url)
         qs = urlparse.parse_qsl(split_url.query, keep_blank_values=True)
         blacklist = {
@@ -822,6 +972,9 @@ class S3Boto3Storage(Storage):
         return split_url.geturl()
 
     def url(self, name, parameters=None, expire=None):
+        """
+        Returns the URL of a remotely-hosted file
+        """
         # Preserve the trailing slash after normalizing the path.
         name = self._normalize_name(self._clean_name(name))
         if self.custom_domain:
@@ -844,4 +997,4 @@ class S3Boto3Storage(Storage):
         name = self._clean_name(name)
         if self.file_overwrite:
             return get_available_overwrite_name(name, max_length)
-        return super(S3Boto3Storage, self).get_available_name(name, max_length)
+        return super().get_available_name(name, max_length)
