@@ -1,4 +1,7 @@
 """
+AWS Storage System
+The Right Honourable Reverend (trhr) 2020
+
 ABOUT THIS PLUGIN:
 
 This plugin migrates the Web-based portion of Evennia, namely images,
@@ -139,7 +142,7 @@ UNINSTALLATION:
 
 If you haven't made changes to your static files (uploaded images, etc),
 you can simply remove the lines you added to secret_settings.py. If you
-have made changes and want to install at a later date, you can export
+have made changes and want to uninstall at a later date, you can export
 your files from your S3 bucket and put them in /static/ in the evennia
 directory.
 
