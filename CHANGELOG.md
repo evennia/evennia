@@ -50,6 +50,8 @@ without arguments starts a full interactive Python console.
   and `SERVER_LOG_MAX_SIZE` (and equivalent for PORTAL) to control log rotation.
 - Addded `inside_rec` lockfunc - if room is locked, the normal `inside()` lockfunc will 
   fail e.g. for your inventory objs (since their loc is you), whereas this will pass.
+- RPSystem contrib's CmdRecog will now list all recogs if no arg is given. Also multiple
+  bugfixes.
 
 
 ## Evennia 0.9 (2018-2019)
