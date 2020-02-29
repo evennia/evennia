@@ -388,19 +388,18 @@ if WEBSERVER_ENABLED:
                     webclientstr = "webclient-websocket%s: %s" % (w_ifacestr, port)
                 INFO_DICT["webclient"].append(webclientstr)
 
-            web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
-            web_root.is_portal = True
+
 
             if WEB_PLUGINS_MODULE:
                 try:
                     web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)
-                except Exception as e: # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
+                except Exception as e:  # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
                     INFO_DICT["errors"] = (
                         "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() not found - "
                         "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
                     )
-
-
+            web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
+            web_root.is_portal = True
             proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)
             proxy_service.setName("EvenniaWebProxy%s:%s" % (ifacestr, proxyport))
             PORTAL.services.addService(proxy_service)
