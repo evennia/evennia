@@ -798,6 +798,16 @@ class RecogHandler(object):
             # recog_mask log not passed, disable recog
             return obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
 
+    def all(self):
+        """
+        Get a mapping of the recogs stored in handler.
+
+        Returns:
+            recogs (dict): A mapping of {recog: obj} stored in handler.
+
+        """
+        return {self.obj2recog[obj]: obj for obj in self.obj2recog.keys()}
+
     def remove(self, obj):
         """
         Clear recog for a given object.
@@ -931,6 +941,9 @@ class CmdSdesc(RPCommand):  # set/look at own sdesc
             except SdescError as err:
                 caller.msg(err)
                 return
+            except AttributeError:
+                caller.msg(f"Cannot set sdesc on {caller.key}.")
+                return
             caller.msg("%s's sdesc was set to '%s'." % (caller.key, sdesc))
 
 
@@ -1040,6 +1053,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
     Recognize another person in the same room.
 
     Usage:
+      recog
       recog sdesc as alias
       forget alias
 
@@ -1047,8 +1061,8 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
         recog tall man as Griatch
         forget griatch
 
-    This will assign a personal alias for a person, or
-    forget said alias.
+    This will assign a personal alias for a person, or forget said alias.
+    Using the command without arguments will list all current recogs.
 
     """
 
@@ -1057,6 +1071,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
 
     def parse(self):
         "Parse for the sdesc as alias structure"
+        self.sdesc, self.alias = "", ""
         if " as " in self.args:
             self.sdesc, self.alias = [part.strip() for part in self.args.split(" as ", 2)]
         elif self.args:
@@ -1069,22 +1084,47 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
     def func(self):
         "Assign the recog"
         caller = self.caller
-        if not self.args:
-            caller.msg("Usage: recog <sdesc> as <alias> or forget <alias>")
-            return
-        sdesc = self.sdesc
         alias = self.alias.rstrip(".?!")
+        sdesc = self.sdesc
+
+        recog_mode = self.cmdstring != "forget" and alias and sdesc
+        forget_mode = self.cmdstring == "forget" and sdesc
+        list_mode = not self.args
+
+        if not (recog_mode or forget_mode or list_mode):
+            caller.msg("Usage: recog, recog <sdesc> as <alias> or forget <alias>")
+            return
+
+        if list_mode:
+            # list all previously set recogs
+            all_recogs = caller.recog.all()
+            if not all_recogs:
+                caller.msg(
+                    "You recognize no-one. " "(Use 'recog <sdesc> as <alias>' to recognize people."
+                )
+            else:
+                # note that we don't skip those failing enable_recog lock here,
+                # because that would actually reveal more than we want.
+                lst = "\n".join(
+                    " {}  ({})".format(key, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+                    for key, obj in all_recogs.items()
+                )
+                caller.msg(
+                    f"Currently recognized (use 'recog <sdesc> as <alias>' to add "
+                    f"new and 'forget <alias>' to remove):\n{lst}"
+                )
+            return
+
         prefixed_sdesc = sdesc if sdesc.startswith(_PREFIX) else _PREFIX + sdesc
         candidates = caller.location.contents
         matches = parse_sdescs_and_recogs(caller, candidates, prefixed_sdesc, search_mode=True)
         nmatches = len(matches)
-        # handle 0, 1 and >1 matches
+        # handle 0 and >1 matches
         if nmatches == 0:
             caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
         elif nmatches > 1:
             reflist = [
-                "%s%s%s (%s%s)"
-                % (
+                "{}{}{} ({}{})".format(
                     inum + 1,
                     _NUM_SEP,
                     _RE_PREFIX.sub("", sdesc),
@@ -1094,17 +1134,20 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
                 for inum, obj in enumerate(matches)
             ]
             caller.msg(_EMOTE_MULTIMATCH_ERROR.format(ref=sdesc, reflist="\n    ".join(reflist)))
+
         else:
+            # one single match
             obj = matches[0]
             if not obj.access(self.obj, "enable_recog", default=True):
                 # don't apply recog if object doesn't allow it (e.g. by being masked).
-                caller.msg("Can't recognize someone who is masked.")
+                caller.msg("It's impossible to recognize them.")
                 return
-            if self.cmdstring == "forget":
+            if forget_mode:
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will now know only '%s'." % (caller.key, obj.recog.get(obj)))
+                caller.msg("%s will now know them only as '%s'." % (caller.key, obj.recog.get(obj)))
             else:
+                # set recog
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
                 try:
                     alias = caller.recog.add(obj, alias)
