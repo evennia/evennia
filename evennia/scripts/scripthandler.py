@@ -88,8 +88,10 @@ class ScriptHandler(object):
             script.start()
         if not script.id:
             # this can happen if the script has repeats=1 or calls stop() in at_repeat.
-            logger.log_info("Script %s started and then immediately stopped; "
-                            "it could probably be a normal function." % scriptclass)
+            logger.log_info(
+                "Script %s started and then immediately stopped; "
+                "it could probably be a normal function." % scriptclass
+            )
         return True
 
     def start(self, key):

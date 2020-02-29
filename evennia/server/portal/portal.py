@@ -388,8 +388,6 @@ if WEBSERVER_ENABLED:
                     webclientstr = "webclient-websocket%s: %s" % (w_ifacestr, port)
                 INFO_DICT["webclient"].append(webclientstr)
 
-
-
             if WEB_PLUGINS_MODULE:
                 try:
                     web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)

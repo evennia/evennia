@@ -2100,20 +2100,16 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             if "prototype" in self.switches:
                 diff, _ = spawner.prototype_diff_from_object(prototype, obj)
                 txt, options = _format_diff_text_and_options(diff, objects=[obj])
-                prompt = "Applying prototype '%s' over '%s' will cause the follow changes:\n%s\n" % \
-                         (
-                             prototype["key"],
-                             obj.name,
-                             "\n".join(txt)
-                         )
+                prompt = (
+                    "Applying prototype '%s' over '%s' will cause the follow changes:\n%s\n"
+                    % (prototype["key"], obj.name, "\n".join(txt))
+                )
                 if not reset:
                     prompt += "\n|yWARNING:|n Use the /reset switch to apply the prototype over a blank state."
                 prompt += "\nAre you sure you want to apply these changes [yes]/no?"
                 answer = yield (prompt)
                 if answer and answer in ("no", "n"):
-                    caller.msg(
-                        "Canceled: No changes were applied."
-                    )
+                    caller.msg("Canceled: No changes were applied.")
                     return
 
             # we let this raise exception if needed
@@ -2144,7 +2140,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             else:
                 string += " Attributes set before swap were not removed."
             if "prototype" in self.switches and prototype_success:
-                string += " Prototype '%s' was successfully applied over the object type." % prototype["key"]
+                string += (
+                    " Prototype '%s' was successfully applied over the object type."
+                    % prototype["key"]
+                )
 
         caller.msg(string)
 
