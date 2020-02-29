@@ -3052,7 +3052,8 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                 ok = obj.scripts.add(self.rhs, autostart=True)
                 if not ok:
                     result.append(
-                        "\nScript %s could not be added and/or started on %s."
+                        "\nScript %s could not be added and/or started on %s "
+                        "(or it started and immediately shut down)."
                         % (self.rhs, obj.get_display_name(caller))
                     )
                 else:
