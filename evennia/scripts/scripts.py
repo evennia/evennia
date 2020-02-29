@@ -221,10 +221,13 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         self.at_repeat()
 
         # check repeats
-        callcount = self.ndb._task.callcount
-        maxcount = self.db_repeats
-        if maxcount > 0 and maxcount <= callcount:
-            self.stop()
+        if self.ndb._task:
+            # we need to check for the task in case stop() was called
+            # inside at_repeat() and it already went away.
+            callcount = self.ndb._task.callcount
+            maxcount = self.db_repeats
+            if maxcount > 0 and maxcount <= callcount:
+                self.stop()
 
     def _step_task(self):
         """
@@ -342,9 +345,9 @@ class DefaultScript(ScriptBase):
 
         try:
             obj = create.create_script(**kwargs)
-        except Exception as e:
+        except Exception:
+            logger.log_trace()
             errors.append("The script '%s' encountered errors and could not be created." % key)
-            logger.log_err(e)
 
         return obj, errors
 
