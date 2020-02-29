@@ -992,15 +992,22 @@ class TestBuilding(CommandTest):
         )
 
         from evennia.prototypes.prototypes import homogenize_prototype
-        test_prototype = [homogenize_prototype(
-                            {"prototype_key": "testkey",
-                             "prototype_tags": [],
-                               "typeclass": "typeclasses.objects.Object",
-                               "key":"replaced_obj",
-                               "attrs": [("foo", "bar", None, ""),
-                                         ("desc", "protdesc", None, "")]})]
-        with mock.patch("evennia.commands.default.building.protlib.search_prototype",
-                        new=mock.MagicMock(return_value=test_prototype)) as mprot:
+
+        test_prototype = [
+            homogenize_prototype(
+                {
+                    "prototype_key": "testkey",
+                    "prototype_tags": [],
+                    "typeclass": "typeclasses.objects.Object",
+                    "key": "replaced_obj",
+                    "attrs": [("foo", "bar", None, ""), ("desc", "protdesc", None, "")],
+                }
+            )
+        ]
+        with mock.patch(
+            "evennia.commands.default.building.protlib.search_prototype",
+            new=mock.MagicMock(return_value=test_prototype),
+        ) as mprot:
             self.call(
                 building.CmdTypeclass(),
                 "/prototype Obj=testkey",
@@ -1008,7 +1015,7 @@ class TestBuilding(CommandTest):
                 "evennia.objects.objects.DefaultObject to "
                 "typeclasses.objects.Object.\nAll object creation hooks were "
                 "run. Attributes set before swap were not removed. Prototype "
-                "'replaced_obj' was successfully applied over the object type."
+                "'replaced_obj' was successfully applied over the object type.",
             )
             assert self.obj1.db.desc == "protdesc"
 
