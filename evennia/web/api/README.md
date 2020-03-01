@@ -1,13 +1,12 @@
 # Evennia API
 
-## What's an API?
+## Synopsis
 An API, or [Application Programming Interface][wiki-api], is a way of establishing rules
 through which external services can use your program. In web development, it's
 often that case that the 'frontend' of a web app is written in HTML and Javascript
 and communicates with the 'backend' server through an API so that it can retrieve
 information to populate web pages or process actions when users click buttons on
 a web page.
-
 
 The API contained within the web/api/ package is an implementation of the
 [Django Rest Framework][drf]. It provides tools to allow you to quickly process
@@ -24,7 +23,7 @@ that largely automate the process of serializing your in-game objects into
 JSON representations for sending them to a client, or for turning a JSON string
 into a model for updating or creating it.
 
-## What is it for?
+## Motivations For Using An API
 
 Having an API can allow you to have richer interactions with client applications. For
 example, suppose you want to allow players to send and receive in-game messages from
@@ -35,7 +34,7 @@ displays it on the page. You also provide a form to let them send messages, wher
 submit button uses AJAX to make a POST request to that endpoint, sending along the
 JSON data from the form, and then returns the response of the results. This works,
 but then a tech-savvy player might ask if they can have their own application that
-will retrieve messages periodically for their own computer. By having a [REST][REST] API that
+will retrieve messages periodically for their own computer. By having a [REST][rest] API that
 they can use, they can create client applications of their own to retrieve or change
 data.
 
@@ -88,8 +87,8 @@ a request to update the object with the specified data you pass along.
 In most cases, you won't be making API requests to the backend with python,
 but with Javascript from your frontend application.
 There are many Javascript libraries which are meant to make this process 
-easier for requests from the frontend, such as [AXIOS][AXIOS], or using 
-the native [Fetch][Fetch].
+easier for requests from the frontend, such as [AXIOS][axios], or using 
+the native [Fetch][fetch].
 
 [wiki-api]: https://en.wikipedia.org/wiki/Application_programming_interface
 [drf]: https://www.django-rest-framework.org/
@@ -97,7 +96,7 @@ the native [Fetch][Fetch].
 [crud]: https://en.wikipedia.org/wiki/Create,_read,_update_and_delete
 [serializers]: https://www.django-rest-framework.org/api-guide/serializers/
 [ajax]: https://en.wikipedia.org/wiki/Ajax_(programming)
-[REST]: https://en.wikipedia.org/wiki/Representational_state_transfer
+[rest]: https://en.wikipedia.org/wiki/Representational_state_transfer
 [requests]: https://requests.readthedocs.io/en/master/
-[AXIOS]: https://github.com/axios/axios
-[Fetch]: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+[axios]: https://github.com/axios/axios
+[fetch]: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API

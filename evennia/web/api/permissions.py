@@ -10,11 +10,11 @@ class EvenniaPermission(permissions.BasePermission):
     view, we'll check a corresponding Evennia access/lock check.
     """
     # subclass this to change these permissions
-    MINIMUM_LIST_PERMISSION = settings.REST_FRAMEWORK["DEFAULT_LIST_PERMISSION"]
-    MINIMUM_CREATE_PERMISSION = settings.REST_FRAMEWORK["DEFAULT_CREATE_PERMISSION"]
-    view_locks = settings.REST_FRAMEWORK["DEFAULT_VIEW_LOCKS"]
-    destroy_locks = settings.REST_FRAMEWORK["DEFAULT_DESTROY_LOCKS"]
-    update_locks = settings.REST_FRAMEWORK["DEFAULT_UPDATE_LOCKS"]
+    MINIMUM_LIST_PERMISSION = settings.REST_FRAMEWORK.get("DEFAULT_LIST_PERMISSION", "builder")
+    MINIMUM_CREATE_PERMISSION = settings.REST_FRAMEWORK.get("DEFAULT_CREATE_PERMISSION", "builder")
+    view_locks = settings.REST_FRAMEWORK.get("DEFAULT_VIEW_LOCKS", ["examine"])
+    destroy_locks = settings.REST_FRAMEWORK.get("DEFAULT_DESTROY_LOCKS", ["delete"])
+    update_locks = settings.REST_FRAMEWORK.get("DEFAULT_UPDATE_LOCKS", ["control", "edit"])
 
     def has_permission(self, request, view):
         """
