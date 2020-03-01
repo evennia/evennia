@@ -8,7 +8,7 @@ https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 """
 from django.db.models import Q
 from django_filters.rest_framework.filterset import FilterSet
-from django_filters.filters import CharFilter
+from django_filters.filters import CharFilter, EMPTY_VALUES
 
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
@@ -22,6 +22,10 @@ class TagTypeFilter(CharFilter):
     tag_type = None
 
     def filter(self, qs, value):
+        # if no value is specified, we don't use the filter
+        if value in EMPTY_VALUES:
+            return qs
+        # if they enter a value, we filter objects by having a tag of this type with the given name
         return qs.filter(Q(db_tags__db_tagtype=self.tag_type) & Q(db_tags__db_key=value))
 
 

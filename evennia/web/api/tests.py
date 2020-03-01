@@ -19,6 +19,7 @@ urlpatterns = [
 )
 class TestEvenniaRESTApi(EvenniaTest):
     client_class = APIClient
+    maxDiff = None
 
     def setUp(self):
         super().setUp()
@@ -96,6 +97,7 @@ class TestEvenniaRESTApi(EvenniaTest):
             with self.subTest(msg=f"Testing {view.view_name} "):
                 view_url = reverse(f"api:{view.view_name}")
                 response = self.client.get(view_url)
+                self.assertEqual(response.status_code, 200)
                 self.assertCountEqual(response.data['results'], [view.serializer(obj).data for obj in view.list])
 
     def test_create(self):
