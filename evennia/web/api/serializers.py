@@ -11,8 +11,8 @@ often django model instances, that we can use (deserialization).
 
 from rest_framework import serializers
 
-from evennia.objects.models import ObjectDB
-from evennia.accounts.models import AccountDB
+from evennia.objects.objects import DefaultObject
+from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.models import ScriptDB
 from evennia.typeclasses.attributes import Attribute
 from evennia.typeclasses.tags import Tag
@@ -32,36 +32,122 @@ class TagSerializer(serializers.ModelSerializer):
 
 class SimpleObjectDBSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ObjectDB
+        model = DefaultObject
         fields = ["id", "db_key"]
 
 
 class TypeclassSerializerMixin(object):
+    """Mixin that contains types shared by typeclasses. A note about tags, aliases, and permissions. You
+    might note that the methods and fields are defined here, but they're included explicitly in each child
+    class. What gives? It's a DRF error: serializer method fields which are inherited do not resolve correctly
+    in child classes, and as of this current version (3.11) you must have them in the child classes explicitly
+    to avoid field errors.
+    """
     db_attributes = AttributeSerializer(many=True)
-    db_tags = TagSerializer(many=True)
 
-    shared_fields = ["id", "db_key", "db_attributes", "db_tags", "db_typeclass_path"]
+    shared_fields = ["id", "db_key", "db_attributes", "db_typeclass_path", "aliases", "tags", "permissions"]
+
+    def get_tags(self, obj):
+        """
+        Serializes tags from the object's Tagshandler
+        Args:
+            obj: Typeclassed object being serialized
+
+        Returns:
+            List of TagSerializer data
+        """
+        return TagSerializer(obj.tags.get(return_tagobj=True, return_list=True), many=True).data
+
+    def get_aliases(self, obj):
+        """
+        Serializes tags from the object's Aliashandler
+        Args:
+            obj: Typeclassed object being serialized
+
+        Returns:
+            List of TagSerializer data
+        """
+        return TagSerializer(obj.aliases.get(return_tagobj=True, return_list=True), many=True).data
+
+    def get_permissions(self, obj):
+        """
+        Serializes tags from the object's Permissionshandler
+        Args:
+            obj: Typeclassed object being serialized
+
+        Returns:
+            List of TagSerializer data
+        """
+        return TagSerializer(obj.permissions.get(return_tagobj=True, return_list=True), many=True).data
 
 
 class ObjectDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
-    contents = SimpleObjectDBSerializer(source="locations_set", many=True, read_only=True)
+    contents = serializers.SerializerMethodField()
+    exits = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
+    aliases = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
 
     class Meta:
-        model = ObjectDB
-        fields = ["db_location", "db_home", "contents"] + TypeclassSerializerMixin.shared_fields
-        read_only_fields = ["id", "db_attributes", "db_tags"]
+        model = DefaultObject
+        fields = ["db_location", "db_home", "contents", "exits"] + TypeclassSerializerMixin.shared_fields
+        read_only_fields = ["id", "db_attributes"]
+
+    def get_exits(self, obj):
+        """
+        Gets exits for the object
+        Args:
+            obj: Object being serialized
+
+        Returns:
+            List of data from SimpleObjectDBSerializer
+        """
+        exits = [ob for ob in obj.contents if ob.destination]
+        return SimpleObjectDBSerializer(exits, many=True).data
+
+    def get_contents(self, obj):
+        """
+        Gets non-exits for the object
+        Args:
+            obj: Object being serialized
+
+        Returns:
+            List of data from SimpleObjectDBSerializer
+        """
+        non_exits = [ob for ob in obj.contents if not ob.destination]
+        return SimpleObjectDBSerializer(non_exits, many=True).data
 
 
-class AccountDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+class AccountSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+    """This uses the DefaultAccount object to have access to the sessions property"""
     db_key = serializers.CharField(required=False)
+    session_ids = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
+    aliases = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
+
+    def get_session_ids(self, obj):
+        """
+        Gets a list of session IDs connected to this Account
+        Args:
+            obj (DefaultAccount): Account we're grabbing sessions from
+
+        Returns:
+            List of session IDs
+        """
+        return [sess.sessid for sess in obj.sessions.all() if hasattr(sess, "sessid")]
 
     class Meta:
-        model = AccountDB
-        fields = ["username"] + TypeclassSerializerMixin.shared_fields
-        read_only_fields = ["id", "db_attributes", "db_tags"]
+        model = DefaultAccount
+        fields = ["username", "session_ids"] + TypeclassSerializerMixin.shared_fields
+        read_only_fields = ["id", "db_attributes", "db_tags", "session_ids"]
 
 
 class ScriptDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+    tags = serializers.SerializerMethodField()
+    aliases = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
+
     class Meta:
         model = ScriptDB
         fields = ["db_interval", "db_persistent", "db_start_delay",

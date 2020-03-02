@@ -17,11 +17,20 @@ class EvenniaPermission(permissions.BasePermission):
     update_locks = settings.REST_FRAMEWORK.get("DEFAULT_UPDATE_LOCKS", ["control", "edit"])
 
     def has_permission(self, request, view):
-        """
-        This method is a check that always happens first. If there's an object involved,
-        such as with retrieve, update, or delete, then the has_object_permission method
-        is also called if this returns True. If we return False, a permission denied
-        error is raised.
+        """Checks for permissions
+
+        Args:
+            request (Request): The incoming request object.
+            view (View): The django view we are checking permission for.
+
+        Returns:
+            bool: If permission is granted or not. If we return False here, a PermissionDenied
+            error will be raised from the view.
+
+        Notes:
+            This method is a check that always happens first. If there's an object involved,
+            such as with retrieve, update, or delete, then the has_object_permission method
+            is called after this, assuming this returns `True`.
         """
         # Only allow authenticated users to call the API
         if not request.user.is_authenticated:
@@ -37,17 +46,34 @@ class EvenniaPermission(permissions.BasePermission):
 
     @staticmethod
     def check_locks(obj, user, locks):
+        """Checks access for user for object with given locks
+        Args:
+            obj: Object instance we're checking
+            user (Account): User who we're checking permissions
+            locks (list): list of lockstrings
+
+        Returns:
+            bool: True if they have access, False if they don't
+        """
         return any([obj.access(user, lock) for lock in locks])
 
     def has_object_permission(self, request, view, obj):
+        """Checks object-level permissions after has_permission
+
+        Args:
+            request (Request): The incoming request object.
+            view (View): The django view we are checking permission for.
+            obj: Object we're checking object-level permissions for
+
+        Returns:
+            bool: If permission is granted or not. If we return False here, a PermissionDenied
+            error will be raised from the view.
+
+        Notes:
+            This method assumes that has_permission has already returned True. We check
+            equivalent Evennia permissions in the request.user to determine if they can
+            complete the action.
         """
-        This method assumes that has_permission has already returned True. We check
-        equivalent Evennia permissions in the request.user to determine if they can
-        complete the action. If so, we return True. Otherwise we return False, and
-        a permission denied error will be raised.
-        """
-        if request.user.is_superuser:
-            return True
         if view.action in ("list", "retrieve"):
             # access_type is based on the examine command
             return self.check_locks(obj, request.user, self.view_locks)

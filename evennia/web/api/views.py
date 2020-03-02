@@ -14,7 +14,7 @@ from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultRoom
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
-from evennia.web.api.serializers import ObjectDBSerializer, AccountDBSerializer, ScriptDBSerializer, AttributeSerializer
+from evennia.web.api.serializers import ObjectDBSerializer, AccountSerializer, ScriptDBSerializer, AttributeSerializer
 from evennia.web.api.filters import ObjectDBFilterSet, AccountDBFilterSet, ScriptDBFilterSet
 from evennia.web.api.permissions import EvenniaPermission
 
@@ -26,7 +26,8 @@ class TypeclassViewSetMixin(object):
     """
     # permission classes determine who is authorized to call the view
     permission_classes = [EvenniaPermission]
-    # the filter backend allows for retrieval views to have filter arguments passed to it
+    # the filter backend allows for retrieval views to have filter arguments passed to it,
+    # for example: mygame.com/api/objects?db_key=bob to find matches based on objects having a db_key of bob
     filter_backends = [DjangoFilterBackend]
 
     @action(detail=True, methods=["put", "post"])
@@ -93,7 +94,7 @@ class ExitViewSet(ObjectDBViewSet):
 
 class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
     """Viewset for Account objects"""
-    serializer_class = AccountDBSerializer
+    serializer_class = AccountSerializer
     queryset = AccountDB.objects.all()
     filterset_class = AccountDBFilterSet
 
