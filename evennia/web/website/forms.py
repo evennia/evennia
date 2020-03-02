@@ -4,8 +4,6 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.forms import ModelForm
 from django.utils.html import escape
 from evennia.utils import class_from_module
-from evennia.accounts.models import AccountDB
-
 from crum import get_current_request
 
 class EvenniaForm(forms.Form):
@@ -162,8 +160,8 @@ class CharacterForm(ObjectForm):
     )
 
     """
-    This is a module for removing some fields present on the django CharacterForm
-    based on permission levels. The goal is that an admin would overload this
+    Below is a module for removing some fields present on the CharacterForm
+    based on permission levels. The idea is that an admin would overload this
     CharacterForm class, add new fields to it, and then, likely, want some
     of those fields to be set/editable only by developers.
 
