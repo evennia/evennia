@@ -26,6 +26,8 @@ class TestEvenniaRESTApi(EvenniaTest):
         self.account.is_superuser = True
         self.account.save()
         self.client.force_login(self.account)
+        # scripts do not have default locks. Without them, even superuser access check fails
+        self.script.locks.add("edit: perm(Admin); examine: perm(Admin); delete: perm(Admin)")
 
     def tearDown(self):
         try:
@@ -35,21 +37,27 @@ class TestEvenniaRESTApi(EvenniaTest):
 
     def get_view_details(self, action):
         """Helper function for generating list of named tuples"""
-        View = namedtuple("View", ["view_name", "obj", "list", "serializer", "create_data"])
+        View = namedtuple("View", ["view_name", "obj", "list", "serializer", "create_data", "retrieve_data"])
         views = [
             View("object-%s" % action, self.obj1, [self.obj1, self.char1, self.exit, self.room1, self.room2, self.obj2,
                                                    self.char2], serializers.ObjectDBSerializer,
-                 {"db_key": "object-create-test-name"}),
+                 {"db_key": "object-create-test-name"},
+                 serializers.ObjectDBSerializer(self.obj1).data),
             View("character-%s" % action, self.char1, [self.char1, self.char2], serializers.ObjectDBSerializer,
-                 {"db_key": "character-create-test-name"}),
+                 {"db_key": "character-create-test-name"},
+                 serializers.ObjectDBSerializer(self.char1).data),
             View("exit-%s" % action, self.exit, [self.exit], serializers.ObjectDBSerializer,
-                 {"db_key": "exit-create-test-name"}),
+                 {"db_key": "exit-create-test-name"},
+                 serializers.ObjectDBSerializer(self.exit).data),
             View("room-%s" % action, self.room1, [self.room1, self.room2], serializers.ObjectDBSerializer,
-                 {"db_key": "room-create-test-name"}),
+                 {"db_key": "room-create-test-name"},
+                 serializers.ObjectDBSerializer(self.room1).data),
             View("script-%s" % action, self.script, [self.script], serializers.ScriptDBSerializer,
-                 {"db_key": "script-create-test-name"}),
-            View("account-%s" % action, self.account2, [self.account, self.account2], serializers.AccountDBSerializer,
-                 {"username": "account-create-test-name"}),
+                 {"db_key": "script-create-test-name"},
+                 serializers.ScriptDBSerializer(self.script).data),
+            View("account-%s" % action, self.account2, [self.account, self.account2], serializers.AccountSerializer,
+                 {"username": "account-create-test-name"},
+                 serializers.AccountSerializer(self.account2).data),
         ]
         return views
 
@@ -62,6 +70,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                 )
                 response = self.client.get(view_url)
                 self.assertEqual(response.status_code, 200)
+                self.assertDictEqual(response.data, view.retrieve_data)
 
     def test_update(self):
         views = self.get_view_details("detail")
@@ -78,6 +87,7 @@ class TestEvenniaRESTApi(EvenniaTest):
                     self.assertEqual(response.status_code, 200)
                     view.obj.refresh_from_db()
                     self.assertEqual(getattr(view.obj, field), new_key)
+                    self.assertEqual(response.data[field], new_key)
 
     def test_delete(self):
         views = self.get_view_details("detail")
