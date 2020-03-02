@@ -7,7 +7,11 @@ from django.conf import settings
 from django.contrib import admin
 from evennia.typeclasses.admin import AttributeInline, TagInline
 from evennia.objects.models import ObjectDB
+from evennia.accounts.models import AccountDB
 from django.contrib.admin.utils import flatten_fieldsets
+from evennia.objects.objects import DefaultObject, DefaultCharacter
+from evennia.utils.utils import class_from_module, get_all_cmdsets, get_all_typeclasses, mod_import
+import inspect
 
 
 class ObjectAttributeInline(AttributeInline):
@@ -28,6 +32,34 @@ class ObjectTagInline(TagInline):
 
     model = ObjectDB.db_tags.through
     related_field = "objectdb"
+
+
+class CharacterForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        if 'initial' not in kwargs:
+            kwargs['initial'] = {}
+        if 'instance' in kwargs:
+            kwargs['initial'].update({'superuser': kwargs['instance'].is_superuser})
+        super().__init__(*args, **kwargs)
+
+    class Meta(object):
+        model = ObjectDB
+        fields = "__all__"
+
+    db_account = forms.ModelChoiceField(
+        queryset=AccountDB.objects.all(),
+        label="Player",
+        help_text="The account for whom this is an in-character object",
+        required=False,
+        )
+
+    superuser = forms.BooleanField(
+        label="Superuser?",
+        required=False,
+        disabled=True,
+        help_text=("You can't change this setting here; use the Account record. "
+            "Always 'False' unless character is puppeted.")
+        )
 
 
 class ObjectCreateForm(forms.ModelForm):
@@ -55,14 +87,35 @@ class ObjectCreateForm(forms.ModelForm):
         "creating a Character you should use the typeclass defined by "
         "settings.BASE_CHARACTER_TYPECLASS or one derived from that.",
     )
-    db_cmdset_storage = forms.CharField(
+
+    #db_typeclass_path = forms.MultipleChoiceField(
+    #    label="Typeclass",
+    #    initial=settings.BASE_OBJECT_TYPECLASS,
+    #    widget=forms.Select,
+    #    choices = [(key, key) for key in sorted(get_all_typeclasses(parent=DefaultObject))],
+    #    help_text="This defines what 'type' of entity this is. This variable holds a "
+    #    "Python path to a module with a valid Evennia Typeclass. If you are "
+    #    "creating a Character you should use the typeclass defined by "
+    #    "settings.BASE_CHARACTER_TYPECLASS or one derived from that.",
+    #) # A nice option, but evennia doesn't load the gamedir, so this is missing custom classes
+
+    #db_cmdset_storage = forms.CharField(
+    #    label="CmdSet",
+    #    initial="",
+    #    required=False,
+    #    widget=forms.TextInput(attrs={"size": "78"}),
+    #    help_text="Most non-character objects don't need a cmdset"
+    #    " and can leave this field blank.",
+    #)
+
+    db_cmdset_storage = forms.MultipleChoiceField(
         label="CmdSet",
         initial="",
         required=False,
-        widget=forms.TextInput(attrs={"size": "78"}),
+        choices = [(key, key) for key in sorted(get_all_cmdsets())],
         help_text="Most non-character objects don't need a cmdset"
         " and can leave this field blank.",
-    )
+        )
     raw_id_fields = ("db_destination", "db_location", "db_home")
 
 
@@ -71,7 +124,6 @@ class ObjectEditForm(ObjectCreateForm):
     Form used for editing. Extends the create one with more fields
 
     """
-
     class Meta(object):
         fields = "__all__"
 
@@ -136,6 +188,24 @@ class ObjectDBAdmin(admin.ModelAdmin):
         ),
     )
 
+
+    character_form = CharacterForm
+    character_fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    ("db_key", "db_typeclass_path",),
+                    ("db_account", "superuser",),
+                    ("db_lock_storage",),
+                    ("db_location", "db_home",),
+                    "db_destination",
+                    "db_cmdset_storage",
+                )
+            },
+        ),
+    )
+
     def get_fieldsets(self, request, obj=None):
         """
         Return fieldsets.
@@ -146,6 +216,8 @@ class ObjectDBAdmin(admin.ModelAdmin):
         """
         if not obj:
             return self.add_fieldsets
+        elif DefaultCharacter in inspect.getmro(class_from_module(obj.db_typeclass_path)):
+            return self.character_fieldsets
         return super().get_fieldsets(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
@@ -163,6 +235,12 @@ class ObjectDBAdmin(admin.ModelAdmin):
                 {"form": self.add_form, "fields": flatten_fieldsets(self.add_fieldsets)}
             )
             defaults.update(kwargs)
+        elif DefaultCharacter in inspect.getmro(class_from_module(obj.db_typeclass_path)):
+            defaults.update(
+                {"form": self.character_form, "fields": flatten_fieldsets(self.character_fieldsets)}
+            )
+            defaults.update(kwargs)
+
         return super().get_form(request, obj, **defaults)
 
     def save_model(self, request, obj, form, change):
@@ -176,6 +254,7 @@ class ObjectDBAdmin(admin.ModelAdmin):
             change (bool): If this is a change or a new object.
 
         """
+        # obj.cmdset = something like form.cleaned_data.get('CmdSet') ? ",".join('{cmdset}'.format(cmdset=key) for key, value in get_all_cmdsets().items()),
         obj.save()
         if not change:
             # adding a new object
@@ -184,6 +263,16 @@ class ObjectDBAdmin(admin.ModelAdmin):
             obj.basetype_setup()
             obj.basetype_posthook_setup()
             obj.at_object_creation()
+        else:  # Reconnect sessions to new puppets, if they changed
+            if settings.MULTISESSION_MODE in (0, 1):
+                obj.account.db._last_puppet = obj
+                for session in obj.account.sessions.get():
+                    obj.account.at_post_login(session=session)
+            elif settings.MULTISESSION_MODE in (2,):
+                obj.account.db._playable_characters = [
+                    x for x in obj.account.db._playable_characters if x != obj
+                ]
+                obj.account.db._playable_characters.append(obj)
         obj.at_init()
 
     def response_add(self, request, obj, post_url_continue=None):

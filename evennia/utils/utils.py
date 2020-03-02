@@ -2026,7 +2026,7 @@ def get_all_typeclasses(parent=None):
         typeclasses (dict): On the form {"typeclass.path": typeclass, ...}
 
     Notes:
-        This will dynamicall retrieve all abstract django models inheriting at any distance
+        This will dynamically retrieve all abstract django models inheriting at any distance
         from the TypedObject base (aka a Typeclass) so it will work fine with any custom
         classes being added.
 
@@ -2044,8 +2044,67 @@ def get_all_typeclasses(parent=None):
             for name, typeclass in typeclasses.items()
             if inherits_from(typeclass, parent)
         }
+
     return typeclasses
 
+
+def get_all_cmdsets(parent=None, flatten=False, keys=False):
+    """
+    List available cmdsets from all available modules.
+
+    Args:
+        parent (str, optional): If given, only return cmdsets inheriting (at any distance)
+            from this parent.
+
+        flatten (bool, optional): By default, this returns nested inheritance. If given,
+            this variable returns a flat dictionary.
+
+        keys (bool, optional): If given, this returns only the keys (paths)
+
+    Returns:
+        cmdsets (dict): On the form {"cmdset.path": cmdset, ...}
+
+    Notes:
+        This will dynamically retrieve all abstract django models inheriting at any distance
+        from the CmdSet base so it will work fine with any custom classes being added.
+
+    """
+    from evennia.commands.cmdset import CmdSet
+
+    if keys:
+        flatten = True
+
+    base_cmdset = class_from_module(parent) if parent else CmdSet
+
+    cmdsets = {
+        "{}.{}".format(subclass.__module__, subclass.__name__): subclass
+        for subclass in base_cmdset.__subclasses__()
+    }
+
+    if flatten:
+        flatten_dict(cmdsets, keys)
+    return cmdsets
+
+
+def flatten_dict(data, keys=False):
+    """
+    Will unpack nested dictionaries into flat dictionaries.
+
+    Args:
+        data (dict): A nested dictionary
+
+        keys (bool): If given, will return the dict keys, instead of the values
+    Yields:
+        An unpacked dictionary
+    """
+    for k, v in data.items():
+        if isinstance(v, dict):
+            yield from flatten_dict(v, keys)
+        else:
+            if keys:
+                yield k
+            else:
+                yield v
 
 def interactive(func):
     """
