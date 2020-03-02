@@ -893,6 +893,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
     "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
+    "crum.CurrentRequestUserMiddleware",
     "evennia.web.utils.middleware.SharedLoginMiddleware",
 ]
 

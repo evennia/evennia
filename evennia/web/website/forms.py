@@ -4,7 +4,9 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.forms import ModelForm
 from django.utils.html import escape
 from evennia.utils import class_from_module
+from evennia.accounts.models import AccountDB
 
+from crum import get_current_request
 
 class EvenniaForm(forms.Form):
     """
@@ -95,7 +97,6 @@ class ObjectForm(EvenniaForm, ModelForm):
         # This lets us rename ugly db-specific keys to something more human
         labels = {"db_key": "Name"}
 
-
 class CharacterForm(ObjectForm):
     """
     This is a Django form for Evennia Character objects.
@@ -130,6 +131,9 @@ class CharacterForm(ObjectForm):
     For more on widgets, see:
     https://docs.djangoproject.com/en/1.11/ref/forms/widgets/
 
+    To set a user as a "superuser", the most powerful permission level,
+    you need to modify their record inside the Django admin. By default, this is
+    at localhost:4001/django_admin
     """
 
     class Meta:
@@ -156,6 +160,55 @@ class CharacterForm(ObjectForm):
         widget=forms.Textarea(attrs={"rows": 3}),
         help_text="A brief description of your character.",
     )
+
+    """
+    This is a module for removing some fields present on the django CharacterForm
+    based on permission levels. The goal is that an admin would overload this
+    CharacterForm class, add new fields to it, and then, likely, want some
+    of those fields to be set/editable only by developers.
+
+    To use this, create a forms.py in your mygame/web/website/ directory:
+
+    class CharacterForm(CharacterForm):
+        FILLABLE_AT = {
+            "Developer" : ("hp", ),
+            "Player" : ("db_key", "desc", ),
+            }
+
+    The dictionary keys correspond to the permission levels used by locks:
+    https://github.com/evennia/evennia/wiki/evennia.locks.lockfuncs
+
+    By default, this is in settings.py's PERMISSION_HIERARCHY and can be viewed
+    with the "access" admin command in-game.
+
+    Any fields not explicitely blocked here are createable/editable by anyone.
+    Any fields blocked with key "NOBODY" (case sensitive) are not even editable
+    by Developers; they are still editable by superusers inside the Django Admin,
+    but will never show up on the form itself.
+    """
+
+    FILLABLE_AT = {  # To match legacy defaults
+        "player": ("desc",)
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = get_current_request()
+        account = None
+
+        try:
+            account = request.user
+        except AttributeError:
+            raise AttributeError("If this isn't previously handled, something is wrong.")
+
+        for k, v in self.FILLABLE_AT.items():
+            if k == "NOBODY":
+                for field in v:
+                    self.fields.pop(field)
+            if account:
+                if k.lower() not in account.permissions.all():
+                    for field in v:
+                        self.fields.pop(field)
 
 
 class CharacterUpdateForm(CharacterForm):

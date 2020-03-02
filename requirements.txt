@@ -7,6 +7,7 @@ pytz
 django-sekizai
 inflect
 autobahn >= 17.9.3
+django-crum
 
 # try to resolve dependency issue in py3.7
 attrs >= 19.2.0
