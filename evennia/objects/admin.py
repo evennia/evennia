@@ -9,8 +9,8 @@ from evennia.typeclasses.admin import AttributeInline, TagInline
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from django.contrib.admin.utils import flatten_fieldsets
-from evennia.objects.objects import DefaultObject, DefaultCharacter
-from evennia.utils.utils import class_from_module, get_all_cmdsets, get_all_typeclasses, mod_import
+from evennia.objects.objects import DefaultCharacter
+from evennia.utils.utils import class_from_module
 import inspect
 
 
@@ -40,6 +40,10 @@ class CharacterForm(forms.ModelForm):
             kwargs['initial'] = {}
         if 'instance' in kwargs:
             kwargs['initial'].update({'superuser': kwargs['instance'].is_superuser})
+            kwargs['initial'].update({
+                'db_account': AccountDB.objects.get_account_from_uid(kwargs['instance'].db.creator_id)
+                }
+            )
         super().__init__(*args, **kwargs)
 
     class Meta(object):
@@ -49,7 +53,7 @@ class CharacterForm(forms.ModelForm):
     db_account = forms.ModelChoiceField(
         queryset=AccountDB.objects.all(),
         label="Player",
-        help_text="The account for whom this is an in-character object",
+        help_text="Who should puppet this object?",
         required=False,
         )
 
@@ -57,8 +61,7 @@ class CharacterForm(forms.ModelForm):
         label="Superuser?",
         required=False,
         disabled=True,
-        help_text=("You can't change this setting here; use the Account record. "
-            "Always 'False' unless character is puppeted.")
+        help_text="You can't change this setting here; use the Account record."
         )
 
 
@@ -78,6 +81,10 @@ class ObjectCreateForm(forms.ModelForm):
         help_text="Main identifier, like 'apple', 'strong guy', 'Elizabeth' etc. "
         "If creating a Character, check so the name is unique among characters!",
     )
+
+    # Potentially extendable (with some frontend work) to an AutoComplete or Select field
+    # choices=[(key.get("typeclass"), key.get("typeclass")) for key in ObjectDB.objects.get_typeclass_totals()],
+
     db_typeclass_path = forms.CharField(
         label="Typeclass",
         initial=settings.BASE_OBJECT_TYPECLASS,
@@ -88,34 +95,15 @@ class ObjectCreateForm(forms.ModelForm):
         "settings.BASE_CHARACTER_TYPECLASS or one derived from that.",
     )
 
-    #db_typeclass_path = forms.MultipleChoiceField(
-    #    label="Typeclass",
-    #    initial=settings.BASE_OBJECT_TYPECLASS,
-    #    widget=forms.Select,
-    #    choices = [(key, key) for key in sorted(get_all_typeclasses(parent=DefaultObject))],
-    #    help_text="This defines what 'type' of entity this is. This variable holds a "
-    #    "Python path to a module with a valid Evennia Typeclass. If you are "
-    #    "creating a Character you should use the typeclass defined by "
-    #    "settings.BASE_CHARACTER_TYPECLASS or one derived from that.",
-    #) # A nice option, but evennia doesn't load the gamedir, so this is missing custom classes
-
-    #db_cmdset_storage = forms.CharField(
-    #    label="CmdSet",
-    #    initial="",
-    #    required=False,
-    #    widget=forms.TextInput(attrs={"size": "78"}),
-    #    help_text="Most non-character objects don't need a cmdset"
-    #    " and can leave this field blank.",
-    #)
-
-    db_cmdset_storage = forms.MultipleChoiceField(
+    db_cmdset_storage = forms.CharField(
         label="CmdSet",
         initial="",
         required=False,
-        choices = [(key, key) for key in sorted(get_all_cmdsets())],
+        widget=forms.TextInput(attrs={"size": "78"}),
         help_text="Most non-character objects don't need a cmdset"
         " and can leave this field blank.",
-        )
+    )
+
     raw_id_fields = ("db_destination", "db_location", "db_home")
 
 
@@ -188,14 +176,14 @@ class ObjectDBAdmin(admin.ModelAdmin):
         ),
     )
 
-
     character_form = CharacterForm
     character_fieldsets = (
         (
             None,
             {
                 "fields": (
-                    ("db_key", "db_typeclass_path",),
+                    "db_key",
+                    "db_typeclass_path",
                     ("db_account", "superuser",),
                     ("db_lock_storage",),
                     ("db_location", "db_home",),
@@ -254,7 +242,6 @@ class ObjectDBAdmin(admin.ModelAdmin):
             change (bool): If this is a change or a new object.
 
         """
-        # obj.cmdset = something like form.cleaned_data.get('CmdSet') ? ",".join('{cmdset}'.format(cmdset=key) for key, value in get_all_cmdsets().items()),
         obj.save()
         if not change:
             # adding a new object
@@ -263,8 +250,16 @@ class ObjectDBAdmin(admin.ModelAdmin):
             obj.basetype_setup()
             obj.basetype_posthook_setup()
             obj.at_object_creation()
-        else:  # Reconnect sessions to new puppets, if they changed
+        # Reconnect sessions to new puppets
+        # if 'db_account' in form.changed_data:
+        # Note that the above fails in the edge case where you're setting the
+        # Player to the creator_id because we're manually setting initial
+        if obj.account:
             if settings.MULTISESSION_MODE in (0, 1):
+                for character in obj.account.characters:
+                    if character != obj:
+                        character.account = None  # cleanup
+                        character.save()
                 obj.account.db._last_puppet = obj
                 for session in obj.account.sessions.get():
                     obj.account.at_post_login(session=session)
