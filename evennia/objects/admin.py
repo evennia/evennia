@@ -9,7 +9,6 @@ from evennia.typeclasses.admin import AttributeInline, TagInline
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from django.contrib.admin.utils import flatten_fieldsets
-from evennia.objects.objects import DefaultCharacter
 from evennia.utils.utils import class_from_module
 import inspect
 
@@ -202,6 +201,8 @@ class ObjectDBAdmin(admin.ModelAdmin):
             request (Request): Incoming request.
             obj (ObjectDB, optional): Database object.
         """
+        from evennia.objects.objects import DefaultCharacter
+
         if not obj:
             return self.add_fieldsets
         elif DefaultCharacter in inspect.getmro(class_from_module(obj.db_typeclass_path)):
