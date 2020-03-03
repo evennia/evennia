@@ -2048,18 +2048,13 @@ def get_all_typeclasses(parent=None):
     return typeclasses
 
 
-def get_all_cmdsets(parent=None, flatten=False, keys=False):
+def get_all_cmdsets(parent=None):
     """
     List available cmdsets from all available modules.
 
     Args:
         parent (str, optional): If given, only return cmdsets inheriting (at any distance)
             from this parent.
-
-        flatten (bool, optional): By default, this returns nested inheritance. If given,
-            this variable returns a flat dictionary.
-
-        keys (bool, optional): If given, this returns only the keys (paths)
 
     Returns:
         cmdsets (dict): On the form {"cmdset.path": cmdset, ...}
@@ -2071,40 +2066,13 @@ def get_all_cmdsets(parent=None, flatten=False, keys=False):
     """
     from evennia.commands.cmdset import CmdSet
 
-    if keys:
-        flatten = True
-
     base_cmdset = class_from_module(parent) if parent else CmdSet
 
     cmdsets = {
         "{}.{}".format(subclass.__module__, subclass.__name__): subclass
         for subclass in base_cmdset.__subclasses__()
     }
-
-    if flatten:
-        flatten_dict(cmdsets, keys)
     return cmdsets
-
-
-def flatten_dict(data, keys=False):
-    """
-    Will unpack nested dictionaries into flat dictionaries.
-
-    Args:
-        data (dict): A nested dictionary
-
-        keys (bool): If given, will return the dict keys, instead of the values
-    Yields:
-        An unpacked dictionary
-    """
-    for k, v in data.items():
-        if isinstance(v, dict):
-            yield from flatten_dict(v, keys)
-        else:
-            if keys:
-                yield k
-            else:
-                yield v
 
 def interactive(func):
     """
