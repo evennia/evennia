@@ -4,6 +4,7 @@
 
 - new `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+- CmdHelp now calls self.msg() properly when used with settings.HELP_MORE disabled.
 
 ### Already in master
 
