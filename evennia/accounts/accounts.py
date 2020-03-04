@@ -828,7 +828,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         server.
 
         Args:
-            text (str, optional): text data to send
+            text (str or tuple, optional): The message to send. This
+                is treated internally like any send-command, so its
+                value can be a tuple if sending multiple arguments to
+                the `text` oob command.
             from_obj (Object or Account or list, optional): Object sending. If given, its
                 at_msg_send() hook will be called. If iterable, call on all entities.
             session (Session or list, optional): Session object or a list of
@@ -859,7 +862,13 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         kwargs["options"] = options
 
         if text is not None:
-            kwargs["text"] = to_str(text)
+            if not (isinstance(text, str) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text)
+                except Exception:
+                    text = repr(text)
+            kwargs["text"] = text
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
