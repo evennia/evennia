@@ -13,7 +13,9 @@ It is set as the NOGOAHEAD protocol_flag option.
 http://www.faqs.org/rfcs/rfc858.html
 
 """
-SUPPRESS_GA = b"\x03"
+from twisted.python.compat import _bytesChr as bchr
+
+SUPPRESS_GA = bchr(3)  # b"\x03"
 
 # default taken from telnet specification
 

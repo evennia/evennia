@@ -8,7 +8,7 @@ ability to run timers.
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from evennia.typeclasses.models import TypeclassBase
 from evennia.scripts.models import ScriptDB
 from evennia.scripts.manager import ScriptManager
@@ -209,6 +209,9 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         Step task runner. No try..except needed due to defer wrap.
 
         """
+        if not self.ndb._task:
+            # if there is no task, we have no business using this method
+            return
 
         if not self.is_valid():
             self.stop()
@@ -218,10 +221,13 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         self.at_repeat()
 
         # check repeats
-        callcount = self.ndb._task.callcount
-        maxcount = self.db_repeats
-        if maxcount > 0 and maxcount <= callcount:
-            self.stop()
+        if self.ndb._task:
+            # we need to check for the task in case stop() was called
+            # inside at_repeat() and it already went away.
+            callcount = self.ndb._task.callcount
+            maxcount = self.db_repeats
+            if maxcount > 0 and maxcount <= callcount:
+                self.stop()
 
     def _step_task(self):
         """
@@ -339,9 +345,9 @@ class DefaultScript(ScriptBase):
 
         try:
             obj = create.create_script(**kwargs)
-        except Exception as e:
+        except Exception:
+            logger.log_trace()
             errors.append("The script '%s' encountered errors and could not be created." % key)
-            logger.log_err(e)
 
         return obj, errors
 

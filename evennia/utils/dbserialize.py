@@ -28,7 +28,7 @@ except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from django.utils.safestring import SafeString, SafeBytes
+from django.utils.safestring import SafeString
 from evennia.utils.utils import uses_database, is_iter, to_str, to_bytes
 from evennia.utils import logger
 
@@ -549,7 +549,7 @@ def to_pickle(data):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
+        if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif dtype == tuple:
             return tuple(process_item(val) for val in item)
@@ -577,7 +577,7 @@ def to_pickle(data):
         except TypeError:
             return item
         except Exception:
-            logger.log_error(f"The object {item} of type {type(item)} could not be stored.")
+            logger.log_err(f"The object {item} of type {type(item)} could not be stored.")
             raise
 
     return process_item(data)
@@ -609,7 +609,7 @@ def from_pickle(data, db_obj=None):
     def process_item(item):
         """Recursive processor and identification of data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
+        if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -638,7 +638,7 @@ def from_pickle(data, db_obj=None):
     def process_tree(item, parent):
         """Recursive processor, building a parent-tree from iterable data"""
         dtype = type(item)
-        if dtype in (str, int, float, bool, bytes, SafeString, SafeBytes):
+        if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif _IS_PACKED_DBOBJ(item):
             # this must be checked before tuple
@@ -716,7 +716,7 @@ def do_pickle(data):
     try:
         return dumps(data, protocol=PICKLE_PROTOCOL)
     except Exception:
-        logger.log_error(f"Could not pickle data for storage: {data}")
+        logger.log_err(f"Could not pickle data for storage: {data}")
         raise
 
 
@@ -725,7 +725,7 @@ def do_unpickle(data):
     try:
         return loads(to_bytes(data))
     except Exception:
-        logger.log_error(f"Could not unpickle data from storage: {data}")
+        logger.log_err(f"Could not unpickle data from storage: {data}")
         raise
 
 

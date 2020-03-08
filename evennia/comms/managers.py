@@ -8,6 +8,7 @@ Comm system components.
 from django.db.models import Q
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
 from evennia.utils import logger
+from evennia.utils.utils import dbref
 
 _GA = object.__getattribute__
 _AccountDB = None
@@ -29,32 +30,6 @@ class CommError(Exception):
 #
 # helper functions
 #
-
-
-def dbref(inp, reqhash=True):
-    """
-    Valid forms of dbref (database reference number) are either a
-    string '#N' or an integer N.
-
-    Args:
-        inp (int or str): A possible dbref to check syntactically.
-        reqhash (bool): Require an initial hash `#` to accept.
-
-    Returns:
-        is_dbref (int or None): The dbref integer part if a valid
-            dbref, otherwise `None`.
-
-    """
-    if reqhash and not (isinstance(inp, str) and inp.startswith("#")):
-        return None
-    if isinstance(inp, str):
-        inp = inp.lstrip("#")
-    try:
-        if int(inp) < 0:
-            return None
-    except Exception:
-        return None
-    return inp
 
 
 def identify_object(inp):

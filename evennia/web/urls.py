@@ -6,9 +6,9 @@
 # http://diveintopython.org/regular_expressions/street_addresses.html#re.matching.2.3
 #
 
-from django.urls import path
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.conf import settings
+from django.urls import path, include
 from django.views.generic import RedirectView
 
 # Setup the root url tree from /

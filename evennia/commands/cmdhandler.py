@@ -48,7 +48,7 @@ from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
