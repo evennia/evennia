@@ -17,6 +17,7 @@ except ImportError:
 
 from evennia import settings_default
 from evennia.locks import lockfuncs
+from evennia.utils.create import create_object
 
 # ------------------------------------------------------------
 # Lock testing
@@ -179,6 +180,13 @@ class TestLockfuncs(EvenniaTest):
         self.assertEqual(False, lockfuncs.inside(self.char1, self.room2))
         self.assertEqual(True, lockfuncs.holds(self.room1, self.char1))
         self.assertEqual(False, lockfuncs.holds(self.room2, self.char1))
+        # test recursively
+        self.assertEqual(True, lockfuncs.inside_rec(self.char1, self.room1))
+        self.assertEqual(False, lockfuncs.inside_rec(self.char1, self.room2))
+        inventory_item = create_object(key="InsideTester", location=self.char1)
+        self.assertEqual(True, lockfuncs.inside_rec(inventory_item, self.room1))
+        self.assertEqual(False, lockfuncs.inside_rec(inventory_item, self.room2))
+        inventory_item.delete()
 
     def test_has_account(self):
         self.assertEqual(True, lockfuncs.has_account(self.char1, None))

@@ -6,6 +6,7 @@ All commands in Evennia inherit from the 'Command' class in this module.
 """
 import re
 import math
+import inspect
 
 from django.conf import settings
 
@@ -74,6 +75,13 @@ def _init_command(cls, **kwargs):
         cls.is_exit = False
     if not hasattr(cls, "help_category"):
         cls.help_category = "general"
+    # make sure to pick up the parent's docstring if the child class is
+    # missing one (important for auto-help)
+    if cls.__doc__ is None:
+        for parent_class in inspect.getmro(cls):
+            if parent_class.__doc__ is not None:
+                cls.__doc__ = parent_class.__doc__
+                break
     cls.help_category = cls.help_category.lower()
 
 

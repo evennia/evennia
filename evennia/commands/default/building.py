@@ -19,6 +19,7 @@ from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw
+from evennia.prototypes.menus import _format_diff_text_and_options
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -1912,8 +1913,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     Usage:
       typeclass[/switch] <object> [= typeclass.path]
-      type                     ''
-      parent                   ''
+      typeclass/prototype <object> = prototype_key
+
       typeclass/list/show [typeclass.path]
       swap - this is a shorthand for using /force/reset flags.
       update - this is a shorthand for using the /force/reload flag.
@@ -1930,9 +1931,12 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       list - show available typeclasses. Only typeclasses in modules actually
              imported or used from somewhere in the code will show up here
              (those typeclasses are still available if you know the path)
+      prototype - clean and overwrite the object with the specified
+               prototype key - effectively making a whole new object.
 
     Example:
       type button = examples.red_button.RedButton
+      type/prototype button=a red button
 
     If the typeclass_path is not given, the current object's typeclass is
     assumed.
@@ -1954,7 +1958,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     key = "typeclass"
     aliases = ["type", "parent", "swap", "update"]
-    switch_options = ("show", "examine", "update", "reset", "force", "list")
+    switch_options = ("show", "examine", "update", "reset", "force", "list", "prototype")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
 
@@ -2038,6 +2042,27 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         new_typeclass = self.rhs or obj.path
 
+        prototype = None
+        if "prototype" in self.switches:
+            key = self.rhs
+            prototype = protlib.search_prototype(key=key)
+            if len(prototype) > 1:
+                caller.msg(
+                    "More than one match for {}:\n{}".format(
+                        key, "\n".join(proto.get("prototype_key", "") for proto in prototype)
+                    )
+                )
+                return
+            elif prototype:
+                # one match
+                prototype = prototype[0]
+            else:
+                # no match
+                caller.msg("No prototype '{}' was found.".format(key))
+                return
+            new_typeclass = prototype["typeclass"]
+            self.switches.append("force")
+
         if "show" in self.switches or "examine" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
             caller.msg(string)
@@ -2070,10 +2095,33 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             hooks = "at_object_creation" if update else "all"
             old_typeclass_path = obj.typeclass_path
 
+            # special prompt for the user in cases where we want
+            # to confirm changes.
+            if "prototype" in self.switches:
+                diff, _ = spawner.prototype_diff_from_object(prototype, obj)
+                txt, options = _format_diff_text_and_options(diff, objects=[obj])
+                prompt = (
+                    "Applying prototype '%s' over '%s' will cause the follow changes:\n%s\n"
+                    % (prototype["key"], obj.name, "\n".join(txt))
+                )
+                if not reset:
+                    prompt += "\n|yWARNING:|n Use the /reset switch to apply the prototype over a blank state."
+                prompt += "\nAre you sure you want to apply these changes [yes]/no?"
+                answer = yield (prompt)
+                if answer and answer in ("no", "n"):
+                    caller.msg("Canceled: No changes were applied.")
+                    return
+
             # we let this raise exception if needed
             obj.swap_typeclass(
                 new_typeclass, clean_attributes=reset, clean_cmdsets=reset, run_start_hooks=hooks
             )
+
+            if "prototype" in self.switches:
+                modified = spawner.batch_update_objects_with_prototype(prototype, objects=[obj])
+                prototype_success = modified > 0
+                if not prototype_success:
+                    caller.msg("Prototype %s failed to apply." % prototype["key"])
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
@@ -2091,6 +2139,11 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 string += " All old attributes where deleted before the swap."
             else:
                 string += " Attributes set before swap were not removed."
+            if "prototype" in self.switches and prototype_success:
+                string += (
+                    " Prototype '%s' was successfully applied over the object type."
+                    % prototype["key"]
+                )
 
         caller.msg(string)
 
@@ -2832,8 +2885,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                reference. A puppeted object cannot be moved to None.
       loc - teleport object to the target's location instead of its contents
 
-    Teleports an object somewhere. If no object is given, you yourself
-    is teleported to the target location.
+    Teleports an object somewhere. If no object is given, you yourself are
+    teleported to the target location.
     """
 
     key = "tel"
@@ -2998,7 +3051,8 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                 ok = obj.scripts.add(self.rhs, autostart=True)
                 if not ok:
                     result.append(
-                        "\nScript %s could not be added and/or started on %s."
+                        "\nScript %s could not be added and/or started on %s "
+                        "(or it started and immediately shut down)."
                         % (self.rhs, obj.get_display_name(caller))
                     )
                 else:

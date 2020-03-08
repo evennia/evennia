@@ -95,6 +95,16 @@ INFO_DICT = {
     "webserver_internal": [],
 }
 
+try:
+    WEB_PLUGINS_MODULE = mod_import(settings.WEB_PLUGINS_MODULE)
+except ImportError:
+    WEB_PLUGINS_MODULE = None
+    INFO_DICT["errors"] = (
+        "WARNING: settings.WEB_PLUGINS_MODULE not found - "
+        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
+    )
+
+
 # -------------------------------------------------------------
 # Portal Service object
 # -------------------------------------------------------------
@@ -190,7 +200,6 @@ class Portal(object):
         self.sessions.disconnect_all()
         if _stop_server:
             self.amp_protocol.stop_server(mode="shutdown")
-
         if not _reactor_stopping:
             # shutting down the reactor will trigger another signal. We set
             # a flag to avoid loops.
@@ -379,6 +388,14 @@ if WEBSERVER_ENABLED:
                     webclientstr = "webclient-websocket%s: %s" % (w_ifacestr, port)
                 INFO_DICT["webclient"].append(webclientstr)
 
+            if WEB_PLUGINS_MODULE:
+                try:
+                    web_root = WEB_PLUGINS_MODULE.at_webproxy_root_creation(web_root)
+                except Exception as e:  # Legacy user has not added an at_webproxy_root_creation function in existing web plugins file
+                    INFO_DICT["errors"] = (
+                        "WARNING: WEB_PLUGINS_MODULE is enabled but at_webproxy_root_creation() not found - "
+                        "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
+                    )
             web_root = Website(web_root, logPath=settings.HTTP_LOG_FILE)
             web_root.is_portal = True
             proxy_service = internet.TCPServer(proxyport, web_root, interface=interface)
