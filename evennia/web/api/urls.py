@@ -28,6 +28,7 @@ from evennia.web.api.views import (
 app_name = "api"
 
 router = routers.DefaultRouter()
+router.trailing_slash = "/?"
 router.register(r'accounts', AccountDBViewSet, basename="account")
 router.register(r'objects', ObjectDBViewSet, basename="object")
 router.register(r'characters', CharacterViewSet, basename="character")
