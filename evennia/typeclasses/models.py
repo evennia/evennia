@@ -458,7 +458,7 @@ class TypedObject(SharedMemoryModel):
     # Object manipulation methods
     #
 
-    def is_typeclass(self, typeclass, exact=True):
+    def is_typeclass(self, typeclass, exact=False):
         """
         Returns true if this object has this type OR has a typeclass
         which is an subclass of the given typeclass. This operates on

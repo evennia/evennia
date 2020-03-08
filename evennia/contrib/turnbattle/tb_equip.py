@@ -218,10 +218,10 @@ def apply_damage(defender, damage):
 def at_defeat(defeated):
     """
     Announces the defeat of a fighter in combat.
-    
+
     Args:
         defeated (obj): Fighter that's been defeated.
-    
+
     Notes:
         All this does is announce a defeat message by default, but if you
         want anything else to happen to defeated fighters (like putting them
@@ -903,10 +903,10 @@ class CmdCombatHelp(CmdHelp):
 class CmdWield(Command):
     """
     Wield a weapon you are carrying
-    
+
     Usage:
       wield <weapon>
-      
+
     Select a weapon you are carrying to wield in combat. If
     you are already wielding another weapon, you will switch
     to the weapon you specify instead. Using this command in
@@ -933,7 +933,7 @@ class CmdWield(Command):
         weapon = self.caller.search(self.args, candidates=self.caller.contents)
         if not weapon:
             return
-        if not weapon.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEWeapon"):
+        if not weapon.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEWeapon", exact=True):
             self.caller.msg("That's not a weapon!")
             # Remember to update the path to the weapon typeclass if you move this module!
             return
@@ -955,10 +955,10 @@ class CmdWield(Command):
 class CmdUnwield(Command):
     """
     Stop wielding a weapon.
-    
+
     Usage:
       unwield
-      
+
     After using this command, you will stop wielding any
     weapon you are currently wielding and become unarmed.
     """
@@ -986,12 +986,12 @@ class CmdUnwield(Command):
 class CmdDon(Command):
     """
     Don armor that you are carrying
-    
+
     Usage:
       don <armor>
-      
+
     Select armor to wear in combat. You can't use this
-    command in the middle of a fight. Use the "doff" 
+    command in the middle of a fight. Use the "doff"
     command to remove any armor you are wearing.
     """
 
@@ -1012,7 +1012,7 @@ class CmdDon(Command):
         armor = self.caller.search(self.args, candidates=self.caller.contents)
         if not armor:
             return
-        if not armor.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEArmor"):
+        if not armor.is_typeclass("evennia.contrib.turnbattle.tb_equip.TBEArmor", exact=True):
             self.caller.msg("That's not armor!")
             # Remember to update the path to the armor typeclass if you move this module!
             return
@@ -1031,10 +1031,10 @@ class CmdDon(Command):
 class CmdDoff(Command):
     """
     Stop wearing armor.
-    
+
     Usage:
       doff
-      
+
     After using this command, you will stop wearing any
     armor you are currently using and become unarmored.
     You can't use this command in combat.
