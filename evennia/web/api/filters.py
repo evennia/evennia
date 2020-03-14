@@ -18,7 +18,7 @@ from evennia.scripts.models import ScriptDB
 
 def get_tag_query(tag_type: Union[str, None], key: str) -> Q:
     """
-
+    Returns a Q object for searching by tag names for typeclasses
     Args:
         tag_type(str or None): The type of tag (None, 'alias', etc)
         key (str): The name of the tag
