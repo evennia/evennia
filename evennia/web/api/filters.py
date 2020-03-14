@@ -6,6 +6,7 @@ documentation specifically regarding DRF integration.
 
 https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 """
+from typing import Union
 from django.db.models import Q
 from django_filters.rest_framework.filterset import FilterSet
 from django_filters.filters import CharFilter, EMPTY_VALUES
@@ -13,6 +14,19 @@ from django_filters.filters import CharFilter, EMPTY_VALUES
 from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
+
+
+def get_tag_query(tag_type: Union[str, None], key: str) -> Q:
+    """
+
+    Args:
+        tag_type(str or None): The type of tag (None, 'alias', etc)
+        key (str): The name of the tag
+
+    Returns:
+        A Q object that for searching by this tag type and name
+    """
+    return Q(db_tags__db_tagtype=tag_type) & Q(db_tags__db_key__iexact=key)
 
 
 class TagTypeFilter(CharFilter):
@@ -26,7 +40,7 @@ class TagTypeFilter(CharFilter):
         if value in EMPTY_VALUES:
             return qs
         # if they enter a value, we filter objects by having a tag of this type with the given name
-        return qs.filter(Q(db_tags__db_tagtype=self.tag_type) & Q(db_tags__db_key=value))
+        return qs.filter(get_tag_query(self.tag_type, value)).distinct()
 
 
 class AliasFilter(TagTypeFilter):
@@ -46,6 +60,22 @@ class BaseTypeclassFilterSet(FilterSet):
     """A parent class with filters for aliases and permissions"""
     alias = AliasFilter(lookup_expr="iexact")
     permission = PermissionFilter(lookup_expr="iexact")
+    name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_key")
+
+    def filter_name(self, queryset, name, value):
+        """
+
+        Args:
+            queryset: The queryset being filtered
+            name: The name of the field
+            value: The value passed in from GET params
+
+        Returns:
+            The filtered queryset
+        """
+        query = Q(**{f"{name}__iexact": value})
+        query |= get_tag_query("alias", value)
+        return queryset.filter(query).distinct()
 
 
 class ObjectDBFilterSet(BaseTypeclassFilterSet):
@@ -58,6 +88,8 @@ class ObjectDBFilterSet(BaseTypeclassFilterSet):
 
 class AccountDBFilterSet(BaseTypeclassFilterSet):
     """This adds filters for Account objects"""
+    name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="username")
+
     class Meta:
         model = AccountDB
         fields = SHARED_FIELDS + ["username", "db_is_connected", "db_is_bot"]
