@@ -62,7 +62,8 @@ class BaseTypeclassFilterSet(FilterSet):
     permission = PermissionFilter(lookup_expr="iexact")
     name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_key")
 
-    def filter_name(self, queryset, name, value):
+    @staticmethod
+    def filter_name(queryset, name, value):
         """
 
         Args:
