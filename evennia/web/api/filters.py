@@ -65,7 +65,7 @@ class BaseTypeclassFilterSet(FilterSet):
     @staticmethod
     def filter_name(queryset, name, value):
         """
-
+        Filters a queryset by aliases or the key of the typeclass
         Args:
             queryset: The queryset being filtered
             name: The name of the field
