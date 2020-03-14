@@ -19,9 +19,26 @@ from evennia.typeclasses.tags import Tag
 
 
 class AttributeSerializer(serializers.ModelSerializer):
+    value_display = serializers.SerializerMethodField(source="value")
+    db_value = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = Attribute
-        fields = ["db_key", "db_value", "db_category", "db_attrtype"]
+        fields = ["db_key", "db_category", "db_attrtype", "value_display", "db_value"]
+
+    @staticmethod
+    def get_value_display(obj: Attribute) -> str:
+        """
+        Gets the string display of an Attribute's value for serialization
+        Args:
+            obj: Attribute being serialized
+
+        Returns:
+            The Attribute's value in string format
+        """
+        if obj.db_strvalue:
+            return obj.db_strvalue
+        return str(obj.value)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -41,9 +58,9 @@ class TypeclassSerializerMixin(object):
     might note that the methods and fields are defined here, but they're included explicitly in each child
     class. What gives? It's a DRF error: serializer method fields which are inherited do not resolve correctly
     in child classes, and as of this current version (3.11) you must have them in the child classes explicitly
-    to avoid field errors.
+    to avoid field errors. Similarly, the child classes must contain the attribute serializer explicitly to
+    not have them render PK-related fields.
     """
-    db_attributes = AttributeSerializer(many=True)
 
     shared_fields = ["id", "db_key", "db_attributes", "db_typeclass_path", "aliases", "tags", "permissions"]
 
@@ -82,6 +99,7 @@ class TypeclassSerializerMixin(object):
 
 
 class ObjectDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+    db_attributes = AttributeSerializer(many=True, read_only=True)
     contents = serializers.SerializerMethodField()
     exits = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -120,6 +138,7 @@ class ObjectDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
 
 class AccountSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
     """This uses the DefaultAccount object to have access to the sessions property"""
+    db_attributes = AttributeSerializer(many=True, read_only=True)
     db_key = serializers.CharField(required=False)
     session_ids = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -144,6 +163,7 @@ class AccountSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
 
 
 class ScriptDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
+    db_attributes = AttributeSerializer(many=True, read_only=True)
     tags = serializers.SerializerMethodField()
     aliases = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
