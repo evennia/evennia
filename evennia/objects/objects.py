@@ -2529,10 +2529,10 @@ class DefaultExit(DefaultObject):
                 [
                     "puppet:false()",  # would be weird to puppet an exit ...
                     "traverse:all()",  # who can pass through exit by default
-                    "get:false()",
+                    "get:false()",  # noone can pick up the exit
                 ]
             )
-        )  # noone can pick up the exit
+        )
 
         # an exit should have a destination (this is replaced at creation time)
         if self.location:
