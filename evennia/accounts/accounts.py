@@ -759,7 +759,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 character_typeclass = kwargs.get(
                     "character_typeclass", settings.BASE_CHARACTER_TYPECLASS
                 )
-                character_home = kwargs.get("home")
+                character_home = kwargs.get("home", settings.START_LOCATION)
                 Character = class_from_module(character_typeclass)
 
                 # Create the character
