@@ -52,6 +52,8 @@ without arguments starts a full interactive Python console.
   fail e.g. for your inventory objs (since their loc is you), whereas this will pass.
 - RPSystem contrib's CmdRecog will now list all recogs if no arg is given. Also multiple
   bugfixes.
+- Remove `dummy@example.com` as a default account email when unset, a string is no longer 
+  required by Django.
 
 
 ## Evennia 0.9 (2018-2019)
