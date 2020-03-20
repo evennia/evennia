@@ -486,9 +486,8 @@ def create_account(
 
     Args:
         key (str): The account's name. This should be unique.
-        email (str): Email on valid addr@addr.domain form. This is
-            technically required but if set to `None`, an email of
-            `dummy@example.com` will be used as a placeholder.
+        email (str or None): Email on valid addr@addr.domain form. If 
+            the empty string, will be set to None. 
         password (str): Password in cleartext.
 
     Kwargs:
@@ -532,7 +531,7 @@ def create_account(
     # correctly when each object is recovered).
 
     if not email:
-        email = "dummy@example.com"
+        email = None
     if _AccountDB.objects.filter(username__iexact=key):
         raise ValueError("An Account with the name '%s' already exists." % key)
 
