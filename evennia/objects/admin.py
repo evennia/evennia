@@ -35,12 +35,15 @@ class ObjectTagInline(TagInline):
 
 class CharacterForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        if 'initial' not in kwargs:
-            kwargs['initial'] = {}
-        if 'instance' in kwargs:
-            kwargs['initial'].update({'superuser': kwargs['instance'].is_superuser})
-            kwargs['initial'].update({
-                'db_account': AccountDB.objects.get_account_from_uid(kwargs['instance'].db.creator_id)
+        if "initial" not in kwargs:
+            kwargs["initial"] = {}
+        if "instance" in kwargs:
+            kwargs["initial"].update({"superuser": kwargs["instance"].is_superuser})
+            kwargs["initial"].update(
+                {
+                    "db_account": AccountDB.objects.get_account_from_uid(
+                        kwargs["instance"].db.creator_id
+                    )
                 }
             )
         super().__init__(*args, **kwargs)
@@ -54,14 +57,14 @@ class CharacterForm(forms.ModelForm):
         label="Player",
         help_text="Who should puppet this object?",
         required=False,
-        )
+    )
 
     superuser = forms.BooleanField(
         label="Superuser?",
         required=False,
         disabled=True,
-        help_text="You can't change this setting here; use the Account record."
-        )
+        help_text="You can't change this setting here; use the Account record.",
+    )
 
 
 class ObjectCreateForm(forms.ModelForm):
@@ -111,6 +114,7 @@ class ObjectEditForm(ObjectCreateForm):
     Form used for editing. Extends the create one with more fields
 
     """
+
     class Meta(object):
         fields = "__all__"
 
@@ -218,6 +222,8 @@ class ObjectDBAdmin(admin.ModelAdmin):
             obj (Object, optional): Database object.
 
         """
+        from evennia.objects.objects import DefaultCharacter
+
         defaults = {}
         if obj is None:
             defaults.update(
