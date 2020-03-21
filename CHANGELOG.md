@@ -4,6 +4,7 @@
 
 - new `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+- REST API allows you external access to db objects through HTTP requests (Tehom)
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
