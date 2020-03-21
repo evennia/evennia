@@ -573,7 +573,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 for parent in (parent for parent in parents if hasattr(parent, "path")):
                     query = query | Q(db_typeclass_path__exact=parent.path)
         # actually query the database
-        return self.filter(query)
+        return super().filter(query)
 
 
 class TypeclassManager(TypedObjectManager):
