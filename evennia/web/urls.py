@@ -6,6 +6,8 @@
 # http://diveintopython.org/regular_expressions/street_addresses.html#re.matching.2.3
 #
 
+from django.conf.urls import url
+from django.conf import settings
 from django.urls import path, include
 from django.views.generic import RedirectView
 
@@ -20,3 +22,6 @@ urlpatterns = [
     # favicon
     path("favicon.ico", RedirectView.as_view(url="/media/images/favicon.ico", permanent=False)),
 ]
+
+if settings.REST_API_ENABLED:
+    urlpatterns += [url(r'^api/', include("evennia.web.api.urls", namespace="api"))]
