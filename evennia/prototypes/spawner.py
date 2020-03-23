@@ -322,9 +322,9 @@ def prototype_from_object(obj):
     return prot
 
 
-def prototype_diff(prototype1, prototype2, maxdepth=2):
+def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False):
     """
-    A 'detailed' diff specifies differences down to individual sub-sectiions
+    A 'detailed' diff specifies differences down to individual sub-sections
     of the prototype, like individual attributes, permissions etc. It is used
     by the menu to allow a user to customize what should be kept.
 
@@ -334,6 +334,8 @@ def prototype_diff(prototype1, prototype2, maxdepth=2):
         maxdepth (int, optional): The maximum depth into the diff we go before treating the elements
             of iterables as individual entities to compare. This is important since a single
             attr/tag (for example) are represented by a tuple.
+        homogenize (bool, optional): Auto-homogenize both prototypes for the best comparison.
+            This is most useful for displaying.
 
     Returns:
         diff (dict): A structure detailing how to convert prototype1 to prototype2. All
@@ -350,7 +352,10 @@ def prototype_diff(prototype1, prototype2, maxdepth=2):
         old_type = type(old)
         new_type = type(new)
 
-        if old_type != new_type:
+        if old_type == new_type and not (old and new):
+            # both old and new are unset, like [] or None
+            return (old, new, "KEEP")
+        elif old_type != new_type:
             if old and not new:
                 if depth < maxdepth and old_type == dict:
                     return {key: (part, None, "REMOVE") for key, part in old.items()}
@@ -387,7 +392,10 @@ def prototype_diff(prototype1, prototype2, maxdepth=2):
         else:
             return (old, new, "KEEP")
 
-    diff = _recursive_diff(prototype1, prototype2)
+    prot1 = protlib.homogenize_prototype(prototype1) if homogenize else prototype1
+    prot2 = protlib.homogenize_prototype(prototype2) if homogenize else prototype2
+
+    diff = _recursive_diff(prot1, prot2)
 
     return diff
 
@@ -490,6 +498,80 @@ def prototype_diff_from_object(prototype, obj):
     return diff, obj_prototype
 
 
+def format_diff(diff, minimal=True):
+    """
+    Reformat a diff for presentation. This is a shortened version
+    of the olc _format_diff_text_and_options without the options.
+
+    Args:
+        diff (dict): A diff as produced by `prototype_diff`.
+        minimal (bool, optional): Only show changes (remove KEEPs)
+
+    Returns:
+        texts (str): The formatted text.
+
+    """
+    valid_instructions = ("KEEP", "REMOVE", "ADD", "UPDATE")
+
+    def _visualize(obj, rootname, get_name=False):
+        if is_iter(obj):
+            if not obj:
+                return str(obj)
+            if get_name:
+                return obj[0] if obj[0] else "<unset>"
+            if rootname == "attrs":
+                return "{} |w=|n {} |w(category:|n |n{}|w, locks:|n {}|w)|n".format(*obj)
+            elif rootname == "tags":
+                return "{} |w(category:|n {}|w)|n".format(obj[0], obj[1])
+        return "{}".format(obj)
+
+    def _parse_diffpart(diffpart, rootname):
+        typ = type(diffpart)
+        texts = []
+        if typ == tuple and len(diffpart) == 3 and diffpart[2] in valid_instructions:
+            old, new, instruction = diffpart
+            if instruction == "KEEP":
+                if not minimal:
+                    texts.append("   |gKEEP|n: {old}".format(old=_visualize(old, rootname)))
+            elif instruction == "ADD":
+                texts.append("   |yADD|n: {new}".format(new=_visualize(new, rootname)))
+            elif instruction == "REMOVE" and not new:
+                texts.append("   |rREMOVE|n: {old}".format(old=_visualize(old, rootname)))
+            else:
+                vold = _visualize(old, rootname)
+                vnew = _visualize(new, rootname)
+                vsep = "" if len(vold) < 78 else "\n"
+                vinst = "   |rREMOVE|n" if instruction == "REMOVE" else "|y{}|n".format(instruction)
+                varrow = "|r->|n" if instruction == "REMOVE" else "|y->|n"
+                texts.append(
+                    "   {inst}|W:|n {old} |W{varrow}|n{sep} {new}".format(
+                        inst=vinst, old=vold, varrow=varrow, sep=vsep, new=vnew
+                    )
+                )
+        else:
+            for key in sorted(list(diffpart.keys())):
+                subdiffpart = diffpart[key]
+                text = _parse_diffpart(subdiffpart, rootname)
+                texts.extend(text)
+        return texts
+
+    texts = []
+
+    for root_key in sorted(diff):
+        diffpart = diff[root_key]
+        text = _parse_diffpart(diffpart, root_key)
+        if text or not minimal:
+            heading = "- |w{}:|n\n".format(root_key)
+            if text:
+                text = [heading + text[0]] + text[1:]
+            else:
+                text = [heading]
+
+            texts.extend(text)
+
+    return "\n ".join(line for line in texts if line)
+
+
 def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
     """
     Update existing objects with the latest version of the prototype.
@@ -525,15 +607,13 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
 
     # make sure the diff is flattened
     diff = flatten_diff(diff)
+
     changed = 0
     for obj in objects:
         do_save = False
 
         old_prot_key = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
         old_prot_key = old_prot_key[0] if old_prot_key else None
-        if prototype_key != old_prot_key:
-            obj.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
-            obj.tags.add(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
 
         for key, directive in diff.items():
             if directive in ("UPDATE", "REPLACE"):
@@ -623,6 +703,11 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
                     pass
                 else:
                     obj.attributes.remove(key)
+
+        # we must always make sure to re-add the prototype tag
+        obj.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
+        obj.tags.add(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+
         if do_save:
             changed += 1
             obj.save()
@@ -707,7 +792,7 @@ def spawn(*prototypes, **kwargs):
     Args:
         prototypes (str or dict): Each argument should either be a
             prototype_key (will be used to find the prototype) or a full prototype
-            dictionary. These will be batched-spawned as one object each. 
+            dictionary. These will be batched-spawned as one object each.
     Kwargs:
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
