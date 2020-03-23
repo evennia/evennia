@@ -56,6 +56,8 @@ _PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 PROT_FUNCS = {}
 
+_PROTOTYPE_FALLBACK_LOCK = "spawn:all();edit:perm(Admin)"
+
 
 class PermissionError(RuntimeError):
     pass
@@ -84,7 +86,18 @@ def homogenize_prototype(prototype, custom_keys=None):
             homogenizations like adding missing prototype_keys and setting a default typeclass.
 
     """
+    if not prototype or not isinstance(prototype, dict):
+        return {}
+
     reserved = _PROTOTYPE_RESERVED_KEYS + (custom_keys or ())
+
+    # correct cases of setting None for certain values
+    for protkey in prototype:
+        if prototype[protkey] is None:
+            if protkey in ("attrs", "tags", "prototype_tags"):
+                prototype[protkey] = []
+            elif protkey in ("prototype_key", "prototype_desc"):
+                prototype[protkey] = ""
 
     attrs = list(prototype.get("attrs", []))  # break reference
     tags = make_iter(prototype.get("tags", []))
@@ -111,12 +124,14 @@ def homogenize_prototype(prototype, custom_keys=None):
 
     # add required missing parts that had defaults before
 
-    if "prototype_key" not in prototype:
+    homogenized["prototype_key"] = homogenized.get("prototype_key",
         # assign a random hash as key
-        homogenized["prototype_key"] = "prototype-{}".format(
-            hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:7]
-        )
-
+        "prototype-{}".format(
+            hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:7]))
+    homogenized["prototype_tags"] = homogenized.get("prototype_tags", [])
+    homogenized["prototype_locks"] = homogenized.get(
+        "prototype_lock", _PROTOTYPE_FALLBACK_LOCK)
+    homogenized["prototype_desc"] = homogenized.get("prototype_desc", "")
     if "typeclass" not in prototype and "prototype_parent" not in prototype:
         homogenized["typeclass"] = settings.BASE_OBJECT_TYPECLASS
 
@@ -230,7 +245,7 @@ def save_prototype(prototype):
         "prototype_desc", prototype.get("prototype_desc", "")
     )
     prototype_locks = in_prototype.get(
-        "prototype_locks", prototype.get("prototype_locks", "spawn:all();edit:perm(Admin)")
+        "prototype_locks", prototype.get("prototype_locks", _PROTOTYPE_FALLBACK_LOCK)
     )
     is_valid, err = validate_lockstring(prototype_locks)
     if not is_valid:
