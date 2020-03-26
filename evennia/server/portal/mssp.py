@@ -12,10 +12,11 @@ active players and so on.
 """
 from django.conf import settings
 from evennia.utils import utils
+from twisted.python.compat import _bytesChr as bchr
 
-MSSP = b"\x46"
-MSSP_VAR = b"\x01"
-MSSP_VAL = b"\x02"
+MSSP = bchr(70)  # b"\x46"
+MSSP_VAR = bchr(1)  # b"\x01"
+MSSP_VAL = bchr(2)  # b"\x02"
 
 # try to get the customized mssp info, if it exists.
 MSSPTable_CUSTOM = utils.variable_from_module(settings.MSSP_META_MODULE, "MSSPTable", default={})
@@ -86,7 +87,7 @@ class Mssp(object):
             "PLAYERS": self.get_player_count,
             "UPTIME": self.get_uptime,
             "PORT": list(
-                reversed(settings.TELNET_PORTS)
+                str(port) for port in reversed(settings.TELNET_PORTS)
             ),  # most important port should be last in list
             # Evennia auto-filled
             "CRAWL DELAY": "-1",
@@ -119,10 +120,15 @@ class Mssp(object):
             if utils.is_iter(value):
                 for partval in value:
                     varlist += (
-                        MSSP_VAR + bytes(variable, "utf-8") + MSSP_VAL + bytes(partval, "utf-8")
+                        MSSP_VAR
+                        + bytes(str(variable), "utf-8")
+                        + MSSP_VAL
+                        + bytes(str(partval), "utf-8")
                     )
             else:
-                varlist += MSSP_VAR + bytes(variable, "utf-8") + MSSP_VAL + bytes(value, "utf-8")
+                varlist += (
+                    MSSP_VAR + bytes(str(variable), "utf-8") + MSSP_VAL + bytes(str(value), "utf-8")
+                )
 
         # send to crawler by subnegotiation
         self.protocol.requestNegotiation(MSSP, varlist)

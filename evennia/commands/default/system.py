@@ -23,6 +23,7 @@ from evennia.accounts.models import AccountDB
 from evennia.utils import logger, utils, gametime, create, search
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
+from evennia.utils.evmore import EvMore
 from evennia.utils.utils import crop, class_from_module
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -232,6 +233,10 @@ def _run_code_snippet(
 
     if ret is None:
         return
+    elif isinstance(ret, tuple):
+        # we must convert here to allow msg to pass it (a tuple is confused
+        # with a outputfunc structure)
+        ret = str(ret)
 
     for session in sessions:
         try:
@@ -284,8 +289,6 @@ class EvenniaPythonConsole(code.InteractiveConsole):
         result = None
         try:
             result = super().push(line)
-        except SystemExit:
-            pass
         finally:
             sys.stdout = old_stdout
             sys.stderr = old_stderr
@@ -301,6 +304,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
       py/edit
       py/time <cmd>
       py/clientraw <cmd>
+      py/noecho
 
     Switches:
       time - output an approximate execution time for <cmd>
@@ -308,6 +312,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
       clientraw - turn off all client-specific escaping. Note that this may
         lead to different output depending on prototocol (such as angular brackets
         being parsed as HTML in the webclient but not in telnet clients)
+      noecho - in Python console mode, turn off the input echo (e.g. if your client
+        does this for you already)
 
     Without argument, open a Python console in-game. This is a full console,
     accepting multi-line Python code for testing and debugging. Type `exit()` to
@@ -339,7 +345,7 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
     key = "py"
     aliases = ["!"]
-    switch_options = ("time", "edit", "clientraw")
+    switch_options = ("time", "edit", "clientraw", "noecho")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
 
@@ -348,6 +354,8 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
         caller = self.caller
         pycode = self.args
+
+        noecho = "noecho" in self.switches
 
         if "edit" in self.switches:
             caller.db._py_measure_time = "time" in self.switches
@@ -367,15 +375,26 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
             # Run in interactive mode
             console = EvenniaPythonConsole(self.caller)
             banner = (
-                f"|gPython {sys.version} on {sys.platform}\n"
-                "Evennia interactive console mode - type 'exit()' to leave.|n"
+                "|gEvennia Interactive Python mode{echomode}\n"
+                "Python {version} on {platform}".format(
+                    echomode=" (no echoing of prompts)" if noecho else "",
+                    version=sys.version,
+                    platform=sys.platform,
+                )
             )
             self.msg(banner)
             line = ""
-            prompt = ">>>"
+            main_prompt = "|x[py mode - quit() to exit]|n"
+            prompt = main_prompt
             while line.lower() not in ("exit", "exit()"):
-                line = yield (prompt)
-                prompt = "..." if console.push(line) else ">>>"
+                try:
+                    line = yield (prompt)
+                    if noecho:
+                        prompt = "..." if console.push(line) else main_prompt
+                    else:
+                        prompt = line if console.push(line) else f"{line}\n{main_prompt}"
+                except SystemExit:
+                    break
             self.msg("|gClosing the Python console.|n")
             return
 
@@ -409,16 +428,19 @@ def format_script_list(scripts):
         align="r",
         border="tablecols",
     )
+
     for script in scripts:
+
         nextrep = script.time_until_next_repeat()
         if nextrep is None:
-            nextrep = "PAUS" if script.db._paused_time else "--"
+            nextrep = "PAUSED" if script.db._paused_time else "--"
         else:
             nextrep = "%ss" % nextrep
 
         maxrepeat = script.repeats
+        remaining = script.remaining_repeats() or 0
         if maxrepeat:
-            rept = "%i/%i" % (maxrepeat - script.remaining_repeats(), maxrepeat)
+            rept = "%i/%i" % (maxrepeat - remaining, maxrepeat)
         else:
             rept = "-/-"
 
@@ -433,6 +455,7 @@ def format_script_list(scripts):
             script.typeclass_path.rsplit(".", 1)[-1],
             crop(script.desc, width=20),
         )
+
     return "%s" % table
 
 
@@ -527,7 +550,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
         else:
             # No stopping or validation. We just want to view things.
             string = format_script_list(scripts)
-        caller.msg(string)
+        EvMore(caller, string)
 
 
 class CmdObjects(COMMAND_DEFAULT_CLASS):
@@ -592,9 +615,13 @@ class CmdObjects(COMMAND_DEFAULT_CLASS):
             "|wtypeclass|n", "|wcount|n", "|w%|n", border="table", align="l"
         )
         typetable.align = "l"
-        dbtotals = ObjectDB.objects.object_totals()
-        for path, count in dbtotals.items():
-            typetable.add_row(path, count, "%.2f" % ((float(count) / nobjs) * 100))
+        dbtotals = ObjectDB.objects.get_typeclass_totals()
+        for stat in dbtotals:
+            typetable.add_row(
+                stat.get("typeclass", "<error>"),
+                stat.get("count", -1),
+                "%.2f" % stat.get("percent", -1),
+            )
 
         # last N table
         objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim) :]

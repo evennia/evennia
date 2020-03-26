@@ -39,16 +39,14 @@ SERVERNAME = "testing_mygame"
 # Testing database types
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'evennia',
-        'USER': 'evennia',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',    # use default
-        'TEST': {
-            'NAME': 'default'
-        }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "evennia",
+        "USER": "evennia",
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "",  # use default
+        "TEST": {"NAME": "default"},
     }
 }
 

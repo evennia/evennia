@@ -1235,7 +1235,7 @@ def _attr_select(caller, attrstr):
 
     attr_tup = _get_tup_by_attrname(caller, attrname)
     if attr_tup:
-        return "node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"}
+        return ("node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"})
     else:
         caller.msg("Attribute not found.")
         return "node_attrs"
@@ -1260,7 +1260,7 @@ def _attrs_actions(caller, raw_inp, **kwargs):
 
     if action and attr_tup:
         if action == "examine":
-            return "node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"}
+            return ("node_examine_entity", {"text": _display_attribute(attr_tup), "back": "attrs"})
         elif action == "remove":
             res = _add_attr(caller, attrname, delete=True)
             caller.msg(res)
@@ -1439,7 +1439,7 @@ def _tags_actions(caller, raw_inp, **kwargs):
 
     if tag_tup:
         if action == "examine":
-            return "node_examine_entity", {"text": _display_tag(tag_tup), "back": "tags"}
+            return ("node_examine_entity", {"text": _display_tag(tag_tup), "back": "tags"})
         elif action == "remove":
             res = _add_tag(caller, tagname, delete=True)
             caller.msg(res)
@@ -1510,7 +1510,7 @@ def _locks_display(caller, lock):
 
 
 def _lock_select(caller, lockstr):
-    return "node_examine_entity", {"text": _locks_display(caller, lockstr), "back": "locks"}
+    return ("node_examine_entity", {"text": _locks_display(caller, lockstr), "back": "locks"})
 
 
 def _lock_add(caller, lock, **kwargs):
@@ -1552,7 +1552,7 @@ def _locks_actions(caller, raw_inp, **kwargs):
 
     if lock:
         if action == "examine":
-            return "node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"}
+            return ("node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"})
         elif action == "remove":
             ret = _lock_add(caller, lock, delete=True)
             caller.msg(ret)
@@ -1645,7 +1645,10 @@ def _display_perm(caller, permission, only_hierarchy=False):
 
 
 def _permission_select(caller, permission, **kwargs):
-    return "node_examine_entity", {"text": _display_perm(caller, permission), "back": "permissions"}
+    return (
+        "node_examine_entity",
+        {"text": _display_perm(caller, permission), "back": "permissions"},
+    )
 
 
 def _add_perm(caller, perm, **kwargs):
@@ -2051,7 +2054,7 @@ def _prototype_locks_actions(caller, raw_inp, **kwargs):
 
     if lock:
         if action == "examine":
-            return "node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"}
+            return ("node_examine_entity", {"text": _locks_display(caller, lock), "back": "locks"})
         elif action == "remove":
             ret = _prototype_lock_add(caller, lock.strip(), delete=True)
             caller.msg(ret)

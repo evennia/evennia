@@ -235,17 +235,23 @@ class AttributeHandler(object):
         # full cache was run on all attributes
         self._cache_complete = False
 
-    def _fullcache(self):
-        """Cache all attributes of this object"""
+    def _query_all(self):
+        "Fetch all Attributes on this object"
         query = {
             "%s__id" % self._model: self._objid,
             "attribute__db_model__iexact": self._model,
             "attribute__db_attrtype": self._attrtype,
         }
-        attrs = [
+        return [
             conn.attribute
             for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
         ]
+
+    def _fullcache(self):
+        """Cache all attributes of this object"""
+        if not _TYPECLASS_AGGRESSIVE_CACHE:
+            return
+        attrs = self._query_all()
         self._cache = dict(
             (
                 "%s-%s"
@@ -298,7 +304,7 @@ class AttributeHandler(object):
                 attr = None
                 cachefound = False
                 del self._cache[cachekey]
-            if cachefound:
+            if cachefound and _TYPECLASS_AGGRESSIVE_CACHE:
                 if attr:
                     return [attr]  # return cached entity
                 else:
@@ -316,13 +322,15 @@ class AttributeHandler(object):
                 conn = getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
                 if conn:
                     attr = conn[0].attribute
-                    self._cache[cachekey] = attr
+                    if _TYPECLASS_AGGRESSIVE_CACHE:
+                        self._cache[cachekey] = attr
                     return [attr] if attr.pk else []
                 else:
                     # There is no such attribute. We will explicitly save that
                     # in our cache to avoid firing another query if we try to
                     # retrieve that (non-existent) attribute again.
-                    self._cache[cachekey] = None
+                    if _TYPECLASS_AGGRESSIVE_CACHE:
+                        self._cache[cachekey] = None
                     return []
         else:
             # only category given (even if it's None) - we can't
@@ -345,12 +353,13 @@ class AttributeHandler(object):
                         **query
                     )
                 ]
-                for attr in attrs:
-                    if attr.pk:
-                        cachekey = "%s-%s" % (attr.db_key, category)
-                        self._cache[cachekey] = attr
-                # mark category cache as up-to-date
-                self._catcache[catkey] = True
+                if _TYPECLASS_AGGRESSIVE_CACHE:
+                    for attr in attrs:
+                        if attr.pk:
+                            cachekey = "%s-%s" % (attr.db_key, category)
+                            self._cache[cachekey] = attr
+                    # mark category cache as up-to-date
+                    self._catcache[catkey] = True
                 return attrs
 
     def _setcache(self, key, category, attr_obj):
@@ -363,6 +372,8 @@ class AttributeHandler(object):
             attr_obj (Attribute): The newly saved attribute
 
         """
+        if not _TYPECLASS_AGGRESSIVE_CACHE:
+            return
         if not key:  # don't allow an empty key in cache
             return
         cachekey = "%s-%s" % (key, category)
@@ -769,9 +780,13 @@ class AttributeHandler(object):
                 their values!) in the handler.
 
         """
-        if not self._cache_complete:
-            self._fullcache()
-        attrs = sorted([attr for attr in self._cache.values() if attr], key=lambda o: o.id)
+        if _TYPECLASS_AGGRESSIVE_CACHE:
+            if not self._cache_complete:
+                self._fullcache()
+            attrs = sorted([attr for attr in self._cache.values() if attr], key=lambda o: o.id)
+        else:
+            attrs = sorted([attr for attr in self._query_all() if attr], key=lambda o: o.id)
+
         if accessing_obj:
             return [
                 attr

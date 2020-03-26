@@ -31,7 +31,7 @@ from evennia.utils.utils import (
     list_to_string,
     to_str,
 )
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -341,8 +341,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         key = kwargs.get("key", self.key)
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
-        plural = _INFLECT.plural(key, 2)
-        plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
+        try:
+            plural = _INFLECT.plural(key, 2)
+            plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
+        except IndexError:
+            # this is raised by inflect if the input is not a proper noun
+            plural = key
         singular = _INFLECT.an(key)
         if not self.aliases.get(plural, category="plural_key"):
             # we need to wipe any old plurals/an/a in case key changed in the interrim
@@ -2062,9 +2066,6 @@ class DefaultCharacter(DefaultObject):
         # Set the supplied key as the name of the intended object
         kwargs["key"] = key
 
-        # Get home for character
-        kwargs["home"] = ObjectDB.objects.get_id(kwargs.get("home", settings.DEFAULT_HOME))
-
         # Get permissions
         kwargs["permissions"] = kwargs.get("permissions", settings.PERMISSION_ACCOUNT_DEFAULT)
 
@@ -2076,9 +2077,10 @@ class DefaultCharacter(DefaultObject):
 
         try:
             # Check to make sure account does not have too many chars
-            if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                errors.append("There are too many characters associated with this account.")
-                return obj, errors
+            if account:
+                if len(account.characters) >= settings.MAX_NR_CHARACTERS:
+                    errors.append("There are too many characters associated with this account.")
+                    return obj, errors
 
             # Create the Character
             obj = create.create_object(**kwargs)
@@ -2524,10 +2526,10 @@ class DefaultExit(DefaultObject):
                 [
                     "puppet:false()",  # would be weird to puppet an exit ...
                     "traverse:all()",  # who can pass through exit by default
-                    "get:false()",
+                    "get:false()",  # noone can pick up the exit
                 ]
             )
-        )  # noone can pick up the exit
+        )
 
         # an exit should have a destination (this is replaced at creation time)
         if self.location:

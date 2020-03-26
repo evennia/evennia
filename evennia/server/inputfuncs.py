@@ -576,8 +576,7 @@ def msdp_list(session, *args, **kwargs):
         fieldnames = [tup[1] for tup in monitor_infos]
         session.msg(reported_variables=(fieldnames, {}))
     if "sendable_variables" in args_lower:
-        # no default sendable variables
-        session.msg(sendable_variables=([], {}))
+        session.msg(sendable_variables=(_monitorable, {}))
 
 
 def msdp_report(session, *args, **kwargs):
@@ -595,6 +594,17 @@ def msdp_unreport(session, *args, **kwargs):
 
     """
     unmonitor(session, *args, **kwargs)
+
+
+def msdp_send(session, *args, **kwargs):
+    """
+    MSDP SEND command
+    """
+    out = {}
+    for varname in args:
+        if varname.lower() in _monitorable:
+            out[varname] = _monitorable[varname.lower()]
+    session.msg(send=((), out))
 
 
 # client specific

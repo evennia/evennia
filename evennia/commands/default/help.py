@@ -79,7 +79,7 @@ class CmdHelp(Command):
                 evmore.msg(self.caller, text, session=self.session)
                 return
 
-        self.msg((text, {"type": "help"}))
+        self.msg(text=(text, {"type": "help"}))
 
     @staticmethod
     def format_help_entry(title, help_text, aliases=None, suggested=None):
@@ -376,7 +376,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
             self.msg("You have to define a topic!")
             return
         topicstrlist = topicstr.split(";")
-        topicstr, aliases = topicstrlist[0], topicstrlist[1:] if len(topicstr) > 1 else []
+        topicstr, aliases = (topicstrlist[0], topicstrlist[1:] if len(topicstr) > 1 else [])
         aliastxt = ("(aliases: %s)" % ", ".join(aliases)) if aliases else ""
         old_entry = None
 

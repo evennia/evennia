@@ -61,3 +61,12 @@ class SharedLoginMiddleware(object):
                     login(request, account)
                 except AttributeError:
                     logger.log_trace()
+
+        if csession.get("webclient_authenticated_uid", None):
+            # set a nonce to prevent the webclient from erasing the webclient_authenticated_uid value
+            csession["webclient_authenticated_nonce"] = (
+                csession.get("webclient_authenticated_nonce", 0) + 1
+            )
+            # wrap around to prevent integer overflows
+            if csession["webclient_authenticated_nonce"] > 32:
+                csession["webclient_authenticated_nonce"] = 0

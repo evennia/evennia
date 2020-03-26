@@ -28,21 +28,23 @@ header where applicable.
 import re
 import json
 from evennia.utils.utils import is_iter
-
-# MSDP-relevant telnet cmd/opt-codes
-MSDP = b"\x45"
-MSDP_VAR = b"\x01"  # ^A
-MSDP_VAL = b"\x02"  # ^B
-MSDP_TABLE_OPEN = b"\x03"  # ^C
-MSDP_TABLE_CLOSE = b"\x04"  # ^D
-MSDP_ARRAY_OPEN = b"\x05"  # ^E
-MSDP_ARRAY_CLOSE = b"\x06"  # ^F
-
-# GMCP
-GMCP = b"\xc9"
+from twisted.python.compat import _bytesChr as bchr
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
+
+# MSDP-relevant telnet cmd/opt-codes
+MSDP = bchr(69)
+MSDP_VAR = bchr(1)
+MSDP_VAL = bchr(2)
+MSDP_TABLE_OPEN = bchr(3)
+MSDP_TABLE_CLOSE = bchr(4)
+
+MSDP_ARRAY_OPEN = bchr(5)
+MSDP_ARRAY_CLOSE = bchr(6)
+
+# GMCP
+GMCP = bchr(201)
 
 
 # pre-compiled regexes
@@ -168,7 +170,7 @@ class TelnetOOB(object):
 
         """
         msdp_cmdname = "{msdp_var}{msdp_cmdname}{msdp_val}".format(
-            msdp_var=MSDP_VAR, msdp_cmdname=cmdname, msdp_val=MSDP_VAL
+            msdp_var=MSDP_VAR.decode(), msdp_cmdname=cmdname, msdp_val=MSDP_VAL.decode()
         )
 
         if not (args or kwargs):
@@ -186,9 +188,9 @@ class TelnetOOB(object):
                     "{msdp_array_open}"
                     "{msdp_args}"
                     "{msdp_array_close}".format(
-                        msdp_array_open=MSDP_ARRAY_OPEN,
-                        msdp_array_close=MSDP_ARRAY_CLOSE,
-                        msdp_args="".join("%s%s" % (MSDP_VAL, json.dumps(val)) for val in args),
+                        msdp_array_open=MSDP_ARRAY_OPEN.decode(),
+                        msdp_array_close=MSDP_ARRAY_CLOSE.decode(),
+                        msdp_args="".join("%s%s" % (MSDP_VAL.decode(), val) for val in args),
                     )
                 )
 
@@ -199,10 +201,10 @@ class TelnetOOB(object):
                 "{msdp_table_open}"
                 "{msdp_kwargs}"
                 "{msdp_table_close}".format(
-                    msdp_table_open=MSDP_TABLE_OPEN,
-                    msdp_table_close=MSDP_TABLE_CLOSE,
+                    msdp_table_open=MSDP_TABLE_OPEN.decode(),
+                    msdp_table_close=MSDP_TABLE_CLOSE.decode(),
                     msdp_kwargs="".join(
-                        "%s%s%s%s" % (MSDP_VAR, key, MSDP_VAL, json.dumps(val))
+                        "%s%s%s%s" % (MSDP_VAR.decode(), key, MSDP_VAL.decode(), val)
                         for key, val in kwargs.items()
                     ),
                 )

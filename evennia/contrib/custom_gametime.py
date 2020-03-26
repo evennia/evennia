@@ -298,6 +298,9 @@ class GametimeScript(DefaultScript):
 
     def at_repeat(self):
         """Call the callback and reset interval."""
+
+        from evennia.utils.utils import calledby
+
         callback = self.db.callback
         if callback:
             callback()

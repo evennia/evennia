@@ -6,7 +6,7 @@
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 
 ### Already in master
-
+- `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
 - Webclient default to a single input pane instead of two. Now defaults to no help-popup.
@@ -27,13 +27,33 @@ without arguments starts a full interactive Python console.
 - `AttributeHandler.get(return_list=True)` will return `[]` if there are no
   Attributes instead of `[None]`.
 - Remove `pillow` requirement (install especially if using imagefield)
-- Add Simplified Korean translation (user aceamro)
+- Add Simplified Korean translation (aceamro)
 - Show warning on `start -l` if settings contains values unsafe for production.
 - Make code auto-formatted with Black.
 - Make default `set` command able to edit nested structures (PR by Aaron McMillan)
 - Allow running Evennia test suite from core repo with `make test`.
-- Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to 
-  the `TickerHandler.remove` method. This makes it easier to manage tickers. 
+- Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to
+  the `TickerHandler.remove` method. This makes it easier to manage tickers.
+- EvMore `text` argument can now also be a list - each entry in the list is run
+  through str(eval()) and ends up on its own line. Good for paginated object lists.
+- EvMore auto-justify now defaults to False since this works better with all types
+  of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
+  but is now only used to pass extra kwargs into the justify function.
+- Improve performance of `find` and `objects` commands on large data sets (strikaco)
+- New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
+- Made `py` interactive mode support regular quit() and more verbose.
+- Made `Account.options.get` accept `default=None` kwarg to mimic other uses of get. Set
+  the new `raise_exception` boolean if ranting to raise KeyError on a missing key.
+- Moved behavior of unmodified `Command` and `MuxCommand` `.func()` to new
+  `.get_command_info()` method for easier overloading and access. (Volund)
+- Removed unused `CYCLE_LOGFILES` setting. Added `SERVER_LOG_DAY_ROTATION`
+  and `SERVER_LOG_MAX_SIZE` (and equivalent for PORTAL) to control log rotation.
+- Addded `inside_rec` lockfunc - if room is locked, the normal `inside()` lockfunc will 
+  fail e.g. for your inventory objs (since their loc is you), whereas this will pass.
+- RPSystem contrib's CmdRecog will now list all recogs if no arg is given. Also multiple
+  bugfixes.
+- Remove `dummy@example.com` as a default account email when unset, a string is no longer 
+  required by Django.
 
 
 ## Evennia 0.9 (2018-2019)

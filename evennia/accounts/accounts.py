@@ -37,7 +37,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.utils.optionhandler import OptionHandler
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from random import getrandbits
 
 __all__ = ("DefaultAccount",)
@@ -51,8 +51,12 @@ _CMDSET_ACCOUNT = settings.CMDSET_ACCOUNT
 _MUDINFO_CHANNEL = None
 
 # Create throttles for too many account-creations and login attempts
-CREATION_THROTTLE = Throttle(limit=2, timeout=10 * 60)
-LOGIN_THROTTLE = Throttle(limit=5, timeout=5 * 60)
+CREATION_THROTTLE = Throttle(
+    limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
+)
+LOGIN_THROTTLE = Throttle(
+    limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
+)
 
 
 class AccountSessionHandler(object):
@@ -216,12 +220,16 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
     @property
     def characters(self):
         # Get playable characters list
-        objs = self.db._playable_characters
+        objs = self.db._playable_characters or []
 
         # Rebuild the list if legacy code left null values after deletion
-        if None in objs:
-            objs = [x for x in self.db._playable_characters if x]
-            self.db._playable_characters = objs
+        try:
+            if None in objs:
+                objs = [x for x in self.db._playable_characters if x]
+                self.db._playable_characters = objs
+        except Exception as e:
+            logger.log_trace(e)
+            logger.log_err(e)
 
         return objs
 
@@ -820,7 +828,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         server.
 
         Args:
-            text (str, optional): text data to send
+            text (str or tuple, optional): The message to send. This
+                is treated internally like any send-command, so its
+                value can be a tuple if sending multiple arguments to
+                the `text` oob command.
             from_obj (Object or Account or list, optional): Object sending. If given, its
                 at_msg_send() hook will be called. If iterable, call on all entities.
             session (Session or list, optional): Session object or a list of
@@ -851,7 +862,13 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         kwargs["options"] = options
 
         if text is not None:
-            kwargs["text"] = to_str(text)
+            if not (isinstance(text, str) or isinstance(text, tuple)):
+                # sanitize text before sending across the wire
+                try:
+                    text = to_str(text)
+                except Exception:
+                    text = repr(text)
+            kwargs["text"] = text
 
         # session relay
         sessions = make_iter(session) if session else self.sessions.all()
