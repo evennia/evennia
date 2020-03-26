@@ -95,4 +95,4 @@ class TestGametime(TestCase):
         self.timescripts.append(script)
         self.assertIsInstance(script, gametime.TimeScript)
         self.assertAlmostEqual(script.interval, 12)
-        self.assertEqual(script.repeats, -1)
+        self.assertEqual(script.repeats, 0)

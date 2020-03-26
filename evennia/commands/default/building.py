@@ -3,7 +3,7 @@ Building and world design commands
 """
 import re
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
@@ -13,11 +13,13 @@ from evennia.utils.utils import (
     class_from_module,
     get_all_typeclasses,
     variable_from_module,
+    dbref,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw
+from evennia.prototypes.menus import _format_diff_text_and_options
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -1911,8 +1913,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     Usage:
       typeclass[/switch] <object> [= typeclass.path]
-      type                     ''
-      parent                   ''
+      typeclass/prototype <object> = prototype_key
+
       typeclass/list/show [typeclass.path]
       swap - this is a shorthand for using /force/reset flags.
       update - this is a shorthand for using the /force/reload flag.
@@ -1929,9 +1931,12 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       list - show available typeclasses. Only typeclasses in modules actually
              imported or used from somewhere in the code will show up here
              (those typeclasses are still available if you know the path)
+      prototype - clean and overwrite the object with the specified
+               prototype key - effectively making a whole new object.
 
     Example:
       type button = examples.red_button.RedButton
+      type/prototype button=a red button
 
     If the typeclass_path is not given, the current object's typeclass is
     assumed.
@@ -1953,7 +1958,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     key = "typeclass"
     aliases = ["type", "parent", "swap", "update"]
-    switch_options = ("show", "examine", "update", "reset", "force", "list")
+    switch_options = ("show", "examine", "update", "reset", "force", "list", "prototype")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
 
@@ -2037,6 +2042,27 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         new_typeclass = self.rhs or obj.path
 
+        prototype = None
+        if "prototype" in self.switches:
+            key = self.rhs
+            prototype = protlib.search_prototype(key=key)
+            if len(prototype) > 1:
+                caller.msg(
+                    "More than one match for {}:\n{}".format(
+                        key, "\n".join(proto.get("prototype_key", "") for proto in prototype)
+                    )
+                )
+                return
+            elif prototype:
+                # one match
+                prototype = prototype[0]
+            else:
+                # no match
+                caller.msg("No prototype '{}' was found.".format(key))
+                return
+            new_typeclass = prototype["typeclass"]
+            self.switches.append("force")
+
         if "show" in self.switches or "examine" in self.switches:
             string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
             caller.msg(string)
@@ -2069,10 +2095,33 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             hooks = "at_object_creation" if update else "all"
             old_typeclass_path = obj.typeclass_path
 
+            # special prompt for the user in cases where we want
+            # to confirm changes.
+            if "prototype" in self.switches:
+                diff, _ = spawner.prototype_diff_from_object(prototype, obj)
+                txt, options = _format_diff_text_and_options(diff, objects=[obj])
+                prompt = (
+                    "Applying prototype '%s' over '%s' will cause the follow changes:\n%s\n"
+                    % (prototype["key"], obj.name, "\n".join(txt))
+                )
+                if not reset:
+                    prompt += "\n|yWARNING:|n Use the /reset switch to apply the prototype over a blank state."
+                prompt += "\nAre you sure you want to apply these changes [yes]/no?"
+                answer = yield (prompt)
+                if answer and answer in ("no", "n"):
+                    caller.msg("Canceled: No changes were applied.")
+                    return
+
             # we let this raise exception if needed
             obj.swap_typeclass(
                 new_typeclass, clean_attributes=reset, clean_cmdsets=reset, run_start_hooks=hooks
             )
+
+            if "prototype" in self.switches:
+                modified = spawner.batch_update_objects_with_prototype(prototype, objects=[obj])
+                prototype_success = modified > 0
+                if not prototype_success:
+                    caller.msg("Prototype %s failed to apply." % prototype["key"])
 
             if is_same:
                 string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
@@ -2090,6 +2139,11 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 string += " All old attributes where deleted before the swap."
             else:
                 string += " Attributes set before swap were not removed."
+            if "prototype" in self.switches and prototype_success:
+                string += (
+                    " Prototype '%s' was successfully applied over the object type."
+                    % prototype["key"]
+                )
 
         caller.msg(string)
 
@@ -2641,7 +2695,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         switches = self.switches
 
-        if not self.args:
+        if not self.args or (not self.lhs and not self.rhs):
             caller.msg("Usage: find <string> [= low [-high]]")
             return
 
@@ -2649,18 +2703,46 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             switches.append("loc")
 
         searchstring = self.lhs
-        low, high = 1, ObjectDB.objects.all().order_by("-id")[0].id
+
+        try:
+            # Try grabbing the actual min/max id values by database aggregation
+            qs = ObjectDB.objects.values("id").aggregate(low=Min("id"), high=Max("id"))
+            low, high = sorted(qs.values())
+            if not (low and high):
+                raise ValueError(
+                    f"{self.__class__.__name__}: Min and max ID not returned by aggregation; falling back to queryset slicing."
+                )
+        except Exception as e:
+            logger.log_trace(e)
+            # If that doesn't work for some reason (empty DB?), guess the lower
+            # bound and do a less-efficient query to find the upper.
+            low, high = 1, ObjectDB.objects.all().order_by("-id").first().id
+
         if self.rhs:
-            if "-" in self.rhs:
-                # also support low-high syntax
-                limlist = [part.lstrip("#").strip() for part in self.rhs.split("-", 1)]
-            else:
-                # otherwise split by space
-                limlist = [part.lstrip("#") for part in self.rhs.split(None, 1)]
-            if limlist and limlist[0].isdigit():
-                low = max(low, int(limlist[0]))
-            if len(limlist) > 1 and limlist[1].isdigit():
-                high = min(high, int(limlist[1]))
+            try:
+                # Check that rhs is either a valid dbref or dbref range
+                bounds = tuple(
+                    sorted(dbref(x, False) for x in re.split("[-\s]+", self.rhs.strip()))
+                )
+
+                # dbref() will return either a valid int or None
+                assert bounds
+                # None should not exist in the bounds list
+                assert None not in bounds
+
+                low = bounds[0]
+                if len(bounds) > 1:
+                    high = bounds[-1]
+
+            except AssertionError:
+                caller.msg("Invalid dbref range provided (not a number).")
+                return
+            except IndexError as e:
+                logger.log_err(
+                    f"{self.__class__.__name__}: Error parsing upper and lower bounds of query."
+                )
+                logger.log_trace(e)
+
         low = min(low, high)
         high = max(low, high)
 
@@ -2672,7 +2754,6 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             restrictions = ", %s" % (", ".join(self.switches))
 
         if is_dbref or is_account:
-
             if is_dbref:
                 # a dbref search
                 result = caller.search(searchstring, global_search=True, quiet=True)
@@ -2703,7 +2784,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                     )
         else:
             # Not an account/dbref search but a wider search; build a queryset.
-            # Searchs for key and aliases
+            # Searches for key and aliases
             if "exact" in switches:
                 keyquery = Q(db_key__iexact=searchstring, id__gte=low, id__lte=high)
                 aliasquery = Q(
@@ -2729,39 +2810,52 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
                     id__lte=high,
                 )
 
-            results = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
-            nresults = results.count()
+            # Keep the initial queryset handy for later reuse
+            result_qs = ObjectDB.objects.filter(keyquery | aliasquery).distinct()
+            nresults = result_qs.count()
 
-            if nresults:
-                # convert result to typeclasses.
-                results = [result for result in results]
-                if "room" in switches:
-                    results = [obj for obj in results if inherits_from(obj, ROOM_TYPECLASS)]
-                if "exit" in switches:
-                    results = [obj for obj in results if inherits_from(obj, EXIT_TYPECLASS)]
-                if "char" in switches:
-                    results = [obj for obj in results if inherits_from(obj, CHAR_TYPECLASS)]
-                nresults = len(results)
+            # Use iterator to minimize memory ballooning on large result sets
+            results = result_qs.iterator()
+
+            # Check and see if type filtering was requested; skip it if not
+            if any(x in switches for x in ("room", "exit", "char")):
+                obj_ids = set()
+                for obj in results:
+                    if (
+                        ("room" in switches and inherits_from(obj, ROOM_TYPECLASS))
+                        or ("exit" in switches and inherits_from(obj, EXIT_TYPECLASS))
+                        or ("char" in switches and inherits_from(obj, CHAR_TYPECLASS))
+                    ):
+                        obj_ids.add(obj.id)
+
+                # Filter previous queryset instead of requesting another
+                filtered_qs = result_qs.filter(id__in=obj_ids).distinct()
+                nresults = filtered_qs.count()
+
+                # Use iterator again to minimize memory ballooning
+                results = filtered_qs.iterator()
 
             # still results after type filtering?
             if nresults:
                 if nresults > 1:
-                    string = "|w%i Matches|n(#%i-#%i%s):" % (nresults, low, high, restrictions)
-                    for res in results:
-                        string += "\n   |g%s - %s|n" % (res.get_display_name(caller), res.path)
+                    header = f"{nresults} Matches"
                 else:
-                    string = "|wOne Match|n(#%i-#%i%s):" % (low, high, restrictions)
-                    string += "\n   |g%s - %s|n" % (
-                        results[0].get_display_name(caller),
-                        results[0].path,
-                    )
-                    if "loc" in self.switches and nresults == 1 and results[0].location:
-                        string += " (|wlocation|n: |g{}|n)".format(
-                            results[0].location.get_display_name(caller)
-                        )
+                    header = "One Match"
+
+                string = f"|w{header}|n(#{low}-#{high}{restrictions}):"
+                res = None
+                for res in results:
+                    string += f"\n   |g{res.get_display_name(caller)} - {res.path}|n"
+                if (
+                    "loc" in self.switches
+                    and nresults == 1
+                    and res
+                    and getattr(res, "location", None)
+                ):
+                    string += f" (|wlocation|n: |g{res.location.get_display_name(caller)}|n)"
             else:
-                string = "|wMatch|n(#%i-#%i%s):" % (low, high, restrictions)
-                string += "\n   |RNo matches found for '%s'|n" % searchstring
+                string = f"|wNo Matches|n(#{low}-#{high}{restrictions}):"
+                string += f"\n   |RNo matches found for '{searchstring}'|n"
 
         # send result
         caller.msg(string.strip())
@@ -2791,8 +2885,8 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                reference. A puppeted object cannot be moved to None.
       loc - teleport object to the target's location instead of its contents
 
-    Teleports an object somewhere. If no object is given, you yourself
-    is teleported to the target location.
+    Teleports an object somewhere. If no object is given, you yourself are
+    teleported to the target location.
     """
 
     key = "tel"
@@ -2957,7 +3051,8 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                 ok = obj.scripts.add(self.rhs, autostart=True)
                 if not ok:
                     result.append(
-                        "\nScript %s could not be added and/or started on %s."
+                        "\nScript %s could not be added and/or started on %s "
+                        "(or it started and immediately shut down)."
                         % (self.rhs, obj.get_display_name(caller))
                     )
                 else:
@@ -2988,7 +3083,8 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                         else:
                             result = ["Script started successfully."]
                             break
-        caller.msg("".join(result).strip())
+
+        EvMore(caller, "".join(result).strip())
 
 
 class CmdTag(COMMAND_DEFAULT_CLASS):

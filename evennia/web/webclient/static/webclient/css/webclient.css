@@ -88,6 +88,10 @@ div {margin:0px;}
   height: 100%;
 }
 
+.card {
+  background-color: #333;
+}
+
 /* Container surrounding entire client */
 #clientwrapper {
   height: 100%;

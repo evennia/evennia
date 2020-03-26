@@ -6,7 +6,7 @@ with evennia set up automatically and get the Evennia JS lib and
 JQuery available.
 -->
 
-{% load staticfiles %}
+{% load static %}
 <html dir="ltr" lang="en">
   <head>
     <title> {{game_name}} </title>
@@ -76,9 +76,16 @@ JQuery available.
     {% block guilib_import %}
         <script src={% static "webclient/js/webclient_gui.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
         <script src={% static "webclient/js/plugins/goldenlayout_default_config.js" %} type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/clienthelp.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
         <script src={% static "webclient/js/plugins/popups.js" %} language="javascript" type="text/javascript"></script>
-        <script src={% static "webclient/js/plugins/options.js" %} language="javascript" type="text/javascript"></script>
+<!--
+	<script src={% static "webclient/js/plugins/options.js" %} language="javascript" type="text/javascript"></script>
+-->
+        <script src={% static "webclient/js/plugins/options2.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/iframe.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/message_routing.js" %} language="javascript" type="text/javascript"></script>
         <script src={% static "webclient/js/plugins/history.js" %} language="javascript" type="text/javascript"></script>
+        <script src={% static "webclient/js/plugins/font.js" %} language="javascript" type="text/javascript" charset="utf-8"></script>
 <!--
         <script src={% static "webclient/js/plugins/splithandler.js" %} language="javascript" type="text/javascript"></script>
 -->

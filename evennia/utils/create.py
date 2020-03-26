@@ -255,11 +255,11 @@ def create_script(
     if obj:
         kwarg["db_obj"] = dbid_to_obj(obj, _ObjectDB)
     if interval:
-        kwarg["db_interval"] = interval
+        kwarg["db_interval"] = max(0, interval)
     if start_delay:
         kwarg["db_start_delay"] = start_delay
     if repeats:
-        kwarg["db_repeats"] = repeats
+        kwarg["db_repeats"] = max(0, repeats)
     if persistent:
         kwarg["db_persistent"] = persistent
     if desc:
@@ -486,9 +486,8 @@ def create_account(
 
     Args:
         key (str): The account's name. This should be unique.
-        email (str): Email on valid addr@addr.domain form. This is
-            technically required but if set to `None`, an email of
-            `dummy@example.com` will be used as a placeholder.
+        email (str or None): Email on valid addr@addr.domain form. If
+            the empty string, will be set to None.
         password (str): Password in cleartext.
 
     Kwargs:
@@ -532,7 +531,7 @@ def create_account(
     # correctly when each object is recovered).
 
     if not email:
-        email = "dummy@example.com"
+        email = None
     if _AccountDB.objects.filter(username__iexact=key):
         raise ValueError("An Account with the name '%s' already exists." % key)
 

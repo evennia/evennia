@@ -38,7 +38,7 @@ from evennia.utils import logger
 from evennia.comms import channelhandler
 from evennia.server.sessionhandler import SESSIONS
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 _SA = object.__setattr__
 
@@ -148,13 +148,17 @@ def _server_maintenance():
     # handle idle timeouts
     if _IDLE_TIMEOUT > 0:
         reason = _("idle timeout exceeded")
+        to_disconnect = []
         for session in (
             sess for sess in SESSIONS.values() if (now - sess.cmd_last) > _IDLE_TIMEOUT
         ):
             if not session.account or not session.account.access(
                 session.account, "noidletimeout", default=False
             ):
-                SESSIONS.disconnect(session, reason=reason)
+                to_disconnect.append(session)
+
+        for session in to_disconnect:
+            SESSIONS.disconnect(session, reason=reason)
 
 
 # ------------------------------------------------------------
@@ -416,7 +420,7 @@ class Evennia(object):
             yield [
                 (s.pause(manual_pause=False), s.at_server_reload())
                 for s in ScriptDB.get_all_cached_instances()
-                if s.is_active or s.attributes.has("_manual_pause")
+                if s.id and (s.is_active or s.attributes.has("_manual_pause"))
             ]
             yield self.sessions.all_sessions_portal_sync()
             self.at_server_reload_stop()
@@ -612,7 +616,10 @@ application = service.Application("Evennia")
 if "--nodaemon" not in sys.argv:
     # custom logging, but only if we are not running in interactive mode
     logfile = logger.WeeklyLogFile(
-        os.path.basename(settings.SERVER_LOG_FILE), os.path.dirname(settings.SERVER_LOG_FILE)
+        os.path.basename(settings.SERVER_LOG_FILE),
+        os.path.dirname(settings.SERVER_LOG_FILE),
+        day_rotation=settings.SERVER_LOG_DAY_ROTATION,
+        max_size=settings.SERVER_LOG_MAX_SIZE,
     )
     application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
 

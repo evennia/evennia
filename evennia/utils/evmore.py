@@ -30,7 +30,7 @@ caller.msg() construct every time the page is updated.
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
-from evennia.utils.utils import justify
+from evennia.utils.utils import justify, make_iter
 
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
@@ -38,6 +38,8 @@ _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 # we need to use NAWS for this
 _SCREEN_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _SCREEN_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
+
+_EVTABLE = None
 
 # text
 
@@ -126,26 +128,38 @@ class EvMore(object):
         text,
         always_page=False,
         session=None,
+        justify=False,
         justify_kwargs=None,
         exit_on_lastpage=False,
         exit_cmd=None,
         **kwargs,
     ):
+
         """
         Initialization of the text handler.
 
         Args:
             caller (Object or Account): Entity reading the text.
-            text (str): The text to put under paging.
+            text (str, EvTable or iterator): The text or data to put under paging.
+                - If a string, paginage normally. If this text contains
+                   one or more `\f` format symbol, automatic pagination and justification
+                   are force-disabled and page-breaks will only happen after each `\f`.
+                - If `EvTable`, the EvTable will be paginated with the same
+                   setting on each page if it is too long. The table
+                   decorations will be considered in the size of the page.
+                - Otherwise `text` is converted to an iterator, where each step is
+                   expected to be a line in the final display. Each line
+                   will be run through repr() (so one could pass a list of objects).
             always_page (bool, optional): If `False`, the
                 pager will only kick in if `text` is too big
                 to fit the screen.
             session (Session, optional): If given, this session will be used
                 to determine the screen width and will receive all output.
-            justify_kwargs (dict, bool or None, optional): If given, this should
-                be valid keyword arguments to the utils.justify() function. If False,
-                no justification will be done (especially important for handling
-                fixed-width text content, like tables!).
+            justify (bool, optional): If set, auto-justify long lines. This must be turned
+                off for fixed-width or formatted output, like tables. It's force-disabled
+                if `text` is an EvTable.
+            justify_kwargs (dict, optional): Keywords for the justifiy function. Used only
+                if `justify` is True. If this is not set, default arguments will be used.
             exit_on_lastpage (bool, optional): If reaching the last page without the
                 page being completely filled, exit pager immediately. If unset,
                 another move forward is required to exit. If set, the pager
@@ -154,18 +168,32 @@ class EvMore(object):
                 the caller when the more page exits. Note that this will be using whatever
                 cmdset the user had *before* the evmore pager was activated (so none of
                 the evmore commands will be available when this is run).
-            kwargs (any, optional): These will be passed on
-                to the `caller.msg` method.
+            kwargs (any, optional): These will be passed on to the `caller.msg` method.
+
+        Examples:
+            super_long_text = " ... "
+            EvMore(caller, super_long_text)
+
+            from django.core.paginator import Paginator
+            query = ObjectDB.objects.all()
+            pages = Paginator(query, 10)  # 10 objs per page
+            EvMore(caller, pages)   # will repr() each object per line, 10 to a page
+
+            multi_page_table = [ [[..],[..]], ...]
+            EvMore(caller, multi_page_table, use_evtable=True,
+                   evtable_args=("Header1", "Header2"),
+                   evtable_kwargs={"align": "r", "border": "tablecols"})
 
         """
         self._caller = caller
         self._kwargs = kwargs
         self._pages = []
-        self._npages = []
-        self._npos = []
+        self._npages = 1
+        self._npos = 0
         self.exit_on_lastpage = exit_on_lastpage
         self.exit_cmd = exit_cmd
         self._exit_msg = "Exited |wmore|n pager."
+
         if not session:
             # if not supplied, use the first session to
             # determine screen size
@@ -179,16 +207,33 @@ class EvMore(object):
         height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
         width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
 
+        if hasattr(text, "table") and hasattr(text, "get"):
+            # This is an EvTable.
+
+            table = text
+
+            if table.height:
+                # enforced height of each paged table, plus space for evmore extras
+                height = table.height - 4
+
+            # convert table to string
+            text = str(text)
+            justify_kwargs = None  # enforce
+
+        if not isinstance(text, str):
+            # not a string - pre-set pages of some form
+            text = "\n".join(str(repr(element)) for element in make_iter(text))
+
         if "\f" in text:
+            # we use \f to indicate the user wants to enforce their line breaks
+            # on their own. If so, we do no automatic line-breaking/justification
+            # at all.
             self._pages = text.split("\f")
             self._npages = len(self._pages)
-            self._npos = 0
         else:
-            if justify_kwargs is False:
-                # no justification. Simple division by line
-                lines = text.split("\n")
-            else:
-                # we must break very long lines into multiple ones
+            if justify:
+                # we must break very long lines into multiple ones. Note that this
+                # will also remove spurious whitespace.
                 justify_kwargs = justify_kwargs or {}
                 width = justify_kwargs.get("width", width)
                 justify_kwargs["width"] = width
@@ -201,17 +246,20 @@ class EvMore(object):
                         lines.extend(justify(line, **justify_kwargs).split("\n"))
                     else:
                         lines.append(line)
+            else:
+                # no justification. Simple division by line
+                lines = text.split("\n")
 
             # always limit number of chars to 10 000 per page
             height = min(10000 // max(1, width), height)
 
+            # figure out the pagination
             self._pages = ["\n".join(lines[i : i + height]) for i in range(0, len(lines), height)]
             self._npages = len(self._pages)
-            self._npos = 0
 
         if self._npages <= 1 and not always_page:
             # no need for paging; just pass-through.
-            caller.msg(text=text, session=self._session, **kwargs)
+            caller.msg(text=self._get_page(0), session=self._session, **kwargs)
         else:
             # go into paging mode
             # first pass on the msg kwargs
@@ -221,12 +269,15 @@ class EvMore(object):
             # goto top of the text
             self.page_top()
 
+    def _get_page(self, pos):
+        return self._pages[pos]
+
     def display(self, show_footer=True):
         """
         Pretty-print the page.
         """
-        pos = self._pos
-        text = self._pages[pos]
+        pos = self._npos
+        text = self._get_page(pos)
         if show_footer:
             page = _DISPLAY.format(text=text, pageno=pos + 1, pagemax=self._npages)
         else:
@@ -245,14 +296,14 @@ class EvMore(object):
         """
         Display the top page
         """
-        self._pos = 0
+        self._npos = 0
         self.display()
 
     def page_end(self):
         """
         Display the bottom page.
         """
-        self._pos = self._npages - 1
+        self._npos = self._npages - 1
         self.display()
 
     def page_next(self):
@@ -260,12 +311,12 @@ class EvMore(object):
         Scroll the text to the next page. Quit if already at the end
         of the page.
         """
-        if self._pos >= self._npages - 1:
+        if self._npos >= self._npages - 1:
             # exit if we are already at the end
             self.page_quit()
         else:
-            self._pos += 1
-            if self.exit_on_lastpage and self._pos >= (self._npages - 1):
+            self._npos += 1
+            if self.exit_on_lastpage and self._npos >= (self._npages - 1):
                 self.display(show_footer=False)
                 self.page_quit(quiet=True)
             else:
@@ -275,7 +326,7 @@ class EvMore(object):
         """
         Scroll the text back up, at the most to the top.
         """
-        self._pos = max(0, self._pos - 1)
+        self._npos = max(0, self._npos - 1)
         self.display()
 
     def page_quit(self, quiet=False):
@@ -290,30 +341,51 @@ class EvMore(object):
             self._caller.execute_cmd(self.exit_cmd, session=self._session)
 
 
+# helper function
+
+
 def msg(
     caller,
     text="",
     always_page=False,
     session=None,
+    justify=False,
     justify_kwargs=None,
     exit_on_lastpage=True,
     **kwargs,
 ):
     """
-    More-supported version of msg, mimicking the normal msg method.
+    EvMore-supported version of msg, mimicking the normal msg method.
 
     Args:
         caller (Object or Account): Entity reading the text.
-        text (str): The text to put under paging.
+        text (str, EvTable or iterator): The text or data to put under paging.
+            - If a string, paginage normally. If this text contains
+              one or more `\f` format symbol, automatic pagination is disabled
+              and page-breaks will only happen after each `\f`.
+            - If `EvTable`, the EvTable will be paginated with the same
+                setting on each page if it is too long. The table
+                decorations will be considered in the size of the page.
+            - Otherwise `text` is converted to an iterator, where each step is
+              is expected to be a line in the final display, and each line
+              will be run through repr().
         always_page (bool, optional): If `False`, the
             pager will only kick in if `text` is too big
             to fit the screen.
         session (Session, optional): If given, this session will be used
             to determine the screen width and will receive all output.
+        justify (bool, optional): If set, justify long lines in output. Disable for
+            fixed-format output, like tables.
         justify_kwargs (dict, bool or None, optional): If given, this should
             be valid keyword arguments to the utils.justify() function. If False,
             no justification will be done.
         exit_on_lastpage (bool, optional): Immediately exit pager when reaching the last page.
+        use_evtable (bool, optional): If True, each page will be rendered as an
+            EvTable. For this to work, `text` must be an iterable, where each element
+            is the table (list of list) to render on that page.
+        evtable_args (tuple, optional): The args to use for EvTable on each page.
+        evtable_kwargs (dict, optional): The kwargs to use for EvTable on each
+            page (except `table`, which is supplied by EvMore per-page).
         kwargs (any, optional): These will be passed on
             to the `caller.msg` method.
 
@@ -323,6 +395,7 @@ def msg(
         text,
         always_page=always_page,
         session=session,
+        justify=justify,
         justify_kwargs=justify_kwargs,
         exit_on_lastpage=exit_on_lastpage,
         **kwargs,

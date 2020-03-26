@@ -1107,8 +1107,9 @@ class EvTable(object):
             Exception: If given erroneous input or width settings for the data.
 
         Notes:
-            Beyond those table-specific keywords, the non-overlapping keywords of `EcCell.__init__` are
-            also available. These will be passed down to every cell in the table.
+            Beyond those table-specific keywords, the non-overlapping keywords
+            of `EcCell.__init__` are also available. These will be passed down
+            to every cell in the table.
 
         """
         # at this point table is a 2D grid - a list of columns

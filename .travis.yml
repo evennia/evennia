@@ -8,6 +8,7 @@ services:
 
 python:
   - "3.7"
+  - "3.8"
 
 env:
   - TESTING_DB=sqlite3

@@ -40,6 +40,21 @@ _RE_SCREENREADER_REGEX = re.compile(
 )
 _IDLE_COMMAND = str.encode(settings.IDLE_COMMAND + "\n")
 
+# identify HTTP indata
+_HTTP_REGEX = re.compile(
+    b"(GET|HEAD|POST|PUT|DELETE|TRACE|OPTIONS|CONNECT|PATCH) (.*? HTTP/[0-9]\.[0-9])", re.I
+)
+
+_HTTP_WARNING = bytes(
+    """
+    This is Evennia's Telnet port and cannot be used for regular HTTP traffic.
+    Use a telnet client to connect here and point your browser to the server's
+    dedicated web port instead.
+
+    """.strip(),
+    "utf-8",
+)
+
 
 class TelnetServerFactory(protocol.ServerFactory):
     "This is only to name this better in logs"
@@ -60,13 +75,21 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.protocol_key = "telnet"
         super().__init__(*args, **kwargs)
 
+    def dataReceived(self, data):
+        """
+        Unused by default, but a good place to put debug printouts
+        of incoming data.
+        """
+        # print(f"telnet dataReceived: {data}")
+        super().dataReceived(data)
+
     def connectionMade(self):
         """
         This is called when the connection is first established.
 
         """
         # important in order to work normally with standard telnet
-        self.do(LINEMODE)
+        self.do(LINEMODE).addErrback(self._wont_linemode)
         # initialize the session
         self.line_buffer = b""
         client_address = self.transport.client
@@ -110,6 +133,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         self.protocol_flags["NOPKEEPALIVE"] = True
         self.nop_keep_alive = None
         self.toggle_nop_keepalive()
+
+    def _wont_linemode(self, *args):
+        """
+        Client refuses do(linemode). This is common for MUD-specific
+        clients, but we must ask for the sake of raw telnet. We ignore
+        this error.
+        """
+        pass
 
     def _send_nop_keepalive(self):
         """Send NOP keepalive unless flag is set"""
@@ -178,6 +209,16 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                 or option == suppress_ga.SUPPRESS_GA
             )
 
+    def disableRemote(self, option):
+        return (
+            option == LINEMODE
+            or option == ttype.TTYPE
+            or option == naws.NAWS
+            or option == MCCP
+            or option == mssp.MSSP
+            or option == suppress_ga.SUPPRESS_GA
+        )
+
     def enableLocal(self, option):
         """
         Call to allow the activation of options for this protocol
@@ -204,13 +245,20 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             option (char): The telnet option to disable locally.
 
         """
+        if option == LINEMODE:
+            return True
         if option == ECHO:
             return True
         if option == MCCP:
             self.mccp.no_mccp(option)
             return True
         else:
-            return super().disableLocal(option)
+            try:
+                return super().disableLocal(option)
+            except Exception:
+                from evennia.utils import logger
+
+                logger.log_trace()
 
     def connectionLost(self, reason):
         """
@@ -246,6 +294,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             data = [_IDLE_COMMAND]
         else:
             data = _RE_LINEBREAK.split(data)
+
+            if len(data) > 2 and _HTTP_REGEX.match(data[0]):
+                # guard against HTTP request on the Telnet port; we
+                # block and kill the connection.
+                self.transport.write(_HTTP_WARNING)
+                self.transport.loseConnection()
+                return
+
             if self.line_buffer and len(data) > 1:
                 # buffer exists, it is terminated by the first line feed
                 data[0] = self.line_buffer + data[0]

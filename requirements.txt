@@ -7,9 +7,12 @@ pytz
 django-sekizai
 inflect
 autobahn >= 17.9.3
-model_mommy
+
+# try to resolve dependency issue in py3.7
+attrs >= 19.2.0
 
 # testing and development
+model_mommy
 mock >= 1.0.1
 anything
 black

@@ -19,7 +19,7 @@ from anything import Anything
 from django.conf import settings
 from mock import Mock, mock
 
-from evennia import DefaultRoom, DefaultExit
+from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.utils.test_resources import EvenniaTest
 from evennia.commands.default import (
@@ -991,6 +991,34 @@ class TestBuilding(CommandTest):
             "All object creation hooks were run. All old attributes where deleted before the swap.",
         )
 
+        from evennia.prototypes.prototypes import homogenize_prototype
+
+        test_prototype = [
+            homogenize_prototype(
+                {
+                    "prototype_key": "testkey",
+                    "prototype_tags": [],
+                    "typeclass": "typeclasses.objects.Object",
+                    "key": "replaced_obj",
+                    "attrs": [("foo", "bar", None, ""), ("desc", "protdesc", None, "")],
+                }
+            )
+        ]
+        with mock.patch(
+            "evennia.commands.default.building.protlib.search_prototype",
+            new=mock.MagicMock(return_value=test_prototype),
+        ) as mprot:
+            self.call(
+                building.CmdTypeclass(),
+                "/prototype Obj=testkey",
+                "replaced_obj changed typeclass from "
+                "evennia.objects.objects.DefaultObject to "
+                "typeclasses.objects.Object.\nAll object creation hooks were "
+                "run. Attributes set before swap were not removed. Prototype "
+                "'replaced_obj' was successfully applied over the object type.",
+            )
+            assert self.obj1.db.desc == "protdesc"
+
     def test_lock(self):
         self.call(building.CmdLock(), "", "Usage: ")
         self.call(building.CmdLock(), "Obj = test:all()", "Added lock 'test:all()' to Obj.")
@@ -1038,10 +1066,40 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), self.char1.dbref, "Exact dbref match")
         self.call(building.CmdFind(), "*TestAccount", "Match")
 
-        self.call(building.CmdFind(), "/char Obj")
-        self.call(building.CmdFind(), "/room Obj")
-        self.call(building.CmdFind(), "/exit Obj")
+        self.call(building.CmdFind(), "/char Obj", "No Matches")
+        self.call(building.CmdFind(), "/room Obj", "No Matches")
+        self.call(building.CmdFind(), "/exit Obj", "No Matches")
         self.call(building.CmdFind(), "/exact Obj", "One Match")
+
+        # Test multitype filtering
+        with mock.patch(
+            "evennia.commands.default.building.CHAR_TYPECLASS",
+            "evennia.objects.objects.DefaultCharacter",
+        ):
+            self.call(building.CmdFind(), "/char/room Obj", "No Matches")
+            self.call(building.CmdFind(), "/char/room/exit Char", "2 Matches")
+            self.call(building.CmdFind(), "/char/room/exit/startswith Cha", "2 Matches")
+
+        # Test null search
+        self.call(building.CmdFind(), "=", "Usage: ")
+
+        # Test bogus dbref range with no search term
+        self.call(building.CmdFind(), "= obj", "Invalid dbref range provided (not a number).")
+        self.call(building.CmdFind(), "= #1a", "Invalid dbref range provided (not a number).")
+
+        # Test valid dbref ranges with no search term
+        id1 = self.obj1.id
+        id2 = self.obj2.id
+        maxid = ObjectDB.objects.latest("id").id
+        maxdiff = maxid - id1 + 1
+        mdiff = id2 - id1 + 1
+
+        self.call(building.CmdFind(), f"=#{id1}", f"{maxdiff} Matches(#{id1}-#{maxid}")
+        self.call(building.CmdFind(), f"={id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1} - {id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1}- #{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"={id1}-#{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
+        self.call(building.CmdFind(), f"=#{id1}-{id2}", f"{mdiff} Matches(#{id1}-#{id2}):")
 
     def test_script(self):
         self.call(building.CmdScript(), "Obj = ", "No scripts defined on Obj")

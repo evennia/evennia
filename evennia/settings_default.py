@@ -135,17 +135,19 @@ else:
                 break
         os.chdir(os.pardir)
 
-# Place to put log files
+# Place to put log files, how often to rotate the log and how big each log file
+# may become before rotating.
 LOG_DIR = os.path.join(GAME_DIR, "server", "logs")
 SERVER_LOG_FILE = os.path.join(LOG_DIR, "server.log")
+SERVER_LOG_DAY_ROTATION = 7
+SERVER_LOG_MAX_SIZE = 1000000
 PORTAL_LOG_FILE = os.path.join(LOG_DIR, "portal.log")
+PORTAL_LOG_DAY_ROTATION = 7
+PORTAL_LOG_MAX_SIZE = 1000000
+# The http log is usually only for debugging since it's very spammy
 HTTP_LOG_FILE = os.path.join(LOG_DIR, "http_requests.log")
 # if this is set to the empty string, lockwarnings will be turned off.
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, "lockwarnings.log")
-# Rotate log files when server and/or portal stops. This will keep log
-# file sizes down. Turn off to get ever growing log files and never
-# lose log info.
-CYCLE_LOGFILES = True
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
 # Max size (in bytes) of channel log files before they rotate
@@ -243,7 +245,7 @@ IN_GAME_ERRORS = True
 # ENGINE - path to the the database backend. Possible choices are:
 #            'django.db.backends.sqlite3', (default)
 #            'django.db.backends.mysql',
-#            'django.db.backends.postgresql_psycopg2',
+#            'django.db.backends.postgresql',
 #            'django.db.backends.oracle' (untested).
 # NAME - database name, or path to the db file for sqlite3
 # USER - db admin (unused in sqlite3)
@@ -400,22 +402,23 @@ COLOR_NO_DEFAULT = False
 
 
 ######################################################################
-# Default command sets
+# Default command sets and commands
 ######################################################################
-# Note that with the exception of the unloggedin set (which is not
-# stored anywhere in the database), changing these paths will only affect
-# NEW created characters/objects, not those already in play. So if you plan to
-# change this, it's recommended you do it before having created a lot of objects
-# (or simply reset the database after the change for simplicity).
 
 # Command set used on session before account has logged in
 CMDSET_UNLOGGEDIN = "commands.default_cmdsets.UnloggedinCmdSet"
+# (Note that changing these three following cmdset paths will only affect NEW
+# created characters/objects, not those already in play. So if you want to
+# change this and have it apply to every object, it's recommended you do it
+# before having created a lot of objects (or simply reset the database after
+# the change for simplicity)).
 # Command set used on the logged-in session
 CMDSET_SESSION = "commands.default_cmdsets.SessionCmdSet"
 # Default set for logged in account with characters (fallback)
 CMDSET_CHARACTER = "commands.default_cmdsets.CharacterCmdSet"
 # Command set for accounts without a character (ooc)
 CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
+
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "evennia.contrib"]
 # Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
@@ -445,10 +448,17 @@ COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
 COMMAND_DEFAULT_HELP_CATEGORY = "general"
 # The default lockstring of a command.
 COMMAND_DEFAULT_LOCKS = ""
-# The Channel Handler will create a command to represent each channel,
-# creating it with the key of the channel, its aliases, locks etc. The
-# default class logs channel messages to a file and allows for /history.
-# This setting allows to override the command class used with your own.
+# The Channel Handler is responsible for managing all available channels. By
+# default it builds the current channels into a channel-cmdset that it feeds
+# to the cmdhandler. Overloading this can completely change how Channels
+# are identified and called.
+CHANNEL_HANDLER_CLASS = "evennia.comms.channelhandler.ChannelHandler"
+# The (default) Channel Handler will create a command to represent each
+# channel, creating it with the key of the channel, its aliases, locks etc. The
+# default class logs channel messages to a file and allows for /history.  This
+# setting allows to override the command class used with your own.
+# If you implement CHANNEL_HANDLER_CLASS, you can change this directly and will
+# likely not need this setting.
 CHANNEL_COMMAND_CLASS = "evennia.comms.channelhandler.ChannelCommand"
 
 ######################################################################
@@ -640,6 +650,12 @@ CLIENT_DEFAULT_HEIGHT = 45
 # (excluding webclient with separate help popups). If continuous scroll
 # is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
 HELP_MORE = True
+# Set rate limits per-IP on account creations and login attempts
+CREATION_THROTTLE_LIMIT = 2
+CREATION_THROTTLE_TIMEOUT = 10 * 60
+LOGIN_THROTTLE_LIMIT = 5
+LOGIN_THROTTLE_TIMEOUT = 5 * 60
+
 
 ######################################################################
 # Guest accounts

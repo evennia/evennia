@@ -231,6 +231,7 @@ def _init():
     from . import contrib
     from .utils.evmenu import EvMenu
     from .utils.evtable import EvTable
+    from .utils.evmore import EvMore
     from .utils.evform import EvForm
     from .utils.eveditor import EvEditor
     from .utils.ansi import ANSIString
