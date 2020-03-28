@@ -11,7 +11,7 @@ from evennia.utils.test_resources import EvenniaTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
 from evennia.prototypes import spawner, prototypes as protlib
 from evennia.prototypes import menus as olc_menus
-from evennia.prototypes import protfuncs as protofuncs
+from evennia.prototypes import protfuncs as protofuncs, spawner
 
 from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
@@ -212,22 +212,21 @@ class TestUtils(EvenniaTest):
                     "puppet:pperm(Developer);tell:perm(Admin);view:all()",
                     "KEEP",
                 ),
-                "prototype_tags": {},
+                "prototype_tags": (None, None, 'KEEP'),
                 "attrs": {
                     "oldtest": (
                         ("oldtest", "to_keep", None, ""),
                         ("oldtest", "to_keep", None, ""),
                         "KEEP",
                     ),
-                    "test": (("test", "testval", None, ""), None, "REMOVE"),
-                    "desc": (("desc", "changed desc", None, ""), None, "REMOVE"),
-                    "fooattr": (None, ("fooattr", "fooattrval", None, ""), "ADD"),
+                    "desc": (("desc", "changed desc", None, ""), None, "KEEP"),
+                    "fooattr": (Something, ("fooattr", "fooattrval", None, ""), "ADD"),
                     "test": (
                         ("test", "testval", None, ""),
                         ("test", "testval_changed", None, ""),
                         "UPDATE",
                     ),
-                    "new": (None, ("new", "new_val", None, ""), "ADD"),
+                    "new": (Something, ("new", "new_val", None, ""), "ADD"),
                 },
                 "key": ("Obj", "Obj", "KEEP"),
                 "typeclass": (
@@ -246,7 +245,7 @@ class TestUtils(EvenniaTest):
             spawner.flatten_diff(pdiff),
             {
                 "aliases": "REMOVE",
-                "attrs": "REPLACE",
+                "attrs": "UPDATE",
                 "home": "KEEP",
                 "key": "KEEP",
                 "location": "KEEP",
@@ -270,7 +269,9 @@ class TestUtils(EvenniaTest):
         new_prot = spawner.prototype_from_object(self.obj1)
         self.assertEqual(
             {
+                "aliases": ['foo'],
                 "attrs": [
+                    ("desc", "changed desc", None, ""),
                     ("fooattr", "fooattrval", None, ""),
                     ("new", "new_val", None, ""),
                     ("oldtest", "to_keep", None, ""),
@@ -293,6 +294,9 @@ class TestUtils(EvenniaTest):
                         "view:all()",
                     ]
                 ),
+                'tags': [
+                    ('footag', 'foocategory', None),
+                    (Something, 'from_prototype', None)],
                 "permissions": ["builder"],
                 "prototype_desc": "Built from Obj",
                 "prototype_key": Something,
@@ -912,24 +916,20 @@ class TestMenuModule(EvenniaTest):
 
         texts, options = olc_menus._format_diff_text_and_options(obj_diff)
         self.assertEqual(
-            "\n".join(texts),
-            "- |wattrs:|n \n"
-            "   |gKEEP|W:|n desc |W=|n This is User #1. |W(category:|n None|W, locks:|n |W)|n\n"
-            "   |c[1] |yADD|n|W:|n None |W->|n foo |W=|n bar |W(category:|n None|W, locks:|n |W)|n\n"
-            "   |gKEEP|W:|n prelogout_location |W=|n #2 |W(category:|n None|W, locks:|n |W)|n\n"
-            "- |whome:|n    |gKEEP|W:|n #2\n"
-            "- |wkey:|n    |gKEEP|W:|n TestChar\n"
-            "- |wlocks:|n    |gKEEP|W:|n boot:false();call:false();control:perm(Developer);delete:false();edit:false();examine:perm(Developer);get:false();msg:all();puppet:false();tell:perm(Admin);view:all()\n"
-            "- |wpermissions:|n \n"
-            "   |gKEEP|W:|n developer\n"
-            "- |wprototype_desc:|n    |c[2] |rREMOVE|n|W:|n Testobject build |W->|n None\n"
-            "- |wprototype_key:|n    |gKEEP|W:|n TestDiffKey\n"
-            "- |wprototype_locks:|n    |gKEEP|W:|n spawn:all();edit:all()\n"
-            "- |wprototype_tags:|n \n"
-            "- |wtags:|n \n"
-            "   |c[3] |yADD|n|W:|n None |W->|n foo |W(category:|n None|W)|n\n"
-            "- |wtypeclass:|n    |gKEEP|W:|n typeclasses.characters.Character",
+            "\n".join(txt.strip() for txt in texts),
+            "- |wattrs:|n    |c[1] |yADD|n: foo |W=|n bar |W(category:|n None|W, locks:|n |W)|n"
+            "\n- |whome:|n"
+            "\n- |wkey:|n"
+            "\n- |wlocks:|n"
+            "\n- |wpermissions:|n"
+            "\n- |wprototype_desc:|n    |c[2] |rREMOVE|n: Testobject build"
+            "\n- |wprototype_key:|n"
+            "\n- |wprototype_locks:|n"
+            "\n- |wprototype_tags:|n"
+            "\n- |wtags:|n    |c[3] |yADD|n: foo |W(category:|n None|W)|n"
+            "\n- |wtypeclass:|n"
         )
+
         self.assertEqual(
             options,
             [

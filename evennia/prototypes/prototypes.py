@@ -56,7 +56,7 @@ PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 PROT_FUNCS = {}
 
-_PROTOTYPE_FALLBACK_LOCK = "spawn:all();edit:perm(Admin)"
+_PROTOTYPE_FALLBACK_LOCK = "spawn:all();edit:all()"
 
 
 class PermissionError(RuntimeError):
