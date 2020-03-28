@@ -13,7 +13,8 @@ from evennia.utils.utils import (
     class_from_module,
     get_all_typeclasses,
     variable_from_module,
-    dbref, interactive
+    dbref, interactive,
+    list_to_string
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
@@ -3253,6 +3254,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
       search - search prototype by name or tags.
       list - list available prototypes, optionally limit by tags.
       show, examine - inspect prototype by key. If not given, acts like list.
+      raw - show the raw dict of the prototype as a one-line string for manual editing.
       save - save a prototype to the database. It will be listable by /list.
       delete - remove a prototype from database, if allowed to.
       update - find existing objects with the same prototype_key and update
@@ -3301,6 +3303,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         "search",
         "list",
         "show",
+        "raw",
         "examine",
         "save",
         "delete",
@@ -3433,9 +3436,12 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     def _list_prototypes(self, key=None, tags=None):
         """Display prototypes as a list, optionally limited by key/tags. """
+        table = protlib.list_prototypes(self.caller, key=key, tags=tags)
+        if not table:
+            return True
         EvMore(
             self.caller,
-            str(protlib.list_prototypes(self.caller, key=key, tags=tags)),
+            str(table),
             exit_on_lastpage=True,
             justify_kwargs=False,
         )
@@ -3492,8 +3498,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         Parse ;-separated input list.
         """
         key, desc, tags = "", "", []
-        if ";" in self.args:
-            parts = (part.strip().lower() for part in self.args.split(";"))
+        if ";" in argstring:
+            parts = [part.strip().lower() for part in argstring.split(";")]
             if len(parts) > 1 and desc:
                 key = parts[0]
                 desc = parts[1]
@@ -3537,8 +3543,18 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
 
             # search for key;tag combinations
-            key, _, tags =  self._parse_key_desc_tags(self.args, desc=False)
+            key, _, tags = self._parse_key_desc_tags(self.args, desc=False)
             self._list_prototypes(key, tags)
+            return
+
+        if "raw" in self.switches:
+            # query for key match and return the prototype as a safe one-liner string.
+            if not self.args:
+                caller.msg("You need to specify a prototype-key to get the raw data for.")
+            prototype = self._search_prototype(self.args)
+            if not prototype:
+                return
+            caller.msg(str(prototype))
             return
 
         if "show" in self.switches or "examine" in self.switches:
@@ -3556,7 +3572,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         if "list" in self.switches:
             # for list, all optional arguments are tags.
-            self._list_prototypes(tags=self.lhslist)
+            tags = self.lhslist
+            err = self._list_prototypes(tags=tags)
+            if err:
+                caller.msg("No prototypes found with prototype-tag(s): {}".format(
+                    list_to_string(tags, "or")))
             return
 
         if "save" in self.switches:

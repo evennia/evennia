@@ -272,10 +272,10 @@ def save_prototype(prototype):
         stored_prototype = create_script(
             DbPrototype,
             key=prototype_key,
-            desc=prototype["prototype_desc"],
+            desc=in_prototype["prototype_desc"],
             persistent=True,
             locks=prototype_locks,
-            tags=prototype["prototype_tags"],
+            tags=in_prototype["prototype_tags"],
             attributes=[("prototype", in_prototype)],
         )
     return stored_prototype.prototype
@@ -724,15 +724,15 @@ def prototype_to_str(prototype):
         prototype_desc=prototype.get("prototype_desc", "|wNone|n"),
         prototype_parent=prototype.get("prototype_parent", "|wNone|n"),
     )
-
-    key = prototype.get("key", "")
-    if key:
+    key = aliases = attrs = tags = locks = permissions = location = home = destination = ""
+    if "key" in prototype:
+        key = prototype["key"]
         key = "|ckey:|n {key}".format(key=key)
-    aliases = prototype.get("aliases", "")
-    if aliases:
+    if "aliases" in prototype:
+        aliases = prototype["aliases"]
         aliases = "|caliases:|n {aliases}".format(aliases=", ".join(aliases))
-    attrs = prototype.get("attrs", "")
-    if attrs:
+    if "attrs" in prototype:
+        attrs = prototype["attrs"]
         out = []
         for (attrkey, value, category, locks) in attrs:
             locks = ", ".join(lock for lock in locks if lock)
@@ -751,8 +751,8 @@ def prototype_to_str(prototype):
                 )
             )
         attrs = "|cattrs:|n\n {attrs}".format(attrs="\n ".join(out))
-    tags = prototype.get("tags", "")
-    if tags:
+    if "tags" in prototype:
+        tags = prototype['tags']
         out = []
         for (tagkey, category, data) in tags:
             out.append(
@@ -761,20 +761,20 @@ def prototype_to_str(prototype):
                 )
             )
         tags = "|ctags:|n\n {tags}".format(tags=", ".join(out))
-    locks = prototype.get("locks", "")
-    if locks:
+    if "locks" in prototype:
+        locks = prototype["locks"]
         locks = "|clocks:|n\n {locks}".format(locks=locks)
-    permissions = prototype.get("permissions", "")
-    if permissions:
+    if "permissions" in prototype:
+        permissions = prototype["permissions"]
         permissions = "|cpermissions:|n {perms}".format(perms=", ".join(permissions))
-    location = prototype.get("location", "")
-    if location:
+    if "location" in prototype:
+        location = prototype["location"]
         location = "|clocation:|n {location}".format(location=location)
-    home = prototype.get("home", "")
-    if home:
+    if "home" in prototype:
+        home = prototype["home"]
         home = "|chome:|n {home}".format(home=home)
-    destination = prototype.get("destination", "")
-    if destination:
+    if "destination" in prototype:
+        destination = prototype["destination"]
         destination = "|cdestination:|n {destination}".format(destination=destination)
 
     body = "\n".join(

@@ -2294,7 +2294,8 @@ def node_apply_diff(caller, **kwargs):
     if not custom_location:
         diff.pop("location", None)
 
-    txt, options = _format_diff_text_and_options(diff, objects=update_objects, base_obj=base_obj)
+    txt, options = _format_diff_text_and_options(diff, objects=update_objects,
+                                                 base_obj=base_obj, prototype=prototype)
 
     if options:
         text = [

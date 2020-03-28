@@ -54,7 +54,8 @@ without arguments starts a full interactive Python console.
   bugfixes.
 - Remove `dummy@example.com` as a default account email when unset, a string is no longer 
   required by Django.
-- Fixes to `spawn`, make updating an existing prototype/object work better.
+- Fixes to `spawn`, make updating an existing prototype/object work better. Add `/raw` switch
+  to `spawn` command to extract the raw prototype dict for manual editing.
 
 
 ## Evennia 0.9 (2018-2019)
