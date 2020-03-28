@@ -145,7 +145,7 @@ from evennia.prototypes.prototypes import (
     value_to_obj,
     value_to_obj_or_any,
     init_spawn_value,
-    _PROTOTYPE_TAG_CATEGORY,
+    PROTOTYPE_TAG_CATEGORY,
 )
 
 
@@ -269,7 +269,7 @@ def prototype_from_object(obj):
     """
     # first, check if this object already has a prototype
 
-    prot = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
+    prot = obj.tags.get(category=PROTOTYPE_TAG_CATEGORY, return_list=True)
     if prot:
         prot = protlib.search_prototype(prot[0])
 
@@ -625,7 +625,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exac
     prototype_key = new_prototype["prototype_key"]
 
     if not objects:
-        objects = ObjectDB.objects.get_by_tag(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+        objects = ObjectDB.objects.get_by_tag(prototype_key, category=PROTOTYPE_TAG_CATEGORY)
 
     if not objects:
         return 0
@@ -640,7 +640,7 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exac
     for obj in objects:
         do_save = False
 
-        old_prot_key = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
+        old_prot_key = obj.tags.get(category=PROTOTYPE_TAG_CATEGORY, return_list=True)
         old_prot_key = old_prot_key[0] if old_prot_key else None
 
         try:
@@ -743,8 +743,8 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exac
             logger.log_trace(f"Failed to apply prototype '{prototype_key}' to {obj}.")
         finally:
             # we must always make sure to re-add the prototype tag
-            obj.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
-            obj.tags.add(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+            obj.tags.clear(category=PROTOTYPE_TAG_CATEGORY)
+            obj.tags.add(prototype_key, category=PROTOTYPE_TAG_CATEGORY)
 
         if do_save:
             changed += 1
@@ -927,7 +927,7 @@ def spawn(*prototypes, **kwargs):
         prototype_key = prototype.get("prototype_key", None)
         if prototype_key:
             # we make sure to add a tag identifying which prototype created this object
-            tags.append((prototype_key, _PROTOTYPE_TAG_CATEGORY))
+            tags.append((prototype_key, PROTOTYPE_TAG_CATEGORY))
 
         val = prot.pop("exec", "")
         execs = init_spawn_value(val, make_iter)

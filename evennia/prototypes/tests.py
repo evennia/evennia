@@ -851,7 +851,7 @@ class TestMenuModule(EvenniaTest):
 
         self.assertEqual(obj.typeclass_path, "evennia.objects.objects.DefaultObject")
         self.assertEqual(
-            obj.tags.get(category=spawner._PROTOTYPE_TAG_CATEGORY), self.test_prot["prototype_key"]
+            obj.tags.get(category=spawner.PROTOTYPE_TAG_CATEGORY), self.test_prot["prototype_key"]
         )
 
         # update helpers
