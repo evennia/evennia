@@ -166,6 +166,18 @@ _PROTOTYPE_ROOT_NAMES = (
 _NON_CREATE_KWARGS = _CREATE_OBJECT_KWARGS + _PROTOTYPE_META_NAMES
 
 
+class Unset:
+    """
+    Helper class representing a non-set diff element.
+
+    """
+    def __bool__(self):
+        return False
+    def __str__(self):
+        return "<Unset>"
+
+
+
 # Helper
 
 
@@ -351,12 +363,6 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
             instruction can be one of "REMOVE", "ADD", "UPDATE" or "KEEP".
 
     """
-    class Unset:
-        def __bool__(self):
-            return False
-        def __str__(self):
-            return "<Unset>"
-
     _unset = Unset()
 
     def _recursive_diff(old, new, depth=0):

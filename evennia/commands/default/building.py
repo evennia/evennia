@@ -3330,7 +3330,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         # handle the search result
         err = None
         if not prototypes:
-            err = f"No prototype named '{prototype_key}'."
+            err = f"No prototype named '{prototype_key}' was found."
         elif nprots > 1:
             err = "Found {} prototypes matching '{}':\n  {}".format(
                     nprots,
@@ -3430,7 +3430,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if prototypes:
             return "\n".join(protlib.prototype_to_str(prot) for prot in prototypes)
         elif query:
-            self.caller.msg(f"No prototype found to match the query '{query}'.")
+            self.caller.msg(f"No prototype named '{query}' was found.")
         else:
             self.caller.msg(f"No prototypes found.")
 
@@ -3583,24 +3583,44 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # store a prototype to the database store
             if not self.args:
                 caller.msg(
-                    "Usage: spawn/save <key>[;desc[;tag,tag[,...][;lockstring]]] = <prototype_dict>"
+                    "Usage: spawn/save [<key>[;desc[;tag,tag[,...][;lockstring]]]] = <prototype_dict>"
                 )
                 return
+            if self.rhs:
+                # input on the form key = prototype
+                prototype_key, prototype_desc, prototype_tags = self._parse_key_desc_tags(self.lhs)
+                prototype_key = None if not prototype_key else prototype_key
+                prototype_desc = None if not prototype_desc else prototype_desc
+                prototype_tags = None if not prototype_tags else prototype_tags
+                prototype_input = self.rhs.strip()
+            else:
+                prototype_key = prototype_desc = None
+                prototype_tags = None
+                prototype_input = self.lhs.strip()
 
-            prototype_key, prototype_desc, prototype_tags = self._parse_key_desc_tags(self.lhs)
-
-            # handle rhs:
-            prototype = self._parse_prototype(self.rhs.strip())
+            # handle parsing
+            prototype = self._parse_prototype(prototype_input)
             if not prototype:
                 return
 
-            if prototype.get("prototype_key") != prototype_key:
+            prot_prototype_key = prototype.get("prototype_key")
+
+            if not (prototype_key or prot_prototype_key):
+                caller.msg("A prototype_key must be given, either as `prototype_key = <prototype>` "
+                           "or as a key 'prototype_key' inside the prototype structure.")
+                return
+
+            if prototype_key is None:
+                prototype_key = prot_prototype_key
+
+            if prot_prototype_key != prototype_key:
                 caller.msg("(Replacing `prototype_key` in prototype with given key.)")
                 prototype['prototype_key'] = prototype_key
-            if prototype_desc and prototype.get("prototype_desc") != prototype_desc:
+
+            if prototype_desc is not None and prot_prototype_key != prototype_desc:
                 caller.msg("(Replacing `prototype_desc` in prototype with given desc.)")
                 prototype['prototype_desc'] = prototype_desc
-            if prototype_tags and prototype.get("prototype_tags") != prototype_tags:
+            if prototype_tags is not None and prototype.get("prototype_tags") != prototype_tags:
                 caller.msg("(Replacing `prototype_tags` in prototype with given tag(s))" )
                 prototype['prototype_tags'] = prototype_tags
 
