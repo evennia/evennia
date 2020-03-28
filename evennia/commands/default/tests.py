@@ -1228,13 +1228,22 @@ class TestBuilding(CommandTest):
             inputs=["y"],
         )
 
+        self.call(
+            building.CmdSpawn(),
+            "/save testprot2 = {'key':'Test Char', "
+            "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
+            "(Replacing `prototype_key` in prototype with given key.)|Saved prototype: testprot2",
+            inputs=["y"],
+        )
+
         self.call(building.CmdSpawn(), "/search ", "Key ")
         self.call(building.CmdSpawn(), "/search test;test2", "")
 
         self.call(
             building.CmdSpawn(),
             "/save {'key':'Test Char', " "'typeclass':'evennia.objects.objects.DefaultCharacter'}",
-            "To save a prototype it must have the 'prototype_key' set.",
+            "A prototype_key must be given, either as `prototype_key = <prototype>` or as "
+            "a key 'prototype_key' inside the prototype structure.",
         )
 
         self.call(building.CmdSpawn(), "/list", "Key ")
@@ -1312,7 +1321,7 @@ class TestBuilding(CommandTest):
         ball.delete()
 
         # test calling spawn with an invalid prototype.
-        self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST'")
+        self.call(building.CmdSpawn(), "'NO_EXIST'", "No prototype named 'NO_EXIST' was found.")
 
         # Test listing commands
         self.call(building.CmdSpawn(), "/list", "Key ")
@@ -1343,13 +1352,12 @@ class TestBuilding(CommandTest):
 
         # spawn/edit with invalid prototype
         msg = self.call(
-            building.CmdSpawn(), "/edit NO_EXISTS", "No prototype 'NO_EXISTS' was found."
+            building.CmdSpawn(), "/edit NO_EXISTS", "No prototype named 'NO_EXISTS' was found."
         )
 
         # spawn/examine (missing prototype)
         # lists all prototypes that exist
-        msg = self.call(building.CmdSpawn(), "/examine")
-        assert "testball" in msg and "testprot" in msg
+        self.call(building.CmdSpawn(), "/examine", "You need to specify a prototype-key to show.")
 
         # spawn/examine with valid prototype
         # prints the prototype
@@ -1358,7 +1366,7 @@ class TestBuilding(CommandTest):
 
         # spawn/examine with invalid prototype
         # shows error
-        self.call(building.CmdSpawn(), "/examine NO_EXISTS", "No prototype 'NO_EXISTS' was found.")
+        self.call(building.CmdSpawn(), "/examine NO_EXISTS", "No prototype named 'NO_EXISTS' was found.")
 
 
 class TestComms(CommandTest):

@@ -487,6 +487,8 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
+    excluded_typeclass_paths = ["evennia.prototypes.prototypes.DbPrototype"]
+
     def func(self):
         """implement method"""
 
@@ -519,6 +521,8 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             if not scripts:
                 caller.msg("No scripts are running.")
                 return
+        # filter any found scripts by tag category.
+        scripts = scripts.exclude(db_typeclass_path__in=self.excluded_typeclass_paths)
 
         if not scripts:
             string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
