@@ -7,7 +7,7 @@ from django.db.models import Q, Min, Max
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
-from evennia.utils import create, utils, search
+from evennia.utils import create, utils, search, logger
 from evennia.utils.utils import (
     inherits_from,
     class_from_module,
@@ -3479,8 +3479,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                     "Use spawn/update <key> to apply later as needed.|n"
                 )
                 return
-            n_updated = spawner.batch_update_objects_with_prototype(
-                prototype, objects=existing_objects)
+            try:
+                n_updated = spawner.batch_update_objects_with_prototype(
+                    prototype, objects=existing_objects)
+            except Exception:
+                logger.log_trace()
             caller.msg(f"{n_updated} objects were updated.")
         return
 
@@ -3585,17 +3588,18 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # check for existing prototype (exact match)
             old_prototype = self._search_prototype(prototype_key, quiet=True)
 
-            print("old_prototype", old_prototype)
-            print("new_prototype", prototype)
             diff = spawner.prototype_diff(old_prototype, prototype, homogenize=True)
-            print("diff", diff)
             diffstr = spawner.format_diff(diff)
             new_prototype_detail = self._get_prototype_detail(prototypes=[prototype])
 
             if old_prototype:
-                string = (f"|yExisting prototype \"{prototype_key}\" found. Change:|n\n{diffstr}\n"
-                          f"|yNew changed prototype:|n\n{new_prototype_detail}")
-                question = "\n|yDo you want to apply the change to the existing prototype?|n [Y]/N"
+                if not diffstr:
+                    string = f"|yAlready existing Prototype:|n\n{new_prototype_detail}\n"
+                    question = "\nThere seems to be no changes. Do you still want to (re)save? [Y]/N"
+                else:
+                    string = (f"|yExisting prototype \"{prototype_key}\" found. Change:|n\n{diffstr}\n"
+                              f"|yNew changed prototype:|n\n{new_prototype_detail}")
+                    question = "\n|yDo you want to apply the change to the existing prototype?|n [Y]/N"
             else:
                 string = f"|yCreating new prototype:|n\n{new_prototype_detail}"
                 question = "\nDo you want to continue saving? [Y]/N"
@@ -3682,7 +3686,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         try:
             for obj in spawner.spawn(prototype):
                 self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
-                if not noloc and "location" not in prototype:
+                if not prototype.get('location') and not noloc:
                     # we don't hardcode the location in the prototype (unless the user
                     # did so manually) - that would lead to it having to be 'removed' every
                     # time we try to update objects with this prototype in the future.
