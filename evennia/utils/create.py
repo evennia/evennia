@@ -501,6 +501,8 @@ def create_account(
         report_to (Object): An object with a msg() method to report
             errors to. If not given, errors will be logged.
 
+    Returns:
+        (object) The acount object of the new account.
     Raises:
         ValueError: If `key` already exists in database.
 
