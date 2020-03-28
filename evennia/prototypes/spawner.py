@@ -138,6 +138,7 @@ from django.conf import settings
 
 import evennia
 from evennia.objects.models import ObjectDB
+from evennia.utils import logger
 from evennia.utils.utils import make_iter, is_iter
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.prototypes import (
@@ -322,7 +323,7 @@ def prototype_from_object(obj):
     return prot
 
 
-def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False):
+def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implicit_keep=False):
     """
     A 'detailed' diff specifies differences down to individual sub-sections
     of the prototype, like individual attributes, permissions etc. It is used
@@ -336,6 +337,10 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False):
             attr/tag (for example) are represented by a tuple.
         homogenize (bool, optional): Auto-homogenize both prototypes for the best comparison.
             This is most useful for displaying.
+        implicit_keep (bool, optional): If set, the resulting diff will assume KEEP unless the new
+            prototype explicitly change them. That is, if a key exists in `prototype1` and
+            not in `prototype2`, it will not be REMOVEd but set to KEEP instead. This is particularly
+            useful for auto-generated prototypes when updating objects.
 
     Returns:
         diff (dict): A structure detailing how to convert prototype1 to prototype2. All
@@ -346,6 +351,10 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False):
             instruction can be one of "REMOVE", "ADD", "UPDATE" or "KEEP".
 
     """
+    class Unset:
+        def __bool__(self):
+            return False
+    _unset = Unset()
 
     def _recursive_diff(old, new, depth=0):
 
@@ -363,6 +372,9 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False):
                     return {
                         part[0] if is_iter(part) else part: (part, None, "REMOVE") for part in old
                     }
+                if isinstance(new, Unset) and implicit_keep:
+                    # the new does not define any change, use implicit-keep
+                    return (old, None, "KEEP")
                 return (old, new, "REMOVE")
             elif not old and new:
                 if depth < maxdepth and new_type == dict:
@@ -376,7 +388,7 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False):
         elif depth < maxdepth and new_type == dict:
             all_keys = set(list(old.keys()) + list(new.keys()))
             return {
-                key: _recursive_diff(old.get(key), new.get(key), depth=depth + 1)
+                key: _recursive_diff(old.get(key), new.get(key, _unset), depth=depth + 1)
                 for key in all_keys
             }
         elif depth < maxdepth and is_iter(new):
@@ -384,7 +396,7 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False):
             new_map = {part[0] if is_iter(part) else part: part for part in new}
             all_keys = set(list(old_map.keys()) + list(new_map.keys()))
             return {
-                key: _recursive_diff(old_map.get(key), new_map.get(key), depth=depth + 1)
+                key: _recursive_diff(old_map.get(key), new_map.get(key, _unset), depth=depth + 1)
                 for key in all_keys
             }
         elif old != new:
@@ -468,7 +480,7 @@ def flatten_diff(diff):
     return flat_diff
 
 
-def prototype_diff_from_object(prototype, obj):
+def prototype_diff_from_object(prototype, obj, implicit_keep=True):
     """
     Get a simple diff for a prototype compared to an object which may or may not already have a
     prototype (or has one but changed locally). For more complex migratations a manual diff may be
@@ -482,6 +494,11 @@ def prototype_diff_from_object(prototype, obj):
         diff (dict): Mapping for every prototype key: {"keyname": "REMOVE|UPDATE|KEEP", ...}
         obj_prototype (dict): The prototype calculated for the given object. The diff is how to
             convert this prototype into the new prototype.
+        implicit_keep (bool, optional): This is usually what one wants for object updating. When
+            set, this means the prototype diff will assume KEEP on differences
+            between the object-generated prototype and that which is not explicitly set in the
+            new prototype. This means e.g. that even though the object has a location, and the
+            prototype does not specify the location, it will not be unset.
 
     Notes:
         The `diff` is on the following form:
@@ -494,7 +511,8 @@ def prototype_diff_from_object(prototype, obj):
 
     """
     obj_prototype = prototype_from_object(obj)
-    diff = prototype_diff(obj_prototype, protlib.homogenize_prototype(prototype))
+    diff = prototype_diff(obj_prototype, protlib.homogenize_prototype(prototype),
+                          implicit_keep=implicit_keep)
     return diff, obj_prototype
 
 
@@ -511,6 +529,7 @@ def format_diff(diff, minimal=True):
         texts (str): The formatted text.
 
     """
+
     valid_instructions = ("KEEP", "REMOVE", "ADD", "UPDATE")
 
     def _visualize(obj, rootname, get_name=False):
@@ -572,7 +591,7 @@ def format_diff(diff, minimal=True):
     return "\n ".join(line for line in texts if line)
 
 
-def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
+def batch_update_objects_with_prototype(prototype, diff=None, objects=None, exact=False):
     """
     Update existing objects with the latest version of the prototype.
 
@@ -583,6 +602,12 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
             If not given this will be constructed from the first object found.
         objects (list, optional): List of objects to update. If not given, query for these
             objects using the prototype's `prototype_key`.
+        exact (bool, optional): By default (`False`), keys not explicitly in the prototype will
+            not be applied to the object, but will be retained as-is. This is usually what is
+            expected - for example, one usually do not want to remove the object's location even
+            if it's not set in the prototype. With `exact=True`, all un-specified properties of the
+            objects will be removed if they exist. This will lead to a more accurate 1:1 correlation
+            between the  object and the prototype but is usually impractical.
     Returns:
         changed (int): The number of objects that had changes applied to them.
 
@@ -615,98 +640,108 @@ def batch_update_objects_with_prototype(prototype, diff=None, objects=None):
         old_prot_key = obj.tags.get(category=_PROTOTYPE_TAG_CATEGORY, return_list=True)
         old_prot_key = old_prot_key[0] if old_prot_key else None
 
-        for key, directive in diff.items():
-            if directive in ("UPDATE", "REPLACE"):
+        try:
+            for key, directive in diff.items():
 
-                if key in _PROTOTYPE_META_NAMES:
-                    # prototype meta keys are not stored on-object
+                if key not in new_prototype and not exact:
+                    # we don't update the object if the prototype does not actually
+                    # contain the key (the diff will report REMOVE but we ignore it
+                    # since exact=False)
                     continue
 
-                val = new_prototype[key]
-                do_save = True
+                if directive in ("UPDATE", "REPLACE"):
 
-                if key == "key":
-                    obj.db_key = init_spawn_value(val, str)
-                elif key == "typeclass":
-                    obj.db_typeclass_path = init_spawn_value(val, str)
-                elif key == "location":
-                    obj.db_location = init_spawn_value(val, value_to_obj)
-                elif key == "home":
-                    obj.db_home = init_spawn_value(val, value_to_obj)
-                elif key == "destination":
-                    obj.db_destination = init_spawn_value(val, value_to_obj)
-                elif key == "locks":
-                    if directive == "REPLACE":
-                        obj.locks.clear()
-                    obj.locks.add(init_spawn_value(val, str))
-                elif key == "permissions":
-                    if directive == "REPLACE":
-                        obj.permissions.clear()
-                    obj.permissions.batch_add(*(init_spawn_value(perm, str) for perm in val))
-                elif key == "aliases":
-                    if directive == "REPLACE":
-                        obj.aliases.clear()
-                    obj.aliases.batch_add(*(init_spawn_value(alias, str) for alias in val))
-                elif key == "tags":
-                    if directive == "REPLACE":
-                        obj.tags.clear()
-                    obj.tags.batch_add(
-                        *(
-                            (init_spawn_value(ttag, str), tcategory, tdata)
-                            for ttag, tcategory, tdata in val
-                        )
-                    )
-                elif key == "attrs":
-                    if directive == "REPLACE":
-                        obj.attributes.clear()
-                    obj.attributes.batch_add(
-                        *(
-                            (
-                                init_spawn_value(akey, str),
-                                init_spawn_value(aval, value_to_obj),
-                                acategory,
-                                alocks,
+                    if key in _PROTOTYPE_META_NAMES:
+                        # prototype meta keys are not stored on-object
+                        continue
+
+                    val = new_prototype[key]
+                    do_save = True
+
+                    if key == "key":
+                        obj.db_key = init_spawn_value(val, str)
+                    elif key == "typeclass":
+                        obj.db_typeclass_path = init_spawn_value(val, str)
+                    elif key == "location":
+                        obj.db_location = init_spawn_value(val, value_to_obj)
+                    elif key == "home":
+                        obj.db_home = init_spawn_value(val, value_to_obj)
+                    elif key == "destination":
+                        obj.db_destination = init_spawn_value(val, value_to_obj)
+                    elif key == "locks":
+                        if directive == "REPLACE":
+                            obj.locks.clear()
+                        obj.locks.add(init_spawn_value(val, str))
+                    elif key == "permissions":
+                        if directive == "REPLACE":
+                            obj.permissions.clear()
+                        obj.permissions.batch_add(*(init_spawn_value(perm, str) for perm in val))
+                    elif key == "aliases":
+                        if directive == "REPLACE":
+                            obj.aliases.clear()
+                        obj.aliases.batch_add(*(init_spawn_value(alias, str) for alias in val))
+                    elif key == "tags":
+                        if directive == "REPLACE":
+                            obj.tags.clear()
+                        obj.tags.batch_add(
+                            *(
+                                (init_spawn_value(ttag, str), tcategory, tdata)
+                                for ttag, tcategory, tdata in val
                             )
-                            for akey, aval, acategory, alocks in val
                         )
-                    )
-                elif key == "exec":
-                    # we don't auto-rerun exec statements, it would be huge security risk!
-                    pass
-                else:
-                    obj.attributes.add(key, init_spawn_value(val, value_to_obj))
-            elif directive == "REMOVE":
-                do_save = True
-                if key == "key":
-                    obj.db_key = ""
-                elif key == "typeclass":
-                    # fall back to default
-                    obj.db_typeclass_path = settings.BASE_OBJECT_TYPECLASS
-                elif key == "location":
-                    obj.db_location = None
-                elif key == "home":
-                    obj.db_home = None
-                elif key == "destination":
-                    obj.db_destination = None
-                elif key == "locks":
-                    obj.locks.clear()
-                elif key == "permissions":
-                    obj.permissions.clear()
-                elif key == "aliases":
-                    obj.aliases.clear()
-                elif key == "tags":
-                    obj.tags.clear()
-                elif key == "attrs":
-                    obj.attributes.clear()
-                elif key == "exec":
-                    # we don't auto-rerun exec statements, it would be huge security risk!
-                    pass
-                else:
-                    obj.attributes.remove(key)
-
-        # we must always make sure to re-add the prototype tag
-        obj.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
-        obj.tags.add(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+                    elif key == "attrs":
+                        if directive == "REPLACE":
+                            obj.attributes.clear()
+                        obj.attributes.batch_add(
+                            *(
+                                (
+                                    init_spawn_value(akey, str),
+                                    init_spawn_value(aval, value_to_obj),
+                                    acategory,
+                                    alocks,
+                                )
+                                for akey, aval, acategory, alocks in val
+                            )
+                        )
+                    elif key == "exec":
+                        # we don't auto-rerun exec statements, it would be huge security risk!
+                        pass
+                    else:
+                        obj.attributes.add(key, init_spawn_value(val, value_to_obj))
+                elif directive == "REMOVE":
+                    do_save = True
+                    if key == "key":
+                        obj.db_key = ""
+                    elif key == "typeclass":
+                        # fall back to default
+                        obj.db_typeclass_path = settings.BASE_OBJECT_TYPECLASS
+                    elif key == "location":
+                        obj.db_location = None
+                    elif key == "home":
+                        obj.db_home = None
+                    elif key == "destination":
+                        obj.db_destination = None
+                    elif key == "locks":
+                        obj.locks.clear()
+                    elif key == "permissions":
+                        obj.permissions.clear()
+                    elif key == "aliases":
+                        obj.aliases.clear()
+                    elif key == "tags":
+                        obj.tags.clear()
+                    elif key == "attrs":
+                        obj.attributes.clear()
+                    elif key == "exec":
+                        # we don't auto-rerun exec statements, it would be huge security risk!
+                        pass
+                    else:
+                        obj.attributes.remove(key)
+        except Exception:
+            logger.log_trace(f"Failed to apply prototype '{prototype_key}' to {obj}.")
+        finally:
+            # we must always make sure to re-add the prototype tag
+            obj.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
+            obj.tags.add(prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
 
         if do_save:
             changed += 1

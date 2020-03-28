@@ -238,9 +238,6 @@ def save_prototype(prototype):
         )
 
     # make sure meta properties are included with defaults
-    stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
-    prototype = stored_prototype[0].prototype if stored_prototype else {}
-
     in_prototype["prototype_desc"] = in_prototype.get(
         "prototype_desc", prototype.get("prototype_desc", "")
     )
@@ -260,17 +257,16 @@ def save_prototype(prototype):
     ]
     in_prototype["prototype_tags"] = prototype_tags
 
-    prototype.update(in_prototype)
-
+    stored_prototype = DbPrototype.objects.filter(db_key=prototype_key)
     if stored_prototype:
         # edit existing prototype
         stored_prototype = stored_prototype[0]
-        stored_prototype.desc = prototype["prototype_desc"]
+        stored_prototype.desc = in_prototype["prototype_desc"]
         if prototype_tags:
             stored_prototype.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
-            stored_prototype.tags.batch_add(*prototype["prototype_tags"])
-        stored_prototype.locks.add(prototype["prototype_locks"])
-        stored_prototype.attributes.add("prototype", prototype)
+            stored_prototype.tags.batch_add(*in_prototype["prototype_tags"])
+        stored_prototype.locks.add(in_prototype["prototype_locks"])
+        stored_prototype.attributes.add("prototype", in_prototype)
     else:
         # create a new prototype
         stored_prototype = create_script(
@@ -280,7 +276,7 @@ def save_prototype(prototype):
             persistent=True,
             locks=prototype_locks,
             tags=prototype["prototype_tags"],
-            attributes=[("prototype", prototype)],
+            attributes=[("prototype", in_prototype)],
         )
     return stored_prototype.prototype
 

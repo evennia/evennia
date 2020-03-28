@@ -2131,12 +2131,13 @@ def _keep_diff(caller, **kwargs):
     tmp[path[-1]] = tuple(list(tmp[path[-1]][:-1]) + ["KEEP"])
 
 
-def _format_diff_text_and_options(diff, **kwargs):
+def _format_diff_text_and_options(diff, minimal=True, **kwargs):
     """
     Reformat the diff in a way suitable for the olc menu.
 
     Args:
         diff (dict): A diff as produced by `prototype_diff`.
+        minimal (bool, optional): Don't show KEEPs.
 
     Kwargs:
         any (any): Forwarded into the generated options as arguments to the callable.
@@ -2150,12 +2151,15 @@ def _format_diff_text_and_options(diff, **kwargs):
 
     def _visualize(obj, rootname, get_name=False):
         if utils.is_iter(obj):
+            if not obj:
+                return str(obj)
             if get_name:
                 return obj[0] if obj[0] else "<unset>"
             if rootname == "attrs":
                 return "{} |W=|n {} |W(category:|n {}|W, locks:|n {}|W)|n".format(*obj)
             elif rootname == "tags":
                 return "{} |W(category:|n {}|W)|n".format(obj[0], obj[1])
+
         return "{}".format(obj)
 
     def _parse_diffpart(diffpart, optnum, *args):
@@ -2166,17 +2170,33 @@ def _format_diff_text_and_options(diff, **kwargs):
             rootname = args[0]
             old, new, instruction = diffpart
             if instruction == "KEEP":
-                texts.append("   |gKEEP|W:|n {old}".format(old=_visualize(old, rootname)))
+                if not minimal:
+                    texts.append("   |gKEEP|W:|n {old}".format(old=_visualize(old, rootname)))
             else:
+                # instructions we should be able to revert by a menu choice
                 vold = _visualize(old, rootname)
                 vnew = _visualize(new, rootname)
                 vsep = "" if len(vold) < 78 else "\n"
-                vinst = "|rREMOVE|n" if instruction == "REMOVE" else "|y{}|n".format(instruction)
-                texts.append(
-                    "   |c[{num}] {inst}|W:|n {old} |W->|n{sep} {new}".format(
-                        inst=vinst, num=optnum, old=vold, sep=vsep, new=vnew
+
+                if instruction == "ADD":
+                    texts.append("   |c[{optnum}] |yADD|n: {new}".format(
+                        optnum=optnum, new=_visualize(new, rootname)))
+                elif instruction == "REMOVE" and not new:
+                    if rootname == "tags" and old[1] == protlib._PROTOTYPE_TAG_CATEGORY:
+                        # special exception for the prototype-tag mechanism
+                        # this is added post-spawn automatically and should
+                        # not be listed as REMOVE.
+                        return texts, options, optnum
+
+                    texts.append("   |c[{optnum}] |rREMOVE|n: {old}".format(
+                        optnum=optnum, old=_visualize(old, rootname)))
+                else:
+                    vinst = "|y{}|n".format(instruction)
+                    texts.append(
+                        "   |c[{num}] {inst}|W:|n {old} |W->|n{sep} {new}".format(
+                            inst=vinst, num=optnum, old=vold, sep=vsep, new=vnew
+                        )
                     )
-                )
                 options.append(
                     {
                         "key": str(optnum),
@@ -2203,11 +2223,8 @@ def _format_diff_text_and_options(diff, **kwargs):
     for root_key in sorted(diff):
         diffpart = diff[root_key]
         text, option, optnum = _parse_diffpart(diffpart, optnum, root_key)
-
         heading = "- |w{}:|n ".format(root_key)
-        if root_key in ("attrs", "tags", "permissions"):
-            texts.append(heading)
-        elif text:
+        if text:
             text = [heading + text[0]] + text[1:]
         else:
             text = [heading]
