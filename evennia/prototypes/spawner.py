@@ -354,6 +354,9 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
     class Unset:
         def __bool__(self):
             return False
+        def __str__(self):
+            return "<Unset>"
+
     _unset = Unset()
 
     def _recursive_diff(old, new, depth=0):
@@ -361,10 +364,10 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
         old_type = type(old)
         new_type = type(new)
 
-        if old_type == new_type and not (old and new):
+        if old_type == new_type and not (old or new):
             # both old and new are unset, like [] or None
-            return (old, new, "KEEP")
-        elif old_type != new_type:
+            return (None, None, "KEEP")
+        if old_type != new_type:
             if old and not new:
                 if depth < maxdepth and old_type == dict:
                     return {key: (part, None, "REMOVE") for key, part in old.items()}
@@ -388,7 +391,7 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
         elif depth < maxdepth and new_type == dict:
             all_keys = set(list(old.keys()) + list(new.keys()))
             return {
-                key: _recursive_diff(old.get(key), new.get(key, _unset), depth=depth + 1)
+                key: _recursive_diff(old.get(key, _unset), new.get(key, _unset), depth=depth + 1)
                 for key in all_keys
             }
         elif depth < maxdepth and is_iter(new):
@@ -396,7 +399,7 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
             new_map = {part[0] if is_iter(part) else part: part for part in new}
             all_keys = set(list(old_map.keys()) + list(new_map.keys()))
             return {
-                key: _recursive_diff(old_map.get(key), new_map.get(key, _unset), depth=depth + 1)
+                key: _recursive_diff(old_map.get(key, _unset), new_map.get(key, _unset), depth=depth + 1)
                 for key in all_keys
             }
         elif old != new:
