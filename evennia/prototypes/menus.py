@@ -1488,7 +1488,7 @@ def node_tags(caller):
         as the |cprototype_key|n and with a category "{tag_category}". This allows the spawner to
         optionally update previously spawned objects when their prototype changes.
     """.format(
-        tag_category=protlib._PROTOTYPE_TAG_CATEGORY
+        tag_category=protlib.PROTOTYPE_TAG_CATEGORY
     )
 
     text = (text, helptext)
@@ -2182,7 +2182,7 @@ def _format_diff_text_and_options(diff, minimal=True, **kwargs):
                     texts.append("   |c[{optnum}] |yADD|n: {new}".format(
                         optnum=optnum, new=_visualize(new, rootname)))
                 elif instruction == "REMOVE" and not new:
-                    if rootname == "tags" and old[1] == protlib._PROTOTYPE_TAG_CATEGORY:
+                    if rootname == "tags" and old[1] == protlib.PROTOTYPE_TAG_CATEGORY:
                         # special exception for the prototype-tag mechanism
                         # this is added post-spawn automatically and should
                         # not be listed as REMOVE.

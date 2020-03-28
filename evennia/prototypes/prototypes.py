@@ -52,7 +52,7 @@ _PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
     "tags",
     "attrs",
 )
-_PROTOTYPE_TAG_CATEGORY = "from_prototype"
+PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 PROT_FUNCS = {}
 
@@ -263,7 +263,7 @@ def save_prototype(prototype):
         stored_prototype = stored_prototype[0]
         stored_prototype.desc = in_prototype["prototype_desc"]
         if prototype_tags:
-            stored_prototype.tags.clear(category=_PROTOTYPE_TAG_CATEGORY)
+            stored_prototype.tags.clear(category=PROTOTYPE_TAG_CATEGORY)
             stored_prototype.tags.batch_add(*in_prototype["prototype_tags"])
         stored_prototype.locks.add(in_prototype["prototype_locks"])
         stored_prototype.attributes.add("prototype", in_prototype)
@@ -421,7 +421,7 @@ def search_objects_with_prototype(prototype_key):
         matches (Queryset): All matching objects spawned from this prototype.
 
     """
-    return ObjectDB.objects.get_by_tag(key=prototype_key, category=_PROTOTYPE_TAG_CATEGORY)
+    return ObjectDB.objects.get_by_tag(key=prototype_key, category=PROTOTYPE_TAG_CATEGORY)
 
 
 def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
