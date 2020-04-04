@@ -1,0 +1,7 @@
+# requirements for building the docs
+
+sphinx
+sphinx-multiversion
+recommonmark
+
+# theme
