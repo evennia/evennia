@@ -29,8 +29,6 @@ sys.path.insert(1, GAME_DIR)
 
 with cd(GAME_DIR):
     # set up Evennia so its sources can be parsed
-    os.chdir(GAME_DIR)
-
     os.environ["DJANGO_SETTINGS_MODULE"] = "server.conf.settings"
 
     import django  # noqa
