@@ -82,9 +82,9 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 # Custom extras for sidebar
-html_sidebars = {'**':
-    [
-    "versioning.html"
+html_sidebars = {
+    '**': [
+        "versioning.html"
     ]
 }
 
@@ -95,7 +95,7 @@ smv_outputdir_format = "versions" + sep + "{config.release}"
 
 # dynamic setup
 
-github_doc_root = "https://github.com/evennia/evennia-docs/"
+github_doc_root = "https://github.com/evennia/tree/master/docs/"
 def setup(app):
     # recommonmark setup
     app.add_config_value('recommonmark_config', {
