@@ -90,7 +90,7 @@ html_sidebars = {'**':
 
 # sphinx-multiversion config
 
-smv_branch_whitelist = r"^master$"
+smv_branch_whitelist = r"^static-file-docs$"
 smv_outputdir_format = "versions" + sep + "{config.release}"
 
 # dynamic setup
