@@ -88,6 +88,7 @@ html_sidebars = {
 
 # sphinx-multiversion config
 
+smv_tag_whitelist = None
 smv_branch_whitelist = r"^static-file-docs$"
 smv_outputdir_format = "versions" + sep + "{config.release}"
 
