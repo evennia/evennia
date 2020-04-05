@@ -1,6 +1,27 @@
 # evennia-docs
 Documentation for the Evennia MUD creation system.
 
-This is very much WIP. We are still experimenting with solutions. Don't use or contribute yet.
+The live documentation is available at `https://evennia.github.io/evennia/`.
 
-The live documentation will be available at `https://evennia.github.io/evennia-docs`.
+# building the docs
+
+## Prerequisits
+
+- Clone the evennia repository.
+- Follow the normal Evennia Getting-Started instructions. Use a virtualenv and create
+a new game folder called `gamedir` at the same level as your `evennia` repo and run migrations in it.
+
+```
+  (top)
+  |
+  ----- evennia/
+  |
+  ----- gamedir/
+```
+
+- Make sure you are in your virtualenv. Go to `evennia/docs/` and install the `requirements.txt` or run `make install` to do the same.
+
+
+## Building the docs.
+
+With your build environment set up as above, stand in the `evennia/docs` directory and run `make local`. This builds the documentation.
