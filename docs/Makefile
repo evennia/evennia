@@ -5,6 +5,8 @@
 # from the environment for the first two.
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
+SPHINXMULTIVERSION ?= sphinx-multiversion
+SPHINXAPIDOC ?= sphinx-apidoc
 SOURCEDIR     = source
 BUILDDIR      = build
 AUTODOCDIR = $(SOURCEDIR)/api
@@ -41,17 +43,17 @@ _multiversion-check-env:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) bash -e checkenv.sh multiversion
 
 _autodoc-index:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) sphinx-apidoc -f -o $(SOURCEDIR)/api/ $(EVDIR)
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXAPIDOC) -f -o $(SOURCEDIR)/api/ $(EVDIR)
 
 _multiversion-autodoc-index:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) sphinx-apidoc -f -o $(SOURCEDIR)/api/ $(EVDIR)
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXAPIDOC) -f -o $(SOURCEDIR)/api/ $(EVDIR)
 	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
 
 _build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) "$(SOURCEDIR)" "$(BUILDDIR)/html"
 
 _multiversion-build:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) sphinx-multiversion "$(SOURCEDIR)" "$(BUILDDIR)/html"
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) "$(SOURCEDIR)" "$(BUILDDIR)/html"
 
 _multiversion-deploy:
 	@bash -e deploy.sh
@@ -72,13 +74,14 @@ local:
 	make _autodoc_index
 	make _build
 	@echo ""
-	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/versions/<version>/index.html in a browser."
+	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/index.html in a browser."
 
 mv-local:
 	make _multiversion-check-env
 	make clean
 	make _multiversion-autodoc-index
 	make _multiversion-build
+	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/versions/<version>/index.html in a browser."
 
 # build and prepare the docs for release
 release:
