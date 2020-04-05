@@ -52,7 +52,7 @@ mv-check-env:
 # we must commit the index before it's made available to multiversion 
 mv-autodoc-index:
 	@sphinx-apidoc -f -o $(SOURCEDIR)/api/ $(EVDIR)
-	git commit -a -m "Updated API autodoc index."
+	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
 
 multiversion-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) sphinx-multiversion "$(SOURCEDIR)" "$(BUILDDIR)/html"
