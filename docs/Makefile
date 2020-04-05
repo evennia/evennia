@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SPHINXOPTS    ?=
+SPHINXOPTS    ?= 
 SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
@@ -14,16 +14,22 @@ AUTODOCDIR = $(SOURCEDIR)/api
 EVDIR ?= $(realpath ../evennia)
 EVGAMEDIR ?= $(realpath ../../gamedir)
 
+cblue = $(shell echo "\033[1m\033[34m")
+cnorm = $(shell echo "\033[0m")
+
+QUICKFILES=$(SOURCEDIR)/*.md
+
 
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	@echo "Evennia-specific: "
-	@echo "  install - get build requirements"
-	@echo "  clean - remove remnants of a previous build"
-	@echo "  local - build local html docs of the current branch (no multiversion)."
-	@echo "  mv-local - build full multiversion html docs, without deploying (req. all changes committed to git)"
-	@echo "  release  - build and deploy multiversion docs online (req. github push access)"
+	@echo "  $(cblue)install$(cnorm)     to get build requirements"
+	@echo "  $(cblue)clean$(cnorm)       to remove remnants of a previous build"
+	@echo "  $(cblue)local$(cnorm)       to build local html docs of the current branch (no multiversion)."
+	@echo "  $(cblue)mv-local$(cnorm)    to build multiversion html docs, without deploying (req. local git commit)"
+	@echo "  $(cblue)release$(cnorm)     to build and deploy multiversion docs online (req. commit and github push access)"
+
 
 .PHONY: help Makefile
 
@@ -50,10 +56,13 @@ _multiversion-autodoc-index:
 	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
 
 _build:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) "$(SOURCEDIR)" "$(BUILDDIR)/html"
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
+
+_quick-build:
+	NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(QUICKFILES)
 
 _multiversion-build:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) "$(SOURCEDIR)" "$(BUILDDIR)/html"
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
 
 _multiversion-deploy:
 	@bash -e deploy.sh
@@ -68,10 +77,16 @@ clean:
 	@git clean -f -d docs/
 	@echo "Cleaned old build dir and leftover files."
 
+quick:
+	make _check-env
+	make _quick-build $(FILES)
+	@echo ""
+	@echo "Documentation built (no autodocs). \nTo see result, open evennia/docs/build/html/index.html in a browser."
+
 local: 
 	make _check-env
 	make clean	
-	make _autodoc_index
+	make _autodoc-index
 	make _build
 	@echo ""
 	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/index.html in a browser."
@@ -82,6 +97,9 @@ mv-local:
 	make _multiversion-autodoc-index
 	make _multiversion-build
 	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/versions/<version>/index.html in a browser."
+
+deploy:
+	make _multiversion-deploy
 
 # build and prepare the docs for release
 release:
