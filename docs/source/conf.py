@@ -104,6 +104,7 @@ smv_outputdir_format = "versions" + sep + "{config.release}"
 github_code_root = "https://github.com/evennia/tree/master/"
 github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
 
+
 def url_resolver(url):
     print(f"in url_resolver: {url}")
     if url.startswith("github:"):
@@ -113,6 +114,7 @@ def url_resolver(url):
 
 
 _NO_AUTODOC = os.environ.get("NOAUTODOC")
+
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
     if _NO_AUTODOC:

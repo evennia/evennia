@@ -1,7 +1,9 @@
 # requirements for building the docs
 
-sphinx
-sphinx-multiversion
-recommonmark
+sphinx==2.4.4
+sphinx-multiversion==0.1.1
+
+# recommonmark 
+git+https://github.com/evennia/recommonmark.git@master#egg=recommonmark
 
 # theme
