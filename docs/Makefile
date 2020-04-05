@@ -8,7 +8,7 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
 
-EVDIR ?= $(realpath ../)
+EVDIR ?= $(realpath ../evennia)
 EVGAMEDIR ?= $(realpath ../../gamedir)
 
 
