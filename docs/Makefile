@@ -51,6 +51,7 @@ clean:
 
 local:
 	make check-env
+	make clean
 	make autodoc-index
 	make multiversion-build
 
