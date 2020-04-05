@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SPHINXOPTS    ?= 
+SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
@@ -40,7 +40,7 @@ help:
 
 # Evennia - custom commands
 
-# helper targets 
+# helper targets
 
 _check-env:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) bash -e checkenv.sh
@@ -59,7 +59,7 @@ _build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
 
 _quick-build:
-	NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(QUICKFILES)
+	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(QUICKFILES)
 
 _multiversion-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
@@ -67,7 +67,7 @@ _multiversion-build:
 _multiversion-deploy:
 	@bash -e deploy.sh
 
-# main targets 
+# main targets
 
 install:
 	@pip install -r requirements.txt
@@ -83,9 +83,9 @@ quick:
 	@echo ""
 	@echo "Documentation built (no autodocs). \nTo see result, open evennia/docs/build/html/index.html in a browser."
 
-local: 
+local:
 	make _check-env
-	make clean	
+	make clean
 	make _autodoc-index
 	make _build
 	@echo ""
