@@ -54,9 +54,16 @@ release = '0.9'
 # ones.
 extensions = [
     "recommonmark",
-    "sphinx.ext.napoleon",
-    "sphinx_multiversion"
+    "sphinx_multiversion",
+    "sphinx.ext.autosectionlabel"
 ]
+
+if not os.environ.get("NOAUTODOC"):
+    extensions.append("sphinx.ext.napoleon")
+
+
+# make sure sectionlabel references can be used as path/to/file:heading
+autosectionlabel_prefix_document = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -95,8 +102,7 @@ smv_outputdir_format = "versions" + sep + "{config.release}"
 # dynamic setup
 
 
-github_doc_root = "https://github.com/evennia/tree/master/docs/"
-
+github_doc_root = "https://github.com/evennia/tree/master/docs"
 
 def setup(app):
     # recommonmark setup
