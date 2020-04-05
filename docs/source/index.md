@@ -3,11 +3,17 @@ Evennia documentation master file, created by
 
 # Welcome to Evennia's documentation!
 
-Click [here](../evennia/objects/objects.py) to go to objects.py ... ..
-Another [link](github:objects/objects.py) to click ...
+Click [here](../../../evennia/objects/objects.py) to go to objects.py ... ..
+Another [link](foo) to click. [Fooheader](./foo#AnotherHeading)
+
+
+Gitlink [here](https://github.com/evennia/evennia/blob/master/README.md)
 
 ##  Indices and tables
 
+* [foo](foo)
 * [genindex](genindex)
 * [modindex](modindex)
 * [search](search)
+
+
