@@ -3,6 +3,9 @@ Evennia documentation master file, created by
 
 # Welcome to Evennia's documentation!
 
+Click [here](../evennia/objects/objects.py) to go to objects.py ... ..
+Another [link](github:objects/objects.py) to click ...
+
 ##  Indices and tables
 
 * [genindex](genindex)

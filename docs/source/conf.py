@@ -55,12 +55,9 @@ release = '0.9'
 extensions = [
     "recommonmark",
     "sphinx_multiversion",
+    "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel"
 ]
-
-if not os.environ.get("NOAUTODOC"):
-    extensions.append("sphinx.ext.napoleon")
-
 
 # make sure sectionlabel references can be used as path/to/file:heading
 autosectionlabel_prefix_document = True
@@ -72,6 +69,8 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
+
+
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -102,12 +101,34 @@ smv_outputdir_format = "versions" + sep + "{config.release}"
 # dynamic setup
 
 
-github_doc_root = "https://github.com/evennia/tree/master/docs"
+github_code_root = "https://github.com/evennia/tree/master/"
+github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
+
+def url_resolver(url):
+    print(f"in url_resolver: {url}")
+    if url.startswith("github:"):
+        return github_code_root + url[7:]
+    else:
+        return github_doc_root + url
+
+
+_NO_AUTODOC = os.environ.get("NOAUTODOC")
+
+def autodoc_skip_member(app, what, name, obj, skip, options):
+    if _NO_AUTODOC:
+        return True
+    return False
+
+
+if _NO_AUTODOC:
+    exclude_patterns = ["api/*"]
+
 
 def setup(app):
-    # recommonmark setup
+    app.connect("autodoc-skip-member", autodoc_skip_member)
+
     app.add_config_value('recommonmark_config', {
-            'url_resolver': lambda url: github_doc_root + url,
+            'url_resolver': url_resolver,
             'auto_toc_tree_section': 'Contents',
             }, True)
     app.add_transform(AutoStructify)
