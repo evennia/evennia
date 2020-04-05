@@ -71,6 +71,8 @@ local:
 	make clean	
 	make _autodoc_index
 	make _build
+	@echo ""
+	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/versions/<version>/index.html in a browser."
 
 mv-local:
 	make _multiversion-check-env
