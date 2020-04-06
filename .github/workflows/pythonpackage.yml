@@ -8,9 +8,9 @@ on:
   pull_request:
 
 env:
-  TESTING_DB=sqlite3
-  TESTING_DB=postgresql
-  TESTING_DB=mysql
+  TESTING_DB: sqlite3
+  TESTING_DB: postgresql
+  TESTING_DB: mysql
 
 jobs:
   build:
