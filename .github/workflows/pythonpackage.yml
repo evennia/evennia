@@ -30,7 +30,7 @@ jobs:
       run: |
         make format
         evennia --init testing_mygame
-        cp .travis/sqlite_settings.py testing_mygame/server/conf/settings.py
+        cp .travis/sqlite3_settings.py testing_mygame/server/conf/settings.py
         cd testing_mygame
         evennia migrate
         evennia collectstatic --noinput
