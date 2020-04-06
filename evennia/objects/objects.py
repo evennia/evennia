@@ -2065,6 +2065,7 @@ class DefaultCharacter(DefaultObject):
 
         # Set the supplied key as the name of the intended object
         kwargs["key"] = key
+        key = cls._validate(key)
 
         # Get home for character
         kwargs["home"] = ObjectDB.objects.get_id(kwargs.get("home", settings.DEFAULT_HOME))
@@ -2114,6 +2115,22 @@ class DefaultCharacter(DefaultObject):
             logger.log_err(e)
 
         return obj, errors
+
+    def _validate(self, key):
+        """
+        Validate that character name is acceptable prior to creating. Note that this should be refactored
+        to support i18n for non-latin scripts, but as we (currently) have no bug reports requesting better
+        support of non-latin character sets, requiring character names to be latinified is an acceptable option.
+
+        Args:
+            key (str) : The name of the character
+
+        Returns:
+            key (str) : A valid name.
+        """
+        from evennia.utils.utils import latinify
+        key = latinify(key, default="X")
+        return key
 
     def basetype_setup(self):
         """
