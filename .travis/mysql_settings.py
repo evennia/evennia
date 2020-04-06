@@ -41,7 +41,7 @@ SERVERNAME = "testing_mygame"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "evennia",
+        "NAME": "database",
         "USER": "evennia",
         "PASSWORD": "password",
         "HOST": "127.0.0.1",
