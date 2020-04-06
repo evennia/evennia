@@ -37,7 +37,7 @@ jobs:
     - name: Test with Evennia Test
       run: |
         cd testing_mygame
-        evennia --settings settings.py test evennia
+        evennia test --settings settings.py evennia
 
   postgres:
     runs-on: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
     - name: Test with Evennia Test
       run: |
         cd testing_mygame
-        evennia --settings settings.py test evennia
+        evennia test --settings settings.py evennia
 
   mysql:
     runs-on: ubuntu-latest
@@ -120,4 +120,4 @@ jobs:
      - name: Test with Evennia Test
        run: |
          cd testing_mygame
-         evennia --settings settings.py test evennia
+         evennia test --settings settings.py evennia
