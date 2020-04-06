@@ -27,7 +27,8 @@ from evennia.commands.cmdhandler import cmdhandler
 from evennia.accounts.models import AccountDB
 from evennia.utils.logger import log_err
 from evennia.utils.utils import to_str
-
+from django.utils.html import strip_tags
+import re
 BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
 
 
@@ -41,6 +42,28 @@ _SA = object.__setattr__
 def _NA(o):
     return "N/A"
 
+def _strip_unsafe(session, txt):
+    """
+    Removes 'unsafe' codes that might be used to cause other users'
+    terminals to display unintended characters. This strips both
+    ingested HTML (which can affect webclient) as well as nasty
+    text-formatting characters (newline, tab). Server developers
+    can overload this function to add or remove processing steps.
+
+    Args:
+        txt (str) : The incoming input string
+    Returns:
+        txt (str) : A cleansed input string
+    """
+    if session.account:
+        if session.account.permissions.get("Developer"):
+            return txt
+
+    # Strip unsafe characters from ingest
+    txt = strip_tags(txt)  # Any HTML codes
+    txt = re.sub(r'|\/', '', txt)  # New lines
+    txt = re.sub(r'|-', '', txt)  # Tabs
+    return txt
 
 _ERROR_INPUT = "Inputfunc {name}({session}): Wrong/unrecognized input: {inp}"
 
@@ -68,6 +91,9 @@ def text(session, *args, **kwargs):
     # also valid
     if txt is None:
         return
+
+    txt = _strip_unsafe(session, txt)
+
     # this is treated as a command input
     # handle the 'idle' command
     if txt.strip() in _IDLE_COMMAND:
@@ -84,6 +110,7 @@ def text(session, *args, **kwargs):
             txt = session.account.nicks.nickreplace(
                 txt, categories=("inputline", "channel"), include_account=False
             )
+
     kwargs.pop("options", None)
     cmdhandler(session, txt, callertype="session", session=session, **kwargs)
     session.update_session_counters()
