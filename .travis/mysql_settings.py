@@ -45,7 +45,7 @@ DATABASES = {
         "USER": "evennia",
         "PASSWORD": "password",
         "HOST": "localhost",
-        "PORT": "",  # use default port
+        "PORT": "3306",  # use default port
         "OPTIONS": {
             "charset": "utf8mb4",
             "init_command": "set collation_connection=utf8mb4_unicode_ci",
