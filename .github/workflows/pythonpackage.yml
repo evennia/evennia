@@ -7,11 +7,6 @@ on:
   push:
   pull_request:
 
-env:
-  TESTING_DB: sqlite3
-  TESTING_DB: postgresql
-  TESTING_DB: mysql
-
 jobs:
   build:
 
@@ -19,6 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8]
+        database: ['sqlite', 'postgresql', 'mysql']
 
     steps:
     - uses: actions/checkout@v2
@@ -47,7 +43,7 @@ jobs:
       run: |
         make format
         evennia --init testing_mygame
-        cp .travis/${TESTING_DB}_settings.py testing_mygame/server/conf/settings.py
+        cp .travis/${{ database }}_settings.py testing_mygame/server/conf/settings.py
         cd testing_mygame
         evennia migrate
         evennia collectstatic --noinput
