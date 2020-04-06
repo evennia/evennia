@@ -108,7 +108,7 @@ jobs:
          pip install mysqlclient
          sudo apt-get install python3-dev
          sudo apt-get install -y mysql-client
-         mysql --host 127.0.0.1 --port 3306 -uroot -ppassword -e "GRANT ALL ON *.* TO 'evennia'@'127.0.0.1' IDENTIFIED BY 'password';"
+         mysql --host 127.0.0.1 --port 3306 -uroot -ppassword -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
          pip install -e .
      - name: Create Evennia game
        run: |
