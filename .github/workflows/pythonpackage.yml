@@ -34,9 +34,10 @@ jobs:
         cd testing_mygame
         evennia migrate
         evennia collectstatic --noinput
-    - name: Test with pytest
+    - name: Test with Evennia Test
       run: |
-         evennia test
+        cd testing_mygame
+        evennia test
 
   postgres:
     runs-on: ubuntu-latest
@@ -73,8 +74,9 @@ jobs:
         cd testing_mygame
         evennia migrate
         evennia collectstatic --noinput
-    - name: Test with pytest
+    - name: Test with Evennia Test
       run: |
+        cd testing_mygame
         evennia test
 
   mysql:
@@ -113,6 +115,7 @@ jobs:
          cd testing_mygame
          evennia migrate
          evennia collectstatic --noinput
-     - name: Test with pytest
+     - name: Test with Evennia Test
        run: |
+         cd testing_mygame
          evennia test
