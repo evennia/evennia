@@ -50,7 +50,7 @@ jobs:
         env:
           POSTGRES_USER: evennia
           POSTGRES_DB: evennia
-          POSTGRES_PASSWORD: ""
+          POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -91,7 +91,6 @@ jobs:
           MYSQL_USER: evennia
           MYSQL_PASSWORD: password
           MYSQL_DATABASE: evennia
-          MYSQL_ROOT_PASSWORD: password
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
         ports:
           - 3306:3306
