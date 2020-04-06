@@ -2116,7 +2116,8 @@ class DefaultCharacter(DefaultObject):
 
         return obj, errors
 
-    def _validate(self, key):
+    @classmethod
+    def _validate(cls, key):
         """
         Validate that character name is acceptable prior to creating. Note that this should be refactored
         to support i18n for non-latin scripts, but as we (currently) have no bug reports requesting better
