@@ -106,6 +106,7 @@ jobs:
          python -m pip install --upgrade pip
          pip install -r requirements.txt
          pip install mysqlclient
+         sudo apt-get install python3-dev
          sudo apt-get install -y mysql-client
          mysql --host 127.0.0.1 --port 3306 -uroot -ppassword -e "SHOW DATABASES"
          pip install -e .
