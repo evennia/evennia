@@ -44,7 +44,7 @@ DATABASES = {
         "NAME": "evennia",
         "USER": "evennia",
         "PASSWORD": "password",
-        "HOST": "localhost",
+        "HOST": "127.0.0.1",
         "PORT": "3306",  # use default port
         "OPTIONS": {
             "charset": "utf8mb4",
