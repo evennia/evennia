@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
         ("objects", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("typeclasses", "0001_initial"),
+        ("contenttypes", "__first__"),
     ]
 
     operations = [

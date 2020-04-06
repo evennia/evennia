@@ -8,7 +8,7 @@ import django.core.validators
 
 class Migration(migrations.Migration):
 
-    dependencies = [("auth", "0001_initial"), ("typeclasses", "0001_initial")]
+    dependencies = [("auth", "0001_initial"), ("typeclasses", "0001_initial"), ("contenttypes", "__first__")]
 
     operations = [
         migrations.CreateModel(

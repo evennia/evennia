@@ -7,7 +7,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [("typeclasses", "0002_auto_20150109_0913")]
+    dependencies = [("typeclasses", "0002_auto_20150109_0913"), ("contenttypes", "__first__")]
 
     operations = [
         migrations.CreateModel(
