@@ -1,11 +1,16 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python package
+name: Evennia Tests
 
 on:
   push:
   pull_request:
+
+env:
+  TESTING_DB=sqlite3
+  TESTING_DB=postgresql
+  TESTING_DB=mysql
 
 jobs:
   build:
@@ -25,6 +30,27 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install psycopg2-binary
+        pip install mysqlclient
+        pip install -e .
+    - name: Set up Databases
+      run: |
+        psql --version
+        psql -U postgres -c "CREATE DATABASE evennia;"
+        psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
+        psql -U postgres -c "ALTER USER evennia CREATEDB;"
+        mysql --version
+        mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
+        mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
+    - name: Create Evennia game
+      run: |
+        make format
+        evennia --init testing_mygame
+        cp .travis/${TESTING_DB}_settings.py testing_mygame/server/conf/settings.py
+        cd testing_mygame
+        evennia migrate
+        evennia collectstatic --noinput
     - name: Test with pytest
       run: |
         pip install pytest
