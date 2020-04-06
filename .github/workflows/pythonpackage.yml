@@ -36,8 +36,7 @@ jobs:
         evennia collectstatic --noinput
     - name: Test with pytest
       run: |
-        pip install pytest
-        pytest
+         evennia test
 
   postgres:
     runs-on: ubuntu-latest
@@ -76,8 +75,7 @@ jobs:
         evennia collectstatic --noinput
     - name: Test with pytest
       run: |
-        pip install pytest
-        pytest
+        evennia test
 
   mysql:
     runs-on: ubuntu-latest
@@ -91,6 +89,7 @@ jobs:
           MYSQL_USER: evennia
           MYSQL_PASSWORD: password
           MYSQL_DATABASE: evennia
+          MYSQL_ROOT_PASSWORD: password
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
         ports:
           - 3306:3306
@@ -116,5 +115,4 @@ jobs:
          evennia collectstatic --noinput
      - name: Test with pytest
        run: |
-         pip install pytest
-         pytest
+         evennia test
