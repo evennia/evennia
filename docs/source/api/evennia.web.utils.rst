@@ -1,6 +1,11 @@
 evennia.web.utils package
 =========================
 
+.. automodule:: evennia.web.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -36,11 +41,3 @@ evennia.web.utils.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.web.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

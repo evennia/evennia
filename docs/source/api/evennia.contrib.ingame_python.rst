@@ -1,6 +1,11 @@
 evennia.contrib.ingame\_python package
 ======================================
 
+.. automodule:: evennia.contrib.ingame_python
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -60,11 +65,3 @@ evennia.contrib.ingame\_python.utils module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.contrib.ingame_python
-   :members:
-   :undoc-members:
-   :show-inheritance:

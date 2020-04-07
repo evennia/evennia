@@ -1,6 +1,11 @@
 evennia.contrib.tutorial\_examples package
 ==========================================
 
+.. automodule:: evennia.contrib.tutorial_examples
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -52,11 +57,3 @@ evennia.contrib.tutorial\_examples.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.contrib.tutorial_examples
-   :members:
-   :undoc-members:
-   :show-inheritance:

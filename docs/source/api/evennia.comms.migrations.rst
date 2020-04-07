@@ -1,6 +1,11 @@
 evennia.comms.migrations package
 ================================
 
+.. automodule:: evennia.comms.migrations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -156,11 +161,3 @@ evennia.comms.migrations.0018\_auto\_20191025\_0831 module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.comms.migrations
-   :members:
-   :undoc-members:
-   :show-inheritance:

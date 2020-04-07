@@ -1,6 +1,11 @@
 evennia.game\_template.typeclasses package
 ==========================================
 
+.. automodule:: evennia.game_template.typeclasses
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -60,11 +65,3 @@ evennia.game\_template.typeclasses.scripts module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.game_template.typeclasses
-   :members:
-   :undoc-members:
-   :show-inheritance:

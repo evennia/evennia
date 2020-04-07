@@ -1,6 +1,11 @@
 evennia.utils.tests package
 ===========================
 
+.. automodule:: evennia.utils.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -91,11 +96,3 @@ evennia.utils.tests.test\_validatorfuncs module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.utils.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:

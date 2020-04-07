@@ -1,6 +1,11 @@
 evennia.web.webclient package
 =============================
 
+.. automodule:: evennia.web.webclient
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -20,11 +25,3 @@ evennia.web.webclient.views module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.web.webclient
-   :members:
-   :undoc-members:
-   :show-inheritance:

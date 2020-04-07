@@ -1,6 +1,11 @@
 evennia.contrib.security.auditing package
 =========================================
 
+.. automodule:: evennia.contrib.security.auditing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -28,11 +33,3 @@ evennia.contrib.security.auditing.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.contrib.security.auditing
-   :members:
-   :undoc-members:
-   :show-inheritance:

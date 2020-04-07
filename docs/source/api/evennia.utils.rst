@@ -1,6 +1,11 @@
 evennia.utils package
 =====================
 
+.. automodule:: evennia.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -180,11 +185,3 @@ evennia.utils.validatorfuncs module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

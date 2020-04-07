@@ -1,6 +1,11 @@
 evennia.locks package
 =====================
 
+.. automodule:: evennia.locks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -28,11 +33,3 @@ evennia.locks.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.locks
-   :members:
-   :undoc-members:
-   :show-inheritance:

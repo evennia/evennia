@@ -1,6 +1,11 @@
 evennia.typeclasses package
 ===========================
 
+.. automodule:: evennia.typeclasses
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -59,11 +64,3 @@ evennia.typeclasses.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.typeclasses
-   :members:
-   :undoc-members:
-   :show-inheritance:

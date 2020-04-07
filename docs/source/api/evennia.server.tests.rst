@@ -1,6 +1,11 @@
 evennia.server.tests package
 ============================
 
+.. automodule:: evennia.server.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -52,11 +57,3 @@ evennia.server.tests.testrunner module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.server.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:

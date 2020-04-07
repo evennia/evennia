@@ -1,6 +1,11 @@
 evennia.contrib package
 =======================
 
+.. automodule:: evennia.contrib
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -239,11 +244,3 @@ evennia.contrib.wilderness module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.contrib
-   :members:
-   :undoc-members:
-   :show-inheritance:

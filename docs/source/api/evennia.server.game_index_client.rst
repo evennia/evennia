@@ -1,6 +1,11 @@
 evennia.server.game\_index\_client package
 ==========================================
 
+.. automodule:: evennia.server.game_index_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -20,11 +25,3 @@ evennia.server.game\_index\_client.service module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.server.game_index_client
-   :members:
-   :undoc-members:
-   :show-inheritance:
