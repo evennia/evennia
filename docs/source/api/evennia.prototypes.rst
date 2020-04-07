@@ -1,6 +1,11 @@
 evennia.prototypes package
 ==========================
 
+.. automodule:: evennia.prototypes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -44,11 +49,3 @@ evennia.prototypes.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.prototypes
-   :members:
-   :undoc-members:
-   :show-inheritance:

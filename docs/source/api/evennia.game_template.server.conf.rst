@@ -1,6 +1,11 @@
 evennia.game\_template.server.conf package
 ==========================================
 
+.. automodule:: evennia.game_template.server.conf
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -124,11 +129,3 @@ evennia.game\_template.server.conf.web\_plugins module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.game_template.server.conf
-   :members:
-   :undoc-members:
-   :show-inheritance:

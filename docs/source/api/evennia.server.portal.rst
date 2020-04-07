@@ -1,6 +1,11 @@
 evennia.server.portal package
 =============================
 
+.. automodule:: evennia.server.portal
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -172,11 +177,3 @@ evennia.server.portal.webclient\_ajax module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.server.portal
-   :members:
-   :undoc-members:
-   :show-inheritance:

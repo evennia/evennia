@@ -1,6 +1,11 @@
 evennia.utils.idmapper package
 ==============================
 
+.. automodule:: evennia.utils.idmapper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -28,11 +33,3 @@ evennia.utils.idmapper.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.utils.idmapper
-   :members:
-   :undoc-members:
-   :show-inheritance:

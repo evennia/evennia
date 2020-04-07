@@ -1,6 +1,11 @@
 evennia.contrib.turnbattle package
 ==================================
 
+.. automodule:: evennia.contrib.turnbattle
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -44,11 +49,3 @@ evennia.contrib.turnbattle.tb\_range module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.contrib.turnbattle
-   :members:
-   :undoc-members:
-   :show-inheritance:

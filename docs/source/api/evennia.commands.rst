@@ -1,6 +1,11 @@
 evennia.commands package
 ========================
 
+.. automodule:: evennia.commands
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -59,11 +64,3 @@ evennia.commands.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.commands
-   :members:
-   :undoc-members:
-   :show-inheritance:

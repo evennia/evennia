@@ -1,6 +1,11 @@
 evennia.utils.tests.data package
 ================================
 
+.. automodule:: evennia.utils.tests.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -20,11 +25,3 @@ evennia.utils.tests.data.prototypes\_example module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.utils.tests.data
-   :members:
-   :undoc-members:
-   :show-inheritance:

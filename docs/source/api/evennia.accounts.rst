@@ -1,6 +1,11 @@
 evennia.accounts package
 ========================
 
+.. automodule:: evennia.accounts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -59,11 +64,3 @@ evennia.accounts.tests module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.accounts
-   :members:
-   :undoc-members:
-   :show-inheritance:

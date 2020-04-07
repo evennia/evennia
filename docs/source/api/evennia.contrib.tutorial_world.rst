@@ -1,6 +1,11 @@
 evennia.contrib.tutorial\_world package
 =======================================
 
+.. automodule:: evennia.contrib.tutorial_world
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -28,11 +33,3 @@ evennia.contrib.tutorial\_world.rooms module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.contrib.tutorial_world
-   :members:
-   :undoc-members:
-   :show-inheritance:

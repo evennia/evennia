@@ -1,6 +1,11 @@
 evennia.scripts package
 =======================
 
+.. automodule:: evennia.scripts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -83,11 +88,3 @@ evennia.scripts.tickerhandler module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.scripts
-   :members:
-   :undoc-members:
-   :show-inheritance:

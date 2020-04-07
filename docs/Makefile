@@ -7,6 +7,9 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
+SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force
+SPHINXAPIDOCENV = members,undoc-members,show-inheritance
+SPHINXAPIDOCEXCLUDE = */migrations/*
 SOURCEDIR     = source
 BUILDDIR      = build
 AUTODOCDIR = $(SOURCEDIR)/api
@@ -48,11 +51,14 @@ _check-env:
 _multiversion-check-env:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) bash -e checkenv.sh multiversion
 
+_clean_api_index:
+	rm source/api/*
+
 _autodoc-index:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXAPIDOC) -f -o $(SOURCEDIR)/api/ $(EVDIR)
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 
 _multiversion-autodoc-index:
-	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXAPIDOC) -f -o $(SOURCEDIR)/api/ $(EVDIR)
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
 
 _build:

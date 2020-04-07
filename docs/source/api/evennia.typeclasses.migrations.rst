@@ -1,6 +1,11 @@
 evennia.typeclasses.migrations package
 ======================================
 
+.. automodule:: evennia.typeclasses.migrations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -108,11 +113,3 @@ evennia.typeclasses.migrations.0013\_auto\_20191015\_1922 module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.typeclasses.migrations
-   :members:
-   :undoc-members:
-   :show-inheritance:

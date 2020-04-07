@@ -1,6 +1,11 @@
 evennia.game\_template.commands package
 =======================================
 
+.. automodule:: evennia.game_template.commands
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -20,11 +25,3 @@ evennia.game\_template.commands.default\_cmdsets module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.game_template.commands
-   :members:
-   :undoc-members:
-   :show-inheritance:

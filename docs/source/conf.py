@@ -56,7 +56,8 @@ extensions = [
     "recommonmark",
     "sphinx_multiversion",
     "sphinx.ext.napoleon",
-    "sphinx.ext.autosectionlabel"
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.viewcode"
 ]
 
 # make sure sectionlabel references can be used as path/to/file:heading
@@ -65,12 +66,46 @@ autosectionlabel_prefix_document = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
 
+# napoleon Google-style docstring parser
 
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = True
+napoleon_use_keyword = True
+napoleon_use_rtype = True
+
+_no_autodoc = os.environ.get("NOAUTODOC")
+
+# settings for sphinxcontrib.apidoc to auto-run sphinx-apidocs
+
+if _no_autodoc:
+    exclude_patterns = ["api/*"]
+else:
+    exclude_patterns = ["api/*migrations.rst"]
+
+# for inline autodoc
+
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
+    "special-members": "__init__",
+}
+
+def autodoc_skip_member(app, what, name, obj, skip, options):
+    if _no_autodoc:
+        return True
+    if name.startswith("__") and name != "__init__":
+        return True
+    return False
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -86,11 +121,11 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 # Custom extras for sidebar
-html_sidebars = {
-    '**': [
-        "versioning.html"
-    ]
-}
+# html_sidebars = {
+#     '**': [
+#         "versioning.html"
+#     ]
+# }
 
 # sphinx-multiversion config
 
@@ -98,39 +133,29 @@ smv_tag_whitelist = r"^$"
 smv_branch_whitelist = r"^static-file-docs$"
 smv_outputdir_format = "versions" + sep + "{config.release}"
 
-# dynamic setup
 
+# reroute to github links or to the api
 
-github_code_root = "https://github.com/evennia/tree/master/"
-github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
+_github_code_root = "https://github.com/evennia/tree/master/"
+_github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
 
 
 def url_resolver(url):
-    print(f"in url_resolver: {url}")
     if url.startswith("github:"):
-        return github_code_root + url[7:]
+        return _github_code_root + url[7:]
     else:
-        return github_doc_root + url
+        return _github_doc_root + url
 
 
-_NO_AUTODOC = os.environ.get("NOAUTODOC")
 
+# dynamic setup
 
-def autodoc_skip_member(app, what, name, obj, skip, options):
-    if _NO_AUTODOC:
-        return True
-    return False
-
-
-if _NO_AUTODOC:
-    exclude_patterns = ["api/*"]
-
+auto_toc_sections = ["Contents", "Toc"]
 
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
-
     app.add_config_value('recommonmark_config', {
             'url_resolver': url_resolver,
-            'auto_toc_tree_section': 'Contents',
+            'auto_toc_tree_section': auto_toc_sections,
             }, True)
     app.add_transform(AutoStructify)

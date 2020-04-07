@@ -1,6 +1,11 @@
 evennia.server.profiling package
 ================================
 
+.. automodule:: evennia.server.profiling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -60,11 +65,3 @@ evennia.server.profiling.timetrace module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.server.profiling
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,6 +1,11 @@
 evennia.commands.default package
 ================================
 
+.. automodule:: evennia.commands.default
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -140,11 +145,3 @@ evennia.commands.default.unloggedin module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.commands.default
-   :members:
-   :undoc-members:
-   :show-inheritance:

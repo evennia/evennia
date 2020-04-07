@@ -1,6 +1,11 @@
 evennia.web package
 ===================
 
+.. automodule:: evennia.web
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -21,11 +26,3 @@ evennia.web.urls module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: evennia.web
-   :members:
-   :undoc-members:
-   :show-inheritance:

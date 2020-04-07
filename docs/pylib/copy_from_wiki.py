@@ -2,10 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
+Copy data from old Evennia github Wiki to static files.
+
 Prepare files for mkdoc. This assumes evennia.wiki is cloned
-to a folder at the same level as the evennia-docs repo.
+to a folder at the same level as the evennia repo.
 
 Just run this to update everything.
+
+We also need to build the toc-tree and should do so automatically for now.
 
 """
 
@@ -14,45 +18,68 @@ import re
 
 _RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -]+)\]\((?P<url>\w+?)\)", re.I + re.S + re.U)
 
-_WIKI_DIR = "../../evennia.wiki/"
-_INFILES = sorted(glob.glob(_WIKI_DIR + "/*.md"))
+_IGNORE_FILES = (
+    "_Sidebar.md",
+    "Evennia-for-MUSH-Users.md",
+    "Installing-on-Android.md",
+    "Nicks.md",
+    "Spawner-and-Prototypes.md"
+)
+
+_WIKI_DIR = "../../../evennia.wiki/"
+_INFILES = [path for path in sorted(glob.glob(_WIKI_DIR + "/*.md"))
+            if path.rsplit('/', 1)[-1] not in _IGNORE_FILES]
 _FILENAMES = [path.rsplit("/", 1)[-1] for path in _INFILES]
+_FILENAMES = [path.split(".", 1)[0] for path in _FILENAMES]
 _FILENAMESLOW = [path.lower() for path in _FILENAMES]
-_OUTDIR = "../sources/"
+_OUTDIR = "../source/"
 
 _CUSTOM_LINK_REMAP = {
-    "CmdSets.md": "Command-Sets.md",
-    "CmdSet.md": "Command-Sets.md",
-    "Cmdsets.md": "Command-Sets.md",
-    "CommandSet.md": "Command-Sets.md",
-    "batch-code-processor.md": "Batch-Code-Processor.md",
-    "Batch-code-processor.md": "Batch-Code-Processor.md",
-    "batch-command-processor.md": "Batch-Command-Processor.md",
-    "Batch-command-processor.md": "Batch-Command-Processor.md",
-    "evennia-API.md": "Evennia-API.md",
-    "Win.md": "Win",
-    "Mac.md": "Mac",
-    "IOS.md": "IOS",
-    "Andr.md": "Andr",
-    "Unix.md": "Unix",
-    "Chrome.md": "Chrome",
-    "EvTable.md": "EvTable.md",
-    "Channels.md": "Communications.md#Channels",
-    "Comms.md": "Communications.md",
-    "typeclass.md": "Typeclasses.md",
-    "Home.md": "index.md"
+    "CmdSets": "Command-Sets",
+    "CmdSet": "Command-Sets",
+    "Cmdsets": "Command-Sets",
+    "CommandSet": "Command-Sets",
+    "batch-code-processor": "Batch-Code-Processor",
+    "Batch-code-processor": "Batch-Code-Processor",
+    "batch-command-processor": "Batch-Command-Processor",
+    "Batch-command-processor": "Batch-Command-Processor",
+    "evennia-API": "Evennia-API",
+    "Channels": "Communications.md#Channels",
+    "Comms": "Communications",
+    "typeclass": "Typeclasses",
+    "Home": "index",
+
 }
+
+_LINK_SKIP = (
+    "[5](Win)", "[6](Win)", "[7](Win)", "[10](Win)", "[11](Mac)", "[13](Win)", 
+    "[14](IOS)", "[15](IOS)", "[16](Andr)", "[17](Andr)", "[18](Unix)", 
+    "[21](Chrome)", 
+    # these should be checked
+    "[EvTable](EvTable)", 
+    "[styled](OptionStyles)",
+    "[Inputfunc](Inputfunc)",     
+    "[API](evennia)",
+    "[online documentation wiki](index)", 
+    "[online documentation](index)", 
+    "[Home](index)", 
+    "[Accounts](Account)",
+    "[Session](Session)",
+    "[Inputfuncs](Inputfunc)",
+
+    "[Nicks](Nicks)",
+    "[Nick](Nicks)",
+)
 
 
 def _sub_link(match):
     mdict = match.groupdict()
     txt, url = mdict['txt'], mdict['url']
-    if not txt:
-        # the 'comment' is not supported by Mkdocs
-        return ""
-    url = url if url.endswith(".md") or url.startswith("http") else url + ".md"
+    # if not txt:
+    #     # the 'comment' is not supported by Mkdocs
+    #     return ""
+    #  url = url if url.endswith(".md") or url.startswith("http") else url + ".md"
 
-    print("url:", url)
     url = _CUSTOM_LINK_REMAP.get(url, url)
 
     if url not in _FILENAMES and not url.startswith("http") and "#" not in url:
@@ -60,7 +87,10 @@ def _sub_link(match):
         url_plur = url[:-3] + 's' + ".md"
         url_cap_plur = url_plur.capitalize()
 
-        print(f"Link [{txt}]({url}) has no matching target")
+        link = f"[{txt}]({url})"
+        if link in _LINK_SKIP:
+            return link
+
         if url_cap in _FILENAMES:
             print(f" Replacing (capitalized): {url.capitalize()}")
             return url_cap
@@ -74,27 +104,51 @@ def _sub_link(match):
             ind = _FILENAMESLOW.index(url.lower())
             alt = _FILENAMES[ind]
             print(f" Possible match (different cap): {alt}")
+        print(f"\nlink {link} found no file match")
         inp = input("Enter alternate url (return to keep old): ")
         if inp.strip():
             url = inp.strip()
 
     return f"[{txt}]({url})"
 
+def create_toctree(files):
 
-for inpath in _INFILES:
-    print(f"Converting links in {inpath} ->", end=" ")
-    with open(inpath) as fil:
-        text = fil.read()
-        text = _RE_MD_LINK.sub(_sub_link, text)
-        text = text.split('\n')[1:] if text.split('\n')[0].strip().startswith('[]') else text.split('\n')
-        text = '\n'.join(text)
+    with open("../source/toc.md", "w") as fil:
+        fil.write("# Toc\n")
 
-    outfile = inpath.rsplit('/', 1)[-1]
-    if outfile == "Home.md":
-        outfile = "index.md"
-    outfile = _OUTDIR + outfile
+        for path in files:
+            filename = path.rsplit("/", 1)[-1]
+            ref = filename.rsplit(".", 1)[0]
+            linkname = ref.replace("-", " ")
 
-    with open(outfile, 'w') as fil:
-        fil.write(text)
+            fil.write(f"\n* [{linkname}]({ref}.md)")
 
-    print(f"{outfile}.")
+def convert_links(files, outdir):
+
+    for inpath in files:
+
+        title = inpath.rsplit("/", 1)[-1].split(".", 1)[0].replace("-", " ")
+
+        print(f"Converting links in {inpath} ->", end=" ")
+        with open(inpath) as fil:
+            text = fil.read()
+            text = _RE_MD_LINK.sub(_sub_link, text)
+            text = text.split('\n')[1:] if text.split('\n')[0].strip().startswith('[]') else text.split('\n')
+            text = f"# {title}\n\n" + '\n'.join(text)
+
+        outfile = inpath.rsplit('/', 1)[-1]
+        if outfile == "Home.md":
+            outfile = "index.md"
+        outfile = _OUTDIR + outfile
+
+        with open(outfile, 'w') as fil:
+            fil.write(text)
+
+        print(f"{outfile}.")
+
+
+if __name__ == "__main__":
+
+    create_toctree(_INFILES)
+    convert_links(_INFILES, _OUTDIR) 
+
