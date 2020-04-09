@@ -486,8 +486,8 @@ def create_account(
 
     Args:
         key (str): The account's name. This should be unique.
-        email (str or None): Email on valid addr@addr.domain form. If 
-            the empty string, will be set to None. 
+        email (str or None): Email on valid addr@addr.domain form. If
+            the empty string, will be set to None.
         password (str): Password in cleartext.
 
     Kwargs:

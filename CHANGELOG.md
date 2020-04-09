@@ -35,11 +35,13 @@ without arguments starts a full interactive Python console.
 - Allow running Evennia test suite from core repo with `make test`.
 - Return `store_key` from `TickerHandler.add` and add `store_key` as a kwarg to
   the `TickerHandler.remove` method. This makes it easier to manage tickers.
-- EvMore `text` argument can now also be a list - each entry in the list is run
-  through str(eval()) and ends up on its own line. Good for paginated object lists.
 - EvMore auto-justify now defaults to False since this works better with all types
   of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
   but is now only used to pass extra kwargs into the justify function.
+- EvMore `text` argument can now also be a list or a queryset. Querysets will be 
+  sliced to only return the required data per page. EvMore takes a new kwarg 
+  `page_formatter` which will be called for each page. This allows to customize 
+  the display of queryset data, build a new EvTable per page etc. 
 - Improve performance of `find` and `objects` commands on large data sets (strikaco)
 - New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
 - Made `py` interactive mode support regular quit() and more verbose.
@@ -55,6 +57,8 @@ without arguments starts a full interactive Python console.
   bugfixes.
 - Remove `dummy@example.com` as a default account email when unset, a string is no longer 
   required by Django.
+- Fixes to `spawn`, make updating an existing prototype/object work better. Add `/raw` switch
+  to `spawn` command to extract the raw prototype dict for manual editing.
 
 
 ## Evennia 0.9 (2018-2019)
