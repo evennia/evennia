@@ -70,14 +70,15 @@ class HTTPChannelWithXForwardedFor(http.HTTPChannel):
         Check to see if this is a reverse proxied connection.
 
         """
-        CLIENT = 0
-        http.HTTPChannel.allHeadersReceived(self)
-        req = self.requests[-1]
-        client_ip, port = self.transport.client
-        proxy_chain = req.getHeader("X-FORWARDED-FOR")
-        if proxy_chain and client_ip in _UPSTREAM_IPS:
-            forwarded = proxy_chain.split(", ", 1)[CLIENT]
-            self.transport.client = (forwarded, port)
+        if self.requests:
+            CLIENT = 0
+            http.HTTPChannel.allHeadersReceived(self)
+            req = self.requests[-1]
+            client_ip, port = self.transport.client
+            proxy_chain = req.getHeader("X-FORWARDED-FOR")
+            if proxy_chain and client_ip in _UPSTREAM_IPS:
+                forwarded = proxy_chain.split(", ", 1)[CLIENT]
+                self.transport.client = (forwarded, port)
 
 
 # Monkey-patch Twisted to handle X-Forwarded-For.

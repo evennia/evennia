@@ -4,7 +4,7 @@ Typeclass for Account objects
 Note that this object is primarily intended to
 store OOC information, not game info! This
 object represents the actual user (not their
-character) and has NO actual precence in the
+character) and has NO actual presence in the
 game world (this is handled by the associated
 character object, so you should customize that
 instead for most things).

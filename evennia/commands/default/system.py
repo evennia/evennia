@@ -487,6 +487,8 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
     locks = "cmd:perm(listscripts) or perm(Admin)"
     help_category = "System"
 
+    excluded_typeclass_paths = ["evennia.prototypes.prototypes.DbPrototype"]
+
     def func(self):
         """implement method"""
 
@@ -519,6 +521,8 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             if not scripts:
                 caller.msg("No scripts are running.")
                 return
+        # filter any found scripts by tag category.
+        scripts = scripts.exclude(db_typeclass_path__in=self.excluded_typeclass_paths)
 
         if not scripts:
             string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
@@ -538,19 +542,20 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 # import pdb  # DEBUG
                 # pdb.set_trace()  # DEBUG
                 ScriptDB.objects.validate()  # just to be sure all is synced
+                caller.msg(string)
             else:
                 # multiple matches.
-                string = "Multiple script matches. Please refine your search:\n"
-                string += format_script_list(scripts)
+                EvMore(caller, scripts, page_formatter=format_script_list)
+                caller.msg("Multiple script matches. Please refine your search")
         elif self.switches and self.switches[0] in ("validate", "valid", "val"):
             # run validation on all found scripts
             nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts)
             string = "Validated %s scripts. " % ScriptDB.objects.all().count()
             string += "Started %s and stopped %s scripts." % (nr_started, nr_stopped)
+            caller.msg(string)
         else:
             # No stopping or validation. We just want to view things.
-            string = format_script_list(scripts)
-        EvMore(caller, string)
+            EvMore(caller, scripts, page_formatter=format_script_list)
 
 
 class CmdObjects(COMMAND_DEFAULT_CLASS):
