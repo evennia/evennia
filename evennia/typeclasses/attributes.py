@@ -59,7 +59,7 @@ class Attribute(SharedMemoryModel):
     # Attribute Database Model setup
     #
     # These database fields are all set using their corresponding properties,
-    # named same as the field, but withtout the db_* prefix.
+    # named same as the field, but without the db_* prefix.
     db_key = models.CharField("key", max_length=255, db_index=True)
     db_value = PickledObjectField(
         "value",
