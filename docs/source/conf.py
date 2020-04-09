@@ -65,6 +65,22 @@ autosectionlabel_prefix_document = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['_static']
+
+# Custom extras for sidebar
+html_sidebars = {
+    '**': [
+        "searchbox.html",
+        "localtoc.html",
+        # "globaltoc.html",
+        "relations.html",
+        "sourcelink.html",
+        "versioning.html",
+    ]
+}
 
 
 # napoleon Google-style docstring parser
@@ -100,6 +116,7 @@ autodoc_default_options = {
     "special-members": "__init__",
 }
 
+
 def autodoc_skip_member(app, what, name, obj, skip, options):
     if _no_autodoc:
         return True
@@ -115,17 +132,6 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
 #
 html_theme = 'alabaster'
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-
-# Custom extras for sidebar
-# html_sidebars = {
-#     '**': [
-#         "versioning.html"
-#     ]
-# }
 
 # sphinx-multiversion config
 
@@ -147,10 +153,10 @@ def url_resolver(url):
         return _github_doc_root + url
 
 
-
 # dynamic setup
 
-auto_toc_sections = ["Contents", "Toc"]
+auto_toc_sections = ["Contents", "Toc", "Index"]
+
 
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
