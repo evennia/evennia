@@ -2063,9 +2063,15 @@ class DefaultCharacter(DefaultObject):
         # If no typeclass supplied, use this class
         kwargs["typeclass"] = kwargs.pop("typeclass", cls)
 
+        # Normalize to latin characters and validate, if necessary, the supplied key
+        key = cls.normalize_name(key)
+
+        if not cls.validate_name(key):
+            errors.append("Invalid character name.")
+            return obj, errors
+
         # Set the supplied key as the name of the intended object
         kwargs["key"] = key
-        key = cls._validate(key)
 
         # Get home for character
         kwargs["home"] = ObjectDB.objects.get_id(kwargs.get("home", settings.DEFAULT_HOME))
@@ -2117,21 +2123,35 @@ class DefaultCharacter(DefaultObject):
         return obj, errors
 
     @classmethod
-    def _validate(cls, key):
+    def normalize_name(cls, name):
         """
-        Validate that character name is acceptable prior to creating. Note that this should be refactored
+        Normalize the character name prior to creating. Note that this should be refactored
         to support i18n for non-latin scripts, but as we (currently) have no bug reports requesting better
         support of non-latin character sets, requiring character names to be latinified is an acceptable option.
 
         Args:
-            key (str) : The name of the character
+            name (str) : The name of the character
 
         Returns:
-            key (str) : A valid name.
+            latin_name (str) : A valid name.
         """
+
         from evennia.utils.utils import latinify
-        key = latinify(key, default="X")
-        return key
+        latin_name = latinify(name, default="X")
+        return latin_name
+
+    @classmethod
+    def validate_name(cls, name):
+        """ Validate the character name prior to creating. Overload this function to add custom validators
+
+        Args:
+            name (str) : The name of the character
+        Returns:
+            valid (bool) : True if character creation should continue; False if it should fail
+
+        """
+
+        return True # Default validator does not perform any operations
 
     def basetype_setup(self):
         """
