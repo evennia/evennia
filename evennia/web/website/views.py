@@ -1113,7 +1113,7 @@ class HelpDetailView(HelpMixin, EvenniaDetailView):
 
         # Check if this object was requested in a valid manner
         if not obj:
-            raise HttpResponseBadRequest(
+            return HttpResponseBadRequest(
                 "No %(verbose_name)s found matching the query"
                 % {"verbose_name": queryset.model._meta.verbose_name}
             )

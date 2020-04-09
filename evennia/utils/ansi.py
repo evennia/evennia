@@ -821,6 +821,8 @@ class ANSIString(str, metaclass=ANSIMeta):
         by a number.
 
         """
+        if not offset:
+            return []
         return [i + offset for i in iterable]
 
     @classmethod
@@ -1063,7 +1065,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         clean_string = self._clean_string * other
         code_indexes = self._code_indexes[:]
         char_indexes = self._char_indexes[:]
-        for i in range(1, other + 1):
+        for i in range(other):
             code_indexes.extend(self._shifter(self._code_indexes, i * len(self._raw_string)))
             char_indexes.extend(self._shifter(self._char_indexes, i * len(self._raw_string)))
         return ANSIString(
