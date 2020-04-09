@@ -178,11 +178,11 @@ class ObjectDBManager(TypedObjectManager):
         # This doesn't work if attribute_value is an object. Workaround below
 
         if isinstance(attribute_value, (str, int, float, bool)):
-            return self.filter(
+            return list(self.filter(
                 cand_restriction
                 & type_restriction
                 & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value)
-            ).order_by("id")
+            ).order_by("id"))
         else:
             # We must loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
             global _ATTR
@@ -278,7 +278,7 @@ class ObjectDBManager(TypedObjectManager):
         exclude_restriction = (
             Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
         )
-        return self.filter(db_location=location).exclude(exclude_restriction).order_by("id")
+        return list(self.filter(db_location=location).exclude(exclude_restriction).order_by("id"))
 
     def get_objs_with_key_or_alias(self, ostring, exact=True, candidates=None, typeclasses=None):
         """
@@ -309,7 +309,7 @@ class ObjectDBManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         if exact:
             # exact match - do direct search
-            return (
+            return list(
                 (
                     self.filter(
                         cand_restriction
