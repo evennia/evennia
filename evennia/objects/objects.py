@@ -67,13 +67,32 @@ class ObjectSessionHandler(object):
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
         self._sessid_cache = list(
-            set(int(val) for val in (self.obj.db_sessid or "").split(",") if val)
+            set(int(val) for val in self._load().split(",") if val)
         )
         if any(sessid for sessid in self._sessid_cache if sessid not in _SESSIONS):
             # cache is out of sync with sessionhandler! Only retain the ones in the handler.
             self._sessid_cache = [sessid for sessid in self._sessid_cache if sessid in _SESSIONS]
-            self.obj.db_sessid = ",".join(str(val) for val in self._sessid_cache)
-            self.obj.save(update_fields=["db_sessid"])
+            self._save(self._sessid_cache)
+
+    def _load(self):
+        """
+        Retrieves data from object owner for sessids.
+
+        Returns:
+            csessids (comma-separated session ids)
+        """
+        return self.obj.db_sessid if self.obj.db_sessid else ""
+
+    def _save(self, sessids):
+        """
+        Saves sessids to persistent storage.
+
+        Args:
+            sessids (list of int): A list of session ids.
+
+        """
+        self.obj.db_sessid = ",".join(str(val) for val in sessids)
+        self.obj.save(update_fields=["db_sessid"])
 
     def get(self, sessid=None):
         """
@@ -144,8 +163,7 @@ class ObjectSessionHandler(object):
             if len(sessid_cache) >= _SESSID_MAX:
                 return
             sessid_cache.append(sessid)
-            self.obj.db_sessid = ",".join(str(val) for val in sessid_cache)
-            self.obj.save(update_fields=["db_sessid"])
+            self._save(sessid_cache)
 
     def remove(self, session):
         """
@@ -163,8 +181,7 @@ class ObjectSessionHandler(object):
         sessid_cache = self._sessid_cache
         if sessid in sessid_cache:
             sessid_cache.remove(sessid)
-            self.obj.db_sessid = ",".join(str(val) for val in sessid_cache)
-            self.obj.save(update_fields=["db_sessid"])
+            self._save(sessid_cache)
 
     def clear(self):
         """
@@ -172,8 +189,7 @@ class ObjectSessionHandler(object):
 
         """
         self._sessid_cache = []
-        self.obj.db_sessid = None
-        self.obj.save(update_fields=["db_sessid"])
+        self._save([])
 
     def count(self):
         """
@@ -184,7 +200,6 @@ class ObjectSessionHandler(object):
 
         """
         return len(self._sessid_cache)
-
 
 #
 # Base class to inherit from.

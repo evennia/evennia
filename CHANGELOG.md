@@ -14,6 +14,7 @@
 - Made most of the networking classes such as Protocols and the SessionHandlers 
   replaceable via `settings.py` for modding enthusiasts. (volund)
 
+- `ObjectSessionHandler` now easier to sub-class.
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
