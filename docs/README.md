@@ -51,7 +51,9 @@ All is done in your terminal/console.
 
 - Next we build the html-based documentation.
 
+    ```
     make quick 
+    ```
 
 - The html-based documentation will appear in the new 
   folder `evennia/docs/build/html/`. Note any errors from files you have edited.
@@ -127,25 +129,25 @@ docs are built by looking at the git tree.
     make mv-local
     ```
 
-- Once all is built and it looks ok, run
+- If you have git-push access to the Evennia `gh-pages` branch on `github`, you 
+can now deploy.
 
     ```
     make deploy
     ```
 
-Note that this step requires git-push access to the Evennia `gh-pages` branch on `github`.
-
-If you know what you are doing you can also do
+- If you know what you are doing you can also do build + deploy in one step: 
 
     ```
     make release
     ```
 
-This does the build + deploy steps in one go. After it finishes, the updated
-live documentation will be available at `https://evennia.github.io/evennia/`.
-
+- After deployment finishes it finishes, the updated live documentation will be
+available at `https://evennia.github.io/evennia/`.
 
 # Help with editing syntax
+
+> This needs expanding in the future.
 
 ## Referring to titles in another file
 
