@@ -9,17 +9,17 @@ The live documentation is (will in the future be) available at `https://evennia.
 # Editing the docs
 
 The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
-Markdown files are simple text files that can be edited with a normal text editor. They use 
-the [Markdown][commonmark] syntax. 
+Markdown files are simple text files that can be edited with a normal text editor. They use
+the [Markdown][commonmark] syntax.
 
-Don't edit the files in `source/api/`. These are auto-generated and your changes 
-will be lost. 
+Don't edit the files in `source/api/`. These are auto-generated and your changes
+will be lost.
 
 See also later in this doc for [Help with editing syntax](#Help-with-editing-syntax).
 
 ## Contributing
 
-Contributing to the docs is is like [contributing to the rest of Evennia][contributing]: 
+Contributing to the docs is is like [contributing to the rest of Evennia][contributing]:
 Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes and make a PR for it!
 
@@ -27,7 +27,7 @@ own work-branch, make your changes and make a PR for it!
 
 The sources in `evennia/docs/source/` are built into a pretty documentation using
 the [Sphinx][sphinx] static generator system. To do so locally you need to either
-use a system with `make` (Linux/Unix/Mac/Windows-WSL) or run sphinx-commands manually 
+use a system with `make` (Linux/Unix/Mac/Windows-WSL) or run sphinx-commands manually
 (read the `Makefile` to see which commands are run by `make`).
 
 You don't necessarily _have_ to build the docs locally to contribute.  But
@@ -38,25 +38,25 @@ your change comes out looking as you expected.
 
 If you only want to build the main documentation pages (not the API autodocs),
 you don't need to install Evennia itself, only the documentation resources.
-All is done in your terminal/console. 
+All is done in your terminal/console.
 
 - (Optional, but recommended): Activate a virtualenv with Python 3.7.
 - `cd` to into the `evennia/docs` folder (where this README is).
-- Install the documentation-build requirements: 
+- Install the documentation-build requirements:
 
     ```
     make install
-    or 
+    or
     pip install -r requirements.txt
     ```
 
 - Next, build the html-based documentation.
 
     ```
-    make quick 
+    make quick
     ```
 
-- The html-based documentation will appear in the new 
+- The html-based documentation will appear in the new
   folder `evennia/docs/build/html/`. Note any errors from files you have edited.
 - Use a web browser to open `evennia/docs/build/html/index.html` and view the docs.
   Note that you will get errors if clicking a link to the auto-docs, because you didn't build them!
@@ -68,11 +68,11 @@ generated from the Evennia source. For this you must install Evennia and
 initialize a new game with a default database (you don't need to have it
 running)
 
-- Follow the normal [Evennia Getting-Started instructions][getting-started] 
+- Follow the normal [Evennia Getting-Started instructions][getting-started]
   to install Evennia. Use a virtualenv.
 - Make sure you `cd` to the folder _containing_ your `evennia/` repo (so two levels up from `docs/`).
 - Create a new game folder called `gamedir` at the same level as your `evennia`
-repo with 
+repo with
 
     ```
     evennia --init gamedir
@@ -95,12 +95,12 @@ repo with
       ----- gamedir/
     ```
 
-- Make sure you are still in your virtualenv, then go to `evennia/docs/` and 
+- Make sure you are still in your virtualenv, then go to `evennia/docs/` and
   install the doc-building requirements:
-  
+
     ```
-    make install 
-    or 
+    make install
+    or
     pip install -r requirements.txt
     ```
 
@@ -110,16 +110,16 @@ repo with
     make local
     ```
 
-- The rendered files will appear in a new folder `evennia/docs/build/html`. 
+- The rendered files will appear in a new folder `evennia/docs/build/html`.
   Note any errors from files you have edited.
 - Point your web browser to `evennia/docs/build/html/index.html` to view the full docs.
 
 ### Building with another gamedir
 
-If you for some reason want to use another location of your `gamedir/`, or want it 
+If you for some reason want to use another location of your `gamedir/`, or want it
 named something else (maybe you already use the name 'gamedir' for your development ...),
 you can do so by setting the `EVGAMEDIR` environment variable to the absolute path
-of your alternative game dir. For example: 
+of your alternative game dir. For example:
 
     ```
     EVGAMEDIR=/my/path/to/mygamedir make local
@@ -143,14 +143,14 @@ docs are built by looking at the git tree.
     ```
 
 - The different versions will be found under `evennia/docs/build/versions/`.
-- If you have git-push access to the Evennia `gh-pages` branch on `github`, you 
+- If you have git-push access to the Evennia `gh-pages` branch on `github`, you
 can now deploy.
 
     ```
     make deploy
     ```
 
-- If you know what you are doing you can also do build + deploy in one step: 
+- If you know what you are doing you can also do build + deploy in one step:
 
     ```
     make release
@@ -165,7 +165,7 @@ available at `https://evennia.github.io/evennia/`.
 
 ## Referring to a heading in the same file
 
-You can self-reference by pointing to a header/label elsewhere in the 
+You can self-reference by pointing to a header/label elsewhere in the
 same document by using `#` and replacing any spaces in the name with `-`.
 
 ```
@@ -205,13 +205,17 @@ This will be automatically translated to the matching github link so the reader 
 > This is not currently working. (WIP)
 
 
-## Making indices
+## Making toc-tree indices
 
-To make a document tree (what Sphinx refers to as a "Toc Tree"), make a list of document urls like this:
+To make a Table-of-Contents listing (what Sphinx refers to as a "Toc Tree"), one
+must make new heading named either `Contents` or `Index`, followed by a bullet-list of
+links:
 
 ```
-* [Title1](doc1.md)
-* [Title2](doc2.md)
+# Index
+
+- [Title1](doc1)
+- [Title2](doc2)
 
 ```
 
