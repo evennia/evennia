@@ -14,20 +14,25 @@ be decorated with [Markdown][commonmark] syntax.
 Don't edit the files in `source/api/`. These are auto-generated and your changes 
 will be lost. 
 
+See also later in this doc for [Help with editing syntax](Help-with-editing-syntax).
+
+# Contributing
+
+Contributing to the docs is is like contributing to normal Evennia: Check out
+the branch of Evennia you want to edit the documentation for. Then make your
+own work-branch, make your changes and make a PR for it!
 
 # Building the docs
 
 The sources in `evennia/docs/source/` are built into a pretty documentation using
-the [Sphinx][sphinx] static generator system. 
+the [Sphinx][sphinx] static generator system. To do so locally you need to either
+use a system with `make` (Linux/Unix/Mac) or run sphinx-commands manually.
 
-You don't necessarily _have_ to build the docs locally to commit changes to the
-docs; they are just text files after all. But building them allows you to check
-for yourself that syntax is correct and that your change comes out looking as
-you expect before contributing.
+You don't necessarily _have_ to build the docs locally to contribute.  But
+building them allows you to check for yourself that syntax is correct and that
+your change comes out looking as you expected.
 
-## Prerequisites
-
-### Only the main documentation
+## Building only the main documentation
 
 If you only want to build the main documentation pages (not the API autodocs),
 you don't need to install Evennia itself, only the documentation resources.
@@ -38,10 +43,11 @@ All is done in your terminal/console.
 - Run `make install` or `pip install -r requirements.txt` to install the documentation-build
   requirements.
 - `make quick` - this will create html-based documentation in the new 
-  folder `evennia/docs/builds/html/`. 
-- Use a web browser to open `evennia/docs/builds/html/index.html` and read the rendered docs.
+  folder `evennia/docs/builds/html/`. Note any errors from files you have edited.
+- Use a web browser to open `evennia/docs/builds/html/index.html` and view the docs.
+  Note that you will get errors if going to the auto-docs, because you didn't build them!
 
-### Main documentation and API docs
+## Building the main documentation and API docs
 
 The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
@@ -65,42 +71,24 @@ to create the database. You don't need to continue to start the game.
   ----- gamedir/
 ```
 
-- Go to `evennia/docs/` and run `make install` or `pip install -r requirements.txt` 
-  to install the doc-building requirements into your virtualenv. 
-
-## Building locally
-
-With your build environment set up as above, stand in the `evennia/docs` directory and run
-
-    make local
-
-This will build the html documentation (including api docs) in the new folder
-`evennia/docs/build/html/`. To read it, open `evennia/docs/build/html/index.html` in any web browser.
-
-Building the api docs can be quite slow. If you are working on some doc change
-and just want to quickly check that things came out the way you want, you can
-also opt to only build the normal docs:
-
-    make quick
-
-You will get errors from the api index and won't be able to view the api-docs, but it's
-a lot faster to run! This will not clean out the `build/` dir between runs. If you
-find you get any old stuff hanging around in the
-`build/` dir you can use
-
-    make clear
-
-to remove any old build cruft before next quick-build.
-
+- Make sure you are still in your virtualenv, then go to `evennia/docs/` and 
+  run `make install` or `pip install -r requirements.txt` 
+  to install the doc-building requirements.
+- Finally, run `make local` will build the full documentation, including the auto-docs.
+  Note any errors from files you have edited.
+- Point your web browser to `evennia/docs/build/html/index.html` to view the full docs.
 
 ## Building for release
 
-The release-build will build all documentation branches. Only official Evennia
-branches will be built so you can't use this to build your own testing branch.
+The full Evennia documentation also tracks old versions of documentation based
+on the available branches. The release-build will build all documentation
+branches. Only specific official Evennia branches will be built so you can't
+use this to build your own testing branch.
 
-- All local changes must have been committed to git first, since the docs build
-by looking at the git tree.
-- To build for local checking, run
+- All local changes must have been committed to git first, since the versioned
+docs are built by looking at the git tree.
+
+- To build for local checking, run (`mv` stands for "multi-version"):
 
     make mv-local
 
@@ -114,24 +102,15 @@ If you know what you are doing you can also do
 
     make release
 
-This does the build + deploy steps automatically.
-
-
-# Contributing and editing documentation
-
-Check out the branch of Evennia you want to edit the documentation for. Then make your own
-branch off this, make your changes and make a PR for it!
-
-The documentation sources are in `evennia/docs/source/`. These are mainly
-[Markdown][commonmark] (`.md`) files that you can edit like normal text files.
-The ReST files in `source/api/` are auto-generated from the Evennia sources and
-should _not_ be manually edited.
+This does the build + deploy steps in one go. After it finishes, the updated
+live documentation will be available at `https://evennia.github.io/evennia/`.
 
 
 # Help with editing syntax
 
 ## Referring to titles in another file
 
+> WIP: Most of these special structures need more work and checking.
 
 If file1 looks like this:
 
@@ -139,6 +118,7 @@ If file1 looks like this:
 # Header title
 
 ```
+
 You can refer to it from another file as
 
 ```
@@ -146,6 +126,7 @@ Read more about it [here](path.to.file1.md:Header title)
 
 
 ```
+> This is not actually working at this time (WIP)
 
 To refer to code in the Evennia repository, you can use a relative reference from the docs/ folder:
 
@@ -153,8 +134,8 @@ To refer to code in the Evennia repository, you can use a relative reference fro
 You can find this code [here](../evennia/objects/objects.py).
 
 ```
-
 This will be automatically translated to the matching github link so the reader can click and jump to that code directly.
+> This is not currently working. (WIP)
 
 
 ## Making indices
