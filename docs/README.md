@@ -1,9 +1,11 @@
 # evennia-docs
 Documentation for the Evennia MUD creation system.
 
-This system is still WIP! 
+> This system is still WIP and many things are bound to change!
+> Contributing is still primarily to be done in the wiki.
 
-The live documentation (will in the future be) is available at `https://evennia.github.io/evennia/`.
+
+The live documentation is (will in the future be) available at `https://evennia.github.io/evennia/`.
 
 # Editing the docs
 
@@ -16,7 +18,7 @@ will be lost.
 
 See also later in this doc for [Help with editing syntax](Help-with-editing-syntax).
 
-# Contributing
+## Contributing
 
 Contributing to the docs is is like contributing to normal Evennia: Check out
 the branch of Evennia you want to edit the documentation for. Then make your
@@ -38,12 +40,20 @@ If you only want to build the main documentation pages (not the API autodocs),
 you don't need to install Evennia itself, only the documentation resources.
 All is done in your terminal/console. 
 
-- (Optional, but recommended): Activate a virtualenv with Python3.7.
-- `cd` to into the `evennia/docs` folder (where this README is)
-- Run `make install` or `pip install -r requirements.txt` to install the documentation-build
-  requirements.
-- `make quick` - this will create html-based documentation in the new 
-  folder `evennia/docs/builds/html/`. Note any errors from files you have edited.
+- (Optional, but recommended): Activate a virtualenv with Python 3.7.
+- `cd` to into the `evennia/docs` folder (where this README is).
+- Install the documentation-build requirements: 
+
+    make install
+    or 
+    pip install -r requirements.txt
+
+- Next we build the html-based documentation.
+
+    make quick 
+
+- The html-based documentation will appear in the new 
+  folder `evennia/docs/build/html/`. Note any errors from files you have edited.
 - Use a web browser to open `evennia/docs/builds/html/index.html` and view the docs.
   Note that you will get errors if going to the auto-docs, because you didn't build them!
 
@@ -56,25 +66,40 @@ running)
 
 - Follow the normal [Evennia Getting-Started instructions][getting-started] 
   to install Evennia. Use a virtualenv.
-- Make sure you `cd` to the folder containing your `evennia/` repo. 
-- Create a new game folder called `gamedir` next to your regular game dir (if you
-  have the same level as your `evennia`
-repo with `evennia --init gamedir`. Then `cd` into it and run `evennia migrate`
-to create the database. You don't need to continue to start the game.
+- Make sure you `cd` to the folder _containing_ your `evennia/` repo (so two levels up from `docs/`).
+- Create a new game folder called `gamedir` at the same level as your `evennia`
+repo with 
+
+    evennia --init gamedir
+
+- Then `cd` into it and create a new, empty database. You don't need to start the game
+  or do any further changes.
+
+    evennia migrate
+
 - This is how the structure should look at this point:
 
 ```
   (top)
   |
-  ----- evennia/  (the top-level folder, where docs/ is)
+  ----- evennia/  (the top-level folder, containing docs/)
   |
   ----- gamedir/
 ```
 
 - Make sure you are still in your virtualenv, then go to `evennia/docs/` and 
-  run `make install` or `pip install -r requirements.txt` 
-  to install the doc-building requirements.
-- Finally, run `make local` will build the full documentation, including the auto-docs.
+  install the doc-building requirements:
+  
+    make install 
+    or 
+    pip install -r requirements.txt
+
+- Finally, build the full documentation, including the auto-docs:
+
+
+    make local
+
+- The rendered files will appear in a new folder `evennia/docs/build/html`. 
   Note any errors from files you have edited.
 - Point your web browser to `evennia/docs/build/html/index.html` to view the full docs.
 
