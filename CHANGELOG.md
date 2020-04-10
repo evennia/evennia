@@ -1,10 +1,13 @@
 # Changelog
 
-## Evennia 1.0 (2019-) (WIP)
+## Evennia 1.0 (2019-) (develop branch, WIP)
 
 - new `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 - REST API allows you external access to db objects through HTTP requests (Tehom)
+- `Object.normalize_name` and `.validate_name` added to (by default) enforce latinify
+  on character name and avoid potential exploits using clever Unicode chars (trhr)
+
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
