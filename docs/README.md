@@ -9,25 +9,26 @@ The live documentation is (will in the future be) available at `https://evennia.
 # Editing the docs
 
 The docs source files are `*.md` files found in `evennia/docs/source/`.  They
-are simple text files that can be edited with a normal text editor and needs to
-be decorated with [Markdown][commonmark] syntax. 
+are simple text files that can be edited with a normal text editor. They use 
+the [Markdown][commonmark] syntax. 
 
 Don't edit the files in `source/api/`. These are auto-generated and your changes 
 will be lost. 
 
-See also later in this doc for [Help with editing syntax](Help-with-editing-syntax).
+See also later in this doc for [Help with editing syntax](#Help-with-editing-syntax).
 
 ## Contributing
 
-Contributing to the docs is is like contributing to normal Evennia: Check out
-the branch of Evennia you want to edit the documentation for. Then make your
+Contributing to the docs is is like [contributing to the rest of Evennia][contributing]: 
+Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes and make a PR for it!
 
 # Building the docs
 
 The sources in `evennia/docs/source/` are built into a pretty documentation using
 the [Sphinx][sphinx] static generator system. To do so locally you need to either
-use a system with `make` (Linux/Unix/Mac) or run sphinx-commands manually.
+use a system with `make` (Linux/Unix/Mac/Windows-WSL) or run sphinx-commands manually 
+(read the `Makefile` to see which commands are run by `make`).
 
 You don't necessarily _have_ to build the docs locally to contribute.  But
 building them allows you to check for yourself that syntax is correct and that
@@ -113,6 +114,17 @@ repo with
   Note any errors from files you have edited.
 - Point your web browser to `evennia/docs/build/html/index.html` to view the full docs.
 
+### Building with another gamedir
+
+If you for some reason want to use another location of your `gamedir/`, or want it 
+named something else (maybe you already use the name 'gamedir' for your development ...),
+you can do so by setting the `EVGAMEDIR` environment variable to the absolute path
+of your alternative game dir. For example: 
+
+    ```
+    EVGAMEDIR=/my/path/to/mygamedir make local
+    ```
+
 ## Building for release
 
 The full Evennia documentation also tracks old versions of documentation based
@@ -142,7 +154,7 @@ can now deploy.
     make release
     ```
 
-- After deployment finishes it finishes, the updated live documentation will be
+- After deployment finishes, the updated live documentation will be
 available at `https://evennia.github.io/evennia/`.
 
 # Help with editing syntax
@@ -213,4 +225,5 @@ to understand our friendly Google-style docstrings used in classes and functions
 [sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
 [sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
 [getting-started]: https://github.com/evennia/evennia/wiki/Getting-Started
+[contributing]: https://github.com/evennia/evennia/wiki/Contributing
 
