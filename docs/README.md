@@ -8,8 +8,8 @@ The live documentation is (will in the future be) available at `https://evennia.
 
 # Editing the docs
 
-The docs source files are `*.md` files found in `evennia/docs/source/`.  They
-are simple text files that can be edited with a normal text editor. They use 
+The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
+Markdown files are simple text files that can be edited with a normal text editor. They use 
 the [Markdown][commonmark] syntax. 
 
 Don't edit the files in `source/api/`. These are auto-generated and your changes 
@@ -50,7 +50,7 @@ All is done in your terminal/console.
     pip install -r requirements.txt
     ```
 
-- Next we build the html-based documentation.
+- Next, build the html-based documentation.
 
     ```
     make quick 
@@ -58,8 +58,8 @@ All is done in your terminal/console.
 
 - The html-based documentation will appear in the new 
   folder `evennia/docs/build/html/`. Note any errors from files you have edited.
-- Use a web browser to open `evennia/docs/builds/html/index.html` and view the docs.
-  Note that you will get errors if going to the auto-docs, because you didn't build them!
+- Use a web browser to open `evennia/docs/build/html/index.html` and view the docs.
+  Note that you will get errors if clicking a link to the auto-docs, because you didn't build them!
 
 ## Building the main documentation and API docs
 
@@ -127,10 +127,11 @@ of your alternative game dir. For example:
 
 ## Building for release
 
-The full Evennia documentation also tracks old versions of documentation based
-on the available branches. The release-build will build all documentation
-branches. Only specific official Evennia branches will be built so you can't
-use this to build your own testing branch.
+The full Evennia documentation also tracks documentation from older Evennia
+versions. This is done by pulling documentation from Evennia's old release
+branches and building them all so readers can choose which one to view. Only
+specific official Evennia branches will be built, so you can't use this to
+build your own testing branch.
 
 - All local changes must have been committed to git first, since the versioned
 docs are built by looking at the git tree.
@@ -141,6 +142,7 @@ docs are built by looking at the git tree.
     make mv-local
     ```
 
+- The different versions will be found under `evennia/docs/build/versions/`.
 - If you have git-push access to the Evennia `gh-pages` branch on `github`, you 
 can now deploy.
 
@@ -160,6 +162,18 @@ available at `https://evennia.github.io/evennia/`.
 # Help with editing syntax
 
 > This needs expanding in the future.
+
+## Referring to a heading in the same file
+
+You can self-reference by pointing to a header/label elsewhere in the 
+same document by using `#` and replacing any spaces in the name with `-`.
+
+```
+This is a [link to the heading](#My-Heading-Name).
+
+# My Heading Name
+
+```
 
 ## Referring to titles in another file
 
