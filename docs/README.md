@@ -1,27 +1,72 @@
 # evennia-docs
 Documentation for the Evennia MUD creation system.
 
-The live documentation is available at `https://evennia.github.io/evennia/`.
+This system is still WIP! 
+
+The live documentation (will in the future be) is available at `https://evennia.github.io/evennia/`.
+
+# Editing the docs
+
+The docs source files are `*.md` files found in `evennia/docs/source/`.  They
+are simple text files that can be edited with a normal text editor and needs to
+be decorated with [Markdown][commonmark] syntax. 
+
+Don't edit the files in `source/api/`. These are auto-generated and your changes 
+will be lost. 
+
 
 # Building the docs
 
-## Prerequisits
+The sources in `evennia/docs/source/` are built into a pretty documentation using
+the [Sphinx][sphinx] static generator system. 
 
-- Clone the evennia repository.
-- Follow the normal Evennia Getting-Started instructions. Use a virtualenv and create
-a new game folder called `gamedir` at the same level as your `evennia` repo and run migrations in it.
+You don't necessarily _have_ to build the docs locally to commit changes to the
+docs; they are just text files after all. But building them allows you to check
+for yourself that syntax is correct and that your change comes out looking as
+you expect before contributing.
+
+## Prerequisites
+
+### Only the main documentation
+
+If you only want to build the main documentation pages (not the API autodocs),
+you don't need to install Evennia itself, only the documentation resources.
+All is done in your terminal/console. 
+
+- (Optional, but recommended): Activate a virtualenv with Python3.7.
+- `cd` to into the `evennia/docs` folder (where this README is)
+- Run `make install` or `pip install -r requirements.txt` to install the documentation-build
+  requirements.
+- `make quick` - this will create html-based documentation in the new 
+  folder `evennia/docs/builds/html/`. 
+- Use a web browser to open `evennia/docs/builds/html/index.html` and read the rendered docs.
+
+### Main documentation and API docs
+
+The full documentation includes both the doc pages and the API documentation
+generated from the Evennia source. For this you must install Evennia and
+initialize a new game with a default database (you don't need to have it
+running)
+
+- Follow the normal [Evennia Getting-Started instructions][getting-started] 
+  to install Evennia. Use a virtualenv.
+- Make sure you `cd` to the folder containing your `evennia/` repo. 
+- Create a new game folder called `gamedir` next to your regular game dir (if you
+  have the same level as your `evennia`
+repo with `evennia --init gamedir`. Then `cd` into it and run `evennia migrate`
+to create the database. You don't need to continue to start the game.
+- This is how the structure should look at this point:
 
 ```
   (top)
   |
-  ----- evennia/
+  ----- evennia/  (the top-level folder, where docs/ is)
   |
   ----- gamedir/
 ```
 
-- Make sure you are in your virtualenv. Go to `evennia/docs/` and install the
-`requirements.txt` or run `make install` to do the same.
-
+- Go to `evennia/docs/` and run `make install` or `pip install -r requirements.txt` 
+  to install the doc-building requirements into your virtualenv. 
 
 ## Building locally
 
@@ -145,3 +190,5 @@ to understand our friendly Google-style docstrings used in classes and functions
 [commonmark]: https://spec.commonmark.org/current/
 [sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
 [sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
+[getting-started]: https://github.com/evennia/evennia/wiki/Getting-Started
+
