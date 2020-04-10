@@ -11,31 +11,35 @@ import recommonmark
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
 
-# we must set up Evennia and its paths for autodocs to work
 
-EV_ROOT = os.environ.get("EVDIR")
-GAME_DIR = os.environ.get("EVGAMEDIR")
+_no_autodoc = os.environ.get("NOAUTODOC")
 
-if not (EV_ROOT and GAME_DIR):
-    print("The EVDIR and EVGAMEDIR environment variables must be set to the "
-          "absolute paths to the evennia/ repo and an initialized evennia "
-          "gamedir respectively.")
-    raise RuntimeError()
+if not _no_autodoc:
+    # we must set up Evennia and its paths for autodocs to work
 
-print("Evennia root: {}, Game dir: {}".format(EV_ROOT, GAME_DIR))
+    EV_ROOT = os.environ.get("EVDIR")
+    GAME_DIR = os.environ.get("EVGAMEDIR")
 
-sys.path.insert(1, EV_ROOT)
-sys.path.insert(1, GAME_DIR)
+    if not (EV_ROOT and GAME_DIR):
+        print("The EVDIR and EVGAMEDIR environment variables must be set to the "
+              "absolute paths to the evennia/ repo and an initialized evennia "
+              "gamedir respectively.")
+        raise RuntimeError()
 
-with cd(GAME_DIR):
-    # set up Evennia so its sources can be parsed
-    os.environ["DJANGO_SETTINGS_MODULE"] = "server.conf.settings"
+    print("Evennia root: {}, Game dir: {}".format(EV_ROOT, GAME_DIR))
 
-    import django  # noqa
-    django.setup()
+    sys.path.insert(1, EV_ROOT)
+    sys.path.insert(1, GAME_DIR)
 
-    import evennia  # noqa
-    evennia._init()
+    with cd(GAME_DIR):
+        # set up Evennia so its sources can be parsed
+        os.environ["DJANGO_SETTINGS_MODULE"] = "server.conf.settings"
+
+        import django  # noqa
+        django.setup()
+
+        import evennia  # noqa
+        evennia._init()
 
 
 # -- Project information -----------------------------------------------------
@@ -98,7 +102,6 @@ napoleon_use_param = True
 napoleon_use_keyword = True
 napoleon_use_rtype = True
 
-_no_autodoc = os.environ.get("NOAUTODOC")
 
 # settings for sphinxcontrib.apidoc to auto-run sphinx-apidocs
 
