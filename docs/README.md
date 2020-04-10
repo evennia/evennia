@@ -1,9 +1,8 @@
 # evennia-docs
 Documentation for the Evennia MUD creation system.
 
-> This system is still WIP and many things are bound to change!
+> WARNING: This system is still WIP and many things are bound to change!
 > Contributing is still primarily to be done in the wiki.
-
 
 The live documentation is (will in the future be) available at `https://evennia.github.io/evennia/`.
 
@@ -44,9 +43,11 @@ All is done in your terminal/console.
 - `cd` to into the `evennia/docs` folder (where this README is).
 - Install the documentation-build requirements: 
 
+    ```
     make install
     or 
     pip install -r requirements.txt
+    ```
 
 - Next we build the html-based documentation.
 
@@ -70,34 +71,41 @@ running)
 - Create a new game folder called `gamedir` at the same level as your `evennia`
 repo with 
 
+    ```
     evennia --init gamedir
+    ```
 
 - Then `cd` into it and create a new, empty database. You don't need to start the game
   or do any further changes.
 
+    ```
     evennia migrate
+    ```
 
 - This is how the structure should look at this point:
 
-```
-  (top)
-  |
-  ----- evennia/  (the top-level folder, containing docs/)
-  |
-  ----- gamedir/
-```
+    ```
+      (top)
+      |
+      ----- evennia/  (the top-level folder, containing docs/)
+      |
+      ----- gamedir/
+    ```
 
 - Make sure you are still in your virtualenv, then go to `evennia/docs/` and 
   install the doc-building requirements:
   
+    ```
     make install 
     or 
     pip install -r requirements.txt
+    ```
 
 - Finally, build the full documentation, including the auto-docs:
 
-
+    ```
     make local
+    ```
 
 - The rendered files will appear in a new folder `evennia/docs/build/html`. 
   Note any errors from files you have edited.
@@ -115,17 +123,23 @@ docs are built by looking at the git tree.
 
 - To build for local checking, run (`mv` stands for "multi-version"):
 
+    ```
     make mv-local
+    ```
 
 - Once all is built and it looks ok, run
 
+    ```
     make deploy
+    ```
 
 Note that this step requires git-push access to the Evennia `gh-pages` branch on `github`.
 
 If you know what you are doing you can also do
 
+    ```
     make release
+    ```
 
 This does the build + deploy steps in one go. After it finishes, the updated
 live documentation will be available at `https://evennia.github.io/evennia/`.
