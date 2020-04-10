@@ -12,7 +12,7 @@ server may be sufficient for serving multimedia to a minimal number of users,
 the perfect use case for this plugin would be:
 
 1) Servers supporting heavy web-based traffic (webclient, etc)
-2) With a sizeable number of users
+2) With a sizable number of users
 3) Where the users are globally distributed
 4) Where multimedia files are served to users as a part of gameplay
 
@@ -131,7 +131,7 @@ AWS_S3_OBJECT_PARAMETERS = { 'Expires': 'Thu, 31 Dec 2099 20:00:00 GMT',
 AWS_DEFAULT_ACL = 'public-read'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % settings.AWS_BUCKET_NAME
 AWS_AUTO_CREATE_BUCKET = True
-STATICFILES_STORAGE = 'evennia.contrib.aws-s3-cdn.S3Boto3Storage'
+STATICFILES_STORAGE = 'evennia.contrib.django.aws-s3-cdn.S3Boto3Storage'
 
 <<< END OF SECRET_SETTINGS.PY COPY/PASTE
 
@@ -580,15 +580,14 @@ class S3Boto3Storage(Storage):
     default_content_type = "application/octet-stream"
     # If config provided in init, signature_version and addressing_style settings/args are ignored.
     config = None
-
     # used for looking up the access and secret key from env vars
     access_key_names = ["AWS_S3_ACCESS_KEY_ID", "AWS_ACCESS_KEY_ID"]
     secret_key_names = ["AWS_S3_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"]
     security_token_names = ["AWS_SESSION_TOKEN", "AWS_SECURITY_TOKEN"]
     security_token = None
 
-    access_key = setting("AWS_S3_ACCESS_KEY_ID", setting("AWS_ACCESS_KEY_ID"))
-    secret_key = setting("AWS_S3_SECRET_ACCESS_KEY", setting("AWS_SECRET_ACCESS_KEY"))
+    access_key = setting("AWS_S3_ACCESS_KEY_ID", setting("AWS_ACCESS_KEY_ID", ""))
+    secret_key = setting("AWS_S3_SECRET_ACCESS_KEY", setting("AWS_SECRET_ACCESS_KEY", ""))
     file_overwrite = setting("AWS_S3_FILE_OVERWRITE", True)
     object_parameters = setting("AWS_S3_OBJECT_PARAMETERS", {})
     bucket_name = setting("AWS_STORAGE_BUCKET_NAME")
