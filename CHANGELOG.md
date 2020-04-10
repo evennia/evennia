@@ -7,7 +7,7 @@
 - REST API allows you external access to db objects through HTTP requests (Tehom)
 - `Object.normalize_name` and `.validate_name` added to (by default) enforce latinify
   on character name and avoid potential exploits using clever Unicode chars (trhr)
-
+- Added content_types indexing to DefaultObject's ContentsHandler.
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
