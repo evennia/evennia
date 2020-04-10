@@ -1,8 +1,7 @@
-# Game Planning
+# How to Build a Game
 
 
-So you have Evennia up and running. You have a great game idea in mind. Now it's time to start cracking!  But where to start? Here are some ideas for a workflow. Note that the suggestions on this page are just that - suggestions. Also, they are primarily aimed at a lone hobby designer or a small team developing a game in their free time. There is an article in the Imaginary Realities e-zine which was written by the Evennia lead dev. It focuses more on you finding out your motivations for making a game - you can [read the article here](http://journal.imaginary-realities.com/volume-07/issue-03/where-do-i-begin/index.html).
-
+You have a great game idea in mind. Now it's time to start cracking!  But where to start? Here are some ideas for a workflow. Note that the suggestions on this page are just that - suggestions. Also, they are primarily aimed at a lone hobby designer or a small team developing a game in their free time. There is an article in the Imaginary Realities e-zine which was written by the Evennia lead dev. It focuses more on you finding out your motivations for making a game - you can [read the article here](http://journal.imaginary-realities.com/volume-07/issue-03/where-do-i-begin/index.html).
 
 Below are some minimal steps for getting the first version of a new game world going with players. It's worth to at least make the attempt to do these steps in order even if you are itching to jump ahead in the development cycle. On the other hand, you should also make sure to keep your work fun for you, or motivation will falter. Making a full game is a lot of work as it is, you'll need all your motivation to make it a reality.
 

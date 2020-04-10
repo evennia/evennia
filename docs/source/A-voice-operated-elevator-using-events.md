@@ -1,8 +1,5 @@
 # A voice operated elevator using events
 
-
-- Previous tutorial: [Adding dialogues in events](Dialogues-in-events)
-
 This tutorial will walk you through the steps to create a voice-operated elevator, using the [in-game Python system](https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md).  This tutorial assumes the in-game Python system is installed in your game.  If it isn't, you can follow the installation steps given in [the documentation on in-game Python](https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md), and come back on this tutorial once the system is installed.  **You do not need to read** the entire documentation, it's a good reference, but not the easiest way to learn about it.  Hence these tutorials.
 
 The in-game Python system allows to run code on individual objects in some situations.  You don't have to modify the source code to add these features, past the installation.  The entire system makes it easy to add specific features to some objects, but not all.
