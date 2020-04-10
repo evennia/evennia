@@ -13,6 +13,7 @@ Attributes are separate objects that store values persistently onto
 the database object. Like everything else, they can be accessed
 transparently through the decorating TypeClass.
 """
+from collections import defaultdict
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -42,8 +43,9 @@ class ContentsHandler(object):
 
         """
         self.obj = obj
-        self._pkcache = {}
+        self._pkcache = set()
         self._idcache = obj.__class__.__instance_cache__
+        self._typecache = defaultdict(set)
         self.init()
 
     def init(self):
@@ -51,25 +53,30 @@ class ContentsHandler(object):
         Re-initialize the content cache
 
         """
-        self._pkcache.update(
-            dict((obj.pk, None) for obj in ObjectDB.objects.filter(db_location=self.obj) if obj.pk)
-        )
+        objects = [obj for obj in ObjectDB.objects.filter(db_location=self.obj) if obj.pk]
+        self._pkcache = {obj.pk for obj in objects}
+        for obj in objects:
+            for ctype in obj._content_types:
+                self._typecache[ctype].add(obj.pk)
 
-    def get(self, exclude=None):
+    def get(self, exclude=None, category=None):
         """
         Return the contents of the cache.
 
         Args:
             exclude (Object or list of Object): object(s) to ignore
+            category (str or None): Filter list by a content-type. If None, don't filter.
 
         Returns:
             objects (list): the Objects inside this location
 
         """
-        if exclude:
-            pks = [pk for pk in self._pkcache if pk not in [excl.pk for excl in make_iter(exclude)]]
+        if category is not None:
+            pks = self._typecache[category]
         else:
             pks = self._pkcache
+        if exclude:
+            pks = pks - {excl.pk for excl in make_iter(exclude)}
         try:
             return [self._idcache[pk] for pk in pks]
         except KeyError:
@@ -91,7 +98,9 @@ class ContentsHandler(object):
             obj (Object): object to add
 
         """
-        self._pkcache[obj.pk] = None
+        self._pkcache.add(obj.pk)
+        for ctype in obj._content_types:
+            self._typecache[ctype].add(obj.pk)
 
     def remove(self, obj):
         """
@@ -101,7 +110,9 @@ class ContentsHandler(object):
             obj (Object): object to remove
 
         """
-        self._pkcache.pop(obj.pk, None)
+        self._pkcache.remove(obj.pk)
+        for ctype in obj._content_types:
+            self._typecache[ctype].discard(obj.pk)
 
     def clear(self):
         """
@@ -109,6 +120,7 @@ class ContentsHandler(object):
 
         """
         self._pkcache = {}
+        self._typecache = defaultdict(set)
         self.init()
 
 
