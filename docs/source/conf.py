@@ -61,7 +61,8 @@ extensions = [
     "sphinx_multiversion",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
-    "sphinx.ext.viewcode"
+    "sphinx.ext.viewcode",
+    # "sphinxcontrib.lunrsearch",
 ]
 
 # make sure sectionlabel references can be used as path/to/file:heading
