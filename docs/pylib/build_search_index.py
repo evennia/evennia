@@ -5,6 +5,7 @@
 Builds a lunr static search index for optimized search
 
 """
+<<<<<<< HEAD
 import glob
 import json
 import os
@@ -13,6 +14,13 @@ from os.path import abspath, dirname
 from os.path import join as joinpath
 from os.path import sep
 
+=======
+import os
+import json
+import glob
+from argparse import ArgumentParser
+from os.path import sep, abspath, dirname, join as joinpath
+>>>>>>> 9916dba845 (First attemts at using lunr search engine)
 from lunr import lunr
 
 _DOCS_PATH = dirname(dirname(abspath(__file__)))
@@ -48,7 +56,11 @@ def create_search_index(sourcedir, outfile):
     print(f"Building Search index from {len(filepaths)} files ... ", end="")
 
     for filepath in filepaths:
+<<<<<<< HEAD
         with open(filepath, "r") as fil:
+=======
+        with open(filepath, 'r') as fil:
+>>>>>>> 9916dba845 (First attemts at using lunr search engine)
             filename = filepath.rsplit(sep, 1)[1].split(".", 1)[0]
             url = f"{URL_BASE}{sep}{filename}.html".strip()
             title = filename.replace("-", " ").strip()
@@ -64,7 +76,20 @@ def create_search_index(sourcedir, outfile):
     idx = lunr(
         ref="url",
         documents=outlist,
+<<<<<<< HEAD
         fields=[{"field_name": "title", "boost": 10}, {"field_name": "text", "boost": 1}],
+=======
+        fields=[
+            {
+                "field_name": "title",
+                "boost": 10
+            },
+            {
+                "field_name": "text",
+                "boost": 1
+            }
+        ],
+>>>>>>> 9916dba845 (First attemts at using lunr search engine)
     )
 
     with open(outfile, "w") as fil:
@@ -77,6 +102,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(description="Build a static search index.")
 
+<<<<<<< HEAD
     parser.add_argument(
         "-i",
         dest="sourcedir",
@@ -89,6 +115,12 @@ if __name__ == "__main__":
         default=DEFAULT_OUTFILE,
         help="Absolute path to the index file to output.",
     )
+=======
+    parser.add_argument("-i", dest="sourcedir", default=DEFAULT_SOURCE_DIR,
+                        help="Absolute path to the documentation source dir")
+    parser.add_argument("-o", dest="outfile", default=DEFAULT_OUTFILE,
+                        help="Absolute path to the index file to output.")
+>>>>>>> 9916dba845 (First attemts at using lunr search engine)
 
     args = parser.parse_args()
 
