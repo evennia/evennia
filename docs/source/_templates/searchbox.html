@@ -1,0 +1,31 @@
+{#
+    basic/searchbox.html
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Variant for lunrJS search
+
+#}
+{%- if pagename != "search" and builder != "singlehtml" %}
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">{{ _('Quick search') }}</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="{{ pathto('search') }}" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="{{ _('Go') }}" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+{%- endif %}
+
+{#
+
+  Lunr indexed quick search
+
+#}
+<p><input id="lunrsearch" type="text" placeholder="type something here"></p>
+<ul id="lunrsearchresults"></ul>
+
+<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+<script src="_static/js/lunr/search.js"></script>
