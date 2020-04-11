@@ -4,6 +4,7 @@
 
 - new `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+- Added content_types indexing to DefaultObject's ContentsHandler.
 - REST API allows you external access to db objects through HTTP requests (Tehom)
 - `Object.normalize_name` and `.validate_name` added to (by default) enforce latinify
   on character name and avoid potential exploits using clever Unicode chars (trhr)
