@@ -53,7 +53,7 @@ class ContentsHandler(object):
         Re-initialize the content cache
 
         """
-        objects = [obj for obj in ObjectDB.objects.filter(db_location=self.obj) if obj.pk]
+        objects = ObjectDB.objects.filter(db_location=self.obj)
         self._pkcache = {obj.pk for obj in objects}
         for obj in objects:
             for ctype in obj._content_types:
