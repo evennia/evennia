@@ -1746,18 +1746,13 @@ def format_grid(elements, width=78, sep=" "):
         wl = wls[ie]
         lrow = len(row)
         debug = row.replace(" ", ".")
-        # from evennia import set_trace;set_trace()
-        if ie >= nelements - 1:
-            # last element in list - make sure to add it
-            if lrow + wl > width:
-                # last slot extends outside grid, move to next line
-                row += " " * (width - lrow)
-                rows.append(row)
-                row = crop(element, width)
-            else:
-                row += crop(element, width)
-            row += " " * max(0, (width - len(row)))
+
+        if lrow + wl > width:
+            # last slot extends outside grid, move to next line
+            row += " " * (width - lrow)
             rows.append(row)
+            row = crop(element, width)
+            ic = 0
         elif ic >= aver_per_row - 1:
             # last slot on the line
             if ic == 0:
@@ -1795,6 +1790,10 @@ def format_grid(elements, width=78, sep=" "):
                 # add a new slot
                 row += element + " " * max(0, averlen - wl)
                 ic += 1
+
+        if ie >= nelements - 1:
+            # last element, make sure to store
+            rows.append(row)
 
     return "\n".join(rows)
 
