@@ -99,30 +99,6 @@ class TestMLen(TestCase):
         self.assertEqual(utils.m_len({"hello": True, "Goodbye": False}), 2)
 
 
-class TestANSIString(TestCase):
-    """
-    Verifies that ANSIString's string-API works as intended.
-    """
-
-    def setUp(self):
-        self.example_raw = "|relectric |cboogaloo|n"
-        self.example_ansi = ANSIString(self.example_raw)
-        self.example_str = "electric boogaloo"
-        self.example_output = "\x1b[1m\x1b[31melectric \x1b[1m\x1b[36mboogaloo\x1b[0m"
-
-    def test_length(self):
-        self.assertEqual(len(self.example_ansi), 17)
-
-    def test_clean(self):
-        self.assertEqual(self.example_ansi.clean(), self.example_str)
-
-    def test_raw(self):
-        self.assertEqual(self.example_ansi.raw(), self.example_output)
-
-    def test_format(self):
-        self.assertEqual(f"{self.example_ansi:0<20}", self.example_output + "000")
-
-
 class TestTimeformat(TestCase):
     """
     Default function header from utils.py:
@@ -287,24 +263,27 @@ class TestFormatGrid(TestCase):
     def test_even_grid(self):
         """Grid with small variations"""
         elements = self._generate_elements(3, 1, 30)
-        result = utils.format_grid(elements, width=78)
-        rows = result.split("\n")
+        rows = utils.format_grid(elements, width=78)
+        for row in rows:
+            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 3)
         self.assertTrue(all(len(row) == 78 for row in rows))
 
     def test_disparate_grid(self):
         """Grid with big variations"""
         elements = self._generate_elements(3, 15, 30)
-        result = utils.format_grid(elements, width=82, sep="  ")
-        rows = result.split("\n")
+        rows = utils.format_grid(elements, width=82, sep="  ")
+        for row in rows:
+            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 8)
         self.assertTrue(all(len(row) == 82 for row in rows))
 
     def test_huge_grid(self):
         """Grid with very long strings"""
         elements = self._generate_elements(70, 20, 30)
-        result = utils.format_grid(elements, width=78)
-        rows = result.split("\n")
+        rows = utils.format_grid(elements, width=78)
+        for row in rows:
+            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 30)
         self.assertTrue(all(len(row) == 78 for row in rows))
 
@@ -313,21 +292,20 @@ class TestFormatGrid(TestCase):
         elements = ("alias", "batchcode", "batchcommands", "cmdsets",
                     "copy", "cpattr", "desc", "destroy", "dig",
                     "examine", "find", "force", "lock")
-        result = utils.format_grid(elements, width=78)
-        rows = result.split("\n")
+        rows = utils.format_grid(elements, width=78)
+        for row in rows:
+            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 2)
         for element in elements:
-            self.assertTrue(element in result, f"element {element} is missing.")
+            self.assertTrue(element in rows, f"element {element} is missing.")
 
     def test_breakline(self):
         """Grid with line-long elements in middle"""
         elements = self._generate_elements(6, 4, 30)
         elements[10] = elements[20] = "-" * 78
-        # from pudb import debugger
-        # debugger.Debugger().set_trace()
-        result = utils.format_grid(elements, width=78)
-        rows = result.split("\n")
+        rows = utils.format_grid(elements, width=78)
+        for row in rows:
+            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 8)
         for element in elements:
-            self.assertTrue(element in result, f"element {element} is missing.")
-
+            self.assertTrue(element in rows, f"element {element} is missing.")

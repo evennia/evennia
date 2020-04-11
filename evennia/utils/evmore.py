@@ -31,6 +31,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
+from evennia.utils.ansi import ANSIString
 from evennia.utils.utils import make_iter, inherits_from, justify
 
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
@@ -41,6 +42,8 @@ _SCREEN_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _SCREEN_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
 
 _EVTABLE = None
+
+_LBR = ANSIString("\n")
 
 # text
 
@@ -332,7 +335,7 @@ class EvMore(object):
             # no justification. Simple division by line
             lines = text.split("\n")
 
-        self._data = ["\n".join(lines[i: i + self.height])
+        self._data = [_LBR.join(lines[i: i + self.height])
                       for i in range(0, len(lines), self.height)]
         self._npages = len(self._data)
         self._paginator = self.paginator_index

@@ -266,7 +266,7 @@ class TestGeneral(CommandTest):
 
 class TestHelp(CommandTest):
     def test_help(self):
-        self.call(help.CmdHelp(), "", "Command help entries", cmdset=CharacterCmdSet())
+        self.call(help.CmdHelp(), "", "Admin", cmdset=CharacterCmdSet())
 
     def test_set_help(self):
         self.call(

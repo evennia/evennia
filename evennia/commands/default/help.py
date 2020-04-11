@@ -187,20 +187,27 @@ class CmdHelp(Command):
         respectively.  You can override this method to return a
         custom display of the list of commands and topics.
         """
+        category_clr = "|w"
+        topic_clr = "|G"
         width = self.client_width()
         grid = []
         verbatim_elements = []
         for category in sorted(set(list(hdict_cmds.keys()) + list(hdict_db.keys()))):
 
             category_str = f"-- {category.title()} "
-            grid.append(ANSIString("|w" + category_str + "-" * (width - len(category_str)) + "|G"))
+            grid.append(ANSIString(
+                category_clr
+                + category_str
+                + "-" * (width - len(category_str))
+                + topic_clr))
             verbatim_elements.append(len(grid) - 1)
 
             entries = sorted(set(hdict_cmds.get(category, []) + hdict_db.get(category, [])))
             grid.extend(entries)
 
         gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
-        return "\n".join(gridrows)
+        gridrows = ANSIString("\n").join(gridrows)
+        return gridrows
 
     def check_show_help(self, cmd, caller):
         """
