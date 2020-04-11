@@ -1686,10 +1686,11 @@ def format_table(table, extra_space=1):
         )
     return ftable
 
-import functools
+
+import functools  # noqa
 
 
-def percentile(iterable, percent, key=lambda x:x):
+def percentile(iterable, percent, key=lambda x: x):
     """
     Find the percentile of a list of values.
 
@@ -1743,31 +1744,55 @@ def format_grid(elements, width=78, sep=" "):
     row = ""
     for ie, element in enumerate(elements):
         wl = wls[ie]
+        lrow = len(row)
+        debug = row.replace(" ", ".")
         # from evennia import set_trace;set_trace()
-        if ic >= aver_per_row - 1 or ie >= nelements - 1:
-            if ic == 0:
-                row = crop(element)
+        if ie >= nelements - 1:
+            # last element in list - make sure to add it
+            if lrow + wl > width:
+                # last slot extends outside grid, move to next line
+                row += " " * (width - lrow)
+                rows.append(row)
+                row = crop(element, width)
+            else:
+                row += crop(element, width)
             row += " " * max(0, (width - len(row)))
             rows.append(row)
-            row = ""
-            ic = 0
-        elif indices[ic] + wl > width:
-            row += " " * (width - len(row))
+        elif ic >= aver_per_row - 1:
+            # last slot on the line
+            if ic == 0:
+                # one slot per line
+                row = crop(element, width)
+                row += " " * max(0, (width - len(row)))
+                rows.append(row)
+            else:
+                # finish line, put slot on next line
+                row += " " * max(0, (width - lrow))
+                rows.append(row)
+                row = crop(element, width)
+                ic = 0
+        elif lrow + wl > width:
+            # last slot extends outside grid, move to next line
+            row += " " * (width - lrow)
             rows.append(row)
             row = crop(element, width)
             ic = 0
         else:
             try:
-                while len(row) > indices[ic] - 1:
+                while lrow > max(0, indices[ic]):
+                    # slot too wide, extend into adjacent slot
                     ic += 1
+                row += " " * max(0, indices[ic] - lrow)
             except IndexError:
+                # we extended past edge of grid, crop or move to next line
                 if ic == 0:
                     row = crop(element, width)
                 else:
-                    row += " " * max(0, width - len(row))
+                    row += " " * max(0, width - lrow)
                 rows.append(row)
                 ic = 0
             else:
+                # add a new slot
                 row += element + " " * max(0, averlen - wl)
                 ic += 1
 
