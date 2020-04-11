@@ -73,7 +73,8 @@ class HelpEntry(SharedMemoryModel):
     db_tags = models.ManyToManyField(
         Tag,
         blank=True,
-        help_text="tags on this object. Tags are simple string markers to identify, group and alias objects.",
+        help_text="tags on this object. Tags are simple string markers to "
+                  "identify, group and alias objects.",
     )
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore.
@@ -122,6 +123,19 @@ class HelpEntry(SharedMemoryModel):
         default - what to return if no lock of access_type was found
         """
         return self.locks.check(accessing_obj, access_type=access_type, default=default)
+
+    @property
+    def search_index_entry(self):
+        """
+        Property for easily retaining a search index entry for this object.
+        """
+        return {
+            "key": self.db_key,
+            "aliases": " ".join(self.aliases.all()),
+            "category": self.db_help_category,
+            "text": self.db_entrytext,
+            "tags": " ".join(str(tag) for tag in self.tags.all())
+        }
 
     #
     # Web/Django methods

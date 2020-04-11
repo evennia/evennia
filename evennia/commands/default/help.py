@@ -6,6 +6,8 @@ set. The normal, database-tied help system is used for collaborative
 creation of other help topics such as RP help or game-world aides.
 """
 
+from lunr import lunr
+from lunr.exceptions import QueryParseError
 from django.conf import settings
 from collections import defaultdict
 from evennia.utils.utils import fill, dedent
@@ -13,7 +15,7 @@ from evennia.commands.command import Command
 from evennia.help.models import HelpEntry
 from evennia.utils import create, evmore
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.utils import string_suggestions, class_from_module
+from evennia.utils.utils import string_suggestions, class_from_module, inherits_from, format_grid
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 HELP_MORE = settings.HELP_MORE
@@ -23,6 +25,71 @@ CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 __all__ = ("CmdHelp", "CmdSetHelp")
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _SEP = "|C" + "-" * _DEFAULT_WIDTH + "|n"
+
+
+class HelpCategory:
+    def __init__(self, key):
+        self.key = key
+
+    @property
+    def search_index_entry(self):
+        return {
+            "key": str(self),
+            "aliases": "",
+            "category": self.key,
+            "tags": "",
+            "text": ""
+        }
+    def __str__(self):
+        return f"Category: {self.key}"
+
+    def __eq__(self, other):
+        return str(self).lower() == str(other).lower()
+
+    def __hash__(self):
+        return id(self)
+
+
+def help_search_with_index(query, candidate_entries, suggestion_maxnum=5):
+    indx = [cnd.search_index_entry for cnd in candidate_entries]
+    mapping = {indx[ix]["key"]: cand for ix, cand in enumerate(candidate_entries)}
+
+    search_index = lunr(
+        ref="key",
+        fields=[
+            {
+                "field_name": "key",
+                "boost": 10,
+            },
+            {
+                "field_name": "aliases",
+                "boost": 9,
+            },
+            {
+                "field_name": "category",
+                "boost": 8,
+            },
+            {
+                "field_name": "tags",
+                "boost": 5
+            },
+            {
+                "field_name": "text",
+                "boost": 1,
+            },
+        ],
+        documents=indx
+    )
+    try:
+        matches = search_index.search(query)[:suggestion_maxnum]
+    except QueryParseError:
+        # this is a user-input problem
+        matches = []
+
+    # matches (objs), suggestions (strs)
+    return ([mapping[match["ref"]] for match in matches],
+            [str(match["ref"])  # + f" (score {match['score']})")   # good debug
+             for match in matches])
 
 
 class CmdHelp(Command):
@@ -119,12 +186,20 @@ class CmdHelp(Command):
         respectively.  You can override this method to return a
         custom display of the list of commands and topics.
         """
+        output = []
+        for category in sorted(set(list(hdict_cmds.keys()) + list(hdict_db.keys()))):
+            output.append(f"|w{category.title()}|G")
+            entries = sorted(set(hdict_cmds.get(category, []) + hdict_db.get(category, [])))
+            output.append(format_grid(entries, width=78))  # self.client_width()))
+        return "\n".join(output)
+
         string = ""
         if hdict_cmds and any(hdict_cmds.values()):
             string += "\n" + _SEP + "\n   |CCommand help entries|n\n" + _SEP
             for category in sorted(hdict_cmds.keys()):
                 string += "\n  |w%s|n:\n" % (str(category).title())
                 string += "|G" + fill("|C, |G".join(sorted(hdict_cmds[category]))) + "|n"
+
         if hdict_db and any(hdict_db.values()):
             string += "\n\n" + _SEP + "\n\r  |COther help entries|n\n" + _SEP
             for category in sorted(hdict_db.keys()):
@@ -134,6 +209,7 @@ class CmdHelp(Command):
                     + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]])))
                     + "|n"
                 )
+
         return string
 
     def check_show_help(self, cmd, caller):
@@ -208,8 +284,8 @@ class CmdHelp(Command):
         ]
         all_categories = list(
             set(
-                [cmd.help_category.lower() for cmd in all_cmds]
-                + [topic.help_category.lower() for topic in all_topics]
+                [HelpCategory(cmd.help_category) for cmd in all_cmds] +
+                [HelpCategory(topic.help_category) for topic in all_topics]
             )
         )
 
@@ -228,74 +304,43 @@ class CmdHelp(Command):
             self.msg_help(self.format_help_list(hdict_cmd, hdict_topic))
             return
 
-        # Try to access a particular command
+        # Try to access a particular help entry or category
+        entries = ([cmd for cmd in all_cmds if cmd] +
+                   list(HelpEntry.objects.all()) +
+                   all_categories)
 
-        # build vocabulary of suggestions and rate them by string similarity.
-        suggestions = None
-        if suggestion_maxnum > 0:
-            vocabulary = (
-                [cmd.key for cmd in all_cmds if cmd]
-                + [topic.key for topic in all_topics]
-                + all_categories
-            )
-            [vocabulary.extend(cmd.aliases) for cmd in all_cmds]
-            suggestions = [
-                sugg
-                for sugg in string_suggestions(
-                    query, set(vocabulary), cutoff=suggestion_cutoff, maxnum=suggestion_maxnum
-                )
-                if sugg != query
-            ]
-            if not suggestions:
-                suggestions = [
-                    sugg for sugg in vocabulary if sugg != query and sugg.startswith(query)
-                ]
+        for match_query in [f"{query}~1", f"{query}*"]:
+            # We first do an exact word-match followed by a start-by query
 
-        # try an exact command auto-help match
-        match = [cmd for cmd in all_cmds if cmd == query]
+            matches, suggestions = help_search_with_index(
+                match_query, entries, suggestion_maxnum=self.suggestion_maxnum)
 
-        if not match:
-            # try an inexact match with prefixes stripped from query and cmds
-            _query = query[1:] if query[0] in CMD_IGNORE_PREFIXES else query
+            if matches:
+                match = matches[0]
+                if isinstance(match, HelpCategory):
+                    formatted = self.format_help_list(
+                        {match.key: [cmd.key for cmd in all_cmds
+                                 if match.key.lower() == cmd.help_category]},
+                        {match.key: [topic.key for topic in all_topics
+                                 if match.key.lower() == topic.help_category]}
+                    )
+                elif inherits_from(match, "evennia.commands.command.Command"):
+                    formatted = self.format_help_entry(
+                        match.key,
+                        match.get_help(caller, cmdset),
+                        aliases=match.aliases,
+                        suggested=suggestions[1:]
+                    )
+                else:
+                    formatted = self.format_help_entry(
+                        match.key,
+                        match.entrytext,
+                        aliases=match.aliases.all(),
+                        suggested=suggestions[1:]
+                    )
 
-            match = [
-                cmd
-                for cmd in all_cmds
-                for m in cmd._matchset
-                if m == _query or m[0] in CMD_IGNORE_PREFIXES and m[1:] == _query
-            ]
-
-        if len(match) == 1:
-            formatted = self.format_help_entry(
-                match[0].key,
-                match[0].get_help(caller, cmdset),
-                aliases=match[0].aliases,
-                suggested=suggestions,
-            )
-            self.msg_help(formatted)
-            return
-
-        # try an exact database help entry match
-        match = list(HelpEntry.objects.find_topicmatch(query, exact=True))
-        if len(match) == 1:
-            formatted = self.format_help_entry(
-                match[0].key,
-                match[0].entrytext,
-                aliases=match[0].aliases.all(),
-                suggested=suggestions,
-            )
-            self.msg_help(formatted)
-            return
-
-        # try to see if a category name was entered
-        if query in all_categories:
-            self.msg_help(
-                self.format_help_list(
-                    {query: [cmd.key for cmd in all_cmds if cmd.help_category == query]},
-                    {query: [topic.key for topic in all_topics if topic.help_category == query]},
-                )
-            )
-            return
+                self.msg_help(formatted)
+                return
 
         # no exact matches found. Just give suggestions.
         self.msg(
