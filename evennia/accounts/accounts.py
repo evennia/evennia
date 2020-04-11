@@ -25,6 +25,7 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
+from evennia.server.serversession import EntitySessionHandler
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter, variable_from_module
 from evennia.server.signals import (
@@ -57,64 +58,6 @@ CREATION_THROTTLE = Throttle(
 LOGIN_THROTTLE = Throttle(
     limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
 )
-
-
-class AccountSessionHandler(object):
-    """
-    Manages the session(s) attached to an account.
-
-    """
-
-    def __init__(self, account):
-        """
-        Initializes the handler.
-
-        Args:
-            account (Account): The Account on which this handler is defined.
-
-        """
-        self.account = account
-
-    def get(self, sessid=None):
-        """
-        Get the sessions linked to this object.
-
-        Args:
-            sessid (int, optional): Specify a given session by
-                session id.
-
-        Returns:
-            sessions (list): A list of Session objects. If `sessid`
-                is given, this is a list with one (or zero) elements.
-
-        """
-        global _SESSIONS
-        if not _SESSIONS:
-            from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        if sessid:
-            return make_iter(_SESSIONS.session_from_account(self.account, sessid))
-        else:
-            return _SESSIONS.sessions_from_account(self.account)
-
-    def all(self):
-        """
-        Alias to get(), returning all sessions.
-
-        Returns:
-            sessions (list): All sessions.
-
-        """
-        return self.get()
-
-    def count(self):
-        """
-        Get amount of sessions connected.
-
-        Returns:
-            sesslen (int): Number of sessions handled.
-
-        """
-        return len(self.get())
 
 
 class DefaultAccount(AccountDB, metaclass=TypeclassBase):
@@ -203,7 +146,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     @lazy_property
     def sessions(self):
-        return AccountSessionHandler(self)
+        return EntitySessionHandler(self)
 
     @lazy_property
     def options(self):
@@ -265,7 +208,6 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         Raises:
             RuntimeError: If puppeting is not possible, the
                 `exception.msg` will contain the reason.
-
 
         """
         # safety checks
