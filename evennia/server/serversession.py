@@ -22,9 +22,6 @@ _SA = object.__setattr__
 _ObjectDB = None
 _ANSI = None
 
-# i18n
-from django.utils.translation import gettext as _
-
 # Handlers for Session.db/ndb operation
 
 
