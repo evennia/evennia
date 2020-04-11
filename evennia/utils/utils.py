@@ -153,6 +153,7 @@ def crop(text, width=None, suffix="[...]"):
     if ltext <= width:
         return text
     else:
+        from evennia import set_trace;set_trace()
         lsuffix = len(suffix)
         text = text[:width] if lsuffix >= width else "%s%s" % (text[: width - lsuffix], suffix)
         return to_str(text)
@@ -1713,7 +1714,7 @@ def percentile(iterable, percent, key=lambda x: x):
     return d0 + d1
 
 
-def format_grid(elements, width=78, sep=" "):
+def format_grid(elements, width=78, sep=" ", verbatim_elements=None):
     """
     This helper function makes a 'grid' output, where it distributes the given
     string-elements as evenly as possible to fill out the given width.
@@ -1723,19 +1724,39 @@ def format_grid(elements, width=78, sep=" "):
         elements (iterable): A 1D list of string elements to put in the grid.
         width (int, optional): The width of the grid area to fill.
         sep (str, optional): The extra separator to put between words. If
-            set to the empty string, words may run into each other
+            set to the empty string, words may run into each other.
+        verbatim_elements (list, optional): This is a list of indices pointing to
+            specific items in the `elements` list. An element at this index will
+            not be included in the calculation of the slot sizes. It will still
+            be inserted into the grid at the correct position and may be surrounded
+            by padding unless filling the entire line. This is useful for embedding
+            decorations in the grid, such as horizontal bars.
 
     Returns:
-        gridstr (str): The grid as a finished renderede multi-line string.
-
+        gridstr (list): The grid as a list of ready-formatted rows. We return it
+            like this to make it easier to insert decorations between rows, such
+            as horizontal bars.
     """
-    nelements = len(elements)
-    elements = [elements[ie] + sep for ie in range(nelements - 1)] + [elements[-1]]
+    if not verbatim_elements:
+        verbatim_elements = []
 
+    nelements = len(elements)
+    # add sep to all but the very last element
+    elements = [elements[ie] + sep for ie in range(nelements - 1)] + [elements[-1]]
     wls = [len(elem) for elem in elements]
+    wls_percentile = [wl for iw, wl in enumerate(wls) if iw not in verbatim_elements]
+
     # get the nth percentile as a good representation of average width
-    averlen = int(percentile(sorted(wls), 0.9)) + 2   # include extra space
+    averlen = int(percentile(sorted(wls_percentile), 0.9)) + 2   # include extra space
     aver_per_row = width // averlen + 1
+
+    if aver_per_row == 1:
+        # one line per row, output directly since this is trivial
+        # we use rstrip here to remove extra spaces added by sep
+        return "\n".join(
+            crop(element.rstrip(), width) + " " * max(0, width - len(element.rstrip()))
+            for iel, element in enumerate(elements)
+        )
 
     indices = [averlen * ind for ind in range(aver_per_row - 1)]
 
@@ -1743,32 +1764,23 @@ def format_grid(elements, width=78, sep=" "):
     ic = 0
     row = ""
     for ie, element in enumerate(elements):
+
         wl = wls[ie]
         lrow = len(row)
         debug = row.replace(" ", ".")
 
         if lrow + wl > width:
-            # last slot extends outside grid, move to next line
+            # this slot extends outside grid, move to next line
             row += " " * (width - lrow)
             rows.append(row)
+            if wl >= width:
+                # remove sep if this fills the entire line
+                element = element.rstrip()
             row = crop(element, width)
             ic = 0
         elif ic >= aver_per_row - 1:
-            # last slot on the line
-            if ic == 0:
-                # one slot per line
-                row = crop(element, width)
-                row += " " * max(0, (width - len(row)))
-                rows.append(row)
-            else:
-                # finish line, put slot on next line
-                row += " " * max(0, (width - lrow))
-                rows.append(row)
-                row = crop(element, width)
-                ic = 0
-        elif lrow + wl > width:
-            # last slot extends outside grid, move to next line
-            row += " " * (width - lrow)
+            # no more slots available on this line
+            row += " " * max(0, (width - lrow))
             rows.append(row)
             row = crop(element, width)
             ic = 0
@@ -1793,9 +1805,10 @@ def format_grid(elements, width=78, sep=" "):
 
         if ie >= nelements - 1:
             # last element, make sure to store
+            row += " " * max(0, width - len(row))
             rows.append(row)
 
-    return "\n".join(rows)
+    return rows
 
 
 def get_evennia_pids():
