@@ -7,6 +7,9 @@
 - REST API allows you external access to db objects through HTTP requests (Tehom)
 - `Object.normalize_name` and `.validate_name` added to (by default) enforce latinify
   on character name and avoid potential exploits using clever Unicode chars (trhr)
+- New `utils.format_grid` for easily displaying long lists of items in a block.
+- Using `lunr` search indexing for better `help` matching and suggestions. Also improve
+  the main help command's default listing output.
 
 
 ### Already in master
