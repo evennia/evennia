@@ -203,8 +203,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     without `obj.save()` having to be called explicitly.
 
     """
-    # Used for sorting / filtering.
-    _content_types = ("object")
+    # Used for sorting / filtering in inventories / room contents.
+    _content_types = ("object",)
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
@@ -259,7 +259,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             and not self.db_account.attributes.get("_quell")
         )
 
-    def contents_get(self, exclude=None, category=None):
+    def contents_get(self, exclude=None, content_type=None):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
@@ -268,13 +268,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             exclude (Object): Object to exclude from returned
                 contents list
-            category (str): A category to filter by. None for no filtering.
+            content_type (str): A content_type to filter by. None for no
+                filtering.
 
         Returns:
             contents (list): List of contents of this Object.
 
         Notes:
-            Also available as the `contents` property.
+            Also available as the `contents` property, minus exclusion
+            and filtering.
 
         """
         con = self.contents_cache.get(exclude=exclude)
@@ -1667,9 +1669,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             return ""
 
         # get and identify all objects
-        exits_list = filter_visible(self.contents_get(category='exit'))
-        users_list = filter_visible(self.contents_get(category='character'))
-        things_list = filter_visible(self.contents_get(category="object"))
+        exits_list = filter_visible(self.contents_get(content_type='exit'))
+        users_list = filter_visible(self.contents_get(content_type='character'))
+        things_list = filter_visible(self.contents_get(content_type="object"))
 
         things = defaultdict(list)
 
@@ -2034,7 +2036,9 @@ class DefaultCharacter(DefaultObject):
     a character avatar controlled by an account.
 
     """
-    _content_types = ("character")
+    # Tuple of types used for indexing inventory contents. Characters generally wouldn't be in
+    # anyone's inventory, but this also governs displays in room contents.
+    _content_types = ("character",)
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the appropriate attributes.
     lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);delete:id({account_id}) or perm(Admin)"
@@ -2285,7 +2289,10 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
-    _content_types = ("room", "object")
+    # A tuple of strings used for indexing this object inside an inventory.
+    # Generally, a room isn't expected to HAVE a location, but maybe in some games?
+    _content_types = ("room",)
+
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the {id} of the creating object.
     lockstring = (
@@ -2435,7 +2442,7 @@ class DefaultExit(DefaultObject):
     exits simply by giving the exit-object's name on its own.
 
     """
-    _content_types = ("exit")
+    _content_types = ("exit",)
     exit_command = ExitCommand
     priority = 101
 
