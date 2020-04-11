@@ -20,7 +20,7 @@ EVGAMEDIR ?= $(realpath ../../gamedir)
 cblue = $(shell echo "\033[1m\033[34m")
 cnorm = $(shell echo "\033[0m")
 
-QUICKFILES=$(SOURCEDIR)/*.md
+QUICKFILES=$(SOURCEDIR)/*/*.md
 
 
 # Put it first so that "make" without argument is like "make help".
