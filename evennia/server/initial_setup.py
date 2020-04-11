@@ -95,7 +95,8 @@ def create_objects():
     god_character.locks.add(
         "examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()"
     )
-    god_character.permissions.add("Developer")
+    # we set this low so that quelling is more useful
+    god_character.permissions.add("Player")
 
     god_account.attributes.add("_first_login", True)
     god_account.attributes.add("_last_puppet", god_character)
