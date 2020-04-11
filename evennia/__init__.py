@@ -414,7 +414,7 @@ def _init():
     GLOBAL_SCRIPTS.start()
 
 
-def set_trace(term_size=(140, 40), debugger="auto"):
+def set_trace(term_size=(140, 80), debugger="auto"):
     """
     Helper function for running a debugger inside the Evennia event loop.
 

@@ -1686,6 +1686,93 @@ def format_table(table, extra_space=1):
         )
     return ftable
 
+import functools
+
+
+def percentile(iterable, percent, key=lambda x:x):
+    """
+    Find the percentile of a list of values.
+
+    Args:
+        iterable (iterable): A list of values. Note N MUST BE already sorted.
+        percent (float): A value from 0.0 to 1.0.
+        key (callable, optional). Function to compute value from each element of N.
+
+    @return - the percentile of the values
+    """
+    if not iterable:
+        return None
+    k = (len(iterable) - 1) * percent
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return key(iterable[int(k)])
+    d0 = key(iterable[int(f)]) * (c - k)
+    d1 = key(iterable[int(c)]) * (k - f)
+    return d0 + d1
+
+
+def format_grid(elements, width=78, sep=" "):
+    """
+    This helper function makes a 'grid' output, where it distributes the given
+    string-elements as evenly as possible to fill out the given width.
+    will not work well if the variation of length is very big!
+
+    Args:
+        elements (iterable): A 1D list of string elements to put in the grid.
+        width (int, optional): The width of the grid area to fill.
+        sep (str, optional): The extra separator to put between words. If
+            set to the empty string, words may run into each other
+
+    Returns:
+        gridstr (str): The grid as a finished renderede multi-line string.
+
+    """
+    nelements = len(elements)
+    elements = [elements[ie] + sep for ie in range(nelements - 1)] + [elements[-1]]
+
+    wls = [len(elem) for elem in elements]
+    # get the nth percentile as a good representation of average width
+    averlen = int(percentile(sorted(wls), 0.9)) + 2   # include extra space
+    aver_per_row = width // averlen + 1
+
+    indices = [averlen * ind for ind in range(aver_per_row - 1)]
+
+    rows = []
+    ic = 0
+    row = ""
+    for ie, element in enumerate(elements):
+        wl = wls[ie]
+        # from evennia import set_trace;set_trace()
+        if ic >= aver_per_row - 1 or ie >= nelements - 1:
+            if ic == 0:
+                row = crop(element)
+            row += " " * max(0, (width - len(row)))
+            rows.append(row)
+            row = ""
+            ic = 0
+        elif indices[ic] + wl > width:
+            row += " " * (width - len(row))
+            rows.append(row)
+            row = crop(element, width)
+            ic = 0
+        else:
+            try:
+                while len(row) > indices[ic] - 1:
+                    ic += 1
+            except IndexError:
+                if ic == 0:
+                    row = crop(element, width)
+                else:
+                    row += " " * max(0, width - len(row))
+                rows.append(row)
+                ic = 0
+            else:
+                row += element + " " * max(0, averlen - wl)
+                ic += 1
+
+    return "\n".join(rows)
+
 
 def get_evennia_pids():
     """

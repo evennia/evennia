@@ -84,6 +84,15 @@ def _init_command(cls, **kwargs):
                 break
     cls.help_category = cls.help_category.lower()
 
+    # pre-prepare a help index entry for quicker lookup
+    cls.search_index_entry = {
+        "key": cls.key,
+        "aliases": " ".join(cls.aliases),
+        "category": cls.help_category,
+        "text": cls.__doc__,
+        "tags": ""
+    }
+
 
 class CommandMeta(type):
     """

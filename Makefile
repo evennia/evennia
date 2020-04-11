@@ -3,7 +3,7 @@
 
 BLACK_FORMAT_CONFIGS = --target-version py37 --line-length 100
 TEST_GAME_DIR = .test_game_dir
-tests?=evennia
+TESTS ?= evennia
 
 default:
 	@echo " Usage: "
@@ -29,10 +29,10 @@ test:
 	evennia --init $(TEST_GAME_DIR);\
 	cd $(TEST_GAME_DIR);\
 	evennia migrate;\
-	evennia test --keepdb $(tests);\
+	evennia test --keepdb $(TESTS);\
 
 testp:
 	evennia --init $(TEST_GAME_DIR);\
 	cd $(TEST_GAME_DIR);\
 	evennia migrate;\
-	evennia test --keepdb --parallel 4 $(tests);\
+	evennia test --keepdb --parallel 4 $(TESTS);\

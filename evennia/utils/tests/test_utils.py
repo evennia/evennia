@@ -6,6 +6,7 @@ TODO: Not nearly all utilities are covered yet.
 """
 
 import os.path
+import random
 
 import mock
 from django.test import TestCase
@@ -264,3 +265,61 @@ class LatinifyTest(TestCase):
         byte_str = utils.to_bytes(self.example_str)
         result = utils.latinify(byte_str)
         self.assertEqual(result, self.expected_output)
+
+
+class TestFormatGrid(TestCase):
+
+    maxDiff = None
+    def setUp(self):
+        # make the random only semi-random with a fixed seed
+        random.seed(1)
+
+    def tearDown(self):
+        # restore normal randomness
+        random.seed(None)
+
+    def _generate_elements(self, basewidth, variation, amount):
+        return [
+            "X" * max(1, basewidth + int(random.randint(-variation, variation)))
+            for _ in range(amount)
+        ]
+
+    def test_even_grid(self):
+        """Grid with small variations"""
+        elements = self._generate_elements(3, 1, 30)
+        result = utils.format_grid(elements, width=78)
+        rows = result.split("\n")
+        self.assertEqual(len(rows), 3)
+        self.assertTrue(all(len(row) == 78 for row in rows))
+
+    def test_disparate_grid(self):
+        """Grid with big variations"""
+        elements = self._generate_elements(3, 15, 30)
+        result = utils.format_grid(elements, width=82, sep="  ")
+        rows = result.split("\n")
+        self.assertEqual(len(rows), 8)
+        self.assertTrue(all(len(row) == 82 for row in rows))
+
+    def test_huge_grid(self):
+        """Grid with very long strings"""
+        elements = self._generate_elements(70, 20, 30)
+        result = utils.format_grid(elements, width=78)
+        rows = result.split("\n")
+        self.assertEqual(len(rows), 30)
+        self.assertTrue(all(len(row) == 78 for row in rows))
+
+    def test_overlap(self):
+        elements = ("alias", "batchcode", "batchcommands", "cmdsets",
+                    "copy", "cpattr", "desc", "destroy", "dig",
+                    "examine", "find", "force", "lock")
+        # from evennia import set_trace;set_trace()
+        from pudb import debugger
+        debugger.Debugger().set_trace()
+        result = utils.format_grid(elements, width=78)
+        rows = result.split("\n")
+        self.assertEqual(len(rows), 2)
+        for row in rows:
+            print(f"'{row}'")
+        for element in elements:
+            self.assertTrue(element in result, f"element {element} is missing.")
+

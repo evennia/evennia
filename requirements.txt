@@ -10,6 +10,7 @@ django-filter >= 2.2.0, < 2.3
 django-sekizai
 inflect
 autobahn >= 17.9.3
+lunr == 0.5.6
 
 # try to resolve dependency issue in py3.7
 attrs >= 19.2.0
