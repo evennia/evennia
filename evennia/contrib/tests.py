@@ -4,7 +4,6 @@ Testing suite for contrib folder
 
 """
 
-import sys
 import datetime
 from django.test import override_settings
 from evennia.commands.default.tests import CommandTest
@@ -282,7 +281,6 @@ class TestRPSystemCommands(CommandTest):
 
 from django.conf import settings
 from evennia.contrib import extended_room
-from evennia import gametime
 from evennia.objects.objects import DefaultRoom
 
 
@@ -2173,7 +2171,6 @@ class TestRandomStringGenerator(EvenniaTest):
 import itertools
 from evennia.contrib import puzzles
 from evennia.utils import search
-from evennia.utils.utils import inherits_from
 
 
 class TestPuzzles(CommandTest):
@@ -3138,7 +3135,7 @@ class TestPuzzles(CommandTest):
 
 
 # Tests for the building_menu contrib
-from evennia.contrib.building_menu import BuildingMenu, CmdNoInput, CmdNoMatch
+from evennia.contrib.building_menu import BuildingMenu, CmdNoMatch
 
 
 class Submenu(BuildingMenu):
