@@ -289,8 +289,6 @@ class TestFormatGrid(TestCase):
         elements = self._generate_elements(3, 1, 30)
         result = utils.format_grid(elements, width=78)
         rows = result.split("\n")
-        for row in rows:
-            print(f"'{row}'")
         self.assertEqual(len(rows), 3)
         self.assertTrue(all(len(row) == 78 for row in rows))
 
@@ -299,20 +297,14 @@ class TestFormatGrid(TestCase):
         elements = self._generate_elements(3, 15, 30)
         result = utils.format_grid(elements, width=82, sep="  ")
         rows = result.split("\n")
-        for row in rows:
-            print(f"'{row}'")
         self.assertEqual(len(rows), 8)
         self.assertTrue(all(len(row) == 82 for row in rows))
 
     def test_huge_grid(self):
         """Grid with very long strings"""
-        # from pudb import debugger
-        # debugger.Debugger().set_trace()
         elements = self._generate_elements(70, 20, 30)
         result = utils.format_grid(elements, width=78)
         rows = result.split("\n")
-        for row in rows:
-            print(f"'{row}'")
         self.assertEqual(len(rows), 30)
         self.assertTrue(all(len(row) == 78 for row in rows))
 
@@ -324,7 +316,18 @@ class TestFormatGrid(TestCase):
         result = utils.format_grid(elements, width=78)
         rows = result.split("\n")
         self.assertEqual(len(rows), 2)
-        for row in rows:
-            print(f"'{row}'")
         for element in elements:
             self.assertTrue(element in result, f"element {element} is missing.")
+
+    def test_breakline(self):
+        """Grid with line-long elements in middle"""
+        elements = self._generate_elements(6, 4, 30)
+        elements[10] = elements[20] = "-" * 78
+        # from pudb import debugger
+        # debugger.Debugger().set_trace()
+        result = utils.format_grid(elements, width=78)
+        rows = result.split("\n")
+        self.assertEqual(len(rows), 8)
+        for element in elements:
+            self.assertTrue(element in result, f"element {element} is missing.")
+

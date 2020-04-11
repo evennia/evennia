@@ -14,6 +14,7 @@ from evennia.utils.utils import fill, dedent
 from evennia.commands.command import Command
 from evennia.help.models import HelpEntry
 from evennia.utils import create, evmore
+from evennia.utils.ansi import ANSIString
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.utils import string_suggestions, class_from_module, inherits_from, format_grid
 
@@ -40,6 +41,7 @@ class HelpCategory:
             "tags": "",
             "text": ""
         }
+
     def __str__(self):
         return f"Category: {self.key}"
 
@@ -178,39 +180,27 @@ class CmdHelp(Command):
         string += "\n" + _SEP
         return string
 
-    @staticmethod
-    def format_help_list(hdict_cmds, hdict_db):
+    def format_help_list(self, hdict_cmds, hdict_db):
         """
         Output a category-ordered list. The input are the
         pre-loaded help files for commands and database-helpfiles
         respectively.  You can override this method to return a
         custom display of the list of commands and topics.
         """
-        output = []
+        width = self.client_width()
+        grid = []
+        verbatim_elements = []
         for category in sorted(set(list(hdict_cmds.keys()) + list(hdict_db.keys()))):
-            output.append(f"|w{category.title()}|G")
+
+            category_str = f"-- {category.title()} "
+            grid.append(ANSIString("|w" + category_str + "-" * (width - len(category_str)) + "|G"))
+            verbatim_elements.append(len(grid) - 1)
+
             entries = sorted(set(hdict_cmds.get(category, []) + hdict_db.get(category, [])))
-            output.append(format_grid(entries, width=78))  # self.client_width()))
-        return "\n".join(output)
+            grid.extend(entries)
 
-        string = ""
-        if hdict_cmds and any(hdict_cmds.values()):
-            string += "\n" + _SEP + "\n   |CCommand help entries|n\n" + _SEP
-            for category in sorted(hdict_cmds.keys()):
-                string += "\n  |w%s|n:\n" % (str(category).title())
-                string += "|G" + fill("|C, |G".join(sorted(hdict_cmds[category]))) + "|n"
-
-        if hdict_db and any(hdict_db.values()):
-            string += "\n\n" + _SEP + "\n\r  |COther help entries|n\n" + _SEP
-            for category in sorted(hdict_db.keys()):
-                string += "\n\r  |w%s|n:\n" % (str(category).title())
-                string += (
-                    "|G"
-                    + fill(", ".join(sorted([str(topic) for topic in hdict_db[category]])))
-                    + "|n"
-                )
-
-        return string
+        gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+        return "\n".join(gridrows)
 
     def check_show_help(self, cmd, caller):
         """
@@ -320,9 +310,9 @@ class CmdHelp(Command):
                 if isinstance(match, HelpCategory):
                     formatted = self.format_help_list(
                         {match.key: [cmd.key for cmd in all_cmds
-                                 if match.key.lower() == cmd.help_category]},
+                                     if match.key.lower() == cmd.help_category]},
                         {match.key: [topic.key for topic in all_topics
-                                 if match.key.lower() == topic.help_category]}
+                                     if match.key.lower() == topic.help_category]}
                     )
                 elif inherits_from(match, "evennia.commands.command.Command"):
                     formatted = self.format_help_entry(
