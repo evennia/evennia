@@ -66,9 +66,7 @@ class ObjectSessionHandler(object):
         global _SESSIONS
         if not _SESSIONS:
             from evennia.server.sessionhandler import SESSIONS as _SESSIONS
-        self._sessid_cache = list(
-            set(int(val) for val in self._load().split(",") if val)
-        )
+        self._sessid_cache = self.load()
         if any(sessid for sessid in self._sessid_cache if sessid not in _SESSIONS):
             # cache is out of sync with sessionhandler! Only retain the ones in the handler.
             self._sessid_cache = [sessid for sessid in self._sessid_cache if sessid in _SESSIONS]
@@ -79,9 +77,10 @@ class ObjectSessionHandler(object):
         Retrieves data from object owner for sessids.
 
         Returns:
-            csessids (comma-separated session ids)
+            sessids (list of ints): A list of session ids.
         """
-        return self.obj.db_sessid if self.obj.db_sessid else ""
+        storage = self.obj.db_sessid if self.obj.db_sessid else ""
+        return list(set(int(val) for val in storage.split(",") if val))
 
     def _save(self, sessids):
         """
