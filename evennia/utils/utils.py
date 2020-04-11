@@ -1744,6 +1744,8 @@ def format_grid(elements, width=78, sep=" ", verbatim_elements=None):
     elements = [elements[ie] + sep for ie in range(nelements - 1)] + [elements[-1]]
     wls = [len(elem) for elem in elements]
     wls_percentile = [wl for iw, wl in enumerate(wls) if iw not in verbatim_elements]
+    # from pudb import debugger
+    # debugger.Debugger().set_trace()
 
     # get the nth percentile as a good representation of average width
     averlen = int(percentile(sorted(wls_percentile), 0.9)) + 2   # include extra space
@@ -1752,10 +1754,10 @@ def format_grid(elements, width=78, sep=" ", verbatim_elements=None):
     if aver_per_row == 1:
         # one line per row, output directly since this is trivial
         # we use rstrip here to remove extra spaces added by sep
-        return "\n".join(
+        return [
             crop(element.rstrip(), width) + " " * max(0, width - len(element.rstrip()))
             for iel, element in enumerate(elements)
-        )
+        ]
 
     indices = [averlen * ind for ind in range(aver_per_row - 1)]
 

@@ -264,8 +264,6 @@ class TestFormatGrid(TestCase):
         """Grid with small variations"""
         elements = self._generate_elements(3, 1, 30)
         rows = utils.format_grid(elements, width=78)
-        for row in rows:
-            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 3)
         self.assertTrue(all(len(row) == 78 for row in rows))
 
@@ -273,8 +271,6 @@ class TestFormatGrid(TestCase):
         """Grid with big variations"""
         elements = self._generate_elements(3, 15, 30)
         rows = utils.format_grid(elements, width=82, sep="  ")
-        for row in rows:
-            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 8)
         self.assertTrue(all(len(row) == 82 for row in rows))
 
@@ -282,8 +278,6 @@ class TestFormatGrid(TestCase):
         """Grid with very long strings"""
         elements = self._generate_elements(70, 20, 30)
         rows = utils.format_grid(elements, width=78)
-        for row in rows:
-            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 30)
         self.assertTrue(all(len(row) == 78 for row in rows))
 
@@ -293,19 +287,15 @@ class TestFormatGrid(TestCase):
                     "copy", "cpattr", "desc", "destroy", "dig",
                     "examine", "find", "force", "lock")
         rows = utils.format_grid(elements, width=78)
-        for row in rows:
-            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 2)
         for element in elements:
-            self.assertTrue(element in rows, f"element {element} is missing.")
+            self.assertTrue(element in "\n".join(rows), f"element {element} is missing.")
 
     def test_breakline(self):
         """Grid with line-long elements in middle"""
         elements = self._generate_elements(6, 4, 30)
         elements[10] = elements[20] = "-" * 78
         rows = utils.format_grid(elements, width=78)
-        for row in rows:
-            print(f"'{row}'", len(row))
         self.assertEqual(len(rows), 8)
         for element in elements:
-            self.assertTrue(element in rows, f"element {element} is missing.")
+            self.assertTrue(element in "\n".join(rows), f"element {element} is missing.")
