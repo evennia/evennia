@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from mock import Mock, MagicMock, patch
 from random import randint
 from unittest import TestCase
 
 from django.test import override_settings
-from evennia.accounts.accounts import AccountSessionHandler
 from evennia.accounts.accounts import DefaultAccount, DefaultGuest
 from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import create
 from evennia.utils.utils import uses_database
-
-from django.conf import settings
 
 
 class TestAccountSessionHandler(TestCase):
@@ -25,7 +21,7 @@ class TestAccountSessionHandler(TestCase):
             password="testpassword",
             typeclass=DefaultAccount,
         )
-        self.handler = AccountSessionHandler(self.account)
+        self.handler = self.account.sessions
 
     def tearDown(self):
         if hasattr(self, "account"):
@@ -36,26 +32,21 @@ class TestAccountSessionHandler(TestCase):
         self.assertEqual(self.handler.get(), [])
         self.assertEqual(self.handler.get(100), [])
 
-        import evennia.server.sessionhandler
-
         s1 = MagicMock()
         s1.logged_in = True
+        s1.sessid = 1
         s1.uid = self.account.uid
-        evennia.server.sessionhandler.SESSIONS[s1.uid] = s1
+        self.handler.add(s1)
+        self.assertEqual([s.uid for s in self.handler.get()], [s1.uid])
+        self.assertEqual([s.sessid for s in self.handler.get()], [s1.sessid])
 
         s2 = MagicMock()
         s2.logged_in = True
-        s2.uid = self.account.uid + 1
-        evennia.server.sessionhandler.SESSIONS[s2.uid] = s2
-
-        s3 = MagicMock()
-        s3.logged_in = False
-        s3.uid = self.account.uid + 2
-        evennia.server.sessionhandler.SESSIONS[s3.uid] = s3
-
-        self.assertEqual([s.uid for s in self.handler.get()], [s1.uid])
-        self.assertEqual([s.uid for s in [self.handler.get(self.account.uid)]], [s1.uid])
-        self.assertEqual([s.uid for s in self.handler.get(self.account.uid + 1)], [])
+        s2.sessid = 2
+        s2.uid = self.account.uid
+        self.handler.add(s2)
+        self.assertEqual([s.uid for s in self.handler.get()], [s1.uid, s2.uid])
+        self.assertEqual([s.sessid for s in self.handler.get()], [s1.sessid, s2.sessid])
 
     def test_all(self):
         "Check all method"
@@ -250,7 +241,7 @@ class TestDefaultAccount(TestCase):
     def test_puppet_object_already_puppeting(self):
         "Check puppet_object method called, already puppeting this"
 
-        import evennia.server.sessionhandler
+        from evennia.server.sessionhandler import SESSION_HANDLER
 
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
@@ -259,7 +250,8 @@ class TestDefaultAccount(TestCase):
             typeclass=DefaultAccount,
         )
         self.s1.uid = account.uid
-        evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
+        SESSION_HANDLER[self.s1.uid] = self.s1
+        account.sessions.add(self.s1)
 
         self.s1.logged_in = True
         self.s1.data_out = Mock(return_value=None)
@@ -275,7 +267,7 @@ class TestDefaultAccount(TestCase):
     def test_puppet_object_no_permission(self):
         "Check puppet_object method called, no permission"
 
-        import evennia.server.sessionhandler
+        from evennia.server.sessionhandler import SESSION_HANDLER
 
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
@@ -284,7 +276,8 @@ class TestDefaultAccount(TestCase):
             typeclass=DefaultAccount,
         )
         self.s1.uid = account.uid
-        evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
+        SESSION_HANDLER[self.s1.uid] = self.s1
+        account.sessions.add(self.s1)
 
         self.s1.data_out = MagicMock()
         obj = Mock()
@@ -310,7 +303,7 @@ class TestDefaultAccount(TestCase):
             typeclass=DefaultAccount,
         )
         self.s1.uid = account.uid
-        evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
+        evennia.server.sessionhandler.SESSION_HANDLER[self.s1.uid] = self.s1
 
         self.s1.puppet = None
         self.s1.logged_in = True
@@ -331,7 +324,7 @@ class TestDefaultAccount(TestCase):
     def test_puppet_object_already_puppeted(self):
         "Check puppet_object method called, already puppeted"
 
-        import evennia.server.sessionhandler
+        from evennia.server.sessionhandler import SESSION_HANDLER
 
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
@@ -341,7 +334,8 @@ class TestDefaultAccount(TestCase):
         )
         self.account = account
         self.s1.uid = account.uid
-        evennia.server.sessionhandler.SESSIONS[self.s1.uid] = self.s1
+        account.sessions.add(self.s1)
+        SESSION_HANDLER[self.s1.uid] = self.s1
 
         self.s1.puppet = None
         self.s1.logged_in = True
@@ -353,6 +347,7 @@ class TestDefaultAccount(TestCase):
         obj.at_post_puppet = Mock()
 
         account.puppet_object(self.s1, obj)
+
         self.assertTrue(
             self.s1.data_out.call_args[1]["text"].endswith(
                 "is already puppeted by another Account."
@@ -408,9 +403,7 @@ class TestDefaultAccountEv(EvenniaTest):
         self.assertEqual(idle, 10)
 
         # test no sessions
-        with patch(
-            "evennia.accounts.accounts._SESSIONS.sessions_from_account", return_value=[]
-        ) as mock_sessh:
+        with patch.object(self.account.sessions, attribute='all', new=list) as mock_sessh:
             idle = self.account.idle_time
             self.assertEqual(idle, None)
 
@@ -421,9 +414,7 @@ class TestDefaultAccountEv(EvenniaTest):
         self.assertEqual(conn, 10)
 
         # test no sessions
-        with patch(
-            "evennia.accounts.accounts._SESSIONS.sessions_from_account", return_value=[]
-        ) as mock_sessh:
+        with patch.object(self.account.sessions, attribute='all', new=list) as mock_sessh:
             idle = self.account.connection_time
             self.assertEqual(idle, None)
 

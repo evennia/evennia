@@ -217,6 +217,7 @@ class ServerSession(Session):
             account (Account): The account associated with the session.
 
         """
+        account.sessions.add(self)
         self.account = account
         self.uid = self.account.id
         self.uname = self.account.username
@@ -537,3 +538,128 @@ class ServerSession(Session):
     def access(self, *args, **kwargs):
         """Dummy method to mimic the logged-in API."""
         return True
+
+
+class EntitySessionHandler:
+    """
+    Handles adding/removing session references to an Account, Puppet, or perhaps
+    stranger things down the line.
+    """
+
+    def __init__(self, obj):
+        """
+        Initializes the handler.
+
+        Args:
+            obj (Object): The object on which the handler is defined.
+
+        """
+        self.obj = obj
+        self._sessions_dict = dict()
+        self._sessions = list()
+
+    def _save(self):
+        """
+        Saves sessids to persistent storage. Currently just used by Puppets.
+
+        Args:
+            Sessions (list of Sessions): A list of Sessions ids.
+
+        """
+        pass
+
+    def get(self, sessid=None):
+        """
+        Get the sessions linked to this Object.
+
+        Args:
+            sessid (int, optional): A specific session id.
+
+        Returns:
+            sessions (list): The sessions connected to this object. If `sessid` is given,
+                this is a list of one (or zero) elements.
+
+        Notes:
+            Aliased to `self.all()`.
+
+        """
+        if sessid:
+            found = self._sessions_dict.get(sessid, [])
+            if found:
+                return [found]
+            return found
+        return self._sessions
+
+    def all(self):
+        """
+        Alias to get(), returning all sessions.
+
+        Returns:
+            sessions (list): All sessions.
+
+        """
+        return self.get()
+
+    def add(self, session):
+        """
+        Add session to handler.
+
+        Args:
+            session (Session or int): Session or session id to add.
+
+        Notes:
+            We will only add a session/sessid if this actually also exists
+            in the the core sessionhandler.
+
+        """
+        try:
+            sessid = session.sessid
+        except AttributeError:
+            sessid = session
+            session = self._sessions_dict.get(sessid, None)
+
+        if sessid in self._sessions_dict:
+            # this really shouldn't happen, but we don't want to store duplicates.
+            return
+        self._sessions_dict[sessid] = session
+        self._sessions.append(session)
+        self._save()
+
+    def remove(self, session):
+        """
+        Remove session from handler.
+
+        Args:
+            session (Session or int): Session or session id to remove.
+
+        """
+        try:
+            sessid = session.sessid
+        except AttributeError:
+            sessid = session
+            session = self._sessions_dict.get(sessid, None)
+
+        if sessid not in self._sessions_dict:
+            return
+        del self._sessions_dict[sessid]
+        self._sessions.remove(session)
+        self._save()
+
+    def clear(self):
+        """
+        Clear all handled sessids.
+
+        """
+        self._sessions_dict.clear()
+        self._sessions.clear()
+        self._save()
+
+    def count(self):
+        """
+        Get amount of sessions connected.
+
+        Returns:
+            sesslen (int): Number of sessions handled.
+
+        """
+        return len(self._sessions)
