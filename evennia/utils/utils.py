@@ -153,7 +153,6 @@ def crop(text, width=None, suffix="[...]"):
     if ltext <= width:
         return text
     else:
-        from evennia import set_trace;set_trace()
         lsuffix = len(suffix)
         text = text[:width] if lsuffix >= width else "%s%s" % (text[: width - lsuffix], suffix)
         return to_str(text)

@@ -822,7 +822,7 @@ class ANSIString(str, metaclass=ANSIMeta):
 
         """
         if not offset:
-            return []
+            return iterable
         return [i + offset for i in iterable]
 
     @classmethod
