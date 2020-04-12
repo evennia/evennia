@@ -55,4 +55,6 @@ print("Starting broken link checker...")
 get_md_files(path)
 print("Done.")
 print("Broken links: {num}".format(num=broken_count))
-print("Clean links: {num}".format(num=clean_count))
+
+if args.verbose:
+    print("Clean links: {num}".format(num=clean_count))
