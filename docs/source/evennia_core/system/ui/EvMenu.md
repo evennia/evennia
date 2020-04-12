@@ -70,7 +70,7 @@ EvMenu(caller, menu_data,
 ```
 
  - `caller` (Object or Account): is a reference to the object using the menu. This object will get a
-   new [CmdSet](Command-Sets) assigned to it, for handling the menu.
+   new [CmdSet](../commands/Command-Sets) assigned to it, for handling the menu.
  - `menu_data` (str, module or dict): is a module or python path to a module where the global-level
    functions will each be considered to be a menu node. Their names in the module will be the names
    by which they are referred to in the module. Importantly, function names starting with an underscore
@@ -78,7 +78,7 @@ EvMenu(caller, menu_data,
  - `startnode` (str): is the name of the menu-node to start the menu at. Changing this means that
    you can jump into a menu tree at different positions depending on circumstance and thus possibly
    re-use menu entries.
- - `cmdset_mergetype` (str): This is usually one of "Replace" or "Union" (see [CmdSets](Command-Sets).
+ - `cmdset_mergetype` (str): This is usually one of "Replace" or "Union" (see [CmdSets](../commands/Command-Sets).
    The first means that the menu is exclusive - the user has no access to any other commands while
    in the menu. The Union mergetype means the menu co-exists with previous commands (and may overload
    them, so be careful as to what to name your menu entries in this case).
@@ -785,7 +785,7 @@ function - for example you can't use other Python keywords like `if` inside the 
 
 Unless you are dealing with a relatively simple dynamic menu, defining menus with lambda's is
 probably more work than it's worth: You can create dynamic menus by instead making each node
-function more clever. See the [NPC shop tutorial](NPC-shop-Tutorial) for an example of this.
+function more clever. See the [NPC shop tutorial](../../../tutorials_and_examples/npcs/NPC-shop-Tutorial) for an example of this.
 
 
 ## Ask for simple input
@@ -974,7 +974,7 @@ auto-created by the `list_node` decorator.
 ## Assorted notes
 
 The EvMenu is implemented using [Commands](../commands/Commands). When you start a new EvMenu, the user of the
-menu will be assigned a [CmdSet](Command-Sets) with the commands they need to navigate the menu.
+menu will be assigned a [CmdSet](../commands/Command-Sets) with the commands they need to navigate the menu.
 This means that if you were to, from inside the menu, assign a new command set to the caller, *you
 may override the Menu Cmdset and kill the menu*. If you want to assign cmdsets to the caller as part
 of the menu, you should store the cmdset on `caller.ndb._menutree` and wait to actually assign it

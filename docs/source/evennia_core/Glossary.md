@@ -42,7 +42,7 @@ The term 'account' refers to the [player's](#player) unique account on the game.
 
 When a player connects to the game, they connect to their account. The account has *no* representation in the game world. Through their Account they can instead choose to [puppet](#puppet) one (or more, depending on game mode) [Characters](#character) in the game. 
 
-In the default [multisession mode](../evennia_core/system/sessions/multisession_mode.md) of Evennia, you immediately start puppeting a Character with the same name as your Account when you log in - mimicking how older servers used to work. 
+In the default [multisession mode](../evennia_core/system/sessions/multisession_mode) of Evennia, you immediately start puppeting a Character with the same name as your Account when you log in - mimicking how older servers used to work. 
 
 ## _admin-site_
 
@@ -50,15 +50,15 @@ This usually refers to [Django's](#django) *Admin site* or database-administrati
 
 ## _attribute_
 
-The term _Attribute_ should not be confused with ([properties](#property) or [fields](#field). The `Attribute` represents arbitrary pieces of data that can be attached to any [typeclassed](#typeclass) entity in Evennia. Attributes allows storing new persistent data on typeclasses without changing their underlying database schemas. [Read more about Attributes here](../evennia_core/system/attributes/Attributes.md). 
+The term _Attribute_ should not be confused with ([properties](#property) or [fields](#field). The `Attribute` represents arbitrary pieces of data that can be attached to any [typeclassed](#typeclass) entity in Evennia. Attributes allows storing new persistent data on typeclasses without changing their underlying database schemas. [Read more about Attributes here](../evennia_core/system/attributes/Attributes). 
 
 ## _channel_
 
-A _Channel_ refers to an in-game communication channel. It's an entity that people subscribe to and which re-distributes messages between all subscribers. Such subscribers default to being [Accounts](#account), for out-of-game communication but could also be [Objects (usually Characters)](#character) if one wanted to adopt Channels for things like in-game walkie-talkies or phone systems. It is represented by the `Channel` typeclass. [You can read more about the comm system here](../evennia_core/system/channels/channels.md).
+A _Channel_ refers to an in-game communication channel. It's an entity that people subscribe to and which re-distributes messages between all subscribers. Such subscribers default to being [Accounts](#account), for out-of-game communication but could also be [Objects (usually Characters)](#character) if one wanted to adopt Channels for things like in-game walkie-talkies or phone systems. It is represented by the `Channel` typeclass. [You can read more about the comm system here](../evennia_core/system/channels/channels).
 
 ## _character_
 
-The _Character_ is the term we use for the default avatar being [puppeted](#puppet) by the [account](#account) in the game world. It is represented by the `Character` typeclass (which is a child of [Object](#object)). Many developers use children of this class to represent monsters and other NPCs. You can [read more about it here](../evennia_core/system/objects/Character.md).
+The _Character_ is the term we use for the default avatar being [puppeted](#puppet) by the [account](#account) in the game world. It is represented by the `Character` typeclass (which is a child of [Object](#object)). Many developers use children of this class to represent monsters and other NPCs. You can [read more about it here](../evennia_core/system/objects/Character).
 
 ## _django_
 
@@ -80,7 +80,7 @@ This term is sometimes used to represent the main Evennia library code suite, *e
 
 ## _field_
 
-A _field_ or _database field_ in Evennia refers to a [property](#property) on a [typeclass](#typeclass) directly linked to an underlying database column. Only a few fixed properties per typeclass are database fields but they are often tied to the core functionality of that base typeclass (for example [Objects](#object) store its location as a field). In all other cases, [attributes](#attribute) are used to add new persistent data to the typeclass. [Read more about typeclass properties here](../evennia_core/system/typeclasses/Typeclasses.md). 
+A _field_ or _database field_ in Evennia refers to a [property](#property) on a [typeclass](#typeclass) directly linked to an underlying database column. Only a few fixed properties per typeclass are database fields but they are often tied to the core functionality of that base typeclass (for example [Objects](#object) store its location as a field). In all other cases, [attributes](#attribute) are used to add new persistent data to the typeclass. [Read more about typeclass properties here](../evennia_core/system/typeclasses/Typeclasses). 
 
 ## _git_
 
@@ -98,7 +98,7 @@ Common usage (for non-Evennia developers):
 - `git clone <github-url>` - clone an online repository to your computer. This is what you do when you 'download' Evennia. You only need to do this once. 
 - `git pull` (inside local copy of repository) - sync your local repository with what is online.
 
-> See [Tutorial - version control](../tutorials_and_examples/python/Version-Control.md) for more info and links to the Git documentation.
+> See [Tutorial - version control](../tutorials_and_examples/python/Version-Control) for more info and links to the Git documentation.
 
 ## _migrate_
 
@@ -106,13 +106,13 @@ This term is used for upgrading the database structure (it's _schema_ )to a new 
 
     evennia migrate 
 
-That should be it (see [virtualenv](#virtualenv) if you get a warning that the `evennia` command is not available). See also [Updating your game](../evennia_core/setup/Updating-Your-Game.md) for more details. 
+That should be it (see [virtualenv](#virtualenv) if you get a warning that the `evennia` command is not available). See also [Updating your game](../evennia_core/setup/Updating-Your-Game) for more details. 
 
 > Technically, migrations are shipped as little Python snippets of code that explains which database actions must be taken to upgrade from one version of the schema to the next. When you run the command above, those snippets are run in sequence. 
 
 ## _multisession mode_
 
-This term refers to the `MULTISESSION_MODE` setting, which has a value of 0 to 3. The mode alters how players can connect to the game, such as how many Sessions a player can start with one account and how many Characters they can control at the same time. It is [described in detail here](../evennia_core/system/sessions/multisession_mode.md).
+This term refers to the `MULTISESSION_MODE` setting, which has a value of 0 to 3. The mode alters how players can connect to the game, such as how many Sessions a player can start with one account and how many Characters they can control at the same time. It is [described in detail here](../evennia_core/system/sessions/multisession_mode).
 
 ## _github_
 
@@ -158,21 +158,21 @@ The `evennia` folder you download from us with `git clone` is a repository. The 
 
 ## _script_
 
-When we refer to [Scripts](../evennia_core/system/scripts/Scripts.md), we generally refer to the `Script` [typeclass](#typeclass). Scripts are the mavericks of Evennia - they are like [Objects](#object) but without any in-game existence. They are useful as custom places to store data but also as building blocks in persistent game systems. Since the can be initialized with timing capabilities they can also be used for long-time persistent time keeping (for fast updates other types of timers may be better though). 
+When we refer to [Scripts](../evennia_core/system/scripts/Scripts), we generally refer to the `Script` [typeclass](#typeclass). Scripts are the mavericks of Evennia - they are like [Objects](#object) but without any in-game existence. They are useful as custom places to store data but also as building blocks in persistent game systems. Since the can be initialized with timing capabilities they can also be used for long-time persistent time keeping (for fast updates other types of timers may be better though). 
 
 ## _session_
 
-A [Session](../evennia_core/system/sessions/Sessions.md) is a Python object representing a single client connection to the server. A given human player could connect to the game from different clients and each would get a Session (even if you did not allow them to actually log in and get access to an [account](#account)). 
+A [Session](../evennia_core/system/sessions/Sessions) is a Python object representing a single client connection to the server. A given human player could connect to the game from different clients and each would get a Session (even if you did not allow them to actually log in and get access to an [account](#account)). 
 
 Sessions are _not_ [typeclassed](#typeclass) and has no database persistence. But since they always exist (also when not logged in), they share some common functionality with typeclasses that can be useful for certain game states.
 
 ## _ticker_
 
-The [Ticker handler](../evennia_core/system/scripts/TickerHandler.md) runs Evennia's optional 'ticker' system. In other engines, such as [DIKU](https://en.wikipedia.org/wiki/DikuMUD), all game events are processed only at specific intervals called 'ticks'. Evennia has no such technical limitation (events are processed whenever needed) but using a fixed tick can still be useful for certain types of game systems, like combat. Ticker Handler allows you to emulate any number of tick rates (not just one) and subscribe actions to be called when those ticks come around.
+The [Ticker handler](../evennia_core/system/scripts/TickerHandler) runs Evennia's optional 'ticker' system. In other engines, such as [DIKU](https://en.wikipedia.org/wiki/DikuMUD), all game events are processed only at specific intervals called 'ticks'. Evennia has no such technical limitation (events are processed whenever needed) but using a fixed tick can still be useful for certain types of game systems, like combat. Ticker Handler allows you to emulate any number of tick rates (not just one) and subscribe actions to be called when those ticks come around.
 
 ## _typeclass_
 
-The [typeclass](../evennia_core/system/typeclasses/Typeclasses.md) is an Evennia-specific term. A typeclass allows developers to work with database-persistent objects as if they were normal Python objects. It makes use of specific [Django](#django) features to link a Python class to a database table. Sometimes we refer to such code entities as _being typeclassed_. 
+The [typeclass](../evennia_core/system/typeclasses/Typeclasses) is an Evennia-specific term. A typeclass allows developers to work with database-persistent objects as if they were normal Python objects. It makes use of specific [Django](#django) features to link a Python class to a database table. Sometimes we refer to such code entities as _being typeclassed_. 
 
 Evennia's main typeclasses are [Account](#account), [Object](#object), [Script](#script) and [Channel](#channel).  Children of the base class (such as [Character](#character)) will use the same database table as the parent, but can have vastly different Python capabilities (and persistent features through [Attributes](#attributes) and [Tags](#tags). A typeclass can be coded and treated pretty much like any other Python class except it must inherit (at any distance) from one of the base typeclasses. Also, creating a new instance of a typeclass will add a new row to the database table to which it is linked. 
 

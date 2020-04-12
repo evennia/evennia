@@ -6,9 +6,9 @@ class Documentation:
 
 # Evennia Launcher
 
-You control Evennia from your game folder (we refer to it as `mygame/` here), using the `evennia` program. If the `evennia` program is not available on the command line you must first [install Evennia](../../evennia_core/setup/installation.md).
+You control Evennia from your game folder (we refer to it as `mygame/` here), using the `evennia` program. If the `evennia` program is not available on the command line you must first [install Evennia](../../evennia_core/setup/installation).
 
-> Hint: If you ever try the `evennia` command and get an error complaining that the command is not available, make sure your [virtualenv](../../tutorials_and_examples/python/virtualenv.md) is active. 
+> Hint: If you ever try the `evennia` command and get an error complaining that the command is not available, make sure your [virtualenv](../../tutorials_and_examples/python/virtualenv) is active. 
 
 Below are described the various management options. Run
 
@@ -22,7 +22,7 @@ to give you a menu with options.
 
 ## Starting Evennia
 
-Evennia consists of two components, the Evennia [Server and Portal](../../evennia_core/system/portal/portal-server-architecture.md).  Briefly, the  **Server** is what is running the mud. It handles all game-specific things but doesn't care exactly how players connect, only that they have. The **Portal** is a gateway to which players connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the game. Both are required for a functioning mud.
+Evennia consists of two components, the Evennia [Server and Portal](../../evennia_core/system/portal/portal-server-architecture).  Briefly, the  **Server** is what is running the mud. It handles all game-specific things but doesn't care exactly how players connect, only that they have. The **Portal** is a gateway to which players connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the game. Both are required for a functioning mud.
 
      evennia start
 
@@ -55,7 +55,7 @@ Evennia under the control of some other type of process.
 The act of *reloading* means the Portal will tell the Server to shut down and then boot it back up again. Everyone will get a message and the game will be briefly paused for all accounts as the server reboots. Since they are connected to the *Portal*, their connections are not lost.
 
 Reloading is as close to a "warm reboot" you can get. It reinitializes all code of Evennia, but
-doesn't kill "persistent" [Scripts](../../evennia_core/system/scripts/Scripts.md). It also calls `at_server_reload()` hooks on all objects so you can save eventual temporary properties you want.
+doesn't kill "persistent" [Scripts](../../evennia_core/system/scripts/Scripts). It also calls `at_server_reload()` hooks on all objects so you can save eventual temporary properties you want.
 
 From in-game the `@reload` command is used. You can also reload the server from outside the game:
 

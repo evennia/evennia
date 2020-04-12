@@ -122,7 +122,7 @@ You should also implement at least two methods, `parse()` and `func()` (You coul
 - `func()` is called right after `parse()` and should make use of the pre-parsed input to actually do whatever the command is supposed to do. This is the main body of the command. The return value from this method will be returned from the execution as a Twisted Deferred.
 - `at_post_cmd()` is called after `func()` to handle eventual cleanup.
 
-Finally, you should always make an informative [doc string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your class. This string is dynamically read by the [Help System](../help/Help-system) to create the help entry for this command. You should decide on a way to format your help and stick to that.
+Finally, you should always make an informative [doc string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your class. This string is dynamically read by the [Help System](../help/Help-System) to create the help entry for this command. You should decide on a way to format your help and stick to that.
 
 Below is how you define a simple alternative "`smile`" command:
 

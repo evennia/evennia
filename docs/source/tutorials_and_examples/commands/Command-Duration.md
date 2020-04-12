@@ -2,7 +2,7 @@
 
 
 Before reading this tutorial, if you haven't done so already, you might want to
-read [the documentation on commands](Commands) to get a basic understanding of
+read [the documentation on commands](../../evennia_core/system/commands/Commands) to get a basic understanding of
 how commands work in Evennia.
 
 In some types of games a command should not start and finish immediately.

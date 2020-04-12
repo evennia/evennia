@@ -26,7 +26,7 @@ This will open an Evennia-aware python shell (using ipython). From within this s
 
 That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made available at the top level of Evennia's  "flat API". See the [flat API](evennia-API) page for more info on how to explore it efficiently.
 
-You can complement your exploration by peeking at the sections of the much more detailed [Developer Central](Developer-Central). The [Tutorials](Tutorials) section also contains a growing collection of system- or implementation-specific help.
+You can complement your exploration by peeking at the sections of the much more detailed [Developer Central](Developer-Central). The [Tutorials](../index) section also contains a growing collection of system- or implementation-specific help.
 
 ### Use a python syntax checker
 

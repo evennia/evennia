@@ -1,7 +1,7 @@
 # Batch Code Processor
 
 
-For an introduction and motivation to using batch processors, see [here](Batch-Processors). This page describes the Batch-*code* processor. The Batch-*command* one is covered [here](Batch-Command-Processor). 
+For an introduction and motivation to using batch processors, see [here](Batch-Processors). This page describes the Batch-*code* processor. The Batch-*command* one is covered [here](../batchcode/Batch-Command-Processor). 
 
 ## Basic Usage
 
@@ -89,7 +89,7 @@ The debug mode is intended to be used when you test out a batchscript. Maybe you
 
 ## Interactive mode
 
-Interactive mode works very similar to the [batch-command processor counterpart](Batch-Command-Processor). It allows you more step-wise control over how the batch file is executed. This is useful for debugging or for picking and choosing only particular blocks to run.  Use `@batchcode` with the `/interactive` flag to enter interactive mode. 
+Interactive mode works very similar to the [batch-command processor counterpart](../batchcode/Batch-Command-Processor). It allows you more step-wise control over how the batch file is executed. This is useful for debugging or for picking and choosing only particular blocks to run.  Use `@batchcode` with the `/interactive` flag to enter interactive mode. 
 
      > @batchcode/interactive tutorial_examples.batch_code
 

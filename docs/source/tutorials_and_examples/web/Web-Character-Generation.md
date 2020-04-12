@@ -218,8 +218,8 @@ def creating(request):
 Most importantly, the following attributes must be set on the created character object:
 
 * Evennia [permissions](https://github.com/evennia/evennia/wiki/Locks#permissions) (copied from the `AccountDB`).
-* The right `puppet` [locks](Locks) so the Account can actually play as this Character later.
-* The relevant Character [typeclass](Typeclasses)
+* The right `puppet` [locks](../../evennia_core/system/locks/Locks) so the Account can actually play as this Character later.
+* The relevant Character [typeclass](../../evennia_core/system/typeclasses/Typeclasses)
 * Character name (key)
 * The Character's home room location (`#2` by default)
 

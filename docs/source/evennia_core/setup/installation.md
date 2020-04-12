@@ -27,8 +27,8 @@ evennia start` (make sure to make a  superuser when asked)
 ```
 
 Related topics:
-- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting.md)
-- [Linux troubleshooting](../../related_topics/troubleshooting/linux-troubleshooting.md)
+- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting)
+- [Linux troubleshooting](../../related_topics/troubleshooting/linux-troubleshooting)
 
 ## MacOS
 
@@ -48,7 +48,7 @@ evennia migrate
 evennia start` (make sure to make a  superuser when asked)
 ```
 Related topics:
-- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting.md)
+- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting)
 
 ## Windows (Vista, Win7, Win8, Win10)
 
@@ -70,9 +70,9 @@ evennia start` (make sure to make a  superuser when asked)
 ```
 
 Related topics:
-- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting.md)
-- [Windows troubleshooting](../../related_topics/troubleshooting/windows-troubleshooting.md)
+- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting)
+- [Windows troubleshooting](../../related_topics/troubleshooting/windows-troubleshooting)
 
 ## Docker
 
-We also release [Docker images](../../related_topics/technical/evennia-docker.md) based on `master` and `develop` branches.
+We also release [Docker images](../../related_topics/technical/evennia-docker) based on `master` and `develop` branches.

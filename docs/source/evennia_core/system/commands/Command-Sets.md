@@ -11,7 +11,7 @@ When an account enters a command, cmdsets from the Account, Character, its locat
 
 An example would be a `Window` object that has a cmdset with two commands in it: `look through window` and `open window`. The command set would be visible to players in the room with the window, allowing them to use those commands only there. You could imagine all sorts of clever uses of this, like a `Television` object which had multiple commands for looking at it, switching channels and so on. The tutorial world included with Evennia showcases a dark room that replaces certain critical commands with its own versions because the Character cannot see. 
 
-If you want a quick start into defining your first commands and using them with command sets, you can head over to the [Adding Command Tutorial](Adding-Command-Tutorial) which steps through things without the explanations. 
+If you want a quick start into defining your first commands and using them with command sets, you can head over to the [Adding Command Tutorial](../../../tutorials_and_examples/commands/Adding-Command-Tutorial) which steps through things without the explanations. 
 
 ## Defining Command Sets
 
@@ -84,7 +84,7 @@ Or you could add the cmdset as the *default* cmdset:
 
 An object can only have one "default" cmdset (but can also have none). This is meant as a safe fall-back even if all other cmdsets fail or are removed. It is always persistent and will not be affected by `cmdset.delete()`. To remove a default cmdset you must explicitly call `cmdset.remove_default()`.
 
-Command sets are often added to an object in its `at_object_creation` method. For more examples of adding commands, read the [Step by step tutorial](Adding-Command-Tutorial). Generally you can customize which command sets are added to your objects by using `self.cmdset.add()` or `self.cmdset.add_default()`. 
+Command sets are often added to an object in its `at_object_creation` method. For more examples of adding commands, read the [Step by step tutorial](../../../tutorials_and_examples/commands/Adding-Command-Tutorial). Generally you can customize which command sets are added to your objects by using `self.cmdset.add()` or `self.cmdset.add_default()`. 
 
 > Important: Commands are identified uniquely by key *or* alias (see [Commands](Commands)). If any overlap exists, two commands are considered identical. Adding a Command to a command set that already has an identical command will *replace* the previous command. This is very important. You must take this behavior into account when attempting to overload any default Evennia commands with your own. Otherwise, you may accidentally "hide" your own command in your command set when adding a new one that has a matching alias. 
 

@@ -40,7 +40,7 @@ Even if there's nobody building a game exactly like you are today, contribs will
 * The contribution should preferably be isolated (only make use of core Evennia) so it can easily be dropped into use. If it does depend on other contribs or third-party modules, these must be clearly documented and part of the installation instructions.
 * Within reason, your contribution should be designed as genre-agnostic as possible. Limit the amount of game-style-specific code. Assume your code will be applied to a very different game than you had in mind when creating it. 
 * The code should follow Evennia's [Code style guidelines][codestyle].
-* The code should be documented according to Evennia's [Documentation guidelines](../documentation/DocumentationStyleGuide)
+* The code should be documented according to Evennia's [Documentation guidelines](../documentation/DocumentationStyle)
 * The code should adhere to Evennia's [License](../licensing/FAQ)
 * The code should be covered by [unit tests](../../tutorials_and_examples/python/Unit-Testing)
 

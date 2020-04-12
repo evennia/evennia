@@ -110,7 +110,7 @@ Retrieves a value from the Character or Account currently controlled by this Ses
                        "interval": secs, "stop": False})` 
  - Output: Depends on the repeated function. Will return `("text", (repeatlist),{}` with a list of accepted names if given an unfamiliar callback name. 
 
-This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes this will set up a [Ticker](TickerHandler). Only previously acceptable functions are possible to repeat-call in this way, you'll need to overload this inputfunc to add the ones you want to offer. By default only two example functions are allowed, "test1" and "test2", which will just echo a text back at the given interval. Stop the repeat by sending `"stop": True` (note that you must include both the callback name and interval for Evennia to know what to stop). 
+This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes this will set up a [Ticker](../scripts/TickerHandler). Only previously acceptable functions are possible to repeat-call in this way, you'll need to overload this inputfunc to add the ones you want to offer. By default only two example functions are allowed, "test1" and "test2", which will just echo a text back at the given interval. Stop the repeat by sending `"stop": True` (note that you must include both the callback name and interval for Evennia to know what to stop). 
 
 ### unrepeat
 
@@ -125,7 +125,7 @@ This is a convenience wrapper for sending "stop" to the `repeat` inputfunc.
  - Input: `("monitor", (), ("name":field_or_argname, stop=False)`
  - Output (on change): `("monitor", (), {"name":name, "value":value})`
 
-This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute changes in any way, the outputcommand will be sent. This is using the [MonitorHandler](MonitorHandler) behind the scenes. Pass the "stop" key to stop monitoring. Note that you must supply the name also when stopping to let the system know which monitor should be cancelled. 
+This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute changes in any way, the outputcommand will be sent. This is using the [MonitorHandler](../scripts/MonitorHandler) behind the scenes. Pass the "stop" key to stop monitoring. Note that you must supply the name also when stopping to let the system know which monitor should be cancelled. 
 
 Only fields/attributes in a whitelist are allowed to be used, you have to overload this function to add more. By default the following fields/attributes can be monitored:
 

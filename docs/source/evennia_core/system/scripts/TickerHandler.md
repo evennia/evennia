@@ -77,7 +77,7 @@ The `callable` can be on any form as long as it accepts the arguments you give t
 
 When testing, you can stop all tickers in the entire game with `tickerhandler.clear()`. You can also view the currently subscribed objects with `tickerhandler.all()`.
 
-See the [Weather Tutorial](Weather-Tutorial) for an example of using the TickerHandler.
+See the [Weather Tutorial](../../../tutorials_and_examples/rooms/Weather-Tutorial) for an example of using the TickerHandler.
 
 ### When *not* to use TickerHandler
 

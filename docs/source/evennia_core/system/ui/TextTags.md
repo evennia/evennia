@@ -3,7 +3,7 @@
 
 This documentation details the various text tags supported by Evennia, namely *colours*, *command links* and *inline functions*. 
 
-There is also an [Understanding Color Tags](Understanding-Color-Tags) tutorial which expands on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
+There is also an [Understanding Color Tags](../../../tutorials_and_examples/ui/Understanding-Color-Tags) tutorial which expands on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
 
 ## Coloured text
 
@@ -13,7 +13,7 @@ Color can be a very useful tool for your game. It can be used to increase readab
 
 Remember however that, with the exception of the webclient, you generally don't control the client used to connect to the game.  There is, for example, one special tag meaning "yellow". But exactly *which* hue of yellow is actually displayed on the user's screen depends on the settings of their particular mud client. They could even swap the colours around or turn them off altogether if so desired. Some clients don't even support color - text games are also played with special reading equipment by people who are blind or have otherwise diminished eyesight. 
 
-So a good rule of thumb is to use colour to enhance your game but don't *rely* on it to display critical information. If you are coding the game, you can add functionality to let users disable colours as they please, as described [here](Manually-Configuring-Color). 
+So a good rule of thumb is to use colour to enhance your game but don't *rely* on it to display critical information. If you are coding the game, you can add functionality to let users disable colours as they please, as described [here](../../../tutorials_and_examples/ui/Manually-Configuring-Color). 
 
 To see which colours your client support, use the default `@color` command. This will list all available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list of all the parsed `ANSI`-colour codes in `evennia/utils/ansi.py`.
 
@@ -91,7 +91,7 @@ The `|*` tag (inverse video) is an old ANSI standard and should usually not be u
     ```
     |*reversed text |!R now BG is red.
     ```
-For a detailed explanation of these caveats, see the [Understanding Color Tags](Understanding-Color-Tags) tutorial. But most of the time you might be better off to simply avoid `|*` and mark your text manually instead. 
+For a detailed explanation of these caveats, see the [Understanding Color Tags](../../../tutorials_and_examples/ui/Understanding-Color-Tags) tutorial. But most of the time you might be better off to simply avoid `|*` and mark your text manually instead. 
 
 ### Xterm256 Colours
 
@@ -172,7 +172,7 @@ def funcname(*args, **kwargs):
 
 where `*args` denotes all the arguments this function will accept as an `$inlinefunc`. The inline function is expected to clean arguments and check that they are valid. If needed arguments are not given, default values should be used. The function should always return a string (even if it's empty). An inlinefunc should never cause a traceback regardless of the input (but it could log errors if desired). 
 
-Note that whereas the function should accept `**kwargs`, keyword inputs are *not* usable in the call to the inlinefunction. The `kwargs` part is instead intended for Evennia to be able to supply extra information. Currently Evennia sends a single keyword to every inline function and that is `session`, which holds the [serversession](Sessions) this text is targeted at. Through the session object, a lot of dynamic possibilities are opened up for your inline functions. 
+Note that whereas the function should accept `**kwargs`, keyword inputs are *not* usable in the call to the inlinefunction. The `kwargs` part is instead intended for Evennia to be able to supply extra information. Currently Evennia sends a single keyword to every inline function and that is `session`, which holds the [serversession](../sessions/Sessions) this text is targeted at. Through the session object, a lot of dynamic possibilities are opened up for your inline functions. 
 
 The `settings.INLINEFUNC_MODULES` configuration option is a list that decides which modules should be parsed for inline function definitions. This will include `mygame/server/conf/inlinefuncs.py` but more could be added. The list is read from left to right so if you want to overload default functions you just have to put your custom module-paths later in the list and name your functions the same as default ones.
 

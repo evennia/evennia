@@ -216,7 +216,7 @@ Finally, issue the `@reload` command to update the server to your changes. Devel
 
 There are many ways to build a Character sheet in text, from manually pasting strings together to more automated ways. Exactly what is the best/easiest way depends on the sheet one tries to create. We will here show two examples using the *EvTable* and *EvForm* utilities.Later we will create Commands to edit and display the output from those utilities.
 
-> Note that due to the limitations of the wiki, no color is used in any of the examples. See [the text tag documentation](TextTags) for how to add color to the tables and forms.
+> Note that due to the limitations of the wiki, no color is used in any of the examples. See [the text tag documentation](../../evennia_core/system/ui/TextTags) for how to add color to the tables and forms.
 
 #### Making a sheet with EvTable
 

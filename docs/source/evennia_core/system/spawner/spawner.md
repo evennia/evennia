@@ -3,7 +3,7 @@ The *spawner* is a system for defining and creating individual objects from a ba
 *prototype*. It is only designed for use with in-game [Objects](../objects/Objects), not any other type of
 entity.
 
-The normal way to create a custom object in Evennia is to make a [Typeclass](Typeclasses). If you
+The normal way to create a custom object in Evennia is to make a [Typeclass](../typeclasses/Typeclasses). If you
 haven't read up on Typeclasses yet, think of them as normal Python classes that save to the database
 behind the scenes. Say you wanted to create a "Goblin" enemy. A common way to do this would be to
 first create a `Mobile` typeclass that holds everything common to mobiles in the game, like generic

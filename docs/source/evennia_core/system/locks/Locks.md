@@ -80,9 +80,9 @@ Below are the access_types checked by the default commandset.
   - `get`- who may pick up the object and carry it around.
   - `puppet` - who may "become" this object and control it as their "character".
   - `attrcreate` - who may create new attributes on the object (default True)
-- [Characters](../../../evennia_core/system/objects/Characters): 
+- [Characters](../../../evennia_core/system/objects/Character): 
   - Same as for Objects
-- [Exits](../../../evennia_core/system/objects/Exits): 
+- [Exits](../../../evennia_core/system/objects/Exit): 
   - Same as for Objects 
   - `traverse` - who may pass the exit.
 - [Accounts](../../../evennia_core/system/accounts/Accounts):

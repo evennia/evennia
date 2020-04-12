@@ -79,6 +79,6 @@ In the `at_repeat` method (which is called immediately and then at interval seco
 1. Shows the number of Player Characters, Rooms and Other/Objects
 2. Shows the number of prototypes currently in the game and then selects 3 random keys to show 
 
-[Scripts Information](Scripts) will show you how to add it as a Global script, however, for testing it may be useful to start/stop it quickly from within the game.  Assuming that you create the file as `mygame/typeclasses/tweet_stats.py` it can be started by using the following command 
+[Scripts Information](../../evennia_core/system/scripts/Scripts) will show you how to add it as a Global script, however, for testing it may be useful to start/stop it quickly from within the game.  Assuming that you create the file as `mygame/typeclasses/tweet_stats.py` it can be started by using the following command 
 
     @script Here = tweet_stats.TweetStats

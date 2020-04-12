@@ -89,7 +89,7 @@ line quite pointless for processing any data from the function. Instead one has 
 - `at_err_kwargs` - an optional dictionary that will be fed as keyword arguments to the `at_err`
   errback.
 
-An example of making an asynchronous call from inside a [Command](Commands) definition:
+An example of making an asynchronous call from inside a [Command](../../evennia_core/system/commands/Commands) definition:
 
 ```python
     from evennia import utils, Command

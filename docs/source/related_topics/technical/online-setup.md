@@ -166,7 +166,7 @@ WEBSOCKET_CLIENT_URL = "wss://fqdn:4002"
 
 ### Let's Encrypt
 
-[Let's Encrypt](letsencrypt.org) is a certificate authority offering free certificates to secure a website with HTTPS. To get started issuing a certificate for your web server using Let's Encrypt, see these links:
+[Let's Encrypt](https://letsencrypt.org) is a certificate authority offering free certificates to secure a website with HTTPS. To get started issuing a certificate for your web server using Let's Encrypt, see these links:
 
  - [Let's Encrypt - Getting Started](https://letsencrypt.org/getting-started/)
  - The [CertBot Client](https://certbot.eff.org/) is a program for automatically obtaining a certificate, use it and maintain it with your website.
@@ -179,7 +179,7 @@ The only process missing from all of the above documentation is how to pass veri
 
 ## Relevant SSL Proxy Setup Information
 - [Apache webserver configuration](../../related_topics/technical/apache-config) (optional)
-- [HAProxy Config](../../related_topics/technica/haproxy-config) (optional) 
+- [HAProxy Config](../../related_topics/technical/haproxy-config) (optional) 
 
 ## Hosting locally or remotely?
 

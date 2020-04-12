@@ -24,10 +24,10 @@ The game directory is created with `evennia --init <name>`. In the Evennia docum
 
 If you cloned the GIT repo following the instructions, you will have a folder named `evennia`. The top level of it contains Python package specific stuff such as a readme file, `setup.py` etc. It also has two subfolders`bin/` and `evennia/` (again).  
 
-The `bin/` directory holds OS-specific binaries that will be used when installing Evennia with `pip` as per the [installation instructions](../../evennia_core/setup/installation.md). The library itself is in the `evennia` subfolder. From your code you will access this subfolder simply by `import evennia`. 
+The `bin/` directory holds OS-specific binaries that will be used when installing Evennia with `pip` as per the [installation instructions](../../evennia_core/setup/installation). The library itself is in the `evennia` subfolder. From your code you will access this subfolder simply by `import evennia`. 
 
 - evennia
-   - `__init__.py` - The "[flat API](../../evennia_core/evennia-flat-api.md)" of Evennia resides here. 
+   - `__init__.py` - The "[flat API](../../evennia_core/evennia-flat-api)" of Evennia resides here. 
    - `settings_default.py` - Root settings of Evennia. Copy settings from here to `mygame/server/settings.py` file.
    - `commands/` - The command parser and handler.
      - `default/` - The default commands and cmdsets. 

@@ -1,6 +1,6 @@
 # Adding Command Tutorial
 
-This is a quick first-time tutorial expanding on the [Commands](Commands) documentation. 
+This is a quick first-time tutorial expanding on the [Commands](../../evennia_core/system/commands/Commands) documentation. 
 
 Let's assume you have just downloaded Evennia, installed it and created your game folder (let's call
 it just `mygame` here). Now you want to try to add a new command. This is the fastest way to do it. 
@@ -80,13 +80,13 @@ If you have trouble, make sure to check the log for error messages (probably due
 your command definition).
 
 > Note: Typing `echotest` will also work. It will be handled as the command `echo` directly followed by
-its argument `test` (which will end up in `self.args). To change this behavior, you can add the `arg_regex` property alongside `key`, `help_category` etc. [See the arg_regex documentation](Commands#on-arg_regex) for more info. 
+its argument `test` (which will end up in `self.args). To change this behavior, you can add the `arg_regex` property alongside `key`, `help_category` etc. [See the arg_regex documentation](../../evennia_core/system/commands/Commands#on-arg_regex) for more info. 
 
 If you want to overload existing default commands (such as `look` or `get`), just add your new
 command with the same key as the old one - it will then replace it. Just remember that you must use
 `@reload` to see any changes. 
 
-See [Commands](Commands) for many more details and possibilities when defining Commands and using
+See [Commands](../../evennia_core/system/commands/Commands) for many more details and possibilities when defining Commands and using
 Cmdsets in various ways.
 
 
@@ -124,7 +124,7 @@ only make the new merged cmdset permanent on that *single* object. Often you wan
 this particular class to have this cmdset.
 
 To make sure all new created objects get your new merged set, put the `cmdset.add` call in your
-custom [Typeclasses](Typeclasses)' `at_object_creation` method: 
+custom [Typeclasses](../../evennia_core/system/typeclasses/Typeclasses)' `at_object_creation` method: 
 
 ```python
     # e.g. in mygame/typeclasses/objects.py

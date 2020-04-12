@@ -21,8 +21,8 @@ This makes it so that everyone can control the mech. More mechs to the people! (
 Before we continue, let’s make a brief detour. Evennia is very flexible about its objects and even more flexible about using and adding commands to those objects. Here are some ground rules well worth remembering for the remainder of this article:
 
 - The [Account](Accounts) represents the real person logging in and has no game-world existence.
-- Any [Object](Objects) can be puppeted by an Account (with proper permissions).
-- [Characters](Objects#characters), [Rooms](Objects#rooms), and [Exits](Objects#exits) are just children of normal Objects.
+- Any [Object](../../evennia_core/objects/Objects) can be puppeted by an Account (with proper permissions).
+- [Characters](../../evennia_core/objects/Objects#characters), [Rooms](../../evennia_core/objects/Objects#rooms), and [Exits](../../evennia_core/objects/Objects#exits) are just children of normal Objects.
 - Any Object can be inside another (except if it creates a loop).
 - Any Object can store custom sets of commands on it. Those commands can:
     - be made available to the puppeteer (Account),
@@ -137,7 +137,7 @@ There we go, one functioning mech. Try your own `launch` command and see that it
 
 What we’ve done so far is just to make a normal Object, describe it and put some commands on it. This is great for testing. The way we added it, the MechCmdSet will even go away if we reload the server. Now we want to make the mech an actual object “type” so we can create mechs without those extra steps. For this we need to create a new Typeclass.
 
-A [Typeclass](Typeclasses) is a near-normal Python class that stores its existence to the database behind the scenes. A Typeclass is created in a normal Python source file:
+A [Typeclass](../../evennia_core/system/typeclasses/Typeclasses) is a near-normal Python class that stores its existence to the database behind the scenes. A Typeclass is created in a normal Python source file:
 
 ```python
 # in the new file mygame/typeclasses/mech.py

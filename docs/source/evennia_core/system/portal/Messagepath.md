@@ -22,7 +22,7 @@ The client sends data to Evennia in two ways.
  - When first connecting, the client can send data to the server about its
  capabilities. This is things like "I support xterm256 but not unicode" and is
  mainly used when a Telnet client connects. This is called a "handshake" and
- will generally set some flags on the [Portal Session](Portal-and-Server) that
+ will generally set some flags on the [Portal Session](../portal/portal-server-architecture) that
  are later synced to the Server Session. Since this is not something the player
  controls, we'll not explore this further here.
  - The client can send an *inputcommand* to the server. Traditionally this only
@@ -31,7 +31,7 @@ The client sends data to Evennia in two ways.
  the client may send commands based on a timer or some trigger.
 
 Exactly how the inputcommand looks when it travels from the client to Evennia
-depends on the [Protocol](Client-APIs) used:
+depends on the [Protocol](Custom-Protocols) used:
  - Telnet: A string. If GMCP or MSDP OOB protocols are used, this string will
  be formatted in a special way, but it's still a raw string. If Telnet SSL is
  active, the string will be encrypted.
@@ -60,7 +60,7 @@ This inputcommand-structure is pickled together with the unique session-id of th
 
 ### ServerSessionHandler
 
-On the Server side, the AMP unpickles the data and associates the session id with the server-side [Session](Session). Data and Session are passed to the server-side `SessionHandler.data_in`. This in turn calls `ServerSession.data_in()`
+On the Server side, the AMP unpickles the data and associates the session id with the server-side [Session](../sessions/Sessions). Data and Session are passed to the server-side `SessionHandler.data_in`. This in turn calls `ServerSession.data_in()`
 
 ### ServerSession
 

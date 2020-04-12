@@ -143,7 +143,7 @@ etc.
  - `ndb` (NotDataBase) - a shortcut property to the Non-peristent AttributeHandler. Allows `obj.ndb.attrname = value`
 
 
-Each of the typeclassed entities then extend this list with their own properties. Go to the respective pages for [Objects](../objects/Objects), [Scripts](../scripts/Scripts), [Accounts](../accounts/Accounts) and [Channels](../channels/channels) for more info. It's also recommended that you explore the available entities using [Evennia's flat API](Evennia-API) to explore which properties and methods they have available.
+Each of the typeclassed entities then extend this list with their own properties. Go to the respective pages for [Objects](../objects/Objects), [Scripts](../scripts/Scripts), [Accounts](../accounts/Accounts) and [Channels](../channels/channels) for more info. It's also recommended that you explore the available entities using [Evennia's flat API](../../evennia-flat-api) to explore which properties and methods they have available.
 
 ### Overloading hooks
 
@@ -243,7 +243,7 @@ Evennia modifies Django's proxy model in various ways to allow them to work with
 
 Evennia uses the *idmapper* to cache its typeclasses (Django proxy models) in memory. The idmapper allows things like on-object handlers and properties to be stored on typeclass instances and to not get lost as long as the server is running (they will only be cleared on a Server reload). Django does not work like this by default; by default every time you search for an object in the database you'll get a *different* instance of that object back and anything you stored on it that was not in the database would be lost. The bottom line is that Evennia's Typeclass instances subside in memory a lot longer than vanilla Django model instance do.
 
-There is one  caveat to consider with this, and that relates to [making your own models](New-Models): Foreign relationships to typeclasses are cached by Django and that means that if you were to change an object in a foreign relationship via some other means than via that relationship, the object seeing the relationship may not reliably update but will still see its old cached version. Due to typeclasses staying so long in memory, stale caches of such relationships could be more visible than common in Django. See the [closed issue #1098 and its comments](https://github.com/evennia/evennia/issues/1098) for examples and solutions.
+There is one  caveat to consider with this, and that relates to [making your own models](../django/new-models): Foreign relationships to typeclasses are cached by Django and that means that if you were to change an object in a foreign relationship via some other means than via that relationship, the object seeing the relationship may not reliably update but will still see its old cached version. Due to typeclasses staying so long in memory, stale caches of such relationships could be more visible than common in Django. See the [closed issue #1098 and its comments](https://github.com/evennia/evennia/issues/1098) for examples and solutions.
 
 ```python
 class Documentation:

@@ -20,7 +20,7 @@ You can review the latest changes with
 
      git log
 
-or the equivalent in the graphical client. You can also see the latest changes online [here](https://github.com/evennia/evennia/blob/master/CHANGELOG.md).
+or the equivalent in the graphical client. You can also see the latest changes online [here](https://github.com/evennia/evennia/blob/master/CHANGELOG).
 
 You will always need to do `evennia reload` (or `reload` from -in-game) from your game-dir to have the new code affect your game. If you want to be really sure you should run a full `evennia reboot` so that both Server and Portal can restart (this will disconnect everyone though, so if you know the Portal has had no updates you don't have to do that). 
 
@@ -50,7 +50,7 @@ When the database schema changes, you just go to your game folder and run
 
      evennia migrate
 
-> Hint: If the `evennia` command is not found, you most likely need to activate your [virtualenv](../../tutorials_and_examples/python/virtualenv.md).
+> Hint: If the `evennia` command is not found, you most likely need to activate your [virtualenv](../../tutorials_and_examples/python/virtualenv).
 
 ## Resetting your database
 

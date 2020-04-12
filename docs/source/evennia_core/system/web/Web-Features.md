@@ -19,7 +19,7 @@ You customize your website from your game directory. In the folder `web` you'll 
 
 Example: To override or modify `evennia/web/website/template/website/index.html` you need to add/modify `mygame/web/template_overrides/website/index.html`. 
 
-The detailed description on how to customize the website is best described in tutorial form. See the [Web Tutorial](Web-Tutorial) for more information.
+The detailed description on how to customize the website is best described in tutorial form. See the [Web Tutorial](../../../tutorials_and_examples/web/Web-Tutorial) for more information.
 
 ### Overloading Django views
 

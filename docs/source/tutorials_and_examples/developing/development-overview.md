@@ -20,7 +20,7 @@ remove them altogether, to get the exact functionality your game requires.
 - [Continuous Integration](Continuous-Integration) - Keeping your 'under construction' code out of your game
 - [Debugging Evennia](Debugging)
 - [Version Control / Backups](Version-Control)
-- [Game System Examples](Tutorials) - Combat and Shops and Mechs, oh my!
+- [Game System Examples](../index) - Combat and Shops and Mechs, oh my!
 - [Unit Tests](Unit-Testing) - Building the 'canaries in the coal mine' that well tell you which three things broke after your latest line of code.
 
 #####Transitioning from other systems
@@ -36,20 +36,20 @@ remove them altogether, to get the exact functionality your game requires.
 
 ##The Evennia Way
 - [Using the Evennia flat API](Evennia-API) - 90% of what you need to know is here
-- [Batch Processing](Batch-Processors) - Doing a lot of stuff with a little code
+- [Batch Processing](../../evennia_core/system/batchcode/Batch-Processors) - Doing a lot of stuff with a little code
 - [Deferred and Asynchronous](ASync-Lite) - Doing stuff 'later'
 
 ##Changing Evennia's Functionality
-- [First Steps](First-Steps-Coding) - How to make things behave differently than the tin says
-- [Out of Band](OOB) - Sending additional data to the client
+- [First Steps](../python/First-Steps-Coding) - How to make things behave differently than the tin says
+- [Out of Band](../../evennia_core/system/portal/OOB) - Sending additional data to the client
 - [Parsing Command Arguments](Parsing-command-arguments,-theory-and-best-practices) - Transforming what your users type into usable data
 
 ##The Full Package
 - [Evennia Technical Documentation](TechDocs) - Complete docstring reference for people who know what they're trying to do but don't remember whether a function returns a list or a boolean
-- [Evennia Portal and Server](Portal-And-Server) - A behind-the-scenes look at Evennia
+- [Evennia Portal and Server](../../evennia_core/system/portal/portal-server-architecture) - A behind-the-scenes look at Evennia
 - [New Database Models](New-Models) - Changing the nature of the data store itself
-- [Message Path](Messagepath) - How a .msg() becomes text on the player's screen
-- [Developing Custom Protocols](Custom-Protocols) - When Telnet's just not enough for you.
+- [Message Path](../../evennia_core/system/portal/Messagepath) - How a .msg() becomes text on the player's screen
+- [Developing Custom Protocols](../../evennia_core/system/portal/Custom-Protocols) - When Telnet's just not enough for you.
 - [Asynchronous Execution](Async-Heavy) - You'll know when you're ready for async
 - [Profiling and Optimization](Profiling) - Gotta go fast. For servers with hundreds of players.
 

@@ -1,6 +1,6 @@
 # Permissions
 
-> This section covers the underlying code use of permissions. If you just want to learn how to practically assign permissions in-game, refer to the [Building Permissions](Building-Permissions) page, which details how you use the `perm` command.
+> This section covers the underlying code use of permissions. If you just want to learn how to practically assign permissions in-game, refer to the [Building Permissions](../../../tutorials_and_examples/building/Building-Permissions) page, which details how you use the `perm` command.
 
 A *permission* is simply a list of text strings stored  in the handler `permissions` on `Objects` and `Accounts`. Permissions can be used as a convenient way to structure access levels and hierarchies. It is set by the `perm` command. Permissions are especially handled by the `perm()` and `pperm()` lock functions listed above. 
 

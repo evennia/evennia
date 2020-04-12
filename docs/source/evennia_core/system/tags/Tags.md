@@ -110,7 +110,7 @@ and so on. Similarly to how `@tag` works in-game, there is also the `@perm` comm
 Generally, tags are enough on their own for grouping objects. Having no tag `category` is perfectly fine and the normal operation. Simply adding a new Tag for grouping objects is often better than making a new category. So think hard before deciding you really need to categorize your Tags. 
 
 That said, tag categories can be useful if you build some game system that uses tags. You can then use tag categories to make sure to separate tags created with this system from any other tags created elsewhere. You can then supply custom search methods that *only* find objects tagged with tags of that category. An example of this 
-is found in the [Zone tutorial](Zones). 
+is found in the [Zone tutorial](../../../tutorials_and_examples/rooms/Zones). 
 
 ```python
 class Documentation:

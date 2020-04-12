@@ -1,11 +1,18 @@
 import re
 import os
+import argparse
+
 from colorama import Fore, Back, Style
 
 files = list()
 os.chdir("source")
 path = os.getcwd()
 broken_count=0
+
+parser = argparse.ArgumentParser(description='Check broken links')
+parser.add_argument('--verbose', default=False, help="Verbosity level (1: Show all links)")
+
+args = parser.parse_args()
 
 def shortpath(path):
     return os.path.relpath(path)
@@ -24,9 +31,11 @@ def check_broken_links(file):
                         print("\t\t", Back.RED, Fore.WHITE, "Broken : {link}".format(link=shortpath(link_dest)), Style.RESET_ALL)
                         broken_count += 1
                     else:
-                        print(Fore.GREEN, "\t\tClean : {link}".format(link=shortpath(link_dest)), Style.RESET_ALL)
+                        if args.verbose:
+                            print(Fore.GREEN, "\t\tClean : {link}".format(link=shortpath(link_dest)), Style.RESET_ALL)
         else:
-            print(Fore.RED, "{file} has no links".format(file=shortpath(file)), Style.RESET_ALL)
+            if args.verbose:
+                print(Fore.RED, "{file} has no links".format(file=shortpath(file)), Style.RESET_ALL)
 
 def get_md_files(path):
     global files

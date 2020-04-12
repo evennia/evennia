@@ -3,13 +3,13 @@
 
 ## Introduction
 
-This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also details how to use the [Batch code processor](Batch-code-processor) for advanced building. There is also the [Dynamic in-game map tutorial](Dynamic-In-Game-Map) that works in the opposite direction, by generating a map from an existing grid of rooms. 
+This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also details how to use the [Batch code processor](../../evennia_core/system/batchcode/Batch-Code-Processor) for advanced building. There is also the [Dynamic in-game map tutorial](Dynamic-In-Game-Map) that works in the opposite direction, by generating a map from an existing grid of rooms. 
 
 Evennia does not require its rooms to be positioned in a "logical" way. Your exits could be named anything. You could make an exit "west" that leads to a room described to be in the far north. You could have rooms inside one another, exits leading back to the same room or describing spatial geometries impossible in the real world. 
 
 That said, most games *do* organize their rooms in a logical fashion, if nothing else to retain the sanity of their players. And when they do, the game becomes possible to map. This tutorial will give an example of a simple but flexible in-game map system to further help player's to navigate. We will 
 
-To simplify development and error-checking we'll break down the work into bite-size chunks, each building on what came before. For this we'll make extensive use of the [Batch code processor](Batch-code-processor), so you may want to familiarize yourself with that.
+To simplify development and error-checking we'll break down the work into bite-size chunks, each building on what came before. For this we'll make extensive use of the [Batch code processor](../../evennia_core/system/batchcode/Batch-Code-Processor), so you may want to familiarize yourself with that.
 
 1. **Planning the map** - Here we'll come up with a small example map to use for the rest of the tutorial.
 2. **Making a map object** - This will showcase how to make a static in-game "map" object a Character could pick up and look at. 
@@ -27,7 +27,7 @@ To simplify development and error-checking we'll break down the work into bite-s
     Exits: north(#8), east(#9), south(#10), west(#11)
     ```
 
-We will henceforth assume your game folder is name named `mygame` and that you haven't modified the default commands. We will also not be using [Colors](TextTags#colored-text) for our map since they don't show in the documentation wiki.
+We will henceforth assume your game folder is name named `mygame` and that you haven't modified the default commands. We will also not be using [Colors](../../evennia_core/system/ui/TextTags#colored-text) for our map since they don't show in the documentation wiki.
 
 ## Planning the Map
 

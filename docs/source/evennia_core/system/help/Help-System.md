@@ -47,7 +47,7 @@ The text at the very top of the command class definition is the class' `__doc__`
 
 You should also supply the `help_category` class property if you can; this helps to group help entries together for people to more easily find them. See the `help` command in-game to see the default categories. If you don't specify the category, "General" is assumed. 
 
-If you don't want your command to be picked up by the auto-help system at all (like if you want to write its docs manually using the info in the next section or you use a [cmdset](Command-Sets) that has its own help functionality) you can explicitly set `auto_help` class property to `False` in your command definition.
+If you don't want your command to be picked up by the auto-help system at all (like if you want to write its docs manually using the info in the next section or you use a [cmdset](../commands/Command-Sets) that has its own help functionality) you can explicitly set `auto_help` class property to `False` in your command definition.
 
 Alternatively, you can keep the advantages of *auto-help* in commands, but control the display of command helps.  You can do so by overriding the command's `get_help()` method.  By default, this method will return the class docstring.  You could modify it to add custom behavior:  the text returned by this method will be displayed to the character asking for help in this command.
 

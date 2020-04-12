@@ -7,14 +7,14 @@ class Documentation:
 
 All *users* (real people) that log into Evennia are doing so through an
 object called *Account*. The Account object has no in-game representation, it represents a unique
-game account.  In order to actually get on the game the Account must *puppet* an [Object](../../evennia_core/system/objects/Objects)
-(normally a [Character](../../evennia_core/system/objects/Character)). 
+game account.  In order to actually get on the game the Account must *puppet* an [Object](../objects/Objects)
+(normally a [Character](../objects/Character)). 
 
 Exactly how many Sessions can interact with an Account and its Puppets at once is determined by
-Evennia's [MULTISESSION_MODE](../../evennia_core/system/sessions/multisession_mode) setting.
+Evennia's [MULTISESSION_MODE](../sessions/multisession_mode) setting.
 
 Apart from storing login information and other account-specific data, the Account object is what is
-chatting on [Channels](../../evennia_core/system/channels/channels).  It is also a good place to store [Permissions](../../evennia_core/system/locks/Locks) to be
+chatting on [Channels](../channels/channels).  It is also a good place to store [Permissions](../locks/Locks) to be
 consistent between different in-game characters as well as configuration options.  
 
 ## Commands
@@ -36,7 +36,7 @@ permissions on the Character/Account will always be used).
 
 ## Properties on Accounts
 
-Beyond those properties assigned to all typeclassed objects (see [Typeclasses](Typeclasses)), the
+Beyond those properties assigned to all typeclassed objects (see [Typeclasses](../typeclasses/Typeclasses)), the
 Account also has the following custom properties: 
 
 - `user` - a unique link to a `User` Django object, representing the logged-in user.
@@ -50,10 +50,10 @@ Account also has the following custom properties:
 - `is_superuser` (bool: True/False) - if this account is a superuser.
 
 Special handlers:
-- `cmdset` - This holds all the current [Commands](../../evennia_core/system/commands/Commands) of this Account. By default these are
+- `cmdset` - This holds all the current [Commands](../commands/Commands) of this Account. By default these are
   the commands found in the cmdset defined by `settings.CMDSET_ACCOUNT`.
-- `nicks` - This stores and handles [Nicks](../../evennia_core/system/nicks/Nicks), in the same way as nicks it works on Objects.
-  For Accounts, nicks are primarily used to store custom aliases for [Channels](../../evennia_core/system/channels/channels).
+- `nicks` - This stores and handles [Nicks](../nicks/Nicks), in the same way as nicks it works on Objects.
+  For Accounts, nicks are primarily used to store custom aliases for [Channels](../channels/channels).
  
 Selection of special methods (see `evennia.DefaultAccount` for details):
 - `get_puppet` - get a currently puppeted object connected to the Account and a given session id, if

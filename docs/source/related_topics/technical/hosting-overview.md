@@ -25,7 +25,7 @@ When you're wanting to apply updates, simply `cd` to your cloned `evennia` root 
 
 Note that this will disconnect all connected players.
 
-For more information, particularly when moving between major versions of evennia, read [Updating Your Game](Updating-Your-Game)
+For more information, particularly when moving between major versions of evennia, read [Updating Your Game](../../evennia_core/setup/Updating-Your-Game)
 
 |_Protip_|Stay in the loop|
 |---|---|
@@ -45,7 +45,7 @@ be sure to `source evenv/bin/activate` (Unix) or `source evenv\Scripts\activate`
 - `evennia start` - Starts the server
 - `evennia stop` - Stops the server gracefully
 
-For more information about these commands, as well as several others that are available, read the detailed guide over at [Stop/Start/Reload](Start-Stop-Reload).
+For more information about these commands, as well as several others that are available, read the detailed guide over at [Stop/Start/Reload](../../evennia_core/setup/Start-Stop-Reload).
 
 ### Database Management
 

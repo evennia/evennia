@@ -252,7 +252,7 @@ We specified the `commands` package to the evennia test command since that's whe
 
 ### Testing commands
 
-This section will test the proper execution of the 'abilities' command, as described in the [First Steps Coding](First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we will need it to test it.
+This section will test the proper execution of the 'abilities' command, as described in the [First Steps Coding](../python/First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we will need it to test it.
 
 Testing commands in Evennia is a bit more complex than the simple testing example we have seen. Luckily, Evennia supplies a special test class to do just that ... we just need to inherit from it and use it properly. This class is called 'CommandTest' and is defined in the 'evennia.commands.default.tests' package.  To create a test for our 'abilities' command, we just need to create a class that inherits from 'CommandTest' and add methods.
 

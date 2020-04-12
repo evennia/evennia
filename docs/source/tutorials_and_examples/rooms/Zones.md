@@ -30,6 +30,6 @@ Henceforth you can then easily retrieve only objects with a given tag:
 
 ## Using typeclasses and inheritance for zoning
 
-The tagging or aliasing systems above don't instill any sort of functional difference between a magical forest room and a normal one - they are just arbitrary ways to mark objects for quick retrieval later. Any functional differences must be expressed using [Typeclasses](Typeclasses).
+The tagging or aliasing systems above don't instill any sort of functional difference between a magical forest room and a normal one - they are just arbitrary ways to mark objects for quick retrieval later. Any functional differences must be expressed using [Typeclasses](../../evennia_core/system/typeclasses/Typeclasses).
 
 Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone inherit from a given typeclass parent - and then limit your searches to objects inheriting from that given parent. The effect would be similar but you'd need to expand the search functionality to properly search the inheritance tree.

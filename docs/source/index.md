@@ -1,7 +1,7 @@
 # Evennia Documentation
 This is the manual of [Evennia](http://www.evennia.com), the open source Python `MU*` creation system.
 - [What is Evennia?](intro-to-evennia)
-- [The Evennia community](community/community-overview)
+- [The Evennia community](community/index)
 - [Getting started with Evennia](related_topics/evennia-quickstart)
 - [The Evennia API](evennia_core/evennia-flat-api)
 - [Tutorials and Examples](tutorials_and_examples/tutorials)
@@ -17,7 +17,7 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python 
 * [Administration](tutorials_and_examples/admin/admin-overview) - For server admins and moderators
 * [Building in Evennia](tutorials_and_examples/building/building-overview) - For builders/level editors
 * [Developing in Evennia](tutorials_and_examples/developing/development-overview) - For developers/programmers
-* [Contributing to Evennia](community/contributing/contributing) - For contributing to Evennia's core repository
+* [Contributing to Evennia](community/contributing/index) - For contributing to Evennia's core repository
 * [Technical Documentation](api/evennia-api) - Developer's Reference
 
 | _Protip_ | Using the Evennia Manual |

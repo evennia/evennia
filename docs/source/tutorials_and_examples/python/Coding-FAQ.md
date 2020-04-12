@@ -18,14 +18,14 @@
 - [Use wide characters with EvTable](#non-latin-characters-in-evtable)
 
 ## Removing default commands
-**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](Commands) from the Character [Command Set](Command-Sets)?
+**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../../evennia_core/system/commands/Commands) from the Character [Command Set](Command-Sets)?
 
 **A:** Go to `mygame/commands/default_cmdsets.py`. Find the `CharacterCmdSet` class. It has one method named `at_cmdset_creation`. At the end of that method, add the following line: `self.remove(default_cmds.CmdGet())`. See the [Adding Commands Tutorial](Adding-Command-Tutorial) for more info.
 
 ## Preventing character from moving based on a condition
 **Q:** How does one keep a character from using any exit, if they meet a certain condition? (I.E. in combat, immobilized, etc.)
 
-**A:** The `at_before_move` hook is called by Evennia just before performing any move. If it returns `False`, the move is aborted. Let's say we want to check for an [Attribute](Attributes) `cantmove`. Add the following code to the `Character` class:
+**A:** The `at_before_move` hook is called by Evennia just before performing any move. If it returns `False`, the move is aborted. Let's say we want to check for an [Attribute](../../evennia_core/system/attributes/Attributes) `cantmove`. Add the following code to the `Character` class:
 
 ```python
 def at_before_move(self, destination):
@@ -81,7 +81,7 @@ Additional hint: To make colors easier to change from one place you could instea
 ## Selectively turn off commands in a room
 **Q:** I want certain commands to turn off in a given room. They should still work normally for staff.
 
-**A:** This is done using a custom cmdset on a room [locked with the 'call' lock type](Locks). Only if this lock is passed will the commands on the room be made available to an object inside it. Here is an example of a room where certain commands are disabled for non-staff:
+**A:** This is done using a custom cmdset on a room [locked with the 'call' lock type](../../evennia_core/system/locks/Locks). Only if this lock is passed will the commands on the room be made available to an object inside it. Here is an example of a room where certain commands are disabled for non-staff:
 
 ```python
 # in mygame/typeclasses/rooms.py
@@ -114,7 +114,7 @@ After `@reload`, make some `BlockingRooms` (or switch a room to it with `@typecl
 ## Select Command based on a condition
 **Q:** I want a command to be available only based on a condition. For example I want the "werewolf" command to only be available on a full moon, from midnight to three in-game time.
 
-**A:** This is easiest accomplished by putting the "werewolf" command on the Character as normal, but to [lock](Locks) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the command be available.
+**A:** This is easiest accomplished by putting the "werewolf" command on the Character as normal, but to [lock](../../evennia_core/system/locks/Locks) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the command be available.
 
 ```python
 # in mygame/commands/command.py

@@ -12,7 +12,7 @@ To follow this tutorial you also need to know the basics of operating your compu
 
 ## Your First Changes
 
-Below are some first things to try with your new custom modules. You can test these to get a feel for the system. See also [Tutorials](Tutorials) for more step-by-step help and special cases.
+Below are some first things to try with your new custom modules. You can test these to get a feel for the system. See also [Tutorials](../index) for more step-by-step help and special cases.
 
 ### Tweak Default Character
 
@@ -43,11 +43,11 @@ We will add some simple rpg attributes to our default Character. In the next sec
             return self.db.strength, self.db.agility, self.db.magic
     ```
 
-1. [Reload](Start-Stop-Reload) the server (you will still be connected to the game after doing this). Note that if you examine *yourself* you will *not* see any new Attributes appear yet. Read the next section to understand why.
+1. [Reload](../../evennia_core/setup/Start-Stop-Reload) the server (you will still be connected to the game after doing this). Note that if you examine *yourself* you will *not* see any new Attributes appear yet. Read the next section to understand why.
 
 #### Updating Yourself
 
-It's important to note that the new [Attributes](Attributes) we added above will only be stored on *newly* created characters. The reason for this is simple: The `at_object_creation` method, where we added those Attributes, is per definition only called when the object is *first created*, then never again. This is usually a good thing since those Attributes may change over time - calling that hook would reset them back to start values. But it also means that your existing character doesn't have them yet. You can see this by calling the `get_abilities` hook on yourself at this point:
+It's important to note that the new [Attributes](../../evennia_core/system/attributes/Attributes) we added above will only be stored on *newly* created characters. The reason for this is simple: The `at_object_creation` method, where we added those Attributes, is per definition only called when the object is *first created*, then never again. This is usually a good thing since those Attributes may change over time - calling that hook would reset them back to start values. But it also means that your existing character doesn't have them yet. You can see this by calling the `get_abilities` hook on yourself at this point:
 
 ```
 # (you have to be superuser to use @py)
@@ -84,7 +84,7 @@ Using `swap_typeclass` to the same typeclass we already have will re-run the cre
 @py typeclasses.myclass import MyClass;[obj.swap_typeclass(MyClass) for obj in MyClass.objects.all()]
 ```
 
-See the [Object Typeclass tutorial](Adding-Object-Typeclass-tutorial) for more help and the [Typeclasses](Typeclasses) and [Attributes](Attributes) page for detailed documentation about Typeclasses and Attributes.
+See the [Object Typeclass tutorial](Adding-Object-Typeclass-tutorial) for more help and the [Typeclasses](../../evennia_core/system/typeclasses/Typeclasses) and [Attributes](../../evennia_core/system/attributes/Attributes) page for detailed documentation about Typeclasses and Attributes.
 
 #### Troubleshooting: Updating Yourself
 
@@ -110,7 +110,7 @@ The full error will show in the terminal/console but this is confusing since you
 
 ### Add a New Default Command
 
-The `@py` command used above is only available to privileged users. We want any player to be able to see their stats.  Let's add a new [command](Commands) to list the abilities we added in the previous section.
+The `@py` command used above is only available to privileged users. We want any player to be able to see their stats.  Let's add a new [command](../../evennia_core/system/commands/Commands) to list the abilities we added in the previous section.
 
 1. Open `mygame/commands/command.py`. You could in principle put your command anywhere but this module has all the imports already set up along with some useful documentation. Make a new class at the bottom of this file:
 
@@ -149,7 +149,7 @@ The `@py` command used above is only available to privileged users. We want any 
         self.add(CmdAbilities())
     ```
 
-1. [Reload](Start-Stop-Reload) the server (noone will be disconnected by doing this).
+1. [Reload](../../evennia_core/setup/Start-Stop-Reload) the server (noone will be disconnected by doing this).
 
 You (and anyone else) should now be able to use `abilities` (or its alias `abi`) as part of your normal commands in-game:
 
@@ -158,7 +158,7 @@ abilities
 STR: 5, AGI: 4, MAG: 2
 ```
 
-See the [Adding a Command tutorial](Adding-Command-Tutorial) for more examples and the [Commands](Commands) section for detailed documentation about the Command system.
+See the [Adding a Command tutorial](Adding-Command-Tutorial) for more examples and the [Commands](../../evennia_core/system/commands/Commands) section for detailed documentation about the Command system.
 
 ### Make a New Type of Object
 
@@ -204,7 +204,7 @@ Let's test to make a new type of object. This example is an "wise stone" object 
             return string + wisewords
     ```
 
-1. Check your code for bugs. Tracebacks will appear on your command line or log. If you have a grave Syntax Error in your code, the source file itself will fail to load which can cause issues with the entire cmdset. If so, fix your bug and [reload the server from the command line](Start-Stop-Reload) (noone will be disconnected by doing this).
+1. Check your code for bugs. Tracebacks will appear on your command line or log. If you have a grave Syntax Error in your code, the source file itself will fail to load which can cause issues with the entire cmdset. If so, fix your bug and [reload the server from the command line](../../evennia_core/setup/Start-Stop-Reload) (noone will be disconnected by doing this).
 1. Use `@create/drop stone:wiseobject.WiseObject` to create a talkative stone. If the `@create` command spits out a warning or cannot find the typeclass (it will tell you which paths it searched), re-check your code for bugs and that you gave the correct path. The `@create` command starts looking for Typeclasses in `mygame/typeclasses/`.
 1. Use `look stone` to test. You will see the default description ("You see nothing special") followed by a random message of stony wisdom. Use `@desc stone = This is a wise old stone.` to make it look nicer. See the [Builder Docs](Builder-Docs) for more information.
 
@@ -214,4 +214,4 @@ The `at_object_creation` is a special case though. Changing most other aspects o
 
 ## Where to Go From Here?
 
-There are more [Tutorials](Tutorials), including one for building a [whole little MUSH-like game](Tutorial-for-basic-MUSH-like-game) - that is instructive also if you have no interest in MUSHes per se. A good idea is to also get onto the [IRC chat](http://webchat.freenode.net/?channels=evennia) and the [mailing list](https://groups.google.com/forum/#!forum/evennia) to get in touch with the community and other developers.
+There are more [Tutorials](../index), including one for building a [whole little MUSH-like game](Tutorial-for-basic-MUSH-like-game) - that is instructive also if you have no interest in MUSHes per se. A good idea is to also get onto the [IRC chat](http://webchat.freenode.net/?channels=evennia) and the [mailing list](https://groups.google.com/forum/#!forum/evennia) to get in touch with the community and other developers.

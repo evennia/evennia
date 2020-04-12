@@ -1,10 +1,10 @@
 # Index
-- [Built with Evennia](built_with_evennia/index)
-- [Connecting to the Community](connecting/index)
-- [Contributing to Evennia](contributing/contributing/index)
+- [Built with Evennia](built_with_evennia)
+- [Connecting to the Community](connecting)
+- [Contributing to Evennia](contributing)
 - [Contibuting to Docs](documentation/DocumentationStyle)
 - [License](licensing/FAQ)
-- [Roadmap](roadmap/index)
+- [Roadmap](roadmap)
 - [Links](links)
 
 # The Evennia Community
