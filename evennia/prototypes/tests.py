@@ -212,7 +212,7 @@ class TestUtils(EvenniaTest):
                     "puppet:pperm(Developer);tell:perm(Admin);view:all()",
                     "KEEP",
                 ),
-                "prototype_tags": (None, None, 'KEEP'),
+                "prototype_tags": (None, None, "KEEP"),
                 "attrs": {
                     "oldtest": (
                         ("oldtest", "to_keep", None, ""),
@@ -269,7 +269,7 @@ class TestUtils(EvenniaTest):
         new_prot = spawner.prototype_from_object(self.obj1)
         self.assertEqual(
             {
-                "aliases": ['foo'],
+                "aliases": ["foo"],
                 "attrs": [
                     ("desc", "changed desc", None, ""),
                     ("fooattr", "fooattrval", None, ""),
@@ -294,9 +294,7 @@ class TestUtils(EvenniaTest):
                         "view:all()",
                     ]
                 ),
-                'tags': [
-                    ('footag', 'foocategory', None),
-                    (Something, 'from_prototype', None)],
+                "tags": [("footag", "foocategory", None), (Something, "from_prototype", None)],
                 "permissions": ["builder"],
                 "prototype_desc": "Built from Obj",
                 "prototype_key": Something,
@@ -927,7 +925,7 @@ class TestMenuModule(EvenniaTest):
             "\n- |wprototype_locks:|n"
             "\n- |wprototype_tags:|n"
             "\n- |wtags:|n    |c[3] |yADD|n: foo |W(category:|n None|W)|n"
-            "\n- |wtypeclass:|n"
+            "\n- |wtypeclass:|n",
         )
 
         self.assertEqual(

@@ -1366,7 +1366,9 @@ class TestBuilding(CommandTest):
 
         # spawn/examine with invalid prototype
         # shows error
-        self.call(building.CmdSpawn(), "/examine NO_EXISTS", "No prototype named 'NO_EXISTS' was found.")
+        self.call(
+            building.CmdSpawn(), "/examine NO_EXISTS", "No prototype named 'NO_EXISTS' was found."
+        )
 
 
 class TestComms(CommandTest):
