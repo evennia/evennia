@@ -124,13 +124,13 @@ def homogenize_prototype(prototype, custom_keys=None):
 
     # add required missing parts that had defaults before
 
-    homogenized["prototype_key"] = homogenized.get("prototype_key",
+    homogenized["prototype_key"] = homogenized.get(
+        "prototype_key",
         # assign a random hash as key
-        "prototype-{}".format(
-            hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:7]))
+        "prototype-{}".format(hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:7]),
+    )
     homogenized["prototype_tags"] = homogenized.get("prototype_tags", [])
-    homogenized["prototype_locks"] = homogenized.get(
-        "prototype_lock", _PROTOTYPE_FALLBACK_LOCK)
+    homogenized["prototype_locks"] = homogenized.get("prototype_lock", _PROTOTYPE_FALLBACK_LOCK)
     homogenized["prototype_desc"] = homogenized.get("prototype_desc", "")
     if "typeclass" not in prototype and "prototype_parent" not in prototype:
         homogenized["typeclass"] = settings.BASE_OBJECT_TYPECLASS
@@ -752,7 +752,7 @@ def prototype_to_str(prototype):
             )
         attrs = "|cattrs:|n\n {attrs}".format(attrs="\n ".join(out))
     if "tags" in prototype:
-        tags = prototype['tags']
+        tags = prototype["tags"]
         out = []
         for (tagkey, category, data) in tags:
             out.append(

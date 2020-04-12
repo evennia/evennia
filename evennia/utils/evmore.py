@@ -272,7 +272,7 @@ class EvMore(object):
         Paginate by slice. This is done with an eye on memory efficiency (usually for
         querysets); to avoid fetching all objects at the same time.
         """
-        return self._data[pageno * self.height: pageno * self.height + self.height]
+        return self._data[pageno * self.height : pageno * self.height + self.height]
 
     # inits for different input types
 

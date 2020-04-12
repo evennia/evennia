@@ -13,8 +13,9 @@ from evennia.utils.utils import (
     class_from_module,
     get_all_typeclasses,
     variable_from_module,
-    dbref, interactive,
-    list_to_string
+    dbref,
+    interactive,
+    list_to_string,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
@@ -3230,7 +3231,6 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
 # helper functions for spawn
 
 
-
 class CmdSpawn(COMMAND_DEFAULT_CLASS):
     """
     spawn objects from prototype
@@ -3333,16 +3333,16 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             err = f"No prototype named '{prototype_key}' was found."
         elif nprots > 1:
             err = "Found {} prototypes matching '{}':\n  {}".format(
-                    nprots,
-                    prototype_key,
-                    ", ".join(proto.get("prototype_key", "") for proto in prototypes),
-                    )
+                nprots,
+                prototype_key,
+                ", ".join(proto.get("prototype_key", "") for proto in prototypes),
+            )
         else:
             # we have a single prototype, check access
             prototype = prototypes[0]
             if not self.caller.locks.check_lockstring(
-                    self.caller, prototype.get("prototype_locks", ""),
-                    access_type="spawn", default=True):
+                self.caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
+            ):
                 err = "You don't have access to use this prototype."
 
         if err:
@@ -3440,10 +3440,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         if not table:
             return True
         EvMore(
-            self.caller,
-            str(table),
-            exit_on_lastpage=True,
-            justify_kwargs=False,
+            self.caller, str(table), exit_on_lastpage=True, justify_kwargs=False,
         )
 
     @interactive
@@ -3487,7 +3484,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             try:
                 n_updated = spawner.batch_update_objects_with_prototype(
-                    prototype, objects=existing_objects)
+                    prototype, objects=existing_objects
+                )
             except Exception:
                 logger.log_trace()
             caller.msg(f"{n_updated} objects were updated.")
@@ -3575,8 +3573,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             tags = self.lhslist
             err = self._list_prototypes(tags=tags)
             if err:
-                caller.msg("No prototypes found with prototype-tag(s): {}".format(
-                    list_to_string(tags, "or")))
+                caller.msg(
+                    "No prototypes found with prototype-tag(s): {}".format(
+                        list_to_string(tags, "or")
+                    )
+                )
             return
 
         if "save" in self.switches:
@@ -3606,8 +3607,10 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             prot_prototype_key = prototype.get("prototype_key")
 
             if not (prototype_key or prot_prototype_key):
-                caller.msg("A prototype_key must be given, either as `prototype_key = <prototype>` "
-                           "or as a key 'prototype_key' inside the prototype structure.")
+                caller.msg(
+                    "A prototype_key must be given, either as `prototype_key = <prototype>` "
+                    "or as a key 'prototype_key' inside the prototype structure."
+                )
                 return
 
             if prototype_key is None:
@@ -3615,14 +3618,14 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
             if prot_prototype_key != prototype_key:
                 caller.msg("(Replacing `prototype_key` in prototype with given key.)")
-                prototype['prototype_key'] = prototype_key
+                prototype["prototype_key"] = prototype_key
 
             if prototype_desc is not None and prot_prototype_key != prototype_desc:
                 caller.msg("(Replacing `prototype_desc` in prototype with given desc.)")
-                prototype['prototype_desc'] = prototype_desc
+                prototype["prototype_desc"] = prototype_desc
             if prototype_tags is not None and prototype.get("prototype_tags") != prototype_tags:
-                caller.msg("(Replacing `prototype_tags` in prototype with given tag(s))" )
-                prototype['prototype_tags'] = prototype_tags
+                caller.msg("(Replacing `prototype_tags` in prototype with given tag(s))")
+                prototype["prototype_tags"] = prototype_tags
 
             string = ""
             # check for existing prototype (exact match)
@@ -3635,11 +3638,17 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             if old_prototype:
                 if not diffstr:
                     string = f"|yAlready existing Prototype:|n\n{new_prototype_detail}\n"
-                    question = "\nThere seems to be no changes. Do you still want to (re)save? [Y]/N"
+                    question = (
+                        "\nThere seems to be no changes. Do you still want to (re)save? [Y]/N"
+                    )
                 else:
-                    string = (f"|yExisting prototype \"{prototype_key}\" found. Change:|n\n{diffstr}\n"
-                              f"|yNew changed prototype:|n\n{new_prototype_detail}")
-                    question = "\n|yDo you want to apply the change to the existing prototype?|n [Y]/N"
+                    string = (
+                        f'|yExisting prototype "{prototype_key}" found. Change:|n\n{diffstr}\n'
+                        f"|yNew changed prototype:|n\n{new_prototype_detail}"
+                    )
+                    question = (
+                        "\n|yDo you want to apply the change to the existing prototype?|n [Y]/N"
+                    )
             else:
                 string = f"|yCreating new prototype:|n\n{new_prototype_detail}"
                 question = "\nDo you want to continue saving? [Y]/N"
@@ -3692,8 +3701,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             except protlib.PermissionError as err:
                 retmsg = f"|rError deleting:|R {err}|n"
             else:
-                retmsg = ("Deletion successful" if success else
-                          "Deletion failed (does the prototype exist?)")
+                retmsg = (
+                    "Deletion successful"
+                    if success
+                    else "Deletion failed (does the prototype exist?)"
+                )
             caller.msg(retmsg)
             return
 
@@ -3726,7 +3738,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         try:
             for obj in spawner.spawn(prototype):
                 self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
-                if not prototype.get('location') and not noloc:
+                if not prototype.get("location") and not noloc:
                     # we don't hardcode the location in the prototype (unless the user
                     # did so manually) - that would lead to it having to be 'removed' every
                     # time we try to update objects with this prototype in the future.

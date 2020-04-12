@@ -171,11 +171,12 @@ class Unset:
     Helper class representing a non-set diff element.
 
     """
+
     def __bool__(self):
         return False
+
     def __str__(self):
         return "<Unset>"
-
 
 
 # Helper
@@ -405,7 +406,9 @@ def prototype_diff(prototype1, prototype2, maxdepth=2, homogenize=False, implici
             new_map = {part[0] if is_iter(part) else part: part for part in new}
             all_keys = set(list(old_map.keys()) + list(new_map.keys()))
             return {
-                key: _recursive_diff(old_map.get(key, _unset), new_map.get(key, _unset), depth=depth + 1)
+                key: _recursive_diff(
+                    old_map.get(key, _unset), new_map.get(key, _unset), depth=depth + 1
+                )
                 for key in all_keys
             }
         elif old != new:
@@ -520,8 +523,9 @@ def prototype_diff_from_object(prototype, obj, implicit_keep=True):
 
     """
     obj_prototype = prototype_from_object(obj)
-    diff = prototype_diff(obj_prototype, protlib.homogenize_prototype(prototype),
-                          implicit_keep=implicit_keep)
+    diff = prototype_diff(
+        obj_prototype, protlib.homogenize_prototype(prototype), implicit_keep=implicit_keep
+    )
     return diff, obj_prototype
 
 
