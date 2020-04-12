@@ -14,9 +14,7 @@ urlpatterns = [
 ]
 
 
-@override_settings(
-    REST_API_ENABLED=True, ROOT_URLCONF=__name__, AUTH_USERNAME_VALIDATORS=[]
-)
+@override_settings(REST_API_ENABLED=True, ROOT_URLCONF=__name__, AUTH_USERNAME_VALIDATORS=[])
 class TestEvenniaRESTApi(EvenniaTest):
     client_class = APIClient
     maxDiff = None
@@ -37,27 +35,58 @@ class TestEvenniaRESTApi(EvenniaTest):
 
     def get_view_details(self, action):
         """Helper function for generating list of named tuples"""
-        View = namedtuple("View", ["view_name", "obj", "list", "serializer", "create_data", "retrieve_data"])
+        View = namedtuple(
+            "View", ["view_name", "obj", "list", "serializer", "create_data", "retrieve_data"]
+        )
         views = [
-            View("object-%s" % action, self.obj1, [self.obj1, self.char1, self.exit, self.room1, self.room2, self.obj2,
-                                                   self.char2], serializers.ObjectDBSerializer,
-                 {"db_key": "object-create-test-name"},
-                 serializers.ObjectDBSerializer(self.obj1).data),
-            View("character-%s" % action, self.char1, [self.char1, self.char2], serializers.ObjectDBSerializer,
-                 {"db_key": "character-create-test-name"},
-                 serializers.ObjectDBSerializer(self.char1).data),
-            View("exit-%s" % action, self.exit, [self.exit], serializers.ObjectDBSerializer,
-                 {"db_key": "exit-create-test-name"},
-                 serializers.ObjectDBSerializer(self.exit).data),
-            View("room-%s" % action, self.room1, [self.room1, self.room2], serializers.ObjectDBSerializer,
-                 {"db_key": "room-create-test-name"},
-                 serializers.ObjectDBSerializer(self.room1).data),
-            View("script-%s" % action, self.script, [self.script], serializers.ScriptDBSerializer,
-                 {"db_key": "script-create-test-name"},
-                 serializers.ScriptDBSerializer(self.script).data),
-            View("account-%s" % action, self.account2, [self.account, self.account2], serializers.AccountSerializer,
-                 {"username": "account-create-test-name"},
-                 serializers.AccountSerializer(self.account2).data),
+            View(
+                "object-%s" % action,
+                self.obj1,
+                [self.obj1, self.char1, self.exit, self.room1, self.room2, self.obj2, self.char2],
+                serializers.ObjectDBSerializer,
+                {"db_key": "object-create-test-name"},
+                serializers.ObjectDBSerializer(self.obj1).data,
+            ),
+            View(
+                "character-%s" % action,
+                self.char1,
+                [self.char1, self.char2],
+                serializers.ObjectDBSerializer,
+                {"db_key": "character-create-test-name"},
+                serializers.ObjectDBSerializer(self.char1).data,
+            ),
+            View(
+                "exit-%s" % action,
+                self.exit,
+                [self.exit],
+                serializers.ObjectDBSerializer,
+                {"db_key": "exit-create-test-name"},
+                serializers.ObjectDBSerializer(self.exit).data,
+            ),
+            View(
+                "room-%s" % action,
+                self.room1,
+                [self.room1, self.room2],
+                serializers.ObjectDBSerializer,
+                {"db_key": "room-create-test-name"},
+                serializers.ObjectDBSerializer(self.room1).data,
+            ),
+            View(
+                "script-%s" % action,
+                self.script,
+                [self.script],
+                serializers.ScriptDBSerializer,
+                {"db_key": "script-create-test-name"},
+                serializers.ScriptDBSerializer(self.script).data,
+            ),
+            View(
+                "account-%s" % action,
+                self.account2,
+                [self.account, self.account2],
+                serializers.AccountSerializer,
+                {"username": "account-create-test-name"},
+                serializers.AccountSerializer(self.account2).data,
+            ),
         ]
         return views
 
@@ -65,9 +94,7 @@ class TestEvenniaRESTApi(EvenniaTest):
         views = self.get_view_details("detail")
         for view in views:
             with self.subTest(msg="Testing {} retrieve".format(view.view_name)):
-                view_url = reverse(
-                    "api:{}".format(view.view_name), kwargs={"pk": view.obj.pk}
-                )
+                view_url = reverse("api:{}".format(view.view_name), kwargs={"pk": view.obj.pk})
                 response = self.client.get(view_url)
                 self.assertEqual(response.status_code, 200)
                 self.assertDictEqual(response.data, view.retrieve_data)
@@ -76,9 +103,7 @@ class TestEvenniaRESTApi(EvenniaTest):
         views = self.get_view_details("detail")
         for view in views:
             with self.subTest(msg="Testing {} update".format(view.view_name)):
-                view_url = reverse(
-                    "api:{}".format(view.view_name), kwargs={"pk": view.obj.pk}
-                )
+                view_url = reverse("api:{}".format(view.view_name), kwargs={"pk": view.obj.pk})
                 # test both PUT (update) and PATCH (partial update) here
                 for new_key, method in (("foobar", "put"), ("fizzbuzz", "patch")):
                     field = "username" if "account" in view.view_name else "db_key"
@@ -93,9 +118,7 @@ class TestEvenniaRESTApi(EvenniaTest):
         views = self.get_view_details("detail")
         for view in views:
             with self.subTest(msg="Testing {} delete".format(view.view_name)):
-                view_url = reverse(
-                    "api:{}".format(view.view_name), kwargs={"pk": view.obj.pk}
-                )
+                view_url = reverse("api:{}".format(view.view_name), kwargs={"pk": view.obj.pk})
                 response = self.client.delete(view_url)
                 self.assertEqual(response.status_code, 204)
                 with self.assertRaises(ObjectDoesNotExist):
@@ -108,7 +131,9 @@ class TestEvenniaRESTApi(EvenniaTest):
                 view_url = reverse(f"api:{view.view_name}")
                 response = self.client.get(view_url)
                 self.assertEqual(response.status_code, 200)
-                self.assertCountEqual(response.data['results'], [view.serializer(obj).data for obj in view.list])
+                self.assertCountEqual(
+                    response.data["results"], [view.serializer(obj).data for obj in view.list]
+                )
 
     def test_create(self):
         views = self.get_view_details("list")

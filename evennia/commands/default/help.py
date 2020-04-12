@@ -34,13 +34,7 @@ class HelpCategory:
 
     @property
     def search_index_entry(self):
-        return {
-            "key": str(self),
-            "aliases": "",
-            "category": self.key,
-            "tags": "",
-            "text": ""
-        }
+        return {"key": str(self), "aliases": "", "category": self.key, "tags": "", "text": ""}
 
     def __str__(self):
         return f"Category: {self.key}"
@@ -59,28 +53,13 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5):
     search_index = lunr(
         ref="key",
         fields=[
-            {
-                "field_name": "key",
-                "boost": 10,
-            },
-            {
-                "field_name": "aliases",
-                "boost": 9,
-            },
-            {
-                "field_name": "category",
-                "boost": 8,
-            },
-            {
-                "field_name": "tags",
-                "boost": 5
-            },
-            {
-                "field_name": "text",
-                "boost": 1,
-            },
+            {"field_name": "key", "boost": 10,},
+            {"field_name": "aliases", "boost": 9,},
+            {"field_name": "category", "boost": 8,},
+            {"field_name": "tags", "boost": 5},
+            {"field_name": "text", "boost": 1,},
         ],
-        documents=indx
+        documents=indx,
     )
     try:
         matches = search_index.search(query)[:suggestion_maxnum]
@@ -89,9 +68,10 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5):
         matches = []
 
     # matches (objs), suggestions (strs)
-    return ([mapping[match["ref"]] for match in matches],
-            [str(match["ref"])  # + f" (score {match['score']})")   # good debug
-             for match in matches])
+    return (
+        [mapping[match["ref"]] for match in matches],
+        [str(match["ref"]) for match in matches],  # + f" (score {match['score']})")   # good debug
+    )
 
 
 class CmdHelp(Command):
@@ -195,11 +175,11 @@ class CmdHelp(Command):
         for category in sorted(set(list(hdict_cmds.keys()) + list(hdict_db.keys()))):
 
             category_str = f"-- {category.title()} "
-            grid.append(ANSIString(
-                category_clr
-                + category_str
-                + "-" * (width - len(category_str))
-                + topic_clr))
+            grid.append(
+                ANSIString(
+                    category_clr + category_str + "-" * (width - len(category_str)) + topic_clr
+                )
+            )
             verbatim_elements.append(len(grid) - 1)
 
             entries = sorted(set(hdict_cmds.get(category, []) + hdict_db.get(category, [])))
@@ -281,8 +261,8 @@ class CmdHelp(Command):
         ]
         all_categories = list(
             set(
-                [HelpCategory(cmd.help_category) for cmd in all_cmds] +
-                [HelpCategory(topic.help_category) for topic in all_topics]
+                [HelpCategory(cmd.help_category) for cmd in all_cmds]
+                + [HelpCategory(topic.help_category) for topic in all_topics]
             )
         )
 
@@ -302,38 +282,47 @@ class CmdHelp(Command):
             return
 
         # Try to access a particular help entry or category
-        entries = ([cmd for cmd in all_cmds if cmd] +
-                   list(HelpEntry.objects.all()) +
-                   all_categories)
+        entries = [cmd for cmd in all_cmds if cmd] + list(HelpEntry.objects.all()) + all_categories
 
         for match_query in [f"{query}~1", f"{query}*"]:
             # We first do an exact word-match followed by a start-by query
 
             matches, suggestions = help_search_with_index(
-                match_query, entries, suggestion_maxnum=self.suggestion_maxnum)
+                match_query, entries, suggestion_maxnum=self.suggestion_maxnum
+            )
 
             if matches:
                 match = matches[0]
                 if isinstance(match, HelpCategory):
                     formatted = self.format_help_list(
-                        {match.key: [cmd.key for cmd in all_cmds
-                                     if match.key.lower() == cmd.help_category]},
-                        {match.key: [topic.key for topic in all_topics
-                                     if match.key.lower() == topic.help_category]}
+                        {
+                            match.key: [
+                                cmd.key
+                                for cmd in all_cmds
+                                if match.key.lower() == cmd.help_category
+                            ]
+                        },
+                        {
+                            match.key: [
+                                topic.key
+                                for topic in all_topics
+                                if match.key.lower() == topic.help_category
+                            ]
+                        },
                     )
                 elif inherits_from(match, "evennia.commands.command.Command"):
                     formatted = self.format_help_entry(
                         match.key,
                         match.get_help(caller, cmdset),
                         aliases=match.aliases,
-                        suggested=suggestions[1:]
+                        suggested=suggestions[1:],
                     )
                 else:
                     formatted = self.format_help_entry(
                         match.key,
                         match.entrytext,
                         aliases=match.aliases.all(),
-                        suggested=suggestions[1:]
+                        suggested=suggestions[1:],
                     )
 
                 self.msg_help(formatted)

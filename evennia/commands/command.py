@@ -90,7 +90,7 @@ def _init_command(cls, **kwargs):
         "aliases": " ".join(cls.aliases),
         "category": cls.help_category,
         "text": cls.__doc__,
-        "tags": ""
+        "tags": "",
     }
 
 

@@ -74,7 +74,7 @@ class HelpEntry(SharedMemoryModel):
         Tag,
         blank=True,
         help_text="tags on this object. Tags are simple string markers to "
-                  "identify, group and alias objects.",
+        "identify, group and alias objects.",
     )
     # (deprecated, only here to allow MUX helpfile load (don't use otherwise)).
     # TODO: remove this when not needed anymore.
@@ -134,7 +134,7 @@ class HelpEntry(SharedMemoryModel):
             "aliases": " ".join(self.aliases.all()),
             "category": self.db_help_category,
             "text": self.db_entrytext,
-            "tags": " ".join(str(tag) for tag in self.tags.all())
+            "tags": " ".join(str(tag) for tag in self.tags.all()),
         }
 
     #

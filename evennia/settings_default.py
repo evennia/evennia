@@ -255,9 +255,7 @@ IN_GAME_ERRORS = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.getenv(
-            "TEST_DB_PATH", os.path.join(GAME_DIR, "server", "evennia.db3")
-        ),
+        "NAME": os.getenv("TEST_DB_PATH", os.path.join(GAME_DIR, "server", "evennia.db3")),
         "USER": "",
         "PASSWORD": "",
         "HOST": "",
@@ -872,9 +870,7 @@ TEMPLATES = [
             os.path.join(GAME_DIR, "web", "template_overrides"),
             os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
             os.path.join(EVENNIA_DIR, "web", "website", "templates"),
-            os.path.join(
-                EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE
-            ),
+            os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
             os.path.join(EVENNIA_DIR, "web", "webclient", "templates"),
         ],
         "APP_DIRS": True,
@@ -946,9 +942,7 @@ AUTH_USER_MODEL = "accounts.AccountDB"
 # Password validation plugins
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {"min_length": 8},
@@ -961,14 +955,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Username validation plugins
 AUTH_USERNAME_VALIDATORS = [
     {"NAME": "django.contrib.auth.validators.ASCIIUsernameValidator"},
-    {
-        "NAME": "django.core.validators.MinLengthValidator",
-        "OPTIONS": {"limit_value": 3},
-    },
-    {
-        "NAME": "django.core.validators.MaxLengthValidator",
-        "OPTIONS": {"limit_value": 30},
-    },
+    {"NAME": "django.core.validators.MinLengthValidator", "OPTIONS": {"limit_value": 3},},
+    {"NAME": "django.core.validators.MaxLengthValidator", "OPTIONS": {"limit_value": 30},},
     {"NAME": "evennia.server.validators.EvenniaUsernameAvailabilityValidator"},
 ]
 
@@ -982,22 +970,18 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 # Django REST Framework settings
 REST_FRAMEWORK = {
     # django_filters allows you to specify search fields for models in an API View
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ),
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     # whether to paginate results and how many per page
-    "DEFAULT_PAGINATION_CLASS": 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 25,
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 25,
     # require logged in users to call API so that access checks can work on them
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated",],
     # These are the different ways people can authenticate for API requests - via
     # session or with user/password. Other ways are possible, such as via tokens
     # or oauth, but require additional dependencies.
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     # default permission checks used by the EvenniaPermission class
     "DEFAULT_CREATE_PERMISSION": "builder",

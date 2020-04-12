@@ -14,7 +14,12 @@ from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultRoom
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
-from evennia.web.api.serializers import ObjectDBSerializer, AccountSerializer, ScriptDBSerializer, AttributeSerializer
+from evennia.web.api.serializers import (
+    ObjectDBSerializer,
+    AccountSerializer,
+    ScriptDBSerializer,
+    AttributeSerializer,
+)
 from evennia.web.api.filters import ObjectDBFilterSet, AccountDBFilterSet, ScriptDBFilterSet
 from evennia.web.api.permissions import EvenniaPermission
 
@@ -24,6 +29,7 @@ class TypeclassViewSetMixin(object):
     This mixin adds some shared functionality to each viewset of a typeclass. They all use the same
     permission classes and filter backend. You can override any of these in your own viewsets.
     """
+
     # permission classes determine who is authorized to call the view
     permission_classes = [EvenniaPermission]
     # the filter backend allows for retrieval views to have filter arguments passed to it,
@@ -58,7 +64,10 @@ class TypeclassViewSetMixin(object):
                 handler.add(key=key, value=value, category=category)
             else:
                 handler.remove(key=key, category=category)
-            return Response(AttributeSerializer(obj.db_attributes.all(), many=True).data, status=status.HTTP_200_OK)
+            return Response(
+                AttributeSerializer(obj.db_attributes.all(), many=True).data,
+                status=status.HTTP_200_OK,
+            )
         return Response(attr.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -69,6 +78,7 @@ class ObjectDBViewSet(TypeclassViewSetMixin, ModelViewSet):
     instances. Serializers are similar to django forms, used for the
     transmitting of data (typically json).
     """
+
     serializer_class = ObjectDBSerializer
     queryset = ObjectDB.objects.all()
     filterset_class = ObjectDBFilterSet
@@ -79,21 +89,27 @@ class CharacterViewSet(ObjectDBViewSet):
     This overrides the queryset to only retrieve Character objects
     based on your DefaultCharacter typeclass path.
     """
-    queryset = DefaultCharacter.objects.typeclass_search(DefaultCharacter.path, include_children=True)
+
+    queryset = DefaultCharacter.objects.typeclass_search(
+        DefaultCharacter.path, include_children=True
+    )
 
 
 class RoomViewSet(ObjectDBViewSet):
     """Viewset for Room objects"""
+
     queryset = DefaultRoom.objects.typeclass_search(DefaultRoom.path, include_children=True)
 
 
 class ExitViewSet(ObjectDBViewSet):
     """Viewset for Exit objects"""
+
     queryset = DefaultExit.objects.typeclass_search(DefaultExit.path, include_children=True)
 
 
 class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
     """Viewset for Account objects"""
+
     serializer_class = AccountSerializer
     queryset = AccountDB.objects.all()
     filterset_class = AccountDBFilterSet
@@ -101,6 +117,7 @@ class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
 
 class ScriptDBViewSet(TypeclassViewSetMixin, ModelViewSet):
     """Viewset for Script objects"""
+
     serializer_class = ScriptDBSerializer
     queryset = ScriptDB.objects.all()
     filterset_class = ScriptDBFilterSet

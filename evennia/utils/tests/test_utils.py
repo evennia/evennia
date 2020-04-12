@@ -246,6 +246,7 @@ class LatinifyTest(TestCase):
 class TestFormatGrid(TestCase):
 
     maxDiff = None
+
     def setUp(self):
         # make the random only semi-random with a fixed seed
         random.seed(1)
@@ -283,9 +284,21 @@ class TestFormatGrid(TestCase):
 
     def test_overlap(self):
         """Grid with elements overlapping into the next slot"""
-        elements = ("alias", "batchcode", "batchcommands", "cmdsets",
-                    "copy", "cpattr", "desc", "destroy", "dig",
-                    "examine", "find", "force", "lock")
+        elements = (
+            "alias",
+            "batchcode",
+            "batchcommands",
+            "cmdsets",
+            "copy",
+            "cpattr",
+            "desc",
+            "destroy",
+            "dig",
+            "examine",
+            "find",
+            "force",
+            "lock",
+        )
         rows = utils.format_grid(elements, width=78)
         self.assertEqual(len(rows), 2)
         for element in elements:
