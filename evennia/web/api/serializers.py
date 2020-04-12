@@ -62,7 +62,15 @@ class TypeclassSerializerMixin(object):
     not have them render PK-related fields.
     """
 
-    shared_fields = ["id", "db_key", "attributes", "db_typeclass_path", "aliases", "tags", "permissions"]
+    shared_fields = [
+        "id",
+        "db_key",
+        "attributes",
+        "db_typeclass_path",
+        "aliases",
+        "tags",
+        "permissions",
+    ]
 
     @staticmethod
     def get_tags(obj):
@@ -98,7 +106,9 @@ class TypeclassSerializerMixin(object):
         Returns:
             List of TagSerializer data
         """
-        return TagSerializer(obj.permissions.get(return_tagobj=True, return_list=True), many=True).data
+        return TagSerializer(
+            obj.permissions.get(return_tagobj=True, return_list=True), many=True
+        ).data
 
     @staticmethod
     def get_attributes(obj):
@@ -136,7 +146,13 @@ class ObjectDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = DefaultObject
-        fields = ["db_location", "db_home", "contents", "exits", "nicks"] + TypeclassSerializerMixin.shared_fields
+        fields = [
+            "db_location",
+            "db_home",
+            "contents",
+            "exits",
+            "nicks",
+        ] + TypeclassSerializerMixin.shared_fields
         read_only_fields = ["id"]
 
     @staticmethod
@@ -168,6 +184,7 @@ class ObjectDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
 
 class AccountSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
     """This uses the DefaultAccount object to have access to the sessions property"""
+
     attributes = serializers.SerializerMethodField()
     nicks = serializers.SerializerMethodField()
     db_key = serializers.CharField(required=False)
@@ -202,6 +219,11 @@ class ScriptDBSerializer(TypeclassSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = ScriptDB
-        fields = ["db_interval", "db_persistent", "db_start_delay",
-                  "db_is_active", "db_repeats"] + TypeclassSerializerMixin.shared_fields
+        fields = [
+            "db_interval",
+            "db_persistent",
+            "db_start_delay",
+            "db_is_active",
+            "db_repeats",
+        ] + TypeclassSerializerMixin.shared_fields
         read_only_fields = ["id"]

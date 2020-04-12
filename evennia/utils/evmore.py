@@ -335,8 +335,9 @@ class EvMore(object):
             # no justification. Simple division by line
             lines = text.split("\n")
 
-        self._data = [_LBR.join(lines[i: i + self.height])
-                      for i in range(0, len(lines), self.height)]
+        self._data = [
+            _LBR.join(lines[i : i + self.height]) for i in range(0, len(lines), self.height)
+        ]
         self._npages = len(self._data)
         self._paginator = self.paginator_index
 

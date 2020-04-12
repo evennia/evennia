@@ -40,7 +40,9 @@ class DefaultObjectTest(EvenniaTest):
         self.assertEqual(obj.db_home, self.room1)
 
     def test_character_create_weirdname(self):
-        obj, errors = DefaultCharacter.create("SigurðurÞórarinsson", self.account, home=self.room1.dbref)
+        obj, errors = DefaultCharacter.create(
+            "SigurðurÞórarinsson", self.account, home=self.room1.dbref
+        )
         self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)
         self.assertEqual(obj.name, "SigurXurXorarinsson")

@@ -24,4 +24,4 @@ urlpatterns = [
 ]
 
 if settings.REST_API_ENABLED:
-    urlpatterns += [url(r'^api/', include("evennia.web.api.urls", namespace="api"))]
+    urlpatterns += [url(r"^api/", include("evennia.web.api.urls", namespace="api"))]

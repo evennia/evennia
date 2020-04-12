@@ -420,7 +420,7 @@ class S3Boto3StorageFile(File):
         if "r" in mode and "w" in mode:
             raise ValueError("Can't combine 'r' and 'w' in mode.")
         self._storage = storage
-        self.name = name[len(self._storage.location):].lstrip("/")
+        self.name = name[len(self._storage.location) :].lstrip("/")
         self._mode = mode
         self._force_mode = (lambda b: b) if "b" in mode else force_text
         self.obj = storage.bucket.Object(storage._encode_name(name))

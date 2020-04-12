@@ -2134,6 +2134,7 @@ class DefaultCharacter(DefaultObject):
         """
 
         from evennia.utils.utils import latinify
+
         latin_name = latinify(name, default="X")
         return latin_name
 
@@ -2148,7 +2149,7 @@ class DefaultCharacter(DefaultObject):
 
         """
 
-        return True # Default validator does not perform any operations
+        return True  # Default validator does not perform any operations
 
     def basetype_setup(self):
         """

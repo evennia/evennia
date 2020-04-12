@@ -33,6 +33,7 @@ class TagTypeFilter(CharFilter):
     """
     This class lets you create different filters for tags of a specified db_tagtype.
     """
+
     tag_type = None
 
     def filter(self, qs, value):
@@ -45,11 +46,13 @@ class TagTypeFilter(CharFilter):
 
 class AliasFilter(TagTypeFilter):
     """A filter for objects by their aliases (tags with a tagtype of 'alias'"""
+
     tag_type = "alias"
 
 
 class PermissionFilter(TagTypeFilter):
     """A filter for objects by their permissions (tags with a tagtype of 'permission'"""
+
     tag_type = "permission"
 
 
@@ -58,6 +61,7 @@ SHARED_FIELDS = ["db_key", "db_typeclass_path", "db_tags__db_key", "db_tags__db_
 
 class BaseTypeclassFilterSet(FilterSet):
     """A parent class with filters for aliases and permissions"""
+
     alias = AliasFilter(lookup_expr="iexact")
     permission = PermissionFilter(lookup_expr="iexact")
     name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_key")
@@ -81,14 +85,20 @@ class BaseTypeclassFilterSet(FilterSet):
 
 class ObjectDBFilterSet(BaseTypeclassFilterSet):
     """This adds filters for ObjectDB instances - characters, rooms, exits, etc"""
+
     class Meta:
         model = ObjectDB
-        fields = SHARED_FIELDS + ["db_location__db_key", "db_home__db_key", "db_location__id",
-                                  "db_home__id"]
+        fields = SHARED_FIELDS + [
+            "db_location__db_key",
+            "db_home__db_key",
+            "db_location__id",
+            "db_home__id",
+        ]
 
 
 class AccountDBFilterSet(BaseTypeclassFilterSet):
     """This adds filters for Account objects"""
+
     name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="username")
 
     class Meta:
@@ -98,7 +108,16 @@ class AccountDBFilterSet(BaseTypeclassFilterSet):
 
 class ScriptDBFilterSet(BaseTypeclassFilterSet):
     """This adds filters for Script objects"""
+
     class Meta:
         model = ScriptDB
-        fields = SHARED_FIELDS + ["db_desc", "db_obj__db_key", "db_obj__id", "db_account__id",
-                                  "db_account__username", "db_is_active", "db_persistent", "db_interval"]
+        fields = SHARED_FIELDS + [
+            "db_desc",
+            "db_obj__db_key",
+            "db_obj__id",
+            "db_account__id",
+            "db_account__username",
+            "db_is_active",
+            "db_persistent",
+            "db_interval",
+        ]

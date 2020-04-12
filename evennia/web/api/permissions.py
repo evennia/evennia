@@ -9,6 +9,7 @@ class EvenniaPermission(permissions.BasePermission):
     Evennia's permission structure. Based on the action in a given
     view, we'll check a corresponding Evennia access/lock check.
     """
+
     # subclass this to change these permissions
     MINIMUM_LIST_PERMISSION = settings.REST_FRAMEWORK.get("DEFAULT_LIST_PERMISSION", "builder")
     MINIMUM_CREATE_PERMISSION = settings.REST_FRAMEWORK.get("DEFAULT_CREATE_PERMISSION", "builder")

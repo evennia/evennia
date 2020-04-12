@@ -1748,7 +1748,7 @@ def format_grid(elements, width=78, sep=" ", verbatim_elements=None):
     # debugger.Debugger().set_trace()
 
     # get the nth percentile as a good representation of average width
-    averlen = int(percentile(sorted(wls_percentile), 0.9)) + 2   # include extra space
+    averlen = int(percentile(sorted(wls_percentile), 0.9)) + 2  # include extra space
     aver_per_row = width // averlen + 1
 
     if aver_per_row == 1:
