@@ -33,10 +33,9 @@ DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 # -------------------------------------------------------------
 # Portal-SessionHandler class
 # -------------------------------------------------------------
-_BASE_HANDLER_CLASS = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
 
 
-class PortalSessionHandler(_BASE_HANDLER_CLASS):
+class PortalSessionHandler(SessionHandler):
     """
     This object holds the sessions connected to the portal at any time.
     It is synced with the server's equivalent SessionHandler over the AMP
