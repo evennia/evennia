@@ -1,7 +1,7 @@
 # Evennia Administration
 The following pages are aimed at game administrators -- the higher-ups that possess shell access and are responsible for managing the game.
 
-- [Listing your game](Evennia-Game-Index) at the online [Evennia game index](http://games.evennia.com)
+- [Listing your game](../../community/built_with_evennia/Evennia-Game-Index) at the online [Evennia game index](http://games.evennia.com)
 - [Changing the Settings](Server-Conf#Settings-file) 
     - [Available Master Settings](https://github.com/evennia/evennia/blob/master/evennia/settings_default.py)
 - [Change Evennia's language](Internationalization) (internationalization)

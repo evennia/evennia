@@ -1,0 +1,12 @@
+{
+    "replacementPatterns": [
+        {
+            "pattern": ".md$",
+            "replacement": ""
+        },
+	{
+            "pattern": "$",
+            "replacement": ".md"
+	}
+    ]
+}

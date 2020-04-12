@@ -68,7 +68,7 @@ This is our elevator room.  It looks a bit empty, feel free to add a prettier de
 
 But what we want now is to be able to say "1", "2" or "3" and have the elevator move in that direction.
 
-If you have read [the previous tutorial about adding dialogues in events](Dialogues-in-events), you may remember what we need to do.  If not, here's a summary: we need to run some code when somebody speaks in the room.  So we need to create a callback (the callback will contain our lines of code).  We just need to know on which event this should be set.  You can enter `call here` to see the possible events in this room.
+If you have read [the previous tutorial about adding dialogues in events](../npcs/Dialogues-in-events), you may remember what we need to do.  If not, here's a summary: we need to run some code when somebody speaks in the room.  So we need to create a callback (the callback will contain our lines of code).  We just need to know on which event this should be set.  You can enter `call here` to see the possible events in this room.
 
 In the table, you should see the "say" event, which is called when somebody says something in the room.  So we'll need to add a callback to this event.  Don't worry if you're a bit lost, just follow the following steps, the way they connect together will become more obvious.
 
@@ -321,4 +321,4 @@ Again, you can force our beggar to move and see the message we have just set.  T
 - **Q:** what if I need several elevators, do I need to copy/paste these callbacks each time?
 - **A:** not advisable.  There are definitely better ways to handle this situation.  One of them is to consider adding the code in the source itself.  Another possibility is to call chained events with the expected behavior, which makes porting code very easy.  This side of chained events will be shown in the next tutorial.
 
-- Previous tutorial: [Adding dialogues in events](Dialogues-in-events)
+- Previous tutorial: [Adding dialogues in events](../npcs/Dialogues-in-events)

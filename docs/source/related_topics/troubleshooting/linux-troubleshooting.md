@@ -4,7 +4,7 @@ class Documentation:
 ```
 
 # Linux Troubleshooting
-This is a linux-specific version of the system-agnostic [troubleshooting](related_topics/troubleshooting) guide.
+This is a linux-specific version of the system-agnostic [troubleshooting](../../related_topics/troubleshooting/troubleshooting) guide.
 
 ## Installing Dependencies
 ```
@@ -14,7 +14,7 @@ sudo apt-get install python3 python3-pip python3-dev python3-setuptools python3-
 # If you are using an Ubuntu version that defaults to Python3, like 18.04+, use this instead:
 sudo apt-get update
 sudo apt-get install python3.7 python3-pip python3.7-dev python3-setuptools virtualenv gcc
-``` 
+```
 
 After installing dependencies, run `pip install -e evennia` again and continue
 

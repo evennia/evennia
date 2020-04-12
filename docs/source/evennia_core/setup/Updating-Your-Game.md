@@ -1,7 +1,10 @@
+```python
+class Documentation:
+    RATING = "Excellent"
+```
 # Updating Your Game
 
-
-Fortunately, it's extremely easy to keep your Evennia server up-to-date. If you haven't already, see the [Getting Started guide](Getting-Started) and get everything running. 
+Fortunately, it's extremely easy to keep your Evennia server up-to-date. 
 
 ### Updating with the latest Evennia code changes
 
@@ -47,11 +50,11 @@ When the database schema changes, you just go to your game folder and run
 
      evennia migrate
 
-> Hint: If the `evennia` command is not found, you most likely need to activate your [virtualenv](Glossary#virtualenv).
+> Hint: If the `evennia` command is not found, you most likely need to activate your [virtualenv](../../tutorials_and_examples/python/virtualenv.md).
 
 ## Resetting your database
 
-Should you ever want to start over completely from scratch, there is no need to re-download Evennia or anything like that. You just need to clear your database. Once you are done, you just rebuild it from scratch as described in [step 2](Getting-Started#step-2-setting-up-your-game) of the [Getting Started guide](Getting-Started).
+Should you ever want to start over completely from scratch, there is no need to re-download Evennia or anything like that. You just need to clear your database.
 
 First stop a running server with
 
@@ -84,8 +87,3 @@ One way one could handle this is to apply the changes manually to your database 
 
 Enter *migrations*. Migrations keeps track of changes in the database schema and applies them automatically for you. Basically, whenever the schema changes we distribute small files called "migrations" with the source. Those tell the system exactly how to implement the change so you don't have to do so manually. When a migration has been added we will tell you so on Evennia's mailing lists and in commit messages -
 you then just run `evennia migrate` to be up-to-date again. 
-
-```python
-class Documentation:
-    RATING = "Unknown"
-```

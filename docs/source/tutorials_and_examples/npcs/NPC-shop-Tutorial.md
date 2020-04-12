@@ -1,6 +1,6 @@
 # NPC shop Tutorial
 
-This tutorial will describe how to make an NPC-run shop. We will make use of the [EvMenu](EvMenu) system to present shoppers with a menu where they can buy things from the store's stock.
+This tutorial will describe how to make an NPC-run shop. We will make use of the [EvMenu](../../evennia_core/system/ui/EvMenu) system to present shoppers with a menu where they can buy things from the store's stock.
 
 Our shop extends over two rooms - a "front" room open to the shop's customers and a locked "store room" holding the wares the shop should be able to sell. We aim for the following features:
 

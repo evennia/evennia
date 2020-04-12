@@ -4,7 +4,7 @@ class Documentation:
 ```
 
 # Windows Troubleshooting
-This is a Windows-specific version of the system-agnostic [troubleshooting](related_topics/troubleshooting) guide.
+This is a Windows-specific version of the system-agnostic [troubleshooting](../../related_topics/troubleshooting/troubleshooting) guide.
 
 ## Installing Dependencies
 

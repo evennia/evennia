@@ -1,14 +1,13 @@
 # Attributes
 
-
 When performing actions in Evennia it is often important that you store data for later. If you write
 a menu system, you have to keep track of the current location in the menu tree so that the player
 can give correct subsequent commands. If you are writing a combat system, you might have a
 combattant's next roll get easier dependent on if their opponent failed. Your characters will
 probably need to store roleplaying-attributes like strength and agility. And so on.
 
-[Typeclassed](Typeclasses) game entities ([Accounts](Accounts), [Objects](Objects),
-[Scripts](Scripts) and [Channels](Communications)) always have *Attributes* associated with them.
+[Typeclassed](../../evennia_core/system/typeclasses/Typeclasses) game entities ([Accounts](../../evennia_core/system/accounts/Accounts), [Objects](../../evennia_core/system/objects/Objects),
+[Scripts](../../evennia_core/system/scripts/Scripts) and [Channels](../../evennia_core/system/channels/channels)) always have *Attributes* associated with them.
 Attributes are used to store any type of data 'on' such entities. This is different from storing
 data in properties already defined on entities (such as `key` or `location`) - these have very
 specific names and require very specific types of data (for example you couldn't assign a python
@@ -18,14 +17,13 @@ want to assign arbitrary data to arbitrary names.
 ## The .db and .ndb shortcuts
 
 To save persistent data on a Typeclassed object you normally use the `db` (DataBase) operator. Let's
-try to save some data to a *Rose* (an [Object](Objects)):
+try to save some data to a *Rose* (an [Object](../../evennia_core/system/objects/Objects)):
 
 ```python
     # saving
     rose.db.has_thorns = True
     # getting it back
     is_ouch = rose.db.has_thorns
-
 ```
 
 This looks like any normal Python assignment, but that `db` makes sure that an *Attribute* is
@@ -83,14 +81,13 @@ The handlers have normal access methods that allow you to manage and retrieve `A
   returned, but the method takes keywords for returning the Attribute object itself. By supplying an
   `accessing_object` to the call one can also make sure to check permissions before modifying
   anything.
-- `add(...)` - this adds a new Attribute to the object. An optional [lockstring](Locks) can be
+- `add(...)` - this adds a new Attribute to the object. An optional [lockstring](../../evennia_core/system/locks/Locks) can be
   supplied here to restrict future access and also the call itself may be checked against locks.
 - `remove(...)` - Remove the given Attribute. This can optionally be made to check for permission
   before performing the deletion.  - `clear(...)`  - removes all Attributes from object.
 - `all(...)` - returns all Attributes (of the given category) attached to this object.
 
-See [this section](https://github.com/evennia/evennia/wiki/Attributes#locking-and-checking-attributes) for more about locking down Attribute
-access and editing. The `Nattribute` offers no concept of access control.
+More information about locking down Attribute access and editing is provided on this page. The `Nattribute` offers no concept of access control.
 
 Some examples:
 
@@ -113,21 +110,20 @@ An Attribute object is stored in the database. It has the following properties:
 - `key` - the name of the Attribute. When doing e.g. `obj.db.attrname = value`, this property is set
   to `attrname`.
 - `value` - this is the value of the Attribute. This value can be anything which can be pickled -
-  objects, lists, numbers or what have you (see
-  [this section](Attributes#What_types_of_data_can_I_save_in_an_Attribute) for more info). In the example
+  objects, lists, numbers or what have you . In the example
   `obj.db.attrname = value`, the `value` is stored here.
 - `category` - this is an optional property that is set to None for most Attributes. Setting this
   allows to use Attributes for different functionality. This is usually not needed unless you want
-  to use Attributes for very different functionality ([Nicks](Nicks) is an example of using Attributes
-  in this way). To modify this property you need to use the [Attribute Handler](Attributes#The_Attribute_Handler).
+  to use Attributes for very different functionality ([Nicks](../../evennia_core/system/nicks/Nicks) is an example of using Attributes
+  in this way). To modify this property you need to use the [Attribute Handler](../../evennia_core/system/attributes/AttributeHandler).
 - `strvalue` - this is a separate value field that only accepts strings. This severely limits the
   data possible to store, but allows for easier database lookups. This property is usually not used
-  except when re-using Attributes for some other purpose ([Nicks](Nicks) use it). It is only
-  accessible via the [Attribute Handler](Attributes#The_Attribute_Handler).
+  except when re-using Attributes for some other purpose ([Nicks](../../evennia_core/system/nicks/Nicks) use it). It is only
+  accessible via the [Attribute Handler](../../evennia_core/system/attributes/AttributeHandler).
 
 There are also two special properties:
 
-- `attrtype` - this is used internally by Evennia to separate [Nicks](Nicks), from Attributes (Nicks
+- `attrtype` - this is used internally by Evennia to separate [Nicks](../../evennia_core/system/nicks/Nicks), from Attributes (Nicks
   use Attributes behind the scenes).
 - `model` - this is a *natural-key* describing the model this Attribute is attached to. This is on
   the form *appname.modelclass*, like `objects.objectdb`. It is used by the Attribute and
@@ -154,7 +150,7 @@ useful in a few situations though.
   during heavy loads.
 - A more valid reason for using non-persistent data is if you *want* to lose your state when logging
   off. Maybe you are storing throw-away data that are re-initialized at server startup. Maybe you
-  are implementing some caching of your own. Or maybe you are testing a buggy [Script](Scripts) that
+  are implementing some caching of your own. Or maybe you are testing a buggy [Script](../../evennia_core/system/scripts/Scripts) that
   does potentially harmful stuff to your character object. With non-persistent storage you can be sure
   that whatever is messed up, it's nothing a server reboot can't clear up.
 - NAttributes have no restrictions at all on what they can store (see next section), since they

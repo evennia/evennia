@@ -1,3 +1,8 @@
+```python
+class Documentation:
+    RATING = "Exceptional"
+```
+
 # Installation
 Note: You don't need to make anything visible to the 'net in order to run and
 test out Evennia. Apart from downloading and updating you don't even need an
@@ -19,11 +24,11 @@ evennia --init mygame
 cd mygame
 evennia migrate
 evennia start` (make sure to make a  superuser when asked)
- ```
+```
 
 Related topics:
-- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting)
-- [Linux troubleshooting](../../related_topics/troubleshooting/linux-troubleshooting)
+- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting.md)
+- [Linux troubleshooting](../../related_topics/troubleshooting/linux-troubleshooting.md)
 
 ## MacOS
 
@@ -41,9 +46,9 @@ evennia --init mygame
 cd mygame
 evennia migrate
 evennia start` (make sure to make a  superuser when asked)
- ```
+```
 Related topics:
-- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting)
+- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting.md)
 
 ## Windows (Vista, Win7, Win8, Win10)
 
@@ -62,12 +67,12 @@ evennia --init mygame
 cd mygame
 evennia migrate
 evennia start` (make sure to make a  superuser when asked)
- ```
+```
 
 Related topics:
-- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting)
-- [Windows troubleshooting](../../related_topics/troubleshooting/windows-troubleshooting)
+- [Troubleshooting](../../related_topics/troubleshooting/troubleshooting.md)
+- [Windows troubleshooting](../../related_topics/troubleshooting/windows-troubleshooting.md)
 
 ## Docker
 
-We also release [Docker images](../../related_topics/technical/evennia-docker) based on `master` and `develop` branches.
+We also release [Docker images](../../related_topics/technical/evennia-docker.md) based on `master` and `develop` branches.
