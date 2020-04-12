@@ -238,6 +238,7 @@ class ServerSession(Session):
         """
         if self.logged_in:
             account = self.account
+            account.sessions.remove(self)
             if self.puppet:
                 account.unpuppet_object(self)
             uaccount = account
