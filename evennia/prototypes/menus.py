@@ -2179,8 +2179,11 @@ def _format_diff_text_and_options(diff, minimal=True, **kwargs):
                 vsep = "" if len(vold) < 78 else "\n"
 
                 if instruction == "ADD":
-                    texts.append("   |c[{optnum}] |yADD|n: {new}".format(
-                        optnum=optnum, new=_visualize(new, rootname)))
+                    texts.append(
+                        "   |c[{optnum}] |yADD|n: {new}".format(
+                            optnum=optnum, new=_visualize(new, rootname)
+                        )
+                    )
                 elif instruction == "REMOVE" and not new:
                     if rootname == "tags" and old[1] == protlib.PROTOTYPE_TAG_CATEGORY:
                         # special exception for the prototype-tag mechanism
@@ -2188,8 +2191,11 @@ def _format_diff_text_and_options(diff, minimal=True, **kwargs):
                         # not be listed as REMOVE.
                         return texts, options, optnum
 
-                    texts.append("   |c[{optnum}] |rREMOVE|n: {old}".format(
-                        optnum=optnum, old=_visualize(old, rootname)))
+                    texts.append(
+                        "   |c[{optnum}] |rREMOVE|n: {old}".format(
+                            optnum=optnum, old=_visualize(old, rootname)
+                        )
+                    )
                 else:
                     vinst = "|y{}|n".format(instruction)
                     texts.append(
@@ -2294,8 +2300,9 @@ def node_apply_diff(caller, **kwargs):
     if not custom_location:
         diff.pop("location", None)
 
-    txt, options = _format_diff_text_and_options(diff, objects=update_objects,
-                                                 base_obj=base_obj, prototype=prototype)
+    txt, options = _format_diff_text_and_options(
+        diff, objects=update_objects, base_obj=base_obj, prototype=prototype
+    )
 
     if options:
         text = [

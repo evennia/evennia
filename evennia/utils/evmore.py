@@ -269,7 +269,7 @@ class EvMore(object):
         Paginate by slice. This is done with an eye on memory efficiency (usually for
         querysets); to avoid fetching all objects at the same time.
         """
-        return self._data[pageno * self.height: pageno * self.height + self.height]
+        return self._data[pageno * self.height : pageno * self.height + self.height]
 
     # inits for different input types
 
@@ -332,8 +332,9 @@ class EvMore(object):
             # no justification. Simple division by line
             lines = text.split("\n")
 
-        self._data = ["\n".join(lines[i: i + self.height])
-                      for i in range(0, len(lines), self.height)]
+        self._data = [
+            "\n".join(lines[i : i + self.height]) for i in range(0, len(lines), self.height)
+        ]
         self._npages = len(self._data)
         self._paginator = self.paginator_index
 

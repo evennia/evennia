@@ -1,7 +1,7 @@
 # This is used with `make <option>` and is used for running various
 # administration operations on the code.
 
-BLACK_FORMAT_CONFIGS = --target-version py37 --line-length 100
+BLACK_FORMAT_CONFIGS = --target-version py37 --line-length 100 --exclude=/docs
 TEST_GAME_DIR = .test_game_dir
 tests?=evennia
 
