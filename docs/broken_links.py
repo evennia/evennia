@@ -22,8 +22,6 @@ def check_broken_links(file):
     global broken_count
     global clean_count
     with open(file,"r") as f:
-#        matches = re.findall(r"(\[.*\])\(((?!http)[^\)]*)\)",f.read())
-#        matches = re.findall(r"(\[.*\])\(((?!http)[^#\)]*)([A-Za-z0-9]*)\)",f.read())
         matches = re.findall(r"\[([^\]]+)\]\((?!http)([^[\)#]+)",f.read())
         if matches:
             print(Fore.BLUE, "{file}...".format(file=shortpath(file)), Style.RESET_ALL)
