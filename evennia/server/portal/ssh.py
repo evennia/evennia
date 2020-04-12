@@ -43,10 +43,9 @@ from twisted.conch import interfaces as iconch
 from twisted.python import components
 from django.conf import settings
 
-from evennia.server import session
 from evennia.accounts.models import AccountDB
 from evennia.utils import ansi
-from evennia.utils.utils import to_str
+from evennia.utils.utils import to_str, class_from_module
 
 _RE_N = re.compile(r"\|n$")
 _RE_SCREENREADER_REGEX = re.compile(
@@ -74,6 +73,8 @@ and put them here:
     _PRIVATE_KEY_FILE, _PUBLIC_KEY_FILE
 )
 
+_BASE_SESSION = class_from_module(settings.BASE_SESSION_CLASS)
+
 
 # not used atm
 class SSHServerFactory(protocol.ServerFactory):
@@ -84,7 +85,7 @@ class SSHServerFactory(protocol.ServerFactory):
         return "SSH"
 
 
-class SshProtocol(Manhole, session.Session):
+class SshProtocol(Manhole, _BASE_SESSION):
     """
     Each account connecting over ssh gets this protocol assigned to
     them.  All communication between game and account goes through

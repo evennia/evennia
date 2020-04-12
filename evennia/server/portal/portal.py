@@ -25,7 +25,7 @@ import evennia
 
 evennia._init()
 
-from evennia.utils.utils import get_evennia_version, mod_import, make_iter
+from evennia.utils.utils import get_evennia_version, mod_import, make_iter, class_from_module
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.utils import logger
 from evennia.server.webserver import EvenniaReverseProxyResource
@@ -261,6 +261,7 @@ if TELNET_ENABLED:
     # Start telnet game connections
 
     from evennia.server.portal import telnet
+    _telnet_protocol = class_from_module(settings.TELNET_PROTOCOL_CLASS)
 
     for interface in TELNET_INTERFACES:
         ifacestr = ""
@@ -270,7 +271,7 @@ if TELNET_ENABLED:
             pstring = "%s:%s" % (ifacestr, port)
             factory = telnet.TelnetServerFactory()
             factory.noisy = False
-            factory.protocol = telnet.TelnetProtocol
+            factory.protocol = _telnet_protocol
             factory.sessionhandler = PORTAL_SESSIONS
             telnet_service = internet.TCPServer(port, factory, interface=interface)
             telnet_service.setName("EvenniaTelnet%s" % pstring)
@@ -284,6 +285,7 @@ if SSL_ENABLED:
     # Start Telnet+SSL game connection (requires PyOpenSSL).
 
     from evennia.server.portal import telnet_ssl
+    _ssl_protocol = class_from_module(settings.SSL_PROTOCOL_CLASS)
 
     for interface in SSL_INTERFACES:
         ifacestr = ""
@@ -294,7 +296,7 @@ if SSL_ENABLED:
             factory = protocol.ServerFactory()
             factory.noisy = False
             factory.sessionhandler = PORTAL_SESSIONS
-            factory.protocol = telnet_ssl.SSLProtocol
+            factory.protocol = _ssl_protocol
 
             ssl_context = telnet_ssl.getSSLContext()
             if ssl_context:
@@ -317,6 +319,7 @@ if SSH_ENABLED:
     # evennia/game if necessary.
 
     from evennia.server.portal import ssh
+    _ssh_protocol = class_from_module(settings.SSH_PROTOCOL_CLASS)
 
     for interface in SSH_INTERFACES:
         ifacestr = ""
@@ -326,7 +329,7 @@ if SSH_ENABLED:
             pstring = "%s:%s" % (ifacestr, port)
             factory = ssh.makeFactory(
                 {
-                    "protocolFactory": ssh.SshProtocol,
+                    "protocolFactory": _ssh_protocol,
                     "protocolArgs": (),
                     "sessions": PORTAL_SESSIONS,
                 }
@@ -345,6 +348,7 @@ if WEBSERVER_ENABLED:
     # Start a reverse proxy to relay data to the Server-side webserver
 
     websocket_started = False
+    _websocket_protocol = class_from_module(settings.WEBSOCKET_PROTOCOL_CLASS)
     for interface in WEBSERVER_INTERFACES:
         ifacestr = ""
         if interface not in ("0.0.0.0", "::") or len(WEBSERVER_INTERFACES) > 1:
@@ -379,7 +383,7 @@ if WEBSERVER_ENABLED:
 
                     factory = Websocket()
                     factory.noisy = False
-                    factory.protocol = webclient.WebSocketClient
+                    factory.protocol = _websocket_protocol
                     factory.sessionhandler = PORTAL_SESSIONS
                     websocket_service = internet.TCPServer(port, factory, interface=w_interface)
                     websocket_service.setName("EvenniaWebSocket%s:%s" % (w_ifacestr, port))
