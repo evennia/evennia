@@ -1,3 +1,8 @@
+ ```python
+class Documentation:
+    RATING = "Unknown"
+```
+
 # Arxcode installing help
 
 ## Introduction 
@@ -11,7 +16,7 @@ to pick ideas or even get a starting game to build on. These instructions are ba
 released as of *Aug 12, 2018*.
 
 If you are not familiar with what Evennia is, you can read 
-[an introduction here](https://github.com/evennia/evennia/wiki/Evennia-Introduction). 
+[an introduction here](../../intro-to-evennia). 
 
 It's not too hard to run Arx from the sources (of course you'll start with an empty database) but
 since part of Arx has grown organically, it doesn't follow standard Evennia paradigms everywhere.
@@ -22,13 +27,12 @@ better match with the vanilla Evennia install.
 
 Firstly, set aside a folder/directory on your drive for everything to follow. 
 
-You need to start by installing [Evennia](http://www.evennia.com) by following most of the [Getting Started
-Instructions](Getting-Started) for your OS. The difference is that you need to `git clone https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is important if referring to newer Evennia documentation. 
+You need to start by installing [Evennia](http://www.evennia.com) by following most of the [installation instructions](../../evennia_core/setup/installation) for your OS. The difference is that you need to `git clone https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is important if referring to newer Evennia documentation. 
 
 If you are new to Evennia it's *highly* recommended that you run through the
 instructions in full - including initializing and starting a new empty game and connecting to it.
 That way you can be sure Evennia works correctly as a base line. If you have trouble, make sure to
-read the [Troubleshooting instructions](https://github.com/evennia/evennia/wiki/Getting-Started#troubleshooting) for your
+read the [Troubleshooting instructions](../../related_topics/troubleshooting/troubleshooting) for your
 operating system. You can also drop into our
 [forums](https://groups.google.com/forum/#%21forum/evennia), join `#evennia` on `irc.freenode.net`
 or chat from the linked [Discord Server](https://discord.gg/NecFePw). 
@@ -58,7 +62,7 @@ Cd to the root of your directory and clone the released source code from github:
 A new folder `myarx` should appear next to the ones you already had. You could rename this to
 something else if you want. 
 
-Cd into `myarx`. If you wonder about the structure of the game dir, you can [read more about it here](Directory-Overview). 
+Cd into `myarx`. If you wonder about the structure of the game dir, you can [read more about it here](../../evennia_core/setup/directory-structure). 
 
 ### Clean up settings
 
@@ -84,7 +88,7 @@ except ImportError:
 ```
 
 > Note: Indents and capitalization matter in Python. Make indents 4 spaces (not tabs) for your own
-> sanity. If you want a starter on Python in Evennia, [you can look here](Python-basic-introduction).
+> sanity. If you want a starter on Python in Evennia, [you can look here](../../tutorials_and_examples/python/Python-basic-introduction).
 
 This will import Arx' base settings and override them with the Evennia-default telnet port and give
 the game a name. The slogan changes the sub-text shown under the name of your game in the website
@@ -259,7 +263,3 @@ winpty ../evennia/bin/windows/evennia.bat start
 
  And you are done! Huzzah!
  
- ```python
-class Documentation:
-    RATING = "Unknown"
-```

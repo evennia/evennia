@@ -33,7 +33,7 @@ said functions, like `{"nodename": <function>, ...}`
 ## Launching the menu
 
 Initializing the menu is done using a call to the `evennia.utils.evmenu.EvMenu` class. This is the
-most common way to do so - from inside a [Command](Commands):
+most common way to do so - from inside a [Command](../commands/Commands):
 
 ```python
 # in, for example gamedir/commands/command.py
@@ -99,7 +99,7 @@ EvMenu(caller, menu_data,
  - `startnode_input` (str or (str, dict) tuple): Pass an input text or a input text + kwargs to the
    start node as if it was entered on a fictional previous node. This can be very useful in order to
    start a menu differently depending on the Command's arguments in which it was initialized.
- - `session` (Session): Useful when calling the menu from an [Account](Accounts) in
+ - `session` (Session): Useful when calling the menu from an [Account](../accounts/Accounts) in
    `MULTISESSION_MODDE` higher than 2, to make sure only the right Session sees the menu output.
  - `debug` (bool): If set, the `menudebug` command will be made available in the menu. Use it to
    list the current state of the menu and use `menudebug <variable>` to inspect a specific state
@@ -488,7 +488,7 @@ def enter_guild:
 
 This simple callable goto will analyse what happens depending on who the `caller` is.  The
 `enter_guild` node will give you a choice of what to say to the guard. If you try to enter, you will
-end up in different nodes depending on (in this example) if you have the right [Tag](Tags) set on
+end up in different nodes depending on (in this example) if you have the right [Tag](../tags/Tags) set on
 yourself or not. Note that since we don't include any 'key's in the option dictionary, you will just
 get to pick between numbers.
 
@@ -973,7 +973,7 @@ auto-created by the `list_node` decorator.
 
 ## Assorted notes
 
-The EvMenu is implemented using [Commands](Commands). When you start a new EvMenu, the user of the
+The EvMenu is implemented using [Commands](../commands/Commands). When you start a new EvMenu, the user of the
 menu will be assigned a [CmdSet](Command-Sets) with the commands they need to navigate the menu.
 This means that if you were to, from inside the menu, assign a new command set to the caller, *you
 may override the Menu Cmdset and kill the menu*. If you want to assign cmdsets to the caller as part

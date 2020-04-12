@@ -163,7 +163,7 @@ Some useful default lockfuncs (see `src/locks/lockfuncs.py` for more):
 
 - `true()/all()` - give access to everyone
 - `false()/none()/superuser()` - give access to none. Superusers bypass the check entirely and are thus the only ones who will pass this check.
-- `perm(perm)` - this tries to match a given `permission` property, on an Account firsthand, on a Character second. See [below](Locks#permissions).
+- `perm(perm)` - this tries to match a given `permission` property, on an Account firsthand, on a Character second. See [below](../locks/Locks#permissions).
 - `perm_above(perm)` - like `perm` but requires a "higher" permission level than the one given.
 - `id(num)/dbref(num)` - checks so the access_object has a certain dbref/id.
 - `attr(attrname)` - checks if a certain [Attribute](../../../evennia_core/system/attributes/Attributes) exists on accessing_object.

@@ -1,3 +1,8 @@
+```python
+class Documentation:
+    RATING = "Unknown"
+```
+
 # Docs refactoring
 
 This is a whitepage for free discussion about the wiki docs and refactorings needed. 
@@ -94,8 +99,5 @@ If I want to find information on the correct syntax for is_typeclass(), here's w
 
 An important part of a refactor, in my opinion, is separating out the "Tutorials" from the "Reference" documentation.
 
-```python
-class Documentation:
-    RATING = "Unknown"
-```
+
  

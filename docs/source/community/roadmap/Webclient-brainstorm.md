@@ -1,3 +1,8 @@
+```python
+class Documentation:
+    RATING = "Unknown"
+``` 
+
 # Webclient brainstorm
 
 # Ideas for a future webclient gui
@@ -250,7 +255,3 @@ I would suggest that, assuming the game dev allows the user to modify their GUI 
 
 So I'd say that normally the panes are all fixed, with minimal spacing between them, no handles etc. But you can enter the client settings window and choose *Customize GUI mode* (or something like that). When you do, then separators get handles and the dropdown menu markers appear (permanently) in the corner of each pane. This means that if a user *wants* to easily tweak their window they could stay in this mode, but they could also "lock" the gui layout at any time.
 
-```python
-class Documentation:
-    RATING = "Unknown"
-``` 

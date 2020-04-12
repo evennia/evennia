@@ -31,7 +31,7 @@ Evennia defines a few default inputfuncs to handle the common cases. These are d
  - Input: `("text", (textstring,), {})`
  - Output: Depends on Command triggered
 
-This is the most common of inputcommands, and the only one supported by every traditional mud. The argument is usually what the user sent from their command line. Since all text input from the user like this is considered a [Command](Commands), this inputfunc will do things like nick-replacement and then pass on the input to the central Commandhandler. 
+This is the most common of inputcommands, and the only one supported by every traditional mud. The argument is usually what the user sent from their command line. Since all text input from the user like this is considered a [Command](../commands/Commands), this inputfunc will do things like nick-replacement and then pass on the input to the central Commandhandler. 
 
 ### echo
 

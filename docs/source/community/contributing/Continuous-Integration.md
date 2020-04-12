@@ -1,3 +1,8 @@
+```python
+class Documentation:
+    RATING = "Unknown"
+```
+
 # Continuous Integration
 
 One of the advantages of Evennia over traditional MUSH development systems is that Evennia is
@@ -211,7 +216,3 @@ And you're done! At this point, you can return to the project overview page and 
 for your game. If everything was set up correctly, the build will complete successfully. Additional
 build steps could be added or removed at this point, adding some features like Unit Testing or more!
 
-```python
-class Documentation:
-    RATING = "Unknown"
-```

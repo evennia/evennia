@@ -1,5 +1,9 @@
-# Licensing
+```python
+class Documentation:
+    RATING = "Acceptable"
+```
 
+# Licensing
 
 Evennia is licensed under the very friendly [BSD](http://en.wikipedia.org/wiki/BSD_license)
 (3-clause) license.  You can find the license as
@@ -31,7 +35,3 @@ if you do!
 The contributions in `evennia/evennia/contrib` are considered to be released under the same license
 as Evennia itself, unless the individual contributor has specifically defined otherwise.
 
-```python
-class Documentation:
-    RATING = "Acceptable"
-```

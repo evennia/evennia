@@ -60,7 +60,7 @@ A help entry consists of four parts:
 - The *topic*. This is the name of the help entry. This is what players search for when they are looking for help. The topic can contain spaces and also partial matches will be found.
 - The *help category*. Examples are *Administration*, *Building*, *Comms* or *General*. This is an overall grouping of similar help topics, used by the engine to give a better overview.
 - The *text* - the help text itself, of any length.
-- locks - a [lock definition](Locks). This can be used to limit access to this help entry, maybe because it's staff-only or otherwise meant to be restricted. Help commands check for `access_type`s `view` and `edit`. An example of a lock string would be `view:perm(Builders)`.
+- locks - a [lock definition](../locks/Locks). This can be used to limit access to this help entry, maybe because it's staff-only or otherwise meant to be restricted. Help commands check for `access_type`s `view` and `edit`. An example of a lock string would be `view:perm(Builders)`.
 
 You can create new help entries in code by using `evennia.create_help_entry()`.
 
@@ -81,7 +81,7 @@ Using `@sethelp` you can add, delete and append text to existing entries. By def
 
 If the category *Roleplaying* did not already exist, it is created and will appear in the help index. 
 
-You can, finally, define a lock for the help entry by following the category with a [lock definition](Locks): 
+You can, finally, define a lock for the help entry by following the category with a [lock definition](../locks/Locks): 
 
     > @sethelp/add emote, Roleplaying, view:all() = Emoting is ... 
 

@@ -1,3 +1,8 @@
+```python
+class Documentation:
+    RATING = "Acceptable"
+```
+
 # Documentation Style Guide
 This guide is intended to standardize the community documentation for Evennia. It outlines specifically what sort of 
 information belongs in the documentation, where to place the information, and how information should be formatted.
@@ -122,7 +127,3 @@ We do not expect every topic covered to reach "exceptional" status - in fact, th
 high so that only a few topics ever will. This is intended to make the documentation more readable for
 new users. Exceptional articles are well-maintained and updated with every release.
 
-```python
-class Documentation:
-    RATING = "Acceptable"
-```

@@ -42,16 +42,16 @@ Selected permission strings can be organized in a *permission hierarchy* by edit
 
 The main use of this is that if you use the lock function `perm()` mentioned above, a lock check for a particular permission in the hierarchy will *also* grant access to those with *higher* hierarchy access. So if you have the permission "Admin" you will also pass a lock defined as `perm(Builder)` or any of those levels below "Admin". 
 
-When doing an access check from an [Object](Objects) or Character, the `perm()` lock function will always first use the permissions of any Account connected to that Object before checking for permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the Account permission will always be used (this stops an Account from escalating their permission by puppeting a high-level Character).  If the permission looked for is not in the hierarchy, an exact match is required, first on the Account and if not found there (or if no Account is connected), then on the Object itself. 
+When doing an access check from an [Object](../objects/Objects) or Character, the `perm()` lock function will always first use the permissions of any Account connected to that Object before checking for permissions on the Object. In the case of hierarchical permissions (Admins, Builders etc), the Account permission will always be used (this stops an Account from escalating their permission by puppeting a high-level Character).  If the permission looked for is not in the hierarchy, an exact match is required, first on the Account and if not found there (or if no Account is connected), then on the Object itself. 
 
 Here is how you use `perm` to give an account more permissions: 
 
      perm/account Tommy = Builders
      perm/account/del Tommy = Builders # remove it again
 
-Note the use of the `/account` switch. It means you assign the permission to the [Accounts](Account) Tommy instead of any [Character](Objects) that also happens to be named "Tommy". 
+Note the use of the `/account` switch. It means you assign the permission to the [Accounts](Account) Tommy instead of any [Character](../objects/Objects) that also happens to be named "Tommy". 
 
-Putting permissions on the *Account* guarantees that they are kept, *regardless* of which Character they are currently puppeting. This is especially important to remember when assigning permissions from the *hierarchy tree* - as mentioned above, an Account's permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters (but see also [quelling](Locks#Quelling)).
+Putting permissions on the *Account* guarantees that they are kept, *regardless* of which Character they are currently puppeting. This is especially important to remember when assigning permissions from the *hierarchy tree* - as mentioned above, an Account's permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters (but see also [quelling](../locks/Locks#Quelling)).
 
 Below is an example of an object without any connected account
 
@@ -109,7 +109,7 @@ This is how the `create` command sets up new objects. In sequence, this permissi
 
 ## A complete example of setting locks on an object
 
-Assume we have two objects - one is ourselves (not superuser) and the other is an [Object](Objects) called `box`. 
+Assume we have two objects - one is ourselves (not superuser) and the other is an [Object](../objects/Objects) called `box`. 
 
      > create/drop box
      > desc box = "This is a very big and heavy box."
@@ -129,7 +129,7 @@ Ok, so for testing we made ourselves strong, but not strong enough.  Now we need
         return
 ```
 
-So the `get` command looks for a lock with the type *get* (not so surprising). It also looks for an [Attribute](Attributes) on the checked object called _get_err_msg_ in order to return a customized error message. Sounds good! Let's start by setting that on the box: 
+So the `get` command looks for a lock with the type *get* (not so surprising). It also looks for an [Attribute](../attributes/Attributes) on the checked object called _get_err_msg_ in order to return a customized error message. Sounds good! Let's start by setting that on the box: 
 
      > set box/get_err_msg = You are not strong enough to lift this box.
 

@@ -1,3 +1,8 @@
+```python
+class Documentation:
+    RATING = "Unknown"
+```
+
 # API refactoring
 
 Building up to Evennia 1.0 and beyond, it's time to comb through the Evennia API for old cruft. This whitepage is for anyone interested to contribute with their views on what part of the API needs refactoring, cleanup or clarification (or extension!)
@@ -31,7 +36,4 @@ Many classes have methods requiring lengthy positional argument lists, which are
 
 ---
 
-```python
-class Documentation:
-    RATING = "Unknown"
-```
+

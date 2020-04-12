@@ -5,7 +5,7 @@ Command Sets are intimately linked with [Commands](Commands) and you should be f
 
 A *Command Set* (often referred to as a CmdSet or cmdset) is the basic unit for storing one or more *Commands*. A given Command can go into any number of different command sets. Storing Command classes in a command set is the way to make commands available to use in your game. 
 
-When storing a CmdSet on an object, you will make the commands in that command set available to the object. An example is the default command set stored on new Characters. This command set contains all the useful commands, from `look` and `inventory` to `@dig` and `@reload` ([permissions](Locks#Permissions) then limit which players may use them, but that's a separate topic).
+When storing a CmdSet on an object, you will make the commands in that command set available to the object. An example is the default command set stored on new Characters. This command set contains all the useful commands, from `look` and `inventory` to `@dig` and `@reload` ([permissions](../locks/Locks#Permissions) then limit which players may use them, but that's a separate topic).
 
 When an account enters a command, cmdsets from the Account, Character, its location, and elsewhere are pulled together into a *merge stack*. This stack is merged together in a specific order to create a single "merged" cmdset, representing the pool of commands available at that very moment.
 
@@ -121,16 +121,16 @@ When a user issues a command, it is matched against the [merged](#adding-and-mer
 
 The currently valid command sets are collected from the following sources:
 
-- The cmdsets stored on the currently active [Session](Sessions). Default is the empty `SessionCmdSet` with merge priority `-20`.
-- The cmdsets defined on the [Account](Accounts). Default is the AccountCmdSet with merge priority `-10`. 
+- The cmdsets stored on the currently active [Session](../sessions/Sessions). Default is the empty `SessionCmdSet` with merge priority `-20`.
+- The cmdsets defined on the [Account](../accounts/Accounts). Default is the AccountCmdSet with merge priority `-10`. 
 - All cmdsets on the Character/Object (assuming the Account is currently puppeting such a Character/Object). Merge priority `0`.
 - The cmdsets of all objects carried by the puppeted Character (checks the `call` lock). Will not be included if `no_objs` option is active in the merge stack.
 - The cmdsets of the Character's current location (checks the `call` lock). Will not be included if `no_objs` option is active in the merge stack. 
 - The cmdsets of objects in the current location (checks the `call` lock). Will not be included if `no_objs` option is active in the merge stack. 
 - The cmdsets of Exits in the location. Merge priority `+101`. Will not be included if `no_exits` *or* `no_objs` option is active in the merge stack.
-- The [channel](Communications) cmdset containing commands for posting to all channels the account or character is currently connected to. Merge priority `+101`. Will not be included if `no_channels` option is active in the merge stack.
+- The [channel](../channels/channels) cmdset containing commands for posting to all channels the account or character is currently connected to. Merge priority `+101`. Will not be included if `no_channels` option is active in the merge stack.
 
-Note that an object does not *have* to share its commands with its surroundings. A Character's cmdsets should not be shared for example, or all other Characters would get multi-match errors just by being in the same room. The ability of an object to share its cmdsets is managed by its `call` [lock](Locks). For example, [Character objects](Objects) defaults to `call:false()` so that any cmdsets on them can only be accessed by themselves, not by other objects around them. Another example might be to lock an object with `call:inside()` to only make their commands available to objects inside them, or `cmd:holds()` to make their commands available only if they are held.
+Note that an object does not *have* to share its commands with its surroundings. A Character's cmdsets should not be shared for example, or all other Characters would get multi-match errors just by being in the same room. The ability of an object to share its cmdsets is managed by its `call` [lock](../locks/Locks). For example, [Character objects](../objects/Objects) defaults to `call:false()` so that any cmdsets on them can only be accessed by themselves, not by other objects around them. Another example might be to lock an object with `call:inside()` to only make their commands available to objects inside them, or `cmd:holds()` to make their commands available only if they are held.
 
 ## Adding and Merging Command Sets
 

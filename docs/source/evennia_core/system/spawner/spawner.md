@@ -1,6 +1,6 @@
 # Spawner
 The *spawner* is a system for defining and creating individual objects from a base template called a
-*prototype*. It is only designed for use with in-game [Objects](Objects), not any other type of
+*prototype*. It is only designed for use with in-game [Objects](../objects/Objects), not any other type of
 entity.
 
 The normal way to create a custom object in Evennia is to make a [Typeclass](Typeclasses). If you

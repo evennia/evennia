@@ -333,7 +333,7 @@ already disconnected from the database from the onset.
 Attributes are normally not locked down by default, but you can easily change that for individual
 Attributes (like those that may be game-sensitive in games with user-level building).
 
-First you need to set a *lock string* on your Attribute. Lock strings are specified [Locks](Locks). The relevant lock types are
+First you need to set a *lock string* on your Attribute. Lock strings are specified [Locks](../locks/Locks). The relevant lock types are
 
 - `attrread` - limits who may read the value of the Attribute
 - `attredit` - limits who may set/change this Attribute

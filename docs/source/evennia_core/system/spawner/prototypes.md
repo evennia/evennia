@@ -53,11 +53,11 @@ The remaining keys determine actual aspects of the objects to spawn from this pr
  - `home` - a valid `#dbref`. Defaults to `location` or `settings.DEFAULT_HOME` if location does not exist.
  - `destination` - a valid `#dbref`. Only used by exits.
  - `permissions` - list of permission strings, like `["Accounts", "may_use_red_door"]`
- - `locks` - a [lock-string](Locks) like `"edit:all();control:perm(Builder)"`
+ - `locks` - a [lock-string](../locks/Locks) like `"edit:all();control:perm(Builder)"`
  - `aliases` - list of strings for use as aliases
- - `tags` - list [Tags](Tags). These are given as tuples `(tag, category, data)`.
- - `attrs` - list of [Attributes](Attributes). These are given as tuples `(attrname, value, category, lockstring)`
- - Any other keywords are interpreted as non-category [Attributes](Attributes) and their values. This is
+ - `tags` - list [Tags](../tags/Tags). These are given as tuples `(tag, category, data)`.
+ - `attrs` - list of [Attributes](../attributes/Attributes). These are given as tuples `(attrname, value, category, lockstring)`
+ - Any other keywords are interpreted as non-category [Attributes](../attributes/Attributes) and their values. This is
    convenient for simple Attributes - use `attrs` for full control of Attributes.
 
 Deprecated as of Evennia 0.8:
@@ -159,7 +159,7 @@ A prototype can be defined and stored in two ways, either in the database or as 
 
 ### Database prototypes
 
-Stored as [Scripts](Scripts) in the database. These are sometimes referred to as *database-prototypes* This is the only way for in-game builders to modify and add prototypes. They have the advantage of being easily modifiable and sharable between builders but you need to work with them using in-game tools.  
+Stored as [Scripts](../scripts/Scripts) in the database. These are sometimes referred to as *database-prototypes* This is the only way for in-game builders to modify and add prototypes. They have the advantage of being easily modifiable and sharable between builders but you need to work with them using in-game tools.  
 
 ### Module-based prototypes
 
