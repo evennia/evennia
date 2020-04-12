@@ -55,7 +55,7 @@ _HTTP_WARNING = bytes(
 )
 
 
-_BASE_SESSION = class_from_module(settings.BASE_SESSION_CLASS)
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
 
@@ -67,7 +67,7 @@ class TelnetServerFactory(protocol.ServerFactory):
         return "Telnet"
 
 
-class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION):
+class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
     """
     Each player connecting over telnet (ie using most traditional mud
     clients) gets a telnet protocol instance assigned to them.  All

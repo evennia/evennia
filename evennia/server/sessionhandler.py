@@ -859,8 +859,8 @@ class ServerSessionHandler(SessionHandler):
 
 
 # import class from settings
-_session_handler_class = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
+_SESSION_HANDLER_CLASS = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
 
 # Instantiate class. These globals are used to provide singleton-like behavior.
-SESSION_HANDLER = _session_handler_class()
+SESSION_HANDLER = _SESSION_HANDLER_CLASS()
 SESSIONS = SESSION_HANDLER  # legacy

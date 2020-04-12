@@ -43,10 +43,10 @@ example (linux, using the openssl program):
     {exestring}
 """
 
-_TELNET_PROTOCOL = class_from_module(settings.TELNET_PROTOCOL_CLASS)
+_TELNET_PROTOCOL_CLASS = class_from_module(settings.TELNET_PROTOCOL_CLASS)
 
 
-class SSLProtocol(_TELNET_PROTOCOL):
+class SSLProtocol(_TELNET_PROTOCOL_CLASS):
     """
     Communication is the same as telnet, except data transfer
     is done with encryption.
