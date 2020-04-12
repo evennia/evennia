@@ -25,12 +25,11 @@ from twisted.conch.telnet import (
     LINEMODE_TRAPSIG,
 )
 from django.conf import settings
-from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws, suppress_ga
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
-from evennia.utils.utils import to_bytes
+from evennia.utils.utils import to_bytes, class_from_module
 
 _RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(br"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
@@ -56,6 +55,10 @@ _HTTP_WARNING = bytes(
 )
 
 
+_BASE_SESSION = class_from_module(settings.BASE_SESSION_CLASS)
+
+
+
 class TelnetServerFactory(protocol.ServerFactory):
     "This is only to name this better in logs"
     noisy = False
@@ -64,7 +67,7 @@ class TelnetServerFactory(protocol.ServerFactory):
         return "Telnet"
 
 
-class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
+class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION):
     """
     Each player connecting over telnet (ie using most traditional mud
     clients) gets a telnet protocol instance assigned to them.  All

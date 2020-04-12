@@ -36,24 +36,7 @@ class Session(object):
     """
 
     # names of attributes that should be affected by syncing.
-    _attrs_to_sync = (
-        "protocol_key",
-        "address",
-        "suid",
-        "sessid",
-        "uid",
-        "csessid",
-        "uname",
-        "logged_in",
-        "puid",
-        "conn_time",
-        "cmd_last",
-        "cmd_last_visible",
-        "cmd_total",
-        "protocol_flags",
-        "server_data",
-        "cmdset_storage_string",
-    )
+    _attrs_to_sync = settings.SESSION_SYNC_ATTRS
 
     def init_session(self, protocol_key, address, sessionhandler):
         """

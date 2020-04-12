@@ -9,6 +9,7 @@ from twisted.internet import reactor
 from django.conf import settings
 from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
+from evennia.utils.utils import class_from_module
 
 # module import
 _MOD_IMPORT = None
@@ -32,9 +33,10 @@ DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 # -------------------------------------------------------------
 # Portal-SessionHandler class
 # -------------------------------------------------------------
+_BASE_HANDLER_CLASS = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
 
 
-class PortalSessionHandler(SessionHandler):
+class PortalSessionHandler(_BASE_HANDLER_CLASS):
     """
     This object holds the sessions connected to the portal at any time.
     It is synced with the server's equivalent SessionHandler over the AMP
@@ -463,4 +465,6 @@ class PortalSessionHandler(SessionHandler):
                         log_trace()
 
 
-PORTAL_SESSIONS = PortalSessionHandler()
+_portal_sessionhandler_class = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
+
+PORTAL_SESSIONS = _portal_sessionhandler_class()

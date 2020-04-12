@@ -10,6 +10,7 @@
 - New `utils.format_grid` for easily displaying long lists of items in a block.
 - Using `lunr` search indexing for better `help` matching and suggestions. Also improve
   the main help command's default listing output.
+- Made most of the networking classes such as Protocols and the SessionHandlers replaceable via `settings.py` for modding enthusiasts.
 
 
 ### Already in master

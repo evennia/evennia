@@ -23,6 +23,7 @@ from evennia.utils.utils import (
     make_iter,
     delay,
     callables_from_module,
+    class_from_module
 )
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
@@ -857,5 +858,9 @@ class ServerSessionHandler(SessionHandler):
                     log_trace()
 
 
-SESSION_HANDLER = ServerSessionHandler()
+# import class from settings
+_session_handler_class = class_from_module(settings.SERVER_SESSION_HANDLER_CLASS)
+
+# Instantiate class. These globals are used to provide singleton-like behavior.
+SESSION_HANDLER = _session_handler_class()
 SESSIONS = SESSION_HANDLER  # legacy
