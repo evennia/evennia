@@ -24,7 +24,7 @@ This will open an Evennia-aware python shell (using ipython). From within this s
     import evennia
     evennia.<TAB>
 
-That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made available at the top level of Evennia's  "flat API". See the [flat API](evennia-API) page for more info on how to explore it efficiently.
+That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made available at the top level of Evennia's  "flat API". See the [flat API](../../evennia_core/evennia-flat-api) page for more info on how to explore it efficiently.
 
 You can complement your exploration by peeking at the sections of the much more detailed [Developer Central](Developer-Central). The [Tutorials](../index) section also contains a growing collection of system- or implementation-specific help.
 
@@ -34,13 +34,13 @@ Evennia works by importing your own modules and running them as part of the serv
 
 ### Plan before you code
 
-Before you start coding away at your dream game, take a look at our [Game Planning](Game-Planning) page. It might hopefully help you avoid some common pitfalls and time sinks.
+Before you start coding away at your dream game, take a look at our [Game Planning](../systems/Game-Planning) page. It might hopefully help you avoid some common pitfalls and time sinks.
 
 ### Code in your game folder, not in the evennia/ repository
 
 As part of the Evennia setup you will create a game folder to host your game code. This is your home. You should *never* need to modify anything in the `evennia` library (anything you download from us, really). You import useful functionality from here and if you see code you like, copy&paste it out into your game folder and edit it there.
 
-If you find that Evennia doesn't support some functionality you need, make a [Feature Request](feature-request) about it. Same goes for [bugs][bug]. If you add features or fix bugs yourself, please consider Contributing your changes upstream!
+If you find that Evennia doesn't support some functionality you need, make a [Feature Request][feature-request] about it. Same goes for [bugs][bug]. If you add features or fix bugs yourself, please consider Contributing your changes upstream!
 
 ### Learn to read tracebacks
 

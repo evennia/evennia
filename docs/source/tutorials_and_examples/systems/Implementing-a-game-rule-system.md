@@ -41,11 +41,11 @@ game.
 - Next is to determine just how you want to store things on your Objects and Characters. You can choose to either store things as individual [Attributes](../../evennia_core/system/attributes/Attributes), like `character.db.STR=34` and `character.db.Hunting_skill=20`. But you could also use some custom storage method, like a dictionary `character.db.skills = {"Hunting":34, "Fishing":20, ...}`. A much more fancy solution is to look at the Ainneve [Trait handler](https://github.com/evennia/ainneve/blob/master/world/traits.py). Finally you could even go with a [custom django model](New-Models). Which is the better depends on your game and the complexity of your system.
 - Make a clear [API](http://en.wikipedia.org/wiki/Application_programming_interface) into your rules. That is, make methods/functions that you feed with, say, your Character and which skill you want to check. That is, you want something similar to this:
 
-    ```python
+```python
         from world import rules
         result = rules.roll_skill(character, "hunting")
         result = rules.roll_challenge(character1, character2, "swords")
-    ```
+```
 
 You might need to make these functions more or less complex depending on your game. For example the properties of the room might matter to the outcome of a roll (if the room is dark, burning etc). Establishing just what you need to send into your game mechanic module is a great way to also get a feel for what you need to add to your engine.
 

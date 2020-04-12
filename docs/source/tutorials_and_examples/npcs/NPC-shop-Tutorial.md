@@ -13,7 +13,7 @@ Our shop extends over two rooms - a "front" room open to the shop's customers an
 
 ### The shop menu
 
-We want to show a menu to the customer where they can list, examine and buy items in the store. This menu should change depending on what is currently for sale. Evennia's *EvMenu* utility will manage the menu for us. It's a good idea to [read up on EvMenu](EvMenu) if you are not familiar with it.
+We want to show a menu to the customer where they can list, examine and buy items in the store. This menu should change depending on what is currently for sale. Evennia's *EvMenu* utility will manage the menu for us. It's a good idea to [read up on EvMenu](../../evennia_core/system/ui/EvMenu) if you are not familiar with it.
 
 #### Designing the menu
 
@@ -164,7 +164,7 @@ class CmdBuy(Command):
                       startnode="menunode_shopfront")
 ```
 
-This will launch the menu. The `EvMenu` instance is initialized with the path to this very module - since the only global functions available in this module are our menu nodes, this will work fine (you could also have put those in a separate module). We now just need to put this command in a [CmdSet](Command-Sets) so we can add it correctly to the game:
+This will launch the menu. The `EvMenu` instance is initialized with the path to this very module - since the only global functions available in this module are our menu nodes, this will work fine (you could also have put those in a separate module). We now just need to put this command in a [CmdSet](../../evennia_core/system/commands/Command-Sets) so we can add it correctly to the game:
 
 ```python
 from evennia import CmdSet

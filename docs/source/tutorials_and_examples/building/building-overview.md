@@ -2,7 +2,7 @@
 
 
 The [default command](Default-Command-Help) definitions coming with Evennia
-follows a style [similar](Using-MUX-as-a-Standard) to that of MUX, so the
+follows a style [similar](../systems/Using-MUX-as-a-Standard) to that of MUX, so the
 commands should be familiar if you used any such code bases before. 
 
 > Throughout the larger documentation you may come across commands prefixed
@@ -190,4 +190,4 @@ This will take a while (be patient and don't re-run the command). You will see a
 
 You will end up with a new exit from Limbo named _tutorial_. Apart from being a little solo-adventure in its own right, the tutorial world is a good source for learning Evennia building (and coding). 
 
-Read [the batch file](https://github.com/evennia/evennia/blob/master/evennia/contrib/tutorial_world/build.ev) to see exactly how it's built, step by step. See also more info about the tutorial world [here](Tutorial-World-Introduction).
+Read [the batch file](https://github.com/evennia/evennia/blob/master/evennia/contrib/tutorial_world/build.ev) to see exactly how it's built, step by step. See also more info about the tutorial world [here](../contribs/Tutorial-World-Introduction).

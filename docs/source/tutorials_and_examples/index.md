@@ -106,5 +106,5 @@ _Expanding Evennia's web presence._
 
 _Hints for new users more familiar with other game engines._
 
-- [Evennia for Diku Users](Evennia-for-Diku-Users) - read up on the differences between Diku style muds and Evennia.
-- [Evennia for MUSH Users](Evennia-for-MUSH-Users) - an introduction to Evennia for those accustomed to MUSH-style servers.
+- [Evennia for Diku Users](systems/Evennia-for-Diku-Users) - read up on the differences between Diku style muds and Evennia.
+- [Evennia for MUSH Users](systems/Evennia-for-MUSH-Users) - an introduction to Evennia for those accustomed to MUSH-style servers.

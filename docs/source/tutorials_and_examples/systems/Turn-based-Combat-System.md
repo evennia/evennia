@@ -29,7 +29,7 @@ This tutorial will implement the slightly more complex turn-based combat system.
 For creating the combat system we will need the following components:
 
 - A combat handler. This is the main mechanic of the system. This is a [Script](../../evennia_core/system/scripts/Scripts) object created for each combat.  It is not assigned to a specific object but is shared by the combating characters and handles all the combat information. Since Scripts are database entities it also means that the combat will not be affected by a server reload.
-- A combat [command set](Command-Sets) with the relevant commands needed for combat, such as the various attack/defend options and the `flee/disengage` command to leave the combat mode.
+- A combat [command set](../../evennia_core/system/commands/Command-Sets) with the relevant commands needed for combat, such as the various attack/defend options and the `flee/disengage` command to leave the combat mode.
 - A rule resolution system. The basics of making such a module is described in the [rule system tutorial](Implementing-a-game-rule-system). We will only sketch such a module here for our end-turn combat resolution.
 - An `attack` [command](../../evennia_core/system/commands/Commands) for initiating the combat mode. This is added to the default command set. It will create the combat handler and add the character(s) to it. It will also assign the combat command set to the characters. 
 

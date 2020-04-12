@@ -599,7 +599,7 @@ Evennia comes with rooms out of the box, so no extra work needed. A GM will auto
 
 ## Channels
 
-Evennia comes with [Channels](Communications.md#Channels) in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:
+Evennia comes with [Channels](Communications#Channels) in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:
 
 * `@ccreate new_channel;alias;alias = short description` - Creates a new channel.
 * `addcom channel` - join an existing channel. Use `addcom alias = channel` to add a new alias you can use to talk to the channel, as many as desired.

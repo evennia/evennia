@@ -96,7 +96,7 @@ about the missiles being fired and has different `key` and `aliases`. We leave
 that up to you to create as an exercise. You could have it print "WOOSH! The
 mech launches missiles against <target>!", for example.
 
-Now we shove our commands into a command set. A [Command Set](Command-Sets) (CmdSet) is a container holding any number of commands. The command set is what we will store on the mech.
+Now we shove our commands into a command set. A [Command Set](../../evennia_core/system/commands/Command-Sets) (CmdSet) is a container holding any number of commands. The command set is what we will store on the mech.
 
 ```python
 # in the same file mygame/commands/mechcommands.py

@@ -43,7 +43,7 @@ Below is an example how this all could look for the echo command:
 
 ## Step 2: Adding the Command to a default Cmdset
 
-The command is not available to use until it is part of a [Command Set](Command-Sets). In this
+The command is not available to use until it is part of a [Command Set](../../evennia_core/system/commands/Command-Sets). In this
 example we will go the easiest route and add it to the default Character commandset that already
 exists. 
 
@@ -95,7 +95,7 @@ Cmdsets in various ways.
 Adding your Command to the `CharacterCmdSet` is just one easy exapmple. The cmdset system is very
 generic. You can create your own cmdsets (let's say in a module `mycmdsets.py`) and add them to
 objects as you please (how to control their merging is described in detail in the [Command Set
-documentation](Command-Sets)).
+documentation](../../evennia_core/system/commands/Command-Sets)).
 
 ```python
     # file mygame/commands/mycmdsets.py

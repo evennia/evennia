@@ -59,7 +59,7 @@ Evennia offers a range of [default commands](Default-Command-Help) for [creating
 
 To overcome this, Evennia offers [batch processors](https://github.com/evennia/evennia/wiki/Batch-Processors) that work as input-files created out-of-game. In this tutorial we'll be using the more powerful of the two available batch processors, the [Batch Code Processor ](https://github.com/evennia/evennia/wiki/Batch-code%20processor), called with the `@batchcode` command. This is a very powerful tool. It allows you to craft Python files to act as blueprints of your entire game world. These files have access to use Evennia's Python API directly. Batchcode allows for easy editing and creation in whatever text editor you prefer, avoiding having to manually build the world line-by-line inside the game. 
 
-> Important warning: `@batchcode`'s power is only rivaled by the `@py` command. Batchcode is so powerful it should be reserved only for the [superuser](Building-Permissions). Think carefully before you let others (such as `Developer`- level staff) run `@batchcode` on their own - make sure you are okay with them running *arbitrary Python code* on your server.
+> Important warning: `@batchcode`'s power is only rivaled by the `@py` command. Batchcode is so powerful it should be reserved only for the [superuser](../building/Building-Permissions). Think carefully before you let others (such as `Developer`- level staff) run `@batchcode` on their own - make sure you are okay with them running *arbitrary Python code* on your server.
 
 While a simple example, the map object it serves as good way to try out `@batchcode`. Go to `mygame/world` and create a new file there named `batchcode_map.py`:
 

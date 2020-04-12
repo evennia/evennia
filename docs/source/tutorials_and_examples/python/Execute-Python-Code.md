@@ -12,8 +12,8 @@ A few local variables are made available when running `@py`. These offer entry i
 
 - **self** / **me** - the calling object (i.e. you)
 - **here** - the current caller's location
-- **obj** - a dummy [Object](../../evennia_core/objects/Objects) instance
-- **evennia** - Evennia's [flat API](evennia-API) - through this you can access all of Evennia.
+- **obj** - a dummy [Object](../../evennia_core/system/objects/Objects) instance
+- **evennia** - Evennia's [flat API](../../evennia_core/evennia-flat-api) - through this you can access all of Evennia.
 
 For accessing other objects in the same room you need to use `self.search(name)`. For objects in other locations, use one of the `evennia.search_*` methods. See [below](https://github.com/evennia/evennia/wiki/Execute%20Python%20Code#finding-objects).
 
@@ -85,4 +85,4 @@ It's recommended that you get a more fully featured Python interpreter like [iPy
     In [2]: evennia.managers.objects.all()
     Out[3]: [<ObjectDB: Harry>, <ObjectDB: Limbo>, ...]
 
-See the page about the [Evennia-API](Evennia-API) for more things to explore. 
+See the page about the [Evennia-API](../../evennia_core/evennia-flat-api) for more things to explore. 

@@ -101,7 +101,7 @@ class CmdSetTrain(CmdSet):
 ```
 Note that while this seems like a lot of text, the majority of lines here are taken up by documentation.
 
-These commands are work in a pretty straightforward way: `CmdEnterTrain` moves the location of the player to inside the train and `CmdLeaveTrain` does the opposite: it moves the player back to the current location of the train (back outside to its current location). We stacked them in a [cmdset](Command-Sets) `CmdSetTrain` so they can be used.
+These commands are work in a pretty straightforward way: `CmdEnterTrain` moves the location of the player to inside the train and `CmdLeaveTrain` does the opposite: it moves the player back to the current location of the train (back outside to its current location). We stacked them in a [cmdset](../../evennia_core/system/commands/Command-Sets) `CmdSetTrain` so they can be used.
 
 To make the commands work we need to add this cmdset to our train typeclass:
 

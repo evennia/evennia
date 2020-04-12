@@ -18,9 +18,9 @@
 - [Use wide characters with EvTable](#non-latin-characters-in-evtable)
 
 ## Removing default commands
-**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../../evennia_core/system/commands/Commands) from the Character [Command Set](Command-Sets)?
+**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../../evennia_core/system/commands/Commands) from the Character [Command Set](../../evennia_core/system/commands/Command-Sets)?
 
-**A:** Go to `mygame/commands/default_cmdsets.py`. Find the `CharacterCmdSet` class. It has one method named `at_cmdset_creation`. At the end of that method, add the following line: `self.remove(default_cmds.CmdGet())`. See the [Adding Commands Tutorial](Adding-Command-Tutorial) for more info.
+**A:** Go to `mygame/commands/default_cmdsets.py`. Find the `CharacterCmdSet` class. It has one method named `at_cmdset_creation`. At the end of that method, add the following line: `self.remove(default_cmds.CmdGet())`. See the [Adding Commands Tutorial](../commands/Adding-Command-Tutorial) for more info.
 
 ## Preventing character from moving based on a condition
 **Q:** How does one keep a character from using any exit, if they meet a certain condition? (I.E. in combat, immobilized, etc.)
@@ -39,7 +39,7 @@ def at_before_move(self, destination):
 ## Reference initiating object in an EvMenu command.
 **Q:** An object has a Command on it starts up an EvMenu instance. How do I capture a reference to that object for use in the menu?
 
-**A:** When an [EvMenu](EvMenu) is started, the menu object is stored as `caller.ndb._menutree`. This is a good place to store menu-specific things since it will clean itself up when the menu closes. When initiating the menu, any additional keywords you give will be available for you as properties on this menu object:
+**A:** When an [EvMenu](../../evennia_core/system/ui/EvMenu) is started, the menu object is stored as `caller.ndb._menutree`. This is a good place to store menu-specific things since it will clean itself up when the menu closes. When initiating the menu, any additional keywords you give will be available for you as properties on this menu object:
 
 ```python
 class MyObjectCommand(Command):
@@ -128,7 +128,7 @@ class CmdWerewolf(Command):
     def func(self):
         # ...
 ```
-Add this to the [default cmdset as usual](Adding-Command-Tutorial). The `is_full_moon` [lock function](https://github.com/evennia/evennia/wiki/Locks#lock-functions) does not yet exist. We must create that:
+Add this to the [default cmdset as usual](../commands/Adding-Command-Tutorial). The `is_full_moon` [lock function](../../evennia_core/system/locks/Locks) does not yet exist. We must create that:
 
 ```python
 # in mygame/server/conf/lockfuncs.py

@@ -64,7 +64,7 @@ Note that this again is made so as to be easy to expand to a full-fledged game. 
 What we need are the following:
 
 - One character generation [Command](../../evennia_core/system/commands/Commands) to set the "Power" on the `Character`.  
-- A chargen [CmdSet](Command-Sets) to hold this command. Lets call it `ChargenCmdset`.  
+- A chargen [CmdSet](../../evennia_core/system/commands/Command-Sets) to hold this command. Lets call it `ChargenCmdset`.  
 - A custom `ChargenRoom` type that makes this set of commands available to players in such rooms.  
 - One such room to test things in.  
 
@@ -118,7 +118,7 @@ class CmdSetPower(Command):
 ```
 This is a pretty straightforward command. We do some error checking, then set the power on ourself. We use a `help_category` of "mush" for all our commands, just so they are easy to find and separate in the help list.
 
-Save the file. We will now add it to a new [CmdSet](Command-Sets) so it can be accessed (in a full chargen system you would of course have more than one command here).
+Save the file. We will now add it to a new [CmdSet](../../evennia_core/system/commands/Command-Sets) so it can be accessed (in a full chargen system you would of course have more than one command here).
 
 Open `mygame/commands/default_cmdsets.py` and import your `command.py` module at the top. We also import the default `CmdSet` class for the next step: 
 
@@ -162,7 +162,7 @@ class ChargenRoom(Room):
         "this is called only at first creation"
         self.cmdset.add(ChargenCmdset, permanent=True)
 ```
-Note how new rooms created with this typeclass will always start with `ChargenCmdset` on themselves. Don't forget the `permanent=True` keyword or you will lose the cmdset after a server reload. For more information about [Command Sets](Command-Sets) and [Commands](../../evennia_core/system/commands/Commands), see the respective links. 
+Note how new rooms created with this typeclass will always start with `ChargenCmdset` on themselves. Don't forget the `permanent=True` keyword or you will lose the cmdset after a server reload. For more information about [Command Sets](../../evennia_core/system/commands/Command-Sets) and [Commands](../../evennia_core/system/commands/Commands), see the respective links. 
 
 ### Testing chargen
 
