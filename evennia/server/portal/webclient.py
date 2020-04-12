@@ -37,10 +37,10 @@ CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
 #   called when the browser is navigating away from the page
 GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
 
-_BASE_SESSION = class_from_module(settings.BASE_SESSION_CLASS)
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
-class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION):
+class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
     """
     Implements the server-side of the Websocket connection.
     """
