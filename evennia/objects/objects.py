@@ -279,9 +279,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             and filtering.
 
         """
-        con = self.contents_cache.get(exclude=exclude)
-        # print "contents_get:", self, con, id(self), calledby()  # DEBUG
-        return con
+        return self.contents_cache.get(exclude=exclude, content_type=content_type)
 
     def contents_set(self, *args):
         "You cannot replace this property"

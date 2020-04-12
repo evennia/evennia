@@ -48,31 +48,40 @@ class ContentsHandler(object):
         self._typecache = defaultdict(set)
         self.init()
 
+    def load(self):
+        """
+        Retrieves all objects from database. Used for initializing.
+
+        Returns:
+            Objects (list of ObjectDB)
+        """
+        return list(self.obj.locations_set.all())
+
     def init(self):
         """
         Re-initialize the content cache
 
         """
-        objects = ObjectDB.objects.filter(db_location=self.obj)
+        objects = self.load()
         self._pkcache = {obj.pk for obj in objects}
         for obj in objects:
             for ctype in obj._content_types:
                 self._typecache[ctype].add(obj.pk)
 
-    def get(self, exclude=None, category=None):
+    def get(self, exclude=None, content_type=None):
         """
         Return the contents of the cache.
 
         Args:
             exclude (Object or list of Object): object(s) to ignore
-            category (str or None): Filter list by a content-type. If None, don't filter.
+            content_type (str or None): Filter list by a content-type. If None, don't filter.
 
         Returns:
             objects (list): the Objects inside this location
 
         """
-        if category is not None:
-            pks = self._typecache[category]
+        if content_type is not None:
+            pks = self._typecache[content_type]
         else:
             pks = self._pkcache
         if exclude:
@@ -88,7 +97,7 @@ class ContentsHandler(object):
             except KeyError:
                 # this means an actual failure of caching. Return real database match.
                 logger.log_err("contents cache failed for %s." % self.obj.key)
-                return list(ObjectDB.objects.filter(db_location=self.obj))
+                return self.load()
 
     def add(self, obj):
         """
@@ -112,7 +121,8 @@ class ContentsHandler(object):
         """
         self._pkcache.remove(obj.pk)
         for ctype in obj._content_types:
-            self._typecache[ctype].discard(obj.pk)
+            if obj.pk in self._typecache[ctype]:
+                self._typecache[ctype].remove(obj.pk)
 
     def clear(self):
         """
