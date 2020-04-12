@@ -92,7 +92,8 @@ class TestDefaultGuest(EvenniaTest):
     @patch("evennia.accounts.accounts.ChannelDB.objects.get_channel")
     def test_create(self, get_channel):
         get_channel.connect = MagicMock(return_value=True)
-        account, errors = DefaultGuest.create()
+        with override_settings(GUEST_HOME=self.room1.dbref):
+            account, errors = DefaultGuest.create()
         self.assertTrue(account, "Guest account should have been created.")
         self.assertFalse(errors)
 
