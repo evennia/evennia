@@ -32,7 +32,7 @@ from evennia.server.signals import (
     SIGNAL_OBJECT_POST_PUPPET,
     SIGNAL_OBJECT_POST_UNPUPPET,
 )
-from evennia.typeclasses.attributes import NickHandler
+from evennia.typeclasses.attributes import NickHandler, ModelAttributeBackend
 from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.utils.optionhandler import OptionHandler
@@ -199,7 +199,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     @lazy_property
     def nicks(self):
-        return NickHandler(self)
+        return NickHandler(self, ModelAttributeBackend)
 
     @lazy_property
     def sessions(self):
