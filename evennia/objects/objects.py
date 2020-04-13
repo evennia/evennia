@@ -203,6 +203,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     without `obj.save()` having to be called explicitly.
 
     """
+    # Used for sorting / filtering in inventories / room contents.
+    _content_types = ("object",)
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
@@ -257,7 +259,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             and not self.db_account.attributes.get("_quell")
         )
 
-    def contents_get(self, exclude=None):
+    def contents_get(self, exclude=None, content_type=None):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
@@ -266,17 +268,18 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             exclude (Object): Object to exclude from returned
                 contents list
+            content_type (str): A content_type to filter by. None for no
+                filtering.
 
         Returns:
             contents (list): List of contents of this Object.
 
         Notes:
-            Also available as the `contents` property.
+            Also available as the `contents` property, minus exclusion
+            and filtering.
 
         """
-        con = self.contents_cache.get(exclude=exclude)
-        # print "contents_get:", self, con, id(self), calledby()  # DEBUG
-        return con
+        return self.contents_cache.get(exclude=exclude, content_type=content_type)
 
     def contents_set(self, *args):
         "You cannot replace this property"
@@ -1656,20 +1659,25 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
         """
+        def filter_visible(obj_list):
+            # Helper method to determine if objects are visible to the looker.
+            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
+
         if not looker:
             return ""
+
         # get and identify all objects
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
-        exits, users, things = [], [], defaultdict(list)
-        for con in visible:
-            key = con.get_display_name(looker)
-            if con.destination:
-                exits.append(key)
-            elif con.has_account:
-                users.append("|c%s|n" % key)
-            else:
-                # things can be pluralized
-                things[key].append(con)
+        exits_list = filter_visible(self.contents_get(content_type='exit'))
+        users_list = filter_visible(self.contents_get(content_type='character'))
+        things_list = filter_visible(self.contents_get(content_type="object"))
+
+        things = defaultdict(list)
+
+        for thing in things_list:
+            things[thing.key].append(thing)
+        users = [f"|c{user.key}|n" for user in users_list]
+        exits = [ex.key for ex in exits_list]
+
         # get description, build string
         string = "|c%s|n\n" % self.get_display_name(looker)
         desc = self.db.desc
@@ -2026,7 +2034,9 @@ class DefaultCharacter(DefaultObject):
     a character avatar controlled by an account.
 
     """
-
+    # Tuple of types used for indexing inventory contents. Characters generally wouldn't be in
+    # anyone's inventory, but this also governs displays in room contents.
+    _content_types = ("character",)
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the appropriate attributes.
     lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);delete:id({account_id}) or perm(Admin)"
@@ -2278,6 +2288,9 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
+    # A tuple of strings used for indexing this object inside an inventory.
+    # Generally, a room isn't expected to HAVE a location, but maybe in some games?
+    _content_types = ("room",)
 
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the {id} of the creating object.
@@ -2428,7 +2441,7 @@ class DefaultExit(DefaultObject):
     exits simply by giving the exit-object's name on its own.
 
     """
-
+    _content_types = ("exit",)
     exit_command = ExitCommand
     priority = 101
 
