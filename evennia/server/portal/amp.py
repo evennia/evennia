@@ -15,7 +15,7 @@ import zlib  # Used in Compressed class
 import pickle
 
 from twisted.internet.defer import DeferredList, Deferred
-from evennia.utils.utils import to_str, variable_from_module
+from evennia.utils.utils import variable_from_module
 
 # delayed import
 _LOGGER = None

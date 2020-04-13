@@ -11,6 +11,9 @@
 - Using `lunr` search indexing for better `help` matching and suggestions. Also improve
   the main help command's default listing output.
 - Added `content_types` indexing to DefaultObject's ContentsHandler. (volund)
+- Made most of the networking classes such as Protocols and the SessionHandlers 
+  replaceable via `settings.py` for modding enthusiasts. (volund)
+
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
