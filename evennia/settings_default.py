@@ -972,7 +972,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
     # require logged in users to call API so that access checks can work on them
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated", ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated",],
     # These are the different ways people can authenticate for API requests - via
     # session or with user/password. Other ways are possible, such as via tokens
     # or oauth, but require additional dependencies.
@@ -1040,28 +1040,28 @@ PORTAL_SESSION_HANDLER_CLASS = "evennia.server.portal.portalsessionhandler.Porta
 # so the additions have somewhere to go. These must be simple things that
 # can be pickled - stuff you could serialize to JSON is best.
 SESSION_SYNC_ATTRS = (
-        "protocol_key",
-        "address",
-        "suid",
-        "sessid",
-        "uid",
-        "csessid",
-        "uname",
-        "logged_in",
-        "puid",
-        "conn_time",
-        "cmd_last",
-        "cmd_last_visible",
-        "cmd_total",
-        "protocol_flags",
-        "server_data",
-        "cmdset_storage_string"
-    )
+    "protocol_key",
+    "address",
+    "suid",
+    "sessid",
+    "uid",
+    "csessid",
+    "uname",
+    "logged_in",
+    "puid",
+    "conn_time",
+    "cmd_last",
+    "cmd_last_visible",
+    "cmd_total",
+    "protocol_flags",
+    "server_data",
+    "cmdset_storage_string",
+)
 
 # The following are used for the communications between the Portal and Server.
 # Very dragons territory.
-AMP_SERVER_PROTOCOL_CLASS = 'evennia.server.portal.amp_server.AMPServerProtocol'
-AMP_CLIENT_PROTOCOL_CLASS = 'evennia.server.amp_client.AMPServerClientProtocol'
+AMP_SERVER_PROTOCOL_CLASS = "evennia.server.portal.amp_server.AMPServerProtocol"
+AMP_CLIENT_PROTOCOL_CLASS = "evennia.server.amp_client.AMPServerClientProtocol"
 
 
 ######################################################################
