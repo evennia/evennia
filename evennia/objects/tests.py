@@ -1,6 +1,7 @@
 from evennia.utils.test_resources import EvenniaTest
 from evennia import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
 from evennia.objects.models import ObjectDB
+from evennia.utils import create
 
 
 class DefaultObjectTest(EvenniaTest):
@@ -145,3 +146,16 @@ class TestObjectManager(EvenniaTest):
         self.assertEqual(obj2.attributes.get(key="phrase"), "xyzzy")
         self.assertEqual(self.obj1.attributes.get(key="phrase", category="adventure"), "plugh")
         self.assertEqual(obj2.attributes.get(key="phrase", category="adventure"), "plugh")
+
+class TestContentHandler(EvenniaTest):
+    "Test the ContentHandler (obj.contents)"
+
+    def test_cache_clearing(self):
+        self.assertTrue(self.obj1 in self.room1.contents)
+        self.assertTrue(self.obj2 in self.room1.contents)
+
+        obj3 = create.create_object(key="obj3", location=self.room1)
+        self.assertTrue(obj3 in self.room1.contents)
+
+        obj3.delete()
+        self.assertFalse(obj3 in self.room1.contents)

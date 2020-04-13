@@ -38,7 +38,7 @@ def unload_module(module):
             an object, the module in which that object sits will be unloaded. A string
             should directly give the module pathname to unload.
 
-    Example: 
+    Example:
         # (in a test method)
         unload_module(foo)
         with mock.patch("foo.GLOBALTHING", "mockval"):
