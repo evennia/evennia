@@ -7,8 +7,10 @@ import time
 from collections import deque, namedtuple
 from twisted.internet import reactor
 from django.conf import settings
-from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
+from evennia.server.sessionhandler import SessionHandler
+from evennia.server.portal.amp import PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
+from evennia.utils.utils import class_from_module
 
 # module import
 _MOD_IMPORT = None
@@ -463,4 +465,6 @@ class PortalSessionHandler(SessionHandler):
                         log_trace()
 
 
-PORTAL_SESSIONS = PortalSessionHandler()
+_PORTAL_SESSION_HANDLER_CLASS = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
+
+PORTAL_SESSIONS = _PORTAL_SESSION_HANDLER_CLASS()

@@ -17,10 +17,8 @@ from the command line and interprets it as an Evennia Command: `["text", ["look"
 import re
 import json
 import html
-from twisted.internet.protocol import Protocol
 from django.conf import settings
-from evennia.server.session import Session
-from evennia.utils.utils import to_str, mod_import
+from evennia.utils.utils import mod_import, class_from_module
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 from autobahn.twisted.websocket import WebSocketServerProtocol
@@ -39,8 +37,10 @@ CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
 #   called when the browser is navigating away from the page
 GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
 
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
-class WebSocketClient(WebSocketServerProtocol, Session):
+
+class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
     """
     Implements the server-side of the Websocket connection.
     """

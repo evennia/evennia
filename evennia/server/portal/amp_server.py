@@ -11,6 +11,7 @@ from evennia.server.portal import amp
 from django.conf import settings
 from subprocess import Popen, STDOUT
 from evennia.utils import logger
+from evennia.utils.utils import class_from_module
 
 
 def _is_windows():
@@ -56,7 +57,7 @@ class AMPServerFactory(protocol.ServerFactory):
 
         """
         self.portal = portal
-        self.protocol = AMPServerProtocol
+        self.protocol = class_from_module(settings.AMP_SERVER_PROTOCOL_CLASS)
         self.broadcasts = []
         self.server_connection = None
         self.launcher_connection = None
@@ -74,7 +75,7 @@ class AMPServerFactory(protocol.ServerFactory):
             protocol (Protocol): The created protocol.
 
         """
-        self.portal.amp_protocol = AMPServerProtocol()
+        self.portal.amp_protocol = self.protocol()
         self.portal.amp_protocol.factory = self
         return self.portal.amp_protocol
 

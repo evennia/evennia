@@ -35,26 +35,6 @@ class Session(object):
 
     """
 
-    # names of attributes that should be affected by syncing.
-    _attrs_to_sync = (
-        "protocol_key",
-        "address",
-        "suid",
-        "sessid",
-        "uid",
-        "csessid",
-        "uname",
-        "logged_in",
-        "puid",
-        "conn_time",
-        "cmd_last",
-        "cmd_last_visible",
-        "cmd_total",
-        "protocol_flags",
-        "server_data",
-        "cmdset_storage_string",
-    )
-
     def init_session(self, protocol_key, address, sessionhandler):
         """
         Initialize the Session. This should be called by the protocol when
@@ -121,9 +101,7 @@ class Session(object):
                 the keys given by self._attrs_to_sync.
 
         """
-        return dict(
-            (key, value) for key, value in self.__dict__.items() if key in self._attrs_to_sync
-        )
+        return {attr: getattr(self, attr, None) for attr in settings.SESSION_SYNC_ATTRS}
 
     def load_sync_data(self, sessdata):
         """

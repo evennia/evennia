@@ -18,7 +18,7 @@ except ImportError as error:
     raise ImportError(errstr.format(err=error))
 
 from django.conf import settings
-from evennia.server.portal.telnet import TelnetProtocol
+from evennia.utils.utils import class_from_module
 
 _GAME_DIR = settings.GAME_DIR
 
@@ -43,8 +43,10 @@ example (linux, using the openssl program):
     {exestring}
 """
 
+_TELNET_PROTOCOL_CLASS = class_from_module(settings.TELNET_PROTOCOL_CLASS)
 
-class SSLProtocol(TelnetProtocol):
+
+class SSLProtocol(_TELNET_PROTOCOL_CLASS):
     """
     Communication is the same as telnet, except data transfer
     is done with encryption.
