@@ -521,25 +521,6 @@ class Trait:
                 f"loaded for {type(self).__name__}."
             )
 
-    # Private helper members
-
-    def _enforce_bounds(self, value):
-        """Ensures that incoming value falls within trait's range."""
-        if self._type in RANGE_TRAITS:
-            if self.min is not None and value <= self.min:
-                return self.min
-            if self._data["max"] == "base" and value >= self.mod + self.base:
-                return self.mod + self.base
-            if self.max is not None and value >= self.max:
-                return self.max
-        return value
-
-    def _mod_base(self):
-        return self._enforce_bounds(self.mod + self.base)
-
-    def _mod_current(self):
-        return self._enforce_bounds(self.mod + self.current)
-
     def __repr__(self):
         """Debug-friendly representation of this Trait."""
         return "{}({{{}}})".format(
@@ -603,6 +584,20 @@ class Trait:
         """Delete extra parameters as attributes."""
         if key in self._data["extra_properties"]:
             del self._data["extra_properties"][key]
+
+    # Limiting the value to set
+
+    def _enforce_bounds(self, value):
+        """Ensures that incoming value falls within trait's range."""
+        return value
+
+    def _mod_base(self):
+        """Calculate adding base and modifications"""
+        return self._enforce_bounds(self.mod + self.base)
+
+    def _mod_current(self):
+        """Calculate the current value"""
+        return self._enforce_bounds(self.mod + self.current)
 
     # Numeric operations
 
@@ -811,7 +806,7 @@ class StaticTrait(Trait):
     @current.setter
     def current(self, value):
         """Current == base for Static Traits."""
-        self.base = self.current = value
+        self.base = value
 
     def reset(self):
         raise TraitException(f"Cannot reset static Trait {self.key}.")
@@ -824,6 +819,16 @@ class CounterTrait(Trait):
     """
 
     trait_type = "counter"
+
+    def _enforce_bounds(self, value):
+        """Ensures that incoming value falls within trait's range."""
+        if self.min is not None and value <= self.min:
+            return self.min
+        if self._data["max_value"] == "base" and value >= self.mod + self.base:
+            return self.mod + self.base
+        if self.max is not None and value >= self.max:
+            return self.max
+        return value
 
     @property
     def actual(self):
@@ -838,9 +843,9 @@ class CounterTrait(Trait):
     @min.setter
     def min(self, amount):
         if amount is None:
-            self._data["min"] = amount
+            self._data["min_value"] = amount
         elif type(amount) in (int, float):
-            self._data["min"] = amount if amount < self.base else self.base
+            self._data["min_value"] = amount if amount < self.base else self.base
 
     @property
     def max(self):
