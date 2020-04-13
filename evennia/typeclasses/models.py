@@ -36,7 +36,8 @@ from django.urls import reverse
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
 
-from evennia.typeclasses.attributes import Attribute, AttributeHandler, NAttributeHandler
+from evennia.typeclasses.attributes import Attribute, AttributeHandler, ModelAttributeBackend, InMemoryAttributeBackend
+from evennia.typeclasses.attributes import DbHolder
 from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
 
 from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
@@ -120,33 +121,6 @@ class TypeclassBase(SharedMemoryModelBase):
         signals.post_save.connect(call_at_first_save, sender=new_class)
         signals.pre_delete.connect(remove_attributes_on_delete, sender=new_class)
         return new_class
-
-
-class DbHolder(object):
-    "Holder for allowing property access of attributes"
-
-    def __init__(self, obj, name, manager_name="attributes"):
-        _SA(self, name, _GA(obj, manager_name))
-        _SA(self, "name", name)
-
-    def __getattribute__(self, attrname):
-        if attrname == "all":
-            # we allow to overload our default .all
-            attr = _GA(self, _GA(self, "name")).get("all")
-            return attr if attr else _GA(self, "all")
-        return _GA(self, _GA(self, "name")).get(attrname)
-
-    def __setattr__(self, attrname, value):
-        _GA(self, _GA(self, "name")).add(attrname, value)
-
-    def __delattr__(self, attrname):
-        _GA(self, _GA(self, "name")).remove(attrname)
-
-    def get_all(self):
-        return _GA(self, _GA(self, "name")).all()
-
-    all = property(get_all)
-
 
 #
 # Main TypedObject abstraction
@@ -301,7 +275,7 @@ class TypedObject(SharedMemoryModel):
     # initialize all handlers in a lazy fashion
     @lazy_property
     def attributes(self):
-        return AttributeHandler(self)
+        return AttributeHandler(self, ModelAttributeBackend)
 
     @lazy_property
     def locks(self):
@@ -321,7 +295,7 @@ class TypedObject(SharedMemoryModel):
 
     @lazy_property
     def nattributes(self):
-        return NAttributeHandler(self)
+        return AttributeHandler(self, InMemoryAttributeBackend)
 
     class Meta(object):
         """
