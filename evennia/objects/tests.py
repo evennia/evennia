@@ -147,10 +147,12 @@ class TestObjectManager(EvenniaTest):
         self.assertEqual(self.obj1.attributes.get(key="phrase", category="adventure"), "plugh")
         self.assertEqual(obj2.attributes.get(key="phrase", category="adventure"), "plugh")
 
+
 class TestContentHandler(EvenniaTest):
     "Test the ContentHandler (obj.contents)"
 
-    def test_cache_clearing(self):
+    def test_object_create_remove(self):
+        """Create/destroy object"""
         self.assertTrue(self.obj1 in self.room1.contents)
         self.assertTrue(self.obj2 in self.room1.contents)
 
@@ -159,3 +161,29 @@ class TestContentHandler(EvenniaTest):
 
         obj3.delete()
         self.assertFalse(obj3 in self.room1.contents)
+
+    def test_object_move(self):
+        """Move object from room to room in various ways"""
+        self.assertTrue(self.obj1 in self.room1.contents)
+        # use move_to hook
+        self.obj1.move_to(self.room2)
+        self.assertFalse(self.obj1 in self.room1.contents)
+        self.assertTrue(self.obj1 in self.room2.contents)
+
+        # move back via direct setting of .location
+        self.obj1.location = self.room1
+        self.assertTrue(self.obj1 in self.room1.contents)
+        self.assertFalse(self.obj1 in self.room2.contents)
+
+    def test_content_type(self):
+        self.assertEqual(
+            set(self.room1.contents_get()),
+            set([self.char1, self.char2, self.obj1, self.obj2, self.exit]),
+        )
+        self.assertEqual(
+            set(self.room1.contents_get(content_type="object")), set([self.obj1, self.obj2])
+        )
+        self.assertEqual(
+            set(self.room1.contents_get(content_type="character")), set([self.char1, self.char2])
+        )
+        self.assertEqual(set(self.room1.contents_get(content_type="exit")), set([self.exit]))
