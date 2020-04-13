@@ -572,6 +572,11 @@ SESSION_SYNC_ATTRS = (
         "cmdset_storage_string"
     )
 
+# The following are used for the communications between the Portal and Server.
+# Very dragons territory.
+AMP_SERVER_PROTOCOL_CLASS = 'evennia.server.portal.amp_server.AMPServerProtocol'
+AMP_CLIENT_PROTOCOL_CLASS = 'evennia.server.amp_client.AMPServerClientProtocol'
+
 ######################################################################
 # Options and validators
 ######################################################################
