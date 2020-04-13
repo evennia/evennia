@@ -509,75 +509,6 @@ START_LOCATION = "#2"
 TYPECLASS_AGGRESSIVE_CACHE = True
 
 ######################################################################
-# Networking Replaceable Guts
-######################################################################
-# Modify the things below at your own risk. This is here be dragons territory.
-
-# The Base Session Class is used as a parent class for all Protocols such as
-# Telnet and SSH.) Changing this could be really dangerous. It will cascade
-# to tons of classes. You generally shouldn't need to touch protocols.
-BASE_SESSION_CLASS = "evennia.server.session.Session"
-
-# Telnet Protocol inherits from whatever above BASE_SESSION_CLASS is specified.
-# It is used for all telnet connections, and is also inherited by the SSL Protocol
-# (which is just TLS + Telnet).
-TELNET_PROTOCOL_CLASS = "evennia.server.portal.telnet.TelnetProtocol"
-SSL_PROTOCOL_CLASS = "evennia.server.portal.ssl.SSLProtocol"
-
-# Websocket Client Protocol. This inherits from BASE_SESSION_CLASS. It is used
-# for all webclient connections.
-WEBSOCKET_PROTOCOL_CLASS = "evennia.server.portal.webclient.WebSocketClient"
-
-# Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.
-SSH_PROTOCOL_CLASS = "evennia.server.portal.ssh.SshProtocol"
-
-# Server-side session class used. This will inherit from BASE_SESSION_CLASS.
-# This one isn't as dangerous to replace.
-SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
-
-# The Server SessionHandler manages all ServerSessions, handling logins,
-# ensuring the login process happens smoothly, handling expected and
-# unexpected disconnects. You shouldn't need to touch it, but you can.
-# Replace it to implement altered game logic.
-SERVER_SESSION_HANDLER_CLASS = "evennia.server.sessionhandler.ServerSessionHandler"
-
-# The Portal SessionHandler manages all incoming connections regardless of
-# the protocol in use. It is responsible for keeping them going and informing
-# the Server Session Handler of the connections and synchronizing them across the
-# AMP connection. You shouldn't ever need to change this. But you can.
-PORTAL_SESSION_HANDLER_CLASS = "evennia.server.portal.portalsessionhandler.PortalSessionHandler"
-
-
-# These are members / properties / attributes kept on both Server and
-# Portal Sessions. They are sync'd at various points, such as logins and
-# reloads. If you add to this, you may need to adjust the class __init__
-# so the additions have somewhere to go. These must be simple things that
-# can be pickled - stuff you could serialize to JSON is best.
-SESSION_SYNC_ATTRS = (
-        "protocol_key",
-        "address",
-        "suid",
-        "sessid",
-        "uid",
-        "csessid",
-        "uname",
-        "logged_in",
-        "puid",
-        "conn_time",
-        "cmd_last",
-        "cmd_last_visible",
-        "cmd_total",
-        "protocol_flags",
-        "server_data",
-        "cmdset_storage_string"
-    )
-
-# The following are used for the communications between the Portal and Server.
-# Very dragons territory.
-AMP_SERVER_PROTOCOL_CLASS = 'evennia.server.portal.amp_server.AMPServerProtocol'
-AMP_CLIENT_PROTOCOL_CLASS = 'evennia.server.amp_client.AMPServerClientProtocol'
-
-######################################################################
 # Options and validators
 ######################################################################
 
@@ -1041,7 +972,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
     # require logged in users to call API so that access checks can work on them
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated",],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated", ],
     # These are the different ways people can authenticate for API requests - via
     # session or with user/password. Other ways are possible, such as via tokens
     # or oauth, but require additional dependencies.
@@ -1060,6 +991,78 @@ REST_FRAMEWORK = {
 
 # To enable the REST api, turn this to True
 REST_API_ENABLED = False
+
+######################################################################
+# Networking Replaceables
+######################################################################
+# This allows for replacing the very core of the infrastructure holding Evennia
+# together with your own variations. You should usually never have to touch
+# this, and if so, you really need to know what you are doing.
+
+# The Base Session Class is used as a parent class for all Protocols such as
+# Telnet and SSH.) Changing this could be really dangerous. It will cascade
+# to tons of classes. You generally shouldn't need to touch protocols.
+BASE_SESSION_CLASS = "evennia.server.session.Session"
+
+# Telnet Protocol inherits from whatever above BASE_SESSION_CLASS is specified.
+# It is used for all telnet connections, and is also inherited by the SSL Protocol
+# (which is just TLS + Telnet).
+TELNET_PROTOCOL_CLASS = "evennia.server.portal.telnet.TelnetProtocol"
+SSL_PROTOCOL_CLASS = "evennia.server.portal.ssl.SSLProtocol"
+
+# Websocket Client Protocol. This inherits from BASE_SESSION_CLASS. It is used
+# for all webclient connections.
+WEBSOCKET_PROTOCOL_CLASS = "evennia.server.portal.webclient.WebSocketClient"
+
+# Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.
+SSH_PROTOCOL_CLASS = "evennia.server.portal.ssh.SshProtocol"
+
+# Server-side session class used. This will inherit from BASE_SESSION_CLASS.
+# This one isn't as dangerous to replace.
+SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
+
+# The Server SessionHandler manages all ServerSessions, handling logins,
+# ensuring the login process happens smoothly, handling expected and
+# unexpected disconnects. You shouldn't need to touch it, but you can.
+# Replace it to implement altered game logic.
+SERVER_SESSION_HANDLER_CLASS = "evennia.server.sessionhandler.ServerSessionHandler"
+
+# The Portal SessionHandler manages all incoming connections regardless of
+# the protocol in use. It is responsible for keeping them going and informing
+# the Server Session Handler of the connections and synchronizing them across the
+# AMP connection. You shouldn't ever need to change this. But you can.
+PORTAL_SESSION_HANDLER_CLASS = "evennia.server.portal.portalsessionhandler.PortalSessionHandler"
+
+
+# These are members / properties / attributes kept on both Server and
+# Portal Sessions. They are sync'd at various points, such as logins and
+# reloads. If you add to this, you may need to adjust the class __init__
+# so the additions have somewhere to go. These must be simple things that
+# can be pickled - stuff you could serialize to JSON is best.
+SESSION_SYNC_ATTRS = (
+        "protocol_key",
+        "address",
+        "suid",
+        "sessid",
+        "uid",
+        "csessid",
+        "uname",
+        "logged_in",
+        "puid",
+        "conn_time",
+        "cmd_last",
+        "cmd_last_visible",
+        "cmd_total",
+        "protocol_flags",
+        "server_data",
+        "cmdset_storage_string"
+    )
+
+# The following are used for the communications between the Portal and Server.
+# Very dragons territory.
+AMP_SERVER_PROTOCOL_CLASS = 'evennia.server.portal.amp_server.AMPServerProtocol'
+AMP_CLIENT_PROTOCOL_CLASS = 'evennia.server.amp_client.AMPServerClientProtocol'
+
 
 ######################################################################
 # Django extensions
