@@ -237,20 +237,59 @@ Examples:
             ```
 """
 
+from django.conf import settings
 from functools import total_ordering
 from evennia.utils.dbserialize import _SaverDict
 from evennia.utils import logger
-from evennia.utils.utils import inherits_from
+from evennia.utils.utils import inherits_from, class_from_module
 
 
+# This way the user can easily supply their own. Each
+# class should have a class-property `trait_type` to
+# identify the Trait class. The default ones are "static",
+# "counter" and "gauge".
 
-STATIC_TYPE = "static"
-COUNTER_TYPE = "counter",
-GAUGE_TYPE = "gauge"
+_TRAIT_CLASS_PATHS = [
+    "evennia.contrib.traits.StaticTrait",
+    "evennia.contrib.traits.CounterTrait",
+    "evennia.contrib.traits.GaugeTrait",
+]
+
+if hasattr(settings, "TRAIT_CLASS_PATHS"):
+    _TRAIT_CLASS_PATHS += settings.TRAIT_CLASS_PATHS
+
+# delay trait-class import to avoid circular import
+_TRAIT_CLASSES = None
 
 
-TRAIT_TYPES = (STATIC_TYPE, COUNTER_TYPE, GAUGE_TYPE)
-RANGE_TRAITS = (COUNTER_TYPE, GAUGE_TYPE)
+def _delayed_import_trait_classes():
+    """
+    Import classes based on the given paths. Note that
+    imports from settings are last in the list, so if they
+    have the same trait_type set, they will replace the
+    default.
+    """
+    global _TRAIT_CLASSES
+    if _TRAIT_CLASSES is None:
+        _TRAIT_CLASSES = {}
+        for classpath in _TRAIT_CLASS_PATHS:
+            try:
+                cls = class_from_module(classpath)
+            except ImportError:
+                logger.log_trace(f"Could not import Trait from {classpath}.")
+            else:
+                if hasattr(cls, "trait_type"):
+                    trait_type = cls.trait_type
+                else:
+                    trait_type = str(cls.__name___).lower()
+                _TRAIT_CLASSES[trait_type] = cls
+
+
+_GA = object.__getattribute__
+_SA = object.__setattr__
+
+# this is the default we offer in TraitHandler.add
+DEFAULT_TRAIT_TYPE = "static"
 
 
 class TraitException(Exception):
@@ -261,6 +300,7 @@ class TraitException(Exception):
         msg (str): informative error message
 
     """
+
     def __init__(self, msg):
         self.msg = msg
 
@@ -270,7 +310,8 @@ class TraitHandler:
     Factory class that instantiates Trait objects.
 
     """
-    def __init__(self, obj, db_attribute_key='traits', db_attribute_category="traits"):
+
+    def __init__(self, obj, db_attribute_key="traits", db_attribute_category="traits"):
         """
         Initialize the handler and set up its internal Attribute-based storage.
 
@@ -279,6 +320,9 @@ class TraitHandler:
             db_attribute_key (str): Name of the DB attribute for trait data storage
 
         """
+        # load the available classes, if necessary
+        _delayed_import_trait_classes()
+
         # Note that this retains the connection to the database, meaning every
         # update we do to .trait_data automatically syncs with database.
         self.trait_data = obj.attributes.get(db_attribute_key, category=db_attribute_category)
@@ -294,8 +338,8 @@ class TraitHandler:
 
     def __setattr__(self, key, value):
         """Returns error message if trait objects are assigned directly."""
-        if key in ('trait_data', '_cache'):
-            super().__setattr__(key, value)
+        if key in ("trait_data", "_cache"):
+            _SA(self, key, value)
         else:
             raise TraitException(
                 "Trait object not settable directly. Assign to one of "
@@ -306,13 +350,18 @@ class TraitHandler:
         """Returns error message if trait objects are assigned directly."""
         return self.__setattr__(key, value)
 
-    def __getattr__(self, trait):
+    def __getattr__(self, key):
         """Returns Trait instances accessed as attributes."""
-        return self.get(trait)
+        return self.get(key)
 
-    def __getitem__(self, trait):
+    def __getitem__(self, key):
         """Returns `Trait` instances accessed as dict keys."""
-        return self.get(trait)
+        return self.get(key)
+
+    def __repr__(self):
+        return "TraitHandler ({num} Trait(s) stored): {keys}".format(
+            num=len(self), keys=", ".join(self.all)
+        )
 
     @property
     def all(self):
@@ -325,7 +374,7 @@ class TraitHandler:
         """
         return list(self.trait_data.keys())
 
-    def get(self, trait):
+    def get(self, key):
         """
         Args:
             trait (str): key from the traits dict containing config data
@@ -336,14 +385,28 @@ class TraitHandler:
             is not found in traits collection.
 
         """
-        trait = self._cache.get(trait)
-        if trait is None and trait in self.trait_data:
-            trait = self.cache[trait] = Trait(self.trait_data[trait])
+        trait = self._cache.get(key)
+        if trait is None and key in self.trait_data:
+            trait_type = self.trait_data[key]["trait_type"]
+            try:
+                trait_cls = _TRAIT_CLASSES[trait_type]
+            except KeyError:
+                raise TraitException("Trait class for {trait_type} could not be found.")
+            trait = self._cache[key] = trait_cls(self.trait_data[key])
         return trait
 
-    def add(self, key, name=None, trait_type=STATIC_TYPE,
-            base=0, modifier=0, min_value=0, max_value=0, 
-            force=False, **extra_properties):
+    def add(
+        self,
+        key,
+        name=None,
+        trait_type=DEFAULT_TRAIT_TYPE,
+        base=0,
+        modifier=0,
+        min_value=None,
+        max_value=None,
+        force=False,
+        **extra_properties,
+    ):
         """
         Create a new Trait and add it to the handler.
 
@@ -369,13 +432,15 @@ class TraitHandler:
                 already exists (and `force` is unset).
 
         """
+        # from evennia import set_trace;set_trace()
+
         if key in self.trait_data:
             if force:
                 self.remove(key)
             else:
                 raise TraitException(f"Trait '{key}' already exists.")
 
-        if trait_type not in TRAIT_TYPES:
+        if trait_type not in _TRAIT_CLASSES:
             raise TraitException("Trait-type '{trait_type} is invalid.")
 
         trait_kwargs = dict(
@@ -385,7 +450,7 @@ class TraitHandler:
             modifier=modifier,
             min_value=min_value,
             max_value=max_value,
-            extra_properties=extra_properties
+            extra_properties=extra_properties,
         )
 
         self.trait_data[key] = trait_kwargs
@@ -402,7 +467,7 @@ class TraitHandler:
             raise TraitException(f"Trait '{key}' not found.")
 
         if key in self._cache:
-            del self.cache[key]
+            del self._cache[key]
         del self.trait_data[key]
 
     def clear(self):
@@ -415,6 +480,7 @@ class TraitHandler:
 
 # Parent Trait class
 
+
 @total_ordering
 class Trait:
     """Represents an object or Character trait.
@@ -423,8 +489,16 @@ class Trait:
         See module docstring for configuration details.
     """
 
-    _keys = set("name", "type", "base", "mod", "current",
-                "min", "max", "extra_properties")
+    _keys = (
+        "name",
+        "trait_type",
+        "base",
+        "modifier",
+        "current",
+        "min_value",
+        "max_value",
+        "extra_properties",
+    )
 
     def __init__(self, trait_data):
         """
@@ -436,20 +510,16 @@ class Trait:
                 save itself the database when updating
 
         """
-        if not all(key in trait_data for key in self.valid_keys):
-            raise TraitException(
-                f"Required keys missing from trait_data "
-                f"(input was {list(trait_data.keys())}, "
-                f"required are {self.valid_keys}).")
 
-        self._type = trait_data['trait_type']
+        self._type = trait_data["trait_type"]
         self._data = trait_data
         self._locked = True
 
         if not isinstance(trait_data, _SaverDict):
             logger.log_warn(
                 f"Non-persistent Trait data (type(trait_data)) "
-                f"loaded for {type(self).__name__}.")
+                f"loaded for {type(self).__name__}."
+            )
 
     # Private helper members
 
@@ -458,7 +528,7 @@ class Trait:
         if self._type in RANGE_TRAITS:
             if self.min is not None and value <= self.min:
                 return self.min
-            if self._data['max'] == 'base' and value >= self.mod + self.base:
+            if self._data["max"] == "base" and value >= self.mod + self.base:
                 return self.mod + self.base
             if self.max is not None and value >= self.max:
                 return self.max
@@ -474,15 +544,14 @@ class Trait:
         """Debug-friendly representation of this Trait."""
         return "{}({{{}}})".format(
             type(self).__name__,
-            ', '.join(["'{}': {!r}".format(k, self._data[k])
-                for k in self._keys if k in self._data]))
+            ", ".join(
+                ["'{}': {!r}".format(k, self._data[k]) for k in self._keys if k in self._data]
+            ),
+        )
 
     def __str__(self):
         status = "{actual:11}".format(actual=self.actual)
-        return "{name:12} {status} ({mod:+3})".format(
-            name=self.name,
-            status=status,
-            mod=self.mod)
+        return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
 
     # Extra Properties - allow access to properties on Trait
 
@@ -504,12 +573,11 @@ class Trait:
     def __getattr__(self, key):
         """Access extra parameters as attributes."""
         try:
-            return self._data['extra_properties'][key]
+            return self._data["extra_properties"][key]
         except KeyError:
             raise AttributeError(
-                "{} '{}' has no attribute {!r}".format(
-                    type(self).__name__, self.name, key
-                ))
+                "{} '{}' has no attribute {!r}".format(type(self).__name__, self.name, key)
+            )
 
     def __setattr__(self, key, value):
         """Set extra parameters as attributes.
@@ -526,16 +594,15 @@ class Trait:
                 raise AttributeError(f"Can't set attribute {key}.")
             propobj.fset(self, value)
         else:
-            if (self.__dict__.get('_locked', False) and
-                    key not in ('_keys',)):
-                self._data['extra_properties'][key] = value
+            if self.__dict__.get("_locked", False) and key not in ("_keys",):
+                _GA(self, "_data")["extra_properties"][key] = value
             else:
-                super().__setattr__(key, value)
+                _SA(self, key, value)
 
     def __delattr__(self, key):
         """Delete extra parameters as attributes."""
-        if key in self._data['extra_parameters']:
-            del self._data['extra_parameters'][key]
+        if key in self._data["extra_properties"]:
+            del self._data["extra_properties"][key]
 
     # Numeric operations
 
@@ -630,7 +697,8 @@ class Trait:
     @property
     def name(self):
         """Display name for the trait."""
-        return self._data['name']
+        return self._data["name"]
+
     key = name
 
     @property
@@ -646,24 +714,24 @@ class Trait:
             The setter for this property will enforce any range bounds set
             on this `Trait`.
         """
-        return self._data['base']
+        return self._data["base"]
 
     @base.setter
     def base(self, amount):
-        if self._data.get('max', None) == 'base':
-            self._data['base'] = amount
+        if self._data.get("max", None) == "base":
+            self._data["base"] = amount
         if type(amount) in (int, float):
-            self._data['base'] = self._enforce_bounds(amount)
+            self._data["base"] = self._enforce_bounds(amount)
 
     @property
     def mod(self):
         """The trait's modifier."""
-        return self._data['modifier']
+        return self._data["modifier"]
 
     @mod.setter
     def mod(self, amount):
         if type(amount) in (int, float):
-            self._data['modifier'] = amount
+            self._data["modifier"] = amount
 
     @property
     def min(self):
@@ -675,7 +743,7 @@ class Trait:
 
     @property
     def max(self):
-        return self._data['max_value']
+        return self._data["max_value"]
 
     @max.setter
     def max(self, value):
@@ -684,7 +752,7 @@ class Trait:
     @property
     def current(self):
         """The `current` value of the `Trait`."""
-        return self._data.get('current', self.base)
+        return self._data.get("current", self.base)
 
     @current.setter
     def current(self, value):
@@ -693,7 +761,7 @@ class Trait:
     @property
     def extra(self):
         """Returns a list containing available extra data keys."""
-        return self._data['extra'].keys()
+        return self._data["extra"].keys()
 
     def reset_mod(self):
         """Clears any mod value to 0."""
@@ -710,11 +778,15 @@ class Trait:
 
 # Implementation of the respective Trait types
 
+
 class StaticTrait(Trait):
     """
     Static Trait.
 
     """
+
+    trait_type = "static"
+
     @property
     def min(self):
         raise TraitException(f"Static Trait {self.key} has no minimum value.")
@@ -733,17 +805,16 @@ class StaticTrait(Trait):
 
     @property
     def current(self):
-        """The `current` value of the `Trait`."""
-        return super().current
+        """The `current` value of the `Trait`. This is the same as base for a Static Trait."""
+        return self.base
 
     @current.setter
     def current(self, value):
-        raise TraitException(
-            f"Cannot set 'current' property on static Trait {self.key}.")
+        """Current == base for Static Traits."""
+        self.base = self.current = value
 
     def reset(self):
-        raise TraitException(
-            f"Cannot reset static Trait {self.key}.")
+        raise TraitException(f"Cannot reset static Trait {self.key}.")
 
 
 class CounterTrait(Trait):
@@ -751,6 +822,9 @@ class CounterTrait(Trait):
     Counter Trait.
 
     """
+
+    trait_type = "counter"
+
     @property
     def actual(self):
         "The actual value of the Trait"
@@ -763,14 +837,14 @@ class CounterTrait(Trait):
 
     @min.setter
     def min(self, amount):
-        if amount is None: 
-            self._data['min'] = amount
+        if amount is None:
+            self._data["min"] = amount
         elif type(amount) in (int, float):
-            self._data['min'] = amount if amount < self.base else self.base
+            self._data["min"] = amount if amount < self.base else self.base
 
     @property
     def max(self):
-        if self._data['max_value'] == 'base':
+        if self._data["max_value"] == "base":
             return self._mod_base()
         return super().max
 
@@ -783,16 +857,16 @@ class CounterTrait(Trait):
             When set this way, the property returns the value of the
             `mod`+`base` properties.
         """
-        if self._data['max_value'] == 'base':
+        if self._data["max_value"] == "base":
             return self._mod_base()
         return super().max
 
     @max.setter
     def max(self, value):
-        if value == 'base' or value is None:
-            self._data['max_value'] = value
+        if value == "base" or value is None:
+            self._data["max_value"] = value
         elif type(value) in (int, float):
-            self._data['max_value'] = value if value > self.base else self.base
+            self._data["max_value"] = value if value > self.base else self.base
 
     @property
     def current(self):
@@ -802,10 +876,9 @@ class CounterTrait(Trait):
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
-            self._data['current'] = self._enforce_bounds(value)
+            self._data["current"] = self._enforce_bounds(value)
         else:
-            raise AttributeError(
-                "'current' property is read-only on static 'Trait'.")
+            raise AttributeError("'current' property is read-only on static 'Trait'.")
 
     def percent(self):
         """Returns the value formatted as a percentage."""
@@ -822,14 +895,12 @@ class GaugeTrait(CounterTrait):
     Gauge Trait.
 
     """
+
+    trait_type = "gauge"
+
     def __str__(self):
-        status = "{actual:4} / {base:4}".format(
-            actual=self.actual,
-            base=self.base)
-        return "{name:12} {status} ({mod:+3})".format(
-            name=self.name,
-            status=status,
-            mod=self.mod)
+        status = "{actual:4} / {base:4}".format(actual=self.actual, base=self.base)
+        return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
 
     @property
     def actual(self):
@@ -844,8 +915,8 @@ class GaugeTrait(CounterTrait):
     @mod.setter
     def mod(self, amount):
         if type(amount) in (int, float):
-            self._data['modifier'] = amount
-            delta = amount - self._data['modifier']
+            self._data["modifier"] = amount
+            delta = amount - self._data["modifier"]
             if delta >= 0:
                 # apply increases to current
                 self.current = self._enforce_bounds(self.current + delta)
@@ -856,7 +927,7 @@ class GaugeTrait(CounterTrait):
     @property
     def current(self):
         """The `current` value of the `Trait`."""
-        return self._data.get('current', self._mod_base())
+        return self._data.get("current", self._mod_base())
 
     @current.setter
     def current(self, value):
@@ -869,5 +940,4 @@ class GaugeTrait(CounterTrait):
             Will honor the upper bound if set.
 
         """
-        self.current = \
-            self._enforce_bounds(self.current + self._mod_base())
+        self.current = self._enforce_bounds(self.current + self._mod_base())

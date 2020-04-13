@@ -23,7 +23,7 @@ from evennia.utils.utils import (
     make_iter,
     delay,
     callables_from_module,
-    class_from_module
+    class_from_module,
 )
 from evennia.server.portal import amp
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT

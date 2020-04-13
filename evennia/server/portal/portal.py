@@ -261,6 +261,7 @@ if TELNET_ENABLED:
     # Start telnet game connections
 
     from evennia.server.portal import telnet
+
     _telnet_protocol = class_from_module(settings.TELNET_PROTOCOL_CLASS)
 
     for interface in TELNET_INTERFACES:
@@ -285,6 +286,7 @@ if SSL_ENABLED:
     # Start Telnet+SSL game connection (requires PyOpenSSL).
 
     from evennia.server.portal import telnet_ssl
+
     _ssl_protocol = class_from_module(settings.SSL_PROTOCOL_CLASS)
 
     for interface in SSL_INTERFACES:
@@ -319,6 +321,7 @@ if SSH_ENABLED:
     # evennia/game if necessary.
 
     from evennia.server.portal import ssh
+
     _ssh_protocol = class_from_module(settings.SSH_PROTOCOL_CLASS)
 
     for interface in SSH_INTERFACES:
@@ -328,11 +331,7 @@ if SSH_ENABLED:
         for port in SSH_PORTS:
             pstring = "%s:%s" % (ifacestr, port)
             factory = ssh.makeFactory(
-                {
-                    "protocolFactory": _ssh_protocol,
-                    "protocolArgs": (),
-                    "sessions": PORTAL_SESSIONS,
-                }
+                {"protocolFactory": _ssh_protocol, "protocolArgs": (), "sessions": PORTAL_SESSIONS,}
             )
             factory.noisy = False
             ssh_service = internet.TCPServer(port, factory, interface=interface)
