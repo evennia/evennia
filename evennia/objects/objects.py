@@ -203,6 +203,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     without `obj.save()` having to be called explicitly.
 
     """
+
     # Used for sorting / filtering in inventories / room contents.
     _content_types = ("object",)
 
@@ -1659,6 +1660,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
         """
+
         def filter_visible(obj_list):
             # Helper method to determine if objects are visible to the looker.
             return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
@@ -1667,8 +1669,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             return ""
 
         # get and identify all objects
-        exits_list = filter_visible(self.contents_get(content_type='exit'))
-        users_list = filter_visible(self.contents_get(content_type='character'))
+        exits_list = filter_visible(self.contents_get(content_type="exit"))
+        users_list = filter_visible(self.contents_get(content_type="character"))
         things_list = filter_visible(self.contents_get(content_type="object"))
 
         things = defaultdict(list)
@@ -2034,6 +2036,7 @@ class DefaultCharacter(DefaultObject):
     a character avatar controlled by an account.
 
     """
+
     # Tuple of types used for indexing inventory contents. Characters generally wouldn't be in
     # anyone's inventory, but this also governs displays in room contents.
     _content_types = ("character",)
@@ -2288,6 +2291,7 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
+
     # A tuple of strings used for indexing this object inside an inventory.
     # Generally, a room isn't expected to HAVE a location, but maybe in some games?
     _content_types = ("room",)
@@ -2441,6 +2445,7 @@ class DefaultExit(DefaultObject):
     exits simply by giving the exit-object's name on its own.
 
     """
+
     _content_types = ("exit",)
     exit_command = ExitCommand
     priority = 101
