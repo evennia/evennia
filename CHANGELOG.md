@@ -10,7 +10,7 @@
 - New `utils.format_grid` for easily displaying long lists of items in a block.
 - Using `lunr` search indexing for better `help` matching and suggestions. Also improve
   the main help command's default listing output.
-
+- Added `content_types` indexing to DefaultObject's ContentsHandler. (volund)
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
