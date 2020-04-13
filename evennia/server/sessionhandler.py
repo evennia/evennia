@@ -25,6 +25,7 @@ from evennia.utils.utils import (
     callables_from_module,
     class_from_module
 )
+from evennia.server.portal import amp
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
 from evennia.utils.inlinefuncs import parse_inlinefunc
@@ -47,25 +48,6 @@ class DummySession(object):
 
 
 DUMMYSESSION = DummySession()
-
-# AMP signals
-PCONN = chr(1)  # portal session connect
-PDISCONN = chr(2)  # portal session disconnect
-PSYNC = chr(3)  # portal session sync
-SLOGIN = chr(4)  # server session login
-SDISCONN = chr(5)  # server session disconnect
-SDISCONNALL = chr(6)  # server session disconnect all
-SSHUTD = chr(7)  # server shutdown
-SSYNC = chr(8)  # server session sync
-SCONN = chr(11)  # server portal connection (for bots)
-PCONNSYNC = chr(12)  # portal post-syncing session
-PDISCONNALL = chr(13)  # portal session discnnect all
-SRELOAD = chr(14)  # server reloading (have portal start a new server)
-SSTART = chr(15)  # server start (portal must already be running anyway)
-PSHUTD = chr(16)  # portal (+server) shutdown
-SSHUTD = chr(17)  # server shutdown
-PSTATUS = chr(18)  # ping server or portal status
-SRESET = chr(19)  # server shutdown in reset mode
 
 # i18n
 from django.utils.translation import gettext as _
@@ -452,7 +434,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         self.server.amp_protocol.send_AdminServer2Portal(
-            DUMMYSESSION, operation=SCONN, protocol_path=protocol_path, config=configdict
+            DUMMYSESSION, operation=amp.SCONN, protocol_path=protocol_path, config=configdict
         )
 
     def portal_restart_server(self):
@@ -460,14 +442,14 @@ class ServerSessionHandler(SessionHandler):
         Called by server when reloading. We tell the portal to start a new server instance.
 
         """
-        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SRELOAD)
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=amp.SRELOAD)
 
     def portal_reset_server(self):
         """
         Called by server when reloading. We tell the portal to start a new server instance.
 
         """
-        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=SRESET)
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=amp.SRESET)
 
     def portal_shutdown(self):
         """
@@ -475,7 +457,7 @@ class ServerSessionHandler(SessionHandler):
         itself down)
 
         """
-        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=PSHUTD)
+        self.server.amp_protocol.send_AdminServer2Portal(DUMMYSESSION, operation=amp.PSHUTD)
 
     def login(self, session, account, force=False, testmode=False):
         """
@@ -523,7 +505,7 @@ class ServerSessionHandler(SessionHandler):
         # sync the portal to the session
         if not testmode:
             self.server.amp_protocol.send_AdminServer2Portal(
-                session, operation=SLOGIN, sessiondata={"logged_in": True, "uid": session.uid}
+                session, operation=amp.SLOGIN, sessiondata={"logged_in": True, "uid": session.uid}
             )
         account.at_post_login(session=session)
         if nsess < 2:
@@ -568,7 +550,7 @@ class ServerSessionHandler(SessionHandler):
         if sync_portal:
             # inform portal that session should be closed.
             self.server.amp_protocol.send_AdminServer2Portal(
-                session, operation=SDISCONN, reason=reason
+                session, operation=amp.SDISCONN, reason=reason
             )
 
     def all_sessions_portal_sync(self):
@@ -579,7 +561,7 @@ class ServerSessionHandler(SessionHandler):
         """
         sessdata = self.get_all_sync_data()
         return self.server.amp_protocol.send_AdminServer2Portal(
-            DUMMYSESSION, operation=SSYNC, sessiondata=sessdata
+            DUMMYSESSION, operation=amp.SSYNC, sessiondata=sessdata
         )
 
     def session_portal_sync(self, session):
@@ -590,7 +572,7 @@ class ServerSessionHandler(SessionHandler):
         """
         sessdata = {session.sessid: session.get_sync_data()}
         return self.server.amp_protocol.send_AdminServer2Portal(
-            DUMMYSESSION, operation=SSYNC, sessiondata=sessdata, clean=False
+            DUMMYSESSION, operation=amp.SSYNC, sessiondata=sessdata, clean=False
         )
 
     def session_portal_partial_sync(self, session_data):
@@ -603,7 +585,7 @@ class ServerSessionHandler(SessionHandler):
 
         """
         return self.server.amp_protocol.send_AdminServer2Portal(
-            DUMMYSESSION, operation=SSYNC, sessiondata=session_data, clean=False
+            DUMMYSESSION, operation=amp.SSYNC, sessiondata=session_data, clean=False
         )
 
     def disconnect_all_sessions(self, reason="You have been disconnected."):
@@ -619,7 +601,7 @@ class ServerSessionHandler(SessionHandler):
             del session
         # tell portal to disconnect all sessions
         self.server.amp_protocol.send_AdminServer2Portal(
-            DUMMYSESSION, operation=SDISCONNALL, reason=reason
+            DUMMYSESSION, operation=amp.SDISCONNALL, reason=reason
         )
 
     def disconnect_duplicate_sessions(
