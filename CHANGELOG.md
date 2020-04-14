@@ -13,8 +13,7 @@
 - Added `content_types` indexing to DefaultObject's ContentsHandler. (volund)
 - Made most of the networking classes such as Protocols and the SessionHandlers 
   replaceable via `settings.py` for modding enthusiasts. (volund)
-
-- `ObjectSessionHandler` now easier to sub-class.
+- Working in whole new Session-Linking scheme. (volund)
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
