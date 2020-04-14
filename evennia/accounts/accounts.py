@@ -25,7 +25,7 @@ from evennia.comms.models import ChannelDB
 from evennia.commands import cmdhandler
 from evennia.server.models import ServerConfig
 from evennia.server.throttle import Throttle
-from evennia.server.serversession import EntitySessionHandler
+from evennia.server.linksessionhandler import AccountSessionHandler
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter, variable_from_module
 from evennia.server.signals import (
@@ -128,7 +128,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
      - at_server_shutdown()
 
      """
-
+    # Link sort is used for the Session Link system. It knows that Account comes before
+    # puppet.
+    _link_sort = -500
     objects = AccountManager()
 
     # properties
@@ -146,7 +148,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
     @lazy_property
     def sessions(self):
-        return EntitySessionHandler(self)
+        return AccountSessionHandler(self)
 
     @lazy_property
     def options(self):
@@ -210,64 +212,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 `exception.msg` will contain the reason.
 
         """
-        # safety checks
+        # Lots of things used to be here. now it's just a compatability wrapper.
         if not obj:
             raise RuntimeError("Object not found")
         if not session:
             raise RuntimeError("Session not found")
-        if self.get_puppet(session) == obj:
-            # already puppeting this object
-            self.msg("You are already puppeting this object.")
-            return
-        if not obj.access(self, "puppet"):
-            # no access
-            self.msg(f"You don't have permission to puppet '{obj.key}'.")
-            return
-        if obj.account:
-            # object already puppeted
-            if obj.account == self:
-                if obj.sessions.count():
-                    # we may take over another of our sessions
-                    # output messages to the affected sessions
-                    if _MULTISESSION_MODE in (1, 3):
-                        txt1 = f"Sharing |c{obj.name}|n with another of your sessions."
-                        txt2 = f"|c{obj.name}|n|G is now shared from another of your sessions.|n"
-                        self.msg(txt1, session=session)
-                        self.msg(txt2, session=obj.sessions.all())
-                    else:
-                        txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
-                        txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
-                        self.msg(txt1, session=session)
-                        self.msg(txt2, session=obj.sessions.all())
-                        self.unpuppet_object(obj.sessions.get())
-            elif obj.account.is_connected:
-                # controlled by another account
-                self.msg(f"|c{obj.key}|R is already puppeted by another Account.")
-                return
-
-        # do the puppeting
-        if session.puppet:
-            # cleanly unpuppet eventual previous object puppeted by this session
-            self.unpuppet_object(session)
-        # if we get to this point the character is ready to puppet or it
-        # was left with a lingering account/session reference from an unclean
-        # server kill or similar
-
-        obj.at_pre_puppet(self, session=session)
-
-        # do the connection
-        obj.sessions.add(session)
-        obj.account = self
-        session.puid = obj.id
-        session.puppet = obj
-        # validate/start persistent scripts on object
-        obj.scripts.validate()
-
-        # re-cache locks to make sure superuser bypass is updated
-        obj.locks.cache_lock_bypass(obj)
-        # final hook
-        obj.at_post_puppet()
-        SIGNAL_OBJECT_POST_PUPPET.send(sender=obj, account=self, session=session)
+        session.link('puppet', obj)
 
     def unpuppet_object(self, session):
         """
@@ -281,19 +231,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             RuntimeError With message about error.
 
         """
+        # lots of things used to be here. Now it's just a compatability wrapper.
         for session in make_iter(session):
             obj = session.puppet
             if obj:
-                # do the disconnect, but only if we are the last session to puppet
-                obj.at_pre_unpuppet()
-                obj.sessions.remove(session)
-                if not obj.sessions.count():
-                    del obj.account
-                obj.at_post_unpuppet(self, session=session)
-                SIGNAL_OBJECT_POST_UNPUPPET.send(sender=obj, session=session, account=self)
-            # Just to be sure we're always clear.
-            session.puppet = None
-            session.puid = None
+                session.unlink('puppet', obj)
 
     def unpuppet_all(self):
         """

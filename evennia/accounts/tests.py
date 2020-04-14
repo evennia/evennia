@@ -216,15 +216,53 @@ class TestDefaultAccount(TestCase):
     "Check DefaultAccount class"
 
     def setUp(self):
-        self.s1 = MagicMock()
-        self.s1.puppet = None
+        from evennia.server.sessionhandler import SESSION_HANDLER
+        from evennia.server.serversession import ServerSession
+
+        self.s1 = ServerSession()
+        self.s1.sessionhandler = SESSION_HANDLER
         self.s1.sessid = 0
+        SESSION_HANDLER[self.s1.sessid] = self.s1
+
+        self.s2 = ServerSession()
+        self.s2.sessionhandler = SESSION_HANDLER
+        self.s2.sessid = 1
+        SESSION_HANDLER[self.s2.sessid] = self.s2
+
+        self.a1 = create.create_account(
+            f"TestAccount{randint(100000, 999999)}",
+            email="test@test.com",
+            password="testpassword",
+            typeclass=DefaultAccount,
+        )
+
+        self.a2 = create.create_account(
+            f"TestAccount{randint(100000, 999999)}",
+            email="test2@test.com",
+            password="testpassword",
+            typeclass=DefaultAccount,
+        )
+
+        self.o0 = create.create_object(key='TestRoom1', typeclass='evennia.objects.objects.DefaultRoom', nohome=True)
+        self.o1 = create.create_object(key="TestCharacter1", typeclass='evennia.objects.objects.DefaultCharacter',
+                                       home=self.o0, location=self.o0)
+        self.o2 = create.create_object(key="TestCharacter2", typeclass='evennia.objects.objects.DefaultCharacter',
+                                       home=self.o0, location=self.o0)
+
+    def tearDown(self):
+        self.o2.delete()
+        self.o1.delete()
+        self.o0.delete()
+        self.a2.delete()
+        self.a1.delete()
+        self.s2.sessionhandler.disconnect(self.s2, sync_portal=False)
+        self.s1.sessionhandler.disconnect(self.s1, sync_portal=False)
 
     def test_puppet_object_no_object(self):
         "Check puppet_object method called with no object param"
 
         try:
-            DefaultAccount().puppet_object(self.s1, None)
+            self.a1.puppet_object(self.s1, None)
             self.fail("Expected error: 'Object not found'")
         except RuntimeError as re:
             self.assertEqual("Object not found", str(re))
@@ -233,7 +271,7 @@ class TestDefaultAccount(TestCase):
         "Check puppet_object method called with no session param"
 
         try:
-            DefaultAccount().puppet_object(None, Mock())
+            self.a1.puppet_object(None, Mock())
             self.fail("Expected error: 'Session not found'")
         except RuntimeError as re:
             self.assertEqual("Session not found", str(re))
@@ -241,28 +279,18 @@ class TestDefaultAccount(TestCase):
     def test_puppet_object_already_puppeting(self):
         "Check puppet_object method called, already puppeting this"
 
-        from evennia.server.sessionhandler import SESSION_HANDLER
 
-        account = create.create_account(
-            f"TestAccount{randint(0, 999999)}",
-            email="test@test.com",
-            password="testpassword",
-            typeclass=DefaultAccount,
-        )
-        self.s1.uid = account.uid
-        SESSION_HANDLER[self.s1.uid] = self.s1
-        account.sessions.add(self.s1)
-
-        self.s1.logged_in = True
+        self.s1.link('account', self.a1)
         self.s1.data_out = Mock(return_value=None)
 
-        obj = Mock()
-        self.s1.puppet = obj
-        account.puppet_object(self.s1, obj)
+        self.o1.at_post_puppet = Mock()
+
+        self.s1.puppet = self.o1
+        self.a1.puppet_object(self.s1, self.o1)
         self.s1.data_out.assert_called_with(
             options=None, text="You are already puppeting this object."
         )
-        self.assertIsNone(obj.at_post_puppet.call_args)
+        self.assertIsNone(self.o1.at_post_puppet.call_args)
 
     def test_puppet_object_no_permission(self):
         "Check puppet_object method called, no permission"
@@ -324,8 +352,6 @@ class TestDefaultAccount(TestCase):
     def test_puppet_object_already_puppeted(self):
         "Check puppet_object method called, already puppeted"
 
-        from evennia.server.sessionhandler import SESSION_HANDLER
-
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
             email="test@test.com",
@@ -333,13 +359,9 @@ class TestDefaultAccount(TestCase):
             typeclass=DefaultAccount,
         )
         self.account = account
-        self.s1.uid = account.uid
-        account.sessions.add(self.s1)
-        SESSION_HANDLER[self.s1.uid] = self.s1
 
-        self.s1.puppet = None
-        self.s1.logged_in = True
         self.s1.data_out = Mock(return_value=None)
+        self.s1.link('account', account)
 
         obj = Mock()
         obj.access = Mock(return_value=True)

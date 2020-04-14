@@ -1055,7 +1055,8 @@ SESSION_SYNC_ATTRS = (
         "cmd_total",
         "protocol_flags",
         "server_data",
-        "cmdset_storage_string"
+        "cmdset_storage_string",
+        "linked_state"
     )
 
 # The following are used for the communications between the Portal and Server.

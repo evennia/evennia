@@ -92,6 +92,9 @@ class Session(object):
         # session is stored in.
         self.sessionhandler = sessionhandler
 
+        # Used to re-create Session Links.
+        self.linked_state = list()
+
     def get_sync_data(self):
         """
         Get all data relevant to sync the session.

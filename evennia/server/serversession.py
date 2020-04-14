@@ -156,13 +156,45 @@ class ServerSession(Session):
     through their session.
 
     """
+    # Link sort is used for the Session Link system. It knows that Session commands comes before
+    # puppet.
+    _link_sort = -1000
 
     def __init__(self):
         """Initiate to avoid AttributeErrors down the line"""
+        self.uid = None
+        self.puid = None
+        self.sessid = None
+        self.uname = None
+        self.logged_in = None
+        self.conn_time = None
+        self.cmd_last_visible = None
+        self.cmd_last = None
+        self.cmd_total = None
+        self.protocol_flags = dict()
+        self.server_data = dict()
+        self.sessionhandler = None
+        self.address = None
         self.puppet = None
         self.account = None
+        self.linked = dict()
+        self.linked_sort = list()
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
+        self._find_map = self._generate_find_map()
+
+    def _generate_find_map(self):
+        """
+        The find map is a dictionary of methods that are used to locate link-kinds.
+        Such as 'account' and 'puppet'. These methods will be called by _find_entity.
+
+        Returns:
+            link method (method): The method to call.
+        """
+        return {
+            'account': self.find_account,
+            'puppet': self.find_object
+        }
 
     def __cmdset_storage_get(self):
         return [path.strip() for path in self.cmdset_storage_string.split(",")]
@@ -171,6 +203,86 @@ class ServerSession(Session):
         self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
 
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
+
+    def find_account(self, acc_id):
+        """
+        Find an Account by its ID.
+
+        Args:
+            acc_id (int): An AccountDB ID.
+
+        Returns:
+            Account (AccountDB): The account in question.
+        """
+        global _AccountDB
+        if not _AccountDB:
+            from evennia.accounts.models import AccountDB as _AccountDB
+        return _AccountDB.objects.get(id=acc_id)
+
+    def find_object(self, obj_id):
+        """
+        Find an ObjectDB by its ID.
+
+        Args:
+            obj_id (int): An ObjectDB ID.
+
+        Returns:
+
+        """
+        global _ObjectDB
+        if not _ObjectDB:
+            from evennia.objects.models import ObjectDB as _ObjectDB
+        return _ObjectDB.objects.get(id=obj_id)
+
+    def find_entity(self, kind, entity):
+        if isinstance(entity, int):
+            find_method = self._find_map.get(kind)
+            entity = find_method(entity)
+            if not entity:
+                raise ValueError("Cannot link to a non-existent entity!")
+        return entity
+
+    def link(self, kind, entity, force=False, sync=False, **kwargs):
+        """
+        Links the session to an entity.
+
+        Args:
+            kind (str): The kind of entity. examples are 'account' and 'puppet'
+            entity (object or int): The entity to link, or its ID to lookup.
+            sync (bool): Whether this is being called by Portal<->Server synchronization after a reload.
+                If yes, this will be passed through to linking calls to smoothly rebuild link state.
+        Raises:
+              ValueError (string): If any checks fail during linking, will be raised as a ValueError.
+                If an exception is raised, no link is performed. Nothing changes.
+        Returns:
+            entity (object): The entity that was linked.
+        """
+        entity = self.find_entity(kind, entity)
+
+        if entity.sessions.add(self, force=force, sync=sync, **kwargs):
+            self.linked[kind] = entity
+            if not sync:
+                self.sort_links()
+
+    def unlink(self, kind, entity, force=False, reason=None, **kwargs):
+        """
+        Unlinks an entity from this session.
+
+        Args:
+            kind (str): The kind of entity. examples are 'account' and 'puppet'
+            entity (object or int): The entity to unlink, or its ID to lookup.
+            force (bool): Don't stop for anything. Mainly used for Unexpected Disconnects
+            reason (str or None): A reason that might be displayed down the chain.
+        """
+        entity = self.find_entity(kind, entity)
+        if entity.sessions.remove(self, force=force, reason=reason, **kwargs):
+            if kind in self.linked:
+                del self.linked[kind]
+            self.sort_links()
+
+    def sort_links(self):
+        self.linked_sort = sorted(self.linked.items(), key=lambda o: o[1]._link_sort)
+        self.linked_state = [(link_type, entity.pk) for link_type, entity in self.linked_sort]
 
     def at_sync(self):
         """
@@ -182,29 +294,21 @@ class ServerSession(Session):
         set up the session as it was.
 
         """
-        global _ObjectDB
-        if not _ObjectDB:
-            from evennia.objects.models import ObjectDB as _ObjectDB
+        super().at_sync()
 
-        super(ServerSession, self).at_sync()
         if not self.logged_in:
             # assign the unloggedin-command set.
             self.cmdset_storage = settings.CMDSET_UNLOGGEDIN
 
         self.cmdset.update(init_mode=True)
 
-        if self.puid:
-            # reconnect puppet (puid is only set if we are coming
-            # back from a server reload). This does all the steps
-            # done in the default @ic command but without any
-            # hooks, echoes or access checks.
-            obj = _ObjectDB.objects.get(id=self.puid)
-            obj.sessions.add(self)
-            obj.account = self.account
-            self.puid = obj.id
-            self.puppet = obj
-            # obj.scripts.validate()
-            obj.locks.cache_lock_bypass(obj)
+        for link_kind, link_id in self.linked_state:
+            try:
+                self.link(link_kind, link_id, sync=True)
+            except Exception as e:
+                # what the heck happened?
+                continue
+        self.sort_links()
 
     def at_login(self, account):
         """

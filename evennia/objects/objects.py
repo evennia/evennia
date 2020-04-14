@@ -19,7 +19,7 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.commands import cmdset, command
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.commands import cmdhandler
-from evennia.server.serversession import EntitySessionHandler
+from evennia.server.linksessionhandler import ObjectSessionHandler
 from evennia.utils import create
 from evennia.utils import search
 from evennia.utils import logger
@@ -43,22 +43,6 @@ _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
-
-class ObjectSessionHandler(EntitySessionHandler):
-    """
-    Handles the get/setting of the sessid
-    comma-separated integer field
-    """
-    def _save(self):
-        """
-        Saves sessids to persistent storage.
-
-        Args:
-            sessids (list of int): A list of session ids.
-
-        """
-        self.obj.db_sessid = ",".join(str(session.sessid) for session in self._sessions if session)
-        self.obj.save(update_fields=["db_sessid"])
 #
 # Base class to inherit from.
 
@@ -79,6 +63,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # Used for sorting / filtering in inventories / room contents.
     _content_types = ("object",)
+
+    # Link sort is used for the Session Link. This value, by default, puts Objects at #3 after
+    # Sessions and Accounts.
+    _link_sort = 0
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.

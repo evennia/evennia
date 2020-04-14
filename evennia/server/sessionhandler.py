@@ -26,8 +26,6 @@ from evennia.utils.utils import (
     class_from_module
 )
 from evennia.server.portal import amp
-from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POST_LOGOUT
-from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
 from evennia.utils.inlinefuncs import parse_inlinefunc
 from codecs import decode as codecs_decode
 
@@ -304,23 +302,21 @@ class ServerSessionHandler(SessionHandler):
         sess = _ServerSession()
         sess.sessionhandler = self
         sess.load_sync_data(portalsessiondata)
-        sess.at_sync()
         # validate all scripts
         _ScriptDB.objects.validate()
         self[sess.sessid] = sess
 
+        # crude shunt to construct a new-style linked state out of old style sync
+        # data. useful for alternate authentication methods like SSH or WebSocket.
         if sess.logged_in and sess.uid:
-            # Session is already logged in. This can happen in the
-            # case of auto-authenticating protocols like SSH or
-            # webclient's session sharing
-            account = _AccountDB.objects.get_account_from_uid(sess.uid)
-            if account:
-                # this will set account.is_connected too
-                self.login(sess, account, force=True)
-                return
-            else:
-                sess.logged_in = False
-                sess.uid = None
+            if not self.linked_state:
+                self.linked_state = [('account', sess.uid)]
+                if sess.puid:
+                    self.linked_state.append(('puppet', sess.puid))
+
+        # will (re) create the Session as needed, including linking to Accounts
+        # and Puppets.
+        sess.at_sync()
 
         # show the first login command, may delay slightly to allow
         # the handshakes to finish.
@@ -477,40 +473,13 @@ class ServerSessionHandler(SessionHandler):
         if session.logged_in and not force:
             # don't log in a session that is already logged in.
             return
+        session.link('account', account, force=False, sync=False, testmode=testmode)
 
-        account.is_connected = True
-
-        # sets up and assigns all properties on the session
-        session.at_login(account)
-
-        # account init
-        account.at_init()
-
-        # Check if this is the first time the *account* logs in
-        if account.db.FIRST_LOGIN:
-            account.at_first_login()
-            del account.db.FIRST_LOGIN
-
-        account.at_pre_login()
-
-        if _MULTISESSION_MODE == 0:
-            # disconnect all previous sessions.
-            self.disconnect_duplicate_sessions(session)
-
-        nsess = len(self.sessions_from_account(account))
-        string = "Logged in: {account} {address} ({nsessions} session(s) total)"
-        string = string.format(account=account, address=session.address, nsessions=nsess)
-        session.log(string)
-        session.logged_in = True
-        # sync the portal to the session
+        # Update AMP.
         if not testmode:
-            self.server.amp_protocol.send_AdminServer2Portal(
+            session.sessionhandler.server.amp_protocol.send_AdminServer2Portal(
                 session, operation=amp.SLOGIN, sessiondata={"logged_in": True, "uid": session.uid}
             )
-        account.at_post_login(session=session)
-        if nsess < 2:
-            SIGNAL_ACCOUNT_POST_FIRST_LOGIN.send(sender=account, session=session)
-        SIGNAL_ACCOUNT_POST_LOGIN.send(sender=account, session=session)
 
     def disconnect(self, session, reason="", sync_portal=True):
         """
@@ -528,23 +497,12 @@ class ServerSessionHandler(SessionHandler):
         session = self.get(session.sessid)
         if not session:
             return
-
-        if hasattr(session, "account") and session.account:
-            # only log accounts logging off
-            nsess = len(self.sessions_from_account(session.account)) - 1
-            sreason = " ({})".format(reason) if reason else ""
-            string = "Logged out: {account} {address} ({nsessions} sessions(s) remaining){reason}"
-            string = string.format(
-                reason=sreason, account=session.account, address=session.address, nsessions=nsess
-            )
-            session.log(string)
-
-            if nsess == 0:
-                SIGNAL_ACCOUNT_POST_LAST_LOGOUT.send(sender=session.account, session=session)
-
-        session.at_disconnect(reason)
-        SIGNAL_ACCOUNT_POST_LOGOUT.send(sender=session.account, session=session)
         sessid = session.sessid
+
+        # Tell Session to stop everything, unlink all entities, and
+        # say goodbye.
+        session.at_disconnect(reason=reason)
+
         if sessid in self and not hasattr(self, "_disconnect_all"):
             del self[sessid]
         if sync_portal:
