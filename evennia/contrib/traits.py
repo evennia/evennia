@@ -1,7 +1,7 @@
 """
 Traits
 
-Whitenoise 2014, Ainneve contributors, 
+Whitenoise 2014, Ainneve contributors,
 Griatch 2020
 
 
@@ -40,21 +40,21 @@ Here's an example for adding the TraitHandler to the base Object class:
     ```
 
 ### Trait Configuration
-    
+
 A single Trait can be one of three basic types:
 
-- `Static` - this means a base value and an optional modifier. A typical example would be 
-  something like a Strength stat or Skill value. That is, something that varies slowly or 
-  not at all. 
-- `Counter` - a Trait of this type has a base value and a current value that 
-  can vary inside a specified range. This could be used for skills that can only incrase 
-  to a max value. 
+- `Static` - this means a base value and an optional modifier. A typical example would be
+  something like a Strength stat or Skill value. That is, something that varies slowly or
+  not at all.
+- `Counter` - a Trait of this type has a base value and a current value that
+  can vary inside a specified range. This could be used for skills that can only incrase
+  to a max value.
 - `Gauge` - Modified counter type modeling a refillable "gauge" that varies between "empty"
   and "full". The classic example is a Health stat.
 
 
     ```python
-    obj.traits.add("hp", name="Health", type="static", 
+    obj.traits.add("hp", name="Health", type="static",
                    base=0, mod=0, min=None, max=None, extra={})
 ```
 
@@ -177,7 +177,7 @@ Examples:
 A "gauge" type `Trait` is a modified counter trait used to model a
 gauge that can be emptied and refilled. The `base` property of a
 gauge trait represents its "full" value. The `mod` property increases
-or decreases that "full" value, rather than the `current`. 
+or decreases that "full" value, rather than the `current`.
 
 Gauge type traits are best used to represent traits such as health
 points, stamina points, or magic points.
@@ -392,43 +392,28 @@ class TraitHandler:
                 trait_cls = _TRAIT_CLASSES[trait_type]
             except KeyError:
                 raise TraitException("Trait class for {trait_type} could not be found.")
-            trait = self._cache[key] = trait_cls(self.trait_data[key])
+            trait = self._cache[key] = trait_cls(_GA(self, "trait_data")[key])
         return trait
 
-    def add(
-        self,
-        key,
-        name=None,
-        trait_type=DEFAULT_TRAIT_TYPE,
-        base=0,
-        modifier=0,
-        min_value=None,
-        max_value=None,
-        force=False,
-        **extra_properties,
-    ):
+    def add(self, key, name=None, trait_type=DEFAULT_TRAIT_TYPE, force=True, **trait_properties):
         """
         Create a new Trait and add it to the handler.
 
         Args:
             key (str): This is the name of the property that will be made
                 available on this handler (example 'hp').
-            name (str, optional): This is a longer name used in Trait
-                string representation (example 'Health'). If not given, this
-                will be set the same as `key`, starting with a capital letter.
+            name (str, optional): Name of the Trait, like "Health". If
+                not given, will use `key` starting with a capital letter.
             trait_type (str, optional): One of 'static', 'counter' or 'gauge'.
-            base (int or float, optional): The base value, or 'full' value in the case
-                of a gauge.
-            modifier (int, optional): A modifier affecting the current or base value.
-            min_value (int or float, optional): The minimum allowed value.
-            max_value (int or float, optional): The maximum allowed value.
-            force (bool, optional): Always add, replacing any existing trait.
-            **extra_properties (any): All other kwargs will be made available as key:value
-                properties on the handler. These must all be possible to store
-                in an Attribute.
+            force_add (bool): If set, create a new Trait even if a Trait with
+                the same `key` already exists.
+            trait_properties (dict): These will all be use to initialize
+                the new trait. See the `properties` class variable on each
+                Trait class to see which are required.
 
         Raises:
-            TraitException: If specifying invalid values or an existing trait
+            TraitException: If specifying invalid values for the given Trait,
+                the `trait_type` is not recognized, or an existing trait
                 already exists (and `force` is unset).
 
         """
@@ -440,25 +425,24 @@ class TraitHandler:
             else:
                 raise TraitException(f"Trait '{key}' already exists.")
 
-        if trait_type not in _TRAIT_CLASSES:
+        trait_class = _TRAIT_CLASSES.get(trait_type)
+        if not trait_class:
             raise TraitException("Trait-type '{trait_type} is invalid.")
 
-        trait_kwargs = dict(
-            name=name if name is not None else key.title(),
-            trait_type=trait_type,
-            base=base,
-            modifier=modifier,
-            min_value=min_value,
-            max_value=max_value,
-            extra_properties=extra_properties,
-        )
+        trait_properties["name"] = key.title() if not name else name
+        trait_properties["trait_type"] = trait_type
 
-        self.trait_data[key] = trait_kwargs
+        # this will raise exception if input is insufficient
+        trait_properties = trait_class.validate_input(trait_properties)
+
+        print("trait_properties", trait_properties)
+
+        self.trait_data[key] = trait_properties
 
     def remove(self, key):
         """
         Remove a Trait from the handler's parent object.
-        
+
         Args:
             key (str): The name of the trait to remove.
 
@@ -481,39 +465,49 @@ class TraitHandler:
 # Parent Trait class
 
 
-@total_ordering
 class Trait:
     """Represents an object or Character trait.
 
     Note:
         See module docstring for configuration details.
-    """
 
-    _keys = (
-        "name",
-        "trait_type",
-        "base",
-        "modifier",
-        "current",
-        "min_value",
-        "max_value",
-        "extra_properties",
-    )
+    """
+    # this is the name used to refer to this trait when adding
+    # a new trait in the TraitHandler
+    trait_type = "trait"
+
+    # These keywords form the internal  data store of the Trait.
+    # Unless a default value is also given, each must be given
+    # supplied with an explicit value when creating this Trait.
+    # This list should at minimum contain "name" and "trait_type".
+    data_keys = ("name", "trait_type")
+    # If a dat key has a default, we will use this if it's not supplied at
+    # creation.
+    data_default = {}
+
+    # enable to set/retrieve other arbitrary properties on the Trait
+    # and have them treated like data to store.
+    allow_extra_properties = True
 
     def __init__(self, trait_data):
         """
-        Initialize a Trait with stored data.
+        This both initializes and validates the Trait on creation. It must
+        raise exception if validation fails. The TraitHandler will call this
+        when the trait is furst added, to make sure it validates before
+        storing.
 
         Args:
-            trait_data (_SaverDict or dict): This will be a _SaverDict if
-                passed from the TraitHandler, which means this will automatically
-                save itself the database when updating
+            trait_data (any): Any pickle-able values to store with this trait.
+                This must contain any cls.data_keys that do not have a default
+                value in cls.data_default_values. Any extra kwargs will be made
+                available as extra properties on the Trait, assuming the class
+                variable `allow_extra_properties` is set.
+
+        Raises:
+            TraitException: If input-validation failed.
 
         """
-
-        self._type = trait_data["trait_type"]
-        self._data = trait_data
-        self._locked = True
+        self._data = self.__class__.validate_input(trait_data)
 
         if not isinstance(trait_data, _SaverDict):
             logger.log_warn(
@@ -521,20 +515,34 @@ class Trait:
                 f"loaded for {type(self).__name__}."
             )
 
-    def __repr__(self):
-        """Debug-friendly representation of this Trait."""
-        return "{}({{{}}})".format(
-            type(self).__name__,
-            ", ".join(
-                ["'{}': {!r}".format(k, self._data[k]) for k in self._keys if k in self._data]
-            ),
-        )
+    @classmethod
+    def validate_input(cls, trait_data):
+        """
+        Validate input
 
-    def __str__(self):
-        status = "{actual:11}".format(actual=self.actual)
-        return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
+        """
+        inp, req = set(trait_data.keys()), set(cls.data_keys)
+        unset = req.difference(inp.intersection(req))
+        if unset:
+            # try to add defaults to those we have not set
+            no_defaults = unset.difference(set(cls.data_default))
+            print(f"inp: {inp}, req: {req}, unset: {unset}, no_defaults: {no_defaults}")
+            if no_defaults:
+                raise TraitException(
+                    "Trait {} could not be created - misses required keys {}".format(
+                        cls.trait_type, ", ".join(no_defaults)
+                    )
+                )
+            trait_data.update({key: cls.data_default[key] for key in unset})
 
-    # Extra Properties - allow access to properties on Trait
+        if not cls.allow_extra_properties:
+            # don't allow any extra properties - remove the extra data
+            for key in inp.difference(req):
+                del trait_data[key]
+
+        return trait_data
+
+    # Grant access to properties on this Trait.
 
     def __getitem__(self, key):
         """Access extra parameters as dict keys."""
@@ -553,11 +561,17 @@ class Trait:
 
     def __getattr__(self, key):
         """Access extra parameters as attributes."""
+        if key in ("data_keys", "data_default", "trait_type", "allow_extra_properties"):
+            return _GA(self, key)
         try:
-            return self._data["extra_properties"][key]
+            return self._data[key]
         except KeyError:
             raise AttributeError(
-                "{} '{}' has no attribute {!r}".format(type(self).__name__, self.name, key)
+                "{!r} {} ({}) has no attribute {!r}.".format(
+                    self._data['name'],
+                    type(self).__name__,
+                    self.trait_type,
+                    key)
             )
 
     def __setattr__(self, key, value):
@@ -568,36 +582,71 @@ class Trait:
 
         This behavior is enabled by setting the instance
         variable `_locked` to True.
+
         """
         propobj = getattr(self.__class__, key, None)
         if isinstance(propobj, property):
-            if propobj.fset is None:
-                raise AttributeError(f"Can't set attribute {key}.")
-            propobj.fset(self, value)
+            # we have a custom property named as this key, find and use its setter
+            if propobj.fset:
+                propobj.fset(self, value)
+            return
         else:
-            if self.__dict__.get("_locked", False) and key not in ("_keys",):
-                _GA(self, "_data")["extra_properties"][key] = value
-            else:
+            # this is some other value
+            if key in ("_data", ):
                 _SA(self, key, value)
+                return
+            if _GA(self, "allow_extra_properties"):
+                _GA(self, "_data")[key] = value
+                return
+        raise AttributeError(f"Can't set attribute {key} on "
+                             f"{self.trait_type} Trait.")
 
     def __delattr__(self, key):
         """Delete extra parameters as attributes."""
-        if key in self._data["extra_properties"]:
-            del self._data["extra_properties"][key]
+        if key not in _GA(self, properties) and key in self._data:
+            del self._data[key]
 
-    # Limiting the value to set
+    def __repr__(self):
+        """Debug-friendly representation of this Trait."""
+        return "{}({{{}}})".format(
+            type(self).__name__,
+            ", ".join(
+                ["'{}': {!r}".format(k, self._data[k]) for k in self._keys if k in self._data]
+            ),
+        )
 
-    def _enforce_bounds(self, value):
-        """Ensures that incoming value falls within trait's range."""
-        return value
+    def __str__(self):
+        return f"<Trait {self.name}>"
 
-    def _mod_base(self):
-        """Calculate adding base and modifications"""
-        return self._enforce_bounds(self.mod + self.base)
+    # access properties
 
-    def _mod_current(self):
-        """Calculate the current value"""
-        return self._enforce_bounds(self.mod + self.current)
+    @property
+    def name(self):
+        """Display name for the trait."""
+        return self._data["name"]
+
+    key = name
+
+
+
+@total_ordering
+class NumericTrait(Trait):
+    """
+    Base trait for all Traits based on numbers. This implements
+    number-comparisons, limits etc. It also features a "modifier"
+    to the value, since this is a common use.
+
+    """
+
+    trait_type = "numeric"
+
+    data_keys = (
+        "name",
+        "base",
+    )
+    data_default = {
+        "base": 0
+    }
 
     # Numeric operations
 
@@ -690,16 +739,9 @@ class Trait:
     # Public members
 
     @property
-    def name(self):
-        """Display name for the trait."""
-        return self._data["name"]
-
-    key = name
-
-    @property
     def actual(self):
         "The actual value of the trait"
-        return self._mod_base()
+        return self.base_mod_base()
 
     @property
     def base(self):
@@ -711,114 +753,93 @@ class Trait:
         """
         return self._data["base"]
 
-    @base.setter
-    def base(self, amount):
-        if self._data.get("max", None) == "base":
-            self._data["base"] = amount
-        if type(amount) in (int, float):
-            self._data["base"] = self._enforce_bounds(amount)
 
-    @property
-    def mod(self):
-        """The trait's modifier."""
-        return self._data["modifier"]
-
-    @mod.setter
-    def mod(self, amount):
-        if type(amount) in (int, float):
-            self._data["modifier"] = amount
-
-    @property
-    def min(self):
-        return self._data["min_value"]
-
-    @min.setter
-    def min(self, value):
-        self._data["min_value"] = value
-
-    @property
-    def max(self):
-        return self._data["max_value"]
-
-    @max.setter
-    def max(self, value):
-        self._data["max_value"] = value
-
-    @property
-    def current(self):
-        """The `current` value of the `Trait`."""
-        return self._data.get("current", self.base)
-
-    @current.setter
-    def current(self, value):
-        self._data["current"] = value
-
-    @property
-    def extra(self):
-        """Returns a list containing available extra data keys."""
-        return self._data["extra"].keys()
-
-    def reset_mod(self):
-        """Clears any mod value to 0."""
-        self.mod = 0
-
-    def reset(self):
-        """Resets `current` property equal to `base` value."""
-        self.current = self.base
-
-    def percent(self):
-        """Returns the value formatted as a percentage."""
-        return "100.0%"
 
 
 # Implementation of the respective Trait types
 
 
-class StaticTrait(Trait):
+class StaticTrait(NumericTrait):
     """
-    Static Trait.
+    Static Trait. This has a modification value.
 
     """
-
     trait_type = "static"
 
+    data_keys = (
+        "name",
+        "base",
+        "mod",
+    )
+    data_default = {
+        "base": 0,
+        "mod": 0
+    }
+
+
+    def __str__(self):
+        status = "{actual:11}".format(actual=self.actual)
+        return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
+
+    # Helpers
+
+
     @property
-    def min(self):
-        raise TraitException(f"Static Trait {self.key} has no minimum value.")
+    def mod(self):
+        """The trait's modifier."""
+        return self._data["mod"]
 
-    @min.setter
-    def min(self):
-        raise TraitException(f"Cannot set minimum value for static Trait {self.key}.")
-
-    @property
-    def max(self):
-        raise TraitException("Static Trait {self.key} has no maximum value.")
-
-    @max.setter
-    def max(self):
-        raise TraitException("Cannot set maximum value for static Trait {self.key}.")
+    @mod.setter
+    def mod(self, amount):
+        if type(amount) in (int, float):
+            self._data["mod"] = amount
 
     @property
-    def current(self):
-        """The `current` value of the `Trait`. This is the same as base for a Static Trait."""
-        return self.base
-
-    @current.setter
-    def current(self, value):
-        """Current == base for Static Traits."""
-        self.base = value
-
-    def reset(self):
-        raise TraitException(f"Cannot reset static Trait {self.key}.")
+    def actual(self):
+        "The actual value of the Trait"
+        return self.base + self.mod
 
 
-class CounterTrait(Trait):
+class CounterTrait(NumericTrait):
     """
     Counter Trait.
+
+    This includes modifications and min/max limits as well as the notion of a
+    current value.  The value can also be reset to the base value.
 
     """
 
     trait_type = "counter"
+
+    data_keys = (
+        "name",
+        "base",
+        "mod",
+        "current",
+        "min_value",
+        "max_value"
+    )
+    data_default = {
+        "base": 0,
+        "mod": 0,
+        "current": 0,
+        "min_value": None,
+        "max_value": None
+    }
+
+    # Helpers
+
+    def _enforce_bounds(self, value):
+        """Ensures that incoming value falls within trait's range."""
+        return value
+
+    def _mod_base(self):
+        """Calculate adding base and modifications"""
+        return self._enforce_bounds(self.mod + self.base)
+
+    def _mod_current(self):
+        """Calculate the current value"""
+        return self._enforce_bounds(self.mod + self.current)
 
     def _enforce_bounds(self, value):
         """Ensures that incoming value falls within trait's range."""
@@ -830,15 +851,27 @@ class CounterTrait(Trait):
             return self.max
         return value
 
+    # properties
+
     @property
     def actual(self):
         "The actual value of the Trait"
         return self._mod_current()
 
     @property
+    def base(self):
+        return self._data["base"]
+
+    @base.setter
+    def base(self, amount):
+        if self._data.get("max", None) == "base":
+            self._data["base"] = amount
+        if type(amount) in (int, float):
+            self._data["base"] = self._enforce_bounds(amount)
+
+    @property
     def min(self):
-        """The lower bound of the range."""
-        return super().min
+        return self._data["min_value"]
 
     @min.setter
     def min(self, amount):
@@ -851,7 +884,7 @@ class CounterTrait(Trait):
     def max(self):
         if self._data["max_value"] == "base":
             return self._mod_base()
-        return super().max
+        return self._data["max_value"]
 
     @max.setter
     def max(self):
@@ -862,12 +895,6 @@ class CounterTrait(Trait):
             When set this way, the property returns the value of the
             `mod`+`base` properties.
         """
-        if self._data["max_value"] == "base":
-            return self._mod_base()
-        return super().max
-
-    @max.setter
-    def max(self, value):
         if value == "base" or value is None:
             self._data["max_value"] = value
         elif type(value) in (int, float):
@@ -876,14 +903,20 @@ class CounterTrait(Trait):
     @property
     def current(self):
         """The `current` value of the `Trait`."""
-        return super().current
+        return self._data.get("current", self.base)
 
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
             self._data["current"] = self._enforce_bounds(value)
-        else:
-            raise AttributeError("'current' property is read-only on static 'Trait'.")
+
+    def reset_mod(self):
+        """Clears any mod value to 0."""
+        self.mod = 0
+
+    def reset(self):
+        """Resets `current` property equal to `base` value."""
+        self.current = self.base
 
     def percent(self):
         """Returns the value formatted as a percentage."""
@@ -899,9 +932,28 @@ class GaugeTrait(CounterTrait):
     """
     Gauge Trait.
 
+    This emulates a gauge-meter that can be reset.
+
     """
 
     trait_type = "gauge"
+
+    # same as Counter, here for easy reference
+    data_keys = (
+        "name",
+        "base",
+        "mod",
+        "current",
+        "min_value",
+        "max_value"
+    )
+    data_default = {
+        "base": 0,
+        "mod": 0,
+        "current": 0,
+        "min_value": None,
+        "max_value": None
+    }
 
     def __str__(self):
         status = "{actual:4} / {base:4}".format(actual=self.actual, base=self.base)
@@ -915,13 +967,13 @@ class GaugeTrait(CounterTrait):
     @property
     def mod(self):
         """The trait's modifier."""
-        return super().mod
+        return self._data["mod"]
 
     @mod.setter
     def mod(self, amount):
         if type(amount) in (int, float):
-            self._data["modifier"] = amount
-            delta = amount - self._data["modifier"]
+            self._data["mod"] = amount
+            delta = amount - self._data["mod"]
             if delta >= 0:
                 # apply increases to current
                 self.current = self._enforce_bounds(self.current + delta)
@@ -936,7 +988,8 @@ class GaugeTrait(CounterTrait):
 
     @current.setter
     def current(self, value):
-        super().current = value
+        if type(value) in (int, float):
+            self._data["current"] = self._enforce_bounds(value)
 
     def fill_gauge(self):
         """Adds the `mod`+`base` to the `current` value.
