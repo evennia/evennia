@@ -329,7 +329,7 @@ class IRCBot(Bot):
                 chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 nicklist = ", ".join(sorted(kwargs["nicklist"], key=lambda n: n.lower()))
                 for obj in self._nicklist_callers:
-                    obj.msg(_(f"Nicks at {chstr}:\n {nicklist}")
+                    obj.msg(_(f"Nicks at {chstr}:\n {nicklist}"))
                 self._nicklist_callers = []
             return
 
