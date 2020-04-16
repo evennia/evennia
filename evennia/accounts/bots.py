@@ -10,6 +10,7 @@ from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import search
 from evennia.utils import utils
+from django.utils.translation import gettext as _
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
@@ -328,7 +329,7 @@ class IRCBot(Bot):
                 chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 nicklist = ", ".join(sorted(kwargs["nicklist"], key=lambda n: n.lower()))
                 for obj in self._nicklist_callers:
-                    obj.msg(f"Nicks at {chstr}:\n {nicklist}")
+                    obj.msg(_("Nicks at {chstr}:\n {nicklist}").format(chstr=chstr, nicklist=nicklist))
                 self._nicklist_callers = []
             return
 
@@ -337,7 +338,7 @@ class IRCBot(Bot):
             if hasattr(self, "_ping_callers") and self._ping_callers:
                 chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 for obj in self._ping_callers:
-                    obj.msg(f"IRC ping return from {chstr} took {kwargs['timing']}s.")
+                    obj.msg(_("IRC ping return from {chstr} took {time}s.").format(chstr=chstr, time=kwargs['timing']))
                 self._ping_callers = []
             return
 
