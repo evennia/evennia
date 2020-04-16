@@ -275,11 +275,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg(_("You are already puppeting this object.")
+            self.msg(_("You are already puppeting this object."))
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(_(f"You don't have permission to puppet '{obj.key}'.")
+            self.msg(_(f"You don't have permission to puppet '{obj.key}'."))
             return
         if obj.account:
             # object already puppeted

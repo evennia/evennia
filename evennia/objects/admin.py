@@ -61,7 +61,7 @@ class ObjectCreateForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={"size": "78"}),
         help_text="Most non-character objects don't need a cmdset"
-        " and can leave this field blank.")
+        " and can leave this field blank."
     )
     raw_id_fields = ("db_destination", "db_location", "db_home")
 

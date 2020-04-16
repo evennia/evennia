@@ -338,7 +338,7 @@ class IRCBot(Bot):
             if hasattr(self, "_ping_callers") and self._ping_callers:
                 chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 for obj in self._ping_callers:
-                    obj.msg(_(f"IRC ping return from {chstr} took {kwargs['timing']}s.")
+                    obj.msg(_(f"IRC ping return from {chstr} took {kwargs['timing']}s."))
                 self._ping_callers = []
             return
 
