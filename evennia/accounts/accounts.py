@@ -279,7 +279,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(_("You don't have permission to puppet '{key}'.".format(key=obj.key)))
+            self.msg(_("You don't have permission to puppet '{key}'.").format(key=obj.key))
             return
         if obj.account:
             # object already puppeted
@@ -300,7 +300,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                         self.unpuppet_object(obj.sessions.get())
             elif obj.account.is_connected:
                 # controlled by another account
-                self.msg(_("|c{key}|R is already puppeted by another Account.".format(key=obj.key)))
+                self.msg(_("|c{key}|R is already puppeted by another Account.").format(key=obj.key))
                 return
 
         # do the puppeting
@@ -1253,7 +1253,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if session:
             session.msg(logged_in={})
 
-        self._send_to_connect_channel(_("|G{key} connected|n".format(key=self.key)))
+        self._send_to_connect_channel(_("|G{key} connected|n").format(key=self.key))
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
             # try to auto-connect to our last conneted object, if any
@@ -1305,7 +1305,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         reason = f" ({reason if reason else ''})"
-        self._send_to_connect_channel(_("|R{key} disconnected{reason}|n".format(key=self.key, reason=reason)))
+        self._send_to_connect_channel(_("|R{key} disconnected{reason}|n").format(key=self.key, reason=reason))
 
     def at_post_disconnect(self, **kwargs):
         """
@@ -1411,7 +1411,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if hasattr(target, "return_appearance"):
                 return target.return_appearance(self)
             else:
-                return _("{target} has no in-game appearance.".format(target=target))
+                return _("{target} has no in-game appearance.").format(target=target)
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
@@ -1589,7 +1589,7 @@ class DefaultGuest(DefaultAccount):
                 overriding the call (unused by default).
 
         """
-        self._send_to_connect_channel(_("|G{key} connected|n".format(key=self.key)))
+        self._send_to_connect_channel(_("|G{key} connected|n").format(key=self.key))
         self.puppet_object(session, self.db._last_puppet)
 
     def at_server_shutdown(self):
