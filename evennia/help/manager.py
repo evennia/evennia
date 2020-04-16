@@ -131,7 +131,7 @@ class HelpEntryManager(TypedObjectManager):
         for topic in topics:
             topic.help_category = default_category
             topic.save()
-        string = "Help database moved to category %s" % default_category
+        string = _(f"Help database moved to category {default_category}")
         logger.log_info(string)
 
     def search_help(self, ostring, help_category=None):
