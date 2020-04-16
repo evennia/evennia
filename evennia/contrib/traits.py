@@ -305,6 +305,14 @@ class TraitException(Exception):
         self.msg = msg
 
 
+class MandatoryTraitKey:
+    """
+    This represents a required key that must be
+    supplied when a Trait is initialized. It's used
+    by Trait classes when defining their required keys.
+    """
+
+
 class TraitHandler:
     """
     Factory class that instantiates Trait objects.
@@ -476,14 +484,13 @@ class Trait:
     # a new trait in the TraitHandler
     trait_type = "trait"
 
-    # These keywords form the internal  data store of the Trait.
-    # Unless a default value is also given, each must be given
-    # supplied with an explicit value when creating this Trait.
-    # This list should at minimum contain "name" and "trait_type".
-    data_keys = ("name", "trait_type")
-    # If a dat key has a default, we will use this if it's not supplied at
-    # creation.
-    data_default = {}
+    # Keys required when creating a Trait of this type. This is a dict
+    # of key: default. If a key must be given, use traits.TraitKeyRequired
+    # as its value - this means the key must be explicitly set or
+    # the trait will not be able to be created.
+    # Apart from the keys given here, "name" and "trait_type" will also
+    # always have to be a apart of the data.
+    data_keys = {}
 
     # enable to set/retrieve other arbitrary properties on the Trait
     # and have them treated like data to store.
@@ -521,23 +528,26 @@ class Trait:
         Validate input
 
         """
-        inp, req = set(trait_data.keys()), set(cls.data_keys)
-        unset = req.difference(inp.intersection(req))
-        if unset:
-            # try to add defaults to those we have not set
-            no_defaults = unset.difference(set(cls.data_default))
-            print(f"inp: {inp}, req: {req}, unset: {unset}, no_defaults: {no_defaults}")
-            if no_defaults:
-                raise TraitException(
-                    "Trait {} could not be created - misses required keys {}".format(
-                        cls.trait_type, ", ".join(no_defaults)
-                    )
+        req = set(list(cls.data_keys.keys()) + ["name", "trait_type"])
+        inp = set(trait_data.keys())
+        unsets = req.difference(inp.intersection(req))
+        unset_defaults = {key: cls.data_keys[key] for key in unsets}
+
+        if MandatoryTraitKey in unset_defaults.values():
+            # we have one or more unset keys that was mandatory
+            unset_required = [key for key, value in unset_defaults.items()
+                              if value == MandatoryTraitKey]
+            raise TraitException(
+                "Trait {} could not be created - misses required keys {}".format(
+                    cls.trait_type, ", ".join(unset_required)
                 )
-            trait_data.update({key: cls.data_default[key] for key in unset})
+            )
+        # apply the default values
+        trait_data.update(unset_defaults)
 
         if not cls.allow_extra_properties:
             # don't allow any extra properties - remove the extra data
-            for key in inp.difference(req):
+            for key in inp.difference(req) not in ("name", "trait_type"):
                 del trait_data[key]
 
         return trait_data
@@ -628,23 +638,18 @@ class Trait:
     key = name
 
 
-
 @total_ordering
 class NumericTrait(Trait):
     """
     Base trait for all Traits based on numbers. This implements
-    number-comparisons, limits etc. It also features a "modifier"
-    to the value, since this is a common use.
+    number-comparisons, limits etc. It also features a "modifier" to the value,
+    since this is a common use.
 
     """
 
     trait_type = "numeric"
 
-    data_keys = (
-        "name",
-        "base",
-    )
-    data_default = {
+    data_keys = {
         "base": 0
     }
 
@@ -754,8 +759,6 @@ class NumericTrait(Trait):
         return self._data["base"]
 
 
-
-
 # Implementation of the respective Trait types
 
 
@@ -766,23 +769,16 @@ class StaticTrait(NumericTrait):
     """
     trait_type = "static"
 
-    data_keys = (
-        "name",
-        "base",
-        "mod",
-    )
-    data_default = {
+    data_keys = {
         "base": 0,
         "mod": 0
     }
-
 
     def __str__(self):
         status = "{actual:11}".format(actual=self.actual)
         return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
 
     # Helpers
-
 
     @property
     def mod(self):
@@ -811,27 +807,15 @@ class CounterTrait(NumericTrait):
 
     trait_type = "counter"
 
-    data_keys = (
-        "name",
-        "base",
-        "mod",
-        "current",
-        "min_value",
-        "max_value"
-    )
-    data_default = {
+    data_keys = {
         "base": 0,
         "mod": 0,
         "current": 0,
         "min_value": None,
-        "max_value": None
+        "max_value": None,
     }
 
     # Helpers
-
-    def _enforce_bounds(self, value):
-        """Ensures that incoming value falls within trait's range."""
-        return value
 
     def _mod_base(self):
         """Calculate adding base and modifications"""
@@ -864,7 +848,7 @@ class CounterTrait(NumericTrait):
 
     @base.setter
     def base(self, amount):
-        if self._data.get("max", None) == "base":
+        if self._data.get("max_value", None) == "base":
             self._data["base"] = amount
         if type(amount) in (int, float):
             self._data["base"] = self._enforce_bounds(amount)
@@ -887,7 +871,7 @@ class CounterTrait(NumericTrait):
         return self._data["max_value"]
 
     @max.setter
-    def max(self):
+    def max(self, value):
         """The maximum value of the `Trait`.
 
         Note:
@@ -939,20 +923,12 @@ class GaugeTrait(CounterTrait):
     trait_type = "gauge"
 
     # same as Counter, here for easy reference
-    data_keys = (
-        "name",
-        "base",
-        "mod",
-        "current",
-        "min_value",
-        "max_value"
-    )
-    data_default = {
+    data_keys = {
         "base": 0,
         "mod": 0,
         "current": 0,
         "min_value": None,
-        "max_value": None
+        "max_value": None,
     }
 
     def __str__(self):
