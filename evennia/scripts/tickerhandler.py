@@ -335,10 +335,10 @@ class TickerHandler(object):
                 outobj = callback.__self__
                 outcallfunc = callback.__func__.__name__
             elif inspect.isfunction(callback):
-                outpath = "%s.%s" % (callback.__module__, callback.__name__)
+                outpath = f"{callback.__module__}.{callback.__name__}"
                 outcallfunc = callback
         else:
-            raise TypeError("%s is not a callable function or method." % callback)
+            raise TypeError(f"{callback} is not a callable function or method.")
         return outobj, outpath, outcallfunc
 
     def _store_key(self, obj, path, interval, callfunc, idstring="", persistent=True):
@@ -458,11 +458,11 @@ class TickerHandler(object):
                         kwargs["_obj"] = None
                     else:
                         # Neither object nor path - discard this ticker
-                        log_err("Tickerhandler: Removing malformed ticker: %s" % str(store_key))
+                        log_err(f"Tickerhandler: Removing malformed ticker: {str(store_key)}")
                         continue
                 except Exception:
                     # this suggests a malformed save or missing objects
-                    log_trace("Tickerhandler: Removing malformed ticker: %s" % str(store_key))
+                    log_trace(f"Tickerhandler: Removing malformed ticker: {str(store_key)}")
                     continue
                 # if we get here we should create a new ticker
                 self.ticker_storage[store_key] = (args, kwargs)

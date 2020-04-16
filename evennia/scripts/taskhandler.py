@@ -82,9 +82,9 @@ class TaskHandler(object):
                 dbserialize(callback)
             except (TypeError, AttributeError):
                 raise ValueError(
-                    "the specified callback {} cannot be pickled. "
+                    f"the specified callback {callback} cannot be pickled. "
                     "It must be a top-level function in a module or an "
-                    "instance method.".format(callback)
+                    "instance method."
                 )
             else:
                 safe_callback = callback
@@ -125,9 +125,9 @@ class TaskHandler(object):
                     dbserialize(arg)
                 except (TypeError, AttributeError):
                     log_err(
-                        "The positional argument {} cannot be "
+                        f"The positional argument {arg} cannot be "
                         "pickled and will not be present in the arguments "
-                        "fed to the callback {}".format(arg, callback)
+                        f"fed to the callback {callback}"
                     )
                 else:
                     safe_args.append(arg)
@@ -137,9 +137,9 @@ class TaskHandler(object):
                     dbserialize(value)
                 except (TypeError, AttributeError):
                     log_err(
-                        "The {} keyword argument {} cannot be "
+                        f"The {key} keyword argument {value} cannot be "
                         "pickled and will not be present in the arguments "
-                        "fed to the callback {}".format(key, value, callback)
+                        f"fed to the callback {callback}"
                     )
                 else:
                     safe_kwargs[key] = value

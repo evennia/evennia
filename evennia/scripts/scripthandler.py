@@ -82,15 +82,15 @@ class ScriptHandler(object):
             # a failing creation from a script that immediately starts/stops.
             script = create.create_script(scriptclass, key=key, obj=self.obj, autostart=False)
         if not script:
-            logger.log_err("Script %s failed to be created/started." % scriptclass)
+            logger.log_err(f"Script {scriptclass} failed to be created/started.")
             return False
         if autostart:
             script.start()
         if not script.id:
             # this can happen if the script has repeats=1 or calls stop() in at_repeat.
             logger.log_info(
-                "Script %s started and then immediately stopped; "
-                "it could probably be a normal function." % scriptclass
+                f"Script {scriptclass} started and then immediately stopped; "
+                "it could probably be a normal function."
             )
         return True
 

@@ -152,7 +152,7 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
     objects = ScriptManager()
 
     def __str__(self):
-        return "<{cls} {key}>".format(cls=self.__class__.__name__, key=self.key)
+        return f"<{self.__class__.__name__} {self.key}>"
 
     def __repr__(self):
         return str(self)
@@ -347,7 +347,7 @@ class DefaultScript(ScriptBase):
             obj = create.create_script(**kwargs)
         except Exception:
             logger.log_trace()
-            errors.append("The script '%s' encountered errors and could not be created." % key)
+            errors.append(f"The script '{key}' encountered errors and could not be created.")
 
         return obj, errors
 
