@@ -275,11 +275,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg("You are already puppeting this object.")
+            self.msg(_("You are already puppeting this object.")
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(f"You don't have permission to puppet '{obj.key}'.")
+            self.msg(_(f"You don't have permission to puppet '{obj.key}'.")
             return
         if obj.account:
             # object already puppeted
@@ -295,12 +295,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     else:
                         txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
                         txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
-                        self.msg(txt1, session=session)
-                        self.msg(txt2, session=obj.sessions.all())
+                        self.msg(_(txt1), session=session)
+                        self.msg(_(txt2), session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
             elif obj.account.is_connected:
                 # controlled by another account
-                self.msg(f"|c{obj.key}|R is already puppeted by another Account.")
+                self.msg(_(f"|c{obj.key}|R is already puppeted by another Account."))
                 return
 
         # do the puppeting
@@ -496,7 +496,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         # See if authentication is currently being throttled
         if ip and LOGIN_THROTTLE.check(ip):
-            errors.append("Too many login failures; please try again in a few minutes.")
+            errors.append(_("Too many login failures; please try again in a few minutes."))
 
             # With throttle active, do not log continued hits-- it is a
             # waste of storage and can be abused to make your logs harder to
@@ -508,8 +508,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if banned:
             # this is a banned IP or name!
             errors.append(
-                "|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x"
+                _("|rYou have been banned and cannot continue from here."
+                "\nIf you feel this ban is in error, please email an admin.|x")
             )
             logger.log_sec(f"Authentication Denied (Banned): {username} (IP: {ip}).")
             LOGIN_THROTTLE.update(ip, "Too many sightings of banned artifact.")
@@ -519,7 +519,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         account = authenticate(username=username, password=password)
         if not account:
             # User-facing message
-            errors.append("Username and/or password is incorrect.")
+            errors.append(_("Username and/or password is incorrect."))
 
             # Log auth failures while throttle is inactive
             logger.log_sec(f"Authentication Failure: {username} (IP: {ip}).")
@@ -688,7 +688,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         ip = kwargs.get("ip", "")
         if ip and CREATION_THROTTLE.check(ip):
             errors.append(
-                "You are creating too many accounts. Please log into an existing account."
+                _("You are creating too many accounts. Please log into an existing account.")
             )
             return None, errors
 
@@ -717,8 +717,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if banned:
             # this is a banned IP or name!
             string = (
-                "|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x"
+                _("|rYou have been banned and cannot continue from here."
+                "\nIf you feel this ban is in error, please email an admin.|x")
             )
             errors.append(string)
             return None, errors
@@ -733,7 +733,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             except Exception as e:
                 errors.append(
-                    "There was an error creating the Account. If this problem persists, contact an admin."
+                    _("There was an error creating the Account. If this problem persists, contact an admin.")
                 )
                 logger.log_trace()
                 return None, errors
@@ -785,7 +785,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            errors.append(_("An error occurred. Please e-mail an admin if the problem persists."))
             logger.log_trace()
 
         # Update the throttle to indicate a new account was created from this IP
@@ -1260,14 +1260,14 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
-                self.msg("The Character does not exist.")
+                self.msg(_("The Character does not exist."))
                 return
         elif _MULTISESSION_MODE == 1:
             # in this mode all sessions connect to the same puppet.
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
-                self.msg("The Character does not exist.")
+                self.msg(_("The Character does not exist."))
                 return
         elif _MULTISESSION_MODE in (2, 3):
             # In this mode we by default end up at a character selection
@@ -1305,7 +1305,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         reason = f" ({reason if reason else ''})"
-        self._send_to_connect_channel(f"|R{self.key} disconnected{reason}|n")
+        self._send_to_connect_channel(_(f"|R{self.key} disconnected{reason}|n"))
 
     def at_post_disconnect(self, **kwargs):
         """
@@ -1411,7 +1411,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if hasattr(target, "return_appearance"):
                 return target.return_appearance(self)
             else:
-                return "{} has no in-game appearance.".format(target)
+                return _(f"{target} has no in-game appearance.")
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
@@ -1454,7 +1454,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if is_su or len(characters) < charmax:
                 if not characters:
                     result.append(
-                        "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
+                        _("\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one.")
                     )
                 else:
                     result.append("\n |w@charcreate <name> [=description]|n - create new character")
@@ -1534,7 +1534,7 @@ class DefaultGuest(DefaultAccount):
 
         # check if guests are enabled.
         if not settings.GUEST_ENABLED:
-            errors.append("Guest accounts are not enabled on this server.")
+            errors.append(_("Guest accounts are not enabled on this server."))
             return None, errors
 
         try:
@@ -1544,7 +1544,7 @@ class DefaultGuest(DefaultAccount):
                     username = name
                     break
             if not username:
-                errors.append("All guest accounts are in use. Please try again later.")
+                errors.append(_("All guest accounts are in use. Please try again later."))
                 if ip:
                     LOGIN_THROTTLE.update(ip, "Too many requests for Guest access.")
                 return None, errors
@@ -1572,7 +1572,7 @@ class DefaultGuest(DefaultAccount):
             # We are in the middle between logged in and -not, so we have
             # to handle tracebacks ourselves at this point. If we don't,
             # we won't see any errors at all.
-            errors.append("An error occurred. Please e-mail an admin if the problem persists.")
+            errors.append(_("An error occurred. Please e-mail an admin if the problem persists."))
             logger.log_trace()
             return None, errors
 
@@ -1589,7 +1589,7 @@ class DefaultGuest(DefaultAccount):
                 overriding the call (unused by default).
 
         """
-        self._send_to_connect_channel(f"|G{self.key} connected|n")
+        self._send_to_connect_channel(_(f"|G{self.key} connected|n"))
         self.puppet_object(session, self.db._last_puppet)
 
     def at_server_shutdown(self):
