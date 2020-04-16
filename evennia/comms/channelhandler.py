@@ -119,17 +119,17 @@ class ChannelCommand(command.Command):
             caller = caller if not hasattr(caller, "account") else caller.account
             unmuted = channel.unmute(caller)
             if unmuted:
-                self.msg("You start listening to %s." % channel)
+                self.msg(_("You start listening to %s.") % channel)
                 return
-            self.msg("You were already listening to %s." % channel)
+            self.msg(_("You were already listening to %s.") % channel)
             return
         if msg == "off":
             caller = caller if not hasattr(caller, "account") else caller.account
             muted = channel.mute(caller)
             if muted:
-                self.msg("You stop listening to %s." % channel)
+                self.msg(_("You stop listening to %s.") % channel)
                 return
-            self.msg("You were already not listening to %s." % channel)
+            self.msg(_("You were already not listening to %s.") % channel)
             return
         if self.history_start is not None:
             # Try to view history
@@ -144,7 +144,7 @@ class ChannelCommand(command.Command):
         else:
             caller = caller if not hasattr(caller, "account") else caller.account
             if caller in channel.mutelist:
-                self.msg("You currently have %s muted." % channel)
+                self.msg(_("You currently have %s muted.") % channel)
                 return
             channel.msg(msg, senders=self.caller, online=True)
 
