@@ -1253,7 +1253,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if session:
             session.msg(logged_in={})
 
-        self._send_to_connect_channel(f"|G{self.key} connected|n")
+        self._send_to_connect_channel(_("|G{key} connected|n".format(key=self.key)))
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
             # try to auto-connect to our last conneted object, if any
@@ -1305,7 +1305,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         reason = f" ({reason if reason else ''})"
-        self._send_to_connect_channel(_("|R{key} disconnected{reason}|n".format(key=self.key)))
+        self._send_to_connect_channel(_("|R{key} disconnected{reason}|n".format(key=self.key, reason=reason)))
 
     def at_post_disconnect(self, **kwargs):
         """
