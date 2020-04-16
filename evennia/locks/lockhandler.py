@@ -246,7 +246,7 @@ class LockHandler(object):
                 evalstring = " ".join(_RE_OK.findall(evalstring))
                 eval(evalstring % tuple(True for func in funclist), {}, {})
             except Exception:
-                elist.append(_("Lock: definition '{lock_string}' has syntax errors.".format(lock_string=raw_lockstring)))
+                elist.append(_("Lock: definition '{lock_string}' has syntax errors.").format(lock_string=raw_lockstring))
                 continue
             if access_type in locks:
                 duplicates += 1
