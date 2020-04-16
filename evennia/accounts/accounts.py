@@ -1411,7 +1411,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if hasattr(target, "return_appearance"):
                 return target.return_appearance(self)
             else:
-                return "{} has no in-game appearance.".format(target)
+                return f"{target} has no in-game appearance."
         else:
             # list of targets - make list to disconnect from db
             characters = list(tar for tar in target if tar) if target else []
@@ -1432,19 +1432,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             )
             for isess, sess in enumerate(sessions):
                 csessid = sess.sessid
-                addr = "%s (%s)" % (
-                    sess.protocol_key,
-                    isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address),
-                )
+                addr = f"{sess.protocol_key} ({isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address)})"
                 result.append(
-                    "\n %s %s"
-                    % (
-                        session
-                        and session.sessid == csessid
-                        and "|w* %s|n" % (isess + 1)
-                        or "  %s" % (isess + 1),
-                        addr,
-                    )
+                    f"\n {session and session.sessid == csessid and f'|w* {isess + 1}|n' or f' {isess + 1}'} {addr}"
                 )
             result.append("\n\n |whelp|n - more commands")
             result.append("\n |wooc <Text>|n - talk on public channel")

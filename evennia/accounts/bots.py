@@ -357,12 +357,7 @@ class IRCBot(Bot):
                     delta_conn = t0 - session.conn_time
                     account = sess.get_account()
                     whos.append(
-                        "%s (%s/%s)"
-                        % (
-                            utils.crop("|w%s|n" % account.name, width=25),
-                            utils.time_format(delta_conn, 0),
-                            utils.time_format(delta_cmd, 1),
-                        )
+                        f"{utils.crop(f'|w{account.name, width=25}|n')} ({utils.time_format(delta_conn, 0)}/{utils.time_format(delta_cmd, 1)})"
                     )
                 text = f"Who list (online/idle): {', '.join(sorted(whos, key=lambda w: w.lower()))}"
             elif txt.lower().startswith("about"):
