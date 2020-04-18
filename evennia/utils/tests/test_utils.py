@@ -312,3 +312,21 @@ class TestFormatGrid(TestCase):
         self.assertEqual(len(rows), 8)
         for element in elements:
             self.assertTrue(element in "\n".join(rows), f"element {element} is missing.")
+
+
+class TestPercent(TestCase):
+    """
+    Test the utils.percentage function.
+    """
+    def test_ok_input(self):
+        result = utils.percentage(3, 0, 10)
+        self.assertEqual(result, "30.0%")
+        result = utils.percentage(2.5, 5, 10, formatting=None)
+        self.assertEqual(result, 50.0)
+        # min==max we set to 100%
+        self.assertEqual(utils.percentage(4, 5, 5), "100.0%")
+
+    def test_bad_input(self):
+        self.assertRaises(RuntimeError):
+            utils.percentage(3, 10, 1)
+

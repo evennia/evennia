@@ -104,6 +104,8 @@ class TraitHandlerTest(_TraitHandlerBase):
             self.traithandler.foo = "bar"
         with self.assertRaises(traits.TraitException):
             self.traithandler["foo"] = "bar"
+        with self.assertRaises(traits.TraitException):
+            self.traithandler.test1 = "foo"
 
     def test_getting(self):
         "Test we are getting data from the dbstore"
@@ -294,74 +296,377 @@ class TraitTest(_TraitHandlerBase):
 
 
 class TestTraitNumeric(_TraitHandlerBase):
+    """
+    Test the numeric base class
+    """
 
-    def test_trait__numeric(self):
+    def setUp(self):
+        super().setUp()
+        self.traithandler.add(
+            "test1",
+            name="Test1",
+            trait_type='numeric',
+            base=1,
+            extra_val1="xvalue1",
+            extra_val2="xvalue2"
+        )
+        self.trait1 = self.traithandler.get("test1")
+
+    def _get_actuals(self):
+        """Get trait actuals for comparisons"""
+        return self.trait1.actual, self.trait2.actual
+
+    def test_init(self):
+        self.assertEqual(
+            self.trait1._data,
+            {"name": "Test1",
+             "trait_type": "numeric",
+             "base": 1,
+             "extra_val1": "xvalue1",
+             "extra_val2": "xvalue2"
+            }
+        )
+
+    def test_set_wrong_type(self):
+        self.trait1.base = "foo"
+        self.assertEqual(self.trait1.base, 1)
+
+    def test_actual(self):
+        self.trait1.base = 10
+        self.assertEqual(self.trait1.actual, 10)
+
+
+class TestTraitStatic(_TraitHandlerBase):
+    """
+    Test for static Traits
+    """
+    def setUp(self):
+        super().setUp()
+        self.traithandler.add(
+            "test1",
+            name="Test1",
+            trait_type='static',
+            base=1,
+            mod=2,
+            extra_val1="xvalue1",
+            extra_val2="xvalue2"
+        )
+        self.trait1 = self.traithandler.get("test1")
+
+    def _get_values(self):
+        return self.trait1.base, self.trait1.mod, self.trait1.actual
+
+    def test_init(self):
+        self.assertEqual(
+            self._get_dbstore("test1"),
+            {"name": "Test1",
+             "trait_type": 'static',
+             "base": 1,
+             "mod": 2,
+             "extra_val1": "xvalue1",
+             "extra_val2": "xvalue2"
+            }
+        )
+
+    def test_actual(self):
+        """Actual is base + mod"""
+        self.assertEqual(self._get_values(), (1, 2, 3))
+        self.trait1.base += 4
+        self.assertEqual(self._get_values(), (5, 2, 7))
+        self.trait1.mod -= 1
+        self.assertEqual(self._get_values(), (5, 1, 6))
+
+    def test_delete(self):
+        """Deleting resets to default."""
+        del self.trait1.base
+        self.assertEqual(self._get_values(), (0, 2, 2))
+        del self.trait1.mod
+        self.assertEqual(self._get_values(), (0, 0, 0))
+
+
+class TestTraitCounter(_TraitHandlerBase):
+    """
+    Test for counter- Traits
+    """
+    def setUp(self):
+        super().setUp()
+        self.traithandler.add(
+            "test1",
+            name="Test1",
+            trait_type='counter',
+            base=1,
+            mod=2,
+            min=-10,
+            max=10,
+            extra_val1="xvalue1",
+            extra_val2="xvalue2"
+        )
+        self.trait1 = self.traithandler.get("test1")
+
+    def _get_values(self):
+        return self.trait1.base, self.trait1.mod, self.trait1.actual
+
+    def test_init(self):
+        self.assertEqual(
+            self._get_dbstore("test1"),
+            {"name": "Test1",
+             "trait_type": 'counter',
+             "base": 1,
+             "mod": 2,
+             "min": -10,
+             "max": 10,
+             "extra_val1": "xvalue1",
+             "extra_val2": "xvalue2"
+            }
+        )
+
+    def test_actual(self):
+        """Actual is current + mod, where current defaults to base"""
+        self.assertEqual(self._get_values(), (1, 2, 3))
+        self.trait1.base += 4
+        self.assertEqual(self._get_values(), (5, 2, 7))
+        self.trait1.mod -= 1
+        self.assertEqual(self._get_values(), (5, 1, 6))
+
+    def test_boundaries__minmax(self):
+        """Test range"""
+        # should not exceed min/max values
+        self.trait1.base += 20
+        self.assertEqual(self._get_values(), (10, 2, 10))
+        self.trait1.base = 100
+        self.assertEqual(self._get_values(), (10, 2, 10))
+        self.trait1.base -= 40
+        self.assertEqual(self._get_values(), (-10, 2, -8))
+        self.trait1.base = -100
+        self.assertEqual(self._get_values(), (-10, 2, -8))
+
+    def test_boundaries__bigmod(self):
+        """add a big mod"""
+        self.trait1.base = 5
+        self.trait1.mod = 100
+        self.assertEqual(self._get_values(), (5, 100, 10))
+        self.trait1.mod = -100
+        self.assertEqual(self._get_values(), (5, -100, -10))
+
+    def test_boundaries__change_boundaries(self):
+        """Change boundaries after base/mod change"""
+        self.trait1.base = 5
+        self.trait1.mod = -100
+        self.trait1.min = -20
+        self.assertEqual(self._get_values(), (5, -100, -20))
+        self.trait1.mod = 100
+        self.trait1.max = 20
+        self.assertEqual(self._get_values(), (5, 100, 20))
+
+    def test_boundaries__base_literal(self):
+        """Use the "base" literal makes the max become base+mod"""
+        self.trait1.base = 5
+        self.trait1.mod = 100
+        self.trait1.max = "base"
+        self.assertEqual(self._get_values(), (5, 100, 105))
+
+    def test_boundaries__disable(self):
+        """Disable and re-enable boundaries"""
+        self.trait1.base = 5
+        self.trait1.mod = 100
+        del self.trait1.max
+        self.assertEqual(self.trait1.max, None)
+        del self.trait1.min
+        self.assertEqual(self.trait1.min, None)
+        self.trait1.base = 100
+        self.assertEqual(self._get_values(), (100, 100, 200))
+        self.trait1.base = -10
+        self.assertEqual(self._get_values(), (-10, 100, 90))
+
+        # re-activate boundaries
+        self.trait1.max = 15
+        self.trait1.min = 10
+        self.assertEqual(self._get_values(), (-10, 100, 15))
+
+    def test_boundaries__inverse(self):
+        """Set inverse boundaries - limited by base"""
+        self.trait1.base = -10
+        self.trait1.mod = 100
+        self.trait1.min = 20  # will be set to base
+        self.assertEqual(self.trait1.min, -10)
+        self.trait1.max = -20
+        self.assertEqual(self.trait1.max, -10)
+        self.assertEqual(self._get_values(), (-10, 100, -10))
+
+    def test_current(self):
+        """Modifying current value"""
+        self.trait1.current = 5
+        self.assertEqual(self._get_values(), (1, 2, 7))
+        self.trait1.current = 10
+        self.assertEqual(self._get_values(), (1, 2, 10))
+        self.trait1.current = 12
+        self.assertEqual(self._get_values(), (1, 2, 10))
+
+    def test_delete(self):
+        """Deleting resets to default."""
+        del self.trait1.base
+        self.assertEqual(self._get_values(), (0, 2, 2))
+        del self.trait1.mod
+        self.assertEqual(self._get_values(), (0, 0, 0))
+        del self.trait1.min
+        del self.trait1.max
+        self.assertEqual(self.trait1.max, None)
+        self.assertEqual(self.trait1.min, None)
+
+
+class TestTraitGauge(TestTraitCounter):
+
+    def setUp(self):
+        super().setUp()
         self.traithandler.add(
             "test2",
-            name="Test2",
-            trait_type='numeric',
+            name="Test1",
+            trait_type='gauge',
+            base=1,
+            mod=2,
+            min=-10,
+            max=10,
+            extra_val1="xvalue1",
+            extra_val2="xvalue2"
         )
-        self.assertEqual(
-            self._get_dbstore("test2"),
-            {"name": "Test2",
-             "trait_type": 'numeric',
-             "base": 0,
-            }
-        )
+        self.trait1 = self.traithandler.get("test2")
+
+    def test_boundaries__change_boundaries(self):
+        """Change boundaries after base/mod  change"""
+        self.trait1.base = 5
+        self.trait1.mod = -100
+        self.trait1.min = -20
+        # from pudb import debugger;debugger.Debugger().set_trace()
+        self.assertEqual(self._get_values(), (5, -100, -20))
+        self.trait1.mod = 100
+        self.trait1.max = 20
+        self.assertEqual(self._get_values(), (5, 100, 20))
+
+    def test_boundaries__disable(self):
+        """Disable and re-enable boundaries"""
+        self.trait1.base = 5
+        self.trait1.mod = 100
+        del self.trait1.max
+        self.assertEqual(self.trait1.max, None)
+        del self.trait1.min
+        self.assertEqual(self.trait1.min, None)
+        self.trait1.base = 100
+        # this won't change since current is not changed
+        self.assertEqual(self._get_values(), (100, 100, 10))
+        self.trait1.current = 150
+        self.assertEqual(self._get_values(), (100, 100, 150))
+        self.trait1.base = -10
+        self.assertEqual(self._get_values(), (-10, 100, 150))
+
+        # re-activate boundaries
+        self.trait1.max = 15
+        self.trait1.min = 10
+        self.assertEqual(self._get_values(), (-10, 100, 15))
+
+    def test_boundaries__inverse(self):
+        """Set inverse boundaries - limited by base"""
+        self.trait1.base = -10
+        self.trait1.mod = 100
+        self.trait1.min = 20  # will be set to base
+        self.assertEqual(self.trait1.min, -10)
+        self.trait1.max = -20 # this is <base so ok
+        self.assertEqual(self.trait1.max, -20)
+        self.assertEqual(self._get_values(), (-10, 100, -10))
+
+    def test_current(self):
+        """For a gauge, mod applies to base and not to current."""
+        self.trait1.current = 5
+        self.assertEqual(self._get_values(), (1, 2, 5))
+        self.trait1.current = 14
+        self.assertEqual(self._get_values(), (1, 2, 10))
+        self.trait1.current = -14
+        self.assertEqual(self._get_values(), (1, 2, -10))
 
 
 
+class TestNumericTraitOperators(TestCase):
+    """Test case for numeric magic method implementations."""
+    def setUp(self):
+        # direct instantiation for testing only; use TraitHandler in production
+        self.st = traits.NumericTrait({
+            'name': 'Strength',
+            'trait_type': 'numeric',
+            'base': 8,
+        })
+        self.at = traits.NumericTrait({
+            'name': 'Attack',
+            'trait_type': 'numeric',
+            'base': 4,
+        })
 
-    def test_trait__static(self):
-        self.traithandler.add(
-            "test3",
-            name="Test3",
-            trait_type='static'
-        )
-        self.assertEqual(
-            self._get_dbstore("test3"),
-            {"name": "Test3",
-             "trait_type": 'static',
-             "base": 0,
-             "mod": 0,
-            }
-        )
+    def tearDown(self):
+        self.st, self.at = None, None
 
-    def test_trait__counter(self):
-        self.traithandler.add(
-            "test4",
-            name="Test4",
-            trait_type='counter'
-        )
-        self.assertEqual(
-            self._get_dbstore("test4"),
-            {"name": "Test4",
-             "trait_type": 'counter',
-             "base": 0,
-             "mod": 0,
-             "current": 0,
-             "max_value": None,
-             "min_value": None,
-            }
-        )
+    def test_pos_shortcut(self):
+        """overridden unary + operator returns `actual` property"""
+        self.assertIn(type(+self.st), (float, int))
+        self.assertEqual(+self.st, self.st.actual)
+        self.assertEqual(+self.st, 8)
 
-    def test_trait__gauge(self):
-        self.traithandler.add(
-            "test5",
-            name="Test5",
-            trait_type='gauge'
-        )
-        self.assertEqual(
-            self._get_dbstore("test5"),
-            {"name": "Test5",
-             "trait_type": 'gauge',
-             "base": 0,
-             "mod": 0,
-             "current": 0,
-             "max_value": None,
-             "min_value": None,
-            }
-        )
+    def test_add_traits(self):
+        """test addition of `Trait` objects"""
+        # two Trait objects
+        self.assertEqual(self.st + self.at, 12)
+        # Trait and numeric
+        self.assertEqual(self.st + 1, 9)
+        self.assertEqual(1 + self.st, 9)
+
+    def test_sub_traits(self):
+        """test subtraction of `Trait` objects"""
+        # two Trait objects
+        self.assertEqual(self.st - self.at, 4)
+        # Trait and numeric
+        self.assertEqual(self.st - 1, 7)
+        self.assertEqual(10 - self.st, 2)
+
+    def test_mul_traits(self):
+        """test multiplication of `Trait` objects"""
+        # between two Traits
+        self.assertEqual(self.st * self.at, 32)
+        # between Trait and numeric
+        self.assertEqual(self.at * 4, 16)
+        self.assertEqual(4 * self.at, 16)
+
+    def test_floordiv(self):
+        """test floor division of `Trait` objects"""
+        # between two Traits
+        self.assertEqual(self.st // self.at, 2)
+        # between Trait and numeric
+        self.assertEqual(self.st // 2, 4)
+        self.assertEqual(18 // self.st, 2)
+
+    def test_comparisons_traits(self):
+        """test equality comparison between `Trait` objects"""
+        self.assertNotEqual(self.st, self.at)
+        self.assertLess(self.at, self.st)
+        self.assertLessEqual(self.at, self.st)
+        self.assertGreater(self.st, self.at)
+        self.assertGreaterEqual(self.st, self.at)
+
+    def test_comparisons_numeric(self):
+        """equality comparisons between `Trait` and numeric"""
+        self.assertEqual(self.st, 8)
+        self.assertEqual(8, self.st)
+        self.assertNotEqual(self.st, 0)
+        self.assertNotEqual(0, self.st)
+        self.assertLess(self.st, 10)
+        self.assertLess(0, self.st)
+        self.assertLessEqual(self.st, 8)
+        self.assertLessEqual(8, self.st)
+        self.assertLessEqual(self.st, 10)
+        self.assertLessEqual(0, self.st)
+        self.assertGreater(self.st, 0)
+        self.assertGreater(10, self.st)
+        self.assertGreaterEqual(self.st, 8)
+        self.assertGreaterEqual(8, self.st)
+        self.assertGreaterEqual(self.st, 0)
+        self.assertGreaterEqual(10, self.st)
+
 
 #
 #
@@ -451,93 +756,6 @@ class TestTraitNumeric(_TraitHandlerBase):
 #         with self.assertRaises(KeyError):
 #              x = self.trait['preloaded']
 #
-# class TraitOperatorsTestCase(TestCase):
-#     """Test case for numeric magic method implementations."""
-#     def setUp(self):
-#         # direct instantiation for testing only; use TraitHandler in production
-#         self.st = Trait({
-#             'name': 'Strength',
-#             'type': 'static',
-#             'base': 8,
-#         })
-#         self.at = Trait({
-#             'name': 'Attack',
-#             'type': 'static',
-#             'base': 4,
-#         })
-#
-#     def tearDown(self):
-#         self.st, self.at = None, None
-#
-#     def test_pos_shortcut(self):
-#         """overridden unary + operator returns `actual` property"""
-#         self.assertIn(type(+self.st), (float, int))
-#         self.assertEqual(+self.st, self.st.actual)
-#         self.assertEqual(+self.st, 8)
-#
-#     def test_add_traits(self):
-#         """test addition of `Trait` objects"""
-#         # two Trait objects
-#         self.assertEqual(self.st + self.at, 12)
-#         # Trait and numeric
-#         self.assertEqual(self.st + 1, 9)
-#         self.assertEqual(1 + self.st, 9)
-#
-#     def test_sub_traits(self):
-#         """test subtraction of `Trait` objects"""
-#         # two Trait objects
-#         self.assertEqual(self.st - self.at, 4)
-#         # Trait and numeric
-#         self.assertEqual(self.st - 1, 7)
-#         self.assertEqual(10 - self.st, 2)
-#
-#     def test_mul_traits(self):
-#         """test multiplication of `Trait` objects"""
-#         # between two Traits
-#         self.assertEqual(self.st * self.at, 32)
-#         # between Trait and numeric
-#         self.assertEqual(self.at * 4, 16)
-#         self.assertEqual(4 * self.at, 16)
-#
-#     def test_floordiv(self):
-#         """test floor division of `Trait` objects"""
-#         # between two Traits
-#         self.assertEqual(self.st // self.at, 2)
-#         # between Trait and numeric
-#         self.assertEqual(self.st // 2, 4)
-#         self.assertEqual(18 // self.st, 2)
-#
-#     def test_comparisons_traits(self):
-#         """test equality comparison between `Trait` objects"""
-#         self.assertNotEqual(self.st, self.at)
-#         self.assertLess(self.at, self.st)
-#         self.assertLessEqual(self.at, self.st)
-#         self.assertGreater(self.st, self.at)
-#         self.assertGreaterEqual(self.st, self.at)
-#         # make st.actual = at.actual by modding at
-#         self.at.mod = 4
-#         self.assertEqual(self.st, self.at)
-#         self.assertGreaterEqual(self.st, self.at)
-#         self.assertLessEqual(self.st, self.at)
-#
-#     def test_comparisons_numeric(self):
-#         """equality comparisons between `Trait` and numeric"""
-#         self.assertEqual(self.st, 8)
-#         self.assertEqual(8, self.st)
-#         self.assertNotEqual(self.st, 0)
-#         self.assertNotEqual(0, self.st)
-#         self.assertLess(self.st, 10)
-#         self.assertLess(0, self.st)
-#         self.assertLessEqual(self.st, 8)
-#         self.assertLessEqual(8, self.st)
-#         self.assertLessEqual(self.st, 10)
-#         self.assertLessEqual(0, self.st)
-#         self.assertGreater(self.st, 0)
-#         self.assertGreater(10, self.st)
-#         self.assertGreaterEqual(self.st, 8)
-#         self.assertGreaterEqual(8, self.st)
-#         self.assertGreaterEqual(self.st, 0)
-#         self.assertGreaterEqual(10, self.st)
 #
 #
 # class CounterTraitTestCase(TestCase):
