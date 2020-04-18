@@ -608,9 +608,13 @@ class TestWilderness(EvenniaTest):
             self.assertTrue(any([e for e in exits if e.key == each_exit]))
 
     def test_room_creation(self):
-        # Pretend that both char1 and char2 are connected...
-        self.char1.sessions.add(1)
-        self.char2.sessions.add(1)
+        # Pretend that both char1 and char2 are connected via the same Account.
+        s1 = MagicMock()
+        s2 = MagicMock()
+        self.account.sessions.add(s1)
+        self.account.sessions.add(s2)
+        self.char1.sessions.add(s1)
+        self.char2.sessions.add(s2)
         self.assertTrue(self.char1.has_account)
         self.assertTrue(self.char2.has_account)
 

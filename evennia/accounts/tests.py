@@ -10,6 +10,7 @@ from evennia.utils.test_resources import EvenniaTest
 from evennia.utils import create
 from evennia.utils.utils import uses_database
 
+from evennia.server.linksessionhandler import SessionLinkError, ObjectSessionHandler
 
 class TestAccountSessionHandler(TestCase):
     "Check AccountSessionHandler class"
@@ -240,118 +241,89 @@ class TestDefaultAccount(TestCase):
     def test_puppet_object_already_puppeting(self):
         "Check puppet_object method called, already puppeting this"
 
-        from evennia.server.sessionhandler import SESSION_HANDLER
-
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
             email="test@test.com",
             password="testpassword",
             typeclass=DefaultAccount,
         )
-        self.s1.uid = account.uid
-        SESSION_HANDLER[self.s1.uid] = self.s1
         account.sessions.add(self.s1)
 
-        self.s1.logged_in = True
-        self.s1.data_out = Mock(return_value=None)
-
         obj = Mock()
-        self.s1.puppet = obj
-        account.puppet_object(self.s1, obj)
-        self.s1.data_out.assert_called_with(
-            options=None, text="You are already puppeting this object."
-        )
+        obj.sessions = ObjectSessionHandler(obj)
+        self.s1.get_puppet = Mock(return_value=obj)
+
+        with self.assertRaises(SessionLinkError) as le:
+            obj.sessions.validate_link_request(self.s1)
+        self.assertTrue("already puppeting" in str(le.exception))
         self.assertIsNone(obj.at_post_puppet.call_args)
 
     def test_puppet_object_no_permission(self):
         "Check puppet_object method called, no permission"
-
-        from evennia.server.sessionhandler import SESSION_HANDLER
-
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
             email="test@test.com",
             password="testpassword",
             typeclass=DefaultAccount,
         )
-        self.s1.uid = account.uid
-        SESSION_HANDLER[self.s1.uid] = self.s1
         account.sessions.add(self.s1)
 
-        self.s1.data_out = MagicMock()
         obj = Mock()
         obj.access = Mock(return_value=False)
+        obj.sessions = ObjectSessionHandler(obj)
 
-        account.puppet_object(self.s1, obj)
-
-        self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].startswith("You don't have permission to puppet")
-        )
+        with self.assertRaises(SessionLinkError) as le:
+            obj.sessions.validate_link_request(self.s1)
+        self.assertTrue("don't have permission" in str(le.exception))
         self.assertIsNone(obj.at_post_puppet.call_args)
 
     @override_settings(MULTISESSION_MODE=0)
     def test_puppet_object_joining_other_session(self):
         "Check puppet_object method called, joining other session"
 
-        import evennia.server.sessionhandler
-
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
             email="test@test.com",
             password="testpassword",
             typeclass=DefaultAccount,
         )
-        self.s1.uid = account.uid
-        evennia.server.sessionhandler.SESSION_HANDLER[self.s1.uid] = self.s1
-
-        self.s1.puppet = None
-        self.s1.logged_in = True
-        self.s1.data_out = MagicMock()
+        account.sessions.add(self.s1)
 
         obj = Mock()
         obj.access = Mock(return_value=True)
         obj.account = account
-        obj.sessions.all = MagicMock(return_value=[self.s1])
+        obj.sessions = ObjectSessionHandler(obj)
+        obj.sessions.add(self.s1)
 
-        account.puppet_object(self.s1, obj)
+        s2 = MagicMock()
+
+        obj.sessions.at_before_link_session_multisession(s2)
         # works because django.conf.settings.MULTISESSION_MODE is not in (1, 3)
         self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].endswith("from another of your sessions.|n")
+            s2.msg.call_args.endswith("from another of your sessions.|n")
         )
         self.assertTrue(obj.at_post_puppet.call_args[1] == {})
 
     def test_puppet_object_already_puppeted(self):
         "Check puppet_object method called, already puppeted"
 
-        from evennia.server.sessionhandler import SESSION_HANDLER
-
         account = create.create_account(
             f"TestAccount{randint(0, 999999)}",
             email="test@test.com",
             password="testpassword",
             typeclass=DefaultAccount,
         )
-        self.account = account
-        self.s1.uid = account.uid
         account.sessions.add(self.s1)
-        SESSION_HANDLER[self.s1.uid] = self.s1
-
-        self.s1.puppet = None
-        self.s1.logged_in = True
-        self.s1.data_out = Mock(return_value=None)
 
         obj = Mock()
         obj.access = Mock(return_value=True)
         obj.account = Mock()
+        obj.sessions = ObjectSessionHandler(obj)
         obj.at_post_puppet = Mock()
 
-        account.puppet_object(self.s1, obj)
-
-        self.assertTrue(
-            self.s1.data_out.call_args[1]["text"].endswith(
-                "is already puppeted by another Account."
-            )
-        )
+        with self.assertRaises(SessionLinkError) as le:
+            obj.sessions.validate_link_request(self.s1)
+        self.assertTrue("another Account" in str(le.exception))
         self.assertIsNone(obj.at_post_puppet.call_args)
 
 
@@ -388,12 +360,6 @@ class TestDefaultAccountEv(EvenniaTest):
         chars = self.account.characters
         self.assertEqual(chars, [self.char1])
         self.assertEqual(self.account.db._playable_characters, [self.char1])
-
-    def test_puppet_success(self):
-        self.account.msg = MagicMock()
-        with patch("evennia.accounts.accounts._MULTISESSION_MODE", 2):
-            self.account.puppet_object(self.session, self.char1)
-            self.account.msg.assert_called_with("You are already puppeting this object.")
 
     @patch("evennia.accounts.accounts.time.time", return_value=10000)
     def test_idle_time(self, mock_time):

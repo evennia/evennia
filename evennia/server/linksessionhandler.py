@@ -9,6 +9,10 @@ from evennia.server.signals import SIGNAL_ACCOUNT_POST_LOGIN, SIGNAL_ACCOUNT_POS
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_FIRST_LOGIN, SIGNAL_ACCOUNT_POST_LAST_LOGOUT
 
 
+class SessionLinkError(ValueError):
+    pass
+
+
 class EntitySessionHandler:
     """
     Handles adding/removing session references to an Account, Puppet, or perhaps
@@ -73,9 +77,9 @@ class EntitySessionHandler:
         """
         try:
             if session in self._sessions:
-                raise ValueError("Session is already linked to this entity!")
+                raise SessionLinkError("Session is already linked to this entity!")
             self.validate_link_request(session, force=force, sync=sync, **kwargs)
-        except ValueError as e:
+        except SessionLinkError as e:
             session.msg(e)
             return False
         self.at_before_link_session(session, force=force, sync=sync, **kwargs)
@@ -99,9 +103,9 @@ class EntitySessionHandler:
         """
         try:
             if session not in self._sessions:
-                raise ValueError("Cannot remove session: it is not linked to this object.")
+                raise SessionLinkError("Cannot remove session: it is not linked to this object.")
             self.validate_unlink_request(session, force=force, reason=reason, **kwargs)
-        except ValueError as e:
+        except SessionLinkError as e:
             self.obj.msg(e)
             return
         self.at_before_unlink_session(session, force=force, reason=reason, **kwargs)
@@ -316,15 +320,15 @@ class ObjectSessionHandler(EntitySessionHandler):
         # that has authority to puppet us!
         if not session.account:
             # not logged in. How did this even happen?
-            raise ValueError("You are not logged in to an account!")
-        if session.get_puppet() == self:
+            raise SessionLinkError("You are not logged in to an account!")
+        if session.get_puppet() == self.obj:
             # already puppeting this object
-            raise ValueError("You are already puppeting this object.")
+            raise SessionLinkError("You are already puppeting this object.")
         if not self.obj.access(session.account, "puppet"):
             # no access
-            raise ValueError(f"You don't have permission to puppet '{self.obj.key}'.")
+            raise SessionLinkError(f"You don't have permission to puppet '{self.obj.key}'.")
         if self.obj.account and self.obj.account != session.account:
-            raise ValueError(f"|c{self.obj.key}|R is already puppeted by another Account.")
+            raise SessionLinkError(f"|c{self.obj.key}|R is already puppeted by another Account.")
 
     def at_before_link_session_multisession(self, session, force=False, sync=False, **kwargs):
         """
