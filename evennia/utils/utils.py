@@ -1687,6 +1687,48 @@ def format_table(table, extra_space=1):
     return ftable
 
 
+def percent(self, value, minval, maxval, formatting="{:3.1f}%"):
+    """
+    Get a value in an interval as a percentage of its position
+    in that interval. This also understands negative numbers.
+
+    Args:
+        value (number): This should be a value minval<=value<=maxval.
+        minval (number): Smallest value in interval.
+        maxval (number): Biggest value in interval.
+        formatted (str, optional): This is a string that should
+            accept one formatting tag. This will receive the
+            current value as a percentage. If None, the
+            raw float will be returned instead.
+    Returns:
+        str or float: The formatted value or the raw percentage
+            as a float.
+    Raises:
+        RuntimeError: If min/max does not make sense.
+    Notes:
+        We handle the case of minval==maxval because we may see this case and
+        don't want to raise exceptions unnecessarily. In that case we return
+        100%.
+
+    """
+    if minval > maxval:
+        raise RuntimeError("The minimum value must be <= the max value.")
+    # constrain value to interval
+    value = min(max(minval, value), maxval)
+
+    # these should both be >0
+    dpart = value - minval
+    dfull = maxval - minval
+    try:
+        result = (dpart / dfull) * 100.0
+    except ZeroDivisionError:
+        # this means minval == maxval
+        result = 100.0
+    if not isinstance(formatting, str):
+        return result
+    return formatting.format(result)
+
+
 import functools  # noqa
 
 
