@@ -241,7 +241,7 @@ from django.conf import settings
 from functools import total_ordering
 from evennia.utils.dbserialize import _SaverDict
 from evennia.utils import logger
-from evennia.utils.utils import inherits_from, class_from_module
+from evennia.utils.utils import inherits_from, class_from_module, list_to_string
 
 
 # This way the user can easily supply their own. Each
@@ -292,7 +292,7 @@ _SA = object.__setattr__
 DEFAULT_TRAIT_TYPE = "static"
 
 
-class TraitException(Exception):
+class TraitException(RuntimeError):
     """
     Base exception class raised by `Trait` objects.
 
@@ -331,13 +331,15 @@ class TraitHandler:
         # load the available classes, if necessary
         _delayed_import_trait_classes()
 
-        # Note that this retains the connection to the database, meaning every
+        # Note that .trait_data retains the connection to the database, meaning every
         # update we do to .trait_data automatically syncs with database.
         self.trait_data = obj.attributes.get(db_attribute_key, category=db_attribute_category)
         if self.trait_data is None:
-            # no existing storage; initialize it
+            # no existing storage; initialize it, we then have to fetch it again
+            # to retain the db connection
             obj.attributes.add(db_attribute_key, {}, category=db_attribute_category)
-            self.trait_data = {}
+            self.trait_data = obj.attributes.get(
+                db_attribute_key, category=db_attribute_category)
         self._cache = {}
 
     def __len__(self):
@@ -385,8 +387,7 @@ class TraitHandler:
     def get(self, key):
         """
         Args:
-            trait (str): key from the traits dict containing config data
-                for the trait. "all" returns a list of all trait keys.
+            key (str): key from the traits dict containing config data.
 
         Returns:
             (`Trait` or `None`): named Trait class or None if trait key
@@ -435,7 +436,7 @@ class TraitHandler:
 
         trait_class = _TRAIT_CLASSES.get(trait_type)
         if not trait_class:
-            raise TraitException("Trait-type '{trait_type} is invalid.")
+            raise TraitException(f"Trait-type '{trait_type}' is invalid.")
 
         trait_properties["name"] = key.title() if not name else name
         trait_properties["trait_type"] = trait_type
@@ -443,9 +444,8 @@ class TraitHandler:
         # this will raise exception if input is insufficient
         trait_properties = trait_class.validate_input(trait_properties)
 
-        print("trait_properties", trait_properties)
-
         self.trait_data[key] = trait_properties
+
 
     def remove(self, key):
         """
@@ -474,7 +474,10 @@ class TraitHandler:
 
 
 class Trait:
-    """Represents an object or Character trait.
+    """Represents an object or Character trait. This simple base is just
+    storing anything in it's 'value' property, so it's pretty much just a
+    different wrapper to an Attribute. It does no type-checking of what is
+    stored.
 
     Note:
         See module docstring for configuration details.
@@ -490,7 +493,7 @@ class Trait:
     # the trait will not be able to be created.
     # Apart from the keys given here, "name" and "trait_type" will also
     # always have to be a apart of the data.
-    data_keys = {}
+    data_keys = {"value": None}
 
     # enable to set/retrieve other arbitrary properties on the Trait
     # and have them treated like data to store.
@@ -527,27 +530,47 @@ class Trait:
         """
         Validate input
 
+        Args:
+            trait_data (dict or _SaverDict): Data to be used for
+                initialization of this trait.
+        Returns:
+            dict: Validated data, possibly complemented with default
+                values from data_keys.
+        Raises:
+            TraitException: If finding unset keys without a default.
+
         """
-        req = set(list(cls.data_keys.keys()) + ["name", "trait_type"])
+        def _raise_err(unset_required):
+            """Helper method to format exception."""
+            raise TraitException(
+                "Trait {} could not be created - misses required keys {}.".format(
+                    cls.trait_type, list_to_string(list(unset_required), addquote=True)
+                )
+            )
         inp = set(trait_data.keys())
+
+        # separate check for name/trait_type, those are always required.
+        req = set(("name", "trait_type"))
+        unsets = req.difference(inp.intersection(req))
+        if unsets:
+            _raise_err(unsets)
+
+        # check other keys, these likely have defaults to fall back to
+        req = set(list(cls.data_keys.keys()))
         unsets = req.difference(inp.intersection(req))
         unset_defaults = {key: cls.data_keys[key] for key in unsets}
 
         if MandatoryTraitKey in unset_defaults.values():
             # we have one or more unset keys that was mandatory
-            unset_required = [key for key, value in unset_defaults.items()
-                              if value == MandatoryTraitKey]
-            raise TraitException(
-                "Trait {} could not be created - misses required keys {}".format(
-                    cls.trait_type, ", ".join(unset_required)
-                )
-            )
+            _raise_err([key for key, value in unset_defaults.items()
+                        if value == MandatoryTraitKey])
         # apply the default values
         trait_data.update(unset_defaults)
 
         if not cls.allow_extra_properties:
             # don't allow any extra properties - remove the extra data
-            for key in inp.difference(req) not in ("name", "trait_type"):
+            for key in (key for key in inp.difference(req)
+                        if key not in ("name", "trait_type")):
                 del trait_data[key]
 
         return trait_data
@@ -577,7 +600,7 @@ class Trait:
             return self._data[key]
         except KeyError:
             raise AttributeError(
-                "{!r} {} ({}) has no attribute {!r}.".format(
+                "{!r} {} ({}) has no property {!r}.".format(
                     self._data['name'],
                     type(self).__name__,
                     self.trait_type,
@@ -612,8 +635,30 @@ class Trait:
                              f"{self.trait_type} Trait.")
 
     def __delattr__(self, key):
-        """Delete extra parameters as attributes."""
-        if key not in _GA(self, properties) and key in self._data:
+        """
+        Delete or reset parameters.
+
+        Args:
+            key (str): property-key to delete.
+        Raises:
+            TraitException: If trying to delete a data-key
+                without a default value to reset to.
+        Notes:
+            This will outright delete extra keys (if allow_extra_properties is
+            set). Keys in self.data_keys with a default value will be
+            reset to default. A data_key with a default of MandatoryDefaultKey
+            will raise a TraitException. Unfound matches will be silently ignored.
+
+        """
+        if key in self.data_keys:
+            if self.data_keys[key] == MandatoryTraitKey:
+                raise TraitException(
+                    "Trait-Key {key} cannot be deleted: It's a mandatory property "
+                    "with no default value to fall back to.")
+            # set to default
+            self._data[key] = self.data_keys[key]
+        elif key in self._data:
+            # an extra property. Delete as normal.
             del self._data[key]
 
     def __repr__(self):
@@ -621,12 +666,12 @@ class Trait:
         return "{}({{{}}})".format(
             type(self).__name__,
             ", ".join(
-                ["'{}': {!r}".format(k, self._data[k]) for k in self._keys if k in self._data]
+                ["'{}': {!r}".format(k, self._data[k]) for k in self.data_keys if k in self._data]
             ),
         )
 
     def __str__(self):
-        return f"<Trait {self.name}>"
+        return f"<Trait {self.name}: {self._data['value']}>"
 
     # access properties
 
@@ -637,13 +682,23 @@ class Trait:
 
     key = name
 
+    @property
+    def value(self):
+        """Store a value"""
+        return self._data["value"]
+
+    @value.setter
+    def value(self, value):
+        """Get value"""
+        self._data["value"] = value
+
 
 @total_ordering
 class NumericTrait(Trait):
     """
     Base trait for all Traits based on numbers. This implements
-    number-comparisons, limits etc. It also features a "modifier" to the value,
-    since this is a common use.
+    number-comparisons, limits etc. It works on the 'base' property since this
+    makes more sense for child classes.
 
     """
 
@@ -652,6 +707,8 @@ class NumericTrait(Trait):
     data_keys = {
         "base": 0
     }
+    def __str__(self):
+        return f"<Trait {self.name}: {self._data['base']}>"
 
     # Numeric operations
 
