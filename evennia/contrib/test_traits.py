@@ -6,13 +6,13 @@ Unit test module for Trait classes.
 
 """
 
-from mock import MagicMock
+from copy import copy
+from anything import Something
+from mock import MagicMock, patch
 from django.test import TestCase
 from django.test import override_settings
 from evennia.utils.test_resources import EvenniaTest
-from evennia.contrib.traits import (
-    TraitHandler, Trait, NumericTrait,
-    StaticTrait, CounterTrait, GaugeTrait)
+from evennia.contrib import traits
 
 
 class _MockObj:
@@ -31,35 +31,337 @@ class _MockObj:
         assert category == self.category
         self.dbstore[key] = value
 
+# we want to test the base traits too
+_TEST_TRAIT_CLASS_PATHS = [
+    "evennia.contrib.traits.Trait",
+    "evennia.contrib.traits.NumericTrait",
+    "evennia.contrib.traits.StaticTrait",
+    "evennia.contrib.traits.CounterTrait",
+    "evennia.contrib.traits.GaugeTrait",
+]
 
-@override_settings(TRAIT_CLASS_PATHS=["evennia.contrib.traits.Trait"])
-class TraitHandlerTest(TestCase):
-    """Test case for TraitHandler"""
-
+class _TraitHandlerBase(TestCase):
+    "Base for trait tests"
+    @patch("evennia.contrib.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
     def setUp(self):
         self.obj = _MockObj()
-        self.traithandler = TraitHandler(self.obj)
+        self.traithandler = traits.TraitHandler(self.obj)
+        self.obj.traits = self.traithandler
+
+    def _get_dbstore(self, key):
+        return self.obj.dbstore['traits'][key]
+
+
+class TraitHandlerTest(_TraitHandlerBase):
+    """Testing for TraitHandler"""
+
+    def setUp(self):
+        super().setUp()
+        self.traithandler.add(
+            "test1",
+            name="Test1",
+            trait_type='trait'
+        )
+        self.traithandler.add(
+            "test2",
+            name="Test2",
+            trait_type='trait',
+            value=["foo", {"1": [1, 2, 3]}, 4],
+        )
 
     def test_add_trait(self):
-
-        self.traithandler.add(
-            "test",
-            name="Test",
-            trait_type="trait"
-        )
-
         self.assertEqual(
-            self.obj.dbstore["test"],
-            {"name": "Test",
-             "trait_type": "trait"}
+            self._get_dbstore("test1"),
+            {"name": "Test1",
+             "trait_type": 'trait',
+             "value": None,
+            }
+        )
+        self.assertEqual(
+            self._get_dbstore("test2"),
+            {"name": "Test2",
+             "trait_type": 'trait',
+             "value": ["foo", {"1": [1, 2, 3]}, 4],
+            }
+        )
+        self.assertEqual(len(self.traithandler), 2)
+
+    def test_cache(self):
+        """
+        Cache should not be set until first get
+        """
+        self.assertEqual(len(self.traithandler._cache), 0)
+        self.traithandler.all  # does not affect cache
+        self.assertEqual(len(self.traithandler._cache), 0)
+        self.traithandler.test1
+        self.assertEqual(len(self.traithandler._cache), 1)
+        self.traithandler.test2
+        self.assertEqual(len(self.traithandler._cache), 2)
+
+    def test_setting(self):
+        "Don't allow setting stuff on traithandler"
+        with self.assertRaises(traits.TraitException):
+            self.traithandler.foo = "bar"
+        with self.assertRaises(traits.TraitException):
+            self.traithandler["foo"] = "bar"
+
+    def test_getting(self):
+        "Test we are getting data from the dbstore"
+        self.assertEqual(
+            self.traithandler.test1._data,
+            {"name": "Test1", "trait_type": "trait",
+             "value": None}
+        )
+        self.assertEqual(
+            self.traithandler._cache, Something
+        )
+        self.assertEqual(
+            self.traithandler.test2._data,
+            {"name": "Test2", "trait_type": "trait",
+             "value": ["foo", {"1": [1, 2, 3]}, 4]}
+        )
+        self.assertEqual(
+            self.traithandler._cache, Something
+        )
+        self.assertFalse(self.traithandler.get("foo"))
+        self.assertFalse(self.traithandler.bar)
+
+    def test_all(self):
+        "Test all method"
+        self.assertEqual(self.traithandler.all, ["test1", "test2"])
+
+    def test_remove(self):
+        "Test remove method"
+        self.traithandler.remove("test2")
+        self.assertEqual(len(self.traithandler), 1)
+        self.assertTrue(bool(self.traithandler.get("test1")))  # this populates cache
+        self.assertEqual(len(self.traithandler._cache), 1)
+        with self.assertRaises(traits.TraitException):
+            self.traithandler.remove("foo")
+
+    def test_clear(self):
+        "Test clear method"
+        self.traithandler.clear()
+        self.assertEqual(len(self.traithandler), 0)
+
+    def test_trait_db_connection(self):
+        "Test that updating a trait property actually updates value in db"
+        trait = self.traithandler.test1
+        self.assertEqual(trait.value, None)
+        trait.value = 10
+        self.assertEqual(trait.value, 10)
+        self.assertEqual(
+            self.obj.attributes.get("traits", category="traits")['test1']['value'],
+            10
+        )
+        trait.value = 20
+        self.assertEqual(trait.value, 20)
+        self.assertEqual(
+            self.obj.attributes.get("traits", category="traits")['test1']['value'],
+            20
+        )
+        del trait.value
+        self.assertEqual(
+            self.obj.attributes.get("traits", category="traits")['test1']['value'],
+            None
+        )
+
+
+class TraitTest(_TraitHandlerBase):
+    """
+    Test the base Trait class
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.traithandler.add(
+            "test1",
+            name="Test1",
+            trait_type="trait",
+            value="value",
+            extra_val1="xvalue1",
+            extra_val2="xvalue2",
+        )
+        self.trait = self.traithandler.get("test1")
+
+    def test_init(self):
+        self.assertEqual(
+            self.trait._data,
+            {"name": "Test1",
+             "trait_type": "trait",
+             "value": "value",
+             "extra_val1": "xvalue1",
+             "extra_val2": "xvalue2"
+            }
+        )
+
+    def test_validate_input__valid(self):
+        """Test valid validation input"""
+        # all data supplied, and extras
+        dat = {
+           "name": "Test",
+           "trait_type": "trait",
+           "value": 10,
+           "extra_val": 1000
+        }
+        expected = copy(dat)  # we must break link or return === dat always
+        self.assertEqual(expected, traits.Trait.validate_input(dat))
+
+        # don't supply value, should get default
+        dat = {
+           "name": "Test",
+           "trait_type": "trait",
+           # missing value
+           "extra_val": 1000
+        }
+        expected = copy(dat)
+        expected["value"] = traits.Trait.data_keys['value']
+        self.assertEqual(expected, traits.Trait.validate_input(dat))
+
+        # make sure extra values are cleaned if trait accepts no extras
+        dat = {
+           "name": "Test",
+           "trait_type": "trait",
+           "value": 10,
+           "extra_val1": 1000,
+           "extra_val2": "xvalue"
+        }
+        expected = copy(dat)
+        expected.pop("extra_val1")
+        expected.pop("extra_val2")
+        with patch.object(traits.Trait, "allow_extra_properties", False):
+            self.assertEqual(expected, traits.Trait.validate_input(dat))
+
+    def test_validate_input__fail(self):
+        """Test failing validation"""
+        dat = {
+           # missing name
+           "trait_type": "trait",
+           "value": 10,
+           "extra_val": 1000
+        }
+        with self.assertRaises(traits.TraitException):
+            traits.Trait.validate_input(dat)
+
+        # make value a required key
+        mock_data_keys = {
+            "value": traits.MandatoryTraitKey
+        }
+        with patch.object(traits.Trait, "data_keys", mock_data_keys):
+            dat = {
+               "name": "Trait",
+               "trait_type": "trait",
+               # missing value, now mandatory
+               "extra_val": 1000
+            }
+            with self.assertRaises(traits.TraitException):
+                traits.Trait.validate_input(dat)
+
+    def test_trait_getset(self):
+        """Get-set-del operations on trait"""
+        self.assertEqual(self.trait.name, "Test1")
+        self.assertEqual(self.trait['name'], "Test1")
+        self.assertEqual(self.trait.value, "value")
+        self.assertEqual(self.trait['value'], "value")
+        self.assertEqual(self.trait.extra_val1, "xvalue1" )
+        self.assertEqual(self.trait['extra_val2'], "xvalue2")
+
+        self.trait.value = 20
+        self.assertEqual(self.trait['value'], 20)
+        self.trait['value'] = 20
+        self.assertEqual(self.trait.value, 20)
+        self.trait.extra_val1 = 100
+        self.assertEqual(self.trait.extra_val1, 100)
+        # additional properties
+        self.trait.foo = "bar"
+        self.assertEqual(self.trait.foo, "bar")
+
+        del self.trait.foo
+        with self.assertRaises(KeyError):
+            self.trait['foo']
+        with self.assertRaises(AttributeError):
+            self.trait.foo
+        del self.trait.extra_val1
+        with self.assertRaises(AttributeError):
+            self.trait.extra_val1
+        del self.trait.value
+        # fall back to default
+        self.assertTrue(self.trait.value == traits.Trait.data_keys["value"])
+
+    def test_repr(self):
+        self.assertEqual(repr(self.trait), Something)
+        self.assertEqual(str(self.trait), Something)
+
+
+class TestTraitNumeric(_TraitHandlerBase):
+
+    def test_trait__numeric(self):
+        self.traithandler.add(
+            "test2",
+            name="Test2",
+            trait_type='numeric',
+        )
+        self.assertEqual(
+            self._get_dbstore("test2"),
+            {"name": "Test2",
+             "trait_type": 'numeric',
+             "base": 0,
+            }
         )
 
 
 
 
+    def test_trait__static(self):
+        self.traithandler.add(
+            "test3",
+            name="Test3",
+            trait_type='static'
+        )
+        self.assertEqual(
+            self._get_dbstore("test3"),
+            {"name": "Test3",
+             "trait_type": 'static',
+             "base": 0,
+             "mod": 0,
+            }
+        )
 
+    def test_trait__counter(self):
+        self.traithandler.add(
+            "test4",
+            name="Test4",
+            trait_type='counter'
+        )
+        self.assertEqual(
+            self._get_dbstore("test4"),
+            {"name": "Test4",
+             "trait_type": 'counter',
+             "base": 0,
+             "mod": 0,
+             "current": 0,
+             "max_value": None,
+             "min_value": None,
+            }
+        )
 
-
+    def test_trait__gauge(self):
+        self.traithandler.add(
+            "test5",
+            name="Test5",
+            trait_type='gauge'
+        )
+        self.assertEqual(
+            self._get_dbstore("test5"),
+            {"name": "Test5",
+             "trait_type": 'gauge',
+             "base": 0,
+             "mod": 0,
+             "current": 0,
+             "max_value": None,
+             "min_value": None,
+            }
+        )
 
 #
 #
