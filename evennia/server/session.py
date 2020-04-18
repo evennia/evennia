@@ -101,7 +101,7 @@ class Session(object):
                 the keys given by self._attrs_to_sync.
 
         """
-        return {attr: getattr(self, attr, None) for attr in settings.SESSION_SYNC_ATTRS}
+        return {attr: getattr(self, attr) for attr in settings.SESSION_SYNC_ATTRS if hasattr(self, attr)}
 
     def load_sync_data(self, sessdata):
         """
