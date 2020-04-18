@@ -179,11 +179,12 @@ class ServerSession(Session):
         self.account = None
         self.linked = dict()
         self.linked_sort = list()
+        self.linked_state = list()
         self.cmdset_storage_string = ""
         self.cmdset = CmdSetHandler(self, True)
-        self._find_map = self._generate_find_map()
 
-    def _generate_find_map(self):
+    @lazy_property
+    def find_map(self):
         """
         The find map is a dictionary of methods that are used to locate link-kinds.
         Such as 'account' and 'puppet'. These methods will be called by _find_entity.
@@ -236,7 +237,7 @@ class ServerSession(Session):
 
     def find_entity(self, kind, entity):
         if isinstance(entity, int):
-            find_method = self._find_map.get(kind)
+            find_method = self.find_map.get(kind)
             entity = find_method(entity)
             if not entity:
                 raise ValueError("Cannot link to a non-existent entity!")

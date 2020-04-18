@@ -137,7 +137,7 @@ class EntitySessionHandler:
                 In general, nothing should stop it if this is true.
 
         Raises:
-            ValueError(str): An error condition which will prevent the linking.
+            SessionLinkError: An error condition which will prevent the linking.
         """
         raise NotImplementedError()
 
