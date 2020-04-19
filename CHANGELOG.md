@@ -13,6 +13,7 @@
 - Added `content_types` indexing to DefaultObject's ContentsHandler. (volund)
 - Made most of the networking classes such as Protocols and the SessionHandlers 
   replaceable via `settings.py` for modding enthusiasts. (volund)
+- Added new Traits contrib, converted and expanded from Ainneve project.
 
 
 ### Already in master
