@@ -12,7 +12,7 @@ be used to represent everything from attributes (str, agi etc) to skills
 Traits use Evennia Attributes under the hood, making them persistent (they survive
 a server reload/reboot).
 
-### Adding Traits to a typeclass
+## Adding Traits to a typeclass
 
 To access and manipulate traits on an object, its Typeclass needs to have a
 `TraitHandler` assigned it. Usually, the handler is made available as `.traits`
@@ -40,222 +40,283 @@ Here's an example for adding the TraitHandler to the base Object class:
 
 After a reload you can now try adding some example traits:
 
+## Using traits
+
+A trait is added to the traithandler, after which one can access it
+as a property on the handler (similarly to how you can do .db.attrname for Attributes
+in Evennia).
+
+
 ```python
->>> obj.traits.add("hunting", "Hunting Skill", trait_type="static", value=4)
+>>> obj.traits.add("hunting", "Hunting Skill", trait_type="static", base=4)
 >>> obj.traits.hunting.value
 4
 >>> obj.traits.hunting.value += 5
 >>> obj.traits.hunting.value
 9
 >>> obj.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
->>> obj.traits.hp.current
+>>> obj.traits.hp.actual
 100
 >>> obj.traits.hp -= 200
->>> obj.traits.hp.current
+>>> obj.traits.hp.actual
 0
 >>> obj.traits.hp.reset()
->>> obj.traits.hp.current
+>>> obj.traits.hp.actual
+100
+# you can also access property with getitem
+>>> obj.traits.hp["actual"]
 100
 
 ```
 
-### Trait Configuration
-
-A single Trait can be one of three basic types:
-
-- `Static` - this means a base value and an optional modifier. A typical example would be
-  something like a Strength stat or Skill value. That is, something that varies slowly or
-  not at all.
-- `Counter` - a Trait of this type has a base value and a current value that
-  can vary inside a specified range. This could be used for skills that can only incrase
-  to a max value.
-- `Gauge` - Modified counter type modeling a refillable "gauge" that varies between "empty"
-  and "full". The classic example is a Health stat.
+When creating the trait, you supply the name of the property (`hunting`) along
+with a more human-friendly name ("Hunting Skill"). The latter will show if you
+print the trait etc. The `trait_type` is important, this specifies which type
+of trait this is.
 
 
-    ```python
-    obj.traits.add("hp", name="Health", type="static",
-                   base=0, mod=0, min=None, max=None, extra={})
+## Trait types
+
+All the default-available traits are number-based. They all have a read-only
+`actual` property that shows the relevant value. Exactly what this means depends
+on the type of trait.
+
+Numerical traits can also be combined to do arithmetic with their .actual values.
+Two numerical traits can also be compared (bigger-than etc), which is useful in
+all sorts of rule-resolution.
+
+```python
+
+if trait1 > trait2:
+    # do stuff
+
 ```
 
-All traits have a read-only `actual` property that will report the trait's
-actual value.
+## Static traits
 
-Example:
 
-    ```python
-    >>> hp = obj.traits.hp
-    >>> hp.actual
-    100
+actual = base + mod
+
+
+The static trait has
+a `base` value and an optional `mod`-ifier. A typical use of a static trait
+  would be a Strength stat or Skill value. That is, something that varies slowly or
+  not at all, and which can have modifier.
+
+```python
+>>> obj.traits.add("str", "Strength", trait_type="static", base=10, mod=2)
+>>> obj.traits.mytrait.actual
+12   # base + mod
+>>> obj.traits.mytrait.base += 2
+>>> obj.traits.mytrait.mod += 1
+>>> obj.traits.mytrait.actual
+15
+>>> obj.traits.mytrait.mod = 0
+>>> obj.traits.mytrait.actual
+12
 ```
 
-They also support storing arbitrary data via either dictionary key or
-attribute syntax. Storage of arbitrary data in this way has the same
-constraints as any nested collection type stored in a persistent Evennia
-Attribute, so it is best to avoid attempting to store complex objects.
+### Counter
 
-#### Static Trait Configuration
+    min/unset     base    base+mod                       max/unset
+     |--------------|--------|---------X--------X------------|
+                                    current   actual
+                                              = current
+                                              + mod
 
-A static `Trait` stores a `base` value and a `mod` modifier value.
-The trait's actual value is equal to `base`+`mod`.
+A counter describes a value that varies from a base value. The `current` property
+starts at the `base` and tracks the current value. One can also add a modifier,
+which will both be added to the base and to current (forming actual).
+The min/max of the range are optional, a boundary set to None will remove it.
 
-Static traits can be used to model many different stats, such as
-Strength, Character Level, or Defense Rating in many tabletop gaming
-systems.
+```python
+>>> obj.traits.add("hunting", "Hunting Skill", trait_type="counter",
+                   base=10, mod=1, min=0, max=100)
+>>> obj.traits.hunting.actual
+11  # current starts at base + mod
+>>> obj.traits.hunting.current += 10
+>>> obj.traits.hunting.actual
+21
+# reset back to base+mod by deleting
+>>> del obj.traits.hunting.current
+>>> obj.traits.hunting.actual
+11
+>>> obj.traits.hunting.max = None  # removing upper bound
 
-Constructor Args:
-    name (str): name of the trait
-    type (str): 'static' for static traits
-    base (int, float): base value of the trait
-    mod (int, optional): modifier value
-    extra (dict, optional): keys of this dict are accessible on the
-        `Trait` object as attributes or dict keys
+```
 
-Properties:
-    actual (int, float): returns the value of `mod`+`base` properties
-    extra (list[str]): list of keys stored in the extra data dict
+Counters have some extra properties:
 
-Methods:
-    reset_mod(): sets the value of the `mod` property to zero
+`descs` is a dict of upper-bounds to a text description. This allows for easily
+storing getting a more human-friendly description of the current value in the
+interval. Here is an example for skill values between 0 and 10:
+    {0: "unskilled", 1: "neophyte", 5: "trained", 7: "expert", 9: "master"}
+The list must go from smallest to largest. Any values below the lowest and above the
+highest description will be considered to be included in the closest description slot.
+By calling `.desc()` on the Counter, will you get the text matching the current `actual`
+value.
 
-Examples:
+```python
+# (could also have passed descs= to traits.add())
+>>> obj.traits.hunting.descs = {
+    0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"}
+>>> obj.traits.hunting.actual
+11
+>>> obj.traits.hunting.desc()
+"neophyte"
+>>> obj.traits.hunting.current += 60
+>>> obj.traits.hunting.actual
+71
+>>> obj.traits.hunting.desc()
+"expert"
 
-    '''python
-    >>> char.traits.add("str", "Strength", base=5)
-    >>> strength = char.traits.str
-    >>> strength.actual
-    5
-    >>> strength.mod = 2            # add a bonus to strength
-    >>> str(strength)
-    'Strength               7 (+2)'
-    >>> strength.reset_mod()        # clear bonuses
-    >>> str(strength)
-    'Strength               5 (+0)'
-    >>> strength.newkey = 'newvalue'
-    >>> strength.extra
-    ['newkey']
-    >>> strength
-    Trait({'name': 'Strength', 'type': 'trait', 'base': 5, 'mod': 0,
-    'min': None, 'max': None, 'extra': {'newkey': 'newvalue'}})
-    ```
+```
 
-#### Counter Trait Configuration
+`rate` defaults to 0, but allows the trait to change value dynamically. This could be
+used for example for an attribute that was temporarily lowered but will gradually
+(or abruptly) recover after a certain time. The rate is given per-second, and the value
+will still be restrained by min/max boundaries, if given.
 
-Counter type `Trait` objects have a `base` value similar to static
-traits, but adds a `current` value and a range along which it may
-vary. Modifier values are applied to this `current` value instead
-of `base` when determining the `actual` value. The `current` can
-also be reset to its `base` value by calling the `reset_counter()`
-method.
+It is also possible to set a "ratetarget", for the auto-change to stop at (rather
+than at the min/max boundaries). This allows for returning to some previous value.
 
-Counter style traits are best used to represent game traits such as
-carrying weight, alignment points, a money system, or bonus/penalty
-counters.
+```python
 
-Constructor Args:
-    (all keys listed above for 'static', plus:)
-    min Optional(int, float, None): default None
-        minimum allowable value for current; unbounded if None
-    max Optional(int, float, None): default None
-        maximum allowable value for current; unbounded if None
+>>> obj.traits.hunting.actual
+71
+>>> obj.traits.hunting.ratetarget = 71
+>>> obj.traits.hunting.current -= 30
+>>> obj.traits.hunting.actual
+41
+>>> obj.traits.hunting.rate = 1  # 1/s increase
+# Waiting 5s
+>>> obj.traits.hunting.actual
+46
+# Waiting 8s
+>>> obj.traits.hunting.actual
+54
+# Waiting 100s
+>>> obj.traits.hunting.actual
+71    # we have stopped at the ratetarget
+>>> obj.traits.hunting.rate = 0  # disable auto-change
 
-Properties:
-    actual (int, float): returns the value of `mod`+`current` properties
+```
 
-Methods:
-    reset_counter(): resets `current` equal to the value of `base`
+If both min and max are defined, the `.percentage()` method of the trait will
+return the value as a percentage.
 
-Examples:
+```python
+>>> obj.traits.hunting.percentage()
+"71.0%"
 
-    ```python
-    >>> char.traits.add("carry", "Carry Weight", base=0, min=0, max=10000)
-    >>> carry = caller.traits.carry
-    >>> str(carry)
-    'Carry Weight           0 ( +0)'
-    >>> carry.current -= 3           # try to go negative
-    >>> carry                        # enforces zero minimum
-    'Carry Weight           0 ( +0)'
-    >>> carry.current += 15
-    >>> carry
-    'Carry Weight          15 ( +0)'
-    >>> carry.mod = -5               # apply a modifier to reduce
-    >>> carry                        # apparent weight
-    'Carry Weight:         10 ( -5)'
-    >>> carry.current = 10000        # set a semi-large value
-    >>> carry                        # still have the modifier
-    'Carry Weight        9995 ( -5)'
-    >>> carry.reset()                # remove modifier
-    >>> carry
-    'Carry Weight        10000 ( +0)'
-    >>> carry.reset_counter()
-    >>> carry
-    0
-    ```
+```
 
-#### Gauge Trait Configuration
 
-A "gauge" type `Trait` is a modified counter trait used to model a
-gauge that can be emptied and refilled. The `base` property of a
-gauge trait represents its "full" value. The `mod` property increases
-or decreases that "full" value, rather than the `current`.
 
-Gauge type traits are best used to represent traits such as health
-points, stamina points, or magic points.
 
-By default gauge type traits have a `min` of zero, and a `max` set
-to the `base`+`mod` properties. A gauge will still work if its `max`
-property is set to a value above its `base` or to None.
+### Gauge
 
-Constructor Args:
-    (all keys listed above for 'static', plus:)
-    min Optional(int, float, None): default 0
-        minimum allowable value for current; unbounded if None
-    max Optional(int, float, None, 'base'): default 'base'
-        maximum allowable value for current; unbounded if None;
-        if 'base', returns the value of `base`+`mod`.
+This emulates a [fuel-] gauge, that empties from a base+mod value.
 
-Properties:
-    actual (int, float): returns the value of the `current` property
+    min/0                                            max=base+mod
+     |-----------------------X---------------------------|
+                           actual
+                          = current
 
-Methods:
-    fill_gauge(): adds the value of `base`+`mod` to `current`
-    percent(): returns the ratio of actual value to max value as
-        a percentage. if `max` is unbound, return the ratio of
-        `current` to `base`+`mod` instead.
+The 'current' value will be with a full gauge. Modifiers only add to the maximum,
+which is set by base + mod. The minimum bound defaults to 0. This trait is useful
+for showing resources that can deplete, like health or stamina etc.
 
-Examples:
+```python
+>>> obj.traits.add("hp", "Health", trait_type="gauge", base=100)
+>>> obj.traits.hp.actual  # (or .current)
+100
+>>> obj.traits.hp.mod = 10
+>>> obj.traits.hp.actual
+110
+>>> obj.traits.hp.current -= 30
+>>> obj.traits.hp.actual
+80
 
-    ```python
-    >>> caller.traits.add("hp", "Health", base=10)
-    >>> hp = caller.traits.hp
-    >>> repr(hp)
-    GaugeTrait({'name': 'HP', 'type': 'gauge', 'base': 10, 'mod': 0,
-    'min': 0, 'max': 'base', 'current': 10, 'extra': {}})
-    >>> str(hp)
-    'HP:           10 /   10 ( +0)'
-    >>> hp.current -= 6                    # take damage
-    >>> str(hp)
-    'HP:            4 /   10 ( +0)'
-    >>> hp.current -= 6                    # take damage to below min
-    >>> str(hp)
-    'HP:            0 /   10 ( +0)'
-    >>> hp.fill()                          # refill trait
-    >>> str(hp)
-    'HP:           10 /   10 ( +0)'
-    >>> hp.current = 15                    # try to set above max
-    >>> str(hp)                            # disallowed because max=='actual'
-    'HP:           10 /   10 ( +0)'
-    >>> hp.mod += 3                        # bonus on full trait
-    >>> str(hp)                            # buffs flow to current
-    'HP:           13 /   13 ( +3)'
-    >>> hp.current -= 5
-    >>> str(hp)
-    'HP:            8 /   13 ( +3)'
-    >>> hp.reset()                         # remove bonus on reduced trait
-    >>> str(hp)                            # debuffs do not affect current
-    'HP:            8 /   10 ( +0)'
-            ```
+```
+
+Same as Counters, Gauges can also have `descs` to describe the interval and can also
+have `rate` and `ratetarget` to auto-update the value. The rate is particularly useful
+for gauges, for everything from poison slowly draining your health, to resting gradually
+increasing it. You can also use the `.percentage()` function to show the current value
+as a percentage.
+
+
+### Trait
+
+A single value of any type.
+
+This is not a numerical trait and does not have an .actual property.  This is
+the 'base' Trait, meant to inherit from if you want to make your own
+trait-types (see below), but you can also use it directly:
+
+```python
+>>> obj.traits.add("mytrait", "My Trait", trait_type="trait", value=30)
+>>> obj.traits.mytrait.value
+30
+>>> obj.traits.mytrait.value = "stringvalue"
+>>> obj.traits.mytrait.value
+"stringvalue"
+
+```
+The "trait" trait-type is little more than a glorified Attribute. It has a .value
+that can be anything, and nothing more fancy. It's meant to expand on.
+
+### NumericTrait
+
+A single value, actual = base
+
+This is a base class for the numeric traits. Basically the Static Trait but
+without the modifier. Is useful to inherit from.  It adds arithmetic so that
+you can add two traits together, do comparisons between them etc.
+
+
+## Expanding with your own Traits
+
+A Trait is a class inhering from `evennia.contrib.traits.Trait` (or
+from one of the existing Trait classes).
+
+```python
+# in a file, say, 'mygame/world/traits.py'
+
+from evennia.contrib.traits import Trait
+
+class RageTrait(Trait):
+
+    trait_type = "rage"
+    data_keys = {
+        "rage": 0
+    }
+
+```
+
+Above is an example custom-trait-class "rage" that stores a property "rage" on
+itself, with a default value of 0. This has all the
+functionality of a Trait - for example, if you do del on the `rage` property, it will be
+set back to its default (0). If you wanted to customize what it does, you
+just add `rage` property get/setters/deleters on the class.
+
+To add your custom RageTrait to Evennia, add the following to your settings file
+(assuming your class is in mygame/world/traits.py):
+
+    TRAIT_CLASS_PATHS = ["world.traits.RageTrait"]
+
+Reload the server and you should now be able to use your trait:
+
+```python
+>>> obj.traits.add("mood", "A dark mood", rage=30)
+>>> obj.traits.mood.rage
+30
+
+```
+
 """
+
 
 from time import time
 from django.conf import settings
