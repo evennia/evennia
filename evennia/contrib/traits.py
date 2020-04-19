@@ -289,6 +289,7 @@ def _delayed_import_trait_classes():
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
+_DA = object.__delattr__
 
 # this is the default we offer in TraitHandler.add
 DEFAULT_TRAIT_TYPE = "static"
@@ -682,8 +683,18 @@ class Trait:
             # set to default
             self._data[key] = self.data_keys[key]
         elif key in self._data:
-            # an extra property. Delete as normal.
-            del self._data[key]
+            try:
+                # check if we have a custom deleter
+                _DA(self, key)
+            except AttributeHandler:
+                # delete normally
+                del self._data[key]
+        else:
+            try:
+                # check if we have custom deleter, otherwise ignore
+                _DA(self, key)
+            except AttributeError:
+                pass
 
     def __repr__(self):
         """Debug-friendly representation of this Trait."""
@@ -1049,7 +1060,7 @@ class GaugeTrait(CounterTrait):
     data_keys = {
         "base": 0,
         "mod": 0,
-        "min": None,
+        "min": 0,
     }
 
     def _mod_base(self):
@@ -1076,28 +1087,36 @@ class GaugeTrait(CounterTrait):
 
     @base.setter
     def base(self, value):
+        """Limit so base+mod can never go below min."""
         if type(value) in (int, float):
-            self._data["base"] = self._enforce_bounds(value)
+            if value + self.mod < self.min:
+                value = self.min - self.mod
+            self._data["base"] = value
 
     @property
     def mod(self):
         return self._data["mod"]
 
     @mod.setter
-    def mod(self, amount):
-        if type(amount) in (int, float):
-            self._data["mod"] = amount
+    def mod(self, value):
+        """Limit so base+mod can never go below min."""
+        if type(value) in (int, float):
+            if value + self.base < self.min:
+                value = self.min - self.base
+            self._data["mod"] = value
 
     @property
     def min(self):
-        return self._data["min"]
+        val = self._data["min"]
+        return self.data_keys["min"] if val is None else val
 
     @min.setter
     def min(self, value):
+        """Limit so min can never be greater than base+mod."""
         if value is None:
             self._data["min"] = self.data_keys['min']
         elif type(value) in (int, float):
-            self._data["min"] = min(self.value, self.base + self.mod)
+            self._data["min"] = min(value, self.base + self.mod)
 
     @property
     def max(self):
@@ -1108,6 +1127,10 @@ class GaugeTrait(CounterTrait):
     def max(self, value):
         raise TraitException("The .max property is not settable "
                              "on GaugeTraits. Set .base instead.")
+    @max.deleter
+    def max(self):
+        raise TraitException("The .max property cannot be reset "
+                             "on GaugeTraits. Reset .mod and .base instead.")
 
     @property
     def current(self):
