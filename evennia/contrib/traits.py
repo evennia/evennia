@@ -957,7 +957,7 @@ class CounterTrait(NumericTrait):
         "mod": 0,
         "min": None,
         "max": None,
-        "descs": None:
+        "descs": None,
     }
 
     @classmethod
@@ -1087,7 +1087,8 @@ class CounterTrait(NumericTrait):
         Retrieve descriptions of the current value, if available.
 
         This must be a mapping {upper_bound_inclusive: text},
-        ordered from small to big.
+        ordered from small to big. Any value above the highest
+        upper bound will be included as being in the highest bound.
         rely on Python3.7+ dicts retaining ordering to let this
         describe the interval.
 
@@ -1100,9 +1101,14 @@ class CounterTrait(NumericTrait):
             return ""
         value = self.actual
         # we rely on Python3.7+ dicts retaining ordering
+        highest = ""
         for bound, txt in descs.items():
-            if bound >= value:
+            highest = txt
+            if value <= bound:
                 return txt
+        # if we get here we are above the highest bound so
+        # we return the latest bound specified.
+        return highest
 
 
 class GaugeTrait(CounterTrait):
@@ -1249,7 +1255,7 @@ class GaugeTrait(CounterTrait):
         del self.current
 
 
-class SequenceTrait(CounterTrait)
+class SequenceTrait(CounterTrait):
     """
     A trait that stores an indexed array of strings to
     represent distinct values in a sequence. Adding to the trait will

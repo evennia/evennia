@@ -403,8 +403,8 @@ class TestTraitCounter(_TraitHandlerBase):
             descs={
                 0: "range0",
                 2: "range1",
-                5: "range3",
-                7: "range4",
+                5: "range2",
+                7: "range3",
             }
         )
         self.trait = self.traithandler.get("test1")
@@ -424,14 +424,14 @@ class TestTraitCounter(_TraitHandlerBase):
              "min": 0,
              "max": 10,
              "extra_val1": "xvalue1",
-             "extra_val2": "xvalue2"
-            },
-            "descs": {
+             "extra_val2": "xvalue2",
+             "descs": {
                 0: "range0",
                 2: "range1",
-                5: "range3",
-                7: "range4",
-            }
+                5: "range2",
+                7: "range3",
+                }
+             }
         )
 
     def test_actual(self):
@@ -549,19 +549,23 @@ class TestTraitCounter(_TraitHandlerBase):
 
     def test_descs(self):
         """Test descriptions"""
+        self.trait.min = -5
         self.trait.mod = 0
-        self.current = 0
+        self.assertEqual(self._get_values(), (1, 0, 1, -5, 10))
+        self.trait.current = -2
         self.assertEqual(self.trait.desc(), "range0")
-        self.current = 1
+        self.trait.current = 0
         self.assertEqual(self.trait.desc(), "range0")
-        self.current = 3
+        self.trait.current = 1
         self.assertEqual(self.trait.desc(), "range1")
-        self.current = 5
+        self.trait.current = 3
+        self.assertEqual(self.trait.desc(), "range2")
+        self.trait.current = 5
+        self.assertEqual(self.trait.desc(), "range2")
+        self.trait.current = 9
         self.assertEqual(self.trait.desc(), "range3")
-        self.current = 9
-        self.assertEqual(self.trait.desc(), "range4")
-        self.current = 100
-        self.assertEqual(self.trait.desc(), "range4")
+        self.trait.current = 100
+        self.assertEqual(self.trait.desc(), "range3")
 
 
 class TestTraitGauge(_TraitHandlerBase):
@@ -575,7 +579,13 @@ class TestTraitGauge(_TraitHandlerBase):
             base=8,  # max = base + mod
             mod=2,
             extra_val1="xvalue1",
-            extra_val2="xvalue2"
+            extra_val2="xvalue2",
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+            }
         )
         self.trait = self.traithandler.get("test1")
 
@@ -594,7 +604,12 @@ class TestTraitGauge(_TraitHandlerBase):
              "min": 0,
              "extra_val1": "xvalue1",
              "extra_val2": "xvalue2",
-             "descs": None
+             "descs": {
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+                }
             }
         )
     def test_actual(self):
@@ -716,6 +731,25 @@ class TestTraitGauge(_TraitHandlerBase):
         self.assertEqual(self.trait.percent(), "30.0%")
         self.trait.mod -= 1
         self.assertEqual(self.trait.percent(), "33.3%")
+
+    def test_descs(self):
+        """Test descriptions"""
+        self.trait.min = -5
+        self.assertEqual(self._get_values(), (8, 2, 10, -5, 10))
+        self.trait.current = -2
+        self.assertEqual(self.trait.desc(), "range0")
+        self.trait.current = 0
+        self.assertEqual(self.trait.desc(), "range0")
+        self.trait.current = 1
+        self.assertEqual(self.trait.desc(), "range1")
+        self.trait.current = 3
+        self.assertEqual(self.trait.desc(), "range2")
+        self.trait.current = 5
+        self.assertEqual(self.trait.desc(), "range2")
+        self.trait.current = 9
+        self.assertEqual(self.trait.desc(), "range3")
+        self.trait.current = 100
+        self.assertEqual(self.trait.desc(), "range3")
 
 
 class TestNumericTraitOperators(TestCase):
