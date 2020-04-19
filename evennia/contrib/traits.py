@@ -865,7 +865,8 @@ class NumericTrait(Trait):
 
 class StaticTrait(NumericTrait):
     """
-    Static Trait. This has a modification value.
+    Static Trait. This is a single value with a modifier,
+    with no concept of a 'current' value.
 
     actual = base + mod
 
@@ -906,15 +907,15 @@ class CounterTrait(NumericTrait):
     This includes modifications and min/max limits as well as the notion of a
     current value. The value can also be reset to the base value.
 
-    min/unset               base                         max/unset
-     |-----------------------|----------X-------------------|
-                                     actual
-                                     = current
-                                      + mod
+    min/unset     base    base+mod                       max/unset
+     |--------------|--------|---------X--------X------------|
+                                    current   actual
+                                              = current
+                                              + mod
 
-    - actual = current + mod, starts at base
+    - actual = current + mod, starts at base + mod
     - if min or max is None, there is no upper/lower bound (default)
-    - if max is set to "base", max will be set as base changes.
+    - if max is set to "base", max will be equal ot base+mod
 
     """
 
@@ -929,21 +930,12 @@ class CounterTrait(NumericTrait):
     }
 
     # Helpers
-
-    def _mod_base(self):
-        """Calculate adding base and modifications"""
-        return self._enforce_bounds(self.mod + self.base)
-
-    def _mod_current(self):
-        """Calculate the current value"""
-        return self._enforce_bounds(self.mod + self.current)
-
-    def _enforce_bounds(self, value):
+    def _enforce_boundaries(self, value):
         """Ensures that incoming value falls within trait's range."""
         if self.min is not None and value <= self.min:
             return self.min
         if self._data["max"] == "base" and value >= self.mod + self.base:
-            return self.mod + self.base
+            return self.base + self.mod
         if self.max is not None and value >= self.max:
             return self.max
         return value
@@ -955,11 +947,31 @@ class CounterTrait(NumericTrait):
         return self._data["base"]
 
     @base.setter
-    def base(self, amount):
-        if self._data.get("max", None) == "base":
-                self._data["base"] = amount
-        if type(amount) in (int, float):
-            self._data["base"] = self._enforce_bounds(amount)
+    def base(self, value):
+        if value is None:
+            self._data["base"] = self.data_keys['base']
+        if type(value) in (int, float):
+            if self.min is not None and value + self.mod < self.min:
+                value = self.min - self.mod
+            if self.max is not None and value + self.mod > self.max:
+                value = self.max - self.mod
+            self._data["base"] = value
+
+    @property
+    def mod(self):
+        return self._data["mod"]
+
+    @mod.setter
+    def mod(self, value):
+        if value is None:
+            # unsetting the boundary to default
+            self._data["mod"] = self.data_keys['mod']
+        elif type(value) in (int, float):
+            if self.min is not None and value + self.base < self.min:
+                value = self.min - self.base
+            if self.max is not None and value + self.base > self.max:
+                value = self.max - self.base
+            self._data["mod"] = value
 
     @property
     def min(self):
@@ -968,56 +980,46 @@ class CounterTrait(NumericTrait):
     @min.setter
     def min(self, value):
         if value is None:
+            # unsetting the boundary
             self._data["min"] = value
         elif type(value) in (int, float):
             if self.max is not None:
                 value = min(self.max, value)
-            self._data["min"] = value if value < self.base else self.base
+            self._data["min"] = min(value, self.base + self.mod)
 
     @property
     def max(self):
-        if self._data["max"] == "base":
-            return self._mod_base()
         return self._data["max"]
 
     @max.setter
     def max(self, value):
-        """The maximum value of the trait.
-
-        Note:
-            This property may be set to the string literal 'base'.
-            When set this way, the property returns the value of the
-            `mod`+`base` properties.
-        """
-        if value == "base" or value is None:
+        if value is None:
+            # unsetting the boundary
             self._data["max"] = value
         elif type(value) in (int, float):
             if self.min is not None:
                 value = max(self.min, value)
-            self._data["max"] = value if value > self.base else self.base
+            self._data["max"] = max(value, self.base + self.mod)
 
     @property
     def current(self):
-        """The `current` value of the `Trait`."""
-        return self._enforce_bounds(self._data.get("current", self.base))
+        """The `current` value of the `Trait`. This does not have .mod added."""
+        return self._data.get("current", self.base)
 
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
-            self._data["current"] = self._enforce_bounds(value)
+            self._data["current"] = self._enforce_boundaries(value)
+
+    @current.deleter
+    def current(self):
+        """reset back to base"""
+        self._data["current"] = self.base
 
     @property
     def actual(self):
-        "The actual value of the Trait"
-        return self._mod_current()
-
-    def reset_mod(self):
-        """Clears any mod value to 0."""
-        self.mod = 0
-
-    def reset(self):
-        """Resets `current` property equal to `base` value."""
-        self.current = self.base
+        "The actual value of the Trait (current + mod)"
+        return self._enforce_boundaries(self.current + self.mod)
 
     def percent(self, formatting="{:3.1f}%"):
         """
@@ -1032,7 +1034,11 @@ class CounterTrait(NumericTrait):
             float or str: Depending of if a `formatting` string
                 is supplied or not.
         """
-        return percent(self.current, self.min, self.max, formatting=formatting)
+        return percent(self.actual, self.min, self.max, formatting=formatting)
+
+    def reset(self):
+        """Resets `current` property equal to `base` value."""
+        del self.current
 
 
 class GaugeTrait(CounterTrait):
@@ -1041,7 +1047,7 @@ class GaugeTrait(CounterTrait):
 
     This emulates a gauge-meter that empties from a base+mod value.
 
-    min/0                                            max=base + mod
+    min/0                                            max=base+mod
      |-----------------------X---------------------------|
                            actual
                           = current
@@ -1063,15 +1069,7 @@ class GaugeTrait(CounterTrait):
         "min": 0,
     }
 
-    def _mod_base(self):
-        """Calculate adding base and modifications"""
-        return self._enforce_bounds(self.mod + self.base)
-
-    def _mod_current(self):
-        """Calculate the current value"""
-        return self._enforce_bounds(self.current)
-
-    def _enforce_bounds(self, value):
+    def _enforce_boundaries(self, value):
         """Ensures that incoming value falls within trait's range."""
         if self.min is not None and value <= self.min:
             return self.min
@@ -1135,12 +1133,18 @@ class GaugeTrait(CounterTrait):
     @property
     def current(self):
         """The `current` value of the gauge."""
-        return self._enforce_bounds(self._data.get("current", self._mod_base()))
+        return self._enforce_boundaries(
+            self._data.get("current", self.base + self.mod))
 
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
-            self._data["current"] = self._enforce_bounds(value)
+            self._data["current"] = self._enforce_boundaries(value)
+
+    @current.deleter
+    def current(self):
+        "Resets current back to 'full'"
+        self._data["current"] = self.base + self.mod
 
     @property
     def actual(self):
@@ -1162,10 +1166,8 @@ class GaugeTrait(CounterTrait):
         """
         return percent(self.current, self.min, self.max, formatting=formatting)
 
-
-    def fill_gauge(self):
+    def reset(self):
         """
         Fills the gauge to its maximum allowed by base + mod
-
         """
-        self.current = self.base + self.mod
+        del self.current
