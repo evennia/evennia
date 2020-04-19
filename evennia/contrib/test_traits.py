@@ -519,7 +519,7 @@ class TestTraitGauge(_TraitHandlerBase):
     def setUp(self):
         super().setUp()
         self.traithandler.add(
-            "test2",
+            "test1",
             name="Test1",
             trait_type='gauge',
             base=8,  # max = base + mod
@@ -527,7 +527,7 @@ class TestTraitGauge(_TraitHandlerBase):
             extra_val1="xvalue1",
             extra_val2="xvalue2"
         )
-        self.trait1 = self.traithandler.get("test2")
+        self.trait1 = self.traithandler.get("test1")
 
     def _get_values(self):
         return (self.trait1.base, self.trait1.mod, self.trait1.actual,
@@ -537,9 +537,10 @@ class TestTraitGauge(_TraitHandlerBase):
         self.assertEqual(
             self._get_dbstore("test1"),
             {"name": "Test1",
-             "trait_type": 'counter',
+             "trait_type": 'gauge',
              "base": 8,
              "mod": 2,
+             "min": 0,
              "extra_val1": "xvalue1",
              "extra_val2": "xvalue2"
             }
@@ -559,8 +560,8 @@ class TestTraitGauge(_TraitHandlerBase):
         self.trait1.base -= 4
         self.assertEqual(self._get_values(), (8, 2, 5, 0, 10))
         self.trait1.min = -100
-        self.trait.base = -20
-        self.assertEqual(self._get_values(), (-20, 2, -18, -100, 10))
+        self.trait1.base = -20
+        self.assertEqual(self._get_values(), (-20, 2, -18, -100, -18))
 
     def test_boundaries__minmax(self):
         """Test range"""

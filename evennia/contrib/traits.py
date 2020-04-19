@@ -686,7 +686,7 @@ class Trait:
             try:
                 # check if we have a custom deleter
                 _DA(self, key)
-            except AttributeHandler:
+            except AttributeError:
                 # delete normally
                 del self._data[key]
         else:
