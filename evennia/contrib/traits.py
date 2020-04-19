@@ -487,7 +487,7 @@ class TraitHandler:
         trait_properties["trait_type"] = trait_type
 
         # this will raise exception if input is insufficient
-        trait_properties = trait_class.validate_input(trait_properties)
+        trait_properties = trait_class.validate_input(trait_class, trait_properties)
 
         self.trait_data[trait_key] = trait_properties
 
@@ -563,7 +563,7 @@ class Trait:
             TraitException: If input-validation failed.
 
         """
-        self._data = self.__class__.validate_input(trait_data)
+        self._data = self.__class__.validate_input(self.__class__, trait_data)
 
         if not isinstance(trait_data, _SaverDict):
             logger.log_warn(
@@ -571,7 +571,7 @@ class Trait:
                 f"loaded for {type(self).__name__}."
             )
 
-    @classmethod
+    @staticmethod
     def validate_input(cls, trait_data):
         """
         Validate input
@@ -967,55 +967,90 @@ class CounterTrait(NumericTrait):
         "ratetarget": None
     }
 
-    @classmethod
-    def validate(cls, trait_data):
+    @staticmethod
+    def validate_input(cls, trait_data):
         """Add extra validation for descs"""
-        trait_data = Trait.validate_input(trait_data)
+        trait_data = Trait.validate_input(cls, trait_data)
+        # validate descs
         descs = trait_data['descs']
         if isinstance(descs, dict):
             if any(not (isinstance(key, (int, float)) and isinstance(value, str))
-                   for key in descs.items()):
-                raise TraitException("Trait descs must be defined on the form {number:str}")
+                   for key, value in descs.items()):
+                raise TraitException(
+                    f"Trait descs must be defined on the "
+                    f"form {{number:str}} (instead found {descs}).")
+        # set up rate
         if trait_data['rate'] != 0:
             trait_data['last_update'] = time()
+        else:
+            trait_data['last_update'] = None
         return trait_data
+
+    # Helpers
+
+    def _within_boundaries(self, value):
+        """Check if given value is within boundaries"""
+        return not (
+            (self.min is not None and value <= self.min) or
+            (self.max is not None and value >= self.max)
+        )
+
+    def _enforce_boundaries(self, value):
+        """Ensures that incoming value falls within boundaries"""
+        if self.min is not None and value <= self.min:
+            return self.min
+        if self.max is not None and value >= self.max:
+            return self.max
+        return value
 
     # timer component
 
-    def _timer_running(self):
-        """Check if timer mechanism is running"""
-        return self.rate != 0 and self._data['last_update'] is not None
+    def _passed_ratetarget(self, value):
+        """Check if we passed the ratetarget in either direction."""
+        ratetarget = self._data['ratetarget']
+        return (ratetarget is not None and (
+                (self.rate < 0 and value <= ratetarget) or
+                (self.rate > 0 and value >= ratetarget)))
 
     def _stop_timer(self):
-        if self._timer_running():
+        """Stop rate-timer component."""
+        if self.rate != 0 and self._data['last_update'] is not None:
             self._data['last_update'] = None
 
-    def _check_ratetarget(self):
-        """Check if we passed ratetarget."""
-        ratetarget = self._data['ratetarget']
-        return (ratetarget is not None and
-                ((self.rate < 0 and new_curr <= ratetarget) or
-                (self.rate > 0 and new_curr >= ratetarget)))
+    def _check_and_start_timer(self, value):
+        """Start timer if we are not at a boundary."""
+        if self.rate != 0 and self._data['last_update'] is None:
+            ratetarget = self._data['ratetarget']
+            if self._within_boundaries(value) and not self._passed_ratetarget(value):
+                # we are not at a boundary [anymore].
+                self._data['last_update'] = time()
+        return value
+
 
     def _update_current(self, current):
-        """Update current value, including any rate change"""
-        if self.rate != 0 and self._data['last_update'] is not None:
+        """Update current value by scaling with rate and time passed."""
+        rate = self.rate
+        if rate != 0 and self._data['last_update'] is not None:
+            now = time()
             tdiff = now - self._data['last_update']
-            current += self.rate * tdiff
-        return current
+            current += rate * tdiff
+            actual = current + self.mod
 
-    def _enforce_boundaries(self, value):
-        """Ensures that incoming value falls within trait's range."""
-        if self.min is not None and value <= self.min:
-            self._stop_timer()
-            return self.min
-        if self.max is not None and value >= self.max:
-            self._stop_timer()
-            return self.max
-        if self._timer_running() and self._check_ratetarget():
-            _stop_timer()
-            return self._data['ratetarget']
-        return value
+            # we must make sure so we don't overstep our bounds
+            # even if .mod is included
+
+            if self._passed_ratetarget(actual):
+                current = self._data['ratetarget'] - self.mod
+                self._stop_timer()
+            elif not self._within_boundaries(actual):
+                current = self._enforce_boundaries(actual) - self.mod
+                self._stop_timer()
+            else:
+                self._data['last_update'] = now
+
+            self._data['current'] = current
+
+        return current
 
     # properties
 
@@ -1086,7 +1121,7 @@ class CounterTrait(NumericTrait):
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
-            self._data["current"] = self._enforce_boundaries(value)
+            self._data["current"] = self._check_and_start_timer(self._enforce_boundaries(value))
 
     @current.deleter
     def current(self):
@@ -1097,6 +1132,15 @@ class CounterTrait(NumericTrait):
     def actual(self):
         "The actual value of the Trait (current + mod)"
         return self._enforce_boundaries(self.current + self.mod)
+
+    @property
+    def ratetarget(self):
+        return self._data['ratetarget']
+
+    @ratetarget.setter
+    def ratetarget(self, value):
+        self._data['ratetarget'] = self._enforce_boundaries(value)
+        self._check_and_start_timer(self.actual)
 
     def percent(self, formatting="{:3.1f}%"):
         """
@@ -1188,6 +1232,30 @@ class GaugeTrait(CounterTrait):
         "ratetarget": None,
     }
 
+    def _update_current(self, current):
+        """Update current value by scaling with rate and time passed."""
+        rate = self.rate
+        if rate != 0 and self._data['last_update'] is not None:
+            now = time()
+            tdiff = now - self._data['last_update']
+            current += rate * tdiff
+            actual = current
+
+            # we don't worry about .mod for gauges
+
+            if self._passed_ratetarget(actual):
+                current = self._data['ratetarget']
+                self._stop_timer()
+            elif not self._within_boundaries(actual):
+                current = self._enforce_boundaries(actual)
+                self._stop_timer()
+            else:
+                self._data['last_update'] = now
+
+            self._data['current'] = current
+
+        return current
+
     def _enforce_boundaries(self, value):
         """Ensures that incoming value falls within trait's range."""
         if self.min is not None and value <= self.min:
@@ -1258,7 +1326,7 @@ class GaugeTrait(CounterTrait):
     @current.setter
     def current(self, value):
         if type(value) in (int, float):
-            self._data["current"] = self._enforce_boundaries(value)
+            self._data["current"] = self._check_and_start_timer(self._enforce_boundaries(value))
 
     @current.deleter
     def current(self):
