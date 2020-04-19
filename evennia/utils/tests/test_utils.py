@@ -319,14 +319,17 @@ class TestPercent(TestCase):
     Test the utils.percentage function.
     """
     def test_ok_input(self):
-        result = utils.percentage(3, 0, 10)
+        result = utils.percent(3, 0, 10)
         self.assertEqual(result, "30.0%")
-        result = utils.percentage(2.5, 5, 10, formatting=None)
+        result = utils.percent(2.5, 0, 5, formatting=None)
         self.assertEqual(result, 50.0)
-        # min==max we set to 100%
-        self.assertEqual(utils.percentage(4, 5, 5), "100.0%")
 
     def test_bad_input(self):
-        self.assertRaises(RuntimeError):
-            utils.percentage(3, 10, 1)
+        """Gracefully handle weird input."""
+        self.assertEqual(utils.percent(3, 10, 1), "0.0%")
+        self.assertEqual(utils.percent(3, None, 1), "100.0%")
+        self.assertEqual(utils.percent(1, 1, 1), "100.0%")
+        self.assertEqual(utils.percent(3, 1, 1), "0.0%")
+        self.assertEqual(utils.percent(3, 0, 1), "100.0%")
+        self.assertEqual(utils.percent(-3, 0, 1), "0.0%")
 
