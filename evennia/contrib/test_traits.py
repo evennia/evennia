@@ -399,7 +399,13 @@ class TestTraitCounter(_TraitHandlerBase):
             min=0,
             max=10,
             extra_val1="xvalue1",
-            extra_val2="xvalue2"
+            extra_val2="xvalue2",
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range3",
+                7: "range4",
+            }
         )
         self.trait = self.traithandler.get("test1")
 
@@ -419,6 +425,12 @@ class TestTraitCounter(_TraitHandlerBase):
              "max": 10,
              "extra_val1": "xvalue1",
              "extra_val2": "xvalue2"
+            },
+            "descs": {
+                0: "range0",
+                2: "range1",
+                5: "range3",
+                7: "range4",
             }
         )
 
@@ -535,6 +547,22 @@ class TestTraitCounter(_TraitHandlerBase):
         del self.trait.min
         self.assertEqual(self.trait.percent(), "100.0%")
 
+    def test_descs(self):
+        """Test descriptions"""
+        self.trait.mod = 0
+        self.current = 0
+        self.assertEqual(self.trait.desc(), "range0")
+        self.current = 1
+        self.assertEqual(self.trait.desc(), "range0")
+        self.current = 3
+        self.assertEqual(self.trait.desc(), "range1")
+        self.current = 5
+        self.assertEqual(self.trait.desc(), "range3")
+        self.current = 9
+        self.assertEqual(self.trait.desc(), "range4")
+        self.current = 100
+        self.assertEqual(self.trait.desc(), "range4")
+
 
 class TestTraitGauge(_TraitHandlerBase):
 
@@ -565,7 +593,8 @@ class TestTraitGauge(_TraitHandlerBase):
              "mod": 2,
              "min": 0,
              "extra_val1": "xvalue1",
-             "extra_val2": "xvalue2"
+             "extra_val2": "xvalue2",
+             "descs": None
             }
         )
     def test_actual(self):
