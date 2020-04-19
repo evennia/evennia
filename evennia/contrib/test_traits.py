@@ -207,7 +207,7 @@ class TraitTest(_TraitHandlerBase):
            "extra_val": 1000
         }
         expected = copy(dat)  # we must break link or return === dat always
-        self.assertEqual(expected, traits.Trait.validate_input(dat))
+        self.assertEqual(expected, traits.Trait.validate_input(traits.Trait, dat))
 
         # don't supply value, should get default
         dat = {
@@ -218,7 +218,7 @@ class TraitTest(_TraitHandlerBase):
         }
         expected = copy(dat)
         expected["value"] = traits.Trait.data_keys['value']
-        self.assertEqual(expected, traits.Trait.validate_input(dat))
+        self.assertEqual(expected, traits.Trait.validate_input(traits.Trait, dat))
 
         # make sure extra values are cleaned if trait accepts no extras
         dat = {
@@ -232,7 +232,7 @@ class TraitTest(_TraitHandlerBase):
         expected.pop("extra_val1")
         expected.pop("extra_val2")
         with patch.object(traits.Trait, "allow_extra_properties", False):
-            self.assertEqual(expected, traits.Trait.validate_input(dat))
+            self.assertEqual(expected, traits.Trait.validate_input(traits.Trait, dat))
 
     def test_validate_input__fail(self):
         """Test failing validation"""
@@ -243,7 +243,7 @@ class TraitTest(_TraitHandlerBase):
            "extra_val": 1000
         }
         with self.assertRaises(traits.TraitException):
-            traits.Trait.validate_input(dat)
+            traits.Trait.validate_input(traits.Trait, dat)
 
         # make value a required key
         mock_data_keys = {
@@ -257,7 +257,7 @@ class TraitTest(_TraitHandlerBase):
                "extra_val": 1000
             }
             with self.assertRaises(traits.TraitException):
-                traits.Trait.validate_input(dat)
+                traits.Trait.validate_input(traits.Trait, dat)
 
     def test_trait_getset(self):
         """Get-set-del operations on trait"""
@@ -433,6 +433,7 @@ class TestTraitCounter(_TraitHandlerBase):
                 },
              "rate": 0,
              "ratetarget": None,
+             "last_update": None,
              }
         )
 
@@ -570,6 +571,84 @@ class TestTraitCounter(_TraitHandlerBase):
         self.assertEqual(self.trait.desc(), "range3")
 
 
+class TestTraitCounterTimed(_TraitHandlerBase):
+    """
+    Test for trait with timer component
+    """
+    @patch("evennia.contrib.traits.time", new=MagicMock(return_value=1000))
+    def setUp(self):
+        super().setUp()
+        self.traithandler.add(
+            "test1",
+            name="Test1",
+            trait_type='counter',
+            base=1,
+            mod=2,
+            min=0,
+            max=100,
+            extra_val1="xvalue1",
+            extra_val2="xvalue2",
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+            },
+            rate=1,
+            ratetarget=None,
+        )
+        self.trait = self.traithandler.get("test1")
+
+    def _get_timer_data(self):
+        return (self.trait.actual, self.trait.current, self.trait.rate,
+                self.trait._data["last_update"], self.trait.ratetarget)
+
+    @patch("evennia.contrib.traits.time")
+    def test_timer_rate(self, mock_time):
+        """Test time stepping"""
+        mock_time.return_value = 1000
+        self.assertEqual(self._get_timer_data(), (3, 1, 1, 1000, None))
+        mock_time.return_value = 1001
+        self.assertEqual(self._get_timer_data(), (4, 2, 1, 1001, None))
+        mock_time.return_value = 1096
+        self.assertEqual(self._get_timer_data(), (99, 97, 1, 1096, None))
+        # hit maximum boundary
+        mock_time.return_value = 1120
+        self.assertEqual(self._get_timer_data(), (100, 98, 1, None, None))
+        mock_time.return_value = 1200
+        self.assertEqual(self._get_timer_data(), (100, 98, 1, None, None))
+        # drop current
+        self.trait.current = 50
+        self.assertEqual(self._get_timer_data(), (52, 50, 1, 1200, None))
+        # set a new rate
+        self.trait.rate = 2
+        mock_time.return_value = 1210
+        self.assertEqual(self._get_timer_data(), (72, 70, 2, 1210, None))
+        self.trait.rate = -10
+        mock_time.return_value = 1214
+        self.assertEqual(self._get_timer_data(), (32, 30, -10, 1214, None))
+        mock_time.return_value = 1218
+        self.assertEqual(self._get_timer_data(), (0, -2, -10, None, None))
+
+    @patch("evennia.contrib.traits.time")
+    def test_timer_ratetarget(self, mock_time):
+        """test ratetarget"""
+        mock_time.return_value = 1000
+        self.trait.ratetarget = 60
+        self.assertEqual(self._get_timer_data(), (3, 1, 1, 1000, 60))
+        mock_time.return_value = 1056
+        self.assertEqual(self._get_timer_data(), (59, 57, 1, 1056, 60))
+        mock_time.return_value = 1057
+        self.assertEqual(self._get_timer_data(), (60, 58, 1, None, 60))
+        mock_time.return_value = 1060
+        self.assertEqual(self._get_timer_data(), (60, 58, 1, None, 60))
+        self.trait.ratetarget = 70
+        mock_time.return_value = 1066
+        self.assertEqual(self._get_timer_data(), (66, 64, 1, 1066, 70))
+        mock_time.return_value = 1070
+        self.assertEqual(self._get_timer_data(), (70, 68, 1, None, 70))
+
+
 class TestTraitGauge(_TraitHandlerBase):
 
     def setUp(self):
@@ -614,6 +693,7 @@ class TestTraitGauge(_TraitHandlerBase):
                 },
              "rate": 0,
              "ratetarget": None,
+             "last_update": None,
             }
         )
     def test_actual(self):
@@ -754,6 +834,85 @@ class TestTraitGauge(_TraitHandlerBase):
         self.assertEqual(self.trait.desc(), "range3")
         self.trait.current = 100
         self.assertEqual(self.trait.desc(), "range3")
+
+
+class TestTraitGaugeTimed(_TraitHandlerBase):
+    """
+    Test for trait with timer component
+    """
+    @patch("evennia.contrib.traits.time", new=MagicMock(return_value=1000))
+    def setUp(self):
+        super().setUp()
+        self.traithandler.add(
+            "test1",
+            name="Test1",
+            trait_type='gauge',
+            base=98,
+            mod=2,
+            min=0,
+            extra_val1="xvalue1",
+            extra_val2="xvalue2",
+            descs={
+                0: "range0",
+                2: "range1",
+                5: "range2",
+                7: "range3",
+            },
+            rate=1,
+            ratetarget=None,
+        )
+        self.trait = self.traithandler.get("test1")
+
+    def _get_timer_data(self):
+        return (self.trait.actual, self.trait.current, self.trait.rate,
+                self.trait._data["last_update"], self.trait.ratetarget)
+
+    @patch("evennia.contrib.traits.time")
+    def test_timer_rate(self, mock_time):
+        """Test time stepping"""
+        mock_time.return_value = 1000
+        self.trait.current = 1
+        self.assertEqual(self._get_timer_data(), (1, 1, 1, 1000, None))
+        mock_time.return_value = 1001
+        self.assertEqual(self._get_timer_data(), (2, 2, 1, 1001, None))
+        mock_time.return_value = 1096
+        self.assertEqual(self._get_timer_data(), (97, 97, 1, 1096, None))
+        # hit maximum boundary
+        mock_time.return_value = 1120
+        self.assertEqual(self._get_timer_data(), (100, 100, 1, None, None))
+        mock_time.return_value = 1200
+        self.assertEqual(self._get_timer_data(), (100, 100, 1, None, None))
+        # drop current
+        self.trait.current = 50
+        self.assertEqual(self._get_timer_data(), (50, 50, 1, 1200, None))
+        # set a new rate
+        self.trait.rate = 2
+        mock_time.return_value = 1210
+        self.assertEqual(self._get_timer_data(), (70, 70, 2, 1210, None))
+        self.trait.rate = -10
+        mock_time.return_value = 1214
+        self.assertEqual(self._get_timer_data(), (30, 30, -10, 1214, None))
+        mock_time.return_value = 1218
+        self.assertEqual(self._get_timer_data(), (0, 0, -10, None, None))
+
+    @patch("evennia.contrib.traits.time")
+    def test_timer_ratetarget(self, mock_time):
+        """test ratetarget"""
+        mock_time.return_value = 1000
+        self.trait.current = 1
+        self.trait.ratetarget = 60
+        self.assertEqual(self._get_timer_data(), (1, 1, 1, 1000, 60))
+        mock_time.return_value = 1056
+        self.assertEqual(self._get_timer_data(), (57, 57, 1, 1056, 60))
+        mock_time.return_value = 1059
+        self.assertEqual(self._get_timer_data(), (60, 60, 1, None, 60))
+        mock_time.return_value = 1060
+        self.assertEqual(self._get_timer_data(), (60, 60, 1, None, 60))
+        self.trait.ratetarget = 70
+        mock_time.return_value = 1066
+        self.assertEqual(self._get_timer_data(), (66, 66, 1, 1066, 70))
+        mock_time.return_value = 1070
+        self.assertEqual(self._get_timer_data(), (70, 70, 1, None, 70))
 
 
 class TestNumericTraitOperators(TestCase):
