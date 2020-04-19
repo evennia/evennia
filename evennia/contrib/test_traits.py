@@ -513,6 +513,14 @@ class TestTraitCounter(_TraitHandlerBase):
         self.assertEqual(self.trait1.max, None)
         self.assertEqual(self.trait1.min, None)
 
+    def test_percentage(self):
+        """Test percentage calculation"""
+        self.assertEqual(self.trait1.percent(), "100.0%")
+        self.trait1.current = 5
+        self.assertEqual(self.trait1.percent(), "50.0%")
+        self.trait1.current = 3
+        self.assertEqual(self.trait1.percent(), "33.3%")
+
 
 class TestTraitGauge(_TraitHandlerBase):
 
@@ -654,6 +662,14 @@ class TestTraitGauge(_TraitHandlerBase):
         self.assertEqual(self._get_values(), (0, 2, 2, -10, 2))
         del self.trait1.min
         self.assertEqual(self._get_values(), (0, 2, 2, 0, 2))
+
+    def test_percentage(self):
+        """Test percentage calculation"""
+        self.assertEqual(self.trait1.percent(), "100.0%")
+        self.trait1.current = 5
+        self.assertEqual(self.trait1.percent(), "50.0%")
+        self.trait1.current = 3
+        self.assertEqual(self.trait1.percent(), "33.3%")
 
 
 class TestNumericTraitOperators(TestCase):
