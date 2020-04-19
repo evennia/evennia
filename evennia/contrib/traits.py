@@ -5,17 +5,16 @@ Whitenoise 2014, Ainneve contributors,
 Griatch 2020
 
 
-A `Trait` represents a modifiable property of (usually) a Character. They can
+A `Trait` represents a modifiable property on (usually) a Character. They can
 be used to represent everything from attributes (str, agi etc) to skills
-(hunting, swords etc) or effects (poisoned, rested etc) and has extra
-functionality beyond using plain Attributes for this.
+(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc.
 
 Traits use Evennia Attributes under the hood, making them persistent (they survive
 a server reload/reboot).
 
 ### Adding Traits to a typeclass
 
-To access and manipulate tragts on an object, its Typeclass needs to have a
+To access and manipulate traits on an object, its Typeclass needs to have a
 `TraitHandler` assigned it. Usually, the handler is made available as `.traits`
 (in the same way as `.tags` or `.attributes`).
 
@@ -38,6 +37,27 @@ Here's an example for adding the TraitHandler to the base Object class:
             return TraitHandler(self)
 
     ```
+
+After a reload you can now try adding some example traits:
+
+```python
+>>> obj.traits.add("hunting", "Hunting Skill", trait_type="static", value=4)
+>>> obj.traits.hunting.value
+4
+>>> obj.traits.hunting.value += 5
+>>> obj.traits.hunting.value
+9
+>>> obj.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
+>>> obj.traits.hp.current
+100
+>>> obj.traits.hp -= 200
+>>> obj.traits.hp.current
+0
+>>> obj.traits.hp.reset()
+>>> obj.traits.hp.current
+100
+
+```
 
 ### Trait Configuration
 
@@ -738,7 +758,6 @@ class NumericTrait(Trait):
 
     actual = base
 
-
     """
 
     trait_type = "numeric"
@@ -916,6 +935,17 @@ class CounterTrait(NumericTrait):
     - actual = current + mod, starts at base + mod
     - if min or max is None, there is no upper/lower bound (default)
     - if max is set to "base", max will be equal ot base+mod
+    - descs are used to optionally describe each value interval.
+      The desc of the current `actual` value can then be retrieved
+      with .desc(). The property is set as {lower_bound_inclusive:desc}
+      and should be given smallest-to-biggest. For example, for
+      a skill rating between 0 and 10:
+            {0: "unskilled",
+             1: "neophyte",
+             5: "traited",
+             7: "expert",
+             9: "master"}
+
 
     """
 
@@ -927,7 +957,19 @@ class CounterTrait(NumericTrait):
         "mod": 0,
         "min": None,
         "max": None,
+        "descs": None:
     }
+
+    @classmethod
+    def validate(cls, trait_data):
+        """Add extra validation for descs"""
+        trait_data = Trait.validate_input(trait_data)
+        descs = trait_data['descs']
+        if isinstance(descs, dict):
+            if any(not (isinstance(key, (int, float)) and isinstance(value, str))
+                   for key in descs.items()):
+                raise TraitException("Trait descs must be defined on the form {number:str}")
+        return trait_data
 
     # Helpers
     def _enforce_boundaries(self, value):
@@ -1040,6 +1082,28 @@ class CounterTrait(NumericTrait):
         """Resets `current` property equal to `base` value."""
         del self.current
 
+    def desc(self):
+        """
+        Retrieve descriptions of the current value, if available.
+
+        This must be a mapping {upper_bound_inclusive: text},
+        ordered from small to big.
+        rely on Python3.7+ dicts retaining ordering to let this
+        describe the interval.
+
+        Returns:
+            str: The description describing the `actual` value.
+                If not found, returns the empty string.
+        """
+        descs = self._data["descs"]
+        if descs is None:
+            return ""
+        value = self.actual
+        # we rely on Python3.7+ dicts retaining ordering
+        for bound, txt in descs.items():
+            if bound >= value:
+                return txt
+
 
 class GaugeTrait(CounterTrait):
     """
@@ -1056,6 +1120,17 @@ class GaugeTrait(CounterTrait):
     - max value is always base + mad
     - .max is an alias of .base
     - actual = current and varies from min to max.
+    - descs is a mapping {upper_bound_inclusive: desc}. These
+        are checked with .desc() and can be retrieve a text
+        description for a given current value.
+
+        For example, this could be used to describe health
+        values between 0 and 100:
+            {0: "Dead"
+             10: "Badly hurt",
+             30: "Bleeding",
+             50: "Hurting",
+             90: "Healthy"}
 
     """
 
@@ -1067,6 +1142,7 @@ class GaugeTrait(CounterTrait):
         "base": 0,
         "mod": 0,
         "min": 0,
+        "descs": None
     }
 
     def _enforce_boundaries(self, value):
@@ -1171,3 +1247,17 @@ class GaugeTrait(CounterTrait):
         Fills the gauge to its maximum allowed by base + mod
         """
         del self.current
+
+
+class SequenceTrait(CounterTrait)
+    """
+    A trait that stores an indexed array of strings to
+    represent distinct values in a sequence. Adding to the trait will
+    step back and forth in the sequence.
+
+    This is useful for systems which don't use numbers as much
+    as discrete states to represent things, such as
+
+    "Weak, "
+
+    """
