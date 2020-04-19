@@ -1687,15 +1687,17 @@ def format_table(table, extra_space=1):
     return ftable
 
 
-def percent(self, value, minval, maxval, formatting="{:3.1f}%"):
+def percent(value, minval, maxval, formatting="{:3.1f}%"):
     """
     Get a value in an interval as a percentage of its position
     in that interval. This also understands negative numbers.
 
     Args:
         value (number): This should be a value minval<=value<=maxval.
-        minval (number): Smallest value in interval.
-        maxval (number): Biggest value in interval.
+        minval (number or None): Smallest value in interval. This could be None
+            for an open interval (then return will always be 100%)
+        maxval (number or None): Biggest value in interval. This could be None
+            for an open interval (then return will always be 100%)
         formatted (str, optional): This is a string that should
             accept one formatting tag. This will receive the
             current value as a percentage. If None, the
@@ -1703,30 +1705,46 @@ def percent(self, value, minval, maxval, formatting="{:3.1f}%"):
     Returns:
         str or float: The formatted value or the raw percentage
             as a float.
-    Raises:
-        RuntimeError: If min/max does not make sense.
     Notes:
-        We handle the case of minval==maxval because we may see this case and
-        don't want to raise exceptions unnecessarily. In that case we return
-        100%.
+        We try to handle a weird interval gracefully.
+        - If either maxval or minval is None (open interval),
+            we (aribtrarily) assume 100%.
+        - If minval > maxval, we return 0%.
+        - If minval == maxval == value we are looking at a single value match
+            and return 100%.
+        - If minval == maxval != value we return 0%.
+        - If value not in [minval..maxval], we set value to the  closest
+            boundary, so the result will be 0% or 100%, respectively.
 
     """
-    if minval > maxval:
-        raise RuntimeError("The minimum value must be <= the max value.")
-    # constrain value to interval
-    value = min(max(minval, value), maxval)
-
-    # these should both be >0
-    dpart = value - minval
-    dfull = maxval - minval
-    try:
-        result = (dpart / dfull) * 100.0
-    except ZeroDivisionError:
-        # this means minval == maxval
+    result = None
+    if None in (minval, maxval):
+        # we have no boundaries, percent calculation makes no sense,
+        # we set this to 100% since it
         result = 100.0
-    if not isinstance(formatting, str):
-        return result
-    return formatting.format(result)
+    elif minval > maxval:
+        # interval has no width so we cannot
+        # occupy any position within it.
+        result = 0.0
+    elif minval == maxval == value:
+        # this is a single value that we match
+        result = 100.0
+    elif minval == maxval != value:
+        # interval has no width so we cannot be in it.
+        result = 0.0
+
+    if result is None:
+        # constrain value to interval
+        value = min(max(minval, value), maxval)
+
+        # these should both be >0
+        dpart = value - minval
+        dfull = maxval - minval
+        result = (dpart / dfull) * 100.0
+
+    if isinstance(formatting, str):
+        return formatting.format(result)
+    return result
 
 
 import functools  # noqa
