@@ -514,7 +514,7 @@ class TestTraitCounter(_TraitHandlerBase):
         self.assertEqual(self.trait1.min, None)
 
 
-class TestTraitGauge(TestTraitCounter):
+class TestTraitGauge(_TraitHandlerBase):
 
     def setUp(self):
         super().setUp()
@@ -522,66 +522,137 @@ class TestTraitGauge(TestTraitCounter):
             "test2",
             name="Test1",
             trait_type='gauge',
-            base=1,
+            base=8,  # max = base + mod
             mod=2,
-            min=-10,
-            max=10,
             extra_val1="xvalue1",
             extra_val2="xvalue2"
         )
         self.trait1 = self.traithandler.get("test2")
 
-    def test_boundaries__change_boundaries(self):
-        """Change boundaries after base/mod  change"""
-        self.trait1.base = 5
-        self.trait1.mod = -100
+    def _get_values(self):
+        return (self.trait1.base, self.trait1.mod, self.trait1.actual,
+                self.trait1.min, self.trait1.max)
+
+    def test_init(self):
+        self.assertEqual(
+            self._get_dbstore("test1"),
+            {"name": "Test1",
+             "trait_type": 'counter',
+             "base": 8,
+             "mod": 2,
+             "extra_val1": "xvalue1",
+             "extra_val2": "xvalue2"
+            }
+        )
+    def test_actual(self):
+        """Actual is current, where current defaults to base + mod"""
+        # current unset - follows base + mod
+        self.assertEqual(self._get_values(), (8, 2, 10, 0, 10))
+        self.trait1.base += 4
+        self.assertEqual(self._get_values(), (12, 2, 14, 0, 14))
+        self.trait1.mod -= 1
+        self.assertEqual(self._get_values(), (12, 1, 13, 0, 13))
+        # set current, decouple from base + mod
+        self.trait1.current = 5
+        self.assertEqual(self._get_values(), (12, 1, 5, 0, 13))
+        self.trait1.mod += 1
+        self.trait1.base -= 4
+        self.assertEqual(self._get_values(), (8, 2, 5, 0, 10))
+        self.trait1.min = -100
+        self.trait.base = -20
+        self.assertEqual(self._get_values(), (-20, 2, -18, -100, 10))
+
+    def test_boundaries__minmax(self):
+        """Test range"""
+        # current unset - tied to base + mod
+        self.trait1.base += 20
+        self.assertEqual(self._get_values(), (28, 2, 30, 0, 30))
+        # set current - decouple from base + mod
+        self.trait1.current = 19
+        self.assertEqual(self._get_values(), (28, 2, 19, 0, 30))
+        # test upper bound
+        self.trait1.current = 100
+        self.assertEqual(self._get_values(), (28, 2, 30, 0, 30))
+        # min defaults to 0
+        self.trait1.current = -10
+        self.assertEqual(self._get_values(), (28, 2, 0, 0, 30))
         self.trait1.min = -20
-        # from pudb import debugger;debugger.Debugger().set_trace()
-        self.assertEqual(self._get_values(), (5, -100, -20))
+        self.assertEqual(self._get_values(), (28, 2, 0, -20, 30))
+        self.trait1.current = -10
+        self.assertEqual(self._get_values(), (28, 2, -10, -20, 30))
+
+    def test_boundaries__bigmod(self):
+        """add a big mod"""
+        self.trait1.base = 5
         self.trait1.mod = 100
-        self.trait1.max = 20
-        self.assertEqual(self._get_values(), (5, 100, 20))
+        self.assertEqual(self._get_values(), (5, 100, 105, 0, 105))
+        # restricted by min
+        self.trait1.mod = -100
+        self.assertEqual(self._get_values(), (5, -5, 0, 0, 0))
+        self.trait1.min = -200
+        self.assertEqual(self._get_values(), (5, -5, 0, -200, 0))
+
+    def test_boundaries__change_boundaries(self):
+        """Change boundaries after current change"""
+        self.trait1.current = 20
+        self.assertEqual(self._get_values(), (8, 2, 10, 0, 10))
+        self.trait1.mod = 102
+        self.assertEqual(self._get_values(), (8, 102, 10, 0, 110))
+        # raising min past current value will force it upwards
+        self.trait1.min = 20
+        self.assertEqual(self._get_values(), (8, 102, 20, 20, 110))
 
     def test_boundaries__disable(self):
-        """Disable and re-enable boundaries"""
+        """Disable and re-enable boundary"""
         self.trait1.base = 5
-        self.trait1.mod = 100
-        del self.trait1.max
-        self.assertEqual(self.trait1.max, None)
+        self.trait1.min = 1
+        self.assertEqual(self._get_values(), (5, 2, 7, 1, 7))
         del self.trait1.min
-        self.assertEqual(self.trait1.min, None)
-        self.trait1.base = 100
-        # this won't change since current is not changed
-        self.assertEqual(self._get_values(), (100, 100, 10))
-        self.trait1.current = 150
-        self.assertEqual(self._get_values(), (100, 100, 150))
-        self.trait1.base = -10
-        self.assertEqual(self._get_values(), (-10, 100, 150))
-
-        # re-activate boundaries
-        self.trait1.max = 15
-        self.trait1.min = 10
-        self.assertEqual(self._get_values(), (-10, 100, 15))
-
+        self.assertEqual(self._get_values(), (5, 2, 7, 0, 7))
+        del self.trait1.base
+        del self.trait1.mod
+        self.assertEqual(self._get_values(), (0, 0, 0, 0, 0))
+        with self.assertRaises(traits.TraitException):
+            del self.trait1.max
     def test_boundaries__inverse(self):
-        """Set inverse boundaries - limited by base"""
+        """Try to set reversed boundaries"""
+        self.trait1.mod = 0
+        self.trait1.base = -10  # limited by min
+        self.assertEqual(self._get_values(), (0, 0, 0, 0, 0))
+        self.trait1.min = -10
+        self.assertEqual(self._get_values(), (0, 0, 0, -10, 0))
         self.trait1.base = -10
-        self.trait1.mod = 100
-        self.trait1.min = 20  # will be set to base
-        self.assertEqual(self.trait1.min, -10)
-        self.trait1.max = -20 # this is <base so ok
-        self.assertEqual(self.trait1.max, -20)
-        self.assertEqual(self._get_values(), (-10, 100, -10))
+        self.assertEqual(self._get_values(), (-10, 0, -10, -10, -10))
+        self.min = 0  # limited by base + mod
+        self.assertEqual(self._get_values(), (-10, 0, -10, -10, -10))
 
     def test_current(self):
-        """For a gauge, mod applies to base and not to current."""
+        """Modifying current value"""
+        self.trait1.base = 10
         self.trait1.current = 5
-        self.assertEqual(self._get_values(), (1, 2, 5))
-        self.trait1.current = 14
-        self.assertEqual(self._get_values(), (1, 2, 10))
-        self.trait1.current = -14
-        self.assertEqual(self._get_values(), (1, 2, -10))
+        self.assertEqual(self._get_values(), (10, 2, 5, 0, 12))
+        self.trait1.current = 10
+        self.assertEqual(self._get_values(), (10, 2, 10, 0, 12))
+        self.trait1.current = 12
+        self.assertEqual(self._get_values(), (10, 2, 12, 0, 12))
+        self.trait1.current = 0
+        self.assertEqual(self._get_values(), (10, 2, 0, 0, 12))
+        self.trait1.current = -1
+        self.assertEqual(self._get_values(), (10, 2, 0, 0, 12))
 
+    def test_delete(self):
+        """Deleting resets to default."""
+        del self.trait1.mod
+        self.assertEqual(self._get_values(), (8, 0, 8, 0, 8))
+        self.trait1.mod = 2
+        del self.trait1.base
+        self.assertEqual(self._get_values(), (0, 2, 2, 0, 2))
+        del self.trait1.min
+        self.assertEqual(self._get_values(), (0, 2, 2, 0, 2))
+        self.trait1.min = -10
+        self.assertEqual(self._get_values(), (0, 2, 2, -10, 2))
+        del self.trait1.min
+        self.assertEqual(self._get_values(), (0, 2, 2, 0, 2))
 
 
 class TestNumericTraitOperators(TestCase):
