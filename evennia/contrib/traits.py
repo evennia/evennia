@@ -257,6 +257,7 @@ Examples:
             ```
 """
 
+from time import time
 from django.conf import settings
 from functools import total_ordering
 from evennia.utils.dbserialize import _SaverDict
@@ -945,7 +946,11 @@ class CounterTrait(NumericTrait):
              5: "traited",
              7: "expert",
              9: "master"}
-
+    - rate/ratetarget are optional settings to include a rate-of-change
+      of the current value. This is calculated on-demand and allows for
+      describing a value that is gradually growing smaller/bigger. The
+      increase will stop when either reaching a boundary (if set) or
+      ratetarget. Setting the rate to 0 (default) stops any change.
 
     """
 
@@ -958,6 +963,8 @@ class CounterTrait(NumericTrait):
         "min": None,
         "max": None,
         "descs": None,
+        "rate": 0,
+        "ratetarget": None
     }
 
     @classmethod
@@ -969,17 +976,45 @@ class CounterTrait(NumericTrait):
             if any(not (isinstance(key, (int, float)) and isinstance(value, str))
                    for key in descs.items()):
                 raise TraitException("Trait descs must be defined on the form {number:str}")
+        if trait_data['rate'] != 0:
+            trait_data['last_update'] = time()
         return trait_data
 
-    # Helpers
+    # timer component
+
+    def _timer_running(self):
+        """Check if timer mechanism is running"""
+        return self.rate != 0 and self._data['last_update'] is not None
+
+    def _stop_timer(self):
+        if self._timer_running():
+            self._data['last_update'] = None
+
+    def _check_ratetarget(self):
+        """Check if we passed ratetarget."""
+        ratetarget = self._data['ratetarget']
+        return (ratetarget is not None and
+                ((self.rate < 0 and new_curr <= ratetarget) or
+                (self.rate > 0 and new_curr >= ratetarget)))
+
+    def _update_current(self, current):
+        """Update current value, including any rate change"""
+        if self.rate != 0 and self._data['last_update'] is not None:
+            tdiff = now - self._data['last_update']
+            current += self.rate * tdiff
+        return current
+
     def _enforce_boundaries(self, value):
         """Ensures that incoming value falls within trait's range."""
         if self.min is not None and value <= self.min:
+            self._stop_timer()
             return self.min
-        if self._data["max"] == "base" and value >= self.mod + self.base:
-            return self.base + self.mod
         if self.max is not None and value >= self.max:
+            self._stop_timer()
             return self.max
+        if self._timer_running() and self._check_ratetarget():
+            _stop_timer()
+            return self._data['ratetarget']
         return value
 
     # properties
@@ -1046,7 +1081,7 @@ class CounterTrait(NumericTrait):
     @property
     def current(self):
         """The `current` value of the `Trait`. This does not have .mod added."""
-        return self._data.get("current", self.base)
+        return self._update_current(self._data.get("current", self.base))
 
     @current.setter
     def current(self, value):
@@ -1148,7 +1183,9 @@ class GaugeTrait(CounterTrait):
         "base": 0,
         "mod": 0,
         "min": 0,
-        "descs": None
+        "descs": None,
+        "rate": 0,
+        "ratetarget": None,
     }
 
     def _enforce_boundaries(self, value):
@@ -1215,8 +1252,8 @@ class GaugeTrait(CounterTrait):
     @property
     def current(self):
         """The `current` value of the gauge."""
-        return self._enforce_boundaries(
-            self._data.get("current", self.base + self.mod))
+        return self._update_current(self._enforce_boundaries(
+            self._data.get("current", self.base + self.mod)))
 
     @current.setter
     def current(self, value):
@@ -1255,15 +1292,7 @@ class GaugeTrait(CounterTrait):
         del self.current
 
 
-class SequenceTrait(CounterTrait):
+class UpdatingTrait(CounterTrait):
     """
-    A trait that stores an indexed array of strings to
-    represent distinct values in a sequence. Adding to the trait will
-    step back and forth in the sequence.
-
-    This is useful for systems which don't use numbers as much
-    as discrete states to represent things, such as
-
-    "Weak, "
-
+    This is a trait that
     """
