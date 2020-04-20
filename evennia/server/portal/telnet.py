@@ -58,7 +58,6 @@ _HTTP_WARNING = bytes(
 _BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
-
 class TelnetServerFactory(protocol.ServerFactory):
     "This is only to name this better in logs"
     noisy = False

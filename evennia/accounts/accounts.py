@@ -508,8 +508,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if banned:
             # this is a banned IP or name!
             errors.append(
-                _("|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x")
+                _(
+                    "|rYou have been banned and cannot continue from here."
+                    "\nIf you feel this ban is in error, please email an admin.|x"
+                )
             )
             logger.log_sec(f"Authentication Denied (Banned): {username} (IP: {ip}).")
             LOGIN_THROTTLE.update(ip, "Too many sightings of banned artifact.")
@@ -716,9 +718,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         banned = cls.is_banned(username=username, ip=ip)
         if banned:
             # this is a banned IP or name!
-            string = (
-                _("|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x")
+            string = _(
+                "|rYou have been banned and cannot continue from here."
+                "\nIf you feel this ban is in error, please email an admin.|x"
             )
             errors.append(string)
             return None, errors
@@ -733,7 +735,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             except Exception as e:
                 errors.append(
-                    _("There was an error creating the Account. If this problem persists, contact an admin.")
+                    _(
+                        "There was an error creating the Account. If this problem persists, contact an admin."
+                    )
                 )
                 logger.log_trace()
                 return None, errors
@@ -1305,7 +1309,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         reason = f" ({reason if reason else ''})"
-        self._send_to_connect_channel(_("|R{key} disconnected{reason}|n").format(key=self.key, reason=reason))
+        self._send_to_connect_channel(
+            _("|R{key} disconnected{reason}|n").format(key=self.key, reason=reason)
+        )
 
     def at_post_disconnect(self, **kwargs):
         """
@@ -1454,7 +1460,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if is_su or len(characters) < charmax:
                 if not characters:
                     result.append(
-                        _("\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one.")
+                        _(
+                            "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
+                        )
                     )
                 else:
                     result.append("\n |w@charcreate <name> [=description]|n - create new character")
