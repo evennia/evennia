@@ -34,7 +34,6 @@ class _MockObj:
 # we want to test the base traits too
 _TEST_TRAIT_CLASS_PATHS = [
     "evennia.contrib.traits.Trait",
-    "evennia.contrib.traits.NumericTrait",
     "evennia.contrib.traits.StaticTrait",
     "evennia.contrib.traits.CounterTrait",
     "evennia.contrib.traits.GaugeTrait",
@@ -169,7 +168,7 @@ class TraitHandlerTest(_TraitHandlerBase):
         )
 
 
-class TraitTest(_TraitHandlerBase):
+class TestTrait(_TraitHandlerBase):
     """
     Test the base Trait class
     """
@@ -217,7 +216,7 @@ class TraitTest(_TraitHandlerBase):
            "extra_val": 1000
         }
         expected = copy(dat)
-        expected["value"] = traits.Trait.data_keys['value']
+        expected["value"] = traits.Trait.default_keys['value']
         self.assertEqual(expected, traits.Trait.validate_input(traits.Trait, dat))
 
         # make sure extra values are cleaned if trait accepts no extras
@@ -246,10 +245,10 @@ class TraitTest(_TraitHandlerBase):
             traits.Trait.validate_input(traits.Trait, dat)
 
         # make value a required key
-        mock_data_keys = {
+        mock_default_keys = {
             "value": traits.MandatoryTraitKey
         }
-        with patch.object(traits.Trait, "data_keys", mock_data_keys):
+        with patch.object(traits.Trait, "default_keys", mock_default_keys):
             dat = {
                "name": "Trait",
                "trait_type": "trait",
@@ -288,52 +287,11 @@ class TraitTest(_TraitHandlerBase):
             self.trait.extra_val1
         del self.trait.value
         # fall back to default
-        self.assertTrue(self.trait.value == traits.Trait.data_keys["value"])
+        self.assertTrue(self.trait.value == traits.Trait.default_keys["value"])
 
     def test_repr(self):
         self.assertEqual(repr(self.trait), Something)
         self.assertEqual(str(self.trait), Something)
-
-
-class TestTraitNumeric(_TraitHandlerBase):
-    """
-    Test the numeric base class
-    """
-
-    def setUp(self):
-        super().setUp()
-        self.traithandler.add(
-            "test1",
-            name="Test1",
-            trait_type='numeric',
-            base=1,
-            extra_val1="xvalue1",
-            extra_val2="xvalue2"
-        )
-        self.trait = self.traithandler.get("test1")
-
-    def _get_actuals(self):
-        """Get trait actuals for comparisons"""
-        return self.trait.actual, self.trait2.actual
-
-    def test_init(self):
-        self.assertEqual(
-            self.trait._data,
-            {"name": "Test1",
-             "trait_type": "numeric",
-             "base": 1,
-             "extra_val1": "xvalue1",
-             "extra_val2": "xvalue2"
-            }
-        )
-
-    def test_set_wrong_type(self):
-        self.trait.base = "foo"
-        self.assertEqual(self.trait.base, 1)
-
-    def test_actual(self):
-        self.trait.base = 10
-        self.assertEqual(self.trait.actual, 10)
 
 
 class TestTraitStatic(_TraitHandlerBase):
@@ -354,7 +312,7 @@ class TestTraitStatic(_TraitHandlerBase):
         self.trait = self.traithandler.get("test1")
 
     def _get_values(self):
-        return self.trait.base, self.trait.mod, self.trait.actual
+        return self.trait.base, self.trait.mod, self.trait.value
 
     def test_init(self):
         self.assertEqual(
@@ -368,8 +326,8 @@ class TestTraitStatic(_TraitHandlerBase):
             }
         )
 
-    def test_actual(self):
-        """Actual is base + mod"""
+    def test_value(self):
+        """value is base + mod"""
         self.assertEqual(self._get_values(), (1, 2, 3))
         self.trait.base += 4
         self.assertEqual(self._get_values(), (5, 2, 7))
@@ -410,9 +368,9 @@ class TestTraitCounter(_TraitHandlerBase):
         self.trait = self.traithandler.get("test1")
 
     def _get_values(self):
-        """Get (base, mod, actual, min, max)."""
+        """Get (base, mod, value, min, max)."""
         return (self.trait.base, self.trait.mod,
-                self.trait.actual, self.trait.min, self.trait.max)
+                self.trait.value, self.trait.min, self.trait.max)
 
     def test_init(self):
         self.assertEqual(
@@ -437,8 +395,8 @@ class TestTraitCounter(_TraitHandlerBase):
              }
         )
 
-    def test_actual(self):
-        """Actual is current + mod, where current defaults to base"""
+    def test_value(self):
+        """value is current + mod, where current defaults to base"""
         self.assertEqual(self._get_values(), (1, 2, 3, 0, 10))
         self.trait.base += 4
         self.assertEqual(self._get_values(), (5, 2, 7, 0, 10))
@@ -600,7 +558,7 @@ class TestTraitCounterTimed(_TraitHandlerBase):
         self.trait = self.traithandler.get("test1")
 
     def _get_timer_data(self):
-        return (self.trait.actual, self.trait.current, self.trait.rate,
+        return (self.trait.value, self.trait.current, self.trait.rate,
                 self.trait._data["last_update"], self.trait.ratetarget)
 
     @patch("evennia.contrib.traits.time")
@@ -671,8 +629,8 @@ class TestTraitGauge(_TraitHandlerBase):
         self.trait = self.traithandler.get("test1")
 
     def _get_values(self):
-        """Get (base, mod, actual, min, max)."""
-        return (self.trait.base, self.trait.mod, self.trait.actual,
+        """Get (base, mod, value, min, max)."""
+        return (self.trait.base, self.trait.mod, self.trait.value,
                 self.trait.min, self.trait.max)
 
     def test_init(self):
@@ -696,8 +654,8 @@ class TestTraitGauge(_TraitHandlerBase):
              "last_update": None,
             }
         )
-    def test_actual(self):
-        """Actual is current, where current defaults to base + mod"""
+    def test_value(self):
+        """value is current, where current defaults to base + mod"""
         # current unset - follows base + mod
         self.assertEqual(self._get_values(), (8, 2, 10, 0, 10))
         self.trait.base += 4
@@ -864,7 +822,7 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
         self.trait = self.traithandler.get("test1")
 
     def _get_timer_data(self):
-        return (self.trait.actual, self.trait.current, self.trait.rate,
+        return (self.trait.value, self.trait.current, self.trait.rate,
                 self.trait._data["last_update"], self.trait.ratetarget)
 
     @patch("evennia.contrib.traits.time")
@@ -919,24 +877,24 @@ class TestNumericTraitOperators(TestCase):
     """Test case for numeric magic method implementations."""
     def setUp(self):
         # direct instantiation for testing only; use TraitHandler in production
-        self.st = traits.NumericTrait({
+        self.st = traits.Trait({
             'name': 'Strength',
-            'trait_type': 'numeric',
-            'base': 8,
+            'trait_type': 'trait',
+            'value': 8,
         })
-        self.at = traits.NumericTrait({
+        self.at = traits.Trait({
             'name': 'Attack',
-            'trait_type': 'numeric',
-            'base': 4,
+            'trait_type': 'trait',
+            'value': 4,
         })
 
     def tearDown(self):
         self.st, self.at = None, None
 
     def test_pos_shortcut(self):
-        """overridden unary + operator returns `actual` property"""
+        """overridden unary + operator returns `value` property"""
         self.assertIn(type(+self.st), (float, int))
-        self.assertEqual(+self.st, self.st.actual)
+        self.assertEqual(+self.st, self.st.value)
         self.assertEqual(+self.st, 8)
 
     def test_add_traits(self):

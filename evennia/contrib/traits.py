@@ -46,8 +46,8 @@ A trait is added to the traithandler, after which one can access it
 as a property on the handler (similarly to how you can do .db.attrname for Attributes
 in Evennia).
 
-
 ```python
+# this is an example using the "static" trait, described below
 >>> obj.traits.add("hunting", "Hunting Skill", trait_type="static", base=4)
 >>> obj.traits.hunting.value
 4
@@ -55,21 +55,25 @@ in Evennia).
 >>> obj.traits.hunting.value
 9
 >>> obj.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
->>> obj.traits.hp.actual
+>>> obj.traits.hp.value
 100
 >>> obj.traits.hp -= 200
->>> obj.traits.hp.actual
+>>> obj.traits.hp.value
 0
 >>> obj.traits.hp.reset()
->>> obj.traits.hp.actual
+>>> obj.traits.hp.value
 100
 # you can also access property with getitem
->>> obj.traits.hp["actual"]
+>>> obj.traits.hp["value"]
 100
+# you can store arbitrary data persistently as well
+>>> obj.traits.hp.effect = "poisoned!"
+>>> obj.traits.hp.effect
+"poisoned!"
 
 ```
 
-When creating the trait, you supply the name of the property (`hunting`) along
+When adding the trait, you supply the name of the property (`hunting`) along
 with a more human-friendly name ("Hunting Skill"). The latter will show if you
 print the trait etc. The `trait_type` is important, this specifies which type
 of trait this is.
@@ -77,11 +81,23 @@ of trait this is.
 
 ## Trait types
 
-All the default-available traits are number-based. They all have a read-only
-`actual` property that shows the relevant value. Exactly what this means depends
-on the type of trait.
+All default traits have a read-only `.value` property that shows the relevant or
+'current' value of the trait. Exactly what this means depends on the type of trait.
 
-Numerical traits can also be combined to do arithmetic with their .actual values.
+Traits can also be combined to do arithmetic with their .value, if both have a
+compatible type.
+
+```python
+>>> trait1 + trait2
+54
+>>> trait1.value
+3
+>>> trait1 + 2
+>>> trait1.value
+5
+
+```
+
 Two numerical traits can also be compared (bigger-than etc), which is useful in
 all sorts of rule-resolution.
 
@@ -91,55 +107,52 @@ if trait1 > trait2:
     # do stuff
 
 ```
+## Static trait
 
-## Static traits
+`value = base + mod`
 
-
-actual = base + mod
-
-
-The static trait has
-a `base` value and an optional `mod`-ifier. A typical use of a static trait
-  would be a Strength stat or Skill value. That is, something that varies slowly or
-  not at all, and which can have modifier.
+The static trait has a `base` value and an optional `mod`-ifier. A typical use
+of a static trait would be a Strength stat or Skill value. That is, something
+that varies slowly or not at all, and which may be modified in-place.
 
 ```python
 >>> obj.traits.add("str", "Strength", trait_type="static", base=10, mod=2)
->>> obj.traits.mytrait.actual
+>>> obj.traits.mytrait.value
 12   # base + mod
 >>> obj.traits.mytrait.base += 2
 >>> obj.traits.mytrait.mod += 1
->>> obj.traits.mytrait.actual
+>>> obj.traits.mytrait.value
 15
 >>> obj.traits.mytrait.mod = 0
->>> obj.traits.mytrait.actual
+>>> obj.traits.mytrait.value
 12
+
 ```
 
 ### Counter
 
     min/unset     base    base+mod                       max/unset
      |--------------|--------|---------X--------X------------|
-                                    current   actual
+                                    current   value
                                               = current
                                               + mod
 
-A counter describes a value that varies from a base value. The `current` property
-starts at the `base` and tracks the current value. One can also add a modifier,
-which will both be added to the base and to current (forming actual).
+A counter describes a value that can move from a base. The `current` property
+is the thing usually modified. It starts at the `base`. One can also add a modifier,
+which will both be added to the base and to current (forming .value).
 The min/max of the range are optional, a boundary set to None will remove it.
 
 ```python
 >>> obj.traits.add("hunting", "Hunting Skill", trait_type="counter",
                    base=10, mod=1, min=0, max=100)
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 11  # current starts at base + mod
 >>> obj.traits.hunting.current += 10
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 21
-# reset back to base+mod by deleting
+# reset back to base+mod by deleting current
 >>> del obj.traits.hunting.current
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 11
 >>> obj.traits.hunting.max = None  # removing upper bound
 
@@ -147,60 +160,71 @@ The min/max of the range are optional, a boundary set to None will remove it.
 
 Counters have some extra properties:
 
-`descs` is a dict of upper-bounds to a text description. This allows for easily
-storing getting a more human-friendly description of the current value in the
+`descs` is a dict {upper_bound:text_description}. This allows for easily
+storing a more human-friendly description of the current value in the
 interval. Here is an example for skill values between 0 and 10:
     {0: "unskilled", 1: "neophyte", 5: "trained", 7: "expert", 9: "master"}
-The list must go from smallest to largest. Any values below the lowest and above the
+The keys must be supplied from smallest to largest. Any values below the lowest and above the
 highest description will be considered to be included in the closest description slot.
-By calling `.desc()` on the Counter, will you get the text matching the current `actual`
+By calling `.desc()` on the Counter, will you get the text matching the current `value`
 value.
 
 ```python
 # (could also have passed descs= to traits.add())
 >>> obj.traits.hunting.descs = {
     0: "unskilled", 10: "neophyte", 50: "trained", 70: "expert", 90: "master"}
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 11
 >>> obj.traits.hunting.desc()
 "neophyte"
 >>> obj.traits.hunting.current += 60
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 71
 >>> obj.traits.hunting.desc()
 "expert"
 
 ```
 
-`rate` defaults to 0, but allows the trait to change value dynamically. This could be
-used for example for an attribute that was temporarily lowered but will gradually
-(or abruptly) recover after a certain time. The rate is given per-second, and the value
-will still be restrained by min/max boundaries, if given.
+#### .rate
 
-It is also possible to set a "ratetarget", for the auto-change to stop at (rather
-than at the min/max boundaries). This allows for returning to some previous value.
+The `rate` property defaults to 0. If set to a value different from 0, it
+allows the trait to change value dynamically. This could be used for example
+for an attribute that was temporarily lowered but will gradually (or abruptly)
+recover after a certain time. The rate is given as change of the `current`
+per-second, and the .value will still be restrained by min/max boundaries, if
+those are set.
+
+It is also possible to set a ".ratetarget", for the auto-change to stop at
+(rather than at the min/max boundaries). This allows the value to return to
+a previous value.
 
 ```python
 
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 71
 >>> obj.traits.hunting.ratetarget = 71
+# debuff hunting for some reason
 >>> obj.traits.hunting.current -= 30
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 41
 >>> obj.traits.hunting.rate = 1  # 1/s increase
 # Waiting 5s
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 46
 # Waiting 8s
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 54
 # Waiting 100s
->>> obj.traits.hunting.actual
+>>> obj.traits.hunting.value
 71    # we have stopped at the ratetarget
 >>> obj.traits.hunting.rate = 0  # disable auto-change
 
 ```
+Note that if rate is a non-integer, the resulting .value (at least until it
+reaches the boundary) will likely also come out a float. If you expect an
+integer, you must run run int() on the result yourself.
+
+#### .percentage()
 
 If both min and max are defined, the `.percentage()` method of the trait will
 return the value as a percentage.
@@ -211,31 +235,30 @@ return the value as a percentage.
 
 ```
 
-
-
-
 ### Gauge
 
-This emulates a [fuel-] gauge, that empties from a base+mod value.
+This emulates a [fuel-] gauge that empties from a base+mod value.
 
     min/0                                            max=base+mod
      |-----------------------X---------------------------|
-                           actual
+                           value
                           = current
 
-The 'current' value will be with a full gauge. Modifiers only add to the maximum,
-which is set by base + mod. The minimum bound defaults to 0. This trait is useful
-for showing resources that can deplete, like health or stamina etc.
+The 'current' value will start from a full gauge. The .max property is
+read-only and is set by .base + .mod. So contrary to a Counter, the modifier
+only applies to the max value of the gauge and not the current value. The
+minimum bound defaults to 0. This trait is useful for showing resources that
+can deplete, like health, stamina and the like.
 
 ```python
 >>> obj.traits.add("hp", "Health", trait_type="gauge", base=100)
->>> obj.traits.hp.actual  # (or .current)
+>>> obj.traits.hp.value  # (or .current)
 100
 >>> obj.traits.hp.mod = 10
->>> obj.traits.hp.actual
+>>> obj.traits.hp.value
 110
 >>> obj.traits.hp.current -= 30
->>> obj.traits.hp.actual
+>>> obj.traits.hp.value
 80
 
 ```
@@ -246,14 +269,15 @@ for gauges, for everything from poison slowly draining your health, to resting g
 increasing it. You can also use the `.percentage()` function to show the current value
 as a percentage.
 
-
 ### Trait
 
 A single value of any type.
 
-This is not a numerical trait and does not have an .actual property.  This is
-the 'base' Trait, meant to inherit from if you want to make your own
-trait-types (see below), but you can also use it directly:
+This is the 'base' Trait, meant to inherit from if you want to make your own
+trait-types (see below). Its .value can be anything (that can be stored in an Attribute)
+and if it's a integer/float you can do arithmetic with it, but otherwise it
+acts just like a glorified Attribute.
+
 
 ```python
 >>> obj.traits.add("mytrait", "My Trait", trait_type="trait", value=30)
@@ -264,17 +288,6 @@ trait-types (see below), but you can also use it directly:
 "stringvalue"
 
 ```
-The "trait" trait-type is little more than a glorified Attribute. It has a .value
-that can be anything, and nothing more fancy. It's meant to expand on.
-
-### NumericTrait
-
-A single value, actual = base
-
-This is a base class for the numeric traits. Basically the Static Trait but
-without the modifier. Is useful to inherit from.  It adds arithmetic so that
-you can add two traits together, do comparisons between them etc.
-
 
 ## Expanding with your own Traits
 
@@ -289,7 +302,7 @@ from evennia.contrib.traits import Trait
 class RageTrait(Trait):
 
     trait_type = "rage"
-    data_keys = {
+    default_keys = {
         "rage": 0
     }
 
@@ -334,6 +347,7 @@ from evennia.utils.utils import (
 # "counter" and "gauge".
 
 _TRAIT_CLASS_PATHS = [
+    "evennia.contrib.traits.Trait",
     "evennia.contrib.traits.StaticTrait",
     "evennia.contrib.traits.CounterTrait",
     "evennia.contrib.traits.GaugeTrait",
@@ -443,7 +457,7 @@ class TraitHandler:
             _SA(self, trait_key, value)
         else:
             trait_cls = self._get_trait_class(trait_key=trait_key)
-            valid_keys = list_to_string(list(trait_cls.data_keys.keys()), endsep="or")
+            valid_keys = list_to_string(list(trait_cls.default_keys.keys()), endsep="or")
             raise TraitException(
                 "Trait object not settable directly. "
                 f"Assign to {trait_key}.{valid_keys}."
@@ -578,7 +592,7 @@ class TraitHandler:
 
 # Parent Trait class
 
-
+@total_ordering
 class Trait:
     """Represents an object or Character trait. This simple base is just
     storing anything in it's 'value' property, so it's pretty much just a
@@ -600,7 +614,7 @@ class Trait:
     # not given, set the default value to the `traits.MandatoryTraitKey` class.
     # Apart from the keys given here, "name" and "trait_type" will also always
     # have to be a apart of the data.
-    data_keys = {"value": None}
+    default_keys = {"value": None}
 
     # enable to set/retrieve other arbitrary properties on the Trait
     # and have them treated like data to store.
@@ -615,7 +629,7 @@ class Trait:
 
         Args:
             trait_data (any): Any pickle-able values to store with this trait.
-                This must contain any cls.data_keys that do not have a default
+                This must contain any cls.default_keys that do not have a default
                 value in cls.data_default_values. Any extra kwargs will be made
                 available as extra properties on the Trait, assuming the class
                 variable `allow_extra_properties` is set.
@@ -642,7 +656,7 @@ class Trait:
                 initialization of this trait.
         Returns:
             dict: Validated data, possibly complemented with default
-                values from data_keys.
+                values from default_keys.
         Raises:
             TraitException: If finding unset keys without a default.
 
@@ -663,9 +677,9 @@ class Trait:
             _raise_err(unsets)
 
         # check other keys, these likely have defaults to fall back to
-        req = set(list(cls.data_keys.keys()))
+        req = set(list(cls.default_keys.keys()))
         unsets = req.difference(inp.intersection(req))
-        unset_defaults = {key: cls.data_keys[key] for key in unsets}
+        unset_defaults = {key: cls.default_keys[key] for key in unsets}
 
         if MandatoryTraitKey in unset_defaults.values():
             # we have one or more unset keys that was mandatory
@@ -701,7 +715,7 @@ class Trait:
 
     def __getattr__(self, key):
         """Access extra parameters as attributes."""
-        if key in ("data_keys", "data_default", "trait_type", "allow_extra_properties"):
+        if key in ("default_keys", "data_default", "trait_type", "allow_extra_properties"):
             return _GA(self, key)
         try:
             return self._data[key]
@@ -752,18 +766,18 @@ class Trait:
                 without a default value to reset to.
         Notes:
             This will outright delete extra keys (if allow_extra_properties is
-            set). Keys in self.data_keys with a default value will be
+            set). Keys in self.default_keys with a default value will be
             reset to default. A data_key with a default of MandatoryDefaultKey
             will raise a TraitException. Unfound matches will be silently ignored.
 
         """
-        if key in self.data_keys:
-            if self.data_keys[key] == MandatoryTraitKey:
+        if key in self.default_keys:
+            if self.default_keys[key] == MandatoryTraitKey:
                 raise TraitException(
                     "Trait-Key {key} cannot be deleted: It's a mandatory property "
                     "with no default value to fall back to.")
             # set to default
-            self._data[key] = self.data_keys[key]
+            self._data[key] = self.default_keys[key]
         elif key in self._data:
             try:
                 # check if we have a custom deleter
@@ -783,7 +797,7 @@ class Trait:
         return "{}({{{}}})".format(
             type(self).__name__,
             ", ".join(
-                ["'{}': {!r}".format(k, self._data[k]) for k in self.data_keys if k in self._data]
+                ["'{}': {!r}".format(k, self._data[k]) for k in self.default_keys if k in self._data]
             ),
         )
 
@@ -799,37 +813,6 @@ class Trait:
 
     key = name
 
-    @property
-    def value(self):
-        """Store a value"""
-        return self._data["value"]
-
-    @value.setter
-    def value(self, value):
-        """Get value"""
-        self._data["value"] = value
-
-
-@total_ordering
-class NumericTrait(Trait):
-    """
-    Base trait for all Traits based on numbers. This implements
-    number-comparisons, limits etc. It works on the 'base' property since this
-    makes more sense for child classes. For this base class, the .actual
-    property is just an alias of .base.
-
-    actual = base
-
-    """
-
-    trait_type = "numeric"
-
-    data_keys = {
-        "base": 0
-    }
-    def __str__(self):
-        return f"<Trait {self.name}: {self._data['base']}>"
-
     # Numeric operations
 
     def __eq__(self, other):
@@ -841,58 +824,58 @@ class NumericTrait(Trait):
             `__eq__` and `__lt__` are implemented.
         """
         if inherits_from(other, Trait):
-            return self.actual == other.actual
+            return self.value == other.value
         elif type(other) in (float, int):
-            return self.actual == other
+            return self.value == other
         else:
             return NotImplemented
 
     def __lt__(self, other):
         """Support less than comparison between `Trait`s or `Trait` and numeric."""
         if inherits_from(other, Trait):
-            return self.actual < other.actual
+            return self.value < other.value
         elif type(other) in (float, int):
-            return self.actual < other
+            return self.value < other
         else:
             return NotImplemented
 
     def __pos__(self):
-        """Access `actual` property through unary `+` operator."""
-        return self.actual
+        """Access `value` property through unary `+` operator."""
+        return self.value
 
     def __add__(self, other):
         """Support addition between `Trait`s or `Trait` and numeric"""
         if inherits_from(other, Trait):
-            return self.actual + other.actual
+            return self.value + other.value
         elif type(other) in (float, int):
-            return self.actual + other
+            return self.value + other
         else:
             return NotImplemented
 
     def __sub__(self, other):
         """Support subtraction between `Trait`s or `Trait` and numeric"""
         if inherits_from(other, Trait):
-            return self.actual - other.actual
+            return self.value - other.value
         elif type(other) in (float, int):
-            return self.actual - other
+            return self.value - other
         else:
             return NotImplemented
 
     def __mul__(self, other):
         """Support multiplication between `Trait`s or `Trait` and numeric"""
         if inherits_from(other, Trait):
-            return self.actual * other.actual
+            return self.value * other.value
         elif type(other) in (float, int):
-            return self.actual * other
+            return self.value * other
         else:
             return NotImplemented
 
     def __floordiv__(self, other):
         """Support floor division between `Trait`s or `Trait` and numeric"""
         if inherits_from(other, Trait):
-            return self.actual // other.actual
+            return self.value // other.value
         elif type(other) in (float, int):
-            return self.actual // other
+            return self.value // other
         else:
             return NotImplemented
 
@@ -903,64 +886,53 @@ class NumericTrait(Trait):
     def __rsub__(self, other):
         """Support subtraction between `Trait`s or `Trait` and numeric"""
         if inherits_from(other, Trait):
-            return other.actual - self.actual
+            return other.value - self.value
         elif type(other) in (float, int):
-            return other - self.actual
+            return other - self.value
         else:
             return NotImplemented
 
     def __rfloordiv__(self, other):
         """Support floor division between `Trait`s or `Trait` and numeric"""
         if inherits_from(other, Trait):
-            return other.actual // self.actual
+            return other.value // self.value
         elif type(other) in (float, int):
-            return other // self.actual
+            return other // self.value
         else:
             return NotImplemented
 
     # Public members
 
     @property
-    def actual(self):
-        "The actual value of the trait"
-        return self.base
+    def value(self):
+        """Store a value"""
+        return self._data["value"]
 
-    @property
-    def base(self):
-        """The trait's base value.
-
-        Note:
-            The setter for this property will enforce any range bounds set
-            on this `Trait`.
-        """
-        return self._data["base"]
-
-    @base.setter
-    def base(self, value):
-        """Base must be a numerical value."""
-        if type(value) in (int, float):
-            self._data["base"] = value
+    @value.setter
+    def value(self, value):
+        """Get value"""
+        self._data["value"] = value
 
 
 # Implementation of the respective Trait types
 
-class StaticTrait(NumericTrait):
+class StaticTrait(Trait):
     """
     Static Trait. This is a single value with a modifier,
     with no concept of a 'current' value.
 
-    actual = base + mod
+    value = base + mod
 
     """
     trait_type = "static"
 
-    data_keys = {
+    default_keys = {
         "base": 0,
         "mod": 0
     }
 
     def __str__(self):
-        status = "{actual:11}".format(actual=self.actual)
+        status = "{value:11}".format(value=self.value)
         return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
 
     # Helpers
@@ -976,12 +948,12 @@ class StaticTrait(NumericTrait):
             self._data["mod"] = amount
 
     @property
-    def actual(self):
-        "The actual value of the Trait"
+    def value(self):
+        "The value of the Trait"
         return self.base + self.mod
 
 
-class CounterTrait(NumericTrait):
+class CounterTrait(Trait):
     """
     Counter Trait.
 
@@ -990,15 +962,15 @@ class CounterTrait(NumericTrait):
 
     min/unset     base    base+mod                       max/unset
      |--------------|--------|---------X--------X------------|
-                                    current   actual
+                                    current   value
                                               = current
                                               + mod
 
-    - actual = current + mod, starts at base + mod
+    - value = current + mod, starts at base + mod
     - if min or max is None, there is no upper/lower bound (default)
     - if max is set to "base", max will be equal ot base+mod
     - descs are used to optionally describe each value interval.
-      The desc of the current `actual` value can then be retrieved
+      The desc of the current `value` value can then be retrieved
       with .desc(). The property is set as {lower_bound_inclusive:desc}
       and should be given smallest-to-biggest. For example, for
       a skill rating between 0 and 10:
@@ -1018,7 +990,7 @@ class CounterTrait(NumericTrait):
     trait_type = "counter"
 
     # current starts equal to base.
-    data_keys = {
+    default_keys = {
         "base": 0,
         "mod": 0,
         "min": None,
@@ -1095,16 +1067,16 @@ class CounterTrait(NumericTrait):
             now = time()
             tdiff = now - self._data['last_update']
             current += rate * tdiff
-            actual = current + self.mod
+            value = current + self.mod
 
             # we must make sure so we don't overstep our bounds
             # even if .mod is included
 
-            if self._passed_ratetarget(actual):
+            if self._passed_ratetarget(value):
                 current = self._data['ratetarget'] - self.mod
                 self._stop_timer()
-            elif not self._within_boundaries(actual):
-                current = self._enforce_boundaries(actual) - self.mod
+            elif not self._within_boundaries(value):
+                current = self._enforce_boundaries(value) - self.mod
                 self._stop_timer()
             else:
                 self._data['last_update'] = now
@@ -1122,7 +1094,7 @@ class CounterTrait(NumericTrait):
     @base.setter
     def base(self, value):
         if value is None:
-            self._data["base"] = self.data_keys['base']
+            self._data["base"] = self.default_keys['base']
         if type(value) in (int, float):
             if self.min is not None and value + self.mod < self.min:
                 value = self.min - self.mod
@@ -1138,7 +1110,7 @@ class CounterTrait(NumericTrait):
     def mod(self, value):
         if value is None:
             # unsetting the boundary to default
-            self._data["mod"] = self.data_keys['mod']
+            self._data["mod"] = self.default_keys['mod']
         elif type(value) in (int, float):
             if self.min is not None and value + self.base < self.min:
                 value = self.min - self.base
@@ -1190,8 +1162,8 @@ class CounterTrait(NumericTrait):
         self._data["current"] = self.base
 
     @property
-    def actual(self):
-        "The actual value of the Trait (current + mod)"
+    def value(self):
+        "The value of the Trait (current + mod)"
         return self._enforce_boundaries(self.current + self.mod)
 
     @property
@@ -1201,7 +1173,7 @@ class CounterTrait(NumericTrait):
     @ratetarget.setter
     def ratetarget(self, value):
         self._data['ratetarget'] = self._enforce_boundaries(value)
-        self._check_and_start_timer(self.actual)
+        self._check_and_start_timer(self.value)
 
     def percent(self, formatting="{:3.1f}%"):
         """
@@ -1216,7 +1188,7 @@ class CounterTrait(NumericTrait):
             float or str: Depending of if a `formatting` string
                 is supplied or not.
         """
-        return percent(self.actual, self.min, self.max, formatting=formatting)
+        return percent(self.value, self.min, self.max, formatting=formatting)
 
     def reset(self):
         """Resets `current` property equal to `base` value."""
@@ -1233,13 +1205,13 @@ class CounterTrait(NumericTrait):
         describe the interval.
 
         Returns:
-            str: The description describing the `actual` value.
+            str: The description describing the `value` value.
                 If not found, returns the empty string.
         """
         descs = self._data["descs"]
         if descs is None:
             return ""
-        value = self.actual
+        value = self.value
         # we rely on Python3.7+ dicts retaining ordering
         highest = ""
         for bound, txt in descs.items():
@@ -1259,13 +1231,13 @@ class GaugeTrait(CounterTrait):
 
     min/0                                            max=base+mod
      |-----------------------X---------------------------|
-                           actual
+                           value
                           = current
 
     - min defaults to 0
     - max value is always base + mad
     - .max is an alias of .base
-    - actual = current and varies from min to max.
+    - value = current and varies from min to max.
     - descs is a mapping {upper_bound_inclusive: desc}. These
         are checked with .desc() and can be retrieve a text
         description for a given current value.
@@ -1284,7 +1256,7 @@ class GaugeTrait(CounterTrait):
 
     # same as Counter, here for easy reference
     # current starts out equal to base
-    data_keys = {
+    default_keys = {
         "base": 0,
         "mod": 0,
         "min": 0,
@@ -1300,15 +1272,15 @@ class GaugeTrait(CounterTrait):
             now = time()
             tdiff = now - self._data['last_update']
             current += rate * tdiff
-            actual = current
+            value = current
 
             # we don't worry about .mod for gauges
 
-            if self._passed_ratetarget(actual):
+            if self._passed_ratetarget(value):
                 current = self._data['ratetarget']
                 self._stop_timer()
-            elif not self._within_boundaries(actual):
-                current = self._enforce_boundaries(actual)
+            elif not self._within_boundaries(value):
+                current = self._enforce_boundaries(value)
                 self._stop_timer()
             else:
                 self._data['last_update'] = now
@@ -1324,7 +1296,7 @@ class GaugeTrait(CounterTrait):
         return min(self.mod + self.base, value)
 
     def __str__(self):
-        status = "{actual:4} / {base:4}".format(actual=self.actual, base=self.base)
+        status = "{value:4} / {base:4}".format(value=self.value, base=self.base)
         return "{name:12} {status} ({mod:+3})".format(name=self.name, status=status, mod=self.mod)
 
     @property
@@ -1354,13 +1326,13 @@ class GaugeTrait(CounterTrait):
     @property
     def min(self):
         val = self._data["min"]
-        return self.data_keys["min"] if val is None else val
+        return self.default_keys["min"] if val is None else val
 
     @min.setter
     def min(self, value):
         """Limit so min can never be greater than base+mod."""
         if value is None:
-            self._data["min"] = self.data_keys['min']
+            self._data["min"] = self.default_keys['min']
         elif type(value) in (int, float):
             self._data["min"] = min(value, self.base + self.mod)
 
@@ -1395,8 +1367,8 @@ class GaugeTrait(CounterTrait):
         self._data["current"] = self.base + self.mod
 
     @property
-    def actual(self):
-        "The actual value of the trait"
+    def value(self):
+        "The value of the trait"
         return self.current
 
     def percent(self, formatting="{:3.1f}%"):
