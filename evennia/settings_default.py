@@ -332,6 +332,10 @@ CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
 # cause issues with menu-logins and autoconnects since the menu will not have
 # started when the autoconnects starts sending menu commands.
 DELAY_CMD_LOGINSTART = 0.3
+# A module that must exist - this holds the instructions Evennia will use to
+# first prepare the database for use. Generally should not be changed. If this
+# cannot be imported, bad things will happen.
+INITIAL_SETUP_MODULE = "evennia.server.initial_setup"
 # An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
