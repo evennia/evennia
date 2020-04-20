@@ -318,6 +318,7 @@ class TestPercent(TestCase):
     """
     Test the utils.percentage function.
     """
+
     def test_ok_input(self):
         result = utils.percent(3, 0, 10)
         self.assertEqual(result, "30.0%")
@@ -332,4 +333,3 @@ class TestPercent(TestCase):
         self.assertEqual(utils.percent(3, 1, 1), "0.0%")
         self.assertEqual(utils.percent(3, 0, 1), "100.0%")
         self.assertEqual(utils.percent(-3, 0, 1), "0.0%")
-

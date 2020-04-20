@@ -31,6 +31,7 @@ class _MockObj:
         assert category == self.category
         self.dbstore[key] = value
 
+
 # we want to test the base traits too
 _TEST_TRAIT_CLASS_PATHS = [
     "evennia.contrib.traits.Trait",
@@ -39,8 +40,10 @@ _TEST_TRAIT_CLASS_PATHS = [
     "evennia.contrib.traits.GaugeTrait",
 ]
 
+
 class _TraitHandlerBase(TestCase):
     "Base for trait tests"
+
     @patch("evennia.contrib.traits._TRAIT_CLASS_PATHS", new=_TEST_TRAIT_CLASS_PATHS)
     def setUp(self):
         self.obj = _MockObj()
@@ -48,7 +51,7 @@ class _TraitHandlerBase(TestCase):
         self.obj.traits = self.traithandler
 
     def _get_dbstore(self, key):
-        return self.obj.dbstore['traits'][key]
+        return self.obj.dbstore["traits"][key]
 
 
 class TraitHandlerTest(_TraitHandlerBase):
@@ -56,32 +59,18 @@ class TraitHandlerTest(_TraitHandlerBase):
 
     def setUp(self):
         super().setUp()
+        self.traithandler.add("test1", name="Test1", trait_type="trait")
         self.traithandler.add(
-            "test1",
-            name="Test1",
-            trait_type='trait'
-        )
-        self.traithandler.add(
-            "test2",
-            name="Test2",
-            trait_type='trait',
-            value=["foo", {"1": [1, 2, 3]}, 4],
+            "test2", name="Test2", trait_type="trait", value=["foo", {"1": [1, 2, 3]}, 4],
         )
 
     def test_add_trait(self):
         self.assertEqual(
-            self._get_dbstore("test1"),
-            {"name": "Test1",
-             "trait_type": 'trait',
-             "value": None,
-            }
+            self._get_dbstore("test1"), {"name": "Test1", "trait_type": "trait", "value": None,}
         )
         self.assertEqual(
             self._get_dbstore("test2"),
-            {"name": "Test2",
-             "trait_type": 'trait',
-             "value": ["foo", {"1": [1, 2, 3]}, 4],
-            }
+            {"name": "Test2", "trait_type": "trait", "value": ["foo", {"1": [1, 2, 3]}, 4],},
         )
         self.assertEqual(len(self.traithandler), 2)
 
@@ -109,21 +98,14 @@ class TraitHandlerTest(_TraitHandlerBase):
     def test_getting(self):
         "Test we are getting data from the dbstore"
         self.assertEqual(
-            self.traithandler.test1._data,
-            {"name": "Test1", "trait_type": "trait",
-             "value": None}
+            self.traithandler.test1._data, {"name": "Test1", "trait_type": "trait", "value": None}
         )
-        self.assertEqual(
-            self.traithandler._cache, Something
-        )
+        self.assertEqual(self.traithandler._cache, Something)
         self.assertEqual(
             self.traithandler.test2._data,
-            {"name": "Test2", "trait_type": "trait",
-             "value": ["foo", {"1": [1, 2, 3]}, 4]}
+            {"name": "Test2", "trait_type": "trait", "value": ["foo", {"1": [1, 2, 3]}, 4]},
         )
-        self.assertEqual(
-            self.traithandler._cache, Something
-        )
+        self.assertEqual(self.traithandler._cache, Something)
         self.assertFalse(self.traithandler.get("foo"))
         self.assertFalse(self.traithandler.bar)
 
@@ -151,20 +133,13 @@ class TraitHandlerTest(_TraitHandlerBase):
         self.assertEqual(trait.value, None)
         trait.value = 10
         self.assertEqual(trait.value, 10)
-        self.assertEqual(
-            self.obj.attributes.get("traits", category="traits")['test1']['value'],
-            10
-        )
+        self.assertEqual(self.obj.attributes.get("traits", category="traits")["test1"]["value"], 10)
         trait.value = 20
         self.assertEqual(trait.value, 20)
-        self.assertEqual(
-            self.obj.attributes.get("traits", category="traits")['test1']['value'],
-            20
-        )
+        self.assertEqual(self.obj.attributes.get("traits", category="traits")["test1"]["value"], 20)
         del trait.value
         self.assertEqual(
-            self.obj.attributes.get("traits", category="traits")['test1']['value'],
-            None
+            self.obj.attributes.get("traits", category="traits")["test1"]["value"], None
         )
 
 
@@ -188,44 +163,40 @@ class TestTrait(_TraitHandlerBase):
     def test_init(self):
         self.assertEqual(
             self.trait._data,
-            {"name": "Test1",
-             "trait_type": "trait",
-             "value": "value",
-             "extra_val1": "xvalue1",
-             "extra_val2": "xvalue2"
-            }
+            {
+                "name": "Test1",
+                "trait_type": "trait",
+                "value": "value",
+                "extra_val1": "xvalue1",
+                "extra_val2": "xvalue2",
+            },
         )
 
     def test_validate_input__valid(self):
         """Test valid validation input"""
         # all data supplied, and extras
-        dat = {
-           "name": "Test",
-           "trait_type": "trait",
-           "value": 10,
-           "extra_val": 1000
-        }
+        dat = {"name": "Test", "trait_type": "trait", "value": 10, "extra_val": 1000}
         expected = copy(dat)  # we must break link or return === dat always
         self.assertEqual(expected, traits.Trait.validate_input(traits.Trait, dat))
 
         # don't supply value, should get default
         dat = {
-           "name": "Test",
-           "trait_type": "trait",
-           # missing value
-           "extra_val": 1000
+            "name": "Test",
+            "trait_type": "trait",
+            # missing value
+            "extra_val": 1000,
         }
         expected = copy(dat)
-        expected["value"] = traits.Trait.default_keys['value']
+        expected["value"] = traits.Trait.default_keys["value"]
         self.assertEqual(expected, traits.Trait.validate_input(traits.Trait, dat))
 
         # make sure extra values are cleaned if trait accepts no extras
         dat = {
-           "name": "Test",
-           "trait_type": "trait",
-           "value": 10,
-           "extra_val1": 1000,
-           "extra_val2": "xvalue"
+            "name": "Test",
+            "trait_type": "trait",
+            "value": 10,
+            "extra_val1": 1000,
+            "extra_val2": "xvalue",
         }
         expected = copy(dat)
         expected.pop("extra_val1")
@@ -236,24 +207,22 @@ class TestTrait(_TraitHandlerBase):
     def test_validate_input__fail(self):
         """Test failing validation"""
         dat = {
-           # missing name
-           "trait_type": "trait",
-           "value": 10,
-           "extra_val": 1000
+            # missing name
+            "trait_type": "trait",
+            "value": 10,
+            "extra_val": 1000,
         }
         with self.assertRaises(traits.TraitException):
             traits.Trait.validate_input(traits.Trait, dat)
 
         # make value a required key
-        mock_default_keys = {
-            "value": traits.MandatoryTraitKey
-        }
+        mock_default_keys = {"value": traits.MandatoryTraitKey}
         with patch.object(traits.Trait, "default_keys", mock_default_keys):
             dat = {
-               "name": "Trait",
-               "trait_type": "trait",
-               # missing value, now mandatory
-               "extra_val": 1000
+                "name": "Trait",
+                "trait_type": "trait",
+                # missing value, now mandatory
+                "extra_val": 1000,
             }
             with self.assertRaises(traits.TraitException):
                 traits.Trait.validate_input(traits.Trait, dat)
@@ -261,15 +230,15 @@ class TestTrait(_TraitHandlerBase):
     def test_trait_getset(self):
         """Get-set-del operations on trait"""
         self.assertEqual(self.trait.name, "Test1")
-        self.assertEqual(self.trait['name'], "Test1")
+        self.assertEqual(self.trait["name"], "Test1")
         self.assertEqual(self.trait.value, "value")
-        self.assertEqual(self.trait['value'], "value")
-        self.assertEqual(self.trait.extra_val1, "xvalue1" )
-        self.assertEqual(self.trait['extra_val2'], "xvalue2")
+        self.assertEqual(self.trait["value"], "value")
+        self.assertEqual(self.trait.extra_val1, "xvalue1")
+        self.assertEqual(self.trait["extra_val2"], "xvalue2")
 
         self.trait.value = 20
-        self.assertEqual(self.trait['value'], 20)
-        self.trait['value'] = 20
+        self.assertEqual(self.trait["value"], 20)
+        self.trait["value"] = 20
         self.assertEqual(self.trait.value, 20)
         self.trait.extra_val1 = 100
         self.assertEqual(self.trait.extra_val1, 100)
@@ -279,7 +248,7 @@ class TestTrait(_TraitHandlerBase):
 
         del self.trait.foo
         with self.assertRaises(KeyError):
-            self.trait['foo']
+            self.trait["foo"]
         with self.assertRaises(AttributeError):
             self.trait.foo
         del self.trait.extra_val1
@@ -298,16 +267,17 @@ class TestTraitStatic(_TraitHandlerBase):
     """
     Test for static Traits
     """
+
     def setUp(self):
         super().setUp()
         self.traithandler.add(
             "test1",
             name="Test1",
-            trait_type='static',
+            trait_type="static",
             base=1,
             mod=2,
             extra_val1="xvalue1",
-            extra_val2="xvalue2"
+            extra_val2="xvalue2",
         )
         self.trait = self.traithandler.get("test1")
 
@@ -317,13 +287,14 @@ class TestTraitStatic(_TraitHandlerBase):
     def test_init(self):
         self.assertEqual(
             self._get_dbstore("test1"),
-            {"name": "Test1",
-             "trait_type": 'static',
-             "base": 1,
-             "mod": 2,
-             "extra_val1": "xvalue1",
-             "extra_val2": "xvalue2"
-            }
+            {
+                "name": "Test1",
+                "trait_type": "static",
+                "base": 1,
+                "mod": 2,
+                "extra_val1": "xvalue1",
+                "extra_val2": "xvalue2",
+            },
         )
 
     def test_value(self):
@@ -346,53 +317,44 @@ class TestTraitCounter(_TraitHandlerBase):
     """
     Test for counter- Traits
     """
+
     def setUp(self):
         super().setUp()
         self.traithandler.add(
             "test1",
             name="Test1",
-            trait_type='counter',
+            trait_type="counter",
             base=1,
             mod=2,
             min=0,
             max=10,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={
-                0: "range0",
-                2: "range1",
-                5: "range2",
-                7: "range3",
-            }
+            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
         )
         self.trait = self.traithandler.get("test1")
 
     def _get_values(self):
         """Get (base, mod, value, min, max)."""
-        return (self.trait.base, self.trait.mod,
-                self.trait.value, self.trait.min, self.trait.max)
+        return (self.trait.base, self.trait.mod, self.trait.value, self.trait.min, self.trait.max)
 
     def test_init(self):
         self.assertEqual(
             self._get_dbstore("test1"),
-            {"name": "Test1",
-             "trait_type": 'counter',
-             "base": 1,
-             "mod": 2,
-             "min": 0,
-             "max": 10,
-             "extra_val1": "xvalue1",
-             "extra_val2": "xvalue2",
-             "descs": {
-                0: "range0",
-                2: "range1",
-                5: "range2",
-                7: "range3",
-                },
-             "rate": 0,
-             "ratetarget": None,
-             "last_update": None,
-             }
+            {
+                "name": "Test1",
+                "trait_type": "counter",
+                "base": 1,
+                "mod": 2,
+                "min": 0,
+                "max": 10,
+                "extra_val1": "xvalue1",
+                "extra_val2": "xvalue2",
+                "descs": {0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+                "rate": 0,
+                "ratetarget": None,
+                "last_update": None,
+            },
         )
 
     def test_value(self):
@@ -453,7 +415,7 @@ class TestTraitCounter(_TraitHandlerBase):
 
         # re-activate boundaries
         self.trait.max = 15
-        self.trait.min = 10 # his is blocked since base+mod is lower
+        self.trait.min = 10  # his is blocked since base+mod is lower
         self.assertEqual(self._get_values(), (-200, 5, -195, -195, 15))
 
     def test_boundaries__inverse(self):
@@ -533,33 +495,34 @@ class TestTraitCounterTimed(_TraitHandlerBase):
     """
     Test for trait with timer component
     """
+
     @patch("evennia.contrib.traits.time", new=MagicMock(return_value=1000))
     def setUp(self):
         super().setUp()
         self.traithandler.add(
             "test1",
             name="Test1",
-            trait_type='counter',
+            trait_type="counter",
             base=1,
             mod=2,
             min=0,
             max=100,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={
-                0: "range0",
-                2: "range1",
-                5: "range2",
-                7: "range3",
-            },
+            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
             rate=1,
             ratetarget=None,
         )
         self.trait = self.traithandler.get("test1")
 
     def _get_timer_data(self):
-        return (self.trait.value, self.trait.current, self.trait.rate,
-                self.trait._data["last_update"], self.trait.ratetarget)
+        return (
+            self.trait.value,
+            self.trait.current,
+            self.trait.rate,
+            self.trait._data["last_update"],
+            self.trait.ratetarget,
+        )
 
     @patch("evennia.contrib.traits.time")
     def test_timer_rate(self, mock_time):
@@ -608,52 +571,42 @@ class TestTraitCounterTimed(_TraitHandlerBase):
 
 
 class TestTraitGauge(_TraitHandlerBase):
-
     def setUp(self):
         super().setUp()
         self.traithandler.add(
             "test1",
             name="Test1",
-            trait_type='gauge',
+            trait_type="gauge",
             base=8,  # max = base + mod
             mod=2,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={
-                0: "range0",
-                2: "range1",
-                5: "range2",
-                7: "range3",
-            }
+            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
         )
         self.trait = self.traithandler.get("test1")
 
     def _get_values(self):
         """Get (base, mod, value, min, max)."""
-        return (self.trait.base, self.trait.mod, self.trait.value,
-                self.trait.min, self.trait.max)
+        return (self.trait.base, self.trait.mod, self.trait.value, self.trait.min, self.trait.max)
 
     def test_init(self):
         self.assertEqual(
             self._get_dbstore("test1"),
-            {"name": "Test1",
-             "trait_type": 'gauge',
-             "base": 8,
-             "mod": 2,
-             "min": 0,
-             "extra_val1": "xvalue1",
-             "extra_val2": "xvalue2",
-             "descs": {
-                0: "range0",
-                2: "range1",
-                5: "range2",
-                7: "range3",
-                },
-             "rate": 0,
-             "ratetarget": None,
-             "last_update": None,
-            }
+            {
+                "name": "Test1",
+                "trait_type": "gauge",
+                "base": 8,
+                "mod": 2,
+                "min": 0,
+                "extra_val1": "xvalue1",
+                "extra_val2": "xvalue2",
+                "descs": {0: "range0", 2: "range1", 5: "range2", 7: "range3",},
+                "rate": 0,
+                "ratetarget": None,
+                "last_update": None,
+            },
         )
+
     def test_value(self):
         """value is current, where current defaults to base + mod"""
         # current unset - follows base + mod
@@ -724,6 +677,7 @@ class TestTraitGauge(_TraitHandlerBase):
         self.assertEqual(self._get_values(), (0, 0, 0, 0, 0))
         with self.assertRaises(traits.TraitException):
             del self.trait.max
+
     def test_boundaries__inverse(self):
         """Try to set reversed boundaries"""
         self.trait.mod = 0
@@ -798,32 +752,33 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
     """
     Test for trait with timer component
     """
+
     @patch("evennia.contrib.traits.time", new=MagicMock(return_value=1000))
     def setUp(self):
         super().setUp()
         self.traithandler.add(
             "test1",
             name="Test1",
-            trait_type='gauge',
+            trait_type="gauge",
             base=98,
             mod=2,
             min=0,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
-            descs={
-                0: "range0",
-                2: "range1",
-                5: "range2",
-                7: "range3",
-            },
+            descs={0: "range0", 2: "range1", 5: "range2", 7: "range3",},
             rate=1,
             ratetarget=None,
         )
         self.trait = self.traithandler.get("test1")
 
     def _get_timer_data(self):
-        return (self.trait.value, self.trait.current, self.trait.rate,
-                self.trait._data["last_update"], self.trait.ratetarget)
+        return (
+            self.trait.value,
+            self.trait.current,
+            self.trait.rate,
+            self.trait._data["last_update"],
+            self.trait.ratetarget,
+        )
 
     @patch("evennia.contrib.traits.time")
     def test_timer_rate(self, mock_time):
@@ -875,18 +830,11 @@ class TestTraitGaugeTimed(_TraitHandlerBase):
 
 class TestNumericTraitOperators(TestCase):
     """Test case for numeric magic method implementations."""
+
     def setUp(self):
         # direct instantiation for testing only; use TraitHandler in production
-        self.st = traits.Trait({
-            'name': 'Strength',
-            'trait_type': 'trait',
-            'value': 8,
-        })
-        self.at = traits.Trait({
-            'name': 'Attack',
-            'trait_type': 'trait',
-            'value': 4,
-        })
+        self.st = traits.Trait({"name": "Strength", "trait_type": "trait", "value": 8,})
+        self.at = traits.Trait({"name": "Attack", "trait_type": "trait", "value": 4,})
 
     def tearDown(self):
         self.st, self.at = None, None
