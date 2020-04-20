@@ -4,7 +4,7 @@ Master configuration file for Evennia.
 NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE!
 
 All settings changes should be done by copy-pasting the variable and
-its value to <gamedir>/conf/settings.py.
+its value to <gamedir>/server/conf/settings.py.
 
 Hint: Don't copy&paste over more from this file than you actually want
 to change.  Anything you don't copy&paste will thus retain its default

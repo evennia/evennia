@@ -465,11 +465,12 @@ def getKeyPair(pubkeyfile, privkeyfile):
 
     if not (os.path.exists(pubkeyfile) and os.path.exists(privkeyfile)):
         # No keypair exists. Generate a new RSA keypair
-        from Crypto.PublicKey import RSA
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives.asymmetric import rsa
 
-        rsa_key = Key(RSA.generate(_KEY_LENGTH))
-        public_key_string = rsa_key.public().toString(type="OPENSSH")
-        private_key_string = rsa_key.toString(type="OPENSSH")
+        rsa_key = Key(rsa.generate_private_key(public_exponent=65537, key_size=_KEY_LENGTH, backend=default_backend()))
+        public_key_string = rsa_key.public().toString(type="OPENSSH").decode()
+        private_key_string = rsa_key.toString(type="OPENSSH").decode()
 
         # save keys for the future.
         with open(privkeyfile, "wt") as pfile:
