@@ -336,8 +336,7 @@ from django.conf import settings
 from functools import total_ordering
 from evennia.utils.dbserialize import _SaverDict
 from evennia.utils import logger
-from evennia.utils.utils import (
-    inherits_from, class_from_module, list_to_string, percent)
+from evennia.utils.utils import inherits_from, class_from_module, list_to_string, percent
 
 
 # Available Trait classes.
@@ -437,8 +436,7 @@ class TraitHandler:
             # no existing storage; initialize it, we then have to fetch it again
             # to retain the db connection
             obj.attributes.add(db_attribute_key, {}, category=db_attribute_category)
-            self.trait_data = obj.attributes.get(
-                db_attribute_key, category=db_attribute_category)
+            self.trait_data = obj.attributes.get(db_attribute_key, category=db_attribute_category)
         self._cache = {}
 
     def __len__(self):
@@ -459,8 +457,7 @@ class TraitHandler:
             trait_cls = self._get_trait_class(trait_key=trait_key)
             valid_keys = list_to_string(list(trait_cls.default_keys.keys()), endsep="or")
             raise TraitException(
-                "Trait object not settable directly. "
-                f"Assign to {trait_key}.{valid_keys}."
+                "Trait object not settable directly. " f"Assign to {trait_key}.{valid_keys}."
             )
 
     def __setitem__(self, trait_key, value):
@@ -524,7 +521,9 @@ class TraitHandler:
             trait = self._cache[trait_key] = trait_cls(_GA(self, "trait_data")[trait_key])
         return trait
 
-    def add(self, trait_key, name=None, trait_type=DEFAULT_TRAIT_TYPE, force=True, **trait_properties):
+    def add(
+        self, trait_key, name=None, trait_type=DEFAULT_TRAIT_TYPE, force=True, **trait_properties
+    ):
         """
         Create a new Trait and add it to the handler.
 
@@ -566,7 +565,6 @@ class TraitHandler:
 
         self.trait_data[trait_key] = trait_properties
 
-
     def remove(self, trait_key):
         """
         Remove a Trait from the handler's parent object.
@@ -592,6 +590,7 @@ class TraitHandler:
 
 # Parent Trait class
 
+
 @total_ordering
 class Trait:
     """Represents an object or Character trait. This simple base is just
@@ -605,6 +604,7 @@ class Trait:
     value
 
     """
+
     # this is the name used to refer to this trait when adding
     # a new trait in the TraitHandler
     trait_type = "trait"
@@ -661,6 +661,7 @@ class Trait:
             TraitException: If finding unset keys without a default.
 
         """
+
         def _raise_err(unset_required):
             """Helper method to format exception."""
             raise TraitException(
@@ -668,6 +669,7 @@ class Trait:
                     cls.trait_type, list_to_string(list(unset_required), addquote=True)
                 )
             )
+
         inp = set(trait_data.keys())
 
         # separate check for name/trait_type, those are always required.
@@ -683,15 +685,13 @@ class Trait:
 
         if MandatoryTraitKey in unset_defaults.values():
             # we have one or more unset keys that was mandatory
-            _raise_err([key for key, value in unset_defaults.items()
-                        if value == MandatoryTraitKey])
+            _raise_err([key for key, value in unset_defaults.items() if value == MandatoryTraitKey])
         # apply the default values
         trait_data.update(unset_defaults)
 
         if not cls.allow_extra_properties:
             # don't allow any extra properties - remove the extra data
-            for key in (key for key in inp.difference(req)
-                        if key not in ("name", "trait_type")):
+            for key in (key for key in inp.difference(req) if key not in ("name", "trait_type")):
                 del trait_data[key]
 
         return trait_data
@@ -722,10 +722,8 @@ class Trait:
         except KeyError:
             raise AttributeError(
                 "{!r} {} ({}) has no property {!r}.".format(
-                    self._data['name'],
-                    type(self).__name__,
-                    self.trait_type,
-                    key)
+                    self._data["name"], type(self).__name__, self.trait_type, key
+                )
             )
 
     def __setattr__(self, key, value):
@@ -746,14 +744,13 @@ class Trait:
             return
         else:
             # this is some other value
-            if key in ("_data", ):
+            if key in ("_data",):
                 _SA(self, key, value)
                 return
             if _GA(self, "allow_extra_properties"):
                 _GA(self, "_data")[key] = value
                 return
-        raise AttributeError(f"Can't set attribute {key} on "
-                             f"{self.trait_type} Trait.")
+        raise AttributeError(f"Can't set attribute {key} on " f"{self.trait_type} Trait.")
 
     def __delattr__(self, key):
         """
@@ -775,7 +772,8 @@ class Trait:
             if self.default_keys[key] == MandatoryTraitKey:
                 raise TraitException(
                     "Trait-Key {key} cannot be deleted: It's a mandatory property "
-                    "with no default value to fall back to.")
+                    "with no default value to fall back to."
+                )
             # set to default
             self._data[key] = self.default_keys[key]
         elif key in self._data:
@@ -797,7 +795,11 @@ class Trait:
         return "{}({{{}}})".format(
             type(self).__name__,
             ", ".join(
-                ["'{}': {!r}".format(k, self._data[k]) for k in self.default_keys if k in self._data]
+                [
+                    "'{}': {!r}".format(k, self._data[k])
+                    for k in self.default_keys
+                    if k in self._data
+                ]
             ),
         )
 
@@ -916,6 +918,7 @@ class Trait:
 
 # Implementation of the respective Trait types
 
+
 class StaticTrait(Trait):
     """
     Static Trait. This is a single value with a modifier,
@@ -924,12 +927,10 @@ class StaticTrait(Trait):
     value = base + mod
 
     """
+
     trait_type = "static"
 
-    default_keys = {
-        "base": 0,
-        "mod": 0
-    }
+    default_keys = {"base": 0, "mod": 0}
 
     def __str__(self):
         status = "{value:11}".format(value=self.value)
@@ -997,7 +998,7 @@ class CounterTrait(Trait):
         "max": None,
         "descs": None,
         "rate": 0,
-        "ratetarget": None
+        "ratetarget": None,
     }
 
     @staticmethod
@@ -1005,18 +1006,21 @@ class CounterTrait(Trait):
         """Add extra validation for descs"""
         trait_data = Trait.validate_input(cls, trait_data)
         # validate descs
-        descs = trait_data['descs']
+        descs = trait_data["descs"]
         if isinstance(descs, dict):
-            if any(not (isinstance(key, (int, float)) and isinstance(value, str))
-                   for key, value in descs.items()):
+            if any(
+                not (isinstance(key, (int, float)) and isinstance(value, str))
+                for key, value in descs.items()
+            ):
                 raise TraitException(
                     f"Trait descs must be defined on the "
-                    f"form {{number:str}} (instead found {descs}).")
+                    f"form {{number:str}} (instead found {descs})."
+                )
         # set up rate
-        if trait_data['rate'] != 0:
-            trait_data['last_update'] = time()
+        if trait_data["rate"] != 0:
+            trait_data["last_update"] = time()
         else:
-            trait_data['last_update'] = None
+            trait_data["last_update"] = None
         return trait_data
 
     # Helpers
@@ -1024,8 +1028,8 @@ class CounterTrait(Trait):
     def _within_boundaries(self, value):
         """Check if given value is within boundaries"""
         return not (
-            (self.min is not None and value <= self.min) or
-            (self.max is not None and value >= self.max)
+            (self.min is not None and value <= self.min)
+            or (self.max is not None and value >= self.max)
         )
 
     def _enforce_boundaries(self, value):
@@ -1040,32 +1044,31 @@ class CounterTrait(Trait):
 
     def _passed_ratetarget(self, value):
         """Check if we passed the ratetarget in either direction."""
-        ratetarget = self._data['ratetarget']
-        return (ratetarget is not None and (
-                (self.rate < 0 and value <= ratetarget) or
-                (self.rate > 0 and value >= ratetarget)))
+        ratetarget = self._data["ratetarget"]
+        return ratetarget is not None and (
+            (self.rate < 0 and value <= ratetarget) or (self.rate > 0 and value >= ratetarget)
+        )
 
     def _stop_timer(self):
         """Stop rate-timer component."""
-        if self.rate != 0 and self._data['last_update'] is not None:
-            self._data['last_update'] = None
+        if self.rate != 0 and self._data["last_update"] is not None:
+            self._data["last_update"] = None
 
     def _check_and_start_timer(self, value):
         """Start timer if we are not at a boundary."""
-        if self.rate != 0 and self._data['last_update'] is None:
-            ratetarget = self._data['ratetarget']
+        if self.rate != 0 and self._data["last_update"] is None:
+            ratetarget = self._data["ratetarget"]
             if self._within_boundaries(value) and not self._passed_ratetarget(value):
                 # we are not at a boundary [anymore].
-                self._data['last_update'] = time()
+                self._data["last_update"] = time()
         return value
-
 
     def _update_current(self, current):
         """Update current value by scaling with rate and time passed."""
         rate = self.rate
-        if rate != 0 and self._data['last_update'] is not None:
+        if rate != 0 and self._data["last_update"] is not None:
             now = time()
-            tdiff = now - self._data['last_update']
+            tdiff = now - self._data["last_update"]
             current += rate * tdiff
             value = current + self.mod
 
@@ -1073,15 +1076,15 @@ class CounterTrait(Trait):
             # even if .mod is included
 
             if self._passed_ratetarget(value):
-                current = self._data['ratetarget'] - self.mod
+                current = self._data["ratetarget"] - self.mod
                 self._stop_timer()
             elif not self._within_boundaries(value):
                 current = self._enforce_boundaries(value) - self.mod
                 self._stop_timer()
             else:
-                self._data['last_update'] = now
+                self._data["last_update"] = now
 
-            self._data['current'] = current
+            self._data["current"] = current
 
         return current
 
@@ -1094,7 +1097,7 @@ class CounterTrait(Trait):
     @base.setter
     def base(self, value):
         if value is None:
-            self._data["base"] = self.default_keys['base']
+            self._data["base"] = self.default_keys["base"]
         if type(value) in (int, float):
             if self.min is not None and value + self.mod < self.min:
                 value = self.min - self.mod
@@ -1110,7 +1113,7 @@ class CounterTrait(Trait):
     def mod(self, value):
         if value is None:
             # unsetting the boundary to default
-            self._data["mod"] = self.default_keys['mod']
+            self._data["mod"] = self.default_keys["mod"]
         elif type(value) in (int, float):
             if self.min is not None and value + self.base < self.min:
                 value = self.min - self.base
@@ -1168,11 +1171,11 @@ class CounterTrait(Trait):
 
     @property
     def ratetarget(self):
-        return self._data['ratetarget']
+        return self._data["ratetarget"]
 
     @ratetarget.setter
     def ratetarget(self, value):
-        self._data['ratetarget'] = self._enforce_boundaries(value)
+        self._data["ratetarget"] = self._enforce_boundaries(value)
         self._check_and_start_timer(self.value)
 
     def percent(self, formatting="{:3.1f}%"):
@@ -1268,24 +1271,24 @@ class GaugeTrait(CounterTrait):
     def _update_current(self, current):
         """Update current value by scaling with rate and time passed."""
         rate = self.rate
-        if rate != 0 and self._data['last_update'] is not None:
+        if rate != 0 and self._data["last_update"] is not None:
             now = time()
-            tdiff = now - self._data['last_update']
+            tdiff = now - self._data["last_update"]
             current += rate * tdiff
             value = current
 
             # we don't worry about .mod for gauges
 
             if self._passed_ratetarget(value):
-                current = self._data['ratetarget']
+                current = self._data["ratetarget"]
                 self._stop_timer()
             elif not self._within_boundaries(value):
                 current = self._enforce_boundaries(value)
                 self._stop_timer()
             else:
-                self._data['last_update'] = now
+                self._data["last_update"] = now
 
-            self._data['current'] = current
+            self._data["current"] = current
 
         return current
 
@@ -1332,7 +1335,7 @@ class GaugeTrait(CounterTrait):
     def min(self, value):
         """Limit so min can never be greater than base+mod."""
         if value is None:
-            self._data["min"] = self.default_keys['min']
+            self._data["min"] = self.default_keys["min"]
         elif type(value) in (int, float):
             self._data["min"] = min(value, self.base + self.mod)
 
@@ -1343,18 +1346,22 @@ class GaugeTrait(CounterTrait):
 
     @max.setter
     def max(self, value):
-        raise TraitException("The .max property is not settable "
-                             "on GaugeTraits. Set .base instead.")
+        raise TraitException(
+            "The .max property is not settable " "on GaugeTraits. Set .base instead."
+        )
+
     @max.deleter
     def max(self):
-        raise TraitException("The .max property cannot be reset "
-                             "on GaugeTraits. Reset .mod and .base instead.")
+        raise TraitException(
+            "The .max property cannot be reset " "on GaugeTraits. Reset .mod and .base instead."
+        )
 
     @property
     def current(self):
         """The `current` value of the gauge."""
-        return self._update_current(self._enforce_boundaries(
-            self._data.get("current", self.base + self.mod)))
+        return self._update_current(
+            self._enforce_boundaries(self._data.get("current", self.base + self.mod))
+        )
 
     @current.setter
     def current(self, value):
