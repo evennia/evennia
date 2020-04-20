@@ -22,6 +22,7 @@ import django
 django.setup()
 
 import evennia
+import importlib
 
 evennia._init()
 
@@ -31,7 +32,6 @@ from django.conf import settings
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig
-from evennia.server import initial_setup
 
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.utils import logger
@@ -333,6 +333,7 @@ class Evennia(object):
         Once finished the last_initial_setup_step is set to -1.
         """
         global INFO_DICT
+        initial_setup = importlib.import_module(settings.INITIAL_SETUP_MODULE)
         last_initial_setup_step = ServerConfig.objects.conf("last_initial_setup_step")
         if not last_initial_setup_step:
             # None is only returned if the config does not exist,
