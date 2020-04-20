@@ -157,3 +157,11 @@ class EvenniaTest(TestCase):
         self.account.delete()
         self.account2.delete()
         super().tearDown()
+
+class LocalEvenniaTest(EvenniaTest):
+    account_typeclass = settings.BASE_ACCOUNT_TYPECLASS
+    object_typeclass = settings.BASE_OBJECT_TYPECLASS
+    character_typeclass = settings.BASE_CHARACTER_TYPECLASS
+    exit_typeclass = settings.BASE_EXIT_TYPECLASS
+    room_typeclass = settings.BASE_ROOM_TYPECLASS
+    script_typeclass = settings.BASE_SCRIPT_TYPECLASS
