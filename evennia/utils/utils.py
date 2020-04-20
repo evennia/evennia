@@ -2041,7 +2041,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         if multimatch_string:
             error = "%s\n" % multimatch_string
         else:
-            error = _("More than one match for '%s' (please narrow target):\n" % query)
+            error = _("More than one match for '{query}' (please narrow target):\n").format(query=query)
 
         for num, result in enumerate(matches):
             # we need to consider Commands, where .aliases is a list

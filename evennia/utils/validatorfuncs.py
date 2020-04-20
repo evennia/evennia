@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError as _error
 from django.core.validators import validate_email as _val_email
 from evennia.utils.ansi import strip_ansi
 from evennia.utils.utils import string_partial_matching as _partial
+from django.utils.translation import gettext as _
 
 _TZ_DICT = {str(tz): _pytz.timezone(tz) for tz in _pytz.common_timezones}
 
@@ -58,7 +59,7 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
 
     """
     if not entry:
-        raise ValueError(f"No {option_key} entered!")
+        raise ValueError(_("No {option_key} entered!").format(option_key=option_key))
     if not from_tz:
         from_tz = _pytz.UTC
         if account:
@@ -66,7 +67,7 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
             try:
                 from_tz = _pytz.timezone(acct_tz)
             except Exception as err:
-                raise ValueError(f"Timezone string '{acct_tz}' is not a valid timezone ({err})")
+                raise ValueError(_("Timezone string '{acct_tz}' is not a valid timezone ({err})").format(acct_tz=acct_tz, err=err))
         else:
             from_tz = _pytz.UTC
 

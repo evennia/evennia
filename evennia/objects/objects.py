@@ -1059,7 +1059,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # See if we need to kick the account off.
 
         for session in self.sessions.all():
-            session.msg(_("Your character %s has been destroyed.") % self.key)
+            session.msg(_("Your character {key} has been destroyed.").format(key=self.key))
             # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
         if self.account:
