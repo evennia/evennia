@@ -743,7 +743,9 @@ def cmdhandler(
                         sysarg = raw_string
                     else:
                         # fallback to default error text
-                        sysarg = _("Command '{command}' is not available.").format(command=raw_string)
+                        sysarg = _("Command '{command}' is not available.").format(
+                            command=raw_string
+                        )
                         suggestions = string_suggestions(
                             raw_string,
                             cmdset.get_all_cmd_keys_and_aliases(caller),
@@ -751,7 +753,9 @@ def cmdhandler(
                             maxnum=3,
                         )
                         if suggestions:
-                            sysarg += _(" Maybe you meant {command}?").format(command=utils.list_to_string(suggestions, _("or"), addquote=True))
+                            sysarg += _(" Maybe you meant {command}?").format(
+                                command=utils.list_to_string(suggestions, _("or"), addquote=True)
+                            )
                         else:
                             sysarg += _(' Type "help" for help.')
                     raise ExecSystemCommand(syscmd, sysarg)

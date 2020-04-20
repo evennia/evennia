@@ -329,7 +329,9 @@ class IRCBot(Bot):
                 chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 nicklist = ", ".join(sorted(kwargs["nicklist"], key=lambda n: n.lower()))
                 for obj in self._nicklist_callers:
-                    obj.msg(_("Nicks at {chstr}:\n {nicklist}").format(chstr=chstr, nicklist=nicklist))
+                    obj.msg(
+                        _("Nicks at {chstr}:\n {nicklist}").format(chstr=chstr, nicklist=nicklist)
+                    )
                 self._nicklist_callers = []
             return
 
@@ -338,7 +340,11 @@ class IRCBot(Bot):
             if hasattr(self, "_ping_callers") and self._ping_callers:
                 chstr = f"{self.db.irc_channel} ({self.db.irc_network}:{self.db.irc_port})"
                 for obj in self._ping_callers:
-                    obj.msg(_("IRC ping return from {chstr} took {time}s.").format(chstr=chstr, time=kwargs['timing']))
+                    obj.msg(
+                        _("IRC ping return from {chstr} took {time}s.").format(
+                            chstr=chstr, time=kwargs["timing"]
+                        )
+                    )
                 self._ping_callers = []
             return
 

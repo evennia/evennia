@@ -32,7 +32,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     # Attribute manager methods
     def get_attribute(
         self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None, **kwargs
-
     ):
         """
         Return Attribute objects by key, by category, by value, by
@@ -104,8 +103,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             key=key, category=category, value=value, strvalue=strvalue, obj=obj
         )
 
-    def get_by_attribute(self, key=None, category=None, value=None,
-                         strvalue=None, attrtype=None, **kwargs):
+    def get_by_attribute(
+        self, key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+    ):
         """
         Return objects having attributes with the given key, category,
         value, strvalue or combination of those criteria.
