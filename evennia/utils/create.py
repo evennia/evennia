@@ -502,7 +502,7 @@ def create_account(
             errors to. If not given, errors will be logged.
 
     Returns:
-        (object) The acount object of the new account.
+        Account: The newly created Account.
     Raises:
         ValueError: If `key` already exists in database.
 
