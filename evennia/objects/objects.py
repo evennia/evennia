@@ -500,12 +500,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         if quiet:
             return list(results)
-
         return _AT_SEARCH_RESULT(
             results,
             self,
             query=searchdata,
-            quiet=quiet,
             nofound_string=nofound_string,
             multimatch_string=multimatch_string,
         )
