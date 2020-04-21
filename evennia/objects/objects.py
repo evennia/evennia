@@ -498,12 +498,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             use_dbref=use_dbref,
         )
 
-        if quiet:
-            return results
         return _AT_SEARCH_RESULT(
             results,
             self,
             query=searchdata,
+            quiet=quiet,
             nofound_string=nofound_string,
             multimatch_string=multimatch_string,
         )
