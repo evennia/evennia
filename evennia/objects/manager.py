@@ -159,7 +159,7 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list, optional): Python pats to restrict matches with.
 
         Returns:
-            matches (list): Objects fullfilling both the `attribute_name` and
+            matches (query): Objects fullfilling both the `attribute_name` and
             `attribute_value` criterions.
 
         Notes:
@@ -178,11 +178,11 @@ class ObjectDBManager(TypedObjectManager):
         # This doesn't work if attribute_value is an object. Workaround below
 
         if isinstance(attribute_value, (str, int, float, bool)):
-            return list(self.filter(
+            return self.filter(
                 cand_restriction
                 & type_restriction
                 & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value)
-            ).order_by("id"))
+            ).order_by("id")
         else:
             # We must loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
             global _ATTR
@@ -273,12 +273,12 @@ class ObjectDBManager(TypedObjectManager):
                 to exclude from the match.
 
         Returns:
-            contents (list): Matching contents, without excludeobj, if given.
+            contents (query): Matching contents, without excludeobj, if given.
         """
         exclude_restriction = (
             Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
         )
-        return list(self.filter(db_location=location).exclude(exclude_restriction).order_by("id"))
+        return self.filter(db_location=location).exclude(exclude_restriction).order_by("id")
 
     def get_objs_with_key_or_alias(self, ostring, exact=True, candidates=None, typeclasses=None):
         """
@@ -291,7 +291,7 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list): Only match objects with typeclasses having thess path strings.
 
         Returns:
-            matches (list): A list of matches of length 0, 1 or more.
+            matches (query): A list of matches of length 0, 1 or more.
         """
         if not isinstance(ostring, str):
             if hasattr(ostring, "key"):
@@ -309,7 +309,7 @@ class ObjectDBManager(TypedObjectManager):
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         if exact:
             # exact match - do direct search
-            return list(
+            return (
                 (
                     self.filter(
                         cand_restriction
