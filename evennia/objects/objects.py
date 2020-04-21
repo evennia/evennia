@@ -498,7 +498,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             use_dbref=use_dbref,
         )
 
-        return _AT_SEARCH_RESULT(
+        matches = _AT_SEARCH_RESULT(
             results,
             self,
             query=searchdata,
@@ -506,6 +506,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             nofound_string=nofound_string,
             multimatch_string=multimatch_string,
         )
+        if matches:
+            return matches
+        return []
 
     def search_account(self, searchdata, quiet=False):
         """
