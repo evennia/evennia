@@ -159,7 +159,7 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list, optional): Python pats to restrict matches with.
 
         Returns:
-            matches (list): Objects fullfilling both the `attribute_name` and
+            matches (query): Objects fullfilling both the `attribute_name` and
             `attribute_value` criterions.
 
         Notes:
@@ -273,7 +273,7 @@ class ObjectDBManager(TypedObjectManager):
                 to exclude from the match.
 
         Returns:
-            contents (list): Matching contents, without excludeobj, if given.
+            contents (query): Matching contents, without excludeobj, if given.
         """
         exclude_restriction = (
             Q(pk__in=[_GA(obj, "id") for obj in make_iter(excludeobj)]) if excludeobj else Q()
@@ -291,7 +291,7 @@ class ObjectDBManager(TypedObjectManager):
             typeclasses (list): Only match objects with typeclasses having thess path strings.
 
         Returns:
-            matches (list): A list of matches of length 0, 1 or more.
+            matches (query): A list of matches of length 0, 1 or more.
         """
         if not isinstance(ostring, str):
             if hasattr(ostring, "key"):

@@ -499,7 +499,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         )
 
         if quiet:
-            return results
+            return list(results)
         return _AT_SEARCH_RESULT(
             results,
             self,
