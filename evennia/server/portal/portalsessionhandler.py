@@ -70,6 +70,18 @@ class PortalSessionHandler(SessionHandler):
         """
         self.connection_time = time.time()
 
+    def generate_sessid(self):
+        """
+        Simply generates a sessid that's guaranteed to be unique for this Portal run.
+
+        Returns:
+            sessid
+        """
+        self.latest_sessid += 1
+        if self.latest_sessid in self:
+            return self.generate_sessid()
+        return self.latest_sessid
+
     def connect(self, session):
         """
         Called by protocol at first connect. This adds a not-yet
@@ -93,8 +105,7 @@ class PortalSessionHandler(SessionHandler):
             if not session.sessid:
                 # if the session already has a sessid (e.g. being inherited in the
                 # case of a webclient auto-reconnect), keep it
-                self.latest_sessid += 1
-                session.sessid = self.latest_sessid
+                session.sessid = self.generate_sessid()
             session.server_connected = False
             _CONNECTION_QUEUE.appendleft(session)
             if len(_CONNECTION_QUEUE) > 1:
