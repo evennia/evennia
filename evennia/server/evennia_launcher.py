@@ -1565,7 +1565,8 @@ def kill(pidfile, component="Server", callback=None, errback=None, killsignal=SI
 
     """
     if _is_windows():
-        # Windows signal sending is very limited.
+        # HACK: Windows signal sending is very limited.
+        # Python 3.2+ supports os.kill() on Windows and this could be refactored out.
         from win32api import GenerateConsoleCtrlEvent, SetConsoleCtrlHandler
 
         try:
@@ -1587,27 +1588,34 @@ def kill(pidfile, component="Server", callback=None, errback=None, killsignal=SI
                 os.remove(pidfile)
             try:
                 os.kill(int(pid), killsignal)
-            except OSError:
-                print(
-                    "{component} ({pid}) cannot be stopped. "
-                    "The PID file '{pidfile}' seems stale. "
-                    "Try removing it manually.".format(
-                        component=component, pid=pid, pidfile=pidfile
+            except OSError as e:
+                import errno
+                if e.errno == errno.EACCES or e.errno == errno.EROFS:
+                    print(
+                        f"{component} ({pid}) cannot be stopped. "
+                        f"Evennia does not have 'write' access to the PID file '{pidfile}'."
                     )
-                )
+                elif e.errno == errno.ESRCH:
+                    print(
+                        f"{component} ({pid}) cannot be stopped. "
+                        f"The PID file '{pidfile}' seems stale. "
+                        f"We will try removing it and launching anyway."
+                    )
+                    os.remove(pidfile)
+                else:
+                    print(os.strerror(e.errno))  # Print the actual error
                 return
             if callback:
                 callback()
             else:
-                print("Sent kill signal to {component}.".format(component=component))
+                print(f"Sent kill signal to {component}.")
                 return
         if errback:
             errback()
         else:
             print(
-                "Could not send kill signal - {component} does "
-                "not appear to be running.".format(component=component)
-            )
+                f"Could not send kill signal - {component} does "
+                f"not appear to be running.")
 
 
 def show_version_info(about=False):
