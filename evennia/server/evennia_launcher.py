@@ -1593,13 +1593,14 @@ def kill(pidfile, component="Server", callback=None, errback=None, killsignal=SI
                 if e.errno == errno.EACCES or e.errno == errno.EROFS:
                     print(
                         f"{component} ({pid}) cannot be stopped. "
-                        f"Evennia does not have 'write' access to the PID file '{pidfile}'."
+                        f"Evennia does not have 'write' access to the PID file '{pidfile}' "
+                        f"or process number {pid}."
                     )
                 elif e.errno == errno.ESRCH:
                     print(
                         f"{component} ({pid}) cannot be stopped. "
                         f"The PID file '{pidfile}' seems stale. "
-                        f"We will try removing it and launching anyway."
+                        f"We will try removing it."
                     )
                     os.remove(pidfile)
                 else:
