@@ -232,6 +232,9 @@ def create_script(
         attributes (list): List if tuples (key, value) or (key, value, category)
            (key, value, lockstring) or (key, value, lockstring, default_access).
 
+    Returns:
+        script (obj): An instance of the script created
+
     See evennia.scripts.manager for methods to manipulate existing
     scripts in the database.
 
