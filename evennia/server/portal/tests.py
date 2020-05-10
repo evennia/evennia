@@ -17,8 +17,7 @@ import json
 
 from mock import Mock, MagicMock
 from evennia.server.portal import irc
-from evennia.utils.test_resources import mockdelay, EvenniaTest, patch
-from twisted import internet
+from evennia.utils.test_resources import EvenniaTest
 
 from twisted.conch.telnet import IAC, WILL, DONT, SB, SE, NAWS, DO
 from twisted.test import proto_helpers
@@ -37,7 +36,7 @@ from .telnet_oob import MSDP, MSDP_VAL, MSDP_VAR
 from .amp import AMPMultiConnectionProtocol, MsgServer2Portal, MsgPortal2Server, AMP_MAXLEN
 from .amp_server import AMPServerFactory
 
-from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol
+from autobahn.twisted.websocket import WebSocketServerFactory
 from .webclient import WebSocketClient
 
 
@@ -282,20 +281,6 @@ class TestTelnet(TwistedTestCase):
 class WebSocket(EvenniaTest):
     def setUp(self):
         super().setUp()
-        # from autobahn.websocket.protocol import WebSocketProtocol
-        # WebSocketServerProtocol.log = Mock()
-        # internet.base.DelayedCall.debug = True
-        # self.proto = WebSocketClient()
-        # self.proto.factory = WebSocketServerFactory()
-        # self.proto.factory.sessionhandler = PORTAL_SESSIONS
-        # self.proto.sessionhandler = PORTAL_SESSIONS
-        # self.proto.sessionhandler.portal = Mock()
-        # self.proto.data_in = MagicMock()
-        # self.proto.data_out = MagicMock()
-        # self.transport = WebSocketProtocol()
-        # self.transport.client = ["localhost"]
-        # self.transport.setTcpKeepAlive = Mock()
-        # self.proto.state = WebSocketProtocol.STATE_OPEN
         self.proto = WebSocketClient()
         self.proto.factory = WebSocketServerFactory()
         self.proto.factory.sessionhandler = PORTAL_SESSIONS
