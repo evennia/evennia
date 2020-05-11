@@ -1298,7 +1298,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         self.assertFalse(wall.db.exit_open)
 
     def test_weapon(self):
-        weapon = create_object(tutobjects.Weapon, key="sword", location=self.char1)
+        weapon = create_object(tutobjects.TutorialWeapon, key="sword", location=self.char1)
         self.call(
             tutobjects.CmdAttack(), "Char", "You stab with sword.", obj=weapon, cmdstring="stab"
         )
@@ -1307,7 +1307,7 @@ class TestTutorialWorldObjects(TwistedTestCase, CommandTest):
         )
 
     def test_weaponrack(self):
-        rack = create_object(tutobjects.WeaponRack, key="rack", location=self.room1)
+        rack = create_object(tutobjects.TutorialWeaponRack, key="rack", location=self.room1)
         rack.db.available_weapons = ["sword"]
         self.call(tutobjects.CmdGetWeapon(), "", "You find Rusty sword.", obj=rack)
 
