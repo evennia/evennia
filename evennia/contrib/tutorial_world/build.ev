@@ -433,7 +433,7 @@ north
 #
 # Create the weapon rack (the barrel)
 #
-@create/drop barrel: tutorial_world.objects.WeaponRack
+@create/drop barrel: tutorial_world.objects.TutorialWeaponRack
 #
 @desc barrel =
  This barrel has the air of leftovers - it contains an assorted
@@ -902,7 +902,7 @@ than the lonely cries of the cold, salty wind.
 
 # give the enemy a tentacle weapon
 #
-@create foggy tentacles;tentacles:tutorial_world.objects.Weapon
+@create foggy tentacles;tentacles:tutorial_world.objects.TutorialWeapon
 #
 # Make the enemy's weapon good - hits at 70% of attacks, but not good at parrying.
 #
@@ -1299,7 +1299,7 @@ Tomb of the hero
 # The sarcophagus is a "weapon rack" from which you can extract one
 # single weapon.
 #
-@create/drop Stone sarcophagus;sarcophagus;stone : tutorial_world.objects.WeaponRack
+@create/drop Stone sarcophagus;sarcophagus;stone : tutorial_world.objects.TutorialWeaponRack
 #
 @desc stone =
  The lid of the coffin is adorned with a stone statue in full size.
