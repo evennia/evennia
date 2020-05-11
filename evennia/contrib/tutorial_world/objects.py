@@ -14,8 +14,8 @@ TutorialClimbable
 Obelisk
 LightSource
 CrumblingWall
-Weapon
-WeaponRack
+TutorialWeapon
+TutorialWeaponRack
 
 """
 
@@ -790,7 +790,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
 
 # -------------------------------------------------------------
 #
-# Weapon - object type
+# TutorialWeapon - object type
 #
 # A weapon is necessary in order to fight in the tutorial
 # world. A weapon (which here is assumed to be a bladed
@@ -929,7 +929,7 @@ class CmdSetWeapon(CmdSet):
         self.add(CmdAttack())
 
 
-class Weapon(TutorialObject):
+class TutorialWeapon(TutorialObject):
     """
     This defines a bladed weapon.
 
@@ -980,7 +980,7 @@ class Weapon(TutorialObject):
 
 WEAPON_PROTOTYPES = {
     "weapon": {
-        "typeclass": "evennia.contrib.tutorial_world.objects.Weapon",
+        "typeclass": "evennia.contrib.tutorial_world.objects.TutorialWeapon",
         "key": "Weapon",
         "hit": 0.2,
         "parry": 0.2,
@@ -1125,7 +1125,7 @@ class CmdSetWeaponRack(CmdSet):
         self.add(CmdGetWeapon())
 
 
-class WeaponRack(TutorialObject):
+class TutorialWeaponRack(TutorialObject):
     """
     This object represents a weapon store. When people use the
     "get weapon" command on this rack, it will produce one
