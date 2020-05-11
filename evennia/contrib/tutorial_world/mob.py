@@ -69,7 +69,7 @@ class Mob(tut_objects.TutorialObject):
             stationary (idling) until attacked.
         aggressive: if set, will attack Characters in
             the same room using whatever Weapon it
-            carries (see tutorial_world.objects.Weapon).
+            carries (see tutorial_world.objects.TutorialWeapon).
             if unset, the mob will never engage in combat
             no matter what.
         hunting: if set, the mob will pursue enemies trying
@@ -168,9 +168,9 @@ class Mob(tut_objects.TutorialObject):
         be "ticked".
 
         Args:
-            interval (int): The number of seconds
+            interval (int or None): The number of seconds
                 between ticks
-            hook_key (str): The name of the method
+            hook_key (str or None): The name of the method
                 (on this mob) to call every interval
                 seconds.
             stop (bool, optional): Just stop the
@@ -372,7 +372,7 @@ class Mob(tut_objects.TutorialObject):
             return
 
         # we use the same attack commands as defined in
-        # tutorial_world.objects.Weapon, assuming that
+        # tutorial_world.objects.TutorialWeapon, assuming that
         # the mob is given a Weapon to attack with.
         attack_cmd = random.choice(("thrust", "pierce", "stab", "slash", "chop"))
         self.execute_cmd("%s %s" % (attack_cmd, target))

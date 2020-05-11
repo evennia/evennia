@@ -902,7 +902,7 @@ than the lonely cries of the cold, salty wind.
 
 # give the enemy a tentacle weapon
 #
-@create foggy tentacles;tentacles:tutorial_world.objects.Weapon
+@create foggy tentacles;tentacles:tutorial_world.objects.TutorialWeapon
 #
 # Make the enemy's weapon good - hits at 70% of attacks, but not good at parrying.
 #
