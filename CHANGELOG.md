@@ -19,6 +19,8 @@
 - Added new `requirements_extra.txt` file for easily getting all optional dependencies.
 
 ### Already in master
+- Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
+  "TutorialWeaponRack" to prevent collisions with classes in mygame
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
