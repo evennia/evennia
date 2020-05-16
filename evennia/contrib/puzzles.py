@@ -289,7 +289,7 @@ class CmdCreatePuzzleRecipe(MuxCommand):
         proto_parts = [proto_def(obj) for obj in parts]
         proto_results = [proto_def(obj) for obj in results]
 
-        puzzle = create_script(PuzzleRecipe, key=puzzle_name)
+        puzzle = create_script(PuzzleRecipe, key=puzzle_name, persistent=True)
         puzzle.save_recipe(puzzle_name, proto_parts, proto_results)
         puzzle.locks.add("control:id(%s) or perm(Builder)" % caller.dbref[1:])
 
@@ -488,7 +488,7 @@ class CmdArmPuzzle(MuxCommand):
 
     Notes:
         Create puzzles with `@puzzle`; get list of
-        defined puzzles using `@lspuzlerecipies`.
+        defined puzzles using `@lspuzzlerecipes`.
 
     """
 

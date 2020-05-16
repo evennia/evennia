@@ -2262,7 +2262,7 @@ def main():
         if option in ("makemessages", "compilemessages"):
             # some commands don't require the presence of a game directory to work
             need_gamedir = False
-        if option in ("shell", "check", "makemigrations"):
+        if option in ("shell", "check", "makemigrations", "createsuperuser"):
             # some django commands requires the database to exist,
             # or evennia._init to have run before they work right.
             check_db = True

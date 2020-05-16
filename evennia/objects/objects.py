@@ -12,7 +12,7 @@ from collections import defaultdict
 from django.conf import settings
 
 from evennia.typeclasses.models import TypeclassBase
-from evennia.typeclasses.attributes import NickHandler
+from evennia.typeclasses.attributes import NickHandler, ModelAttributeBackend
 from evennia.objects.manager import ObjectManager
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripthandler import ScriptHandler
@@ -225,7 +225,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     @lazy_property
     def nicks(self):
-        return NickHandler(self)
+        return NickHandler(self, ModelAttributeBackend)
 
     @lazy_property
     def sessions(self):
@@ -503,7 +503,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         )
 
         if quiet:
-            return results
+            return list(results)
         return _AT_SEARCH_RESULT(
             results,
             self,
@@ -1059,7 +1059,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # See if we need to kick the account off.
 
         for session in self.sessions.all():
-            session.msg(_("Your character %s has been destroyed.") % self.key)
+            session.msg(_("Your character {key} has been destroyed.").format(key=self.key))
             # no need to disconnect, Account just jumps to OOC mode.
         # sever the connection (important!)
         if self.account:

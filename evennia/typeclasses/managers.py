@@ -31,7 +31,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Attribute manager methods
     def get_attribute(
-        self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None
+        self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None, **kwargs
     ):
         """
         Return Attribute objects by key, by category, by value, by
@@ -55,6 +55,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             attrype (str, optional): An attribute-type to search for.
                 By default this is either `None` (normal Attributes) or
                 `"nick"`.
+            kwargs (any): Currently unused. Reserved for future use.
 
         Returns:
             attributes (list): The matching Attributes.
@@ -102,7 +103,9 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             key=key, category=category, value=value, strvalue=strvalue, obj=obj
         )
 
-    def get_by_attribute(self, key=None, category=None, value=None, strvalue=None, attrtype=None):
+    def get_by_attribute(
+        self, key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+    ):
         """
         Return objects having attributes with the given key, category,
         value, strvalue or combination of those criteria.
@@ -122,6 +125,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             attrype (str, optional): An attribute-type to search for.
                 By default this is either `None` (normal Attributes) or
                 `"nick"`.
+            kwargs (any): Currently unused. Reserved for future use.
 
         Returns:
             obj (list): Objects having the matching Attributes.
@@ -488,12 +492,12 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
     def get_typeclass_totals(self, *args, **kwargs) -> object:
         """
         Returns a queryset of typeclass composition statistics.
-        
+
         Returns:
-            qs (Queryset): A queryset of dicts containing the typeclass (name), 
+            qs (Queryset): A queryset of dicts containing the typeclass (name),
                 the count of objects with that typeclass and a float representing
                 the percentage of objects associated with the typeclass.
-            
+
         """
         return (
             self.values("db_typeclass_path")
