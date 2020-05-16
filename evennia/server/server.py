@@ -105,7 +105,7 @@ _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
-_LAST_SERVER_TIME_SNAPSHOT = None
+_LAST_SERVER_TIME_SNAPSHOT = 0
 
 
 def _server_maintenance():
@@ -128,6 +128,7 @@ def _server_maintenance():
         # first call after a reload
         _GAMETIME_MODULE.SERVER_START_TIME = now
         _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf("runtime", default=0.0)
+        _LAST_SERVER_TIME_SNAPSHOT = now
     else:
         # adjust the runtime not with 60s but with the actual elapsed time
         # in case this may varies slightly from 60s.
