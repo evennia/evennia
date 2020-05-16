@@ -16,20 +16,13 @@ jobs:
     strategy:
       matrix:
         python-version: [3.5, 3.6, 3.7, 3.8]
-        TESTING_DB: [sqlite3, postgresql, mysql]
-    services:
-      postgres:
-        image: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      mysql:
-        image: mysql
-
+        TESTING_DB: [sqlite3, postgresql, mysql]   
     steps:
     - uses: actions/checkout@v2
+    - name: Setup MySQL
+      uses: mirrmutth/mysql-qction@1.1
+    - name: Setup PosgrSQL
+      uses: Harmon758/postgresql-action@v1.0.0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
