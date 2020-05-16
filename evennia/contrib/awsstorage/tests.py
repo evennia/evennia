@@ -9,7 +9,7 @@ from django.utils.timezone import is_aware, utc
 import datetime, gzip, pickle, threading
 
 from botocore.exceptions import ClientError
-from evennia.contrib.django import aws_s3_cdn as s3boto3
+from evennia.contrib.awsstorage import aws_s3_cdn as s3boto3
 
 try:
     from django.utils.six.moves.urllib import parse as urlparse
