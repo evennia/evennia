@@ -22,6 +22,7 @@ from evennia.utils.test_resources import EvenniaTest
 from twisted.conch.telnet import IAC, WILL, DONT, SB, SE, NAWS, DO
 from twisted.test import proto_helpers
 from twisted.trial.unittest import TestCase as TwistedTestCase
+from twisted.internet.base import DelayedCall
 
 from .telnet import TelnetServerFactory, TelnetProtocol
 from .portal import PORTAL_SESSIONS
@@ -226,10 +227,12 @@ class TestTelnet(TwistedTestCase):
         self.transport = proto_helpers.StringTransport()
         self.addCleanup(factory.sessionhandler.disconnect_all)
 
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_mudlet_ttype(self):
         self.transport.client = ["localhost"]
         self.transport.setTcpKeepAlive = Mock()
         d = self.proto.makeConnection(self.transport)
+
         # test suppress_ga
         self.assertTrue(self.proto.protocol_flags["NOGOAHEAD"])
         self.proto.dataReceived(IAC + DONT + SUPPRESS_GA)
@@ -278,7 +281,7 @@ class TestTelnet(TwistedTestCase):
         return d
 
 
-class WebSocket(EvenniaTest):
+class TestWebSocket(EvenniaTest):
     def setUp(self):
         super().setUp()
         self.proto = WebSocketClient()
@@ -292,10 +295,12 @@ class WebSocket(EvenniaTest):
         self.proto.transport.setTcpKeepAlive = Mock()
         self.proto.state = MagicMock()
         self.addCleanup(self.proto.factory.sessionhandler.disconnect_all)
+        DelayedCall.debug = True
 
     def tearDown(self):
         super().tearDown()
 
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_data_in(self):
         self.proto.sessionhandler.data_in = MagicMock()
         self.proto.onOpen()
@@ -307,6 +312,7 @@ class WebSocket(EvenniaTest):
         self.proto.onMessage(msg, isBinary=False)
         self.proto.sessionhandler.data_in.assert_called_with(self.proto, text=[[sendStr], {}])
 
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_data_out(self):
         self.proto.onOpen()
         self.proto.sendLine = MagicMock()
