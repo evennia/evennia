@@ -10,40 +10,31 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  build:
-
+  build:          
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7, 3.8]
-        TESTING_DB: [sqlite3, postgresql, mysql]  
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5    
+        TESTING_DB: [sqlite3, postgresql, mysql]     
     steps:
     - uses: actions/checkout@v2    
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Set up databases
-      run: | 
+    - name: Set up postgreSQL database
+      if: ${{ matrix.TESTING_DB }} == 'postgresql'
+      run: |
         psql --version
+        sudo service postgresql start
         psql -U postgres -c "CREATE DATABASE evennia;"
         psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
         psql -U postgres -c "ALTER USER evennia CREATEDB;"
+    - name: Set up MySQL database
+      if: ${{ matrix.TESTING_DB }} == 'mysql'
+      run: |         
         mysql --version
+        sudo service mysql start 
         mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
         mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
         mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
@@ -64,10 +55,15 @@ jobs:
     - name: run test 
       run: |
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
+
   coveralls: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7      
       - name: install coveralls
         run: |
           python -m pip install --upgrade pip
