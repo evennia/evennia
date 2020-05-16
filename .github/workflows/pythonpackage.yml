@@ -18,11 +18,7 @@ jobs:
         python-version: [3.7, 3.8]
         TESTING_DB: [sqlite3, postgresql, mysql]   
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup MySQL
-      uses: mirromutth/mysql-action@1.1
-    - name: Setup PosgrSQL
-      uses: Harmon758/postgresql-action@v1.0.0
+    - uses: actions/checkout@v2    
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -41,9 +37,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install psycopg2-binary
-        pip install mysqlclient
-        pip install coveralls
-        pip install codacy-coverage
+        pip install mysqlclient        
         pip install -e .
         pip install -r requirements_extra.txt
     - name: Set up evennia
@@ -59,8 +53,14 @@ jobs:
   coveralls: 
     runs-on: ubuntu-latest
     steps:
-      - name: upload to coveralls
+      - uses: actions/checkout@v2
+      - name: install coveralls
+        run: |
+          python -m pip install --upgrade pip
+          pip install coveralls
+          pip install codacy-coverage 
+      - name: run and upload to coveralls
         run: |
           coveralls
           coverage xml
-          python-codacy-coveraage -r coverage.xml
+          python-codacy-coverage -r coverage.xml
