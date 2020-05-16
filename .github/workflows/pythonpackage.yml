@@ -31,7 +31,7 @@ jobs:
     - name: Setup PostgreSQL database 
       if: ${{ matrix.TESTING_DB  == 'postgresql' }}
       run: |
-        psql --versiont
+        psql --version
         psql -U postgres -c "CREATE DATABASE evennia;"
         psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
         psql -U postgres -c "ALTER USER evennia CREATEDB;"
