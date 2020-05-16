@@ -15,12 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.7, 3.8]
         TESTING_DB: [sqlite3, postgresql, mysql]   
     steps:
     - uses: actions/checkout@v2
     - name: Setup MySQL
-      uses: mirrmutth/mysql-qction@1.1
+      uses: mirromutth/mysql-action@1.1
     - name: Setup PosgrSQL
       uses: Harmon758/postgresql-action@v1.0.0
     - name: Set up Python ${{ matrix.python-version }}
