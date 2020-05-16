@@ -16,6 +16,7 @@
 - The `initial_setup.py` file can now be substituted in `settings.py` to customize 
   initial game database state. (volund)
 - Added new Traits contrib, converted and expanded from Ainneve project.
+- Added new `requirements_extra.txt` file for easily getting all optional dependencies.
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
