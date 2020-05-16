@@ -31,8 +31,7 @@ jobs:
     - name: Setup PostgreSQL database 
       if: ${{ matrix.TESTING_DB  == 'postgresql' }}
       run: |
-        psql --version
-        sudo service postgresql start
+        psql --versiont
         psql -U postgres -c "CREATE DATABASE evennia;"
         psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
         psql -U postgres -c "ALTER USER evennia CREATEDB;"
@@ -41,14 +40,12 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'mysql' }}
       uses: mirromutth/mysql-action@v1.1
       with:    
-        mysql version: '8.0'
-        mysql_user: root
-        mysql_password: root
+        mysql version: '8.0'        
+        mysql root password: 'root'       
     - name: Setup MySQL database
       if: ${{ matrix.TESTING_DB == 'mysql' }} 
       run: |         
-        mysql --version
-        sudo service mysql start 
+        mysql --version        
         mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
         mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
         mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
