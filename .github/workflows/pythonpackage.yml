@@ -54,6 +54,7 @@ jobs:
       run: |
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
   coveralls: 
+    runs-on: ubuntu-latest
     steps:
       - name: upload to coveralls
         run: |
