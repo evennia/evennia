@@ -1,7 +1,7 @@
 # This Evennia workflow will install Python dependencies, run tests with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Evennia
+name: Evennia test-suite and coveralls
 
 on:
   push:
@@ -17,6 +17,16 @@ jobs:
       matrix:
         python-version: [3.5, 3.6, 3.7, 3.8]
         TESTING_DB: [sqlite3, postgresql, mysql]
+    services:
+      postgres:
+        image: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mysql:
+        image: mysql
 
     steps:
     - uses: actions/checkout@v2
