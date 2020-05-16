@@ -26,12 +26,12 @@ class TestAttributes(EvenniaTest):
         key = "testattr"
         value = "test attr value "
         self.obj1.attributes.add(key, value)
-        self.assertFalse(self.obj1.attributes._cache)
+        self.assertFalse(self.obj1.attributes.backend._cache)
 
         self.assertEqual(self.obj1.attributes.get(key), value)
         self.obj1.db.testattr = value
         self.assertEqual(self.obj1.db.testattr, value)
-        self.assertFalse(self.obj1.attributes._cache)
+        self.assertFalse(self.obj1.attributes.backend._cache)
 
     def test_weird_text_save(self):
         "test 'weird' text type (different in py2 vs py3)"
