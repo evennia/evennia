@@ -17,31 +17,27 @@ jobs:
         python-version: [3.7, 3.8]
         TESTING_DB: [sqlite3, postgresql, mysql]     
     steps:      
-    - uses: actions/checkout@v2    
+    - uses: actions/checkout@v2   
+    - uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '10.7'
+        postgresql db: postgres 
+    - uses: mirromutth/mysql-action@v1.1
+      with:    
+        mysql version: '8.0'        
+        mysql root password: 'root' 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    
-    - name: Start postgreSQL server
-      if: ${{ matrix.TESTING_DB  == 'postgresql' }}    
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '10.7'
+                   
     - name: Setup PostgreSQL database 
       if: ${{ matrix.TESTING_DB  == 'postgresql' }}
       run: |
         psql --version
         psql -U postgres -c "CREATE DATABASE evennia;"
         psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
-        psql -U postgres -c "ALTER USER evennia CREATEDB;"
-        
-    - name: Start MySQL server 
-      if: ${{ matrix.TESTING_DB == 'mysql' }}
-      uses: mirromutth/mysql-action@v1.1
-      with:    
-        mysql version: '8.0'        
-        mysql root password: 'root'       
+        psql -U postgres -c "ALTER USER evennia CREATEDB;"                  
     - name: Setup MySQL database
       if: ${{ matrix.TESTING_DB == 'mysql' }} 
       run: |         
