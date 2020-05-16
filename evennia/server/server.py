@@ -22,6 +22,7 @@ import django
 django.setup()
 
 import evennia
+import importlib
 
 evennia._init()
 
@@ -31,7 +32,6 @@ from django.conf import settings
 from evennia.accounts.models import AccountDB
 from evennia.scripts.models import ScriptDB
 from evennia.server.models import ServerConfig
-from evennia.server import initial_setup
 
 from evennia.utils.utils import get_evennia_version, mod_import, make_iter
 from evennia.utils import logger
@@ -105,6 +105,7 @@ _IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_LAST_SERVER_TIME_SNAPSHOT = 0
 
 
 def _server_maintenance():
@@ -113,6 +114,8 @@ def _server_maintenance():
     the server needs to do. It is called every minute.
     """
     global EVENNIA, _MAINTENANCE_COUNT, _FLUSH_CACHE, _GAMETIME_MODULE
+    global _LAST_SERVER_TIME_SNAPSHOT
+
     if not _FLUSH_CACHE:
         from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
     if not _GAMETIME_MODULE:
@@ -125,8 +128,13 @@ def _server_maintenance():
         # first call after a reload
         _GAMETIME_MODULE.SERVER_START_TIME = now
         _GAMETIME_MODULE.SERVER_RUNTIME = ServerConfig.objects.conf("runtime", default=0.0)
+        _LAST_SERVER_TIME_SNAPSHOT = now
     else:
-        _GAMETIME_MODULE.SERVER_RUNTIME += 60.0
+        # adjust the runtime not with 60s but with the actual elapsed time
+        # in case this may varies slightly from 60s.
+        _GAMETIME_MODULE.SERVER_RUNTIME += (now - _LAST_SERVER_TIME_SNAPSHOT)
+    _LAST_SERVER_TIME_SNAPSHOT = now
+
     # update game time and save it across reloads
     _GAMETIME_MODULE.SERVER_RUNTIME_LAST_UPDATED = now
     ServerConfig.objects.conf("runtime", _GAMETIME_MODULE.SERVER_RUNTIME)
@@ -333,6 +341,7 @@ class Evennia(object):
         Once finished the last_initial_setup_step is set to -1.
         """
         global INFO_DICT
+        initial_setup = importlib.import_module(settings.INITIAL_SETUP_MODULE)
         last_initial_setup_step = ServerConfig.objects.conf("last_initial_setup_step")
         if not last_initial_setup_step:
             # None is only returned if the config does not exist,

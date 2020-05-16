@@ -4,7 +4,7 @@ Master configuration file for Evennia.
 NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE!
 
 All settings changes should be done by copy-pasting the variable and
-its value to <gamedir>/conf/settings.py.
+its value to <gamedir>/server/conf/settings.py.
 
 Hint: Don't copy&paste over more from this file than you actually want
 to change.  Anything you don't copy&paste will thus retain its default
@@ -332,6 +332,10 @@ CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
 # cause issues with menu-logins and autoconnects since the menu will not have
 # started when the autoconnects starts sending menu commands.
 DELAY_CMD_LOGINSTART = 0.3
+# A module that must exist - this holds the instructions Evennia will use to
+# first prepare the database for use. Generally should not be changed. If this
+# cannot be imported, bad things will happen.
+INITIAL_SETUP_MODULE = "evennia.server.initial_setup"
 # An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).

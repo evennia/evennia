@@ -13,8 +13,9 @@
 - Added `content_types` indexing to DefaultObject's ContentsHandler. (volund)
 - Made most of the networking classes such as Protocols and the SessionHandlers 
   replaceable via `settings.py` for modding enthusiasts. (volund)
+- The `initial_setup.py` file can now be substituted in `settings.py` to customize 
+  initial game database state. (volund)
 - Added new Traits contrib, converted and expanded from Ainneve project.
-
 
 ### Already in master
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False

@@ -8,6 +8,7 @@ from django.contrib import admin
 from evennia.typeclasses.admin import AttributeInline, TagInline
 from evennia.objects.models import ObjectDB
 from django.contrib.admin.utils import flatten_fieldsets
+from django.utils.translation import gettext as _
 
 
 class ObjectAttributeInline(AttributeInline):
