@@ -70,8 +70,10 @@ jobs:
     - name: run test 
       run: |
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
+
+    # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: run coverall
-      if: ${{ matrix.TESTING_DB == 'sqlite3' && matix.python-version == 3.7 }}
+      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
       run: |
         coveralls
         coverage xml
