@@ -6,6 +6,8 @@
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 
 ### Already in master
+- Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
+  "TutorialWeaponRack" to prevent collisions with classes in mygame
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
