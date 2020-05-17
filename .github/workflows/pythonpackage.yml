@@ -95,7 +95,7 @@ jobs:
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
         coverage xml
-        cp coverage.cml ../cobertura.xml
+        cp coverage.xml ../cobertura.xml
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: Send data to Coveralls
