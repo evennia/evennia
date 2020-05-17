@@ -10,18 +10,18 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  build:          
+  build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         python-version: [3.7, 3.8]
         TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
-      fail-fast: False 
+      fail-fast: False
 
-    steps:      
+    steps:
 
-    - uses: actions/checkout@v2   
+    - uses: actions/checkout@v2
 
     - name: Set up PostgreSQL server
       uses: harmon758/postgresql-action@v1
@@ -31,17 +31,14 @@ jobs:
         postgresql db: 'evennia'
         postgresql user: 'evennia'
         postgresql password: 'password'
-    - name: Shutdown Ubuntu MySQL
-      if: ${{ matrix.TESTING_DB == 'mysql'}}
-      run: sudo service mysql stop
     - name: Set up MySQL server
       uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
-      with:    
-        mysql version: '8.0'        
-        mysql database: 'evennia'
+      with:
+        mysql version: '5.7'
         character set server: 'utf8mb4'
         collation server: 'utf8mb4_unicode_ci'
+        mysql database: 'evennia'
         mysql user: 'evennia'
         mysql password: 'password'
 
@@ -52,26 +49,10 @@ jobs:
       with:
         time: '10s'
     - name: Database container logs
-      # if: failure()
       uses: jwalton/gh-docker-logs@v1.0.0
     - name: Check running containers
       run: docker ps -a
 
-      #     - name: Setup PostgreSQL database 
-      #       if: ${{ matrix.TESTING_DB == 'postgresql' }}
-      #       run: |
-      #         psql --version
-      #         psql -U postgres -d postgres -h localhost -c "CREATE DATABASE evennia;"
-      #         psql -U postgres -d postgres -h localhost -c "CREATE USER evennia WITH PASSWORD 'password';"
-      #         psql -U postgres -d postgres -h localhost -c "ALTER USER evennia CREATEDB;"
-      #     - name: Setup MySQL database
-      #       if: ${{ matrix.TESTING_DB == 'mysql' }} 
-      #       run: |         
-      #         mysql --version        
-      #         mysql -uroot -proot -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-      #         mysql -uroot -proot -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
-      #         mysql -uroot -proot -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
-      # 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -80,7 +61,7 @@ jobs:
     - name: Install package dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install wheel 
+        pip install wheel
         pip install psycopg2-binary
         pip install mysqlclient
         pip install coveralls
@@ -99,9 +80,9 @@ jobs:
         evennia migrate
         evennia collectstatic --noinput
 
-    - name: Run test 
+    - name: Run test suite
       run: |
-        cd testing_mygame 
+        cd testing_mygame
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
         coverage xml
 
@@ -111,7 +92,7 @@ jobs:
       env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
-        cd testing_mygame 
+        cd testing_mygame
         coveralls
     - name: Send data to Codacy
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
