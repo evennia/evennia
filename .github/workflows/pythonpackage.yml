@@ -42,8 +42,8 @@ jobs:
         mysql database: 'evennia'
         character set server: 'utf8mb4'
         collation server: 'utf8mb4_unicode_ci'
-        mysql_user: 'evennia'
-        mysql_password: 'password'
+        mysql user: 'evennia'
+        mysql password: 'password'
 
     # wait for db to activage, get logs from their start
     - name: Wait / sleep
