@@ -23,11 +23,11 @@ jobs:
     - uses: actions/checkout@v2   
 
     - uses: harmon758/postgresql-action@v1
-      if: ${{ matrix.TESTING_DB == 'mysql' }}
+      if: ${{ matrix.TESTING_DB == 'postgresql' }}
       with:
         postgresql version: '10.7'
     - uses: mirromutth/mysql-action@v1.1
-      if: ${{ matrix.TESTING_DB == 'postgresql'}}
+      if: ${{ matrix.TESTING_DB == 'mysql'}}
       with:    
         mysql version: '8.0'        
         mysql root password: 'root' 
@@ -44,7 +44,7 @@ jobs:
       run: docker ps -a
 
     - name: Setup PostgreSQL database 
-      if: ${{ matrix.TESTING_DB  == 'postgresql' }}
+      if: ${{ matrix.TESTING_DB == 'postgresql' }}
       run: |
         psql --version
         psql -U postgres -c "CREATE DATABASE evennia;"
@@ -72,7 +72,10 @@ jobs:
         pip install coveralls
         pip install codacy-coverage         
         pip install -e .
-        pip install -r requirements_extra.txt
+
+    - name: Install extra dependencies  # Only develop branch right now
+      if: ${{ github.ref == 'refs/heads/develop' }}
+      run: pip install -r requirements_extra.txt
 
     - name: Install and initialize evennia
       run: |
