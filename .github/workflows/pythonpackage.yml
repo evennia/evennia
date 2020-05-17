@@ -105,8 +105,8 @@ jobs:
         cd testing_mygame 
         coveralls
     - name: Send data to Codacy
-        if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
-        uses: codacy/codacy-coverage-reporter-action@master
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: ./testing_mygame/coverage.xml
+      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      uses: codacy/codacy-coverage-reporter-action@master
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: ./testing_mygame/coverage.xml
