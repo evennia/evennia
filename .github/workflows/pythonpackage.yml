@@ -98,6 +98,8 @@ jobs:
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: Run coverall
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      with: 
+        coveralls_repo_token: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         coveralls
         coverage xml
