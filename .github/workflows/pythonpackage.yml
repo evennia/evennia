@@ -74,6 +74,7 @@ jobs:
         pip install psycopg2-binary
         pip install mysqlclient
         pip install coveralls
+        pip install codacy-coverage
         pip install -e .
 
     - name: Install extra dependencies  # Only develop branch right now
@@ -92,19 +93,15 @@ jobs:
       run: |
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
-        coverage xml
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
-    - name: Send to Coveralls
+    - name: Send data to Coveralls / Codacy 
+      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
       env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       run: |
         cd testing_mygame 
         coveralls
-
-    - name: Send to Codacity
-      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
-      uses: codacy/codacy-coverage-reporter-action@master
-      with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: ./testing_mygame/coverage.xml
+        coverage xml
+        python-codacy-coverage -r coverage.xml
