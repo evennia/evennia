@@ -12,25 +12,35 @@ on:
 jobs:
   build:          
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: [3.7, 3.8]
-        TESTING_DB: [sqlite3, postgresql, mysql]     
+        TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
+
     steps:      
     - uses: actions/checkout@v2   
+
     - uses: harmon758/postgresql-action@v1
+      if: ${{ TESTING_DB == 'mysql' }}
       with:
         postgresql version: '10.7'
-        postgresql db: postgres 
     - uses: mirromutth/mysql-action@v1.1
+      if: ${{ TESTING_DB == 'postgresql'}}
       with:    
         mysql version: '8.0'        
         mysql root password: 'root' 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+
+    # wait for db to activage, get logs from their start
+    - name: Wait / sleep
+      uses: jakejarvis/wait-action@v0.1.0
       with:
-        python-version: ${{ matrix.python-version }}
-                   
+        time: '10s'
+    - name:
+      uses: kwalton/gh-docker-logs@v1.0.0
+    - name: Check running containers
+      run: docker ps -a
+
     - name: Setup PostgreSQL database 
       if: ${{ matrix.TESTING_DB  == 'postgresql' }}
       run: |
@@ -45,8 +55,13 @@ jobs:
         mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
         mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
         mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
-        
-    - name: Install dependencies
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install package dependencies
       run: |
         python -m pip install --upgrade pip
         pip install wheel 
@@ -56,13 +71,15 @@ jobs:
         pip install codacy-coverage         
         pip install -e .
         pip install -r requirements_extra.txt
-    - name: Set up evennia
+
+    - name: Install and initialize evennia
       run: |
         evennia --init testing_mygame
         cp .travis/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
         cd testing_mygame
         evennia migrate
         evennia collectstatic --noinput
+
     - name: run test 
       run: |
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
