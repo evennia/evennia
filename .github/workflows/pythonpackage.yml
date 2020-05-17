@@ -28,8 +28,9 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       with:
         postgresql version: '10.7'
-        posgresql db: 'postgres'
-        postgresql user: 'postgres'
+        postgresql db: 'evennia'
+        postgresql user: 'evennia'
+        postgresql password: 'password'
     - name: Shutdown Ubuntu MySQL
       if: ${{ matrix.TESTING_DB == 'mysql'}}
       run: sudo service mysql stop
@@ -38,8 +39,11 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'mysql'}}
       with:    
         mysql version: '8.0'        
-        mysql database: 'root'
-        mysql root password: 'root' 
+        mysql database: 'evennia'
+        character set server: 'utf8mb4'
+        collation server: 'utf8mb4_unicode_ci'
+        mysql_user: 'evennia'
+        mysql_password: 'password'
 
     # wait for db to activage, get logs from their start
     - name: Wait / sleep
@@ -48,26 +52,26 @@ jobs:
       with:
         time: '10s'
     - name: Database container logs
-      if: failure()
+      # if: failure()
       uses: jwalton/gh-docker-logs@v1.0.0
     - name: Check running containers
       run: docker ps -a
 
-    - name: Setup PostgreSQL database 
-      if: ${{ matrix.TESTING_DB == 'postgresql' }}
-      run: |
-        psql --version
-        psql -U postgres -d postgres -h localhost -c "CREATE DATABASE evennia;"
-        psql -U postgres -d postgres -h localhost -c "CREATE USER evennia WITH PASSWORD 'password';"
-        psql -U postgres -d postgres -h localhost -c "ALTER USER evennia CREATEDB;"
-    - name: Setup MySQL database
-      if: ${{ matrix.TESTING_DB == 'mysql' }} 
-      run: |         
-        mysql --version        
-        mysql -uroot -proot -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-        mysql -uroot -proot -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
-        mysql -uroot -proot -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
-
+      #     - name: Setup PostgreSQL database 
+      #       if: ${{ matrix.TESTING_DB == 'postgresql' }}
+      #       run: |
+      #         psql --version
+      #         psql -U postgres -d postgres -h localhost -c "CREATE DATABASE evennia;"
+      #         psql -U postgres -d postgres -h localhost -c "CREATE USER evennia WITH PASSWORD 'password';"
+      #         psql -U postgres -d postgres -h localhost -c "ALTER USER evennia CREATEDB;"
+      #     - name: Setup MySQL database
+      #       if: ${{ matrix.TESTING_DB == 'mysql' }} 
+      #       run: |         
+      #         mysql --version        
+      #         mysql -uroot -proot -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      #         mysql -uroot -proot -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
+      #         mysql -uroot -proot -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
+      # 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
