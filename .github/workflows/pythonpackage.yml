@@ -39,7 +39,7 @@ jobs:
       uses: jakejarvis/wait-action@v0.1.0
       with:
         time: '10s'
-    - name:
+    - name: Database container logs
       # if: failure()
       uses: jwalton/gh-docker-logs@v1.0.0
     - name: Check running containers
@@ -49,12 +49,9 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       run: |
         psql --version
-        psql postgreqsl://postgres:postgres@localhost:5432/postgres -c "CREATE DATABASE evennia;"
-        psql postgreqsl://postgres:postgres@localhost:5432/postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
-        psql postgreqsl://postgres:postgres@localhost:5432/postgres -c "ALTER USER evennia CREATED;"
-        # psql -U postgres -w -c "CREATE DATABASE evennia;"
-        # psql -U postgres -w -c "CREATE USER evennia WITH PASSWORD 'password';"
-        # psql -U postgres -w -c "ALTER USER evennia CREATEDB;"
+        psql -U postgres -c "CREATE DATABASE evennia;"
+        psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
+        psql -U postgres -c "ALTER USER evennia CREATEDB;"
     - name: Setup MySQL database
       if: ${{ matrix.TESTING_DB == 'mysql' }} 
       run: |         
@@ -92,15 +89,5 @@ jobs:
 
     - name: run test 
       run: |
-        echo `pwd`
-        echo `ls`
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
-
-    # we only want to run coverall once, so we only do it for one of the matrix combinations
-    - name: run coverall
-      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
-      run: |
-        coveralls
-        coverage xml
-        python-codacy-coverage -r coverage.xml
