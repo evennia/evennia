@@ -20,15 +20,17 @@ jobs:
       fail-fast: False 
 
     steps:      
-    - uses: actions/checkout@v2   
 
-    - uses: harmon758/postgresql-action@v1
+    - uses: actions/checkout@v2   
+    - name: Set up PostgreSQL server
+      uses: harmon758/postgresql-action@v1
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       with:
         postgresql version: '10.7'
         postgresql user: 'postgres'
         postgresql password: 'postgres'
-    - uses: mirromutth/mysql-action@v1.1
+    - name: Set up MySQL server
+      uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
       with:    
         mysql version: '8.0'        
@@ -72,7 +74,6 @@ jobs:
         pip install psycopg2-binary
         pip install mysqlclient
         pip install coveralls
-        pip install codacy-coverage         
         pip install -e .
 
     - name: Install extra dependencies  # Only develop branch right now
@@ -87,7 +88,7 @@ jobs:
         evennia migrate
         evennia collectstatic --noinput
 
-    - name: run test 
+    - name: Run test 
       run: |
         echo `pwd`
         echo `ls`
@@ -95,14 +96,14 @@ jobs:
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
-    - name: run coverall
+    - name: Run coverall
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
       run: |
         coveralls
         coverage xml
-        python-codacy-coverage -r coverage.xml
 
-    - name: codacy-coverage-reporter
+    - name: Report coverage to codacy
+      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
       uses: codacy/codacy-coverage-reporter-action@master
       with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
