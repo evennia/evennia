@@ -89,5 +89,21 @@ jobs:
 
     - name: run test 
       run: |
+        echo `pwd`
+        echo `ls`
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
+
+    # we only want to run coverall once, so we only do it for one of the matrix combinations
+    - name: run coverall
+      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      run: |
+        coveralls
+        coverage xml
+        python-codacy-coverage -r coverage.xml
+
+    - name: codacy-coverage-reporter
+      uses: codacy/codacy-coverage-reporter-action@master
+      with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml
