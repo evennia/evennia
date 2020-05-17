@@ -27,8 +27,8 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       with:
         postgresql version: '10.7'
+        posgresql db: 'postgres'
         postgresql user: 'postgres'
-        postgresql password: 'postgres'
     - name: Set up MySQL server
       uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
@@ -52,9 +52,9 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       run: |
         psql --version
-        psql -U postgres -c "CREATE DATABASE evennia;"
-        psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
-        psql -U postgres -c "ALTER USER evennia CREATEDB;"
+        psql -U postgres -d postgres -h localhost -c "CREATE DATABASE evennia;"
+        psql -U postgres -d postgres -h localhost -c "CREATE USER evennia WITH PASSWORD 'password';"
+        psql -U postgres -d postgres -h localhost -c "ALTER USER evennia CREATEDB;"
     - name: Setup MySQL database
       if: ${{ matrix.TESTING_DB == 'mysql' }} 
       run: |         
@@ -95,6 +95,7 @@ jobs:
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
         coverage xml
+        cp coverage.cml ../cobertura.xml
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: Send data to Coveralls
@@ -109,4 +110,4 @@ jobs:
       uses: codacy/codacy-coverage-reporter-action@master
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: ./testing_mygame/coverage.xml
+        # coverage-reports: ./testing_mygame/coverage.xml
