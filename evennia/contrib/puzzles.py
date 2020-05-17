@@ -589,13 +589,28 @@ def _matching_puzzles(puzzles, puzzlename_tags_dict, puzzle_ingredients):
 
 class CmdUsePuzzleParts(MuxCommand):
     """
+    Use an object, or a group of objects at once.
+
+
+    Example:
+      You look around you and see a pole, a long string, and a needle.
+
+      use pole, long string, needle
+
+      Genius! You built a fishing pole.
+
+
+    Usage:
+        use <obj1> [,obj2,...]
+    """
+
+    # Technical explanation
+    """
     Searches for all puzzles whose parts match the given set of objects. If there are matching
     puzzles, the result objects are spawned in their corresponding location if all parts have been
     passed in.
-
-    Usage:
-        use <part1[,part2,...>]
     """
+
 
     key = "use"
     aliases = "combine"
