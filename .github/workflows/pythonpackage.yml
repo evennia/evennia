@@ -92,18 +92,19 @@ jobs:
       run: |
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
+        coverage xml
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: Send to Coveralls
-      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
-      uses: coverallsapp/github-action@v1.1.1
-      with: 
-        github-token: ${{ secrets.GITHUB_TOKEN }}  # in-built, need not be set up manually
-        path-to-lcov: ./testing_mygame/.coverage
+      env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        cd testing_mygame 
+        coveralls
 
     - name: Send to Codacity
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
       uses: codacy/codacy-coverage-reporter-action@master
       with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: ./testing_mygame/.coverage
+          coverage-reports: ./testing_mygame/coverage.xml
