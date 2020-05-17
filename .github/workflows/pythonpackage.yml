@@ -22,6 +22,7 @@ jobs:
     steps:      
 
     - uses: actions/checkout@v2   
+
     - name: Set up PostgreSQL server
       uses: harmon758/postgresql-action@v1
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
@@ -29,13 +30,17 @@ jobs:
         postgresql version: '10.7'
         posgresql db: 'postgres'
         postgresql user: 'postgres'
-        #     - name: Set up MySQL server
-        #       uses: mirromutth/mysql-action@v1.1
-        #       if: ${{ matrix.TESTING_DB == 'mysql'}}
-        #       with:    
-        #         mysql version: '8.0'        
-        #         mysql root password: 'root' 
-        # 
+    - name: Shutdown Ubuntu MySQL
+      if: ${{ matrix.TESTING_DB == 'mysql'}}
+      run: sudo service mysql stop
+    - name: Set up MySQL server
+      uses: mirromutth/mysql-action@v1.1
+      if: ${{ matrix.TESTING_DB == 'mysql'}}
+      with:    
+        mysql version: '8.0'        
+        mysql database: 'root'
+        mysql root password: 'root' 
+
     # wait for db to activage, get logs from their start
     - name: Wait / sleep
       uses: jakejarvis/wait-action@v0.1.0
