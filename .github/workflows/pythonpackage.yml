@@ -43,7 +43,7 @@ jobs:
       with:
         time: '10s'
     - name: Database container logs
-      # if: failure()
+      if: failure()
       uses: jwalton/gh-docker-logs@v1.0.0
     - name: Check running containers
       run: docker ps -a
@@ -59,9 +59,9 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'mysql' }} 
       run: |         
         mysql --version        
-        mysql -u root -proot -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-        mysql -u root -proot -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
-        mysql -u root -proot -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
+        mysql -uroot -proot -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        mysql -uroot -proot -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
+        mysql -uroot -proot -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -95,7 +95,6 @@ jobs:
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
         coverage xml
-        cp coverage.xml ../cobertura.xml
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: Send data to Coveralls
@@ -110,4 +109,4 @@ jobs:
       uses: codacy/codacy-coverage-reporter-action@master
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        # coverage-reports: ./testing_mygame/coverage.xml
+        coverage-reports: ./testing_mygame/coverage.xml
