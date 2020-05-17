@@ -39,6 +39,7 @@ jobs:
     # wait for db to activage, get logs from their start
     - name: Wait / sleep
       uses: jakejarvis/wait-action@v0.1.0
+      if: ${{ matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql' }}
       with:
         time: '10s'
     - name: Database container logs
@@ -93,15 +94,19 @@ jobs:
       run: |
         cd testing_mygame 
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
+        coverage xml
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
-    - name: Send data to Coveralls / Codacy 
+    - name: Send data to Coveralls
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
       env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       run: |
         cd testing_mygame 
         coveralls
-        coverage xml
-        python-codacy-coverage -r coverage.xml
+    - name: Send data to Codacy
+        if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: ./testing_mygame/coverage.xml
