@@ -26,6 +26,7 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       with:
         postgresql version: '10.7'
+        postgresql user: 'postgres'
     - uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
       with:    
@@ -38,7 +39,7 @@ jobs:
       with:
         time: '10s'
     - name:
-      if: failure()
+      # if: failure()
       uses: jwalton/gh-docker-logs@v1.0.0
     - name: Check running containers
       run: docker ps -a
@@ -47,16 +48,16 @@ jobs:
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       run: |
         psql --version
-        psql -U postgres -c "CREATE DATABASE evennia;"
-        psql -U postgres -c "CREATE USER evennia WITH PASSWORD 'password';"
-        psql -U postgres -c "ALTER USER evennia CREATEDB;"                  
+        psql -U postgres -w -c "CREATE DATABASE evennia;"
+        psql -U postgres -w -c "CREATE USER evennia WITH PASSWORD 'password';"
+        psql -U postgres -w -c "ALTER USER evennia CREATEDB;"
     - name: Setup MySQL database
       if: ${{ matrix.TESTING_DB == 'mysql' }} 
       run: |         
         mysql --version        
-        mysql -u root -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-        mysql -u root -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
-        mysql -u root -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
+        mysql -u root -proot -e "CREATE DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        mysql -u root -proot -e "CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'password';"
+        mysql -u root -proot -e "GRANT ALL ON *.* TO 'evennia'@'localhost' IDENTIFIED BY 'password';"
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -87,7 +88,8 @@ jobs:
 
     - name: run test 
       run: |
-        coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
+        echo `pwd`
+        coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ./bin/unix/evennia test --settings=settings --keepdb evennia
 
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: run coverall
