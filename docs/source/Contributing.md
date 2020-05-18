@@ -37,7 +37,7 @@ We always need more eyes and hands on the code. Even if you don't feel confident
 and reporting when stuff doesn't make sense helps us a lot.
 
 The most elegant way to contribute code to Evennia is to use GitHub to create a *fork* of the
-Evennia repository and make your changes to that. Refer to the [Forking Evennia][forking] version
+Evennia repository and make your changes to that. Refer to the [Forking Evennia](https://github.com/evennia/evennia/wiki/Version-Control#forking-evennia) version
 control instructions for detailed instructions. 
 
 Once you have a fork set up, you can not only work on your own game in a separate branch, you can
