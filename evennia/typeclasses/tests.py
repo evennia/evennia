@@ -137,3 +137,12 @@ class TestTypedObjectManager(EvenniaTest):
             ),
             [self.obj1],
         )
+
+    def test_get_tag_withnomatch(self):
+        self.obj1.tags.add("tagC", "categoryC")
+        self.assertEqual(
+            self._manager(
+                "get_by_tag", ["tagA", "tagB"], ["categoryA", "categoryB"], match="any"
+            ),
+            [],
+        )
