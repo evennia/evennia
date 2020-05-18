@@ -10,6 +10,7 @@ from os.path import sep, abspath, dirname, join as pathjoin, exists
 import recommonmark
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
+from sphinx.search import IndexBuilder
 
 
 _no_autodoc = os.environ.get("NOAUTODOC")
@@ -62,7 +63,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
-    # "sphinxcontrib.lunrsearch",
+    "sphinxcontrib.lunrsearch",
 ]
 
 # make sure sectionlabel references can be used as path/to/file:heading
