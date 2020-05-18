@@ -89,7 +89,7 @@ From in-game the `@reset` command is used. From the terminal:
 
 ## Rebooting
 
-This will shut down *both* Server and Portal, which means all connected players will loose their
+This will shut down *both* Server and Portal, which means all connected players will lose their
 connection. It can only be initiated from the terminal:
 
     evennia reboot
