@@ -14,7 +14,7 @@
 In the first part of the tutorial we did things like
 
 ```python
-> @py me.msg("Hello World!")
+> py me.msg("Hello World!")
 ```
 
 To learn about functions and imports we also passed that `me` on to a function `hello_world` in another module.
@@ -22,29 +22,29 @@ To learn about functions and imports we also passed that `me` on to a function `
 Let's learn some more about this `me` thing we are passing around all over the place. In the following we assume that we named our superuser Character "Christine".
 
 ```python
-> @py me
+> py me
     Christine
-> @py me.key
+> py me.key
     Christine
 ```
 
 These returns look the same at first glance, but not if we examine them more closely:
 
 ```python
-> @py type(me)
+> py type(me)
     <class 'typeclasses.characters.Character'>
-> @py type(me.key)
+> py type(me.key)
     <type str>
 ```
 
-> Note: In some MU* clients, such as Mudlet and MUSHclient simply returning `type(me)`, you may not see the proper return from the above commands. This is likely due to the HTML-like tags, such as `<...>`, through `@py`.
+> Note: In some MU* clients, such as Mudlet and MUSHclient simply returning `type(me)`, you may not see the proper return from the above commands. This is likely due to the HTML-like tags `<...>`, being swallowed by the client.
 
 The `type` function is, like `print`, another in-built function in Python. It
 tells us that we (`me`) are of the *class* `typeclasses.characters.Character`.
 Meanwhile `me.key` is a *property* on us, a string. It holds the name of this
 object.
 
-> When you do `@py me`, the `me` is defined in such a way that it will use its `.key` property to represent itself. That is why the result is the same as when doing `@py me.key`. Also, remember that as noted in the first part of the tutorial, the `me` is *not* a reserved Python word; it was just defined by the Evennia developers as a convenient short-hand when creating the `@py` command. So don't expect `me` to be available elsewhere.
+> When you do `py me`, the `me` is defined in such a way that it will use its `.key` property to represent itself. That is why the result is the same as when doing `py me.key`. Also, remember that as noted in the first part of the tutorial, the `me` is *not* a reserved Python word; it was just defined by the Evennia developers as a convenient short-hand when creating the `py` command. So don't expect `me` to be available elsewhere.
 
 A *class* is like a "factory" or blueprint. From a class you then create individual *instances*. So if class is`Dog`, an instance of `Dog` might be `fido`. Our in-game persona is of a class `Character`. The superuser `christine` is an *instance* of the `Character` class (an instance is also often referred to as an *object*). This is an important concept in *object oriented programming*. You are wise to [familiarize yourself with it](https://en.wikipedia.org/wiki/Class-based_programming) a little.
 
@@ -52,13 +52,13 @@ A *class* is like a "factory" or blueprint. From a class you then create individ
 > * class: A description of a thing, all the methods (code) and data (information)
 > * object: A thing, defined as an *instance* of a class.
 >
-> So in "Fido is a dog", "Fido" is an object--a unique thing--and "dog" is a class. Coders would also say, "Fido is an instance of Dog". There can be other dogs too, such as Butch and Fifi. They, too, would be instances of Dog.
+> So in "Fido is a Dog", "Fido" is an object--a unique thing--and "Dog" is a class. Coders would also say, "Fido is an instance of Dog". There can be other dogs too, such as Butch and Fifi. They, too, would be instances of Dog.
 >
 > As another example: "Christine is a Character", or "Christine is an instance of typeclasses.characters.Character". To start, all characters will be instances of typeclass.characters.Character.
 >
 > You'll be writing your own class soon! The important thing to know here is how classes and objects relate.
 
-The string `'typeclasses.characters.Character'` we got from the `type()` function is not arbitrary. It exactly describes where to find the python code describing this class. Python treats source code files on your hard drive (known as *modules*) as well as folders (known as *packages*) as objects that you access with the `.` operator. It starts looking at a place that Evennia has set up for you - namely the root of your own game directory.
+The string `'typeclasses.characters.Character'` we got from the `type()` function is not arbitrary. You'll recognize this from when we _imported_ `world.test` in part one. This is a _path_ exactly describing where to find the python code describing this class. Python treats source code files on your hard drive (known as *modules*) as well as folders (known as *packages*) as objects that you access with the `.` operator. It starts looking at a place that Evennia has set up for you - namely the root of your own game directory.
 
 Open and look at your game folder (named `mygame` if you exactly followed the Getting Started instructions) in a file editor or in a new terminal/console. Locate the file `mygame/typeclasses/characters.py`
 
@@ -252,7 +252,7 @@ Note that we don't send `self` but only the `message` argument. Python will auto
 
 By default the `at_before_say` method doesn't do anything. It just takes the `message` input and `return`s it just the way it was (the `return` is another reserved Python word).
 
-> We won't go into `**kwargs` here, but it (and its sibling `*args`) is also important to understand. To understand the meaning of `self`,  and [here for `**kwargs`](https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python).
+> We won't go into `**kwargs` here, but it (and its sibling `*args`) is also important to understand, extra reading is [here for `**kwargs`](https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python).
 
 Now, open your game folder and edit `mygame/typeclasses/characters.py`. Locate your `Character` class and modify it as such:
 
@@ -263,12 +263,12 @@ class Character(DefaultCharacter):
     """
     def at_before_say(self, message, **kwargs):
         "Called before say, allows for tweaking message"
-        return "{} ...".format(message)
+        return f"{message} ..."
 ```
 
 So we add our own version of `at_before_say`, duplicating the `def` line from the parent but putting new code in it. All we do in this tutorial is to add an ellipsis (`...`) to the message as it passes through the method.
 
-The `format` is a standard method on Python strings. It looks for placeholders `{}` in the string and replaces that placeholder with its arguments in the same order. In this case we are inserting the original `message` into the place of the `{}` and follow it with `...`. Python has very powerful [string formatting](https://docs.python.org/2/library/string.html#format-specification-mini-language) and you are wise to learn those well.
+Note that `f` in front of the string, it means we turned the string into a 'formatted string'. We can now easily inject stuff directly into the string by wrapping them in curly brackets `{ }`. In this example, we put the incoming `message` into the string, followed by an ellipsis. This is only one way to format a string. Python has very powerful [string formatting](https://docs.python.org/2/library/string.html#format-specification-mini-language) and you are wise to learn it well, considering your game will be mainly text-based.
 
 > You could also copy & paste the relevant method from `DefaultObject` here to get the full doc string. For more complex methods, or if you only want to change some small part of the default behavior, copy & pasting will eliminate the need to constantly look up the original method and keep you sane.
 
@@ -280,13 +280,13 @@ In-game, now try
 
 An ellipsis `...` is added to what you said! This is a silly example but you have just made your first code change to core functionality - without touching any of Evennia's original code! We just plugged in our own version of the `at_before_say` method and it replaced the default one. Evennia happily redirected the message through our version and we got a different output.
 
-> For sane overriding of parent methods you should also be aware of Python's [super](https://docs.python.org/2/library/functions.html#super), which allows you to call the methods defined on a parent in your child class.
+> For sane overriding of parent methods you should also be aware of Python's [super](https://docs.python.org/3/library/functions.html#super), which allows you to call the methods defined on a parent in your child class.
 
 ### The Evennia shell
 
-Now on to some generally useful tools as you continue learning Python and Evennia. We have so far explored using `@py` and inserted Python directly in-game. We have also modified Evennia's behavior by overriding default functionality with our own. There is a third way to conveniently explore Evennia and Python - the Evennia shell.
+Now on to some generally useful tools as you continue learning Python and Evennia. We have so far explored using `py` and have inserted Python code directly in-game. We have also modified Evennia's behavior by overriding default functionality with our own. There is a third way to conveniently explore Evennia and Python - the Evennia shell.
 
-First `cd` to your game folder and make sure any needed virtualenv is running. Next:
+Outside of your game, `cd` to your mygame folder and make sure any needed virtualenv is running. Next:
 
     > pip install ipython      # only needed once
 
@@ -294,7 +294,7 @@ The [`IPython`](https://en.wikipedia.org/wiki/IPython) program is just a nicer i
 
     > evennia shell
 
-You will now be in a Python prompt managed by the IPython program.
+If you did this call from your game dir you will now be in a Python prompt managed by the IPython program.
 
     IPython ...
     ...
@@ -307,7 +307,7 @@ IPython has some very nice ways to explore what Evennia has to offer.
 > evennia.<TAB>
 ```
 
-That is, write `evennia.` and press the Tab key. You will be presented with a list of all available resources in the Evennia Flat API. We looked at the `__init__.py` file in the `evennia` folder earlier, so some of what you see should be familiar. From the IPython prompt do:
+That is, write `evennia.` and press the Tab key. You will be presented with a list of all available resources in the Evennia Flat API. We looked at the `__init__.py` file in the `evennia` folder earlier, so some of what you see should be familiar. From the IPython prompt, do:
 
 ```python
 > from evennia import DefaultCharacter
@@ -316,7 +316,7 @@ That is, write `evennia.` and press the Tab key. You will be presented with a li
 
 Don't forget that you can use `<TAB>` to auto-complete code as you write. Appending a single `?` to the end will show you the doc-string for `at_before_say` we looked at earlier. Use `??` to get the whole source code.
 
-Let's look at our over-ridden version instead. Since we must start `IPython` from our game dir we can easily get to our code too:
+Let's look at our over-ridden version instead. Since we started the `evennia shell` from our game dir we can easily get to our code too:
 
 ```python
 > from typeclasses.characters import Character

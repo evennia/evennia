@@ -103,6 +103,7 @@
  - [Library Reference](http://docs.python.org/lib/lib.html)
  - [Language Reference](http://docs.python.org/ref/ref.html)
  - [Python tips and tricks](http://www.siafoo.net/article/52)
+ - [Jetbrains Python academy](https://hyperskill.org/onboarding?track=python) - free online programming curriculum for different skill levels
 
 ### Credits
 

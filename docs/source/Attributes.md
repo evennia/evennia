@@ -15,6 +15,8 @@ specific names and require very specific types of data (for example you couldn't
 *list* to the `key` property no matter how hard you tried).  `Attributes` come into play when you
 want to assign arbitrary data to arbitrary names.
 
+**Attributes are _not_ secure by default and any player may be able to change them unless you [prevent this behavior](#locking-and-checking-attributes).**
+
 ## The .db and .ndb shortcuts
 
 To save persistent data on a Typeclassed object you normally use the `db` (DataBase) operator. Let's

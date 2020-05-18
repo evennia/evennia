@@ -195,6 +195,7 @@ What we showed above is by far the simplest and probably cheapest option: Run Ev
 - No support or safety - if your house burns down, so will your game. Also, you are yourself responsible for doing regular backups.
 - Potentially not as easy if you don't know how to open ports in your firewall or router.
 - Home IP numbers are often dynamically allocated, so for permanent online time you need to set up a DNS to always re-point to the right place (see below).
+- You are personally responsible for any use/misuse of your internet connection-- though unlikely (but not impossible) if running your server somehow causes issues for other customers on the network, goes against your ISP's terms of service (many ISPs insist on upselling you to a business-tier connection) or you are the subject of legal action by a copyright holder, you may find your main internet connection terminated as a consequence.
 
 #### Setting up your own machine as a server
 

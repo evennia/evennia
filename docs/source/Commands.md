@@ -148,7 +148,7 @@ class CmdSmile(Command):
 
     def parse(self):
         "Very trivial parser"
-        target = self.args.strip()
+        self.target = self.args.strip()
 
     def func(self):
         "This actually does things"

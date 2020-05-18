@@ -92,7 +92,8 @@ Command sets are often added to an object in its `at_object_creation` method. Fo
 
 There are several extra flags that you can set on CmdSets in order to modify how they work. All are optional and will be set to defaults otherwise.  Since many of these relate to *merging* cmdsets, you might want to read the [Adding and Merging Command Sets](https://github.com/evennia/evennia/wiki/Command-Sets#adding-and-merging-command-sets) section for some of these to make sense.
 
-- `key` (string) - an identifier for the cmdset. This is optional, but should be unique. It is used for display in lists, but also to identify special merging behaviours using the `key_mergetype` dictionary below. - `mergetype` (string) - allows for one of the following string values: "*Union*", "*Intersect*", "*Replace*", or "*Remove*".  
+- `key` (string) - an identifier for the cmdset. This is optional, but should be unique. It is used for display in lists, but also to identify special merging behaviours using the `key_mergetype` dictionary below. 
+- `mergetype` (string) - allows for one of the following string values: "*Union*", "*Intersect*", "*Replace*", or "*Remove*".  
 - `priority` (int) - This defines the merge order of the merge stack - cmdsets will merge in rising order of priority with the highest priority set merging last. During a merger, the commands from the set with the higher priority will have precedence (just what happens depends on the [merge type](#adding-and-merging-command-sets)). If priority is identical, the order in the merge stack determines preference. The priority value must be greater or equal to `-100`. Most in-game sets should usually have priorities between `0` and `100`. Evennia default sets have priorities as follows (these can be changed if you want a different distribution): 
     - EmptySet: `-101` (should be lower than all other sets)
     - SessionCmdSet: `-20`
