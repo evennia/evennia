@@ -149,9 +149,10 @@ In the future you can add any number of commands to this cmdset, to expand your 
 We will create a simple Room typeclass to act as a template for all our Chargen areas. Edit `mygame/typeclasses/rooms.py` next:
 
 ```python 
-# end of rooms.py
-
 from commands.default_cmdsets import ChargenCmdset
+
+# ... 
+# down at the end of rooms.py
 
 class ChargenRoom(Room):
     """
@@ -199,6 +200,8 @@ Go back to `mygame/commands/command.py` and add the command to the end like this
 
 ```python    
 import random
+
+# ... 
 
 class CmdAttack(Command):
     """

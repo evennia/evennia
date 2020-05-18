@@ -72,7 +72,11 @@ Think thís default error message looks dull? The `get` command looks for an [At
 
     set box/get_err_msg = It's way too heavy for you to lift. 
 
-Try to get it now and you should see a nicer error message echoed back to you.
+Try to get it now and you should see a nicer error message echoed back to you. To see what this message string is in the future, you can use 'examine.'
+
+    examine box/get_err_msg
+
+Examine will return the value of attributes, including color codes. `examine here/desc` would return the raw description of your current room (including color codes), so that you can copy-and-paste to set its description to something else.
 
 You create new Commands (or modify existing ones) in Python outside the game. See the [Adding Commands tutorial](https://github.com/evennia/evennia/wiki/Adding%20Command%20Tutorial) for help with creating your first own Command.
 

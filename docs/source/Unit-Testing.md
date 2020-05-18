@@ -41,7 +41,7 @@ Evennia's test suite makes use of Django unit test system, which in turn relies 
 
 To make the test runner find the tests, they must be put in a module named `test*.py` (so `test.py`, `tests.py` etc). Such a test module will be found wherever it is in the package. It can be a good idea to look at some of Evennia's `tests.py` modules to see how they look. 
 
-Inside a testing file, a `unittest.TestCase` class is used to test a single aspect or component in various ways. Each test case contains one ore more *test methods* - these define the actual tests to run. You can name the test methods anything you want as long as  the name starts with "`test_`".  Your `TestCase` class can also have a method `setUp()`. This is run before each test, setting up and storing whatever preparations the test methods need. Conversely, a `tearDown()` method can optionally do cleanup after each test. 
+Inside a testing file, a `unittest.TestCase` class is used to test a single aspect or component in various ways. Each test case contains one or more *test methods* - these define the actual tests to run. You can name the test methods anything you want as long as  the name starts with "`test_`".  Your `TestCase` class can also have a method `setUp()`. This is run before each test, setting up and storing whatever preparations the test methods need. Conversely, a `tearDown()` method can optionally do cleanup after each test. 
 
 To test the results, you use special methods of the `TestCase` class.  Many of those start with "`assert`", such as `assertEqual` or `assertTrue`.
 

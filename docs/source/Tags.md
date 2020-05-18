@@ -10,12 +10,16 @@ In Evennia, Tags are technically also used to implement `Aliases` (alternative n
 
 ## Properties of Tags (and Aliases and Permissions)
 
-Tags are *unique*. This means that there is only ever one Tag object with a given key and category. When Tags are assigned to game entities, these entities are actually sharing the same Tag. This means that Tags are not suitable for storing information about a single object - use an [Attribute](Attributes) for this instead. Tags are a lot more limited than Attributes but this also makes them very quick to lookup in the database - this is the whole point.
+Tags are *unique*. This means that there is only ever one Tag object with a given key and category. 
+
+> Not specifying a category (default) gives the tag a category of `None`, which is also considered a unique key + category combination. 
+
+When Tags are assigned to game entities, these entities are actually sharing the same Tag. This means that Tags are not suitable for storing information about a single object - use an [Attribute](Attributes) for this instead. Tags are a lot more limited than Attributes but this also makes them very quick to lookup in the database - this is the whole point.
 
 Tags have the following properties, stored in the database:
 
 - **key** - the name of the Tag. This is the main property to search for when looking up a Tag.
-- **category** - this category allows for retrieving only specific subsets of tags used for different purposes. You could have one category of tags for "zones", another for "outdoor locations", for example.
+- **category** - this category allows for retrieving only specific subsets of tags used for different purposes. You could have one category of tags for "zones", another for "outdoor locations", for example. If not given, the category will be `None`, which is also considered a separate, default, category. 
 - **data** - this is an optional text field with information about the tag. Remember that Tags are shared between entities, so this field cannot hold any object-specific information. Usually it would be used to hold info about the group of entities the Tag is tagging - possibly used for contextual help like a tool tip. It is not used by default.
 
 There are also two special properties. These should usually not need to be changed or set, it is used internally by Evennia to implement various other uses it makes of the `Tag` object:
@@ -28,6 +32,7 @@ You can tag any *typeclassed* object, namely [Objects](Objects), [Accounts](Acco
 
 ```python
      mychair.tags.add("furniture")
+     mychair.tags.add("furniture", category="luxurious")
      myroom.tags.add("dungeon#01")
      myscript.tags.add("weather", category="climate")
      myaccount.tags.add("guestaccount")
@@ -37,9 +42,13 @@ You can tag any *typeclassed* object, namely [Objects](Objects), [Accounts](Acco
      mychair.tags.clear()    
 ```
 
-Adding a new tag will either create a new Tag or re-use an already existing one. When using `remove`, the `Tag` is not deleted but are just disconnected from the tagged object. This makes for very quick operations. The `clear` method removes (disconnects) all Tags from the object. You can also use the default `@tag` command: 
+Adding a new tag will either create a new Tag or re-use an already existing one. Note that there are _two_ "furniture" tags, one with a `None` category, and one with the "luxurious" category. 
+
+When using `remove`, the `Tag` is not deleted but are just disconnected from the tagged object. This makes for very quick operations. The `clear` method removes (disconnects) all Tags from the object. You can also use the default `@tag` command: 
 
      @tag mychair = furniture
+
+This tags the chair with a 'furniture' Tag (the one with a `None` category). 
 
 ## Searching for objects with a given tag
 
@@ -52,6 +61,7 @@ Usually tags are used as a quick way to find tagged database entities. You can r
 
      # search for objects 
      objs = evennia.search_tag("furniture")
+     objs2 = evennia.search_tag("furniture", category="luxurious")
      dungeon = evennia.search_tag("dungeon#01")
      forest_rooms = evennia.search_tag(category="forest") 
      forest_meadows = evennia.search_tag("meadow", category="forest")
@@ -64,6 +74,9 @@ Usually tags are used as a quick way to find tagged database entities. You can r
      # search for accounts
      accounts = evennia.search_tag_account("guestaccount")          
 ```
+
+> Note that searching for just "furniture" will only return the objects tagged with the "furniture" tag that 
+has a category of `None`. We must explicitly give the category to get the "luxurious" furniture. 
 
 Using any of the `search_tag` variants will all return [Django Querysets](https://docs.djangoproject.com/en/2.1/ref/models/querysets/), including if you only have one match. You can treat querysets as lists and iterate over them, or continue building search queries with them. 
 
