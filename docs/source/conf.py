@@ -170,3 +170,6 @@ def setup(app):
             'auto_toc_tree_section': auto_toc_sections,
             }, True)
     app.add_transform(AutoStructify)
+
+from sphinxcontrib import lunrsearch
+
