@@ -2,7 +2,9 @@
 
 sphinx==2.4.4
 sphinx-multiversion==0.1.1
-sphinxontrib-lunrsearch==0.3
 
 # recommonmark custom branch with evennia-specific fixes
 git+https://github.com/evennia/recommonmark.git@evennia-mods#egg=recommonmark
+
+# sphinxcontrib-lunrsearch custom branch with evennia-specific fixes
+git+https://github.com/evennia/sphinxcontrib-lunrsearch.git@evennia-mods#egg=sphinxcontrib-lunrsearch
