@@ -141,7 +141,7 @@ html_theme = 'alabaster'
 # sphinx-multiversion config
 
 smv_tag_whitelist = r"^$"
-smv_branch_whitelist = r"^static-file-docs$"
+smv_branch_whitelist = r"^static-file-docs$|^static-file-dev$"
 smv_outputdir_format = "versions" + sep + "{config.release}"
 
 
