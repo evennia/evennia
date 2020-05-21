@@ -2,7 +2,7 @@
 <h3>{{ _('Versions') }}</h3>
 <ul>
   {%- for item in versions %}
-  <li><a href="{{ item.url }}">{{ item.name }}</a></li>
+  <li><a href="{{ item.url }}">{{ item.version }} ({{ item.name }} branch)</a></li>
   {%- endfor %}
 </ul>
 {% endif %}

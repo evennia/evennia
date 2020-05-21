@@ -1,4 +1,4 @@
-# Makefile to control Evennia documentation building. 
+# Makefile to control Evennia documentation building.
 # Most common commands are `make help`, `make quick` and `make local`.
 
 # You can set these variables from the command line, and also
