@@ -50,7 +50,7 @@ copyright = '2020, The Evennia developer community'
 author = 'The Evennia developer community'
 
 # The full version, including alpha/beta/rc tags
-release = '0.9'
+release = '0.9b'
 
 # -- General configuration ---------------------------------------------------
 
