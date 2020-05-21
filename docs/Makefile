@@ -1,5 +1,5 @@
-# Minimal makefile for Sphinx documentation
-#
+# Makefile to control Evennia documentation building. 
+# Most common commands are `make help`, `make quick` and `make local`.
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
