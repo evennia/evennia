@@ -6,11 +6,11 @@
 
 import os
 import sys
-from os.path import sep, abspath, dirname, join as pathjoin, exists
-import recommonmark
+from os.path import sep
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
-from sphinx.search import IndexBuilder
+# custom search
+from docs import search
 
 
 _no_autodoc = os.environ.get("NOAUTODOC")
@@ -22,9 +22,9 @@ if not _no_autodoc:
     GAME_DIR = os.environ.get("EVGAMEDIR")
 
     if not (EV_ROOT and GAME_DIR):
-        print("The EVDIR and EVGAMEDIR environment variables must be set to the "
-              "absolute paths to the evennia/ repo and an initialized evennia "
-              "gamedir respectively.")
+        print("The EVDIR and EVGAMEDIR environment variables must be set to "
+              "the absolute paths to the evennia/ repo and an initialized "
+              "evennia gamedir respectively.")
         raise RuntimeError()
 
     print("Evennia root: {}, Game dir: {}".format(EV_ROOT, GAME_DIR))
@@ -63,7 +63,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
-    "sphinxcontrib.lunrsearch",
+    # "sphinxcontrib.lunrsearch",
 ]
 
 # make sure sectionlabel references can be used as path/to/file:heading
@@ -171,5 +171,5 @@ def setup(app):
             }, True)
     app.add_transform(AutoStructify)
 
-from sphinxcontrib import lunrsearch
-
+    # custom search
+    search.setup(app)
