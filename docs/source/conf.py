@@ -9,8 +9,6 @@ import sys
 from os.path import sep
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
-# custom search
-from docs import search
 
 
 _no_autodoc = os.environ.get("NOAUTODOC")
@@ -171,5 +169,7 @@ def setup(app):
             }, True)
     app.add_transform(AutoStructify)
 
+    # custom lunr-based search
+    # from docs import search
     # custom search
-    search.setup(app)
+    # search.setup(app)
