@@ -4,7 +4,7 @@ Mkdocs search implementation.
 
 """
 from os.path import dirname, join, exists
-from os import makedirs
+from os import makedirs, getcwd
 import json
 import sphinx.search
 from six import iteritems
@@ -29,16 +29,23 @@ def _make_iter(inp):
 
 
 class IndexBuilder(sphinx.search.IndexBuilder):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filetexts = {}
+
+    def _get_filetext(self, filename):
+        """Helper to get file content from file in main source dir"""
+        text = self.filetexts.get(filename)
+        if not text:
+            with open(join(dirname(dirname(__file__)), "source", filename), 'r') as fil:
+                text = self.filetexts[filename] = fil.read()
+        return text
+
     def freeze(self):
         """Create a usable data structure for serializing."""
         data = super(IndexBuilder, self).freeze()
-        try:
-            # Sphinx >= 1.5 format
-            # Due to changes from github.com/sphinx-doc/sphinx/pull/2454
-            base_file_names = data['docnames']
-        except KeyError:
-            # Sphinx < 1.5 format
-            base_file_names = data['filenames']
+        base_file_names = data['docnames']
 
         lunrdocuments = []
         for prefix, items in iteritems(data['objects']):
@@ -66,13 +73,19 @@ class IndexBuilder(sphinx.search.IndexBuilder):
                 })
 
         titles = data['titles']
+        filenames = data['filenames']
+
         for titleterm, indices in data['titleterms'].items():
-            # Title components; the indices map to index in base_file_name
             for index in _make_iter(indices):
+
+                title = titles[index]
+                text = self._get_filetext(filenames[index])
+                anchor = "#" + title.replace(" ", "-")
+
                 lunrdocuments.append({
-                    'location': base_file_names[index],
+                    'location': "../../" + base_file_names[index] + ".html" + anchor,
                     'title': titles[index],
-                    'text': titleterm
+                    'text': text
                 })
 
         # this is just too big for regular use
@@ -116,7 +129,8 @@ class IndexBuilder(sphinx.search.IndexBuilder):
         lunr_index_json = json.dumps(page_store, sort_keys=True,
                                      separators=(',', ':'))
         try:
-            fname = join(dirname(__file__), "js", "search", "search_index.json")
+            fname = join(
+                dirname(__file__), "js", "search", "search_index.json")
             with open(fname, 'w') as fil:
                 fil.write(lunr_index_json)
         except Exception as err:
@@ -134,7 +148,8 @@ def builder_inited(app):
     somewhere in its layout. but the base theme and pretty much everything
     else that inherits from it uses this filename.
     """
-    app.builder.templates.loaders.insert(0, SphinxFileSystemLoader(dirname(__file__)))
+    app.builder.templates.loaders.insert(
+        0, SphinxFileSystemLoader(dirname(__file__)))
 
 
 def copy_static_files(app, _):
