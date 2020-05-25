@@ -52,17 +52,17 @@ _CUSTOM_LINK_REMAP = {
 }
 
 _LINK_SKIP = (
-    "[5](Win)", "[6](Win)", "[7](Win)", "[10](Win)", "[11](Mac)", "[13](Win)", 
-    "[14](IOS)", "[15](IOS)", "[16](Andr)", "[17](Andr)", "[18](Unix)", 
-    "[21](Chrome)", 
+    "[5](Win)", "[6](Win)", "[7](Win)", "[10](Win)", "[11](Mac)", "[13](Win)",
+    "[14](IOS)", "[15](IOS)", "[16](Andr)", "[17](Andr)", "[18](Unix)",
+    "[21](Chrome)",
     # these should be checked
-    "[EvTable](EvTable)", 
+    "[EvTable](EvTable)",
     "[styled](OptionStyles)",
-    "[Inputfunc](Inputfunc)",     
+    "[Inputfunc](Inputfunc)",
     "[API](evennia)",
-    "[online documentation wiki](index)", 
-    "[online documentation](index)", 
-    "[Home](index)", 
+    "[online documentation wiki](index)",
+    "[online documentation](index)",
+    "[Home](index)",
     "[Accounts](Account)",
     "[Session](Session)",
     "[Inputfuncs](Inputfunc)",
@@ -150,5 +150,5 @@ def convert_links(files, outdir):
 if __name__ == "__main__":
 
     create_toctree(_INFILES)
-    convert_links(_INFILES, _OUTDIR) 
+    convert_links(_INFILES, _OUTDIR)
 

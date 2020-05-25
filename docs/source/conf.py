@@ -117,8 +117,8 @@ autodoc_default_options = {
     "undoc-members": True,
     "show-inheritance": True,
     "special-members": "__init__",
+    "enable_eval_rst": True,
 }
-
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
     if _no_autodoc:
@@ -126,6 +126,7 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
     if name.startswith("__") and name != "__init__":
         return True
     return False
+
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -148,25 +149,28 @@ smv_outputdir_format = "versions" + sep + "{config.release}"
 _github_code_root = "https://github.com/evennia/tree/master/"
 _github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
 
+# recommonmark
 
 def url_resolver(url):
     if url.startswith("github:"):
         return _github_code_root + url[7:]
+    elif url.startswith("api:"):
+        return f"api/{url[4:]}.rst"
     else:
         return _github_doc_root + url
 
-
-# dynamic setup
-
 auto_toc_sections = ["Contents", "Toc", "Index"]
+
+recommonmark_config = {
+    "enable_auto_doc_ref": True,
+    "enable_auto_toc_tree": True,
+    "url_resolver": url_resolver,
+    "auto_toc_tree_section": ["Contents", "Toc", "Index"],
+}
 
 
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
-    app.add_config_value('recommonmark_config', {
-            'url_resolver': url_resolver,
-            'auto_toc_tree_section': auto_toc_sections,
-            }, True)
     app.add_transform(AutoStructify)
 
     # custom lunr-based search

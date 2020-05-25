@@ -15,12 +15,12 @@ There is [a lengthier introduction](Evennia-Introduction) to read. You might als
 |-----------------|----------------------|--------------------------|----------------------|----------------------------|--------------------|
 |[Getting Started](Getting-Started)| [Admin Docs](Administrative-Docs) | [Builder Docs](Builder-Docs) | [Developer Central](Developer-Central) | [Tutorials & Examples](Tutorials) | [API](evennia) |
 
-- The [Getting Started](Getting-Started) page helps installing and starting Evennia for the first time.
-- The [Admin Docs](Administrative-Docs) covers running and maintaining an Evennia server.
-- The [Builder Docs](Builder-Docs) helps for starting to build a game world using Evennia.
-- The [Developer Central](Developer-Central) describes how Evennia works and is used by coders.
-- The [Tutorials & Examples](Tutorials) contains help pages on a step-by-step or tutorial format.
-- The [API](evennia) documentation is created from the latest source code.
+- [Getting Started](Getting-Started) page helps installing and starting Evennia for the first time.
+- [Admin Docs](Administrative-Docs) covers running and maintaining an Evennia server.
+- [Builder Docs](Builder-Docs) helps for starting to build a game world using Evennia.
+- [Developer Central](Developer-Central) describes how Evennia works and is used by coders.
+- [Tutorials & Examples](Tutorials) contains help pages on a step-by-step or tutorial format.
+- [API](api:evennia) documentation is created from the latest source code.
 
 [search]: https://www.google.com/cse/publicurl?cx=010440404980795145992:6ztkvqc46je
 [group]: https://groups.google.com/forum/#%21forum/evennia
