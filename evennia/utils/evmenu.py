@@ -858,6 +858,7 @@ class EvMenu(object):
             )
 
         # validation of the node return values
+        helptext = False
         if type(nodetext) == dict:
             if 'help' in nodetext:
                 helptext = nodetext['help']
