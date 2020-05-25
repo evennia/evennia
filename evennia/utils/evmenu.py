@@ -903,7 +903,7 @@ class EvMenu(object):
         self.nodename = nodename
 
         # handle the helptext
-        if type(helptext) == str:
+        if helptext and type(helptext) == str:
             self.helptext = self.helptext_formatter(helptext)
         elif options:
             self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
