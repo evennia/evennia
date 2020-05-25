@@ -1,3 +1,7 @@
+import textwrap
+
+from evennia.utils.ansi import ANSIString
+
 """
 EvMenu
 
@@ -64,10 +68,37 @@ deleted when the menu is exited.
 The return values must be given in the above order, but each can be
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
-
-    text (str, tuple or None): Text shown at this node. If a tuple, the
-        second element in the tuple is a help text to display at this
-        node when the user enters the menu help command there.
+    text (str, tuple, dict or None): Text shown at this node. If a dict
+        it can also contain various formatting instructions. In such a 
+        case the followng keys are already supported:        
+            - 'text' (str): The text of the node.
+            - 'help' (str): The help text of the node.
+            - 'footer' (str): Footer text for the node.
+            - 'format' (str): String dictating the layout of the node if
+                the default layout is not being used. It currently
+                supports two options:
+                    - 'suppress': The node is not drawn at all
+                    - 'scroll': The node is framed inside the ANSI image
+                        of a scroll.
+            - 'optionformat' (dict): A dictionary containing information 
+                for the formating of the options table. Current options 
+                are:
+                    - 'hidekey' (list): A list of keys. The options for 
+                        those keys will not be listed in the options 
+                        table though the node will accept them as input.
+                    - 'hidedesc' (list): As hidekey but using the desc 
+                        of the options instead.
+                    - 'movekeys' (list): A list of keys. The options for 
+                        those keys will be put into a separate list 
+                        after the options table.
+                    - 'movedesc' (list): As movekeys but using the desc
+                        of the options instead.
+                    - 'rows' (int): Will attempt to make the options 
+                        table the specified number of rows.            
+        If a tuple, the second element in the tuple is a help text to 
+        display at this node when the user enters the menu help command 
+        there. Deprecated in favor of dict but kept for backwards 
+        compatibility.
     options (tuple, dict or None): If `None`, this exits the menu.
         If a single dict, this is a single-option node. If a tuple,
         it should be a tuple of option dictionaries. Option dicts have
@@ -106,8 +137,10 @@ Example:
     # in menu_module.py
 
     def node1(caller):
-        text = ("This is a node text",
-                "This is help text for this node")
+        text = {"text": "This is a node text",
+                "help": "This is help text for this node",
+                "format": "scroll",
+                "optionformat": {"rows": 1} }
         options = ({"key": "testing",
                     "desc": "Select this to go to node 2",
                     "goto": ("node2", {"foo": "bar"}),
@@ -579,6 +612,8 @@ class EvMenu(object):
         Args:
             nodetext (str): The node text
             optionlist (list): List of (key, desc) pairs.
+            optionformat (dict, optional): Instructions to control the
+                layout of the optionlist
 
         Returns:
             string (str): The options section, including
@@ -595,7 +630,11 @@ class EvMenu(object):
         nodetext = self.nodetext_formatter(nodetext)
 
         # handle the options
-        optionstext = self.options_formatter(optionlist)
+        if type(nodetext) == dict and 'optionformat' in nodetext:
+            optionstext = self.options_formatter(optionlist,
+                                                 nodetext['optionformat'])
+        else:
+            optionstext = self.options_formatter(optionlist)
 
         # format the entire node
         return self.node_formatter(nodetext, optionstext)
@@ -819,13 +858,15 @@ class EvMenu(object):
             )
 
         # validation of the node return values
-        helptext = ""
-        if is_iter(nodetext):
+        if type(nodetext) == dict:
+            if 'help' in nodetext:
+                helptext = nodetext['help']
+        elif is_iter(nodetext):
             if len(nodetext) > 1:
                 nodetext, helptext = nodetext[:2]
             else:
                 nodetext = nodetext[0]
-        nodetext = "" if nodetext is None else str(nodetext)
+        nodetext = "" if nodetext is None else nodetext
         options = [options] if isinstance(options, dict) else options
 
         # this will be displayed in the given order
@@ -862,7 +903,7 @@ class EvMenu(object):
         self.nodename = nodename
 
         # handle the helptext
-        if helptext:
+        if type(helptext) == str:
             self.helptext = self.helptext_formatter(helptext)
         elif options:
             self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
@@ -1005,7 +1046,10 @@ class EvMenu(object):
             self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
 
     def display_nodetext(self):
-        self.caller.msg(self.nodetext, session=self._session)
+        if not (type(self.test_nodetext) == dict
+                and 'format' in self.test_nodetext
+                and self.test_nodetext['format'] == 'suppress'):
+            self.caller.msg(self.nodetext, session=self._session)
 
     def display_helptext(self):
         self.caller.msg(self.helptext, session=self._session)
@@ -1017,13 +1061,18 @@ class EvMenu(object):
         Format the node text itself.
 
         Args:
-            nodetext (str): The full node text (the text describing the node).
+            nodetext (str or dict): The full node text (the text describing the node).
 
         Returns:
-            nodetext (str): The formatted node text.
+            nodetext (str or dict): The formatted node text.
 
         """
-        return dedent(nodetext.strip("\n"), baseline_index=0).rstrip()
+        if type(nodetext) == str:
+            nodetext = nodetext.strip("\n").rstrip()
+        elif type(nodetext) == dict:
+            if 'text' in nodetext:
+                nodetext['text'] = nodetext['text'].strip("\n").rstrip()
+        return nodetext
 
     def helptext_formatter(self, helptext):
         """
@@ -1038,7 +1087,7 @@ class EvMenu(object):
         """
         return dedent(helptext.strip("\n"), baseline_index=0).rstrip()
 
-    def options_formatter(self, optionlist):
+    def options_formatter(self, optionlist, optionformat=None):
         """
         Formats the option block.
 
@@ -1046,23 +1095,45 @@ class EvMenu(object):
             optionlist (list): List of (key, description) tuples for every
                 option related to this node.
             caller (Object, Account or None, optional): The caller of the node.
+            optionformat (Dict, optional): Instructions to control the layout
+                of the options
 
         Returns:
             options (str): The formatted option display.
 
         """
+        if not optionformat:
+            optionformat = {}
         if not optionlist:
             return ""
 
         # column separation distance
         colsep = 4
 
-        nlist = len(optionlist)
+        # parse out options for Quit, Back, Proceed, None, and Finish
+        optiontable = []
+        optionbreak = []
+        for item in optionlist:
+            if ('movekeys' in optionformat and
+                    item[0] in optionformat['movekeys']):
+                optionbreak.append(item)
+            elif ('hidekeys' in optionformat and
+                  item[0] in optionformat['hidekeys']):
+                pass
+            elif ('movedesc' in optionformat and
+                    item[0] in optionformat['movedesc']):
+                optionbreak.append(item)
+            elif ('hidedesc' in optionformat and
+                  item[0] in optionformat['hidedesc']):
+                pass
+            else:
+                optiontable.append(item)
+        nlist = len(optiontable)
 
         # get the widest option line in the table.
         table_width_max = -1
         table = []
-        for key, desc in optionlist:
+        for key, desc in optiontable:
             if key or desc:
                 desc_string = ": %s" % desc if desc else ""
                 table_width_max = max(
@@ -1085,8 +1156,11 @@ class EvMenu(object):
             return ""
 
         ncols = ncols + 1 if ncols == 0 else ncols
-        # get the amount of rows needed (start with 4 rows)
-        nrows = 4
+        # get the amount of rows needed (start with 4 rows if optionformat does not override)
+        if 'rows' in optionformat:
+            nrows = optionformat['rows']
+        else:
+            nrows = 4
         while nrows * ncols < nlist:
             nrows += 1
         ncols = nlist // nrows  # number of full columns
@@ -1109,14 +1183,39 @@ class EvMenu(object):
             table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
 
         # format the table into columns
-        return str(EvTable(table=table, border="none"))
+        result = EvTable(table=table, border="none")
+
+        # if there is a broken off section add it as rows
+        if len(optionbreak) > 0:
+            result.add_row(' ')
+            for key, desc in optionbreak:
+                if key or desc:
+                    desc_string = ": %s" % desc if desc else ""
+                    table_width_max = max(
+                        table_width_max,
+                        max(m_len(p) for p in key.split("\n"))
+                        + max(m_len(p) for p in desc_string.split("\n"))
+                        + colsep,
+                    )
+                    raw_key = strip_ansi(key)
+                    if raw_key != key:
+                        # already decorations in key definition
+                        result.add_row(" |lc%s|lt%s|le%s" % (raw_key, key,
+                                                             desc_string))
+                    else:
+                        # add a default white color to key
+                        result.add_row(" |lc%s|lt|w%s|n|le%s" % (raw_key,
+                                                                 raw_key,
+                                                                 desc_string))
+
+        return str(result)
 
     def node_formatter(self, nodetext, optionstext):
         """
         Formats the entirety of the node.
 
         Args:
-            nodetext (str): The node text as returned by `self.nodetext_formatter`.
+            nodetext (str or dict): The node text or dict as returned by `self.nodetext_formatter`.
             optionstext (str): The options display as returned by `self.options_formatter`.
             caller (Object, Account or None, optional): The caller of the node.
 
@@ -1126,17 +1225,174 @@ class EvMenu(object):
         """
         sep = self.node_border_char
 
+        if type(nodetext) == dict:
+            if 'text' in nodetext:
+                text = nodetext['text']
+            else:
+                text = ''
+            if 'footer' in nodetext:
+                footer = nodetext['footer']
+            else:
+                footer = False
+        else:
+            text = str(nodetext)
+            footer = False
+        if type(nodetext) == dict and 'format' in nodetext:
+            if nodetext['format'] == 'scroll':
+                result = self.scroll(text, optionstext, footer)
+            else:
+                result = self.default_format(sep, text, optionstext, footer)
+        else:
+            result = self.default_format(sep, text, optionstext, footer)
+
+        return result
+
+    def default_format(self, sep, text, optionstext, footer):
+        """
+        Original EvMenu formatting style.
+
+        sep (str): Seperator character
+        text (str): The node text as originally returned by `self.nodetext_formatter`.
+        optionstext (str): The options display as originally returned by `self.options_formatter`.
+        footer (str or none): An footer applied after the options.
+
+        Returns:
+            node (str): The formatted node to display.
+
+        """
         if self._session:
             screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
         else:
             screen_width = _MAX_TEXT_WIDTH
 
-        nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
+        nodetext_width_max = max(m_len(line) for line in text.split("\n"))
         options_width_max = max(m_len(line) for line in optionstext.split("\n"))
         total_width = min(screen_width, max(options_width_max, nodetext_width_max))
         separator1 = sep * total_width + "\n\n" if nodetext_width_max else ""
         separator2 = "\n" + sep * total_width + "\n\n" if total_width else ""
-        return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
+        result = separator1 + "|n" + text + "|n" + separator2 + "|n" + optionstext
+        if footer:
+            result = result + '|/' + footer
+        return result
+
+    def scroll(self, text, options, footer):
+        """
+        Alternate EvMenu formatting style for proof of concept.
+
+        text (str): The node text as originally returned by `self.nodetext_formatter`.
+        options (str): The options display as originally returned by `self.options_formatter`.
+        footer (str or none): An optional footer applied after the options
+
+        Returns:
+            node (str): The formatted node to display.
+
+        """
+
+        atext = ANSIString(text)
+        options = options + '\n' + footer
+
+        margins = 3
+        top = 1
+        padding = 3
+
+        if self._session:
+            screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
+        else:
+            screen_width = _MAX_TEXT_WIDTH
+        nodetext_width_max = max(m_len(line) for line in atext.split("\n")) + (margins + padding + 1) * 2
+        options_width_max = max(m_len(strip_ansi(line)) for line in options.split("\n")) + (margins + padding + 1) * 2
+        total_width = min(screen_width, max(options_width_max, nodetext_width_max))
+        cpad = 0
+        if total_width < screen_width:
+            cpad = int((screen_width - total_width) /2)
+
+        temp = []
+        for x in range(top):
+            temp.append(' ')
+        for line in atext.split('\n'):
+            if line == '':
+                temp.append(' ')
+            else:
+                temp.append(line)
+
+        newtext = []
+        for line in temp:
+            if line != ' ':
+                for item in textwrap.wrap(line, (total_width
+                                                 - ((margins + padding + 1) * 2))):
+                    newtext.append(item)
+            else:
+                newtext.append(' ')
+
+        newoptions = []
+        for line in options.split('\n'):
+            if line == '':
+                newoptions.append(' ')
+            else:
+                newoptions.append(line)
+
+        reps = int(.9 + ((len(newtext) + len(newoptions) - 4) / 8))
+        newlength = 5 + reps * 8
+        reassemble = []
+        for line in newtext:
+            reassemble.append(line)
+        for x in range(newlength - (len(newtext) + len(newoptions)) - 1):
+            reassemble.append(' ')
+        for line in newoptions:
+            reassemble.append(line)
+
+        shape = []
+        iwidth = total_width - (margins * 2 + padding + 2)
+        m = ' ' * margins
+        shape.append('  ' + '_' * (iwidth + 3) + '__')
+        shape.append(' /' + m + ANSIljust(reassemble[0],iwidth) + '/ \\ ')
+        shape.append('|' + m + ANSIljust(reassemble[1],iwidth) + '| \\/ ')
+        shape.append('|' + m + ANSIljust(reassemble[2],iwidth) + '| ')
+        shape.append(' \\' + m + ANSIljust(reassemble[3],iwidth) + '\\ ')
+        count = 0
+        for loop in range(reps):
+            shape.append('  \\' + m + ANSIljust(reassemble[4 + count * 8], iwidth) +
+                         '\\ ')
+            shape.append('   |' + m + ANSIljust(reassemble[5 + count * 8], iwidth) +
+                         '| ')
+            shape.append('   |' + m + ANSIljust(reassemble[6 + count * 8], iwidth) +
+                         '| ')
+            shape.append('  /' + m + ANSIljust(reassemble[7 + count * 8], iwidth) +
+                         '/ ')
+            shape.append(' /' + m + ANSIljust(reassemble[8 + count * 8], iwidth) +
+                         '/ ')
+            shape.append('|' + m + ANSIljust(reassemble[9 + count * 8], iwidth) +
+                         '| ')
+            shape.append('|' + m + ANSIljust(reassemble[10 + count * 8], iwidth) +
+                         '| ')
+            shape.append(' \\' + m + ANSIljust(reassemble[11 + count * 8], iwidth) +
+                         '\\ ')
+            count = count + 1
+        shape.append(' _\\' + '_' * (iwidth + 2) + ' \\ ')
+        shape.append('/ ' + ' ' * (iwidth + 2) + '/\\ | ')
+        shape.append('\\' + '_' * (iwidth + 3) + '\\_/ ')
+        final = ''
+        for line in shape:
+            data = line
+            final = final + ' ' * (padding + cpad) + data + '|/'
+        return final
+
+def ANSIljust(input, width):
+    """
+    .ljust doesn't really work on ANSIString, so this is a simple replacement
+
+    input (str): String with ANSI values that needs to be left aligned.
+    width (int): The length input needs to be padded to.
+
+    Returns:
+        result (str): input padded to width
+    """
+
+    result = input
+    t = strip_ansi(input)
+    a = len(t)
+    result = result + ' ' * (width - a)
+    return result
 
 
 # -----------------------------------------------------------
