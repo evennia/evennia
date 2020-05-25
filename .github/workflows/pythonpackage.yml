@@ -89,6 +89,7 @@ jobs:
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     - name: Send data to Coveralls
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      continue-on-error: true 
       env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
@@ -96,6 +97,7 @@ jobs:
         coveralls
     - name: Send data to Codacy
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      continue-on-error: true 
       uses: codacy/codacy-coverage-reporter-action@master
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
