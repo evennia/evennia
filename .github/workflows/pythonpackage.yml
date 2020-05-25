@@ -69,8 +69,7 @@ jobs:
         pip install codacy-coverage
         pip install -e .
 
-    - name: Install extra dependencies  # Only develop branch right now
-      if: ${{ github.ref == 'refs/heads/develop' }}
+    - name: Install extra dependencies
       run: pip install -r requirements_extra.txt
 
     - name: Install and initialize evennia
