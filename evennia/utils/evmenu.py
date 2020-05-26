@@ -1,7 +1,3 @@
-import textwrap
-
-from evennia.utils.ansi import ANSIString
-
 """
 EvMenu
 
@@ -1230,7 +1226,7 @@ class EvMenu(object):
         """
 
         # Determine the text, header, and footer
-        if type(nodetext) == dict:
+        if isinstance(nodetext, dict):
 
             if 'text' in nodetext:
                 text = nodetext['text']
