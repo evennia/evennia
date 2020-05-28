@@ -66,39 +66,61 @@ returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
     text (str, tuple, dict or None): Text shown at this node. If a dict
         it can also contain various formatting instructions. In such a
-        case the followng keys are already supported:
-            - 'text' (str): The text of the node.
-            - 'help' (str): The help text of the node.
-            - 'header' (str): Header text for the node.
-            - 'footer' (str): Footer text for the node.
-            - 'format' (str): String dictating the layout of the node if
-                the default layout is not being used. It currently
-                supports three options:
+        case the following keys are already supported:
+
+            - 'header' (dict): Dictionary of header data for the node
+            - 'text' (dict): Dictionary of text data for the node
+            - 'options' (dict): Dictionary of options data for the node
+            - 'footer' (dict): Dictionary of footer data for the node
+            - 'help' (dict): Dictionary of help data for the node
+
+            Each of these keys support their own dictionary with the
+            following keys:
+
+                - 'contents' (string or list): Required. String data for
+                    all keys other than 'options'. List in the case of
+                    options.
+                - 'formatter' (string): Optional. Designator of the
+                    function used to format the contents. Unless this
+                    code has been subclassed the only options are 'bars'
+                    or 'no_bars'.
+
+            In the case of 'options' the following additional keys are
+            supported by its dictionary:
+
+                - 'hidekeys' (list): A list of keys. The options for
+                    those keys will not be listed in the options table
+                    though the node will accept them as input.
+                - 'hidedescs' (list): As hidekey but using the desc of
+                    the options instead.
+                - 'movekeys' (list): A list of keys. The options for
+                    those keys will be put into a separate list after
+                    the options table.
+                - 'movedescs' (list): As movekeys but using the desc of
+                    the options instead.
+                - 'rows' (int): Will attempt to make the options table
+                    the specified number of rows.
+
+            - 'node' (dict): A dict for consistency of use. At present
+                it only handles a single key:
+
+                - 'formatter' (str): String designating the function to
+                    be used for final assembly of the node. Unless this
+                    code has been subclasses it currently supports three
+                    options:
                     - 'suppress': The node is not drawn at all
-                    - 'no_bars': The node is drawn similarly to the
-                        default format but without separator bars.
-                    - 'invert': The node is drawn similar to the
-                        default format but the options table will be
-                        above the text.
-            - 'optionformat' (dict): A dictionary containing information
-                for the formating of the options table. Current options
-                are:
-                    - 'hidekeys' (list): A list of keys. The options for
-                        those keys will not be listed in the options
-                        table though the node will accept them as input.
-                    - 'hidedescs' (list): As hidekey but using the desc
-                        of the options instead.
-                    - 'movekeys' (list): A list of keys. The options for
-                        those keys will be put into a separate list
-                        after the options table.
-                    - 'movedescs' (list): As movekeys but using the desc
-                        of the options instead.
-                    - 'rows' (int): Will attempt to make the options
-                        table the specified number of rows.
+                    - 'default': The node is assembled similarly to the
+                        legacy method.
+                    - 'invert': The node is assembled with the header
+                        followed by the options table, the general text,
+                        and then the footer, more or less inverting the
+                        traditional layout.
+
         If a tuple, the second element in the tuple is a help text to
         display at this node when the user enters the menu help command
         there. Deprecated in favor of dict but kept for backwards
         compatibility.
+
     options (tuple, dict or None): If `None`, this exits the menu.
         If a single dict, this is a single-option node. If a tuple,
         it should be a tuple of option dictionaries. Option dicts have
@@ -137,17 +159,23 @@ Example:
     # in menu_module.py
 
     def node1(caller):
-        text = {"text": "This is a node text",
-                "help": "This is help text for this node",
-                "format": "scroll",
-                "optionformat": {"rows": 1} }
+        text = "This is a node text"
+        helptext = "This is help text for this node"
         options = ({"key": "testing",
                     "desc": "Select this to go to node 2",
                     "goto": ("node2", {"foo": "bar"}),
                     "exec": "callback1"},
                    {"desc": "Go to node 3.",
                     "goto": "node3"})
-        return text, options
+
+        display = {'text': {'contents': text,
+                            'formatter': 'bars'},
+                   'helptext': {'contents': helptext,
+                                'formatter': 'bars'},
+                   'options': {'contents': options},
+                   'node': {'formatter': 'invert'} }
+
+        return display
 
     def callback1(caller):
         # this is called when choosing the "testing" option in node1
@@ -607,13 +635,12 @@ class EvMenu(object):
 
     def _format_node(self, nodetext, optionlist):
         """
-        Format the node text + option section
+        Format the node text + option section. Legacy code. Use is
+        deprecated.
 
         Args:
             nodetext (str): The node text
             optionlist (list): List of (key, desc) pairs.
-            optionformat (dict, optional): Instructions to control the
-                layout of the optionlist
 
         Returns:
             string (str): The options section, including
@@ -630,11 +657,7 @@ class EvMenu(object):
         nodetext = self.nodetext_formatter(nodetext)
 
         # handle the options
-        if isinstance(nodetext, dict) and 'optionformat' in nodetext:
-            optionstext = self.options_formatter(optionlist,
-                                                 nodetext['optionformat'])
-        else:
-            optionstext = self.options_formatter(optionlist)
+        optionstext = self.options_formatter(optionlist)
 
         # format the entire node
         return self.node_formatter(nodetext, optionstext)
@@ -848,7 +871,7 @@ class EvMenu(object):
                 nodename = self.nodename
         try:
             # execute the found node, make use of the returns.
-            nodetext, options = self._execute_node(nodename, raw_string, **kwargs)
+            nodedata, options = self._execute_node(nodename, raw_string, **kwargs)
         except EvMenuError:
             return
 
@@ -857,20 +880,31 @@ class EvMenu(object):
                 "_menutree_saved_startnode", (nodename, (raw_string, kwargs))
             )
 
-        # validation of the node return values
-        helptext = False
-        if isinstance(nodetext, dict):
-            if 'help' in nodetext:
-                helptext = nodetext['help']
-        elif is_iter(nodetext):
+            # validation of the node return values
+        if isinstance(nodedata, dict):
+            nodetext = None
+        else:
+            nodetext = nodedata
+        helptext = ""
+        if not isinstance(nodedata, dict) and is_iter(nodetext):
             if len(nodetext) > 1:
                 nodetext, helptext = nodetext[:2]
             else:
                 nodetext = nodetext[0]
-        nodetext = "" if nodetext is None else nodetext
+        nodetext = "" if nodetext is None else str(nodetext)
         options = [options] if isinstance(options, dict) else options
 
         # this will be displayed in the given order
+        if isinstance(nodedata, dict):
+            if ('options' in nodedata
+                    and 'contents' in nodedata['options']):
+                options = nodedata['options']['contents']
+            else:
+
+                # if nodetext is a dictionary the second part of any tuple will
+                # be quashed. No combining of new and old methods. Pick a lane.
+                options = None
+
         display_options = []
         # this is used for lookup
         self.options = {}
@@ -899,17 +933,75 @@ class EvMenu(object):
                                 exec_kwargs,
                             )
 
-        self.nodetext = self._format_node(nodetext, display_options)
+        if isinstance(nodedata, dict):
+            # Use the new method to generate nodetext
+
+            if 'options' in nodedata:
+                nodedata['options']['display'] = display_options
+                optiondict = nodedata['options']
+                if 'formatter' in optiondict:
+                    formatter = getattr(self, 'options_format_'
+                                        + optiondict['formatter'])
+                    if not callable(formatter):
+                        formatter = getattr(self, 'options_format_no_bars')
+                else:
+                    formatter = getattr(self, 'options_format_no_bars')
+                nodedata = self._safe_call(formatter, '', **nodedata)
+
+            for field in ['header', 'text', 'footer', 'help']:
+                if field in nodedata:
+                    fielddict = nodedata[field]
+                    if 'formatter' in fielddict:
+                        formatter = getattr(self, 'text_format_'
+                                            + fielddict['formatter'])
+                        if not callable(formatter):
+                            if format != 'text':
+                                formatter = getattr(self,
+                                                    'text_format_no_bars')
+                            else:
+                                formatter = getattr(self, 'text_format_bars')
+                    else:
+                        if format != 'text':
+                            formatter = getattr(self, 'text_format_no_bars')
+                        else:
+                            formatter = getattr(self, 'text_format_bars')
+                    nodedata = self._safe_call(formatter, field, **nodedata)
+
+            if 'node' in  nodedata and 'formatter' in nodedata['node']:
+                formatter = getattr(self, 'node_format_'
+                                    + nodedata['node']['formatter'])
+                if not callable(formatter):
+                    formatter = getattr(self, 'node_format_default')
+            else:
+                formatter = getattr(self, 'node_format_default')
+            self.nodetext = self._safe_call(formatter, '', **nodedata)
+
+        else:
+            # Use the old method
+
+            self.nodetext = self._format_node(nodetext, display_options)
+
         self.node_kwargs = kwargs
         self.nodename = nodename
 
-        # handle the helptext
-        if helptext and isinstance(helptext, str):
-            self.helptext = self.helptext_formatter(helptext)
-        elif options:
-            self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
+        if isinstance(nodedata, dict):
+            # use the new method to generate the help text
+
+            if 'help' in nodedata and 'contents' in nodedata['help']:
+                self.helptext = nodedata['help']['contents']
+            elif options:
+                self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
+            else:
+                self.helptext = _HELP_NO_OPTIONS if self.auto_quit else _HELP_NO_OPTIONS_NO_QUIT
+
         else:
-            self.helptext = _HELP_NO_OPTIONS if self.auto_quit else _HELP_NO_OPTIONS_NO_QUIT
+            # handle the helptext through the old method
+            if helptext:
+                self.helptext = self.helptext_formatter(helptext)
+            elif options:
+                self.helptext = _HELP_FULL if self.auto_quit else _HELP_NO_QUIT
+            else:
+                self.helptext = _HELP_NO_OPTIONS if self.auto_quit else _HELP_NO_OPTIONS_NO_QUIT
 
         self.display_nodetext()
         if not options:
@@ -1047,9 +1139,7 @@ class EvMenu(object):
             self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
 
     def display_nodetext(self):
-        if not (isinstance(self.test_nodetext, dict)
-                and 'format' in self.test_nodetext
-                and self.test_nodetext['format'] == 'suppress'):
+        if self.nodetext != 'suppress':
             self.caller.msg(self.nodetext, session=self._session)
 
     def display_helptext(self):
@@ -1059,25 +1149,20 @@ class EvMenu(object):
 
     def nodetext_formatter(self, nodetext):
         """
-        Format the node text itself.
+        Format the node text itself. Legacy code. Use is deprecated.
 
         Args:
-            nodetext (str or dict): The full node text (the text describing the node).
+            nodetext (str): The full node text (the text describing the node).
 
         Returns:
-            nodetext (str or dict): The formatted node text.
+            nodetext (str): The formatted node text.
 
         """
-        if isinstance(nodetext, str):
-            nodetext = nodetext.strip("\n").rstrip()
-        elif isinstance(nodetext, dict):
-            if 'text' in nodetext:
-                nodetext['text'] = nodetext['text'].strip("\n").rstrip()
-        return nodetext
+        return dedent(nodetext.strip("\n"), baseline_index=0).rstrip()
 
     def helptext_formatter(self, helptext):
         """
-        Format the node's help text
+        Format the node's help text. Legacy code. Use is deprecated.
 
         Args:
             helptext (str): The unformatted help text for the node.
@@ -1088,48 +1173,49 @@ class EvMenu(object):
         """
         return dedent(helptext.strip("\n"), baseline_index=0).rstrip()
 
-    def options_formatter(self, optionlist, optionformat=None):
+    def options_formatter(self, options):
         """
         Formats the option block.
 
         Args:
-            optionlist (list): List of (key, description) tuples for every
-                option related to this node.
-            caller (Object, Account or None, optional): The caller of the node.
-            optionformat (Dict, optional): Instructions to control the layout
-                of the options
+            options (list or dict): List of (key, description) tuples for every
+                option related to this node or dict containing the list as well
+                as various formatting instructions such as a list of options
+                to hide or move.
 
         Returns:
             options (str): The formatted option display.
 
         """
-        if not optionformat:
-            optionformat = {}
+        if isinstance(options, dict):
+            optionlist = options['display']
+        else:
+            optionlist = options
         if not optionlist:
             return ""
 
         # column separation distance
         colsep = 4
 
-        # parse out options for Quit, Back, Proceed, None, and Finish
+        # parse out hidden and moved options
         optiontable = []
         optionbreak = []
         for item in optionlist:
-            if ('movekeys' in optionformat and
-                    item[0] in optionformat['movekeys']):
+            if (isinstance(options, dict) and 'movekeys' in options and
+                    item[0] in options['movekeys']):
                 optionbreak.append(item)
-            elif ('hidekeys' in optionformat and
-                  item[0] in optionformat['hidekeys']):
+            elif (isinstance(options, dict) and 'hidekeys' in options and
+                  item[0] in options['hidekeys']):
                 pass
-            elif ('movedescs' in optionformat and
-                    item[0] in optionformat['movedescs']):
+            elif (isinstance(options, dict) and 'movedescs' in options and
+                  item[0] in options['movedescs']):
                 optionbreak.append(item)
-            elif ('hidedescs' in optionformat and
-                  item[0] in optionformat['hidedescs']):
+            elif (isinstance(options, dict) and 'hidedescs' in options and
+                  item[0] in options['hidedescs']):
                 pass
             else:
                 optiontable.append(item)
-        nlist = len(optiontable)
+        nlist = len(optionlist)
 
         # get the widest option line in the table.
         table_width_max = -1
@@ -1157,9 +1243,9 @@ class EvMenu(object):
             return ""
 
         ncols = ncols + 1 if ncols == 0 else ncols
-        # get the amount of rows needed (start with 4 rows if optionformat does not override)
-        if 'rows' in optionformat:
-            nrows = optionformat['rows']
+        # get the amount of rows needed (start with 4 rows if options does not override)
+        if isinstance(options, dict) and 'rows' in options:
+            nrows = options['rows']
         else:
             nrows = 4
         while nrows * ncols < nlist:
@@ -1213,10 +1299,10 @@ class EvMenu(object):
 
     def node_formatter(self, nodetext, optionstext):
         """
-        Formats the entirety of the node.
+        Original node formatter. Formats the entirety of the node.
 
         Args:
-            nodetext (str or dict): The node text or dict as returned by `self.nodetext_formatter`.
+            nodetext (str): The node text as returned by `self.nodetext_formatter`.
             optionstext (str): The options display as returned by `self.options_formatter`.
             caller (Object, Account or None, optional): The caller of the node.
 
@@ -1224,161 +1310,282 @@ class EvMenu(object):
             node (str): The formatted node to display.
 
         """
+        sep = self.node_border_char
 
-        # Determine the text, header, and footer
-        if isinstance(nodetext, dict):
+        if self._session:
+            screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
+        else:
+            screen_width = _MAX_TEXT_WIDTH
 
-            if 'text' in nodetext:
-                text = nodetext['text']
+        nodetext_width_max = max(m_len(line) for line in nodetext.split("\n"))
+        options_width_max = max(m_len(line) for line in optionstext.split("\n"))
+        total_width = min(screen_width, max(options_width_max, nodetext_width_max))
+        separator1 = sep * total_width + "\n\n" if nodetext_width_max else ""
+        separator2 = "\n" + sep * total_width + "\n\n" if total_width else ""
+        return separator1 + "|n" + nodetext + "|n" + separator2 + "|n" + optionstext
+
+    def options_format_bars(self, callback, field, **nodedata):
+        """
+        Options formatter for new methodology. Formats the option block
+        with repetitions of self.node_border_char (typically _) above
+        and below the options table.
+
+        Args:
+            callback: Unused
+            field: Unused
+            nodedata (dict): Dictionary containing all node data.
+
+        Returns:
+            nodedate (dict): Updated nodedate with the formatted text.
+
+        """
+        sep = self.node_border_char
+
+        options = nodedata['options']
+        if 'optionstext' not in options:
+            nodedata['options']['optionstext'] = (
+                self.options_formatter(options))
+
+        # Find the max width
+
+        if 'text' in nodedata and 'contents' in nodedata['text']:
+            text = dedent(nodedata['text']['contents'],
+                          baseline_index=0).rstrip()
+        else:
+            text = ''
+
+        if 'header' in nodedata and 'contents' in nodedata['header']:
+            header = dedent(nodedata['header']['contents'],
+                            baseline_index=0).rstrip()
+        else:
+            header = ''
+
+        if 'footer' in nodedata and 'contents' in nodedata['footer']:
+            footer = dedent(nodedata['footer']['contents'],
+                            baseline_index=0).rstrip()
+        else:
+            footer = ''
+
+        optionstext = nodedata['options']['optionstext']
+
+        if self._session:
+            screen_width = self._session.protocol_flags.get(
+                "SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
+        else:
+            screen_width = _MAX_TEXT_WIDTH
+
+        nodetext_width_max = max(m_len(line) for line in text.split("\n"))
+        options_width_max = max(m_len(line)
+                                for line in optionstext.split("\n"))
+        header_width_max = max(m_len(line) for line in header.split("\n"))
+        footer_width_max = max(m_len(line) for line in footer.split("\n"))
+        total_width = min(screen_width,
+                          max(options_width_max, nodetext_width_max,
+                              header_width_max, footer_width_max))
+
+        # Build the new data
+        separator1 = sep * total_width + "\n\n" if nodetext_width_max else ""
+        separator2 = "\n" + sep * total_width + "\n" if total_width else ""
+        optionstext = separator1 + optionstext + separator2
+
+        nodedata['options']['optionstext'] = optionstext
+
+        return nodedata
+
+    def options_format_no_bars(self, callback, field, **nodedata):
+        """
+        Options formatter for new methodology. Generally should not do
+        much unless somehow optionstext has not yet been created.
+
+        Args:
+            callback: Unused
+            field: Unused
+            nodedata (dict): Dictionary containing all node data.
+
+        Returns:
+            nodedate (dict): Updated nodedate with the formatted text.
+
+        """
+        options = nodedata['options']
+        if 'optionstext' not in options:
+            nodedata['options']['optionstext'] = (
+                self.options_formatter(options))
+        return nodedata
+
+    def text_format_bars(self, callback, field, **nodedata):
+        """
+        Text formatter for new methodology. Formats the text with
+        repetitions of self.node_border_char (typically _) above and
+        below its body.
+
+        Args:
+            callback: Unused
+            field: The field (header, text, footer, or help) being
+                formatted.
+            nodedata (dict): Dictionary containing all node data.
+
+        Returns:
+            nodedate (dict): Updated nodedate with the formatted text.
+
+        """
+        sep = self.node_border_char
+
+        # Find the max width
+
+        if self._session:
+            screen_width = self._session.protocol_flags.get(
+                "SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
+        else:
+            screen_width = _MAX_TEXT_WIDTH
+
+        if field != 'help':
+            if 'text' in nodedata and 'contents' in nodedata['text']:
+                text = dedent(nodedata['text']['contents'],
+                              baseline_index=0).rstrip()
             else:
                 text = ''
 
-            if 'header' in nodetext:
-                header = nodetext['header']
+            if 'header' in nodedata and 'contents' in nodedata['header']:
+                header = dedent(nodedata['header']['contents'],
+                                baseline_index=0).rstrip()
             else:
-                header = False
+                header = ''
 
-            if 'footer' in nodetext:
-                footer = nodetext['footer']
+            if 'footer' in nodedata and 'contents' in nodedata['footer']:
+                footer = dedent(nodedata['footer']['contents'],
+                                baseline_index=0).rstrip()
             else:
-                footer = False
-        else:
-            text = str(nodetext)
-            header = False
-            footer = False
+                footer = ''
 
-        if isinstance(nodetext, dict) and 'format' in nodetext:
-            if nodetext['format'] == 'no_bars':
-                result = self.no_bars_format(text, optionstext, header, footer)
-            elif nodetext['format'] == 'invert':
-                result = self.invert_format(text, optionstext, header, footer)
+            if 'options' in nodedata and 'optionstext' in nodedata['options']:
+                optionstext = nodedata['options']['optionstext']
             else:
-                result = self.default_format(text, optionstext, header, footer)
+                optionstext = ''
+
+            nodetext_width_max = max(m_len(line) for line in text.split("\n"))
+            options_width_max = max(m_len(line)
+                                    for line in optionstext.split("\n"))
+            header_width_max = max(m_len(line) for line in header.split("\n"))
+            footer_width_max = max(m_len(line) for line in footer.split("\n"))
+            total_width = min(screen_width,
+                              max(options_width_max, nodetext_width_max,
+                                  header_width_max, footer_width_max))
         else:
-            result = self.default_format(text, optionstext, header,footer)
+            if 'help' in nodedata and 'contents' in nodedata['help']:
+                helptext = dedent(nodedata['help']['contents'],
+                                  baseline_index=0).rstrip()
+            else:
+                helptext = ''
+            help_width_max = max(m_len(line) for line in helptext.split("\n"))
+            total_width = min(screen_width, help_width_max)
 
-        return result
-
-    def default_format(self, text, optionstext=False, header=False,
-                       footer=False):
-        """
-        Original EvMenu formatting style.
-
-        Args:
-            text (str): The node text as originally returned by
-                `self.nodetext_formatter`.
-            optionstext (str): The options display as originally
-                returned by `self.options_formatter`.
-            header (str or False): A header applied above the top
-                separator.
-            footer (str or False): A footer applied after the options.
-
-        Returns:
-            node (str): The formatted node to display.
-
-        """
-
-        sep = self.node_border_char
-
-        if self._session:
-            screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
-        else:
-            screen_width = _MAX_TEXT_WIDTH
-
-        nodetext_width_max = max(m_len(line) for line in text.split("\n"))
-        if optionstext:
-            options_width_max = max(m_len(line) for line in optionstext.split("\n"))
-        else:
-            options_width_max = 0
-        total_width = min(screen_width, max(options_width_max, nodetext_width_max))
-        separator1 = sep * total_width + "\n\n" if nodetext_width_max else ""
+        # Build the new data
+        separator1 = sep * total_width + "\n\n" if total_width else ""
         separator2 = "\n" + sep * total_width + "\n" if total_width else ""
-        if header:
-            result = (header + "|/" + separator1 + "|n" + text + "|n" +
-                      separator2 + "|n")
-        else:
-            result = (separator1 + "|n" + text + "|n" + separator2 + "|n")
-        if optionstext:
-            result = result + "|/" + optionstext
-        if footer:
-            result = result + "|/" + footer
-        return result
+        newtext = (separator1
+                   + dedent(nodedata[field]['contents'],
+                            baseline_index=0).strip("\n").rstrip()
+                   + separator2)
 
-    def no_bars_format(self, text, optionstext=False, header=False,
-                       footer=False):
+        nodedata[field]['contents'] = newtext
+
+        return nodedata
+
+    def text_format_no_bars(self, callback, field, **nodedata):
         """
-        Format based on original EvMenu formatting style but without
-        separator bars.
+        Text formatter for new methodology. Really a dummy function that
+        exists when no special formatted is being done to a field.
 
         Args:
-            text (str): The node text as originally returned by
-                `self.nodetext_formatter`.
-            optionstext (str): The options display as originally
-                returned by `self.options_formatter`.
-            header (str or False): A header applied above the top
-                separator.
-            footer (str or False): A footer applied after the options.
+            callback: Unused
+            field: Unused
+            nodedata (dict): Dictionary containing all node data.
 
         Returns:
-            node (str): The formatted node to display.
+            nodedata (dict): Original nodedata.
 
         """
 
-        if header:
-            result = header + "|/|/" + text + "|/"
-        else:
-            result = text + "|/"
-        if optionstext:
-            result = result + "|/" + optionstext
-        if footer:
-            result = result + "|/" + footer
-        return result
+        return nodedata
 
-    def invert_format(self, text, optionstext=False, header=False,
-                       footer=False):
+    def node_format_default(selfself, callback, raw_string, **nodedata):
         """
-        Format based on original EvMenu formatting style but placing
-        the options table above the text.
+        Node formatter for new methodology. Does the final assembly of
+        the node, placing the header at the top, the general text, the
+        options table, and then the footer. It will ignore fields that
+        don't exist and will produce results identical to the legacy
+        behavior if there is no header or footer, the bars formatter is
+        used for text, and the no_bars formatter is used for the options
+        table.
 
         Args:
-            text (str): The node text as originally returned by
-                `self.nodetext_formatter`.
-            optionstext (str): The options display as originally
-                returned by `self.options_formatter`.
-            header (str or False): A header applied above the top
-                separator.
-            footer (str or False): A footer applied after the options.
+            callback: Unused
+            raw_string: Unused
+            nodedata (dict): Dictionary containing all node data.
 
         Returns:
-            node (str): The formatted node to display.
+            result (str): String to display entire node.
 
         """
-
-        sep = self.node_border_char
-
-        if self._session:
-            screen_width = self._session.protocol_flags.get("SCREENWIDTH", {0: _MAX_TEXT_WIDTH})[0]
-        else:
-            screen_width = _MAX_TEXT_WIDTH
-
-        nodetext_width_max = max(m_len(line) for line in text.split("\n"))
-        if optionstext:
-            options_width_max = max(m_len(line) for line in optionstext.split("\n"))
-        else:
-            options_width_max = 0
-        total_width = min(screen_width, max(options_width_max, nodetext_width_max))
-        separator1 = sep * total_width + "\n\n" if nodetext_width_max else ""
-        separator2 = "\n" + sep * total_width if total_width else ""
         result = ""
-        if header:
-            result = result + header + "|/|/"
-        if optionstext:
-            result = result + optionstext + "|/"
-        result = (result + separator1 + "|n" + text + "|n" + separator2
-                  + "|n")
-        if footer:
-            result = result + "|/" + footer
-        return result
+        if 'header' in nodedata and 'contents' in nodedata['header']:
+            result = result + "\n" + nodedata['header']['contents']
+        if 'text' in nodedata and 'contents' in nodedata['text']:
+            result = result + "\n" + nodedata['text']['contents']
+        if 'options' in nodedata and 'optionstext' in nodedata['options']:
+            result = result + "\n" + nodedata['options']['optionstext']
+        if 'footer' in nodedata and 'contents' in nodedata['footer']:
+            result = result + "\n" + nodedata['footer']['contents']
+        return result[1:]
+
+    def node_format_invert(selfself, callback, raw_string, **nodedata):
+        """
+        Node formatter for new methodology. Does the final assembly of
+        the node, placing the header at the top, the options table, the
+        general text, and then the footer. It will ignore fields that
+        don't exist and will produce an inverted result (options above
+        text) to the legacy behavior if there is no header or footer,
+        the bars formatter is used for text, and the no_bars formatter
+        is used for the options table.
+
+        Args:
+            callback: Unused
+            raw_string: Unused
+            nodedata (dict): Dictionary containing all node data.
+
+        Returns:
+            result (str): String to display entire node.
+
+        """
+        result = ""
+        if 'header' in nodedata and 'contents' in nodedata['header']:
+            result = result + "\n" + nodedata['header']['contents']
+        if 'options' in nodedata and 'optionstext' in nodedata['options']:
+            result = result + "\n" + nodedata['options']['optionstext']
+            if 'text' in nodedata and 'contents' in nodedata['text']:
+                result = result + "\n" + nodedata['text']['contents']
+        if 'footer' in nodedata and 'contents' in nodedata['footer']:
+            result = result + "\n" + nodedata['footer']['contents']
+        return result[1:]
+
+    def node_format_suppress(selfself, callback, raw_string, **nodedata):
+        """
+        Node formatter for new methodology. Sets the resulting nodetext
+        to 'suppress' which prevents it from being drawn by
+        display_nodetext.
+
+        Args:
+            callback: Unused
+            raw_string: Unused
+            nodedata (dict): Dictionary containing all node data.
+
+        Returns:
+            'suppress'
+
+        """
+
+        return 'suppress'
+
 
 # -----------------------------------------------------------
 #
