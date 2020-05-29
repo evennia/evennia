@@ -1173,7 +1173,8 @@ class EvMenu(object):
         """
         return dedent(helptext.strip("\n"), baseline_index=0).rstrip()
 
-    def options_formatter(self, options):
+    @staticmethod
+    def options_formatter(options):
         """
         Formats the option block.
 
@@ -1491,7 +1492,8 @@ class EvMenu(object):
 
         return nodedata
 
-    def text_format_no_bars(self, callback, field, **nodedata):
+    @staticmethod
+    def text_format_no_bars(callback, field, **nodedata):
         """
         Text formatter for new methodology. Really a dummy function that
         exists when no special formatted is being done to a field.
@@ -1508,7 +1510,8 @@ class EvMenu(object):
 
         return nodedata
 
-    def node_format_default(selfself, callback, raw_string, **nodedata):
+    @staticmethod
+    def node_format_default(callback, raw_string, **nodedata):
         """
         Node formatter for new methodology. Does the final assembly of
         the node, placing the header at the top, the general text, the
@@ -1538,7 +1541,8 @@ class EvMenu(object):
             result = result + "\n" + nodedata['footer']['contents']
         return result[1:]
 
-    def node_format_invert(selfself, callback, raw_string, **nodedata):
+    @staticmethod
+    def node_format_invert(callback, raw_string, **nodedata):
         """
         Node formatter for new methodology. Does the final assembly of
         the node, placing the header at the top, the options table, the
@@ -1568,7 +1572,8 @@ class EvMenu(object):
             result = result + "\n" + nodedata['footer']['contents']
         return result[1:]
 
-    def node_format_suppress(selfself, callback, raw_string, **nodedata):
+    @staticmethod
+    def node_format_suppress(callback, raw_string, **nodedata):
         """
         Node formatter for new methodology. Sets the resulting nodetext
         to 'suppress' which prevents it from being drawn by
