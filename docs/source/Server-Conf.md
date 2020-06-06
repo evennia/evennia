@@ -39,7 +39,7 @@ Apart from the main `settings.py` file,
 - `at_server_startstop.py` - this module contains two functions that Evennia will call every time the Server starts and stops respectively - this includes stopping due to reloading and resetting as well as shutting down completely. It's a useful place to put custom startup code for handlers and other things that must run in your game but which has no database persistence.
 - `connection_screens.py` - all global string variables in this module are interpreted by Evennia as a greeting screen to show when an Account first connects. If more than one string variable is present in the module a random one will be picked.
 - `inlinefuncs.py` - this is where you can define custom [Inline functions](TextTags#inlinefuncs).
-- `inputfuncs.py` - this is where you define custom Inputfuncs to handle data from the client.
+- `inputfuncs.py` - this is where you define custom [Input functions](Inputfuncs) to handle data from the client.
 - `lockfuncs.py` - this is one of many possible modules to hold your own "safe" *lock functions* to make available to Evennia's [Locks](Locks).
 - `mssp.py` - this holds meta information about your game. It is used by MUD search engines (which you often have to register with) in order to display what kind of game you are running along with
     statistics such as number of online accounts and online status.

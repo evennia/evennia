@@ -10,7 +10,7 @@ Inside Evennia, all server-client communication happens in the same way (so plai
 
 This is often referred to as an *inputcommand* or *outputcommand*, depending on the direction it's traveling. The end point for an inputcommand, (the 'Evennia-end' of the message path) is a matching [Inputfunc](Inputfuncs). This function is called as `cmdname(session, *args, **kwargs)` where `session` is the Session-source of the command. Inputfuncs can easily be added by the developer to support/map client commands to actions inside Evennia (see the [inputfunc](Inputfuncs) page for more details). 
 
-When a message is outgoing (at the 'Client-end' of the message path) the outputcommand is handled by a matching *Outputfunc*. This is responsible for converting the internal Evennia representation to a form suitable to send over the wire to the Client. Outputfuncs are hard-coded. Which is chosen and how it processes the outgoing data depends on the nature of the client it's connected to. The only time one would want to add new outputfuncs is as part of developing support for a new Evennia [Protocol](https://github.com/evennia/evennia/wiki/Custom-Protocols).
+When a message is outgoing (at the 'Client-end' of the message path) the outputcommand is handled by a matching *Outputfunc*. This is responsible for converting the internal Evennia representation to a form suitable to send over the wire to the Client. Outputfuncs are hard-coded. Which is chosen and how it processes the outgoing data depends on the nature of the client it's connected to. The only time one would want to add new outputfuncs is as part of developing support for a new Evennia [Protocol](Custom-Protocols).
 
 ## Sending and receiving an OOB message
 
@@ -33,7 +33,7 @@ Which commands you can send depends on the client. If the client does not suppor
 
 > Remember that a given message may go to multiple clients with different capabilities. So unless you turn off telnet completely and only rely on the webclient, you should never rely on non-`text` OOB messages always reaching all targets.
 
-[Inputfuncs](Inputfunc) lists the default inputfuncs available to handle incoming OOB messages. To accept more you need to add more inputfuncs (see that page for more info). 
+[Inputfuncs]([Inputfuncs](Inputfunc)) lists the default inputfuncs available to handle incoming OOB messages. To accept more you need to add more inputfuncs (see that page for more info). 
 
 ## Supported OOB protocols
 

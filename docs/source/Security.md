@@ -86,7 +86,7 @@ Finally:
 Now the only ports open will be your administrative ssh port (whichever you chose), and Evennia on 4000-4001.
 
 ### Use an external webserver
-Though not officially supported, there are some benefits to [deploying a webserver](https://github.com/evennia/evennia/wiki/Apache-Config) to handle/proxy traffic to your Evennia instance.
+Though not officially supported, there are some benefits to [deploying a webserver](Apache-Config) to handle/proxy traffic to your Evennia instance.
 
 For example, Evennia's game engine and webservice are tightly integrated. If you bring your game down for maintenance (or if it simply crashes) your website will go down with it. In these cases a standalone webserver can still be used to display a maintenance page or otherwise communicate to your users the reason for the downtime, instead of disappearing off the face of the earth and returning opaque `SERVER NOT FOUND` error messages.
 

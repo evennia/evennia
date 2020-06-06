@@ -13,7 +13,7 @@ The game directory is created with `evennia --init <name>`. In the Evennia docum
     - [`conf/`](https://github.com/evennia/evennia/tree/master/evennia/game_template/server) - All server configuration files sits here. The most important file is `settings.py`. 
     - `logs/` - Portal log files are stored here (Server is logging to the terminal by default)
   - `typeclasses/` - this folder contains empty templates for overloading default game entities of Evennia. Evennia will automatically use the changes in those templates for the game entities it creates. 
-  - `web/` - This holds the [Web features](Web-features) of your game. 
+  - `web/` - This holds the [Web features](Web-Features) of your game. 
   - `world/` - this is a "miscellaneous" folder holding everything related to the world you are building, such as build scripts and rules modules that don't fit with one of the other folders.  
 
 ## Evennia library layout:
@@ -45,4 +45,4 @@ The `bin/` directory holds OS-specific binaries that will be used when installin
 
 All directories contain files ending in `.py`. These are Python *modules* and are the basic units of Python code. The roots of directories also have (usually empty) files named `__init__.py`. These are required by Python so as to be able to find and import modules in other directories. When you have run Evennia at least once you will find that there will also be `.pyc` files appearing, these are pre-compiled binary versions of the `.py` files to speed up execution.
 
-The root of the `evennia` folder has an `__init__.py` file containing the "[flat API](evennia-API)". This holds shortcuts to various subfolders in the evennia library. It is provided to make it easier to find things; it allows you to just import `evennia` and access things from that rather than having to import from their actual locations inside the source tree. 
+The root of the `evennia` folder has an `__init__.py` file containing the "[flat API](Evennia-API)". This holds shortcuts to various subfolders in the evennia library. It is provided to make it easier to find things; it allows you to just import `evennia` and access things from that rather than having to import from their actual locations inside the source tree. 

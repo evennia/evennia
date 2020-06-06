@@ -39,7 +39,7 @@ to Evennia you must import that module from somewhere.
 
 All Evennia classes inheriting from class in the table above share one important feature and two important limitations. This is why we don't simply call them "classes" but "typeclasses".
 
- 1. A typeclass can save itself to the database. This means that some properties (actually not that many) on the class actually represents database fields and can only hold very specific data types. This is detailed [below](https://github.com/evennia/evennia/wiki/Typeclasses#about-typeclass-properties).
+ 1. A typeclass can save itself to the database. This means that some properties (actually not that many) on the class actually represents database fields and can only hold very specific data types. This is detailed [below](Typeclasses#about-typeclass-properties).
  1. Due to its connection to the database, the typeclass' name must be *unique* across the _entire_ server namespace. That is, there must never be two same-named classes defined anywhere. So the below code would give an error (since `DefaultObject` is now globally found both in this module and in the default library):
 
     ```python
@@ -228,7 +228,7 @@ obj_to_change.swap_typeclass(new_typeclass_path, clean_attributes=False,
                    run_start_hooks="all", no_default=True, clean_cmdsets=False)
 ```
 
-The arguments to this method are described [in the API docs here](https://github.com/evennia/evennia/wiki/evennia.typeclasses.models#typedobjectswap_typeclass).
+The arguments to this method are described [in the API docs here](code:evennia.typeclasses.models#typedobjectswap_typeclass).
 
 
 ## How typeclasses actually work

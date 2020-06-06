@@ -12,7 +12,7 @@ This will help you download, install and start Evennia for the first time.
 - [Linux Install](#linux-install)
 - [Mac Install](#mac-install)
 - [Windows Install](#windows-install)
-- [Running in Docker](https://github.com/evennia/evennia/wiki/Running-Evennia-in-Docker)
+- [Running in Docker](Running-Evennia-in-Docker)
 - [Where to Go Next](#where-to-go-next)
 - [Troubleshooting](#troubleshooting)
 - [Glossary of terms](Glossary)
@@ -35,7 +35,7 @@ more detailed instructions for your platform.
 10. `evennia start` (make sure to make a  superuser when asked)
 Evennia should now be running and you can connect to it by pointing a web browser to `http://localhost:4001` or a MUD telnet client to `localhost:4000` (use `127.0.0.1` if your OS does not recognize `localhost`).
 
-We also release [Docker images](https://github.com/evennia/evennia/wiki/Running-Evennia-in-Docker)
+We also release [Docker images](Running-Evennia-in-Docker)
 based on `master` and `develop` branches.
 
 ## Requirements
@@ -425,14 +425,14 @@ logged in, stand in the `Limbo` room and run
 
 to build [Evennia's tutorial world](Tutorial-World-Introduction) - it's a small solo quest to explore. Only run the instructed `@batchcommand` once. You'll get a lot of text scrolling by as the tutorial is built. Once done, the `tutorial` exit will have appeared out of Limbo - just write `tutorial` to enter it.
 
-Once you get back to `Limbo` from the tutorial (if you get stuck in the tutorial quest you can do `@tel #2` to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-Reload) the Evennia server. You may also want to familiarize yourself with some [commonly used terms in our Glossary](Glossary). After that, why not experiment with [creating some new items and build some new rooms](https://github.com/evennia/evennia/wiki/Building-Quickstart) out from Limbo.
+Once you get back to `Limbo` from the tutorial (if you get stuck in the tutorial quest you can do `@tel #2` to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-Reload) the Evennia server. You may also want to familiarize yourself with some [commonly used terms in our Glossary](Glossary). After that, why not experiment with [creating some new items and build some new rooms](Building-Quickstart) out from Limbo.
 
 From here on, you could move on to do one of our [introductory tutorials](Tutorials) or simply dive headlong into Evennia's comprehensive [manual](https://github.com/evennia/evennia/wiki). While Evennia has no major game systems out of the box, we do supply a range of optional *contribs* that you can use or borrow from. They range from dice rolling and alternative color schemes to barter and combat systems. You can find the [growing list of contribs here](https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md).
 
 If you have any questions, you can always ask in [the developer chat](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb) `#evennia` on `irc.freenode.net` or by posting to the [Evennia forums](https://groups.google.com/forum/#%21forum/evennia). You can also join the [Discord Server](https://discord.gg/NecFePw).
 
 Finally, if you are itching to help out or support Evennia (awesome!) have an
-issue to report or a feature to request, [see here](how-to-get-and-give-help).
+issue to report or a feature to request, [see here](How-To-Get-And-Give-Help).
 
 Enjoy your stay!
 

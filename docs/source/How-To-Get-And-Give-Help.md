@@ -3,7 +3,7 @@
 
 ### How to *get* Help
 
-If you cannot find what you are looking for in the [online documentation](index), here's what to do:
+If you cannot find what you are looking for in the [online documentation]([online documentation](index)), here's what to do:
  
 - If you think the documentation is not clear enough and are short on time, fill in our quick little [online form][form] and let us know - no login required. Maybe the docs need to be improved or a new tutorial added! Note that while this form is useful as a suggestion box we cannot answer questions or reply to you. Use the discussion group or chat (linked below) if you want feedback.
 - If you have trouble with a missing feature or a problem you think is a bug, go to the [issue tracker][issues] and search to see if has been reported/suggested already. If you can't find an existing entry create a new one.
@@ -19,7 +19,7 @@ The first and easiest way you as a user can help us out is by taking part in [co
 
 If you'd like to help develop Evennia more hands-on, here are some ways to get going:
 
-- Look through our [online documentation wiki](index) and see if you can help improve or expand the documentation (even small things like fixing typos!). You don't need any particular permissions to edit the wiki.
+- Look through our [online documentation wiki]([online documentation wiki](index)) and see if you can help improve or expand the documentation (even small things like fixing typos!). You don't need any particular permissions to edit the wiki.
 - Send a message to our [discussion group][group] and/or our [IRC chat][chat] asking about what needs doing, along with what your interests and skills are.
 - Take a look at our [issue tracker][issues] and see if there's something you feel like taking on. [here are bugs][issues-master] that need fixes. At any given time there may also be some [bounties][issues-bounties] open - these are issues members of the community has put up money to see fixed (if you want to put up a bounty yourself you can do so via our page on [bountysource][bountysource]).
 - Check out the [Contributing](Contributing) page on how to practically contribute with code using github.

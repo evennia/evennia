@@ -84,7 +84,7 @@ Using `swap_typeclass` to the same typeclass we already have will re-run the cre
 @py typeclasses.myclass import MyClass;[obj.swap_typeclass(MyClass) for obj in MyClass.objects.all()]
 ```
 
-See the [Object Typeclass tutorial](Adding-Object-Typeclass-tutorial) for more help and the [Typeclasses](Typeclasses) and [Attributes](Attributes) page for detailed documentation about Typeclasses and Attributes.
+See the [Object Typeclass tutorial](Adding-Object-Typeclass-Tutorial) for more help and the [Typeclasses](Typeclasses) and [Attributes](Attributes) page for detailed documentation about Typeclasses and Attributes.
 
 #### Troubleshooting: Updating Yourself
 

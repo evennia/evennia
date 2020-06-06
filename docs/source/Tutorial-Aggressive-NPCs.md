@@ -3,14 +3,14 @@
 
 This tutorial shows the implementation of an NPC object that responds to characters entering their location. In this example the NPC has the option to respond aggressively or not, but any actions could be triggered this way.
 
-One could imagine using a [Script](https://github.com/evennia/evennia/wiki/Scripts) that is constantly checking for newcomers. This would be highly inefficient (most of the time its check would fail). Instead we handle this on-demand by using a couple of existing object hooks to inform the NPC that a Character has entered.
+One could imagine using a [Script](Scripts) that is constantly checking for newcomers. This would be highly inefficient (most of the time its check would fail). Instead we handle this on-demand by using a couple of existing object hooks to inform the NPC that a Character has entered.
 
-It is assumed that you already know how to create custom room and character typeclasses, please see the [Basic Game tutorial](https://github.com/evennia/evennia/wiki/Tutorial%20for%20basic%20MUSH%20like%20game) if you haven't already done this.
+It is assumed that you already know how to create custom room and character typeclasses, please see the [Basic Game tutorial](Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
 
 What we will need is the following: 
 
 - An NPC typeclass that can react when someone enters.
-- A custom [Room](https://github.com/evennia/evennia/wiki/Objects#rooms) typeclass that can tell the NPC that someone entered.
+- A custom [Room](Objects#rooms) typeclass that can tell the NPC that someone entered.
 - We will also tweak our default `Character` typeclass a little. 
 
 To begin with, we need to create an NPC typeclass. Create a new file inside of your typeclasses folder and name it `npcs.py` and then add the following code:

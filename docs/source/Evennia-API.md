@@ -3,7 +3,7 @@
 
 Evennia makes much of its programming tools available directly from the top-level `evennia` package. This is often referred to as Evennia's "flat" [Application Programming Interface](https://en.wikipedia.org/wiki/Application_programming_interface) (API). The flat API tries to collect and bring the most commonly used resources to the front in a way where everything is available at a glance (in a flat display), making it a good place to start to learn Evennia.
 
-> Evennia's flat (and full) API can be perused through the auto-generated [API Library refence](https://github.com/evennia/evennia/wiki/evennia).
+> Evennia's flat (and full) API can be perused through the auto-generated [API Library refence](code:evennia).
 
 A good, interactive way to explore the flat API is to use [IPython](http://ipython.org/), a more flexible version of the default Python shell. Inside your virtual environment you can install IPython simply by
 

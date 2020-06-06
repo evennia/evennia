@@ -22,7 +22,7 @@ The client sends data to Evennia in two ways.
  - When first connecting, the client can send data to the server about its
  capabilities. This is things like "I support xterm256 but not unicode" and is
  mainly used when a Telnet client connects. This is called a "handshake" and
- will generally set some flags on the [Portal Session](Portal-and-Server) that
+ will generally set some flags on the [Portal Session](Portal-And-Server) that
  are later synced to the Server Session. Since this is not something the player
  controls, we'll not explore this further here.
  - The client can send an *inputcommand* to the server. Traditionally this only
@@ -60,7 +60,7 @@ This inputcommand-structure is pickled together with the unique session-id of th
 
 ### ServerSessionHandler
 
-On the Server side, the AMP unpickles the data and associates the session id with the server-side [Session](Session). Data and Session are passed to the server-side `SessionHandler.data_in`. This in turn calls `ServerSession.data_in()`
+On the Server side, the AMP unpickles the data and associates the session id with the server-side [Session]([Session](Session)). Data and Session are passed to the server-side `SessionHandler.data_in`. This in turn calls `ServerSession.data_in()`
 
 ### ServerSession
 
@@ -135,7 +135,7 @@ In the *ServerSessionhandler*, the keywords from the `msg` method are collated i
 
 This will intelligently convert different input to the same form. So `msg("Hello")` will end up as an outputcommand `("text", ("Hello",), {})`.
 
-This is also the point where [Inlinefuncs](https://github.com/evennia/evennia/wiki/TextTags#inline-functions) are parsed, depending on the session to receive the data. Said data is pickled together with the Session id then sent over the AMP bridge.
+This is also the point where [Inlinefuncs](TextTags#inline-functions) are parsed, depending on the session to receive the data. Said data is pickled together with the Session id then sent over the AMP bridge.
 
 ### PortalSessionHandler
 

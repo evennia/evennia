@@ -39,7 +39,7 @@ The term 'account' refers to the [player's](#player) unique account on the game.
 
 When a player connects to the game, they connect to their account. The account has *no* representation in the game world. Through their Account they can instead choose to [puppet](#puppet) one (or more, depending on game mode) [Characters](#character) in the game. 
 
-In the default [multisession mode](https://github.com/evennia/evennia/wiki/Sessions#multisession-mode) of Evennia, you immediately start puppeting a Character with the same name as your Account when you log in - mimicking how older servers used to work. 
+In the default [multisession mode](Sessions#multisession-mode) of Evennia, you immediately start puppeting a Character with the same name as your Account when you log in - mimicking how older servers used to work. 
 
 ### _admin-site_
 
@@ -55,7 +55,7 @@ A _Channel_ refers to an in-game communication channel. It's an entity that peop
 
 ### _character_
 
-The _Character_ is the term we use for the default avatar being [puppeted](#puppet) by the [account](#account) in the game world. It is represented by the `Character` typeclass (which is a child of [Object](#object)). Many developers use children of this class to represent monsters and other NPCs. You can [read more about it here](https://github.com/evennia/evennia/wiki/Objects#subclasses-of-object).
+The _Character_ is the term we use for the default avatar being [puppeted](#puppet) by the [account](#account) in the game world. It is represented by the `Character` typeclass (which is a child of [Object](#object)). Many developers use children of this class to represent monsters and other NPCs. You can [read more about it here](Objects#subclasses-of-object).
 
 ### _django_
 
@@ -63,11 +63,11 @@ The _Character_ is the term we use for the default avatar being [puppeted](#pupp
  
 Through Django, we can work with any supported database (SQlite3, Postgres, MySQL ...) using generic Python instead of database-specific SQL: A database table is represented in Django as a Python class (called a *model*). An Python instance of such a class represents a row in that table. 
 
-There is usually no need to know the details of Django's database handling in order to use Evennia - it will handle most of the complexity for you under the hood using what we call [typeclasses](#typeclass). But should you need the power of Django you can always get it. Most commonly people want to use "raw" Django when doing more advanced/custom database queries than offered by Evennia's [default search functions](https://github.com/evennia/evennia/wiki/Tutorial-Searching-For-Objects). One will then need to read about Django's _querysets_. Querysets are Python method calls on a special form that lets you build complex queries. They get converted into optimized SQL queries under the hood, suitable for your current database. [Here is our tutorial/explanation of Django queries](https://github.com/evennia/evennia/wiki/Tutorial-Searching-For-Objects#queries-in-django).
+There is usually no need to know the details of Django's database handling in order to use Evennia - it will handle most of the complexity for you under the hood using what we call [typeclasses](#typeclass). But should you need the power of Django you can always get it. Most commonly people want to use "raw" Django when doing more advanced/custom database queries than offered by Evennia's [default search functions](Tutorial-Searching-For-Objects). One will then need to read about Django's _querysets_. Querysets are Python method calls on a special form that lets you build complex queries. They get converted into optimized SQL queries under the hood, suitable for your current database. [Here is our tutorial/explanation of Django queries](https://github.com/evennia/evennia/wiki/Tutorial-Searching-For-Objects#queries-in-django).
 
 > By the way, Django (and Evennia) does allow you to fall through and send raw SQL if you really want to. It's highly unlikely to be needed though; the Django database abstraction is very, very powerful.
 
-The other aspect where Evennia uses Django is for web integration. On one end Django gives an infrastructure for wiring Python functions (called *views*) to URLs: the view/function is called when a user goes that URL in their browser, enters data into a form etc. The return is the web page to show. Django also offers templating with features such as being able to add special markers in HTML where it will insert the values of Python variables on the fly (like showing the current player count on the web page). [Here is one of our tutorials on wiring up such a web page](https://github.com/evennia/evennia/wiki/Add-a-simple-new-web-page). Django also comes with the [admin site](#admin-site), which automatically maps the database into a form accessible from a web browser. 
+The other aspect where Evennia uses Django is for web integration. On one end Django gives an infrastructure for wiring Python functions (called *views*) to URLs: the view/function is called when a user goes that URL in their browser, enters data into a form etc. The return is the web page to show. Django also offers templating with features such as being able to add special markers in HTML where it will insert the values of Python variables on the fly (like showing the current player count on the web page). [Here is one of our tutorials on wiring up such a web page](Add-a-simple-new-web-page). Django also comes with the [admin site](#admin-site), which automatically maps the database into a form accessible from a web browser. 
 
 ### _core_
 
@@ -77,7 +77,7 @@ This term is sometimes used to represent the main Evennia library code suite, *e
 
 ### _field_
 
-A _field_ or _database field_ in Evennia refers to a [property](#property) on a [typeclass](#typeclass) directly linked to an underlying database column. Only a few fixed properties per typeclass are database fields but they are often tied to the core functionality of that base typeclass (for example [Objects](#object) store its location as a field). In all other cases, [attributes](#attribute) are used to add new persistent data to the typeclass. [Read more about typeclass properties here](https://github.com/evennia/evennia/wiki/Typeclasses#about-typeclass-properties). 
+A _field_ or _database field_ in Evennia refers to a [property](#property) on a [typeclass](#typeclass) directly linked to an underlying database column. Only a few fixed properties per typeclass are database fields but they are often tied to the core functionality of that base typeclass (for example [Objects](#object) store its location as a field). In all other cases, [attributes](#attribute) are used to add new persistent data to the typeclass. [Read more about typeclass properties here](Typeclasses#about-typeclass-properties). 
 
 ### _git_
 
@@ -121,7 +121,7 @@ GitHub is a business, offering free hosting to Open-source projects like Evennia
 
 In general Python (and other [object-oriented languages](https://en.wikipedia.org/wiki/Object-oriented_programming)), an `object` is what we call the instance of a *class*. But one of Evennia's core [typeclasses](#typeclasss) is also called "Object". To separate these in the docs we try to use `object` to refer to the general term and capitalized `Object` when we refer to the typeclass. 
 
-The `Object` is a typeclass that represents all *in-game* entities, including [Characters](#character), rooms, trees, weapons etc. [Read more about Objects here](https://github.com/evennia/evennia/wiki/Objects). 
+The `Object` is a typeclass that represents all *in-game* entities, including [Characters](#character), rooms, trees, weapons etc. [Read more about Objects here](Objects). 
 
 ### _pip_
 

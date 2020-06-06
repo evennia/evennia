@@ -128,7 +128,7 @@ class CmdWerewolf(Command):
     def func(self):
         # ...
 ```
-Add this to the [default cmdset as usual](Adding-Command-Tutorial). The `is_full_moon` [lock function](https://github.com/evennia/evennia/wiki/Locks#lock-functions) does not yet exist. We must create that:
+Add this to the [default cmdset as usual](Adding-Command-Tutorial). The `is_full_moon` [lock function](Locks#lock-functions) does not yet exist. We must create that:
 
 ```python
 # in mygame/server/conf/lockfuncs.py

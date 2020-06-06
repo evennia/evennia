@@ -1,3 +1,5 @@
+# Spawner and Prototypes
+
 
 The *spawner* is a system for defining and creating individual objects from a base template called a
 *prototype*. It is only designed for use with in-game [Objects](Objects), not any other type of
@@ -141,7 +143,7 @@ Finally, the value can be a *prototype function* (*Protfunc*). These look like s
                        "He has $randint(2,5) skulls in a chain around his neck."}
 ```
 At execution time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc works in much the same way as an
-[InlineFunc](https://github.com/evennia/evennia/wiki/TextTags#inline-functions) - they are actually
+[InlineFunc](TextTags#inline-functions) - they are actually
 parsed using the same parser - except protfuncs are run every time the prototype is used to spawn a new object (whereas an inlinefunc is called when a text is returned to the user). 
 
 Here is how a protfunc is defined (same as an inlinefunc). 
@@ -272,4 +274,4 @@ Note that no `location` will be set automatically when using `evennia.prototypes
 have to specify `location` explicitly in the prototype dict.
 
 If the prototypes you supply are using `prototype_parent` keywords, the spawner will read prototypes from modules 
-in `settings.PROTOTYPE_MODULES` as well as those saved to the database to determine the body of available parents. The `spawn` command takes many optional keywords, you can find its definition [in the api docs](https://github.com/evennia/evennia/wiki/evennia.prototypes.spawner#spawn).
+in `settings.PROTOTYPE_MODULES` as well as those saved to the database to determine the body of available parents. The `spawn` command takes many optional keywords, you can find its definition [in the api docs](code:evennia.prototypes.spawner#spawn).

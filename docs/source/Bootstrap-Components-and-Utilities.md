@@ -1,7 +1,7 @@
 # Bootstrap Components and Utilities
 
 Bootstrap provides many utilities and components you can use when customizing Evennia's web presence. We'll go over a few examples here that you might find useful.
-> Please take a look at either [the basic web tutorial](https://github.com/evennia/evennia/wiki/Add-a-simple-new-web-page) or [the web character view tutorial](https://github.com/evennia/evennia/wiki/Web-Character-View-Tutorial)
+> Please take a look at either [the basic web tutorial](Add-a-simple-new-web-page) or [the web character view tutorial](Web-Character-View-Tutorial)
 > to get a feel for how to add pages to Evennia's website to test these examples.
 
 ## General Styling

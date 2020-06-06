@@ -6,13 +6,17 @@ Evennia has an [official docker image](https://hub.docker.com/r/evennia/evennia/
 
 First, install the `docker` program so you can run the Evennia container. You can get it freely from [docker.com](https://www.docker.com/). Linux users can likely also get it through their normal package manager.
 
+To fetch the latest evennia docker image, run: 
+
     docker pull evennia/evennia
 
-This is a good command to know. It will fetch the latest official docker image from docker hub and is how you upgrade to the latest in the future. 
+This is a good command to know, it is also how you update to the latest version when we make updates in the future. This tracks the `master` branch of Evennia. 
 
-`cd` to a place where your game dir is, or where you want to create it. Then run: 
+> Note: If you want to experiment with the (unstable) `develop` branch, use `docker pull evennia/evennia:develop`.
 
-    docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game evennia/evennia
+Next `cd` to a place where your game dir is, or where you want to create it. Then run: 
+
+    docker run -it --rm -p 4000:4000 -p 4001:4001 -p 4002:4002 --rm -v $PWD:/usr/src/game --user $UID:$GID evennia/evennia
 
 Having run this (see next section for a description of what's what), you will be at a prompt inside the docker container: 
 
@@ -20,7 +24,7 @@ Having run this (see next section for a description of what's what), you will be
 evennia|docker /usr/src/game $
 ```
 
-This is a normal shell prompt. We are in the `/usr/src/game` location inside the docker container. If you had anything in the folder you started from, you should see it here (with `ls`) since we mounted the current directory to `usr/src/game` (with `-v` above). You have the `evennia` command available and can now proceed to create a new game as per the [Getting Started](Getting-Started) instructions. 
+This is a normal shell prompt. We are in the `/usr/src/game` location inside the docker container. If you had anything in the folder you started from, you should see it here (with `ls`) since we mounted the current directory to `usr/src/game` (with `-v` above). You have the `evennia` command available and can now proceed to create a new game as per the [Getting Started](Getting-Started) instructions (you can skip the virtualenv and install 'globally' in the container though). 
 
 You can run Evennia from inside this container if you want to, it's like you are root in a little isolated Linux environment. To exit the container and all processes in there, press `Ctrl-D`. If you created a new game folder, you will find that it has appeared on-disk. 
 
@@ -188,4 +192,4 @@ docker-compose up
 ```
 For more information about `docker-compose`, see [Getting Started with docker-compose](https://docs.docker.com/compose/gettingstarted/). 
 
-Note that with this setup you lose the `--user $UID` option. The problem is that the variable `UID` is not available inside the configuration file `docker-compose.yml`. A workaround is to hardcode your user and group id. In a terminal run `echo  $UID:$GID` and if for example you get `1000:1000` you can add to `docker-compose.yml` a line `user: 1000:1000` just below the `image: ...` line.
+> Note that with this setup you lose the `--user $UID` option. The problem is that the variable `UID` is not available inside the configuration file `docker-compose.yml`. A workaround is to hardcode your user and group id. In a terminal run `echo  $UID:$GID` and if for example you get `1000:1000` you can add to `docker-compose.yml` a line `user: 1000:1000` just below the `image: ...` line.

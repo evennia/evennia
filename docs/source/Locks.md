@@ -1,7 +1,7 @@
 # Locks
 
 
-For most games it is a good idea to restrict what people can do. In Evennia such restrictions are applied and checked by something called *locks*. All Evennia entities (Commands, Objects, Scripts, Accounts, [Help System](help-system), [messages](Communications#Msg) and [channels](Communications#Channels)) are accessed through locks. 
+For most games it is a good idea to restrict what people can do. In Evennia such restrictions are applied and checked by something called *locks*. All Evennia entities ([Commands](Commands), [Objects](Objects), [Scripts](Scripts), [Accounts](Accounts), [Help System](Help-System), [messages](Communications#Msg) and [channels](Communications#Channels)) are accessed through locks. 
 
 A lock can be thought of as an "access rule" restricting a particular use of an Evennia entity.  Whenever another entity wants that kind of access the lock will analyze that entity in different ways to determine if access should be granted or not. Evennia implements a "lockdown" philosophy - all entities are inaccessible unless you explicitly define a lock that allows some or full access. 
 
@@ -240,7 +240,7 @@ Here is how you use `perm` to give an account more permissions:
      perm/account Tommy = Builders
      perm/account/del Tommy = Builders # remove it again
 
-Note the use of the `/account` switch. It means you assign the permission to the [Accounts](Account) Tommy instead of any [Character](Objects) that also happens to be named "Tommy". 
+Note the use of the `/account` switch. It means you assign the permission to the [Accounts]([Accounts](Account)) Tommy instead of any [Character](Objects) that also happens to be named "Tommy". 
 
 Putting permissions on the *Account* guarantees that they are kept, *regardless* of which Character they are currently puppeting. This is especially important to remember when assigning permissions from the *hierarchy tree* - as mentioned above, an Account's permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters (but see also [quelling](Locks#Quelling)).
 

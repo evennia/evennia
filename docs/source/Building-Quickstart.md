@@ -78,7 +78,7 @@ Try to get it now and you should see a nicer error message echoed back to you. T
 
 Examine will return the value of attributes, including color codes. `examine here/desc` would return the raw description of your current room (including color codes), so that you can copy-and-paste to set its description to something else.
 
-You create new Commands (or modify existing ones) in Python outside the game. See the [Adding Commands tutorial](https://github.com/evennia/evennia/wiki/Adding%20Command%20Tutorial) for help with creating your first own Command.
+You create new Commands (or modify existing ones) in Python outside the game. See the [Adding Commands tutorial](Adding-Command-Tutorial) for help with creating your first own Command.
 
 ## Get a Personality
 

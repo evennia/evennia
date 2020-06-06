@@ -1,3 +1,5 @@
+# Nicks
+
 
 *Nicks*, short for *Nicknames* is a system allowing an object (usually a [Account](Accounts)) to assign custom replacement names for other game entities. 
 
