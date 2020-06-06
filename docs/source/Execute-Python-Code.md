@@ -13,9 +13,9 @@ A few local variables are made available when running `@py`. These offer entry i
 - **self** / **me** - the calling object (i.e. you)
 - **here** - the current caller's location
 - **obj** - a dummy [Object](Objects) instance
-- **evennia** - Evennia's [flat API](evennia-API) - through this you can access all of Evennia.
+- **evennia** - Evennia's [flat API](Evennia-API) - through this you can access all of Evennia.
 
-For accessing other objects in the same room you need to use `self.search(name)`. For objects in other locations, use one of the `evennia.search_*` methods. See [below](https://github.com/evennia/evennia/wiki/Execute%20Python%20Code#finding-objects).
+For accessing other objects in the same room you need to use `self.search(name)`. For objects in other locations, use one of the `evennia.search_*` methods. See [below](Execute-Python-Code#finding-objects).
 
 ## Returning output
 
@@ -30,7 +30,7 @@ Note that we didn't get any return value, all we where told is that the code fin
     09:15
     <<< Done.
 
-> Warning: When using the `msg` function wrap our argument in `str()` to convert it into a string above. This is not strictly necessary for most types of data (Evennia will usually convert to a string behind the scenes for you). But for *lists* and *tuples* you will be confused by the output if you don't wrap them in `str()`: only the first item of the iterable will be returned. This is because doing `msg(text)` is actually just a convenience shortcut; the full argument that `msg` accepts is something called an *outputfunc* on the form `(cmdname, (args), {kwargs})` (see [the message path](https://github.com/evennia/evennia/wiki/Messagepath) for more info). Sending a list/tuple confuses Evennia to think you are sending such a structure. Converting it to a string however makes it clear it should just be displayed as-is. 
+> Warning: When using the `msg` function wrap our argument in `str()` to convert it into a string above. This is not strictly necessary for most types of data (Evennia will usually convert to a string behind the scenes for you). But for *lists* and *tuples* you will be confused by the output if you don't wrap them in `str()`: only the first item of the iterable will be returned. This is because doing `msg(text)` is actually just a convenience shortcut; the full argument that `msg` accepts is something called an *outputfunc* on the form `(cmdname, (args), {kwargs})` (see [the message path](Messagepath) for more info). Sending a list/tuple confuses Evennia to think you are sending such a structure. Converting it to a string however makes it clear it should just be displayed as-is. 
 
 If you were to use Python's standard `print`, you will see the result in your current `stdout` (your terminal by default, otherwise your log file).
 

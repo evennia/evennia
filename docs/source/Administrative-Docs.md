@@ -9,9 +9,9 @@ The following pages are aimed at game administrators -- the higher-ups that poss
 - [Running Evennia in Docker Containers](Running-Evennia-in-Docker)
 - [Starting, stopping, reloading and resetting Evennia](Start-Stop-Reload)
 - [Keeping your game up to date](Updating-Your-Game)
- - [Resetting your database](https://github.com/evennia/evennia/wiki/Updating%20Your%20Game#resetting-your-database)
+ - [Resetting your database](Updating-Your-Game#resetting-your-database)
 - [Making your game available online](Online-Setup)
-  - [Hosting options](https://github.com/evennia/evennia/wiki/Online-Setup#hosting-options)
+  - [Hosting options](Online-Setup#hosting-options)
   - [Securing your server with SSL/Let's Encrypt](https://github.com/evennia/evennia/wiki/Online-Setup#ssl)
 - [Listing your game](Evennia-Game-Index) at the online [Evennia game index](http://games.evennia.com)
 
@@ -27,14 +27,14 @@ The following pages are aimed at game administrators -- the higher-ups that poss
 - [How to connect Evennia to IRC channels](IRC)
 - [How to connect Evennia to RSS feeds](RSS)
 - [How to connect Evennia to Grapevine](Grapevine)
-- [How to connect Evennia to Twitter](https://github.com/evennia/evennia/wiki/How-to-connect-Evennia-to-Twitter)
+- [How to connect Evennia to Twitter](How-to-connect-Evennia-to-Twitter)
 
 ### Administrating the running game
 
 - [Supported clients](Client-Support-Grid) (grid of known client issues)
 - [Changing Permissions](Building-Permissions) of users
 - [Banning](Banning) and deleting users
-  - [Summary of abuse-handling tools](https://github.com/evennia/evennia/wiki/Banning#summary-of-abuse-handling-tools) in the default cmdset
+  - [Summary of abuse-handling tools](Banning#summary-of-abuse-handling-tools) in the default cmdset
 
 ### Working with Evennia
 

@@ -7,7 +7,7 @@ This tutorial will create a simple web-based interface for generating a new in-g
 
 It is probably most useful to set `MULTISESSION_MODE = 2` or `3` (which gives you a character-selection screen when you log into the game later). Other modes can be used with some adaptation to auto-puppet the new Character.
 
-You should have some familiarity with how Django sets up its Model Template View framework. You need to understand what is happening in the basic [Web Character View tutorial](https://github.com/evennia/evennia/wiki/Web-Character-View-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website interface). This guide will outline the format of the models, views, urls, and html templates needed. 
+You should have some familiarity with how Django sets up its Model Template View framework. You need to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website interface). This guide will outline the format of the models, views, urls, and html templates needed. 
 
 ## Pictures
 
@@ -217,7 +217,7 @@ def creating(request):
 
 Most importantly, the following attributes must be set on the created character object:
 
-* Evennia [permissions](https://github.com/evennia/evennia/wiki/Locks#permissions) (copied from the `AccountDB`).
+* Evennia [permissions](Locks#permissions) (copied from the `AccountDB`).
 * The right `puppet` [locks](Locks) so the Account can actually play as this Character later.
 * The relevant Character [typeclass](Typeclasses)
 * Character name (key)

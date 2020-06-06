@@ -1,3 +1,5 @@
+# Installing on Android
+
 
 This page describes how to install and run the Evennia server on an Android phone. This will involve
 installing a slew of third-party programs from the Google Play store, so make sure you are okay with
@@ -101,7 +103,7 @@ $ cd ~ && source evenv/bin/activate
 (evenv) $ evennia start
 ```
 
-You may wish to look at the [Linux Instructions](https://github.com/evennia/evennia/wiki/Getting-Started#linux-install) for more.
+You may wish to look at the [Linux Instructions](Getting-Started#linux-install) for more.
 
 ## Caveats
 

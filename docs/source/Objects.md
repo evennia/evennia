@@ -36,7 +36,7 @@ What the `@create` command actually *does* is to use `evennia.create_object`. Yo
 
 (The `@create` command will auto-append the most likely path to your typeclass, if you enter the call manually you have to give the full path to the class. The `create.create_object` function is powerful and should be used for all coded object creating (so this is what you use when defining your own building commands). Check out the `ev.create_*` functions for how to build other entities like [Scripts](Scripts)). 
 
-This particular Rose class doesn't really do much, all it does it make sure the attribute `desc`(which is what the `look` command looks for) is pre-set, which is pretty pointless since you will usually want to change this at build time (using the `@desc` command or using the [Spawner](https://github.com/evennia/evennia/wiki/Spawner-and-Prototypes)). The `Object` typeclass offers many more hooks that is available to use though - see next section. 
+This particular Rose class doesn't really do much, all it does it make sure the attribute `desc`(which is what the `look` command looks for) is pre-set, which is pretty pointless since you will usually want to change this at build time (using the `@desc` command or using the [Spawner](Spawner-and-Prototypes)). The `Object` typeclass offers many more hooks that is available to use though - see next section. 
 
 ## Properties and functions on Objects
 
@@ -56,7 +56,7 @@ Beyond the properties assigned to all [typeclassed](Typeclasses) objects (see th
 The last two properties are special:
 
 - `cmdset` - this is a handler that stores all [command sets](Commands#Command_Sets) defined on the object (if any).
-- `scripts` - this is a handler that manages Scripts attached to the object (if any).
+- `scripts` - this is a handler that manages [Scripts](Scripts) attached to the object (if any).
 
 The Object also has a host of useful utility functions. See the function headers in `src/objects/objects.py` for their arguments and more details. 
 

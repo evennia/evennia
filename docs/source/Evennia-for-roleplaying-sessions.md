@@ -28,7 +28,7 @@ We will assume you start from scratch. You need Evennia installed, as per the [G
 
 ### The permission hierarchy
 
-Evennia has the following [permission hierarchy](https://github.com/evennia/evennia/wiki/Building%20Permissions#assigning-permissions) out of the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but then we'd need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.
+Evennia has the following [permission hierarchy](Building-Permissions#assigning-permissions) out of the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but then we'd need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.
 
 1. `Players` is the permission set on normal players. This is the default for anyone creating a new account on the server.
 2. `Helpers` are like `Players` except they also have the ability to create/edit new help entries. This could be granted to players who are willing to help with writing lore or custom logs for everyone.
@@ -36,7 +36,7 @@ Evennia has the following [permission hierarchy](https://github.com/evennia/even
 4. `Admins` is the permission level the GM should have. Admins can do everything builders can (create/describe rooms etc) but also kick accounts, rename them and things like that.
 5. `Developers`-level permission are the server administrators, the ones with the ability to restart/shutdown the server as well as changing the permission levels.
 
-> The [superuser](https://github.com/evennia/evennia/wiki/Building%20Permissions#the-super-user) is not part of the hierarchy and actually completely bypasses it. We'll assume server admin(s) will "just" be Developers.
+> The [superuser](Building-Permissions#the-super-user) is not part of the hierarchy and actually completely bypasses it. We'll assume server admin(s) will "just" be Developers.
 
 ### How to grant permissions
 
@@ -215,7 +215,7 @@ There are many ways to build a Character sheet in text, from manually pasting st
 
 #### Making a sheet with EvTable
 
-[EvTable](https://github.com/evennia/evennia/wiki/evennia.utils.evtable) is a text-table generator. It helps with displaying text in ordered rows and columns. This is an example of using it in code:
+[EvTable](code:evennia.utils.evtable) is a text-table generator. It helps with displaying text in ordered rows and columns. This is an example of using it in code:
 
 ````python
 # this can be tried out in a Python shell like iPython
@@ -232,7 +232,7 @@ table = evtable.EvTable("Attr", "Value",
                         ], align='r', border="incols")
 ````
 
-Above, we create a two-column table by supplying the two columns directly. We also tell the table to be right-aligned and to use the "incols" border type (borders drawns only in between columns). The `EvTable` class takes a lot of arguments for customizing its look, you can see [some of the possible keyword arguments here](https://github.com/evennia/evennia/wiki/evennia.utils.evtable#evtable__init__). Once you have the `table` you could also retroactively add new columns and rows to it with `table.add_row()` and `table.add_column()`: if necessary the table will expand with empty rows/columns to always remain rectangular.
+Above, we create a two-column table by supplying the two columns directly. We also tell the table to be right-aligned and to use the "incols" border type (borders drawns only in between columns). The `EvTable` class takes a lot of arguments for customizing its look, you can see [some of the possible keyword arguments here](code:evennia.utils.evtable#evtable__init__). Once you have the `table` you could also retroactively add new columns and rows to it with `table.add_row()` and `table.add_column()`: if necessary the table will expand with empty rows/columns to always remain rectangular.
 
 The result from printing the above table will be
 
@@ -255,7 +255,7 @@ This is a minimalistic but effective Character sheet. By combining the `table_st
 
 #### Making a sheet with EvForm
 
-[EvForm](https://github.com/evennia/evennia/wiki/evennia.utils.evform) allows the creation of a two-dimensional "graphic" made by text characters. On this surface, one marks and tags rectangular regions ("cells") to be filled with content. This content can be either normal strings or `EvTable` instances (see the previous section, one such instance would be the `table` variable in that example).
+[EvForm](code:evennia.utils.evform) allows the creation of a two-dimensional "graphic" made by text characters. On this surface, one marks and tags rectangular regions ("cells") to be filled with content. This content can be either normal strings or `EvTable` instances (see the previous section, one such instance would be the `table` variable in that example).
 
 In the case of a Character sheet, these cells would be comparable to a line or box where you could enter the name of your character or their strength score. EvMenu also easily allows to update the content of those fields in code (it use EvTables so you rebuild the table first before re-sending it to EvForm).
 
@@ -581,7 +581,7 @@ Use `help dice` to see what syntax is supported or look at `evennia/contrib/dice
 
 ## Rooms
 
-Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all needed building commands available. A fuller go-through is found in the [Building tutorial](Building-quickstart). Here are some useful highlights:
+Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all needed building commands available. A fuller go-through is found in the [Building tutorial](Building-Quickstart). Here are some useful highlights:
 
 * `@dig roomname;alias = exit_there;alias, exit_back;alias` - this is the basic command for digging a new room. You can specify any exit-names and just enter the name of that exit to go there.
 * `@tunnel direction = roomname` - this is a specialized command that only accepts directions in the cardinal directions (n,ne,e,se,s,sw,w,nw) as well as in/out and up/down. It also automatically builds "matching" exits back in the opposite direction.
@@ -594,7 +594,7 @@ Evennia comes with rooms out of the box, so no extra work needed. A GM will auto
 
 ## Channels
 
-Evennia comes with [Channels](Communications.md#Channels) in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:
+Evennia comes with [Channels](Communications#Channels) in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:
 
 * `@ccreate new_channel;alias;alias = short description` - Creates a new channel.
 * `addcom channel` - join an existing channel. Use `addcom alias = channel` to add a new alias you can use to talk to the channel, as many as desired.

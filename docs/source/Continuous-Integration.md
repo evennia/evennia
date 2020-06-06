@@ -25,7 +25,7 @@ To prepare a CI environment for your `MU*`, it will be necessary to set up some 
 Among those you will need:
 * A Continuous Integration Environment.
   * I recommend [TeamCity](https://www.jetbrains.com/teamcity/) which has an in-depth [Setup Guide](https://confluence.jetbrains.com/display/TCD8/Installing+and+Configuring+the+TeamCity+Server)
-* [Source Control](https://github.com/evennia/evennia/wiki/Version%20Control)
+* [Source Control](Version-Control)
   * This could be Git or SVN or any other available SC.
 
 ## Linux TeamCity Setup

@@ -3,7 +3,7 @@
 
 This is a small tutorial for customizing your character objects, using the example of letting users turn on and off ANSI color parsing as an example.  `@options NOCOLOR=True` will now do what this tutorial shows, but the tutorial subject can be applied to other toggles you may want, as well.
 
-In the Building guide's [Colors](https://github.com/evennia/evennia/wiki/TextTags#coloured-text) page you can learn how to add color to your game by using special markup. Colors enhance the gaming experience, but not all users want color. Examples would be users working from clients that don't support color, or people with various seeing disabilities that rely on screen readers to play your game. Also, whereas Evennia normally automatically detects if a client supports color, it may get it wrong. Being able to turn it on manually if you know it **should** work could be a nice feature.
+In the Building guide's [Colors](TextTags#coloured-text) page you can learn how to add color to your game by using special markup. Colors enhance the gaming experience, but not all users want color. Examples would be users working from clients that don't support color, or people with various seeing disabilities that rely on screen readers to play your game. Also, whereas Evennia normally automatically detects if a client supports color, it may get it wrong. Being able to turn it on manually if you know it **should** work could be a nice feature.
 
 So here's how to allow those users to remove color. It basically means you implementing a simple configuration system for your characters. This is the basic sequence:
 

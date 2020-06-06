@@ -3,7 +3,7 @@
 
 An Evennia *Session* represents one single established connection to the server. Depending on the Evennia session, it is possible for a person to connect multiple times, for example using different clients in multiple windows. Each such connection is represented by a session object.
 
-A session object has its own [cmdset](command-sets), usually the "unloggedin" cmdset. This is what is used to show the login screen and to handle commands to create a new account (or [Account](Accounts) in evennia lingo) read initial help and to log into the game with an existing account. A session object can either be "logged in" or not.  Logged in means that the user has authenticated. When this happens the session is associated with an Account object (which is what holds account-centric stuff). The account can then in turn puppet any number of objects/characters.
+A session object has its own [cmdset](Command-Sets), usually the "unloggedin" cmdset. This is what is used to show the login screen and to handle commands to create a new account (or [Account](Accounts) in evennia lingo) read initial help and to log into the game with an existing account. A session object can either be "logged in" or not.  Logged in means that the user has authenticated. When this happens the session is associated with an Account object (which is what holds account-centric stuff). The account can then in turn puppet any number of objects/characters.
 
 > Warning: A Session is not *persistent* - it is not a [Typeclass](Typeclasses) and has no connection to the database. The Session will go away when a user disconnects and you will lose any custom data on it if the server reloads. The `.db` handler on Sessions is there to present a uniform API (so you can assume `.db` exists even if you don't know if you receive an Object or a Session), but this is just an alias to `.ndb`. So don't store any data on Sessions that you can't afford to lose in a reload. You have been warned.
 
@@ -89,7 +89,7 @@ During certain situations, the portal- and server-side sessions are
 
 ## Sessionhandlers
 
-Both the Portal and Server each have a *sessionhandler* to manage the connections. These handlers are global entities contain all methods for relaying data across the AMP bridge. All types of Sessions hold a reference to their respective Sessionhandler (the property is called `sessionhandler`) so they can relay data. See [protocols](https://github.com/evennia/evennia/wiki/Custom-Protocols) for more info
+Both the Portal and Server each have a *sessionhandler* to manage the connections. These handlers are global entities contain all methods for relaying data across the AMP bridge. All types of Sessions hold a reference to their respective Sessionhandler (the property is called `sessionhandler`) so they can relay data. See [protocols](Custom-Protocols) for more info
 on building new protocols.
 
 To get all Sessions in the game (i.e. all currently connected clients), you access the server-side Session handler, which you get by 

@@ -15,7 +15,7 @@ consistent between different in-game characters as well as configuration options
 object also has its own [CmdSet](Command-Sets), the `AccountCmdSet`. 
 
 Logged into default evennia, you can use the `ooc` command to leave your current
-Objects and go into OOC mode. You are quite limited in this mode, basically it works
+[character](Objects) and go into OOC mode. You are quite limited in this mode, basically it works
 like a simple chat program.  It acts as a staging area for switching between Characters (if your
 game supports that) or as a safety mode if your Character gets deleted. Use `ic` to attempt to
 (re)puppet a Character. 
@@ -83,7 +83,7 @@ Account also has the following custom properties:
 - `obj` - an alias for `character`.
 - `name` - an alias for `user.username`
 - `sessions` - an instance of
-  [ObjectSessionHandler](https://github.com/evennia/evennia/wiki/evennia.objects.objects#objectsessionhandler)
+  [ObjectSessionHandler](code:evennia.objects.objects#objectsessionhandler)
   managing all connected Sessions (physical connections) this object listens to (Note: In older
   versions of Evennia, this was a list). The so-called `session-id` (used in many places) is found as
   a property `sessid` on each Session instance.

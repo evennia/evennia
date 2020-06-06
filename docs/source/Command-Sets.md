@@ -90,7 +90,7 @@ Command sets are often added to an object in its `at_object_creation` method. Fo
 
 ### Properties on Command Sets
 
-There are several extra flags that you can set on CmdSets in order to modify how they work. All are optional and will be set to defaults otherwise.  Since many of these relate to *merging* cmdsets, you might want to read the [Adding and Merging Command Sets](https://github.com/evennia/evennia/wiki/Command-Sets#adding-and-merging-command-sets) section for some of these to make sense.
+There are several extra flags that you can set on CmdSets in order to modify how they work. All are optional and will be set to defaults otherwise.  Since many of these relate to *merging* cmdsets, you might want to read the [Adding and Merging Command Sets](Command-Sets#adding-and-merging-command-sets) section for some of these to make sense.
 
 - `key` (string) - an identifier for the cmdset. This is optional, but should be unique. It is used for display in lists, but also to identify special merging behaviours using the `key_mergetype` dictionary below. 
 - `mergetype` (string) - allows for one of the following string values: "*Union*", "*Intersect*", "*Replace*", or "*Remove*".  

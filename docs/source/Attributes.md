@@ -15,7 +15,7 @@ specific names and require very specific types of data (for example you couldn't
 *list* to the `key` property no matter how hard you tried).  `Attributes` come into play when you
 want to assign arbitrary data to arbitrary names.
 
-**Attributes are _not_ secure by default and any player may be able to change them unless you [prevent this behavior](#locking-and-checking-attributes).**
+**Attributes are _not_ secure by default and any player may be able to change them unless you [prevent this behavior](Attributes#locking-and-checking-attributes).**
 
 ## The .db and .ndb shortcuts
 
@@ -58,12 +58,12 @@ You can also `del` properties on `db` and `ndb` as normal. This will for example
     del rose.db.has_thorns
 ```
 
-Both `db` and `ndb` defaults to offering an `all()` method on themselves. This returns all
+Both `db` and `ndb` defaults to offering an `all` property on themselves. This returns all
 associated attributes or non-persistent properties.
 
 ```python
-     list_of_all_rose_attributes = rose.db.all()
-     list_of_all_rose_ndb_attrs = rose.ndb.all()
+     list_of_all_rose_attributes = rose.db.all
+     list_of_all_rose_ndb_attrs = rose.ndb.all
 ```
 
 If you use `all` as the name of an attribute, this will be used instead. Later deleting your custom
@@ -91,7 +91,7 @@ The handlers have normal access methods that allow you to manage and retrieve `A
   before performing the deletion.  - `clear(...)`  - removes all Attributes from object.
 - `all(...)` - returns all Attributes (of the given category) attached to this object.
 
-See [this section](https://github.com/evennia/evennia/wiki/Attributes#locking-and-checking-attributes) for more about locking down Attribute
+See [this section](Attributes#locking-and-checking-attributes) for more about locking down Attribute
 access and editing. The `Nattribute` offers no concept of access control.
 
 Some examples:
@@ -185,7 +185,7 @@ not a big deal. But if you are accessing the Attribute as part of some big loop 
 amount of reads/writes you should first extract it to a temporary variable, operate on *that* and
 then save the result back to the Attribute. If you are storing a more complex structure like a
 `dict` or a `list` you should make sure to "disconnect" it from the database before looping over it,
-as mentioned in the [Retrieving Mutable Objects](#retrieving-mutable-objects) section below.
+as mentioned in the [Retrieving Mutable Objects](Attributes#retrieving-mutable-objects) section below.
 
 ### Storing single objects
 

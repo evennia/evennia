@@ -146,23 +146,27 @@ smv_outputdir_format = "versions" + sep + "{config.release}"
 
 # reroute to github links or to the api
 
-_github_code_root = "https://github.com/evennia/tree/master/"
+_github_code_root = "https://github.com/evennia/evennia/blob/master/"
 _github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
+
 
 # recommonmark
 
 def url_resolver(url):
-    if url.startswith("github:"):
-        return _github_code_root + url[7:]
-    elif url.startswith("api:"):
-        return f"api/{url[4:]}.rst"
+    urlstart = "code:"
+    apistart = "api:"
+
+    if url.startswith(urlstart):
+        return _github_code_root + url[len(urlstart):]
+    elif url.startswith(apistart):
+        return "api/" + url[len(apistart):] + ".html"
     else:
         return _github_doc_root + url
+
 
 auto_toc_sections = ["Contents", "Toc", "Index"]
 
 recommonmark_config = {
-    "enable_auto_doc_ref": True,
     "enable_auto_toc_tree": True,
     "url_resolver": url_resolver,
     "auto_toc_tree_section": ["Contents", "Toc", "Index"],

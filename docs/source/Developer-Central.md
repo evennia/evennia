@@ -26,7 +26,7 @@ This page serves as a central nexus for information on using Evennia as well as 
 
 #### Core components and protocols
 
-- [Server and Portal](Portal-and-Server)  
+- [Server and Portal](Portal-And-Server)  
   - [Sessions](Sessions)
   - [Configuration and module plugins](Server-Conf)
 - [The message path](Messagepath)
@@ -67,9 +67,9 @@ This page serves as a central nexus for information on using Evennia as well as 
 
 #### Web 
 
-- [Web features overview](Web-features)
+- [Web features overview](Web-Features)
 - [The Webclient](Webclient)
-- [Web tutorials](Web-tutorial)
+- [Web tutorials](Web-Tutorial)
 
 #### Other systems
 
@@ -83,9 +83,9 @@ This page serves as a central nexus for information on using Evennia as well as 
 - [Game Menus](EvMenu) (EvMenu)
 - [Text paging/scrolling](EvMore) (EvMore)
 - [Text Line Editor](EvEditor) (EvEditor)
-- [Text Tables](https://github.com/evennia/evennia/wiki/evennia.utils.evtable) (EvTable)
-- [Text Form generation](https://github.com/evennia/evennia/wiki/evennia.utils.evform) (EvForm)
-- [Spawner and Prototypes](https://github.com/evennia/evennia/wiki/Spawner-and-Prototypes)
+- [Text Tables](code:evennia.utils.evtable) (EvTable)
+- [Text Form generation](code:evennia.utils.evform) (EvForm)
+- [Spawner and Prototypes](Spawner-and-Prototypes)
 - [Inlinefuncs](TextTags#inline-functions)
 - [Asynchronous execution](Async-Process)
 

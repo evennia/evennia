@@ -5,7 +5,7 @@
 their own custom client protocol.*
 
 
-A [PortalSession](Portal-and-Server-Sessions) is the basic data object representing an external
+A [PortalSession](Sessions#Portal-and-Server-Sessions) is the basic data object representing an external
 connection to the Evennia [Portal](Portal-And-Server) -- usually a human player running a mud client
 of some kind.  The way they connect (the language the player's client and Evennia use to talk to
 each other) is called the connection *Protocol*. The most common such protocol for MUD:s is the
@@ -206,7 +206,7 @@ The message will pass through the system such that the sessionhandler will dig o
 
 ### Receiving data 
 
-Just because the protocol is there, does not mean Evennia knows what to do with it. An [Inputfunc](Inputfunc) must exist to receive it. In the case of the `text` input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the [Inputfunc](Inputfunc) page for how to do this. 
+Just because the protocol is there, does not mean Evennia knows what to do with it. An [Inputfunc]([Inputfunc](Inputfunc)) must exist to receive it. In the case of the `text` input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the [Inputfunc]([Inputfunc](Inputfunc)) page for how to do this. 
 
 These might not be as clear-cut in all protocols, but the principle is there. These four basic
 components - however they are accessed - links to the *Portal Session*, which is the actual common

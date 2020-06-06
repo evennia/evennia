@@ -62,7 +62,7 @@ up.
 you will find the traceback. The most common error is that you have some sort of syntax error in
 your class. 
 
-Note that the Locks and [Attribute](Attributes) which are set in the typeclass could just
+Note that the [Locks](Locks) and [Attribute](Attributes) which are set in the typeclass could just
 as well have been set using commands in-game, so this is a *very* simple example.
 
 ## Storing data on initialization

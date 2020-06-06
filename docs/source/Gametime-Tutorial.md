@@ -17,6 +17,7 @@ Evennia's game time features assume a standard calendar (see the relevant sectio
 All is done through the settings.  Here are the settings you should use if you want a game time with a standard calendar:
 
 ```python
+# in a file settings.py in mygame/server/conf
 # The time factor dictates if the game world runs faster (timefactor>1)
 # or slower (timefactor<1) than the real world.
 TIME_FACTOR = 2.0
@@ -44,6 +45,7 @@ time.mktime(start.timetuple())
 This should return a huge number - the number of seconds since Jan 1 1970. Copy that directly into your settings (editing `server/conf/settings.py`):
 
 ```python
+# in a file settings.py in mygame/server/conf
 TIME_GAME_EPOCH = 1577865600
 ```
 
@@ -127,6 +129,7 @@ In our first example of the Shire calendar, used by hobbits in books by Tolkien,
 The custom calendar is defined by adding the `TIME_UNITS` setting to your settings file. It's a dictionary containing as keys the name of the units, and as value the number of seconds (the smallest unit for us) in this unit. Its keys must be picked among the following: "sec", "min", "hour", "day", "week", "month" and "year" but you don't have to include them all.  Here is the configuration for the Shire calendar:
 
 ```python
+# in a file settings.py in mygame/server/conf
 TIME_UNITS = {"sec": 1,
               "min": 60,
               "hour": 60 * 60,
@@ -142,6 +145,7 @@ In order for this setting to work properly, remember all units have to be multip
 So for our example, our settings may look like this: 
 
 ```python
+# in a file settings.py in mygame/server/conf
 # Time factor
 TIME_FACTOR = 4
 
@@ -200,7 +204,11 @@ class CmdTime(Command):
 Don't forget to add it in your CharacterCmdSet to see this command:
 
 ```python
-from commands.gametime import CmdTime
+# in mygame/commands/default_cmdset.py
+
+from commands.gametime import CmdTime   # <-- Add 
+
+# ...
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -215,7 +223,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         Populates the cmdset
         """
         super().at_cmdset_creation()
-        self.add(CmdTime())
+        # ... 
+        self.add(CmdTime())   # <- Add
 ```
 
 Reload your game with the `@reload` command.  You should now see the `time` command.  If you enter it, you might see something like:

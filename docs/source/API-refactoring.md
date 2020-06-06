@@ -12,7 +12,7 @@ This is how to enter an opinion. Use any markdown needed but stay within your se
 
 ### Griatch (Sept 2, 2019)
 
-I don't agree with removing explicit keywords as suggested by [Johnny on Aug 29 below](https://github.com/evennia/evennia/wiki/API-refactoring/_edit#reduce-usage-of-optionalpositional-arguments-aug-29-2019). Overriding such a method can still be done by `get(self, **kwargs)` if so desired, making the kwargs explicit helps IMO readability of the API. If just giving a generic `**kwargs`, one must read the docstring or even the code to see which keywords are valid. 
+I don't agree with removing explicit keywords as suggested by [Johnny on Aug 29 below](API-refactoring#reduce-usage-of-optionalpositional-arguments-aug-29-2019). Overriding such a method can still be done by `get(self, **kwargs)` if so desired, making the kwargs explicit helps IMO readability of the API. If just giving a generic `**kwargs`, one must read the docstring or even the code to see which keywords are valid. 
 
 On the other hand, I think it makes sense to as a standard offer an extra `**kwargs` at the end of arg-lists for common methods that are expected to be over-ridden. This make the API more flexible by hinting to the dev that they could expand their own over-ridden implementation with their own keyword arguments if so desired.
 

@@ -7,7 +7,7 @@
 [issue tracker](https://github.com/evennia/evennia/issues).*
 
 The full set of default Evennia commands currently contains 92 commands in 9 source
-files.  Our policy for adding default commands is outlined [here](Using-Mux-as-a-Standard). More
+files.  Our policy for adding default commands is outlined [here](Using-MUX-as-a-Standard). More
 information about how commands work can be found in the documentation for [Commands](Commands).
 
 
@@ -15,97 +15,97 @@ information about how commands work can be found in the documentation for [Comma
 ## A-Z
 
 - [`__unloggedin_look_command`](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-`--unloggedin-look-command`-cmdunconnectedlook) - look when in unlogged-in state
-- [about](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-about-cmdabout) - show Evennia info
-- [access](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-access-cmdaccess) - show your current game access
-- [addcom](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-addcom-cmdaddcom) - add a channel alias and/or subscribe to a channel
-- [alias](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-alias-cmdsetobjalias) - adding permanent aliases for object
-- [allcom](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-allcom-cmdallcom) - perform admin operations on all channels
-- [ban](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-ban-cmdban) - ban an account from the server
-- [batchcode](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-batchcode-cmdbatchcode) - build from batch-code file
-- [batchcommands](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-batchcommands-cmdbatchcommands) - build from batch-command file
-- [boot](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-boot-cmdboot) - kick an account from the server.
-- [cboot](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-cboot-cmdcboot) - kick an account from a channel you control
-- [ccreate](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-ccreate-cmdchannelcreate) - create a new channel
-- [cdesc](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-cdesc-cmdcdesc) - describe a channel you control
-- [cdestroy](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-cdestroy-cmdcdestroy) - destroy a channel you created
-- [cemit](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-cemit-cmdcemit) - send an admin message to a channel you control
-- [channels](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-channels-cmdchannels) - list all channels available to you
-- [charcreate](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-charcreate-cmdcharcreate) - create a new character
-- [chardelete](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-chardelete-cmdchardelete) - delete a character - this cannot be undone!
-- [clock](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-clock-cmdclock) - change channel locks of a channel you control
-- [cmdsets](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-cmdsets-cmdlistcmdsets) - list command sets defined on an object
-- [color](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-color-cmdcolortest) - testing which colors your client support
-- [command](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-command-objmanipcommand) - This is a parent class for some of the defining objmanip commands
-- [connect](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-connect-cmdunconnectedconnect) - connect to the game
-- [copy](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-copy-cmdcopy) - copy an object and its properties
-- [cpattr](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-cpattr-cmdcpattr) - copy attributes between objects
-- [create](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-create-cmdunconnectedcreate) - create a new account account
-- [create](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-create-cmdcreate) - create new objects
-- [cwho](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-cwho-cmdcwho) - show who is listening to a channel
-- [delcom](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-delcom-cmddelcom) - remove a channel alias and/or unsubscribe from channel
-- [desc](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-desc-cmddesc) - describe an object or the current room.
-- [destroy](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-destroy-cmddestroy) - permanently delete objects
-- [dig](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-dig-cmddig) - build new rooms and connect them to the current location
-- [drop](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-drop-cmddrop) - drop something
-- [emit](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-emit-cmdemit) - admin command for emitting message to multiple objects
-- [examine](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-examine-cmdexamine) - get detailed information about an object
-- [find](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-find-cmdfind) - search the database for objects
-- [force](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-force-cmdforce) - forces an object to execute a command
-- [get](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-get-cmdget) - pick up something
-- [give](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-give-cmdgive) - give away something to someone
-- [help](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-help-cmdunconnectedhelp) - get help when in unconnected-in state
-- [help](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-help-cmdhelp) - View help or a list of topics
-- [home](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-home-cmdhome) - move to your character's home location
-- [ic](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-ic-cmdic) - control an object you have permission to puppet
-- [inventory](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-inventory-cmdinventory) - view inventory
-- [irc2chan](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-irc2chan-cmdirc2chan) - Link an evennia channel to an external IRC channel
-- [link](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-link-cmdlink) - link existing rooms together with exits
-- [lock](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-lock-cmdlock) - assign a lock definition to an object
-- [look](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-look-cmdlook) - look at location or object
-- [look](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-look-cmdooclook) - look while out-of-character
-- [mvattr](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-mvattr-cmdmvattr) - move attributes between objects
-- [name](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-name-cmdname) - change the name and/or aliases of an object
-- [nick](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-nick-cmdnick) - define a personal alias/nick by defining a string to
-- [objects](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-objects-cmdobjects) - statistics on objects in the database
-- [ooc](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-ooc-cmdooc) - stop puppeting and go ooc
-- [open](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-open-cmdopen) - open a new exit from the current room
-- [option](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-option-cmdoption) - Set an account option
-- [page](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-page-cmdpage) - send a private message to another account
-- [password](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-password-cmdpassword) - change your password
-- [perm](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-perm-cmdperm) - set the permissions of an account/object
-- [pose](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-pose-cmdpose) - strike a pose
-- [py](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-py-cmdpy) - execute a snippet of python code
-- [quell](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-quell-cmdquell) - use character's permissions instead of account's
-- [quit](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-quit-cmdunconnectedquit) - quit when in unlogged-in state
-- [quit](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-quit-cmdquit) - quit the game
-- [reload](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-reload-cmdreload) - reload the server
-- [reset](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-reset-cmdreset) - reset and reboot the server
-- [rss2chan](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-rss2chan-cmdrss2chan) - link an evennia channel to an external RSS feed
-- [say](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-say-cmdsay) - speak as your character
-- [script](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-script-cmdscript) - attach a script to an object
-- [scripts](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-scripts-cmdscripts) - list and manage all running scripts
-- [server](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-server-cmdserverload) - show server load and memory statistics
-- [service](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-service-cmdservice) - manage system services
-- [sessions](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-sessions-cmdsessions) - check your connected session(s)
-- [set](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-set-cmdsetattribute) - set attribute on an object or account
-- [setdesc](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-setdesc-cmdsetdesc) - describe yourself
-- [sethelp](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-sethelp-cmdsethelp) - Edit the help database.
-- [sethome](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-sethome-cmdsethome) - set an object's home location
-- [shutdown](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-shutdown-cmdshutdown) - stop the server completely
-- [spawn](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-spawn-cmdspawn) - spawn objects from prototype
-- [style](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-style-cmdstyle) - In-game style options
-- [tag](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-tag-cmdtag) - handles the tags of an object
-- [tel](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-tel-cmdteleport) - teleport object to another location
-- [time](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-time-cmdtime) - show server time statistics
-- [tunnel](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-tunnel-cmdtunnel) - create new rooms in cardinal directions only
-- [typeclass](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-typeclass-cmdtypeclass) - set or change an object's typeclass
-- [unban](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-unban-cmdunban) - remove a ban from an account
-- [unlink](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-unlink-cmdunlink) - remove exit-connections between rooms
-- [userpassword](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-userpassword-cmdnewpassword) - change the password of an account
-- [wall](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-wall-cmdwall) - make an announcement to all
-- [whisper](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-whisper-cmdwhisper) - Speak privately as your character to another
-- [who](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-who-cmdwho) - list who is currently online
-- [wipe](https://github.com/evennia/evennia/wiki/Default-Command-Help#wiki-wipe-cmdwipe) - clear all attributes from an object
+- [about](Default-Command-Help#wiki-about-cmdabout) - show Evennia info
+- [access](Default-Command-Help#wiki-access-cmdaccess) - show your current game access
+- [addcom](Default-Command-Help#wiki-addcom-cmdaddcom) - add a channel alias and/or subscribe to a channel
+- [alias](Default-Command-Help#wiki-alias-cmdsetobjalias) - adding permanent aliases for object
+- [allcom](Default-Command-Help#wiki-allcom-cmdallcom) - perform admin operations on all channels
+- [ban](Default-Command-Help#wiki-ban-cmdban) - ban an account from the server
+- [batchcode](Default-Command-Help#wiki-batchcode-cmdbatchcode) - build from batch-code file
+- [batchcommands](Default-Command-Help#wiki-batchcommands-cmdbatchcommands) - build from batch-command file
+- [boot](Default-Command-Help#wiki-boot-cmdboot) - kick an account from the server.
+- [cboot](Default-Command-Help#wiki-cboot-cmdcboot) - kick an account from a channel you control
+- [ccreate](Default-Command-Help#wiki-ccreate-cmdchannelcreate) - create a new channel
+- [cdesc](Default-Command-Help#wiki-cdesc-cmdcdesc) - describe a channel you control
+- [cdestroy](Default-Command-Help#wiki-cdestroy-cmdcdestroy) - destroy a channel you created
+- [cemit](Default-Command-Help#wiki-cemit-cmdcemit) - send an admin message to a channel you control
+- [channels](Default-Command-Help#wiki-channels-cmdchannels) - list all channels available to you
+- [charcreate](Default-Command-Help#wiki-charcreate-cmdcharcreate) - create a new character
+- [chardelete](Default-Command-Help#wiki-chardelete-cmdchardelete) - delete a character - this cannot be undone!
+- [clock](Default-Command-Help#wiki-clock-cmdclock) - change channel locks of a channel you control
+- [cmdsets](Default-Command-Help#wiki-cmdsets-cmdlistcmdsets) - list command sets defined on an object
+- [color](Default-Command-Help#wiki-color-cmdcolortest) - testing which colors your client support
+- [command](Default-Command-Help#wiki-command-objmanipcommand) - This is a parent class for some of the defining objmanip commands
+- [connect](Default-Command-Help#wiki-connect-cmdunconnectedconnect) - connect to the game
+- [copy](Default-Command-Help#wiki-copy-cmdcopy) - copy an object and its properties
+- [cpattr](Default-Command-Help#wiki-cpattr-cmdcpattr) - copy attributes between objects
+- [create](Default-Command-Help#wiki-create-cmdunconnectedcreate) - create a new account account
+- [create](Default-Command-Help#wiki-create-cmdcreate) - create new objects
+- [cwho](Default-Command-Help#wiki-cwho-cmdcwho) - show who is listening to a channel
+- [delcom](Default-Command-Help#wiki-delcom-cmddelcom) - remove a channel alias and/or unsubscribe from channel
+- [desc](Default-Command-Help#wiki-desc-cmddesc) - describe an object or the current room.
+- [destroy](Default-Command-Help#wiki-destroy-cmddestroy) - permanently delete objects
+- [dig](Default-Command-Help#wiki-dig-cmddig) - build new rooms and connect them to the current location
+- [drop](Default-Command-Help#wiki-drop-cmddrop) - drop something
+- [emit](Default-Command-Help#wiki-emit-cmdemit) - admin command for emitting message to multiple objects
+- [examine](Default-Command-Help#wiki-examine-cmdexamine) - get detailed information about an object
+- [find](Default-Command-Help#wiki-find-cmdfind) - search the database for objects
+- [force](Default-Command-Help#wiki-force-cmdforce) - forces an object to execute a command
+- [get](Default-Command-Help#wiki-get-cmdget) - pick up something
+- [give](Default-Command-Help#wiki-give-cmdgive) - give away something to someone
+- [help](Default-Command-Help#wiki-help-cmdunconnectedhelp) - get help when in unconnected-in state
+- [help](Default-Command-Help#wiki-help-cmdhelp) - View help or a list of topics
+- [home](Default-Command-Help#wiki-home-cmdhome) - move to your character's home location
+- [ic](Default-Command-Help#wiki-ic-cmdic) - control an object you have permission to puppet
+- [inventory](Default-Command-Help#wiki-inventory-cmdinventory) - view inventory
+- [irc2chan](Default-Command-Help#wiki-irc2chan-cmdirc2chan) - Link an evennia channel to an external IRC channel
+- [link](Default-Command-Help#wiki-link-cmdlink) - link existing rooms together with exits
+- [lock](Default-Command-Help#wiki-lock-cmdlock) - assign a lock definition to an object
+- [look](Default-Command-Help#wiki-look-cmdlook) - look at location or object
+- [look](Default-Command-Help#wiki-look-cmdooclook) - look while out-of-character
+- [mvattr](Default-Command-Help#wiki-mvattr-cmdmvattr) - move attributes between objects
+- [name](Default-Command-Help#wiki-name-cmdname) - change the name and/or aliases of an object
+- [nick](Default-Command-Help#wiki-nick-cmdnick) - define a personal alias/nick by defining a string to
+- [objects](Default-Command-Help#wiki-objects-cmdobjects) - statistics on objects in the database
+- [ooc](Default-Command-Help#wiki-ooc-cmdooc) - stop puppeting and go ooc
+- [open](Default-Command-Help#wiki-open-cmdopen) - open a new exit from the current room
+- [option](Default-Command-Help#wiki-option-cmdoption) - Set an account option
+- [page](Default-Command-Help#wiki-page-cmdpage) - send a private message to another account
+- [password](Default-Command-Help#wiki-password-cmdpassword) - change your password
+- [perm](Default-Command-Help#wiki-perm-cmdperm) - set the permissions of an account/object
+- [pose](Default-Command-Help#wiki-pose-cmdpose) - strike a pose
+- [py](Default-Command-Help#wiki-py-cmdpy) - execute a snippet of python code
+- [quell](Default-Command-Help#wiki-quell-cmdquell) - use character's permissions instead of account's
+- [quit](Default-Command-Help#wiki-quit-cmdunconnectedquit) - quit when in unlogged-in state
+- [quit](Default-Command-Help#wiki-quit-cmdquit) - quit the game
+- [reload](Default-Command-Help#wiki-reload-cmdreload) - reload the server
+- [reset](Default-Command-Help#wiki-reset-cmdreset) - reset and reboot the server
+- [rss2chan](Default-Command-Help#wiki-rss2chan-cmdrss2chan) - link an evennia channel to an external RSS feed
+- [say](Default-Command-Help#wiki-say-cmdsay) - speak as your character
+- [script](Default-Command-Help#wiki-script-cmdscript) - attach a script to an object
+- [scripts](Default-Command-Help#wiki-scripts-cmdscripts) - list and manage all running scripts
+- [server](Default-Command-Help#wiki-server-cmdserverload) - show server load and memory statistics
+- [service](Default-Command-Help#wiki-service-cmdservice) - manage system services
+- [sessions](Default-Command-Help#wiki-sessions-cmdsessions) - check your connected session(s)
+- [set](Default-Command-Help#wiki-set-cmdsetattribute) - set attribute on an object or account
+- [setdesc](Default-Command-Help#wiki-setdesc-cmdsetdesc) - describe yourself
+- [sethelp](Default-Command-Help#wiki-sethelp-cmdsethelp) - Edit the help database.
+- [sethome](Default-Command-Help#wiki-sethome-cmdsethome) - set an object's home location
+- [shutdown](Default-Command-Help#wiki-shutdown-cmdshutdown) - stop the server completely
+- [spawn](Default-Command-Help#wiki-spawn-cmdspawn) - spawn objects from prototype
+- [style](Default-Command-Help#wiki-style-cmdstyle) - In-game style options
+- [tag](Default-Command-Help#wiki-tag-cmdtag) - handles the tags of an object
+- [tel](Default-Command-Help#wiki-tel-cmdteleport) - teleport object to another location
+- [time](Default-Command-Help#wiki-time-cmdtime) - show server time statistics
+- [tunnel](Default-Command-Help#wiki-tunnel-cmdtunnel) - create new rooms in cardinal directions only
+- [typeclass](Default-Command-Help#wiki-typeclass-cmdtypeclass) - set or change an object's typeclass
+- [unban](Default-Command-Help#wiki-unban-cmdunban) - remove a ban from an account
+- [unlink](Default-Command-Help#wiki-unlink-cmdunlink) - remove exit-connections between rooms
+- [userpassword](Default-Command-Help#wiki-userpassword-cmdnewpassword) - change the password of an account
+- [wall](Default-Command-Help#wiki-wall-cmdwall) - make an announcement to all
+- [whisper](Default-Command-Help#wiki-whisper-cmdwhisper) - Speak privately as your character to another
+- [who](Default-Command-Help#wiki-who-cmdwho) - list who is currently online
+- [wipe](Default-Command-Help#wiki-wipe-cmdwipe) - clear all attributes from an object
 
 ## A-Z by source file
 

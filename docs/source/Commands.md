@@ -91,9 +91,9 @@ Let's say account *Bob* with a character *BigGuy* enters the command *look at sw
   used, but they could be used to implement alternate help-display systems.
 - `.client_width()` - Shortcut for getting the client's screen-width. Note that not all clients will 
   truthfully report this value - that case the `settings.DEFAULT_SCREEN_WIDTH` will be returned.
-- `.styled_table(*args, **kwargs)` - This returns an [EvTable](EvTable) [styled](OptionStyles) based on the 
+- `.styled_table(*args, **kwargs)` - This returns an [EvTable]([EvTable](EvTable)) [styled]([styled](OptionStyles)) based on the 
   session calling this command. The args/kwargs are the same as for EvTable, except styling defaults are set.
-- `.styled_header`, `_footer`, `separator` - These will produce [styled](OptionStyles) decorations for 
+- `.styled_header`, `_footer`, `separator` - These will produce [styled]([styled](OptionStyles)) decorations for 
   display to the user. They are useful for creating listings and forms with colors adjustable per-user. 
 
 ### Defining your own command classes
@@ -118,7 +118,7 @@ You should also implement at least two methods, `parse()` and `func()` (You coul
 - `func()` is called right after `parse()` and should make use of the pre-parsed input to actually do whatever the command is supposed to do. This is the main body of the command. The return value from this method will be returned from the execution as a Twisted Deferred.
 - `at_post_cmd()` is called after `func()` to handle eventual cleanup.
 
-Finally, you should always make an informative [doc string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your class. This string is dynamically read by the [Help System](Help-system) to create the help entry for this command. You should decide on a way to format your help and stick to that.
+Finally, you should always make an informative [doc string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your class. This string is dynamically read by the [Help System](Help-System) to create the help entry for this command. You should decide on a way to format your help and stick to that.
 
 Below is how you define a simple alternative "`smile`" command:
 
@@ -286,7 +286,7 @@ class CmdConfirm(Command):
 
 This time, when the user enters the 'confirm' command, she will be asked if she wants to go on. Entering 'yes' or "y" (regardless of case) will give the first reply, otherwise the second reply will show.
 
-> Note again that the `yield` keyword does not store state.  If the game reloads while waiting for the user to answer, the user will have to start over. It is not a good idea to use `yield` for important or complex choices, a persistent [EvMenu](https://github.com/evennia/evennia/wiki/EvMenu) might be more appropriate in this case.
+> Note again that the `yield` keyword does not store state.  If the game reloads while waiting for the user to answer, the user will have to start over. It is not a good idea to use `yield` for important or complex choices, a persistent [EvMenu](EvMenu) might be more appropriate in this case.
 
 ## System commands
 
@@ -416,7 +416,7 @@ Any time the user sends text to Evennia, the server tries to figure out if the t
     - CmdSets defined on the current account, if caller is a puppeted object.
     - CmdSets defined on the Session itself.
     - The active CmdSets of eventual objects in the same location (if any). This includes commands on [Exits](Objects#Exits).
-    - Sets of dynamically created *System commands* representing available [Communications](Communications.md#Channels).
+    - Sets of dynamically created *System commands* representing available [Communications](Communications#Channels).
 7. All CmdSets *of the same priority* are merged together in groups.  Grouping avoids order-dependent issues of merging multiple same-prio sets onto lower ones.
 8. All the grouped CmdSets are *merged* in reverse priority into one combined CmdSet according to each set's merge rules.
 9. Evennia's *command parser* takes the merged cmdset and matches each of its commands (using its key and aliases) against the beginning of the string entered by *caller*. This produces a set of candidates.

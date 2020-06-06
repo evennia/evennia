@@ -228,9 +228,9 @@ never raise a traceback but instead echo errors through logging. See
 ## Display utilities
 ### Making ascii tables
 
-The [EvTable](../wiki/evennia.utils.evtable#evtable) class (`evennia/utils/evtable.py`) can be used to create correctly formatted text tables. There is also [EvForm](../wiki/evennia.utils.evform#evform) (`evennia/utils/evform.py`). This reads a fixed-format text template from a file in order to create any level of sophisticated ascii layout.  Both evtable and evform have lots of options and inputs so see the header of each module for help.
+The [EvTable](code:evennia.utils.evtable#evtable) class (`evennia/utils/evtable.py`) can be used to create correctly formatted text tables. There is also [EvForm](code:evennia.utils.evform#evform) (`evennia/utils/evform.py`). This reads a fixed-format text template from a file in order to create any level of sophisticated ascii layout.  Both evtable and evform have lots of options and inputs so see the header of each module for help.
 
 The third-party [PrettyTable](https://code.google.com/p/prettytable/) module is also included in Evennia. PrettyTable is considered deprecated in favor of EvTable since PrettyTable cannot handle ANSI colour. PrettyTable can be found in `evennia/utils/prettytable/`.  See its homepage above for instructions.
 
 ### Menus
-- [evennia.EvMenu](../wiki/evennia.utils.evmenu#evmenu)
+- [evennia.EvMenu](https://github.com/evennia/evennia/wiki/evennia.utils.evmenu#evmenu)

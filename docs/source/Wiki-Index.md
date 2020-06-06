@@ -77,7 +77,7 @@ There are 141 entries in the wiki.
 - [Haproxy config (optional)](HAProxy-Config-(Optional)) - A page about Haproxy config (optional).
 - [Help system](Help-System) - How-to-use-and-add-help-files-to-the-game.
 - [Help system tutorial](Help-System-Tutorial) - Create-a-page-to-see-your-game-help-online
-- [Home](index) - Wiki-front-page.
+- [Home]([Home](index)) - Wiki-front-page.
 - [How to connect evennia to twitter](How-to-connect-Evennia-to-Twitter) - Connecting-your-game-to-a-twitter-account.
 - [How to get and give help](How-To-Get-And-Give-Help) - Summing-up-how-to-best-get-help-or-give-it.
 - [Implementing a game rule system](Implementing-a-game-rule-system) - Tutorial-giving-ideas-about-creating-a-game-rule-system

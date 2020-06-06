@@ -544,7 +544,7 @@ After this quick tour of some `str` methods, we'll take a look at some Evennia-s
 
 One very common task is to convert a `str` into an Evennia object.  Take the previous example: having `"book"`  in a variable is great, but we would prefer to know what the user is talking about... what is this `"book"`?
 
-To get an object from a string, we perform an Evennia search.  Evennia provides a `search` method on all typeclassed objects (you will most likely use the one on characters or accounts).  This method supports a very wide array of arguments and has [its own tutorial](https://github.com/evennia/evennia/wiki/Tutorial-Searching-For-Objects).  Some examples of useful cases follow:
+To get an object from a string, we perform an Evennia search.  Evennia provides a `search` method on all typeclassed objects (you will most likely use the one on characters or accounts).  This method supports a very wide array of arguments and has [its own tutorial](Tutorial-Searching-For-Objects).  Some examples of useful cases follow:
 
 ### Local searches
 

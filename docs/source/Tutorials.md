@@ -30,8 +30,8 @@ To use Evennia, you will need basic understanding of Python [modules](http://doc
 
 _Starting tutorials for you who are new to developing with Evennia._
 
-- [Python basic introduction](https://github.com/evennia/evennia/wiki/Python-basic-introduction) (part 1) - Python intro using Evennia.
-- [Python basic introduction](https://github.com/evennia/evennia/wiki/Python-basic-tutorial-part-two) (part 2) - More on objects, classes and finding where things are. 
+- [Python basic introduction](Python-basic-introduction) (part 1) - Python intro using Evennia.
+- [Python basic introduction](Python-basic-tutorial-part-two) (part 2) - More on objects, classes and finding where things are. 
 - [Tutorial: First Steps Coding](https://github.com/evennia/evennia/wiki/First%20Steps%20Coding) - learn each basic feature on their own through step-by-step instruction. 
 - [Tutorial: A small first game](Tutorial-for-basic-MUSH-like-game) - learn basic features as part of building a small but working game from scratch.
 - [Tutorial: Adding new commands](Adding-Command-Tutorial) - focuses specifically on how to add new commands.
@@ -49,7 +49,7 @@ _Examples of designing new objects for your game world_
 - [Tutorial: Listening NPC's](https://github.com/evennia/evennia/wiki/Tutorial-NPCs-listening)
 - [Tutorial: Creating a vehicle](https://github.com/evennia/evennia/wiki/Tutorial-Vehicles)
 - [Tutorial: Making an NPC shop](NPC-shop-Tutorial) (also advanced [EvMenu](EvMenu) usage)
-- [Tutorial: Implementing a Static In Game Map](Static-In-Game-Map) (also [Batch Code](Batch-code-processor) usage)
+- [Tutorial: Implementing a Static In Game Map](Static-In-Game-Map) (also [Batch Code](Batch-Code-Processor) usage)
 - [Tutorial: Implementing a Dynamic In Game Map](Dynamic-In-Game-Map)
 - [Tutorial: Writing your own unit tests](https://github.com/evennia/evennia/wiki/Unit-Testing#testing-for-game-development-mini-tutorial)
 

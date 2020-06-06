@@ -15,23 +15,23 @@ Name                   | Version  | Comments
 [Evennia webclient][1] | 0.6  | Uses WS/AJAX. [Current client issues][2]
 [tintin++][3]          | 2.0+ | No MXP support
 [tinyfugue][4]         | 5.0+ | No UTF-8 support
-[MUSHclient][5](Win)   | 4.94 | NAWS reports full text area
-[Zmud][6](Win)         | 7.21 | *UNTESTED*              
-[Cmud][7](Win)         | v3   | *UNTESTED*   
+[MUSHclient][5] (Win)   | 4.94 | NAWS reports full text area
+[Zmud][6] (Win)         | 7.21 | *UNTESTED*              
+[Cmud][7] (Win)         | v3   | *UNTESTED*   
 [Potato][8]            | 2.0.0b16  | No MXP, MCCP support. Win 32bit does not understand "localhost", must use `127.0.0.1`. [Newline issue](https://github.com/evennia/evennia/issues/1131). *Won't send a single blank line on Enter press.
 [Mudlet][9]            | 3.4+ | No known issues. Some older versions showed <> as html under MXP.
-[SimpleMU][10](Win)    | full | *UNTESTED*. Discontinued. NAWS reports pixel size.
-[Atlantis][11](Mac)    | 0.9.9.4 | No known issues.
+[SimpleMU][10] (Win)    | full | *UNTESTED*. Discontinued. NAWS reports pixel size.
+[Atlantis][11] (Mac)    | 0.9.9.4 | No known issues.
 [GMUD][12]             | 0.0.1 | Can't handle any telnet handshakes. Not recommended.
-[BeipMU][13](Win)      | 3.0.255 | No MXP support. Best to enable "MUD prompt handling", disable "Handle HTML tags".
-[MudRammer][14](IOS)   | 1.8.7 | Bad Telnet Protocol compliance: displays spurious characters.
-[MUDMaster][15](IOS)   | 1.3.1 | *UNTESTED* 
-[BlowTorch][16](Andr)  | 1.1.3 | *Telnet NOP displays as spurious character.
-[Mukluk][17](Andr)     | 2015.11.20| *Telnet NOP displays as spurious character. Has UTF-8/Emoji support.
-[Gnome-MUD][18](Unix)  | 0.11.2 | Telnet handshake errors. First (only) attempt at logging in fails.
+[BeipMU][13] (Win)      | 3.0.255 | No MXP support. Best to enable "MUD prompt handling", disable "Handle HTML tags".
+[MudRammer][14] (IOS)   | 1.8.7 | Bad Telnet Protocol compliance: displays spurious characters.
+[MUDMaster][15] (IOS)   | 1.3.1 | *UNTESTED* 
+[BlowTorch][16] (Andr)  | 1.1.3 | *Telnet NOP displays as spurious character.
+[Mukluk][17] (Andr)     | 2015.11.20| *Telnet NOP displays as spurious character. Has UTF-8/Emoji support.
+[Gnome-MUD][18] (Unix)  | 0.11.2 | Telnet handshake errors. First (only) attempt at logging in fails.
 [Spyrit][19]           | 0.4 | No MXP, OOB support.
 [JamochaMUD][20]       | 5.2 | Does not support ANSI within MXP text.
-[DuckClient][21](Chrome)| 4.2 | No MXP support. Displays Telnet Go-Ahead and WILL SUPPRESS-GO-AHEAD as ù character. Also seems to run the `version` command on connection, which will not work in `MULTISESSION_MODES` above 1.
+[DuckClient][21] (Chrome)| 4.2 | No MXP support. Displays Telnet Go-Ahead and WILL SUPPRESS-GO-AHEAD as ù character. Also seems to run the `version` command on connection, which will not work in `MULTISESSION_MODES` above 1.
 [KildClient][22]       | 2.11.1 | No known issues.
 
 [1]: https://github.com/evennia/evennia/wiki/Web%20features#web-client
@@ -62,8 +62,8 @@ Name                   | Version  | Comments
 ### Issue: Telnet NOP displays as spurious character.
 
 #### Known Clients
-* [BlowTorch][16](Andr)
-* [Mukluk][17](Andr)
+* [BlowTorch][16]([16](Andr))
+* [Mukluk][17]([17](Andr))
 
 #### Workarounds
 * Set the command in game to `@option NOPKEEPALIVE=off` for the session, or use the `/save` parameter to disable it for that Evennian account permanently.

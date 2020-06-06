@@ -115,7 +115,7 @@ The solution to all these is to plan ahead. Make sure that superusers are never 
 
 ## Assorted notes
 
-The fact that you build as 'yourself' can also be considered an advantage however, should you ever decide to change the default command to allow others than superusers to call the processor. Since normal access-checks are still performed, a malevolent builder with access to the processor should not be able to do all that much damage (this is the main drawback of the [Batch Code Processor](batch-code-processor))
+The fact that you build as 'yourself' can also be considered an advantage however, should you ever decide to change the default command to allow others than superusers to call the processor. Since normal access-checks are still performed, a malevolent builder with access to the processor should not be able to do all that much damage (this is the main drawback of the [Batch Code Processor](Batch-Code-Processor))
 
 - [GNU Emacs](https://www.gnu.org/software/emacs/) users might find it interesting to use emacs' *evennia mode*. This is an Emacs major mode found in `evennia/utils/evennia-mode.el`. It offers correct syntax highlighting and indentation with `<tab>` when editing `.ev` files in Emacs. See the header of that file for installation instructions.
 - [VIM](http://www.vim.org/) users can use amfl's [vim-evennia](https://github.com/amfl/vim-evennia) mode instead, see its readme for install instructions.

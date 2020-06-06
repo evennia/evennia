@@ -57,11 +57,11 @@ class CmdPoke(default_cmds.MuxCommand):
 ```
 By default, the search method of a Character will attempt to find a unique object match for the string sent to it (`self.args`, in this case, which is the arguments passed to the command by the player) in the surroundings of the Character - the room or their inventory. If there is no match found, the return value (which is assigned to `target`) will be `None`, and an appropriate failure message will be sent to the Character. If there's not a unique match, `None` will again be returned, and a different error message will be sent asking them to disambiguate the multi-match. By default, the user can then pick out a specific match using with a number and dash preceding the name of the object: `character.search("2-pink unicorn")` will try to find the second pink unicorn in the room.
 
-The search method has many [arguments](https://github.com/evennia/evennia/wiki/evennia.objects.objects#defaultcharactersearch) that allow you to refine the search, such as by designating the location to search in or only matching specific typeclasses. 
+The search method has many [arguments](code:evennia.objects.objects#defaultcharactersearch) that allow you to refine the search, such as by designating the location to search in or only matching specific typeclasses. 
 
 ## Searching using `utils.search`
 
-Sometimes you will want to find something that isn't tied to the search methods of a character or account. In these cases, Evennia provides a [utility module with a number of search functions](https://github.com/evennia/evennia/wiki/evennia.utils.search). For example, suppose you want a command that will find and display all the rooms that are tagged as a 'hangout', for people to gather by. Here's a simple Command to do this: 
+Sometimes you will want to find something that isn't tied to the search methods of a character or account. In these cases, Evennia provides a [utility module with a number of search functions](code:evennia.utils.search). For example, suppose you want a command that will find and display all the rooms that are tagged as a 'hangout', for people to gather by. Here's a simple Command to do this: 
 
 ```python
 # e.g. in file mygame/commands/command.py

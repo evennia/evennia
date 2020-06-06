@@ -1,6 +1,5 @@
 # Toc
 
-* [index](index.md)
 * [A voice operated elevator using events](A-voice-operated-elevator-using-events.md)
 * [API refactoring](API-refactoring.md)
 * [Accounts](Accounts.md)
@@ -57,6 +56,7 @@
 * [Evennia Game Index](Evennia-Game-Index.md)
 * [Evennia Introduction](Evennia-Introduction.md)
 * [Evennia for Diku Users](Evennia-for-Diku-Users.md)
+* [Evennia for MUSH Users](Evennia-for-MUSH-Users.md)
 * [Evennia for roleplaying sessions](Evennia-for-roleplaying-sessions.md)
 * [Execute Python Code](Execute-Python-Code.md)
 * [First Steps Coding](First-Steps-Coding.md)
@@ -75,6 +75,7 @@
 * [IRC](IRC.md)
 * [Implementing a game rule system](Implementing-a-game-rule-system.md)
 * [Inputfuncs](Inputfuncs.md)
+* [Installing on Android](Installing-on-Android.md)
 * [Internationalization](Internationalization.md)
 * [Learn Python for Evennia The Hard Way](Learn-Python-for-Evennia-The-Hard-Way.md)
 * [Licensing](Licensing.md)
@@ -86,6 +87,7 @@
 * [MonitorHandler](MonitorHandler.md)
 * [NPC shop Tutorial](NPC-shop-Tutorial.md)
 * [New Models](New-Models.md)
+* [Nicks](Nicks.md)
 * [OOB](OOB.md)
 * [Objects](Objects.md)
 * [Online Setup](Online-Setup.md)
@@ -107,6 +109,7 @@
 * [Setting up PyCharm](Setting-up-PyCharm.md)
 * [Signals](Signals.md)
 * [Soft Code](Soft-Code.md)
+* [Spawner and Prototypes](Spawner-and-Prototypes.md)
 * [Start Stop Reload](Start-Stop-Reload.md)
 * [Static In Game Map](Static-In-Game-Map.md)
 * [Tags](Tags.md)
