@@ -62,15 +62,17 @@ On the psql command line:
 CREATE USER evennia WITH PASSWORD 'somepassword';
 CREATE DATABASE evennia;
 
-# Postgres-specific optimizations
-# https://docs.djangoproject.com/en/dev/ref/databases/#optimizing-postgresql-s-configuration
+-- Postgres-specific optimizations
+-- https://docs.djangoproject.com/en/dev/ref/databases/#optimizing-postgresql-s-configuration
 ALTER ROLE evennia SET client_encoding TO 'utf8';
 ALTER ROLE evennia SET default_transaction_isolation TO 'read committed';
 ALTER ROLE evennia SET timezone TO 'UTC';
 
 GRANT ALL PRIVILEGES ON DATABASE evennia TO evennia;
-\l       # list all databases and permissions
-\q       # exit 
+-- Other useful commands: 
+--  \l       (list all databases and permissions)
+--  \q       (exit)
+
 ```
 [Here](https://gist.github.com/Kartones/dd3ff5ec5ea238d4c546) is a cheat-sheet for psql commands.
 
@@ -131,10 +133,10 @@ Inside the database client interface:
 ```sql
 CREATE USER 'evennia'@'localhost' IDENTIFIED BY 'somepassword';
 CREATE DATABASE evennia;
-ALTER DATABASE `evennia` CHARACTER SET utf8;      # note that it's `evennia` not 'evennia'!
+ALTER DATABASE `evennia` CHARACTER SET utf8; -- note that it's `evennia` with back-ticks, not quotes!
 GRANT ALL PRIVILEGES ON evennia.* TO 'evennia'@'localhost';
 FLUSH PRIVILEGES;
-exit
+-- use 'exit' to quit client
 ```
 [Here](https://gist.github.com/hofmannsven/9164408) is a mysql command cheat sheet. 
 

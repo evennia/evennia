@@ -3,11 +3,11 @@
 This is the first part of our beginner's guide to the basics of using Python with Evennia. It's aimed at you with limited or no programming/Python experience. But also if you are an experienced programmer new to Evennia or Python you might still pick up a thing or two. It is by necessity brief and low on detail. There are countless Python guides and tutorials, books and videos out there for learning more in-depth - use them!
 
 **Contents:**
-- [Evennia Hello world](#evennia-hello-world)
-- [Importing modules](#importing-modules)
-- [Parsing Python errors](#parsing-python-errors)
-- [Our first function](#our-first-function)
-- [Looking at the log](#looking-at-the-log)
+- [Evennia Hello world](Python-basic-introduction#evennia-hello-world)
+- [Importing modules](Python-basic-introduction#importing-modules)
+- [Parsing Python errors](Python-basic-introduction#parsing-python-errors)
+- [Our first function](Python-basic-introduction#our-first-function)
+- [Looking at the log](Python-basic-introduction#looking-at-the-log)
 - (continued in [part 2](Python-basic-tutorial-part-two))
 
 This quickstart assumes you have [gotten Evennia started](Getting-Started). You should make sure that you are able to see the output from the server in the console from which you started it. Log into the game either with a mud client on `localhost:4000` or by pointing a web browser to `localhost:4001/webclient`. Log in as your superuser (the user you created during install).
@@ -18,16 +18,12 @@ Below, lines starting with a single `>` means command input.
 
 The `py` (or `!` which is an alias) command allows you as a superuser to run raw Python from in-game. From the game's input line, enter the following:
 
-```python
-> py print("Hello World!")
-```
+    > py print("Hello World!")
 
 You will see
 
-```
->>> print("Hello world!")
-Hello World
-```
+    > print("Hello world!")
+    Hello World
 
 To understand what is going on: some extra info: The `print(...)` *function* is the basic, in-built way to output text in Python. The quotes `"..."` means you are inputing a *string* (i.e. text). You could also have used single-quotes `'...'`, Python accepts both.
 
@@ -37,10 +33,8 @@ The first return line (with `>>>`) is just `py` echoing what you input (we won't
 
 The `print` command is a standard Python structure. We can use that here in the `py` command, and it's great for debugging and quick testing. But if you need to send a text to an actual player, `print` won't do, because it doesn't know _who_ to send to. Try this:
 
-```python
-> py me.msg("Hello world!")
+    > py me.msg("Hello world!")
     Hello world!
-```
 
 This looks the same as the `print` result, but we are now actually messaging a specific *object*, `me`. The `me` is something uniquely available in the `py` command (we could also use `self`, it's an alias). It represents "us", the ones calling the `py` command. The `me` is an example of an *Object instance*. Objects are fundamental in Python and Evennia. The `me` object not only represents the character we play in the game, it also contains a lot of useful resources for doing things with that Object. One such resource is `msg`. `msg` works like `print` except it sends the text to the object it is attached to. So if we, for example, had an object `you`, doing `you.msg(...)` would send a message to the object `you`. 
 
@@ -147,17 +141,13 @@ Now that we are moving onto multi-line Python code, there are some important thi
 
 First, `reload` your game to make it aware of the updated Python module. Now we have defined our first function, let's use it.
 
-```python
-> reload
-> py import world.test
-```
+    > reload
+    > py import world.test
 
 Nothing happened! That is because the function in our module won't do anything just by importing it. It will only act when we *call* it. We will need to enter the module we just imported and do so.
 
-```python
-> @py import world.test ; world.test.hello_world(me)
-Hello world!
-```
+    > py import world.test ; world.test.hello_world(me)
+    Hello world!
 
 There is our "Hello World"! The `;` is the way to put multiple Python-statements on one line.
 

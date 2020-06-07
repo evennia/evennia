@@ -83,6 +83,11 @@ clean:
 	@git clean -f -d docs/
 	@echo "Cleaned old build dir and leftover files."
 
+# TODO remove once done with migration
+copy:
+	@cd pylib && python copy_from_wiki.py && cd ..
+	make quick 
+
 quick:
 	make _check-env
 	make _quick-build $(FILES)

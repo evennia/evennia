@@ -9,7 +9,7 @@ The first thing to consider is the base type of the thing you are searching for.
 
 So to find an entity, what can be searched for? 
 
- - The `key` is the name of the entity. While you can get this from `obj.key` the *database field* is actually named `obj.db_key` - this is useful to know only when you do [direct database queries](#queries-in-django). The one exception is `Accounts`, where the database field for `.key` is instead named `username` (this is a Django requirement). When you don't specify search-type, you'll usually search based on key. *Aliases* are extra names given to Objects using something like `@alias` or `obj.aliases.add('name')`. The main search functions (see below) will automatically search for aliases whenever you search by-key. 
+ - The `key` is the name of the entity. While you can get this from `obj.key` the *database field* is actually named `obj.db_key` - this is useful to know only when you do [direct database queries](Tutorial-Searching-For-Objects#queries-in-django). The one exception is `Accounts`, where the database field for `.key` is instead named `username` (this is a Django requirement). When you don't specify search-type, you'll usually search based on key. *Aliases* are extra names given to Objects using something like `@alias` or `obj.aliases.add('name')`. The main search functions (see below) will automatically search for aliases whenever you search by-key. 
  - [Tags](Tags) are the main way to group and identify objects in Evennia. Tags can most often be used (sometimes together with keys) to uniquely identify an object. For example, even though you have two locations with the same name, you can separate them by their tagging (this is how Evennia implements 'zones' seen in other systems). Tags can also have categories, to further organize your data for quick lookups. 
  - An object's [Attributes](Attributes) can also used to find an object. This can be very useful but since Attributes can store almost any data they are far less optimized to search for than Tags or keys.
 - The object's [Typeclass](Typeclasses) indicate the sub-type of entity. A Character, Flower or Sword are all types of Objects. A Bot is a kind of Account. The database field is called `typeclass_path` and holds the full Python-path to the class. You can usually specify the `typeclass` as an argument to Evennia's search functions as well as use the class directly to limit queries. 
@@ -57,11 +57,11 @@ class CmdPoke(default_cmds.MuxCommand):
 ```
 By default, the search method of a Character will attempt to find a unique object match for the string sent to it (`self.args`, in this case, which is the arguments passed to the command by the player) in the surroundings of the Character - the room or their inventory. If there is no match found, the return value (which is assigned to `target`) will be `None`, and an appropriate failure message will be sent to the Character. If there's not a unique match, `None` will again be returned, and a different error message will be sent asking them to disambiguate the multi-match. By default, the user can then pick out a specific match using with a number and dash preceding the name of the object: `character.search("2-pink unicorn")` will try to find the second pink unicorn in the room.
 
-The search method has many [arguments](code:evennia.objects.objects#defaultcharactersearch) that allow you to refine the search, such as by designating the location to search in or only matching specific typeclasses. 
+The search method has many [arguments](github:evennia.objects.objects#defaultcharactersearch) that allow you to refine the search, such as by designating the location to search in or only matching specific typeclasses. 
 
 ## Searching using `utils.search`
 
-Sometimes you will want to find something that isn't tied to the search methods of a character or account. In these cases, Evennia provides a [utility module with a number of search functions](code:evennia.utils.search). For example, suppose you want a command that will find and display all the rooms that are tagged as a 'hangout', for people to gather by. Here's a simple Command to do this: 
+Sometimes you will want to find something that isn't tied to the search methods of a character or account. In these cases, Evennia provides a [utility module with a number of search functions](github:evennia.utils.search). For example, suppose you want a command that will find and display all the rooms that are tagged as a 'hangout', for people to gather by. Here's a simple Command to do this: 
 
 ```python
 # e.g. in file mygame/commands/command.py
@@ -189,13 +189,13 @@ Here are the most commonly used methods to use with the `objects` managers:
 If you pass more than one keyword argument to a query method, the query becomes an `AND` relationship. For example, if we want to find characters whose names start with "A" *and* are also werewolves (have the `lycanthrope` tag), we might do:
 
 ```python
-queryset = Character.objects.filter(db_key__startswith="A", db_tags__db_key="lycanthrope")`
+queryset = Character.objects.filter(db_key__startswith="A", db_tags__db_key="lycanthrope")
 ```
 
 To exclude lycanthropes currently in rooms tagged as hangouts, we might tack on an `.exclude` as before:
 
 ```python
-queryset = quersyet.exclude(db_location__db_tags__db_key="hangout")`.
+queryset = quersyet.exclude(db_location__db_tags__db_key="hangout")
 ```
 
 Note the syntax of the keywords in building the queryset. For example, `db_location` is the name of the database field sitting on (in this case) the `Character` (Object). Double underscore `__` works like dot-notation in normal Python (it's used since dots are not allowed in keyword names). So the instruction `db_location__db_tags__db_key="hangout"` should be read as such:

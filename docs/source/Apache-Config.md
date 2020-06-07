@@ -15,24 +15,21 @@ Note that the Apache instructions below might be outdated. If something is not w
 use Evennia with a different server, please let us know. Also, if there is a particular Linux distro
 you would like covered, please let us know.
 
-## mod_wsgi Setup
+## `mod_wsgi` Setup
 
-### Install mod_wsgi
+### Install `mod_wsgi`
 
-#### Fedora/RHEL
-Apache HTTP Server and mod_wsgi are available in the standard package repositories for Fedora and RHEL:
-```
-# dnf install httpd mod_wsgi
-or
-# yum install httpd mod_wsgi
-```
-
-#### Ubuntu/Debian
-Apache HTTP Server and mod_wsgi are available in the standard package repositories for Ubuntu and Debian:
-```
-# apt-get update
-# apt-get install apache2 libapache2-mod-wsgi
-```
+- *Fedora/RHEL* - Apache HTTP Server and `mod_wsgi` are available in the standard package repositories for Fedora and RHEL:
+    ```
+    $ dnf install httpd mod_wsgi
+    or
+    $ yum install httpd mod_wsgi
+    ```
+- *Ubuntu/Debian* -  Apache HTTP Server and `mod_wsgi` are available in the standard package repositories for Ubuntu and Debian:
+   ```
+   $ apt-get update
+   $ apt-get install apache2 libapache2-mod-wsgi
+   ```
 
 ### Copy and modify the VHOST
 
@@ -46,15 +43,14 @@ Read the comments and change the paths to point to the appropriate locations wit
 
 You'll then want to reload or restart apache2 after changing the configurations.
 
-#### Fedora/RHEL/Ubuntu
-```
-# systemctl restart httpd
-```
-
-#### Ubuntu/Debian
-```
-# systemctl restart apache2
-```
+- *Fedora/RHEL/Ubuntu*
+    ```
+    $ systemctl restart httpd
+    ```
+- *Ubuntu/Debian*
+    ```
+    $ systemctl restart apache2
+    ```
 
 ### Enjoy
 
@@ -96,28 +92,21 @@ Below are steps on running Evennia using a front-end proxy (Apache HTTP), `mod_p
 
 ### Install `mod_ssl`
 
-#### Fedora/RHEL
-
-Apache HTTP Server and `mod_ssl` are available in the standard package repositories for Fedora and RHEL:
-
-```
-# dnf install httpd mod_ssl
-or
-# yum install httpd mod_ssl
-
-```
-
-#### Ubuntu/Debian
-
-Apache HTTP Server and `mod_sslj`kl are installed together in the `apache2` package and available in the
+- *Fedora/RHEL* - Apache HTTP Server and `mod_ssl` are available in the standard package repositories for Fedora and RHEL:
+    ```
+    $ dnf install httpd mod_ssl
+    or
+    $ yum install httpd mod_ssl
+    
+    ```
+- *Ubuntu/Debian* - Apache HTTP Server and `mod_sslj`kl are installed together in the `apache2` package and available in the
 standard package repositories for Ubuntu and Debian. `mod_ssl` needs to be enabled after installation:
+    ```
+    $ apt-get update
+    $ apt-get install apache2 
+    $ a2enmod ssl
 
-```
-# apt-get update
-# apt-get install apache2 
-# a2enmod ssl
-
-```
+    ```
 
 ### TLS proxy+websocket configuration
 

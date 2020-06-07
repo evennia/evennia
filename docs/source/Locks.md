@@ -240,7 +240,7 @@ Here is how you use `perm` to give an account more permissions:
      perm/account Tommy = Builders
      perm/account/del Tommy = Builders # remove it again
 
-Note the use of the `/account` switch. It means you assign the permission to the [Accounts]([Accounts](Account)) Tommy instead of any [Character](Objects) that also happens to be named "Tommy". 
+Note the use of the `/account` switch. It means you assign the permission to the [Accounts](Accounts) Tommy instead of any [Character](Objects) that also happens to be named "Tommy". 
 
 Putting permissions on the *Account* guarantees that they are kept, *regardless* of which Character they are currently puppeting. This is especially important to remember when assigning permissions from the *hierarchy tree* - as mentioned above, an Account's permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters (but see also [quelling](Locks#Quelling)).
 

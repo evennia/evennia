@@ -70,7 +70,7 @@ The Object also has a host of useful utility functions. See the function headers
 - `delete()` - deletes this object, first calling `clear_exits()` and
     `clear_contents()`.
 
-The Object Typeclass defines many more *hook methods* beyond `at_object_creation`. Evennia calls these hooks at various points.  When implementing your custom objects, you will inherit from the base parent and overload these hooks with your own custom code. See `evennia.objects.objects` for an updated list of all the available hooks or the [API for DefaultObject here](evennia.objects.objects#defaultobject).
+The Object Typeclass defines many more *hook methods* beyond `at_object_creation`. Evennia calls these hooks at various points.  When implementing your custom objects, you will inherit from the base parent and overload these hooks with your own custom code. See `evennia.objects.objects` for an updated list of all the available hooks or the [API for DefaultObject here](api:evennia.objects.objects#defaultobject).
 
 ## Subclasses of `Object`
 

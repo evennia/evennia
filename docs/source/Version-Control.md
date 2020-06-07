@@ -216,7 +216,7 @@ password <my_github_password>
 
 _Contributing_ can mean both bug-fixes or adding new features to Evennia.  Please note that if your change is not already listed and accepted in the [Issue Tracker](https://github.com/evennia/evennia/issues), it is recommended that you first hit the developer mailing list or IRC chat to see beforehand if your feature is deemed suitable to include as a core feature in the engine. When it comes to bug-fixes, other developers may also have good input on how to go about resolving the issue.
 
-To contribute you need to have [forked Evennia](#forking-evennia) first. As described above you should do your modification in a separate local branch (not in the master branch). This branch is what you then present to us (as a *Pull request*, PR, see below). We can then merge your change into the upstream master and you then do `git pull` to update master usual. Now that the master is updated with your fixes, you can safely delete your local work branch. Below we describe this work flow.
+To contribute you need to have [forked Evennia](Version-Control#forking-evennia) first. As described above you should do your modification in a separate local branch (not in the master branch). This branch is what you then present to us (as a *Pull request*, PR, see below). We can then merge your change into the upstream master and you then do `git pull` to update master usual. Now that the master is updated with your fixes, you can safely delete your local work branch. Below we describe this work flow.
 
 First update the Evennia master branch to the latest Evennia version:
 

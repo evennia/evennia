@@ -33,7 +33,7 @@ Which commands you can send depends on the client. If the client does not suppor
 
 > Remember that a given message may go to multiple clients with different capabilities. So unless you turn off telnet completely and only rely on the webclient, you should never rely on non-`text` OOB messages always reaching all targets.
 
-[Inputfuncs]([Inputfuncs](Inputfunc)) lists the default inputfuncs available to handle incoming OOB messages. To accept more you need to add more inputfuncs (see that page for more info). 
+[Inputfuncs](Inputfuncs) lists the default inputfuncs available to handle incoming OOB messages. To accept more you need to add more inputfuncs (see that page for more info). 
 
 ## Supported OOB protocols
 

@@ -32,12 +32,12 @@ _Starting tutorials for you who are new to developing with Evennia._
 
 - [Python basic introduction](Python-basic-introduction) (part 1) - Python intro using Evennia.
 - [Python basic introduction](Python-basic-tutorial-part-two) (part 2) - More on objects, classes and finding where things are. 
-- [Tutorial: First Steps Coding](https://github.com/evennia/evennia/wiki/First%20Steps%20Coding) - learn each basic feature on their own through step-by-step instruction. 
+- [Tutorial: First Steps Coding](First-Steps-Coding) - learn each basic feature on their own through step-by-step instruction. 
 - [Tutorial: A small first game](Tutorial-for-basic-MUSH-like-game) - learn basic features as part of building a small but working game from scratch.
 - [Tutorial: Adding new commands](Adding-Command-Tutorial) - focuses specifically on how to add new commands.
 - [Tutorial: Parsing command argument](Parsing-command-arguments,-theory-and-best-practices).
 - [Tutorial: Adding new objects](Adding-Object-Typeclass-Tutorial) - focuses specifically on how to add new objects.
-- [Tutorial: Searching objects in the database](https://github.com/evennia/evennia/wiki/Tutorial-Searching-For-Objects) - how to find existing objects so you can operate on them.
+- [Tutorial: Searching objects in the database](Tutorial-Searching-For-Objects) - how to find existing objects so you can operate on them.
 
 
 ### Custom objects and typeclasses
@@ -45,13 +45,13 @@ _Starting tutorials for you who are new to developing with Evennia._
 _Examples of designing new objects for your game world_
 
 - [Tutorial: Rooms with Weather](Weather-Tutorial)
-- [Tutorial: Aggressive NPC's](https://github.com/evennia/evennia/wiki/Tutorial-Aggressive-NPCs)
-- [Tutorial: Listening NPC's](https://github.com/evennia/evennia/wiki/Tutorial-NPCs-listening)
-- [Tutorial: Creating a vehicle](https://github.com/evennia/evennia/wiki/Tutorial-Vehicles)
+- [Tutorial: Aggressive NPC's](Tutorial-Aggressive-NPCs)
+- [Tutorial: Listening NPC's](Tutorial-NPCs-listening)
+- [Tutorial: Creating a vehicle](Tutorial-Vehicles)
 - [Tutorial: Making an NPC shop](NPC-shop-Tutorial) (also advanced [EvMenu](EvMenu) usage)
 - [Tutorial: Implementing a Static In Game Map](Static-In-Game-Map) (also [Batch Code](Batch-Code-Processor) usage)
 - [Tutorial: Implementing a Dynamic In Game Map](Dynamic-In-Game-Map)
-- [Tutorial: Writing your own unit tests](https://github.com/evennia/evennia/wiki/Unit-Testing#testing-for-game-development-mini-tutorial)
+- [Tutorial: Writing your own unit tests](Unit-Testing#testing-for-game-development-mini-tutorial)
 
 ### Game mechanics tutorials
 
@@ -68,17 +68,17 @@ _Design various game systems and achieve particular effects._
 - [FAQ](Coding-FAQ): A place for users to enter their own hints on achieving various goals in Evennia.
 - [Tutorial: Adding a Command prompt](Command-Prompt)
 - [Tutorial: Creating a Zoning system](Zones)
-- [Tutorial: Letting players manually configure color settings](https://github.com/evennia/evennia/wiki/Manually-Configuring-Color)
-- [Hints: Asking the user a question and dealing with the result](https://github.com/evennia/evennia/wiki/EvMenu#ask-for-simple-input)
+- [Tutorial: Letting players manually configure color settings](Manually-Configuring-Color)
+- [Hints: Asking the user a question and dealing with the result](EvMenu#ask-for-simple-input)
 - [Hints: Designing commands that take time to finish](Command-Duration)
 - [Hints: Adding cooldowns to commands](Command-Cooldown)
 - [Tutorial: Mass and weight for objects](Mass-and-weight-for-objects)
 - [Hints: Show a different message when trying a non-existent exit](Default-Exit-Errors)
-- [Tutorial: Make automatic tweets of game statistics](https://github.com/evennia/evennia/wiki/Tutorial-Tweeting-Game-Stats)
+- [Tutorial: Make automatic tweets of game statistics](Tutorial-Tweeting-Game-Stats)
 - [Tutorial: Handling virtual time in your game](Gametime-Tutorial)
 - [Tutorial: Setting up a coordinate system for rooms](Coordinates)
 - [Tutorial: customize the way channels and channel commands work in your game](Customize-channels)
-- [Tutorial: Adding unit tests to your game project](https://github.com/evennia/evennia/wiki/Unit-Testing#testing-for-game-development-mini-tutorial)
+- [Tutorial: Adding unit tests to your game project](Unit-Testing#testing-for-game-development-mini-tutorial)
 
 ### Contrib
 
@@ -99,8 +99,8 @@ _Expanding Evennia's web presence._
 - [Tutorial: Build a web page displaying a game character](Web-Character-View-Tutorial) - make a way to view your character on the web page.
 - [Tutorial: access your help system from your website](Help-System-Tutorial)
 - [Tutorial: add a wiki on your website](Add-a-wiki-on-your-website)
-- [Tutorial: Web Character Generation](https://github.com/evennia/evennia/wiki/Web-Character-Generation/) - make a web-based character application form.
-- [Tutorial: Bootstrap Components and Utilities](https://github.com/evennia/evennia/wiki/Bootstrap-Components-and-Utilities) - Describes some common Bootstrap Components and Utilities that might help in designing for Evennia
+- [Tutorial: Web Character Generation](Web-Character-Generation/) - make a web-based character application form.
+- [Tutorial: Bootstrap Components and Utilities](Bootstrap-Components-and-Utilities) - Describes some common Bootstrap Components and Utilities that might help in designing for Evennia
 
 ### Evennia for [Engine]-Users
 

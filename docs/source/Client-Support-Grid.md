@@ -61,19 +61,23 @@ Name                   | Version  | Comments
 
 ### Issue: Telnet NOP displays as spurious character.
 
-#### Known Clients
-* [BlowTorch][16]([16](Andr))
-* [Mukluk][17]([17](Andr))
+Known clients:
 
-#### Workarounds
+* [BlowTorch][16](Andr)
+* [Mukluk][17](Andr)
+
+Workaround:
+
 * Set the command in game to `@option NOPKEEPALIVE=off` for the session, or use the `/save` parameter to disable it for that Evennian account permanently.
 * Client-side: Set a gag-type trigger on the NOP character to make it invisible to the client.
 
 
 ### Issue: Won't send blank line on Enter key press.
 
-#### Known Clients
+Known clients: 
+
 * [Potato][8]
 
-#### Workaround
+Workaround: 
+
 * Press Control Enter, then Enter key again to send blank line.

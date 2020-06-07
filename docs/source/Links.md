@@ -107,4 +107,4 @@
 
 ### Credits
 
- - Wiki [Home]([Home](index)) Icons made by [Freepik](http://www.freepik.com"-title="Freepik">Freepik) from [flaticon.com](http://www.flaticon.com), licensed under [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0).
+ - Wiki [Home](index) Icons made by [Freepik](http://www.freepik.com"-title="Freepik">Freepik) from [flaticon.com](http://www.flaticon.com), licensed under [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0).

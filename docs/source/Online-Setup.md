@@ -162,7 +162,7 @@ WEBSOCKET_CLIENT_URL = "wss://fqdn:4002"
 
 ### Let's Encrypt
 
-[Let's Encrypt](letsencrypt.org) is a certificate authority offering free certificates to secure a website with HTTPS. To get started issuing a certificate for your web server using Let's Encrypt, see these links:
+[Let's Encrypt](https://letsencrypt.org) is a certificate authority offering free certificates to secure a website with HTTPS. To get started issuing a certificate for your web server using Let's Encrypt, see these links:
 
  - [Let's Encrypt - Getting Started](https://letsencrypt.org/getting-started/)
  - The [CertBot Client](https://certbot.eff.org/) is a program for automatically obtaining a certificate, use it and maintain it with your website.
@@ -199,7 +199,7 @@ What we showed above is by far the simplest and probably cheapest option: Run Ev
 
 #### Setting up your own machine as a server
 
-[The first section](#connecting-from-the-outside) of this page describes how to do this and allow users to connect to the IP address of your machine/router. 
+[The first section](Online-Setup#connecting-from-the-outside) of this page describes how to do this and allow users to connect to the IP address of your machine/router. 
 
 A complication with using a specific IP address like this is that your home IP might not remain the same. Many ISPs (Internet Service Providers) allocates a *dynamic* IP to you which could change at any time. When that happens, that IP you told people to go to will be worthless. Also, that long string of numbers is not very pretty, is it? It's hard to remember and not easy to use in marketing your game. What you need is to alias it to a more sensible domain name - an alias that follows you around also when the IP changes.
 

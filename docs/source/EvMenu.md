@@ -241,7 +241,7 @@ EvMenu accepts one important special `key` given only as `"_default"`. This key 
 enters something that does not match any other fixed keys. It is particularly useful for getting
 user input:
 
-```
+```python
 def node_readuser(caller, raw_string, **kwargs):
     text = "Please enter your name"
 
@@ -251,6 +251,7 @@ def node_readuser(caller, raw_string, **kwargs):
     return text, options
 
 ```
+
 A `"_default"` option does not show up in the menu, so the above will just be a node saying
 `"Please enter your name"`. The name they entered will appear as `raw_string` in the next node.
 
@@ -271,27 +272,26 @@ are three ways to write it
 
 def _action_two(caller, raw_string, **kwargs):
     # do things ...
-    return calculated_node_to_go_to
+    return "calculated_node_to_go_to"
 
 def _action_three(caller, raw_string, **kwargs):
     # do things ...
     return "node_four", {"mode": 4}
 
-
 def node_select(caller, raw_string, **kwargs):
 
     text = ("select one",
-            "help: they all do different things ...")
+            "help - they all do different things ...")
 
     options = ({"desc": "Option one",
-		"goto": "node_one"},
-	       {"desc": "Option two",
-		"goto": _action_two}
-	       {"desc": "Option three",
-		"goto": (_action_three, {"key": 1, "key2": 2})
+		            "goto": "node_one"},
+	             {"desc": "Option two",
+		            "goto": _action_two},
+	             {"desc": "Option three",
+		            "goto": (_action_three, {"key": 1, "key2": 2})}
+              )
 
     return text, options
-
 
 ```
 
@@ -300,7 +300,7 @@ go to. When given like this, EvMenu will look for a node named like this and cal
 function as
 
 ```python
-    nodename(caller, raw_string, **kwargs)`
+    nodename(caller, raw_string, **kwargs)
 ```
 
 Here, `raw_string` is always the input the user entered to make that choice and `kwargs` are the
@@ -414,14 +414,14 @@ See `evennia/utils/evmenu.py` for the details of their default implementations.
 
 ## Examples:
 
-- **[Simple branching menu](#example-simple-branching-menu)** - choose from options
-- **[Dynamic goto](#example-dynamic-goto)** - jumping to different nodes based on response
-- **[Set caller properties](#example-set-caller-properties)** - a menu that changes things
-- **[Getting arbitrary input](#example-get-arbitrary-input)** - entering text
-- **[Storing data between nodes](#example-storing-data-between-nodes)** - keeping states and information while in the menu
-- **[Repeating the same node](#example-repeating-the-same-node)** - validating within the node before moving to the next
-- **[Full Menu](#example-full-menu):** a complete example
-- **[Yes/No prompt](#example-yesno-prompt)** - entering text with limited possible responses (this is *not* using EvMenu but the conceptually similar yet technically unrelated `get_input` helper function accessed as `evennia.utils.evmenu.get_input`).
+- **[Simple branching menu](EvMenu#example-simple-branching-menu)** - choose from options
+- **[Dynamic goto](EvMenu#example-dynamic-goto)** - jumping to different nodes based on response
+- **[Set caller properties](EvMenu#example-set-caller-properties)** - a menu that changes things
+- **[Getting arbitrary input](EvMenu#example-get-arbitrary-input)** - entering text
+- **[Storing data between nodes](EvMenu#example-storing-data-between-nodes)** - keeping states and information while in the menu
+- **[Repeating the same node](EvMenu#example-repeating-the-same-node)** - validating within the node before moving to the next
+- **[Full Menu](EvMenu#example-full-menu):** a complete example
+- **[Yes/No prompt](EvMenu#example-yesno-prompt)** - entering text with limited possible responses (this is *not* using EvMenu but the conceptually similar yet technically unrelated `get_input` helper function accessed as `evennia.utils.evmenu.get_input`).
 
 
 ### Example: Simple branching menu

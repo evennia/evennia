@@ -260,7 +260,7 @@ Log into Evennia as the superuser and run this batchcode. If everything worked o
 
 Now, lets turn our attention towards our game's rooms. Let's use the `return_minimap` method we created above in order to include a minimap in our room descriptions. This is a little more complicated.
 
-By itself we would have to settle for either the map being *above* the description with `room.db.desc = map_string + description_string`, or the map going *below* by reversing their order. Both options are rather unsatisfactory - we would like to have the map next to the text! For this solution we'll explore the utilities that ship with Evennia. Tucked away in `evennia\evennia\utils` is a little module called [EvTable](code:evennia.utils.evtable) . This is an advanced ASCII table creator for you to utilize in your game. We'll use it by creating a basic table with 1 row and two columns (one for our map and one for our text) whilst also hiding the borders. Open the batchfile again
+By itself we would have to settle for either the map being *above* the description with `room.db.desc = map_string + description_string`, or the map going *below* by reversing their order. Both options are rather unsatisfactory - we would like to have the map next to the text! For this solution we'll explore the utilities that ship with Evennia. Tucked away in `evennia\evennia\utils` is a little module called [EvTable](github:evennia.utils.evtable) . This is an advanced ASCII table creator for you to utilize in your game. We'll use it by creating a basic table with 1 row and two columns (one for our map and one for our text) whilst also hiding the borders. Open the batchfile again
 
 ```python
 # mygame\world\batchcode_world.py
@@ -334,4 +334,4 @@ Log in to evennia and run `@batchcode batchcode_world` and you'll have a little 
 
 You should now have a mapped little world and a basic understanding of batchcode, EvTable and how easily new game defining features can be added to Evennia. 
 
-You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why not add more features to your game by trying other tutorials: [Add weather to your world](Weather-Tutorial), [fill your world with NPC's](https://github.com/evennia/evennia/wiki/Tutorial-Aggressive-NPCs) or [implement a combat system](Turn-based-Combat-System).
+You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why not add more features to your game by trying other tutorials: [Add weather to your world](Weather-Tutorial), [fill your world with NPC's](Tutorial-Aggressive-NPCs) or [implement a combat system](Turn-based-Combat-System).

@@ -83,7 +83,7 @@ Account also has the following custom properties:
 - `obj` - an alias for `character`.
 - `name` - an alias for `user.username`
 - `sessions` - an instance of
-  [ObjectSessionHandler](code:evennia.objects.objects#objectsessionhandler)
+  [ObjectSessionHandler](github:evennia.objects.objects#objectsessionhandler)
   managing all connected Sessions (physical connections) this object listens to (Note: In older
   versions of Evennia, this was a list). The so-called `session-id` (used in many places) is found as
   a property `sessid` on each Session instance.

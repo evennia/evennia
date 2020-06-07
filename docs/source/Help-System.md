@@ -53,7 +53,7 @@ Alternatively, you can keep the advantages of *auto-help* in commands, but contr
 
 ## Database help entries
 
-These are all help entries not involving commands (this is handled automatically by the [Command Auto-help system](#command-auto-help-system)).  Non-automatic help entries describe how your particular game is played - its rules, world descriptions and so on.
+These are all help entries not involving commands (this is handled automatically by the [Command Auto-help system](Help-System#command-auto-help-system)).  Non-automatic help entries describe how your particular game is played - its rules, world descriptions and so on.
 
 A help entry consists of four parts: 
 

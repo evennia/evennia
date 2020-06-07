@@ -33,10 +33,10 @@ The `bin/` directory holds OS-specific binaries that will be used when installin
    - `locale/` - Language files ([i18n](Internationalization)).
    - [`locks/`](Locks) - Lock system for restricting access to in-game entities.
    - [`objects/`](Objects) - In-game entities (all types of items and Characters).
-   - [`prototypes/`](https://github.com/evennia/evennia/wiki/Spawner-and-Prototypes) - Object Prototype/spawning system and OLC menu
+   - [`prototypes/`](Spawner-and-Prototypes) - Object Prototype/spawning system and OLC menu
    - [`accounts/`](Accounts) - Out-of-game Session-controlled entities (accounts, bots etc)
    - [`scripts/`](Scripts) - Out-of-game entities equivalence to Objects, also with timer support. 
-   - [`server/`](Portal-and-Server) - Core server code and Session handling. 
+   - [`server/`](Portal-And-Server) - Core server code and Session handling. 
      - `portal/` - Portal proxy and connection protocols.
    - [`settings_default.py`](Server-Conf#Settings-file) - Root settings of Evennia. Copy settings from here to `mygame/server/settings.py` file. 
    - [`typeclasses/`](Typeclasses) - Abstract classes for the typeclass storage and database system.

@@ -21,7 +21,7 @@ We will assume you start from scratch. You need Evennia installed, as per the [G
 
 ## The Game Master role
 
-### Short version
+In brief: 
 
 * Simplest way: Being an admin, just give one account `Admins` permission using the standard `@perm` command.
 * Better but more work: Make a custom command to set/unset the above, while tweaking the Character to show your renewed GM status to the other accounts.
@@ -200,7 +200,7 @@ Finally, issue the `@reload` command to update the server to your changes. Devel
 
 ## Character sheet
 
-### Short version
+In brief: 
 
 * Use Evennia's EvTable/EvForm to build a Character sheet
 * Tie individual sheets to a given Character.
@@ -215,7 +215,7 @@ There are many ways to build a Character sheet in text, from manually pasting st
 
 #### Making a sheet with EvTable
 
-[EvTable](code:evennia.utils.evtable) is a text-table generator. It helps with displaying text in ordered rows and columns. This is an example of using it in code:
+[EvTable](github:evennia.utils.evtable) is a text-table generator. It helps with displaying text in ordered rows and columns. This is an example of using it in code:
 
 ````python
 # this can be tried out in a Python shell like iPython
@@ -232,7 +232,7 @@ table = evtable.EvTable("Attr", "Value",
                         ], align='r', border="incols")
 ````
 
-Above, we create a two-column table by supplying the two columns directly. We also tell the table to be right-aligned and to use the "incols" border type (borders drawns only in between columns). The `EvTable` class takes a lot of arguments for customizing its look, you can see [some of the possible keyword arguments here](code:evennia.utils.evtable#evtable__init__). Once you have the `table` you could also retroactively add new columns and rows to it with `table.add_row()` and `table.add_column()`: if necessary the table will expand with empty rows/columns to always remain rectangular.
+Above, we create a two-column table by supplying the two columns directly. We also tell the table to be right-aligned and to use the "incols" border type (borders drawns only in between columns). The `EvTable` class takes a lot of arguments for customizing its look, you can see [some of the possible keyword arguments here](github:evennia.utils.evtable#evtable__init__). Once you have the `table` you could also retroactively add new columns and rows to it with `table.add_row()` and `table.add_column()`: if necessary the table will expand with empty rows/columns to always remain rectangular.
 
 The result from printing the above table will be
 
@@ -255,7 +255,7 @@ This is a minimalistic but effective Character sheet. By combining the `table_st
 
 #### Making a sheet with EvForm
 
-[EvForm](code:evennia.utils.evform) allows the creation of a two-dimensional "graphic" made by text characters. On this surface, one marks and tags rectangular regions ("cells") to be filled with content. This content can be either normal strings or `EvTable` instances (see the previous section, one such instance would be the `table` variable in that example).
+[EvForm](github:evennia.utils.evform) allows the creation of a two-dimensional "graphic" made by text characters. On this surface, one marks and tags rectangular regions ("cells") to be filled with content. This content can be either normal strings or `EvTable` instances (see the previous section, one such instance would be the `table` variable in that example).
 
 In the case of a Character sheet, these cells would be comparable to a line or box where you could enter the name of your character or their strength score. EvMenu also easily allows to update the content of those fields in code (it use EvTables so you rebuild the table first before re-sending it to EvForm).
 

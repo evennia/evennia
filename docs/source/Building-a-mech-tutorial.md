@@ -73,7 +73,7 @@ class CmdShoot(Command):
 
         if not self.args:
             # no argument given to command - shoot in the air
-            message = “BOOM! The mech fires its gun in the air!”
+            message = "BOOM! The mech fires its gun in the air!"
             location.msg_contents(message)
             return
 
@@ -86,6 +86,7 @@ class CmdShoot(Command):
 class CmdLaunch(Command):
     # make your own 'launch'-command here as an exercise!
     # (it's very similar to the 'shoot' command above).
+
 ```
 
 This is saved as a normal Python module (let’s call it `mechcommands.py`), in a place Evennia looks for such modules (`mygame/commands/`). This command will trigger when the player gives the command “shoot”, “fire,” or even “fire!” with an exclamation mark. The mech can shoot in the air or at a target if you give one. In a real game the gun would probably be given a chance to hit and give damage to the target, but this is enough for now.
