@@ -51,7 +51,7 @@ Next, navigate to `mygame/server/conf/settings.py` and add or edit the following
 
 After this, we will get into defining our *models* (the description of the database storage), *views* (the server-side website content generators), *urls* (how the web browser finds the pages) and *templates* (how the web page should be structured).
 
-### Checkpoint:
+### Installing - Checkpoint:
 
 * you should have a folder named `chargen` or whatever you chose in your mygame/web/ directory
 * you should have your application name added to your INSTALLED_APPS in settings.py
@@ -92,7 +92,7 @@ class CharApp(models.Model):
 
 You should consider how you are going to link your application to your account. For this tutorial, we are using the account_id attribute on our character application model in order to keep track of which characters are owned by which accounts. Since the account id is a primary key in Evennia, it is a good candidate, as you will never have two of the same IDs in Evennia. You can feel free to use anything else, but for the purposes of this guide, we are going to use account ID to join the character applications with the proper account.
 
-### Checkpoint:
+### Model - Checkpoint:
 
 * you should have filled out `mygame/web/chargen/models.py` with the model class shown above (eventually adding fields matching what you need for your game). 
 
@@ -293,7 +293,7 @@ def creating(request):
     return render(request, 'chargen/create.html', {'form': form})
 ```
 
-### Checkpoint:
+### Create Views - Checkpoint:
 
 * you’ve defined a `views.py` that has an index, detail, and creating functions.
 * you’ve defined a forms.py with the `AppForm` class needed by the `creating` function of `views.py`.
@@ -344,7 +344,7 @@ urlpatterns += [
 urlpatterns = custom_patterns + urlpatterns
 ```
 
-### Checkpoint:
+### URLs - Checkpoint:
 
 * You’ve created a urls.py file in the `mygame/web/chargen` directory
 * You have edited the main `mygame/web/urls.py` file to include urls to the `chargen` directory.
@@ -432,7 +432,7 @@ Our create HTML template will use the Django form we defined back in views.py/fo
 {% endblock %}
 ```
 
-### Checkpoint: 
+### Templates - Checkpoint: 
 
 * Create a `index.html`, `detail.html` and `create.html` template in your `mygame/web/chargen/templates/chargen` directory
 

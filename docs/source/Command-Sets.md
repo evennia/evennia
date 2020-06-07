@@ -15,7 +15,7 @@ If you want a quick start into defining your first commands and using them with 
 
 ## Defining Command Sets
 
-A CmdSet is, as most things in Evennia, defined as a Python class inheriting from the correct parent (`evennia.CmdSet`, which is a shortcut to `evennia.commands.cmdset.CmdSet`). The CmdSet class only needs to define one method, called `at_cmdset_creation()`. All other class parameters are optional, but are used for more advanced set manipulation and coding (see the [merge rules](#merge-rules) section). 
+A CmdSet is, as most things in Evennia, defined as a Python class inheriting from the correct parent (`evennia.CmdSet`, which is a shortcut to `evennia.commands.cmdset.CmdSet`). The CmdSet class only needs to define one method, called `at_cmdset_creation()`. All other class parameters are optional, but are used for more advanced set manipulation and coding (see the [merge rules](Command-Sets#merge-rules) section). 
 
 ```python
 # file mygame/commands/mycmdset.py
@@ -94,14 +94,14 @@ There are several extra flags that you can set on CmdSets in order to modify how
 
 - `key` (string) - an identifier for the cmdset. This is optional, but should be unique. It is used for display in lists, but also to identify special merging behaviours using the `key_mergetype` dictionary below. 
 - `mergetype` (string) - allows for one of the following string values: "*Union*", "*Intersect*", "*Replace*", or "*Remove*".  
-- `priority` (int) - This defines the merge order of the merge stack - cmdsets will merge in rising order of priority with the highest priority set merging last. During a merger, the commands from the set with the higher priority will have precedence (just what happens depends on the [merge type](#adding-and-merging-command-sets)). If priority is identical, the order in the merge stack determines preference. The priority value must be greater or equal to `-100`. Most in-game sets should usually have priorities between `0` and `100`. Evennia default sets have priorities as follows (these can be changed if you want a different distribution): 
+- `priority` (int) - This defines the merge order of the merge stack - cmdsets will merge in rising order of priority with the highest priority set merging last. During a merger, the commands from the set with the higher priority will have precedence (just what happens depends on the [merge type](Command-Sets#adding-and-merging-command-sets)). If priority is identical, the order in the merge stack determines preference. The priority value must be greater or equal to `-100`. Most in-game sets should usually have priorities between `0` and `100`. Evennia default sets have priorities as follows (these can be changed if you want a different distribution): 
     - EmptySet: `-101` (should be lower than all other sets)
     - SessionCmdSet: `-20`
     - AccountCmdSet: `-10`
     - CharacterCmdSet: `0`
     - ExitCmdSet: ` 101` (generally should always be available)
     - ChannelCmdSet: `101` (should usually always be available) - since exits never accept arguments, there is no collision between exits named the same as a channel even though the commands "collide".
-- `key_mergetype` (dict) - a dict of `key:mergetype` pairs. This allows this cmdset to merge differently with certain named cmdsets. If the cmdset to merge with has a `key` matching an entry in `key_mergetype`, it will not be merged according to the setting in `mergetype` but according to the mode in this dict. Please note that this is more complex than it may seem due to the [merge order](#adding-and-merging-command-sets) of command sets.  Please review that section before using `key_mergetype`.
+- `key_mergetype` (dict) - a dict of `key:mergetype` pairs. This allows this cmdset to merge differently with certain named cmdsets. If the cmdset to merge with has a `key` matching an entry in `key_mergetype`, it will not be merged according to the setting in `mergetype` but according to the mode in this dict. Please note that this is more complex than it may seem due to the [merge order](Command-Sets#adding-and-merging-command-sets) of command sets.  Please review that section before using `key_mergetype`.
 - `duplicates` (bool/None default `None`) - this determines what happens when merging same-priority cmdsets containing same-key commands together. The`dupicate` option will *only* apply when merging the cmdset with this option onto one other cmdset with the same priority. The resulting cmdset will *not* retain this `duplicate` setting. 
     - `None` (default): No duplicates are allowed and the cmdset being merged "onto" the old one will take precedence. The result will be unique commands. *However*, the system will assume this value to be `True` for cmdsets on Objects, to avoid dangerous clashes. This is usually the safe bet.
     - `False`: Like `None` except the system will not auto-assume any value for cmdsets defined on Objects.
@@ -118,7 +118,7 @@ There are several extra flags that you can set on CmdSets in order to modify how
 
 ## Command Sets Searched
 
-When a user issues a command, it is matched against the [merged](#adding-and-merging-command-sets) command sets available to the player at the moment. Which those are may change at any time (such as when the player walks into the room with the `Window` object described earlier). 
+When a user issues a command, it is matched against the [merged](Command-Sets#adding-and-merging-command-sets) command sets available to the player at the moment. Which those are may change at any time (such as when the player walks into the room with the `Window` object described earlier). 
 
 The currently valid command sets are collected from the following sources:
 

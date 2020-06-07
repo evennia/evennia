@@ -15,7 +15,7 @@ We'll start by tracing data from the client to the server. Here it is in short:
           ServerSession ->
             Inputfunc
 
-### Client
+### Client (ingoing)
 
 The client sends data to Evennia in two ways.
 
@@ -31,18 +31,18 @@ The client sends data to Evennia in two ways.
  the client may send commands based on a timer or some trigger.
 
 Exactly how the inputcommand looks when it travels from the client to Evennia
-depends on the [Protocol](Client-APIs) used:
+depends on the [Protocol](Custom-Protocols) used:
  - Telnet: A string. If GMCP or MSDP OOB protocols are used, this string will
  be formatted in a special way, but it's still a raw string. If Telnet SSL is
  active, the string will be encrypted.
  - SSH: An encrypted string
  - Webclient: A JSON-serialized string.
 
-### Portal Session
+### Portal Session (ingoing)
 
 Each client is connected to the game via a *Portal Session*, one per connection. This Session is different depending on the type of connection (telnet, webclient etc) and thus know how to handle that particular data type. So regardless of how the data arrives, the Session will identify the type of the instruction and any arguments it should have. For example, the telnet protocol will figure that anything arriving normally over the wire should be passed on as a "text" type.
 
-### PortalSessionHandler
+### PortalSessionHandler (ingoing)
 
 The *PortalSessionhandler* manages all connected Sessions in the Portal. Its `data_in` method (called by each Portal Session) will parse the command names and arguments from the protocols and convert them to a standardized form we call the *inputcommand*:
 
@@ -58,11 +58,11 @@ All inputcommands must have a name, but they may or may not have arguments and k
 
 This inputcommand-structure is pickled together with the unique session-id of the Session to which it belongs. This is then sent over the AMP connection.
 
-### ServerSessionHandler
+### ServerSessionHandler (ingoing)
 
-On the Server side, the AMP unpickles the data and associates the session id with the server-side [Session]([Session](Session)). Data and Session are passed to the server-side `SessionHandler.data_in`. This in turn calls `ServerSession.data_in()`
+On the Server side, the AMP unpickles the data and associates the session id with the server-side [Session](Sessions). Data and Session are passed to the server-side `SessionHandler.data_in`. This in turn calls `ServerSession.data_in()`
 
-### ServerSession
+### ServerSession (ingoing)
 
 The method `ServerSession.data_in` is meant to offer a single place to override if they want to examine *all* data passing into the server from the client. It is meant to call the `ssessionhandler.call_inputfuncs` with the (potentially processed) data (so this is technically a sort of detour back to the sessionhandler).
 
@@ -121,11 +121,11 @@ Note the form of the `mycommand` outputfunction. This explicitly defines the arg
 
 > Note: The `msg` method sits on your Object- and Account typeclasses. It means you can easily override `msg` and make custom- or per-object modifications to the flow of data as it passes through.
 
-### Session
+### ServerSession (outgoing)
 
 Nothing is processed on the Session, it just serves as a gathering points for all different `msg`. It immediately passes the data on to ...
 
-### ServerSessionHandler
+### ServerSessionHandler (outgoing)
 
 In the *ServerSessionhandler*, the keywords from the `msg` method are collated into one or more *outputcommands* on a standardized form (identical to inputcommands):
 
@@ -137,7 +137,7 @@ This will intelligently convert different input to the same form. So `msg("Hello
 
 This is also the point where [Inlinefuncs](TextTags#inline-functions) are parsed, depending on the session to receive the data. Said data is pickled together with the Session id then sent over the AMP bridge.
 
-### PortalSessionHandler
+### PortalSessionHandler (outgoing)
 
 After the AMP connection has unpickled the data and paired the session id to the matching PortalSession, the handler next determines if this Session has a suitable method for handling the outputcommand.
 
@@ -145,11 +145,11 @@ The situation is analogous to how inputfuncs work, except that protocols are fix
 
 For example, the common sending of text expects a PortalSession method `send_text`. This will be called as `send_text(*("Hello",), **{})`. If the "prompt" outputfunction was used, send_prompt is called. In all other cases the `send_default(cmdname, *args, **kwargs)` will be called - this is the case for all client-custom outputcommands, like when wanting to tell the client to update a graphic or play a sound.
 
-### PortalSession
+### PortalSession (outgoing)
 
 At this point it is up to the session to convert the command into a form understood by this particular protocol. For telnet, `send_text` will just send the argument as a string (since that is what telnet clients expect when "text" is coming). If `send_default` was called (basically everything that is not traditional text or a prompt), it will pack the data as an GMCP or MSDP command packet if the telnet client supports either (otherwise it won't send at all). If sending to the webclient, the data will get packed into a JSON structure at all times.
 
-### Client
+### Client (outgoing)
 
 Once arrived at the client, the outputcommand is handled in the way supported by the client (or it may be quietly ignored if not). "text" commands will be displayed in the main window while others may trigger changes in the GUI or play a sound etc.
 

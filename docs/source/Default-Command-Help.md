@@ -1,8 +1,6 @@
 # Default Command Help
 
 
-[](Auto-generated-listing-of-default-Evennia-commands)
-
 > *This page is auto-generated. Do not modify - your changes will be lost. Report problems to the
 [issue tracker](https://github.com/evennia/evennia/issues).*
 
@@ -109,15 +107,15 @@ information about how commands work can be found in the documentation for [Comma
 
 ## A-Z by source file
 
-- [account.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#accountpy)
-- [admin.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#adminpy)
-- [batchprocess.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#batchprocesspy)
-- [building.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#buildingpy)
-- [comms.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#commspy)
-- [general.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#generalpy)
-- [help.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#helppy)
-- [system.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#systempy)
-- [unloggedin.py](https://github.com/evennia/evennia/wiki/Default-Command-Help#unloggedinpy)
+- [account.py](Default-Command-Help#accountpy)
+- [admin.py](Default-Command-Help#adminpy)
+- [batchprocess.py](Default-Command-Help#batchprocesspy)
+- [building.py](Default-Command-Help#buildingpy)
+- [comms.py](Default-Command-Help#commspy)
+- [general.py](Default-Command-Help#generalpy)
+- [help.py](Default-Command-Help#helppy)
+- [system.py](Default-Command-Help#systempy)
+- [unloggedin.py](Default-Command-Help#unloggedinpy)
 
 ## Command details
 

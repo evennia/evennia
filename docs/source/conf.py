@@ -144,19 +144,23 @@ smv_branch_whitelist = r"^static-file-docs$|^static-file-dev$"
 smv_outputdir_format = "versions" + sep + "{config.release}"
 
 
+# recommonmark
+
 # reroute to github links or to the api
 
 _github_code_root = "https://github.com/evennia/evennia/blob/master/"
 _github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
+_github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
 
-
-# recommonmark
 
 def url_resolver(url):
-    urlstart = "code:"
+    urlstart = "github:"
     apistart = "api:"
+    choose_issue = ("feature-request", "report-bug", "issue")
 
-    if url.startswith(urlstart):
+    if url.lower().strip() in choose_issue:
+        return _github_issue_choose
+    elif url.startswith(urlstart):
         return _github_code_root + url[len(urlstart):]
     elif url.startswith(apistart):
         return "api/" + url[len(apistart):] + ".html"
@@ -164,12 +168,15 @@ def url_resolver(url):
         return _github_doc_root + url
 
 
+# auto-create TOCs if a list of links is under these headers
 auto_toc_sections = ["Contents", "Toc", "Index"]
 
 recommonmark_config = {
     "enable_auto_toc_tree": True,
     "url_resolver": url_resolver,
     "auto_toc_tree_section": ["Contents", "Toc", "Index"],
+    "code_highlight_options": {"force": True,
+                               "linenos": True}
 }
 
 

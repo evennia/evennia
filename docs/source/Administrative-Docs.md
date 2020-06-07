@@ -12,7 +12,7 @@ The following pages are aimed at game administrators -- the higher-ups that poss
  - [Resetting your database](Updating-Your-Game#resetting-your-database)
 - [Making your game available online](Online-Setup)
   - [Hosting options](Online-Setup#hosting-options)
-  - [Securing your server with SSL/Let's Encrypt](https://github.com/evennia/evennia/wiki/Online-Setup#ssl)
+  - [Securing your server with SSL/Let's Encrypt](Online-Setup#ssl)
 - [Listing your game](Evennia-Game-Index) at the online [Evennia game index](http://games.evennia.com)
 
 ### Customizing the server

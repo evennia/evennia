@@ -228,7 +228,7 @@ obj_to_change.swap_typeclass(new_typeclass_path, clean_attributes=False,
                    run_start_hooks="all", no_default=True, clean_cmdsets=False)
 ```
 
-The arguments to this method are described [in the API docs here](code:evennia.typeclasses.models#typedobjectswap_typeclass).
+The arguments to this method are described [in the API docs here](github:evennia.typeclasses.models#typedobjectswap_typeclass).
 
 
 ## How typeclasses actually work

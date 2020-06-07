@@ -74,7 +74,7 @@ Evennia is split into two parts, the [Portal and the Server](Portal-And-Server).
 
 The "Session" we normally refer to is actually the `ServerSession`. Its counter-part on the Portal side is the `PortalSession`. Whereas the server sessions deal with game states, the portal session deals with details of the connection-protocol itself. The two are also acting as backups of critical data such as when the server reboots.
 
-New Account connections are listened for and handled by the Portal using the [protocols](session-protocols) it understands (such as telnet, ssh, webclient etc). When a new connection is established, a `PortalSession` is created on the Portal side. This session object looks different depending on which protocol is used to connect, but all still have a minimum set of attributes that are generic to all
+New Account connections are listened for and handled by the Portal using the [protocols](Portal-And-Server) it understands (such as telnet, ssh, webclient etc). When a new connection is established, a `PortalSession` is created on the Portal side. This session object looks different depending on which protocol is used to connect, but all still have a minimum set of attributes that are generic to all
 sessions.
 
 These common properties are piped from the Portal, through the AMP connection, to the Server, which is now informed a new connection has been established.  On the Server side, a `ServerSession` object is created to represent this. There is only one type of `ServerSession`; It looks the same regardless of how the Account connects.

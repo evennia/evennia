@@ -16,14 +16,11 @@ We also need to build the toc-tree and should do so automatically for now.
 import glob
 import re
 
-_RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -]+)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
+_RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
 
 _IGNORE_FILES = (
     "_Sidebar.md",
-    # "Evennia-for-MUSH-Users.md",
-    # "Installing-on-Android.md",
-    # "Nicks.md",
-    # "Spawner-and-Prototypes.md"
+    "Wiki-Index.md"
 )
 
 _WIKI_DIR = "../../../evennia.wiki/"
@@ -35,7 +32,8 @@ _FILENAMESLOW = [path.lower() for path in _FILENAMES]
 _OUTDIR = "../source/"
 _OLD_WIKI_URL = "https://github.com/evennia/evennia/wiki/"
 _OLD_WIKI_URL_LEN = len(_OLD_WIKI_URL)
-_CODE_PREFIX = "code:"
+_CODE_PREFIX = "github:"
+_API_PREFIX = "api:"
 
 _CUSTOM_LINK_REMAP = {
     "CmdSets": "Command-Sets",
@@ -55,12 +53,13 @@ _CUSTOM_LINK_REMAP = {
     "Using-Mux-as-a-Standard": "Using-MUX-as-a-Standard",
     "Building-quickstart": "Building-Quickstart",
     "Adding-Object-Typeclass-tutorial": "Adding-Object-Typeclass-Tutorial",
+    "EvTable": _API_PREFIX + "evennia.utils#module-evennia.utils.evtable",
 }
 
 # absolute links (mainly github links) that should not be converted. This
 # should be given without any #anchor.
 _ABSOLUTE_LINK_SKIP = (
-    "https://github.com/evennia/evennia/wiki/feature-request"
+    # "https://github.com/evennia/evennia/wiki/feature-request",
 )
 
 # specific references tokens that should be ignored. Should be given
@@ -73,16 +72,11 @@ _REF_SKIP = (
     "[EvTable](EvTable)",
     "[styled](OptionStyles)",
     "[Inputfunc](Inputfunc)",
-    "[API](evennia)",
     "[online documentation wiki](index)",
     "[online documentation](index)",
-    "[Home](index)",
     "[Accounts](Account)",
     "[Session](Session)",
     "[Inputfuncs](Inputfunc)",
-
-    # "[Nicks](Nicks)",
-    # "[Nick](Nicks)",
 )
 
 
@@ -96,7 +90,7 @@ def _sub_link(match):
     # if not txt:
     #     # the 'comment' is not supported by Mkdocs
     #     return ""
-    #  url = url if url.endswith(".md") or url.startswith("http") else url + ".md"
+    print(f" [{txt}]({url})")
 
     url = _CUSTOM_LINK_REMAP.get(url, url)
 
@@ -105,6 +99,10 @@ def _sub_link(match):
     if url in _ABSOLUTE_LINK_SKIP:
         url += (("#" + anchor[0]) if anchor else "")
         return f"[{txt}]({url})"
+
+    if url.startswith("evennia"):
+        print(f" Convert evennia url {url} -> {_CODE_PREFIX + url}")
+        url = _API_PREFIX + url
 
     if url.startswith(_OLD_WIKI_URL):
         # old wiki is an url on the form https://<wikiurl>/wiki/TextTags#header
@@ -175,8 +173,6 @@ def create_toctree(files):
 def convert_links(files, outdir):
     global _CURRENT_TITLE
 
-    print(_INFILES)
-
     for inpath in files:
 
         outfile = inpath.rsplit('/', 1)[-1]
@@ -201,4 +197,3 @@ if __name__ == "__main__":
 
     create_toctree(_INFILES)
     convert_links(_INFILES, _OUTDIR)
-

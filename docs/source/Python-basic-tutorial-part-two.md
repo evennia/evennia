@@ -3,41 +3,35 @@
 [In the first part](Python-basic-introduction) of this Python-for-Evennia basic tutorial we learned how to run some simple Python code from inside the game. We also made our first new *module* containing a *function* that we called. Now we're going to start exploring the very important subject of *objects*.
 
 **Contents:**
-- [On the subject of objects](#on-the-subject-of-objects)
-- [Exploring the Evennia library](#exploring-the-evennia-library)
-- [Tweaking our Character class](#tweaking-our-character-class)
-- [The Evennia shell](#the-evennia-shell)
-- [Where to go from here](#where-to-go-from-here)
+- [On the subject of objects](Python-basic-tutorial-part-two#on-the-subject-of-objects)
+- [Exploring the Evennia library](Python-basic-tutorial-part-two#exploring-the-evennia-library)
+- [Tweaking our Character class](Python-basic-tutorial-part-two#tweaking-our-character-class)
+- [The Evennia shell](Python-basic-tutorial-part-two#the-evennia-shell)
+- [Where to go from here](Python-basic-tutorial-part-two#where-to-go-from-here)
 
 ### On the subject of objects
 
 In the first part of the tutorial we did things like
 
-```python
-> py me.msg("Hello World!")
-```
+    > py me.msg("Hello World!")
 
 To learn about functions and imports we also passed that `me` on to a function `hello_world` in another module.
 
 Let's learn some more about this `me` thing we are passing around all over the place. In the following we assume that we named our superuser Character "Christine".
 
-```python
-> py me
+    > py me
     Christine
-> py me.key
+    > py me.key
     Christine
-```
 
 These returns look the same at first glance, but not if we examine them more closely:
 
-```python
-> py type(me)
+    > py type(me)
     <class 'typeclasses.characters.Character'>
-> py type(me.key)
+    > py type(me.key)
     <type str>
-```
 
-> Note: In some MU* clients, such as Mudlet and MUSHclient simply returning `type(me)`, you may not see the proper return from the above commands. This is likely due to the HTML-like tags `<...>`, being swallowed by the client.
+> Note: In some MU clients, such as Mudlet and MUSHclient simply returning `type(me)`, you may not see the proper return from the above commands. This is likely due to the HTML-like tags `<...>`, being swallowed by the client.
 
 The `type` function is, like `print`, another in-built function in Python. It
 tells us that we (`me`) are of the *class* `typeclasses.characters.Character`.
@@ -82,6 +76,7 @@ class Character(DefaultCharacter):
     (Doc string for class)
     """
     pass
+
 ```
 
 There is `Character`, the last part of the path. Note how empty this file is. At first glance one would think a Character had no functionality at all. But from what we have used already we know it has at least the `key` property and the method `msg`! Where is the code? The answer is that this 'emptiness' is an illusion caused by something called *inheritance*. Read on.
@@ -128,9 +123,9 @@ The structure of the library directly reflects how you import from it.
 - You could also do `import evennia`. You would then have to enter the full `evennia.utils.utils.justify(...)` every time you use it. Using `from` to only import the things you need is usually easier and more readable.
 - See [this overview](http://effbot.org/zone/import-confusion.htm) about the different ways to import in Python.
 
-Now, remember that our `characters.py` module did `from evennia import DefaultCharacter`. But if we look at the contents of the `evennia` folder, there is no `DefaultCharacter` anywhere! This is because Evennia gives a large number of optional "shortcuts", known as [the "flat" API](https://github.com/evennia/evennia/wiki/Evennia-API). The intention is to make it easier to remember where to find stuff. The flat API is defined in that weirdly named `__init__.py` file. This file just basically imports useful things from all over Evennia so you can more easily find them in one place.
+Now, remember that our `characters.py` module did `from evennia import DefaultCharacter`. But if we look at the contents of the `evennia` folder, there is no `DefaultCharacter` anywhere! This is because Evennia gives a large number of optional "shortcuts", known as [the "flat" API](Evennia-API). The intention is to make it easier to remember where to find stuff. The flat API is defined in that weirdly named `__init__.py` file. This file just basically imports useful things from all over Evennia so you can more easily find them in one place.
 
-We could [just look at the documenation](code:evennia#typeclasses) to find out where we can look at our `DefaultCharacter` parent. But for practice, let's figure it out. Here is where `DefaultCharacter` [is imported from](https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L188) inside `__init__.py`:
+We could [just look at the documenation](github:evennia#typeclasses) to find out where we can look at our `DefaultCharacter` parent. But for practice, let's figure it out. Here is where `DefaultCharacter` [is imported from](https://github.com/evennia/evennia/blob/master/evennia/__init__.py#L188) inside `__init__.py`:
 
 ```python
 from .objects.objects import DefaultCharacter
@@ -150,18 +145,26 @@ from evennia import DefaultCharacter
 
 is the same thing, just a little easier to remember.
 
-> To access the shortcuts of the flat API you *must* use `from evennia import ...`. Using something like `import evennia.DefaultCharacter` will not work. See [more about the Flat API here](Evennia-API).
+> To access the shortcuts of the flat API you *must* use `from evennia import
+> ...`. Using something like `import evennia.DefaultCharacter` will not work.
+> See [more about the Flat API here](Evennia-API).
 
 
 ### Tweaking our Character class
 
-In the previous section we traced the parent of our `Character` class to be `DefaultCharacter` in [evennia/objects/objects.py](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py). Open that file and locate the `DefaultCharacter` class. It's quite a bit down in this module so you might want to search using your editor's (or browser's) search function. Once you find it, you'll find that the class starts like this:
+In the previous section we traced the parent of our `Character` class to be
+`DefaultCharacter` in
+[evennia/objects/objects.py](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py).
+Open that file and locate the `DefaultCharacter` class. It's quite a bit down
+in this module so you might want to search using your editor's (or browser's)
+search function. Once you find it, you'll find that the class starts like this:
 
 ```python
+
 class DefaultCharacter(DefaultObject):
     """
-    This implements an Object puppeted by a Session - that is,
-    a character avatar controlled by an account.
+    This implements an Object puppeted by a Session - that is, a character
+    avatar controlled by an account.
     """
 
     def basetype_setup(self):
@@ -173,7 +176,7 @@ class DefaultCharacter(DefaultObject):
         Character object works).
         """
         super().basetype_setup()
-        self.locks.add(";".join(["get:false()",  # noone can pick up the character
+        self.locks.add(";".join(["get:false()",     # noone can pick up the character
                                  "call:false()"]))  # no commands can be called on character from outside
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
@@ -188,8 +191,10 @@ class DefaultCharacter(DefaultObject):
     def at_pre_puppet(self, account, session=None, **kwargs):
         """
         Return the character from storage in None location in `at_post_unpuppet`.
-        Args:
-    ...
+        """
+
+    # ...
+
 ```
 
 ... And so on (you can see the full [class online here](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L1915)). Here we have functional code! These methods may not be directly visible in `Character` back in our game dir, but they are still available since `Character` is a child of `DefaultCharacter` above. Here is a brief summary of the methods we find in `DefaultCharacter` (follow in the code to see if you can see roughly where things happen)::
@@ -205,14 +210,14 @@ Reading the class we notice another thing:
 
 ```python
 class DefaultCharacter(DefaultObject):
-    ...
+    # ...
 ```
 
 This means that `DefaultCharacter` is in *itself* a child of something called `DefaultObject`! Let's see what this parent class provides. It's in the same module as `DefaultCharacter`, you just need to [scroll up near the top](https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py#L182):
 
 ```python
 class DefaultObject(with_metaclass(TypeclassBase, ObjectDB)):
-    ...
+   # ...
 ```
 
 This is a really big class where the bulk of code defining an in-game object resides. It consists of a large number of methods, all of which thus also becomes available on the `DefaultCharacter` class below *and* by extension in your `Character` class over in your game dir. In this class you can for example find the `msg` method we have been using before.
@@ -243,10 +248,8 @@ As you can see, the first argument to `at_before_say` is `self`. In Python, the 
 
 What can trip up newcomers is that you *don't* include `self` when you *call* the method. Try:
 
-```python
-> @py me.at_before_say("Hello World!")
-Hello World!
-```
+    > @py me.at_before_say("Hello World!")
+    Hello World!
 
 Note that we don't send `self` but only the `message` argument. Python will automatically add `self` for us. In this case, `self` will become equal to the Character instance `me`.
 
@@ -302,26 +305,20 @@ If you did this call from your game dir you will now be in a Python prompt manag
 
 IPython has some very nice ways to explore what Evennia has to offer.
 
-```python
-> import evennia
-> evennia.<TAB>
-```
+    > import evennia
+    > evennia.<TAB>
 
 That is, write `evennia.` and press the Tab key. You will be presented with a list of all available resources in the Evennia Flat API. We looked at the `__init__.py` file in the `evennia` folder earlier, so some of what you see should be familiar. From the IPython prompt, do:
 
-```python
-> from evennia import DefaultCharacter
-> DefaultCharacter.at_before_say?
-```
+    > from evennia import DefaultCharacter
+    > DefaultCharacter.at_before_say?
 
 Don't forget that you can use `<TAB>` to auto-complete code as you write. Appending a single `?` to the end will show you the doc-string for `at_before_say` we looked at earlier. Use `??` to get the whole source code.
 
 Let's look at our over-ridden version instead. Since we started the `evennia shell` from our game dir we can easily get to our code too:
 
-```python
-> from typeclasses.characters import Character
-> Character.at_before_say??
-```
+    > from typeclasses.characters import Character
+    > Character.at_before_say??
 
 This will show us the changed code we just did. Having a window with IPython running is very convenient for quickly exploring code without having to go digging through the file structure!
 

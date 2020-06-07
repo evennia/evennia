@@ -154,7 +154,7 @@ For now, good night!
 
 Relates to the activity happening relating to the [Webclient extensions task #614](https://github.com/evennia/evennia/issues/614).
 
-## Griatch Jan 23, 2017
+## Griatch Jan 23, 2017 post 2
 
 These are my ideas for the functionality of Evennia's webclient in the (possibly distant) future. It assumes the webclient options have been implemented as per [#1172](https://github.com/evennia/evennia/pull/1172).
 
@@ -214,7 +214,7 @@ The panes themselves can work differently depending on the content though:
 
 logging: do you mean have a "save to log" item in the pane menu?
 
-## Griatch Jan 23, 2017
+## Griatch Jan 23, 2017, post 1
 
 It makes sense that different types of panes would have different functionality. I was thinking that something like `inventory` would be very specific to a given game. But titeuf87 has a point - maybe you can get a rather generalized behavior just by defining if a pane should replace or append to the existing data. 
 

@@ -234,6 +234,6 @@ Reload your game with the `@reload` command.  You should now see the `time` comm
 
 You could display it a bit more prettily with names for months and perhaps even days, if you want. And if "months" are called "moons" in your game, this is where you'd add that.
 
-#### Time-related events
+#### Time-related events in custom gametime
 
 The `custom_gametime` module also has a way to schedule game-related events, taking into account your game time (and your custom calendar).  It can be used to have a specific message every day at 6:00 AM, to show the sun rises, for instance. The `custom_gametime.schedule` function works in the same way as described for the default one above.

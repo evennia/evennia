@@ -28,6 +28,3 @@ def get(self, key=None, default=None, category=None, return_obj=False,
             default_access=True, return_list=False):
 ```
 Many classes have methods requiring lengthy positional argument lists, which are tedious and error-prone to extend and override especially in cases where not all arguments are even required. It would be useful if arguments were reserved for required inputs and anything else relegated to kwargs for easier passthrough on extension.
-
----
-

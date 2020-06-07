@@ -17,7 +17,7 @@ So here's how to allow those users to remove color. It basically means you imple
 
 Create a new module in `mygame/typeclasses` named, for example, `mycharacter.py`. Alternatively you can simply add a new class to 'mygamegame/typeclasses/characters.py'.
 
-In your new module(or characters.py), create a new [Typeclass](../typeclasses) inheriting from `evennia.DefaultCharacter`. We will also import `evennia.utils.ansi`, which we will use later.
+In your new module(or characters.py), create a new [Typeclass](Typeclasses) inheriting from `evennia.DefaultCharacter`. We will also import `evennia.utils.ansi`, which we will use later.
 
 ```python
     from evennia import Character
@@ -29,7 +29,7 @@ In your new module(or characters.py), create a new [Typeclass](../typeclasses) i
             self.db.config_color = True
 ```
 
-Above we set a simple config value as an [Attribute](../Attributes).
+Above we set a simple config value as an [Attribute](Attributes).
 
 Let's make sure that new characters are created of this type. Edit your `mygame/server/conf/settings.py` file and add/change `BASE_CHARACTER_TYPECLASS` to point to your new character class. Observe that this will only affect *new* characters, not those already created. You have to convert already created characters to the new typeclass by using the `@typeclass` command (try on a secondary character first though, to test that everything works - you don't want to render your root user unusable!).
 
@@ -127,7 +127,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 ## More colors
 
-Apart from ANSI colors, Evennia also supports **Xterm256** colors (See [Colors](../TextTags#colored-text)). The `msg()` method supports the `xterm256` keyword for manually activating/deactiving xterm256. It should be easy to expand the above example to allow players to customize xterm256 regardless of if Evennia thinks their client supports it or not.
+Apart from ANSI colors, Evennia also supports **Xterm256** colors (See [Colors](TextTags#colored-text)). The `msg()` method supports the `xterm256` keyword for manually activating/deactiving xterm256. It should be easy to expand the above example to allow players to customize xterm256 regardless of if Evennia thinks their client supports it or not.
 
 To get a better understanding of how `msg()` works with keywords, you can try this as superuser:
 

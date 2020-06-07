@@ -91,9 +91,9 @@ Let's say account *Bob* with a character *BigGuy* enters the command *look at sw
   used, but they could be used to implement alternate help-display systems.
 - `.client_width()` - Shortcut for getting the client's screen-width. Note that not all clients will 
   truthfully report this value - that case the `settings.DEFAULT_SCREEN_WIDTH` will be returned.
-- `.styled_table(*args, **kwargs)` - This returns an [EvTable]([EvTable](EvTable)) [styled]([styled](OptionStyles)) based on the 
+- `.styled_table(*args, **kwargs)` - This returns an [EvTable](api:evennia.utils#module-evennia.utils.evtable) styled based on the 
   session calling this command. The args/kwargs are the same as for EvTable, except styling defaults are set.
-- `.styled_header`, `_footer`, `separator` - These will produce [styled]([styled](OptionStyles)) decorations for 
+- `.styled_header`, `_footer`, `separator` - These will produce styled decorations for 
   display to the user. They are useful for creating listings and forms with colors adjustable per-user. 
 
 ### Defining your own command classes
@@ -105,7 +105,7 @@ Beyond the properties Evennia always assigns to the command at run-time (listed 
 - `locks` (string) - a [lock definition](Locks), usually on the form `cmd:<lockfuncs>`. Locks is a rather big topic, so until you learn more about locks, stick to giving the lockstring `"cmd:all()"` to make the command available to everyone (if you don't provide a lock string, this will be assigned for you).
 - `help_category` (optional string) - setting this helps to structure the auto-help into categories. If none is set, this will be set to *General*.
 - `save_for_next` (optional boolean). This defaults to `False`. If `True`, a copy of this command object (along with any changes you have done to it) will be stored by the system and can be accessed by the next command by retrieving `self.caller.ndb.last_cmd`. The next run command will either clear or replace the storage.
-- `arg_regex` (optional raw string): Used to force the parser to limit itself and tell it when the command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is done with a regular expression. [See the arg_regex section](#on-arg_regex) for the details.
+- `arg_regex` (optional raw string): Used to force the parser to limit itself and tell it when the command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is done with a regular expression. [See the arg_regex section](Commands#on-arg_regex) for the details.
 - `auto_help` (optional boolean). Defaults to `True`. This allows for turning off the [auto-help system](Help-System#command-auto-help-system) on a per-command basis. This could be useful if you either want to write your help entries manually or hide the existence of a command from `help`'s generated list.
 - `is_exit` (bool) - this marks the command as being used for an in-game exit. This is, by default, set by all Exit objects and you should not need to set it manually unless you make your own Exit system. It is used for optimization and allows the cmdhandler to easily disregard this command when the cmdset has its `no_exits` flag set.
 - `is_channel` (bool)- this marks the command as being used for an in-game channel. This is, by default, set by all Channel objects and you should not need to set it manually unless you make your own Channel system.  is used for optimization and allows the cmdhandler to easily disregard this command when its cmdset has its `no_channels` flag set.

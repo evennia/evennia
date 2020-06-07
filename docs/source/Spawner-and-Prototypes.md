@@ -61,7 +61,7 @@ If you wanted to load it into the spawner in-game you could just put all on one 
 > Note that the prototype dict as given on the command line must be a valid Python structure -
 so you need to put quotes around strings etc. For security reasons, a dict inserted from-in game cannot have any 
 other advanced Python functionality, such as executable code, `lambda` etc. If builders are supposed
-to be able to use such features, you need to offer them through [$protfuncs](#protfuncs), embedded runnable functions that you have full control to check and vet before running.  
+to be able to use such features, you need to offer them through [$protfuncs](Spawner-and-Prototypes#protfuncs), embedded runnable functions that you have full control to check and vet before running.  
 
 ### Prototype keys
 
@@ -104,7 +104,7 @@ Deprecated as of Evennia 0.8:
  - `ndb_<name>` - sets the value of a non-persistent attribute (`"ndb_"` is stripped from the name).
    This is simply not useful in a prototype and is deprecated.
  - `exec` - This accepts a code snippet or a list of code snippets to run. This should not be used -
-   use callables or [$protfuncs](#protfuncs) instead (see below).
+   use callables or [$protfuncs](Spawner-and-Prototypes#protfuncs) instead (see below).
 
 ### Prototype values
 
@@ -274,4 +274,4 @@ Note that no `location` will be set automatically when using `evennia.prototypes
 have to specify `location` explicitly in the prototype dict.
 
 If the prototypes you supply are using `prototype_parent` keywords, the spawner will read prototypes from modules 
-in `settings.PROTOTYPE_MODULES` as well as those saved to the database to determine the body of available parents. The `spawn` command takes many optional keywords, you can find its definition [in the api docs](code:evennia.prototypes.spawner#spawn).
+in `settings.PROTOTYPE_MODULES` as well as those saved to the database to determine the body of available parents. The `spawn` command takes many optional keywords, you can find its definition [in the api docs](github:evennia.prototypes.spawner#spawn).

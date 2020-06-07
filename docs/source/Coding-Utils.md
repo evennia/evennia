@@ -112,7 +112,7 @@ gametime.reset_gametime()
 
 The setting `TIME_FACTOR` determines how fast/slow in-game time runs compared to the real world. The setting `TIME_GAME_EPOCH` sets the starting game epoch (in seconds). The functions from the `gametime` module all return their times in seconds. You can convert this to whatever units of time you desire for your game. You can use the `@time` command to view the server time info.
 
-You can also *schedule* things to happen at specific in-game times using the [gametime.schedule](https://github.com/evennia/evennia/wiki/evennia.utils.gametime#schedule) function:
+You can also *schedule* things to happen at specific in-game times using the [gametime.schedule](github:evennia.utils.gametime#schedule) function:
 
 ```python
 import evennia
@@ -223,14 +223,14 @@ never raise a traceback but instead echo errors through logging. See
 [here](Text-Encodings) for more info.
 
 ### Ansi Coloring Tools
-- [evennia.ansi](../wiki/evennia.utils.ansi)
+- [evennia.ansi](api:evennia.utils.ansi)
 
 ## Display utilities
 ### Making ascii tables
 
-The [EvTable](code:evennia.utils.evtable#evtable) class (`evennia/utils/evtable.py`) can be used to create correctly formatted text tables. There is also [EvForm](code:evennia.utils.evform#evform) (`evennia/utils/evform.py`). This reads a fixed-format text template from a file in order to create any level of sophisticated ascii layout.  Both evtable and evform have lots of options and inputs so see the header of each module for help.
+The [EvTable](github:evennia.utils.evtable#evtable) class (`evennia/utils/evtable.py`) can be used to create correctly formatted text tables. There is also [EvForm](github:evennia.utils.evform#evform) (`evennia/utils/evform.py`). This reads a fixed-format text template from a file in order to create any level of sophisticated ascii layout.  Both evtable and evform have lots of options and inputs so see the header of each module for help.
 
 The third-party [PrettyTable](https://code.google.com/p/prettytable/) module is also included in Evennia. PrettyTable is considered deprecated in favor of EvTable since PrettyTable cannot handle ANSI colour. PrettyTable can be found in `evennia/utils/prettytable/`.  See its homepage above for instructions.
 
 ### Menus
-- [evennia.EvMenu](https://github.com/evennia/evennia/wiki/evennia.utils.evmenu#evmenu)
+- [evennia.EvMenu](github:evennia.utils.evmenu#evmenu)

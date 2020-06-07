@@ -206,7 +206,7 @@ The message will pass through the system such that the sessionhandler will dig o
 
 ### Receiving data 
 
-Just because the protocol is there, does not mean Evennia knows what to do with it. An [Inputfunc]([Inputfunc](Inputfunc)) must exist to receive it. In the case of the `text` input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the [Inputfunc]([Inputfunc](Inputfunc)) page for how to do this. 
+Just because the protocol is there, does not mean Evennia knows what to do with it. An [Inputfunc](Inputfuncs) must exist to receive it. In the case of the `text` input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the [Inputfunc](Inputfuncs) page for how to do this. 
 
 These might not be as clear-cut in all protocols, but the principle is there. These four basic
 components - however they are accessed - links to the *Portal Session*, which is the actual common

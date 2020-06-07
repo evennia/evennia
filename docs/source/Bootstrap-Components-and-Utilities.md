@@ -60,4 +60,4 @@ Bootstrap provides classes to easily add responsive margin and padding. Most of 
 ```
 
 ### Forms
-[Forms](https://getbootstrap.com/docs/4.0/components/forms/) are highly customizable with Bootstrap. For a more in-depth look at how to use forms and their styles in your own Evennia site, please read over [the web character gen tutorial.](https://github.com/evennia/evennia/wiki/Web-Character-Generation)
+[Forms](https://getbootstrap.com/docs/4.0/components/forms/) are highly customizable with Bootstrap. For a more in-depth look at how to use forms and their styles in your own Evennia site, please read over [the web character gen tutorial.](Web-Character-Generation)

@@ -34,5 +34,5 @@ commands to jump to previous pages, to the top or bottom of the document as well
 paging.
 
 The pager takes several more keyword arguments for controlling the message output. See the
-[evmore-API](code:evennia.utils.evmore) for more info.
+[evmore-API](github:evennia.utils.evmore) for more info.
 
