@@ -9,14 +9,6 @@ evennia.commands.default package
 Submodules
 ----------
 
-evennia.commands.default module
--------------------------------
-
-.. automodule:: evennia.commands.default
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 evennia.commands.default.account module
 ---------------------------------------
 

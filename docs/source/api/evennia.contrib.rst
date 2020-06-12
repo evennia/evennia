@@ -11,6 +11,7 @@ Subpackages
 
 .. toctree::
 
+   evennia.contrib.awsstorage
    evennia.contrib.ingame_python
    evennia.contrib.security
    evennia.contrib.turnbattle
@@ -19,14 +20,6 @@ Subpackages
 
 Submodules
 ----------
-
-evennia.contrib module
-----------------------
-
-.. automodule:: evennia.contrib
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 evennia.contrib.barter module
 -----------------------------
@@ -212,10 +205,26 @@ evennia.contrib.talking\_npc module
    :undoc-members:
    :show-inheritance:
 
+evennia.contrib.test\_traits module
+-----------------------------------
+
+.. automodule:: evennia.contrib.test_traits
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 evennia.contrib.tests module
 ----------------------------
 
 .. automodule:: evennia.contrib.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+evennia.contrib.traits module
+-----------------------------
+
+.. automodule:: evennia.contrib.traits
    :members:
    :undoc-members:
    :show-inheritance:
