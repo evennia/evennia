@@ -11,6 +11,7 @@ Subpackages
 
 .. toctree::
 
+   evennia.web.api
    evennia.web.utils
    evennia.web.webclient
    evennia.web.website

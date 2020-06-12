@@ -16,6 +16,14 @@ Subpackages
 Submodules
 ----------
 
+evennia.utils.tests.test\_ansi module
+-------------------------------------
+
+.. automodule:: evennia.utils.tests.test_ansi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 evennia.utils.tests.test\_batchprocessors module
 ------------------------------------------------
 
