@@ -20,10 +20,10 @@ if not _no_autodoc:
     GAME_DIR = os.environ.get("EVGAMEDIR")
 
     if not (EV_ROOT and GAME_DIR):
-        print("The EVDIR and EVGAMEDIR environment variables must be set to "
+        err = ("The EVDIR and EVGAMEDIR environment variables must be set to "
               "the absolute paths to the evennia/ repo and an initialized "
               "evennia gamedir respectively.")
-        raise RuntimeError()
+        raise RuntimeError(err)
 
     print("Evennia root: {}, Game dir: {}".format(EV_ROOT, GAME_DIR))
 
