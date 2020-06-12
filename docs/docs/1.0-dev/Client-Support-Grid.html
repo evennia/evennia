@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Client Support Grid &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="client-support-grid">
+<h1>Client Support Grid<a class="headerlink" href="#client-support-grid" title="Permalink to this headline">¶</a></h1>
+<p>This grid tries to gather Evennia-specific knowledge about the various clients and protocols used. Everyone’s welcome to report their findings.</p>
+<div class="section" id="legend">
+<h2>Legend:<a class="headerlink" href="#legend" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Name</strong>: The name of the client. If it’s only available for a specific OS, it should be noted here too.</p></li>
+<li><p><strong>Version</strong>: Which version or range of client versions were tested.</p></li>
+<li><p><strong>Comments</strong>: Any comments or quirks on using this client with Evennia should be added here. Also note if some other protocol than Telnet is used (like Websockets, SSH etc).</p></li>
+</ul>
+</div>
+<div class="section" id="client-grid">
+<h2>Client Grid<a class="headerlink" href="#client-grid" title="Permalink to this headline">¶</a></h2>
+<p>Name                   | Version  | Comments
+:———-:————
+<a class="reference external" href="https://github.com/evennia/evennia/wiki/Web%20features#web-client">Evennia webclient</a> | 0.6  | Uses WS/AJAX. <a class="reference external" href="https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&amp;q=client+status%3Dopen+%5D">Current client issues</a>
+<a class="reference external" href="http://tintin.sourceforge.net/">tintin++</a>          | 2.0+ | No MXP support
+<a class="reference external" href="http://tinyfugue.sourceforge.net/">tinyfugue</a>         | 5.0+ | No UTF-8 support
+<a class="reference external" href="http://mushclient.com/">MUSHclient</a> (Win)   | 4.94 | NAWS reports full text area
+<a class="reference external" href="http://forums.zuggsoft.com/index.php?page=4&amp;action=file&amp;file_id=65">Zmud</a> (Win)         | 7.21 | <em>UNTESTED</em><br /><a class="reference external" href="http://forums.zuggsoft.com/index.php?page=4&amp;action=category&amp;cat_id=11">Cmud</a> (Win)         | v3   | <em>UNTESTED</em><br /><a class="reference external" href="http://www.potatomushclient.com/">Potato</a>            | 2.0.0b16  | No MXP, MCCP support. Win 32bit does not understand “localhost”, must use <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>. <a class="reference external" href="https://github.com/evennia/evennia/issues/1131">Newline issue</a>. *Won’t send a single blank line on Enter press.
+<a class="reference external" href="http://www.mudlet.org/">Mudlet</a>            | 3.4+ | No known issues. Some older versions showed &lt;&gt; as html under MXP.
+<a class="reference external" href="https://archive.org/details/tucows_196173_SimpleMU_MU_Client">SimpleMU</a> (Win)    | full | <em>UNTESTED</em>. Discontinued. NAWS reports pixel size.
+<a class="reference external" href="http://www.riverdark.net/atlantis/">Atlantis</a> (Mac)    | 0.9.9.4 | No known issues.
+<a class="reference external" href="https://sourceforge.net/projects/g-mud/">GMUD</a>             | 0.0.1 | Can’t handle any telnet handshakes. Not recommended.
+<a class="reference external" href="http://www.beipmu.com/">BeipMU</a> (Win)      | 3.0.255 | No MXP support. Best to enable “MUD prompt handling”, disable “Handle HTML tags”.
+<a class="reference external" href="https://itunes.apple.com/us/app/mudrammer-a-modern-mud-client/id597157072">MudRammer</a> (IOS)   | 1.8.7 | Bad Telnet Protocol compliance: displays spurious characters.
+<a class="reference external" href="https://itunes.apple.com/us/app/mudmaster/id341160033">MUDMaster</a> (IOS)   | 1.3.1 | <em>UNTESTED</em>
+<a class="reference external" href="http://bt.happygoatstudios.com/">BlowTorch</a> (Andr)  | 1.1.3 | *Telnet NOP displays as spurious character.
+<a class="reference external" href="https://play.google.com/store/apps/details?id=com.crap.mukluk">Mukluk</a> (Andr)     | 2015.11.20| *Telnet NOP displays as spurious character. Has UTF-8/Emoji support.
+<a class="reference external" href="https://github.com/GNOME/gnome-mud">Gnome-MUD</a> (Unix)  | 0.11.2 | Telnet handshake errors. First (only) attempt at logging in fails.
+<a class="reference external" href="https://spyrit.ierne.eu.org/">Spyrit</a>           | 0.4 | No MXP, OOB support.
+<a class="reference external" href="http://jamochamud.org/">JamochaMUD</a>       | 5.2 | Does not support ANSI within MXP text.
+<a class="reference external" href="http://duckclient.com/">DuckClient</a> (Chrome)| 4.2 | No MXP support. Displays Telnet Go-Ahead and WILL SUPPRESS-GO-AHEAD as ù character. Also seems to run the <code class="docutils literal notranslate"><span class="pre">version</span></code> command on connection, which will not work in <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODES</span></code> above 1.
+<a class="reference external" href="https://www.kildclient.org/">KildClient</a>       | 2.11.1 | No known issues.</p>
+</div>
+<div class="section" id="workarounds-for-client-issues">
+<h2>Workarounds for client issues:<a class="headerlink" href="#workarounds-for-client-issues" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="issue-telnet-nop-displays-as-spurious-character">
+<h3>Issue: Telnet NOP displays as spurious character.<a class="headerlink" href="#issue-telnet-nop-displays-as-spurious-character" title="Permalink to this headline">¶</a></h3>
+<p>Known clients:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://bt.happygoatstudios.com/">BlowTorch</a>(Andr)</p></li>
+<li><p><a class="reference external" href="https://play.google.com/store/apps/details?id=com.crap.mukluk">Mukluk</a>(Andr)</p></li>
+</ul>
+<p>Workaround:</p>
+<ul class="simple">
+<li><p>Set the command in game to <code class="docutils literal notranslate"><span class="pre">&#64;option</span> <span class="pre">NOPKEEPALIVE=off</span></code> for the session, or use the <code class="docutils literal notranslate"><span class="pre">/save</span></code> parameter to disable it for that Evennian account permanently.</p></li>
+<li><p>Client-side: Set a gag-type trigger on the NOP character to make it invisible to the client.</p></li>
+</ul>
+</div>
+<div class="section" id="issue-won-t-send-blank-line-on-enter-key-press">
+<h3>Issue: Won’t send blank line on Enter key press.<a class="headerlink" href="#issue-won-t-send-blank-line-on-enter-key-press" title="Permalink to this headline">¶</a></h3>
+<p>Known clients:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.potatomushclient.com/">Potato</a></p></li>
+</ul>
+<p>Workaround:</p>
+<ul class="simple">
+<li><p>Press Control Enter, then Enter key again to send blank line.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Client Support Grid</a><ul>
+<li><a class="reference internal" href="#legend">Legend:</a></li>
+<li><a class="reference internal" href="#client-grid">Client Grid</a></li>
+<li><a class="reference internal" href="#workarounds-for-client-issues">Workarounds for client issues:</a><ul>
+<li><a class="reference internal" href="#issue-telnet-nop-displays-as-spurious-character">Issue: Telnet NOP displays as spurious character.</a></li>
+<li><a class="reference internal" href="#issue-won-t-send-blank-line-on-enter-key-press">Issue: Won’t send blank line on Enter key press.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Client-Support-Grid.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Client-Support-Grid.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Client-Support-Grid.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

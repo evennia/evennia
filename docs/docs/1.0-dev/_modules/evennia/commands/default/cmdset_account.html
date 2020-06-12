@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.commands.default.cmdset_account &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.default.cmdset_account</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">This is the cmdset for Account (OOC) commands.  These are</span>
+<span class="sd">stored on the Account object and should thus be able to handle getting</span>
+<span class="sd">an Account object as caller rather than a Character.</span>
+
+<span class="sd">Note - in order for session-rerouting (in MULTISESSION_MODE=2) to</span>
+<span class="sd">function, all commands in this cmdset should use the self.msg()</span>
+<span class="sd">command method rather than caller.msg().</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="k">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="k">import</span> <span class="n">help</span><span class="p">,</span> <span class="n">comms</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="n">system</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="k">import</span> <span class="n">building</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">general</span>
+
+
+<div class="viewcode-block" id="AccountCmdSet"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.cmdset_account.AccountCmdSet">[docs]</a><span class="k">class</span> <span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements the account command set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultAccount&quot;</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+
+<div class="viewcode-block" id="AccountCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.cmdset_account.AccountCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Populates the cmdset&quot;</span>
+
+        <span class="c1"># Account-specific commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdOOCLook</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdIC</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdOOC</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdCharCreate</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdCharDelete</span><span class="p">())</span>
+        <span class="c1"># self.add(account.CmdSessions())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdWho</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdOption</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdQuit</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdPassword</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdColorTest</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdQuell</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdStyle</span><span class="p">())</span>
+
+        <span class="c1"># nicks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">general</span><span class="o">.</span><span class="n">CmdNick</span><span class="p">())</span>
+
+        <span class="c1"># testing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">())</span>
+
+        <span class="c1"># Help command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">help</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">())</span>
+
+        <span class="c1"># system commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdReload</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdReset</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdShutdown</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdPy</span><span class="p">())</span>
+
+        <span class="c1"># Admin commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">CmdNewPassword</span><span class="p">())</span>
+
+        <span class="c1"># Comm commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdAddCom</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdDelCom</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdAllCom</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdChannels</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCdestroy</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdChannelCreate</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdClock</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCBoot</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCemit</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCWho</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdCdesc</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdPage</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdIRC2Chan</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdIRCStatus</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdRSS2Chan</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">comms</span><span class="o">.</span><span class="n">CmdGrapevine2Chan</span><span class="p">())</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="cmdset_account.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

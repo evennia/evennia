@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Docs refactoring &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="docs-refactoring">
+<h1>Docs refactoring<a class="headerlink" href="#docs-refactoring" title="Permalink to this headline">¶</a></h1>
+<p>This is a whitepage for free discussion about the wiki docs and refactorings needed.</p>
+<p>Note that this is not a forum. To keep things clean, each opinion text should ideally present a clear argument or lay out a suggestion. Asking for clarification and any side-discussions should be held in chat or forum.</p>
+<div class="section" id="griatch-aug-13-2019">
+<h2>Griatch (Aug 13, 2019)<a class="headerlink" href="#griatch-aug-13-2019" title="Permalink to this headline">¶</a></h2>
+<p>This is how to make a discussion entry for the whitepage. Use any markdown formatting you need. Also remember to copy your work to the clipboard before saving the page since if someone else edited the page since you started, you’ll have to reload and write again.</p>
+<div class="section" id="sept-23-2019">
+<h3>(Sept 23, 2019)<a class="headerlink" href="#sept-23-2019" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/evennia/evennia/issues/1431">This (now closed) issue by DamnedScholar</a> gives the following suggestion:</p>
+<blockquote>
+<div><p>I think it would be useful for the pages that explain how to use various features of Evennia to have explicit and easily visible links to the respective API entry or entries. Some pages do, but not all. I imagine this as a single entry at the top of the page […].</p>
+</div></blockquote>
+<p><a class="reference external" href="https://github.com/evennia/evennia/issues/1578">This (now closed) issue by taladan</a> gives the following suggestion:</p>
+<blockquote>
+<div><p>It would help me (and probably a couple of others) if there is a way to show the file path where a particular thing exists. Maybe up under the ‘last edited’ line we could have a line like:
+evennia/locks/lockhandler.py</p>
+</div></blockquote>
+<p>This would help in development to quickly refer to where a resource is located.</p>
+</div>
+</div>
+<div class="section" id="kovitikus-sept-11-2019">
+<h2>Kovitikus (Sept. 11, 2019)<a class="headerlink" href="#kovitikus-sept-11-2019" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="Batch-Code-Processor.html"><span class="doc">Batch Code</span></a> should have a link in the developer area. It is currently only listed in the tutorials section as an afterthought to a tutorial title.</p>
+<hr class="docutils" />
+<p>In regards to the general structure of each wiki page: I’d like to see a table of contents at the top of each one, so that it can be quickly navigated and is immediately apparent what sections are covered on the page. Similar to the current <a class="reference internal" href="Getting-Started.html"><span class="doc">Getting Started</span></a> page.</p>
+<hr class="docutils" />
+<p>The structuring of the page should also include a quick reference cheatsheet for certain aspects. Such as <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a> including a quick reference section at the top that lists an example of every available method you can use in a clear and consistent format, along with a comment. Readers shouldn’t have to decipher the article to gather such basic information and it should instead be available at first glance.</p>
+<p>Example of a quick reference:</p>
+<p><strong>Tags</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add a tag.</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+
+<span class="c1"># Remove a tag.</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+
+<span class="c1"># Remove all tags.</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+<span class="c1"># Search for a tag. Evennia must be imported first.</span>
+<span class="n">store_result</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+
+<span class="c1"># Return a list of all tags.</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>  
+</pre></div>
+</div>
+<p><strong>Aliases</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add an alias.</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+
+<span class="n">ETC</span><span class="o">...</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>In regards to comment structure, I often find that smushing together lines with comments to be too obscure. White space should be used to clearly delineate what information the comment is for. I understand that the current format is that a comment references whatever is below it, but newbies may not know that until they realize it.</p>
+<p>Example of poor formatting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#comment</span>
+<span class="n">command</span><span class="o">/</span><span class="n">code</span>
+<span class="c1">#comment</span>
+<span class="n">command</span><span class="o">/</span><span class="n">code</span>
+</pre></div>
+</div>
+<p>Example of good formatting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Comment.</span>
+<span class="n">command</span><span class="o">/</span><span class="n">code</span>
+
+<span class="c1"># Comment.</span>
+<span class="n">command</span><span class="o">/</span><span class="n">code</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sage-3-28-20">
+<h2>Sage (3/28/20)<a class="headerlink" href="#sage-3-28-20" title="Permalink to this headline">¶</a></h2>
+<p>If I want to find information on the correct syntax for is_typeclass(), here’s what I do:</p>
+<ul class="simple">
+<li><p>Pop over to the wiki. Okay, this is a developer functionality. Let’s try that.</p></li>
+<li><p>Ctrl+F on Developer page. No results.</p></li>
+<li><p>Ctrl+F on API page. No results. Ctrl+F on Flat API page. No results</p></li>
+<li><p>Ctrl+F on utils page. No results.</p></li>
+<li><p>Ctrl+F on utils.utils page. No results.</p></li>
+<li><p>Ctrl+F in my IDE. Results.</p></li>
+<li><p>Fortunately, there’s only one result for def is_typeclass. If this was at_look, there would be several results, and I’d have to go through each of those individually, and most of them would just call return_appearance</p></li>
+</ul>
+<p>An important part of a refactor, in my opinion, is separating out the “Tutorials” from the “Reference” documentation.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Docs refactoring</a><ul>
+<li><a class="reference internal" href="#griatch-aug-13-2019">Griatch (Aug 13, 2019)</a><ul>
+<li><a class="reference internal" href="#sept-23-2019">(Sept 23, 2019)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#kovitikus-sept-11-2019">Kovitikus (Sept. 11, 2019)</a></li>
+<li><a class="reference internal" href="#sage-3-28-20">Sage (3/28/20)</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Docs-refactoring.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Docs-refactoring.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Docs-refactoring.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

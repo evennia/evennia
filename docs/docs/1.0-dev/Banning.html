@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Banning &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="banning">
+<h1>Banning<a class="headerlink" href="#banning" title="Permalink to this headline">¶</a></h1>
+<p>Whether due to abuse, blatant breaking of your rules, or some other reason, you will eventually find
+no other recourse but to kick out a particularly troublesome player. The default command set has
+admin tools to handle this, primarily <code class="docutils literal notranslate"><span class="pre">&#64;ban</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;unban</span></code>, and <code class="docutils literal notranslate"><span class="pre">&#64;boot</span></code>.</p>
+<div class="section" id="creating-a-ban">
+<h2>Creating a ban<a class="headerlink" href="#creating-a-ban" title="Permalink to this headline">¶</a></h2>
+<p>Say we have a troublesome player “YouSuck” - this is a person that refuses common courtesy - an abusive
+and spammy account that is clearly created by some bored internet hooligan only to cause grief. You
+have tried to be nice. Now you just want this troll gone.</p>
+<div class="section" id="name-ban">
+<h3>Name ban<a class="headerlink" href="#name-ban" title="Permalink to this headline">¶</a></h3>
+<p>The easiest recourse is to block the account YouSuck from ever connecting again.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="n">YouSuck</span>
+</pre></div>
+</div>
+<p>This will lock the name YouSuck (as well as ‘yousuck’ and any other capitalization combination), and next time they try to log in with this name the server will not let them!</p>
+<p>You can also give a reason so you remember later why this was a good thing (the banned account will never see this)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">This</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">a</span> <span class="n">troll</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If you are sure this is just a spam account, you might even consider deleting the player account outright:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@delaccount</span> <span class="n">YouSuck</span>
+</pre></div>
+</div>
+<p>Generally, banning the name is the easier and safer way to stop the use of an account – if you change your mind you can always remove the block later whereas a deletion is permanent.</p>
+</div>
+<div class="section" id="ip-ban">
+<h3>IP ban<a class="headerlink" href="#ip-ban" title="Permalink to this headline">¶</a></h3>
+<p>Just because you block YouSuck’s name might not mean the trolling human behind that account gives up. They can just create a new account YouSuckMore and be back at it. One way to make things harder for them is to tell the server to not allow connections from their particular IP address.</p>
+<p>First, when the offending account is online, check which IP address they use. This you can do with the <code class="docutils literal notranslate"><span class="pre">who</span></code> command, which will show you something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">Account</span> <span class="n">Name</span>     <span class="n">On</span> <span class="k">for</span>     <span class="n">Idle</span>     <span class="n">Room</span>     <span class="n">Cmds</span>     <span class="n">Host</span>          
+ <span class="n">YouSuckMore</span>      <span class="mi">01</span><span class="p">:</span><span class="mi">12</span>      <span class="mi">2</span><span class="n">m</span>       <span class="mi">22</span>       <span class="mi">212</span>      <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.223</span> 
+</pre></div>
+</div>
+<p>The “Host” bit is the IP address from which the account is connecting. Use this to define the ban instead of the name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.223</span>
+</pre></div>
+</div>
+<p>This will stop YouSuckMore connecting from their computer. Note however that IP address might change easily - either due to how the player’s Internet Service Provider operates or by the user simply changing computers. You can make a more general ban by putting asterisks <code class="docutils literal notranslate"><span class="pre">*</span></code> as wildcards for the groups of three digits in the address. So if you figure out that !YouSuckMore mainly connects from 237.333.0.223, 237.333.0.225, and 237.333.0.256 (only changes in their subnet), it might be an idea to put down a ban like this to include any number in that subnet:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@ban</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>
+</pre></div>
+</div>
+<p>You should combine the IP ban with a name-ban too of course, so the account YouSuckMore is truly locked regardless of where they connect from.</p>
+<p>Be careful with too general IP bans however (more asterisks above). If you are unlucky you could be blocking out innocent players who just happen to connect from the same subnet as the offender.</p>
+</div>
+</div>
+<div class="section" id="booting">
+<h2>Booting<a class="headerlink" href="#booting" title="Permalink to this headline">¶</a></h2>
+<p>YouSuck is not really noticing all this banning yet though - and won’t until having logged out and trying to log back in again. Let’s help the troll along.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@boot</span> <span class="n">YouSuck</span>
+</pre></div>
+</div>
+<p>Good riddance. You can give a reason for booting too (to be echoed to the player before getting kicked out).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@boot</span> <span class="n">YouSuck</span><span class="p">:</span><span class="n">Go</span> <span class="n">troll</span> <span class="n">somewhere</span> <span class="k">else</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="section" id="lifting-a-ban">
+<h3>Lifting a ban<a class="headerlink" href="#lifting-a-ban" title="Permalink to this headline">¶</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">&#64;unban</span></code> (or <code class="docutils literal notranslate"><span class="pre">&#64;ban</span></code>) command without any arguments and you will see a list of all currently active bans:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Active</span> <span class="n">bans</span>
+<span class="nb">id</span>   <span class="n">name</span><span class="o">/</span><span class="n">ip</span>       <span class="n">date</span>                      <span class="n">reason</span> 
+<span class="mi">1</span>    <span class="n">yousuck</span>       <span class="n">Fri</span> <span class="n">Jan</span> <span class="mi">3</span> <span class="mi">23</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">22</span> <span class="mi">2020</span>   <span class="n">This</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">a</span> <span class="n">Troll</span><span class="o">.</span>
+<span class="mi">2</span>    <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>   <span class="n">Fri</span> <span class="n">Jan</span> <span class="mi">3</span> <span class="mi">23</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">03</span> <span class="mi">2020</span>   <span class="n">YouSuck</span><span class="s1">&#39;s IP.</span>
+</pre></div>
+</div>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">id</span></code> from this list to find out which ban to lift.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@unban</span> <span class="mi">2</span>
+  
+<span class="n">Cleared</span> <span class="n">ban</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">237.333</span><span class="o">.</span><span class="mf">0.</span><span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="summary-of-abuse-handling-tools">
+<h2>Summary of abuse-handling tools<a class="headerlink" href="#summary-of-abuse-handling-tools" title="Permalink to this headline">¶</a></h2>
+<p>Below are other useful commands for dealing with annoying players.</p>
+<ul class="simple">
+<li><p><strong>who</strong> – (as admin) Find the IP of a account. Note that one account can be connected to from multiple IPs depending on what you allow in your settings.</p></li>
+<li><p><strong>examine/account thomas</strong> – Get all details about an account. You can also use <code class="docutils literal notranslate"><span class="pre">*thomas</span></code> to get the account. If not given, you will get the <em>Object</em> thomas if it exists in the same location, which is not what you want in this case.</p></li>
+<li><p><strong>boot thomas</strong>  – Boot all sessions of the given account name.</p></li>
+<li><p><strong>boot 23</strong> – Boot one specific client session/IP by its unique id.</p></li>
+<li><p><strong>ban</strong> – List all bans (listed with ids)</p></li>
+<li><p><strong>ban thomas</strong> – Ban the user with the given account name</p></li>
+<li><p><strong>ban/ip <code class="docutils literal notranslate"><span class="pre">134.233.2.111</span></code></strong> – Ban by IP</p></li>
+<li><p><strong>ban/ip <code class="docutils literal notranslate"><span class="pre">134.233.2.*</span></code></strong> – Widen IP ban</p></li>
+<li><p><strong>ban/ip <code class="docutils literal notranslate"><span class="pre">134.233.*.*</span></code></strong> – Even wider IP ban</p></li>
+<li><p><strong>unban 34</strong> – Remove ban with id #34</p></li>
+<li><p><strong>cboot mychannel = thomas</strong> – Boot a subscriber from a channel you control</p></li>
+<li><p><strong>clock mychannel = control:perm(Admin);listen:all();send:all()</strong> – Fine control of access to your channel using <a class="reference internal" href="Locks.html"><span class="doc">lock definitions</span></a>.</p></li>
+</ul>
+<p>Locking a specific command (like <code class="docutils literal notranslate"><span class="pre">page</span></code>) is accomplished like so:</p>
+<ol class="simple">
+<li><p>Examine the source of the command. <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/commands/default/comms.py#L686">The default <code class="docutils literal notranslate"><span class="pre">page</span></code> command class</a> has the lock string <strong>“cmd:not pperm(page_banned)”</strong>. This means that unless the player has the ‘permission’ “page_banned” they can use this command. You can assign any lock string to allow finer customization in your commands. You might look for the value of an <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a> or <a class="reference internal" href="Tags.html"><span class="doc">Tag</span></a>, your current location etc.</p></li>
+<li><p><strong>perm/account thomas = page_banned</strong> – Give the account the ‘permission’ which causes (in this case) the lock to fail.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>perm/del/account thomas = page_banned</strong> – Remove the given permission</p></li>
+<li><p><strong>tel thomas = jail</strong> – Teleport a player to a specified location or #dbref</p></li>
+<li><p><strong>type thomas = FlowerPot</strong> – Turn an annoying player into a flower pot (assuming you have a <code class="docutils literal notranslate"><span class="pre">FlowerPot</span></code> typeclass ready)</p></li>
+<li><p><strong>userpassword thomas = fooBarFoo</strong> – Change a user’s password</p></li>
+<li><p><strong>delaccount thomas</strong> – Delete a player account (not recommended, use <strong>ban</strong> instead)</p></li>
+<li><p><strong>server</strong> – Show server statistics, such as CPU load, memory usage, and how many objects are cached</p></li>
+<li><p><strong>time</strong> – Gives server uptime, runtime, etc</p></li>
+<li><p><strong>reload</strong> – Reloads the server without disconnecting anyone</p></li>
+<li><p><strong>reset</strong> – Restarts the server, kicking all connections</p></li>
+<li><p><strong>shutdown</strong> – Stops the server cold without it auto-starting again</p></li>
+<li><p><strong>py</strong> – Executes raw Python code, allows for direct inspection of the database and account objects on the fly. For advanced users.</p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Banning</a><ul>
+<li><a class="reference internal" href="#creating-a-ban">Creating a ban</a><ul>
+<li><a class="reference internal" href="#name-ban">Name ban</a></li>
+<li><a class="reference internal" href="#ip-ban">IP ban</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#booting">Booting</a><ul>
+<li><a class="reference internal" href="#lifting-a-ban">Lifting a ban</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary-of-abuse-handling-tools">Summary of abuse-handling tools</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Banning.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Banning.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Banning.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

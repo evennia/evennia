@@ -1,0 +1,895 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.commands.cmdhandler &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.cmdhandler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Command handler</span>
+
+<span class="sd">This module contains the infrastructure for accepting commands on the</span>
+<span class="sd">command line. The processing of a command works as follows:</span>
+
+<span class="sd">1. The calling object (caller) is analyzed based on its callertype.</span>
+<span class="sd">2. Cmdsets are gathered from different sources:</span>
+<span class="sd">   - channels:  all available channel names are auto-created into a cmdset, to allow</span>
+<span class="sd">     for giving the channel name and have the following immediately</span>
+<span class="sd">     sent to the channel. The sending is performed by the CMD_CHANNEL</span>
+<span class="sd">     system command.</span>
+<span class="sd">   - object cmdsets: all objects at caller&#39;s location are scanned for non-empty</span>
+<span class="sd">     cmdsets. This includes cmdsets on exits.</span>
+<span class="sd">   - caller: the caller is searched for its own currently active cmdset.</span>
+<span class="sd">   - account: lastly the cmdsets defined on caller.account are added.</span>
+<span class="sd">3. The collected cmdsets are merged together to a combined, current cmdset.</span>
+<span class="sd">4. If the input string is empty -&gt; check for CMD_NOINPUT command in</span>
+<span class="sd">   current cmdset or fallback to error message. Exit.</span>
+<span class="sd">5. The Command Parser is triggered, using the current cmdset to analyze the</span>
+<span class="sd">   input string for possible command matches.</span>
+<span class="sd">6. If multiple matches are found -&gt; check for CMD_MULTIMATCH in current</span>
+<span class="sd">   cmdset, or fallback to error message. Exit.</span>
+<span class="sd">7. If no match was found -&gt; check for CMD_NOMATCH in current cmdset or</span>
+<span class="sd">   fallback to error message. Exit.</span>
+<span class="sd">8. A single match was found. If this is a channel-command (i.e. the</span>
+<span class="sd">   ommand name is that of a channel), --&gt; check for CMD_CHANNEL in</span>
+<span class="sd">   current cmdset or use channelhandler default. Exit.</span>
+<span class="sd">9. At this point we have found a normal command. We assign useful variables to it that</span>
+<span class="sd">   will be available to the command coder at run-time.</span>
+<span class="sd">12. We have a unique cmdobject, primed for use. Call all hooks:</span>
+<span class="sd">   `at_pre_cmd()`, `cmdobj.parse()`, `cmdobj.func()` and finally `at_post_cmd()`.</span>
+<span class="sd">13. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">weakref</span> <span class="k">import</span> <span class="n">WeakValueDictionary</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">deferLater</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">inlineCallbacks</span><span class="p">,</span> <span class="n">returnValue</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="k">import</span> <span class="n">InterruptCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.channelhandler</span> <span class="k">import</span> <span class="n">CHANNELHANDLER</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">string_suggestions</span>
+
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="n">_IN_GAME_ERRORS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IN_GAME_ERRORS</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;cmdhandler&quot;</span><span class="p">,</span> <span class="s2">&quot;InterruptCommand&quot;</span><span class="p">)</span>
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+<span class="n">_CMDSET_MERGE_CACHE</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>
+
+<span class="c1"># tracks recursive calls by each caller</span>
+<span class="c1"># to avoid infinite loops (commands calling themselves)</span>
+<span class="n">_COMMAND_NESTING</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">_COMMAND_RECURSION_LIMIT</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># This decides which command parser is to be used.</span>
+<span class="c1"># You have to restart the server for changes to take effect.</span>
+<span class="n">_COMMAND_PARSER</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_PARSER</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># System command names - import these variables rather than trying to</span>
+<span class="c1"># remember the actual string constants. If not defined, Evennia</span>
+<span class="c1"># hard-coded defaults are used instead.</span>
+
+<span class="c1"># command to call if user just presses &lt;return&gt; with no input</span>
+<span class="n">CMD_NOINPUT</span> <span class="o">=</span> <span class="s2">&quot;__noinput_command&quot;</span>
+<span class="c1"># command to call if no command match was found</span>
+<span class="n">CMD_NOMATCH</span> <span class="o">=</span> <span class="s2">&quot;__nomatch_command&quot;</span>
+<span class="c1"># command to call if multiple command matches were found</span>
+<span class="n">CMD_MULTIMATCH</span> <span class="o">=</span> <span class="s2">&quot;__multimatch_command&quot;</span>
+<span class="c1"># command to call if found command is the name of a channel</span>
+<span class="n">CMD_CHANNEL</span> <span class="o">=</span> <span class="s2">&quot;__send_to_channel_command&quot;</span>
+<span class="c1"># command to call as the very first one when the user connects.</span>
+<span class="c1"># (is expected to display the login screen)</span>
+<span class="n">CMD_LOGINSTART</span> <span class="o">=</span> <span class="s2">&quot;__unloggedin_look_command&quot;</span>
+
+<span class="c1"># Function for handling multiple command matches.</span>
+<span class="n">_SEARCH_AT_RESULT</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># Output strings. The first is the IN_GAME_ERRORS return, the second</span>
+<span class="c1"># is the normal &quot;production message to echo to the account.</span>
+
+<span class="n">_ERROR_UNTRAPPED</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An untrapped error occurred.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An untrapped error occurred. Please file a bug report detailing the steps to reproduce.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_CMDSETS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A cmdset merger-error occurred. This is often due to a syntax</span>
+<span class="sd">error in one of the cmdsets to merge.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A cmdset merger-error occurred. Please file a bug report detailing the</span>
+<span class="sd">steps to reproduce.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_NOCMDSETS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">No command sets found! This is a critical bug that can have</span>
+<span class="sd">multiple causes.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">No command sets found! This is a sign of a critical bug.  If</span>
+<span class="sd">disconnecting/reconnecting doesn&#39;t&quot; solve the problem, try to contact</span>
+<span class="sd">the server admin through&quot; some other means for assistance.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_CMDHANDLER</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A command handler bug occurred. If this is not due to a local change,</span>
+<span class="sd">please file a bug report with the Evennia project, including the</span>
+<span class="sd">traceback and steps to reproduce.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A command handler bug occurred. Please notify staff - they should</span>
+<span class="sd">likely file a bug report with the Evennia project.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_RECURSION_LIMIT</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Command recursion limit (</span><span class="si">{recursion_limit}</span><span class="s2">) &quot;</span> <span class="s2">&quot;reached for &#39;</span><span class="si">{raw_cmdname}</span><span class="s2">&#39; (</span><span class="si">{cmdclass}</span><span class="s2">).&quot;</span>
+<span class="p">)</span>
+
+
+<span class="c1"># delayed imports</span>
+<span class="n">_GET_INPUT</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="c1"># helper functions</span>
+
+
+<span class="k">def</span> <span class="nf">_msg_err</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">stringtuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function for returning an error to the caller.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        receiver (Object): object to get the error message.</span>
+<span class="sd">        stringtuple (tuple): tuple with two strings - one for the</span>
+<span class="sd">            _IN_GAME_ERRORS mode (with the traceback) and one with the</span>
+<span class="sd">            production string (with a timestamp) to be shown to the user.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{traceback}</span><span class="se">\n</span><span class="si">{errmsg}</span><span class="se">\n</span><span class="s2">(Traceback was logged </span><span class="si">{timestamp}</span><span class="s2">).&quot;</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+    <span class="n">tracestring</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
+        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">traceback</span><span class="o">=</span><span class="n">tracestring</span><span class="p">,</span> <span class="n">errmsg</span><span class="o">=</span><span class="n">stringtuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">traceback</span><span class="o">=</span><span class="n">tracestring</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">errmsg</span><span class="o">=</span><span class="n">stringtuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_progressive_cmd_run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Progressively call the command that was given in argument. Used</span>
+<span class="sd">    when `yield` is present in the Command&#39;s `func()` method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cmd (Command): the command itself.</span>
+<span class="sd">        generator (GeneratorType): the generator describing the processing.</span>
+<span class="sd">        reponse (str, optional): the response to send to the generator.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the func call yields something not identifiable as a</span>
+<span class="sd">            time-delay or a string prompt.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This function is responsible for executing the command, if</span>
+<span class="sd">        the func() method contains &#39;yield&#39; instructions.  The yielded</span>
+<span class="sd">        value will be accessible at each step and will affect the</span>
+<span class="sd">        process.  If the value is a number, just delay the execution</span>
+<span class="sd">        of the command.  If it&#39;s a string, wait for the user input.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_GET_INPUT</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_GET_INPUT</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">get_input</span> <span class="k">as</span> <span class="n">_GET_INPUT</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_progressive_cmd_run</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">_GET_INPUT</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">_process_input</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unknown type for a yielded value in command: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">_process_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specifically handle the get_input value to send to _progressive_cmd_run as</span>
+<span class="sd">    part of yielding from a Command&#39;s `func`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (Character, Account or Session): the caller.</span>
+<span class="sd">        prompt (str): The sent prompt.</span>
+<span class="sd">        result (str): The unprocessed answer.</span>
+<span class="sd">        cmd (Command): The command itself.</span>
+<span class="sd">        generator (GeneratorType): The generator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result (bool): Always `False` (stop processing).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We call it using a Twisted deferLater to make sure the input is properly closed.</span>
+    <span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">_progressive_cmd_run</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="c1"># custom Exceptions</span>
+
+
+<span class="k">class</span> <span class="nc">NoCmdSets</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="s2">&quot;No cmdsets found. Critical error.&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">ExecSystemCommand</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="s2">&quot;Run a system command&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>  <span class="c1"># needed by exception error handling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">syscmd</span> <span class="o">=</span> <span class="n">syscmd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sysarg</span> <span class="o">=</span> <span class="n">sysarg</span>
+
+
+<span class="k">class</span> <span class="nc">ErrorReported</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="s2">&quot;Re-raised when a subsructure already reported the error&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw_string</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span>
+
+
+<span class="c1"># Helper function</span>
+
+
+<span class="nd">@inlineCallbacks</span>
+<span class="k">def</span> <span class="nf">get_and_merge_cmdsets</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callertype</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gather all relevant cmdsets and merge them.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (Session, Account or Object): The entity executing the command. Which</span>
+<span class="sd">            type of object this is depends on the current game state; for example</span>
+<span class="sd">            when the user is not logged in, this will be a Session, when being OOC</span>
+<span class="sd">            it will be an Account and when puppeting an object this will (often) be</span>
+<span class="sd">            a Character Object. In the end it depends on where the cmdset is stored.</span>
+<span class="sd">        session (Session or None): The Session associated with caller, if any.</span>
+<span class="sd">        account (Account or None): The calling Account associated with caller, if any.</span>
+<span class="sd">        obj (Object or None): The Object associated with caller, if any.</span>
+<span class="sd">        callertype (str): This identifies caller as either &quot;account&quot;, &quot;object&quot; or &quot;session&quot;</span>
+<span class="sd">            to avoid having to do this check internally.</span>
+<span class="sd">        raw_string (str): The input string. This is only used for error reporting.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        cmdset (Deferred): This deferred fires with the merged cmdset</span>
+<span class="sd">        result once merger finishes.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The cdmsets are merged in order or generality, so that the</span>
+<span class="sd">        Object&#39;s cmdset is merged last (and will thus take precedence</span>
+<span class="sd">        over same-named and same-prio commands on Account and Session).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="nd">@inlineCallbacks</span>
+        <span class="k">def</span> <span class="nf">_get_channel_cmdset</span><span class="p">(</span><span class="n">account_or_obj</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper-method; Get channel-cmdsets</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Create cmdset for all account&#39;s available channels</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">channel_cmdset</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">CHANNELHANDLER</span><span class="o">.</span><span class="n">get_cmdset</span><span class="p">(</span><span class="n">account_or_obj</span><span class="p">)</span>
+                <span class="n">returnValue</span><span class="p">([</span><span class="n">channel_cmdset</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_CMDSETS</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+
+        <span class="nd">@inlineCallbacks</span>
+        <span class="k">def</span> <span class="nf">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper-method; Get Object-level cmdsets</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Gather cmdsets from location, objects in location or carried</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">location</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+                    <span class="c1"># Gather all cmdsets stored on objects in the room and</span>
+                    <span class="c1"># also in the caller&#39;s inventory and the location itself</span>
+                    <span class="n">local_objlist</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span>
+                        <span class="n">location</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">contents_get</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="n">location</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">local_objlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">local_objlist</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">_is_deleted</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">lobj</span> <span class="ow">in</span> <span class="n">local_objlist</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="c1"># call hook in case we need to do dynamic changing to cmdset</span>
+                            <span class="n">_GA</span><span class="p">(</span><span class="n">lobj</span><span class="p">,</span> <span class="s2">&quot;at_cmdset_get&quot;</span><span class="p">)(</span><span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+                    <span class="c1"># the call-type lock is checked here, it makes sure an account</span>
+                    <span class="c1"># is not seeing e.g. the commands on a fellow account (which is why</span>
+                    <span class="c1"># the no_superuser_bypass must be True)</span>
+                    <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="nb">list</span><span class="p">(</span>
+                        <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
+                            <span class="n">lobj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">cmdset_stack</span>
+                            <span class="k">for</span> <span class="n">lobj</span> <span class="ow">in</span> <span class="n">local_objlist</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">lobj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span>
+                                <span class="ow">and</span> <span class="n">lobj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span>
+                                    <span class="n">caller</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;call&quot;</span><span class="p">,</span> <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">True</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span><span class="p">:</span>
+                        <span class="c1"># This is necessary for object sets, or we won&#39;t be able to</span>
+                        <span class="c1"># separate the command sets from each other in a busy room. We</span>
+                        <span class="c1"># only keep the setting if duplicates were set to False/True</span>
+                        <span class="c1"># explicitly.</span>
+                        <span class="n">cset</span><span class="o">.</span><span class="n">old_duplicates</span> <span class="o">=</span> <span class="n">cset</span><span class="o">.</span><span class="n">duplicates</span>
+                        <span class="n">cset</span><span class="o">.</span><span class="n">duplicates</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">duplicates</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cset</span><span class="o">.</span><span class="n">duplicates</span>
+                <span class="n">returnValue</span><span class="p">(</span><span class="n">local_obj_cmdsets</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_CMDSETS</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+
+        <span class="nd">@inlineCallbacks</span>
+        <span class="k">def</span> <span class="nf">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Helper method; Get cmdset while making sure to trigger all</span>
+<span class="sd">            hooks safely. Returns the stack and the valid options.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_cmdset_get</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_CMDSETS</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">returnValue</span><span class="p">((</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">)))</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">returnValue</span><span class="p">(((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">[]))</span>
+
+        <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;session&quot;</span><span class="p">:</span>
+            <span class="c1"># we are calling the command from the session level</span>
+            <span class="n">report_to</span> <span class="o">=</span> <span class="n">session</span>
+            <span class="n">current</span><span class="p">,</span> <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">account</span><span class="p">:</span>  <span class="c1"># this automatically implies logged-in</span>
+                <span class="n">pcurrent</span><span class="p">,</span> <span class="n">account_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">account_cmdsets</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="n">pcurrent</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="n">ocurrent</span><span class="p">,</span> <span class="n">obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="n">current</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="n">ocurrent</span>
+                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">obj_cmdsets</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_objs</span><span class="p">:</span>
+                        <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">no_exits</span><span class="p">:</span>
+                            <span class="c1"># filter out all exits</span>
+                            <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span>
+                                <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
+                            <span class="p">]</span>
+                        <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                        <span class="c1"># also objs may have channels</span>
+                        <span class="n">channel_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                        <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">channel_cmdsets</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                    <span class="n">channel_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">channel_cmdsets</span>
+
+        <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+            <span class="c1"># we are calling the command from the account level</span>
+            <span class="n">report_to</span> <span class="o">=</span> <span class="n">account</span>
+            <span class="n">current</span><span class="p">,</span> <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="n">ocurrent</span><span class="p">,</span> <span class="n">obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="n">ocurrent</span>
+                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">obj_cmdsets</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_objs</span><span class="p">:</span>
+                    <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">no_exits</span><span class="p">:</span>
+                        <span class="c1"># filter out all exits</span>
+                        <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
+                        <span class="p">]</span>
+                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="n">local_obj_cmdsets</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                    <span class="c1"># also objs may have channels</span>
+                    <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+            <span class="c1"># we are calling the command from the object level</span>
+            <span class="n">report_to</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="n">current</span><span class="p">,</span> <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_objs</span><span class="p">:</span>
+                <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_get_local_obj_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">no_exits</span><span class="p">:</span>
+                    <span class="c1"># filter out all exits</span>
+                    <span class="n">local_obj_cmdsets</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;ExitCmdSet&quot;</span>
+                    <span class="p">]</span>
+                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">local_obj_cmdsets</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current</span><span class="o">.</span><span class="n">no_channels</span><span class="p">:</span>
+                <span class="c1"># also objs may have channels</span>
+                <span class="n">cmdsets</span> <span class="o">+=</span> <span class="k">yield</span> <span class="n">_get_channel_cmdset</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;get_and_merge_cmdsets: callertype </span><span class="si">%s</span><span class="s2"> is not valid.&quot;</span> <span class="o">%</span> <span class="n">callertype</span><span class="p">)</span>
+
+        <span class="c1"># weed out all non-found sets</span>
+        <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">[</span><span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">]</span>
+        <span class="c1"># report cmdset errors to user (these should already have been logged)</span>
+        <span class="k">yield</span> <span class="p">[</span>
+            <span class="n">report_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">errmessage</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span> <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">cmdsets</span><span class="p">:</span>
+            <span class="c1"># faster to do tuple on list than to build tuple directly</span>
+            <span class="n">mergehash</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">id</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">mergehash</span> <span class="ow">in</span> <span class="n">_CMDSET_MERGE_CACHE</span><span class="p">:</span>
+                <span class="c1"># cached merge exist; use that</span>
+                <span class="n">cmdset</span> <span class="o">=</span> <span class="n">_CMDSET_MERGE_CACHE</span><span class="p">[</span><span class="n">mergehash</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># we group and merge all same-prio cmdsets separately (this avoids</span>
+                <span class="c1"># order-dependent clashes in certain cases, such as</span>
+                <span class="c1"># when duplicates=True)</span>
+                <span class="n">tempmergers</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span><span class="p">:</span>
+                    <span class="n">prio</span> <span class="o">=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span>
+                    <span class="k">if</span> <span class="n">prio</span> <span class="ow">in</span> <span class="n">tempmergers</span><span class="p">:</span>
+                        <span class="c1"># merge same-prio cmdset together separately</span>
+                        <span class="n">tempmergers</span><span class="p">[</span><span class="n">prio</span><span class="p">]</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">tempmergers</span><span class="p">[</span><span class="n">prio</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmdset</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tempmergers</span><span class="p">[</span><span class="n">prio</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmdset</span>
+
+                <span class="c1"># sort cmdsets after reverse priority (highest prio are merged in last)</span>
+                <span class="n">cmdsets</span> <span class="o">=</span> <span class="k">yield</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tempmergers</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
+
+                <span class="c1"># Merge all command sets into one, beginning with the lowest-prio one</span>
+                <span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdsets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">merging_cmdset</span> <span class="ow">in</span> <span class="n">cmdsets</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                    <span class="n">cmdset</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmdset</span> <span class="o">+</span> <span class="n">merging_cmdset</span>
+                <span class="c1"># store the full sets for diagnosis</span>
+                <span class="n">cmdset</span><span class="o">.</span><span class="n">merged_from</span> <span class="o">=</span> <span class="n">cmdsets</span>
+                <span class="c1"># cache</span>
+                <span class="n">_CMDSET_MERGE_CACHE</span><span class="p">[</span><span class="n">mergehash</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmdset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmdset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="p">(</span><span class="n">cset</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cset</span><span class="p">):</span>
+            <span class="n">cset</span><span class="o">.</span><span class="n">duplicates</span> <span class="o">=</span> <span class="n">cset</span><span class="o">.</span><span class="n">old_duplicates</span>
+        <span class="n">returnValue</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ErrorReported</span><span class="p">:</span>
+        <span class="k">raise</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_CMDSETS</span><span class="p">)</span>
+        <span class="k">raise</span>
+        <span class="c1"># raise ErrorReported</span>
+
+
+<span class="c1"># Main command-handler function</span>
+
+
+<div class="viewcode-block" id="cmdhandler"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdhandler.cmdhandler">[docs]</a><span class="nd">@inlineCallbacks</span>
+<span class="k">def</span> <span class="nf">cmdhandler</span><span class="p">(</span>
+    <span class="n">called_by</span><span class="p">,</span>
+    <span class="n">raw_string</span><span class="p">,</span>
+    <span class="n">_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">callertype</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span>
+    <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cmdobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cmdobj_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the main mechanism that handles any string sent to the engine.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        called_by (Session, Account or Object): Object from which this</span>
+<span class="sd">            command was called. which this was called from.  What this is</span>
+<span class="sd">            depends on the game state.</span>
+<span class="sd">        raw_string (str): The command string as given on the command line.</span>
+<span class="sd">        _testing (bool, optional): Used for debug purposes and decides if we</span>
+<span class="sd">            should actually execute the command or not. If True, the</span>
+<span class="sd">            command instance will be returned.</span>
+<span class="sd">        callertype (str, optional): One of &quot;session&quot;, &quot;account&quot; or</span>
+<span class="sd">            &quot;object&quot;. These are treated in decending order, so when the</span>
+<span class="sd">            Session is the caller, it will merge its own cmdset into</span>
+<span class="sd">            cmdsets from both Account and eventual puppeted Object (and</span>
+<span class="sd">            cmdsets in its room etc). An Account will only include its own</span>
+<span class="sd">            cmdset and the Objects and so on. Merge order is the same</span>
+<span class="sd">            order, so that Object cmdsets are merged in last, giving them</span>
+<span class="sd">            precendence for same-name and same-prio commands.</span>
+<span class="sd">        session (Session, optional): Relevant if callertype is &quot;account&quot; - the session will help</span>
+<span class="sd">            retrieve the correct cmdsets from puppeted objects.</span>
+<span class="sd">        cmdobj (Command, optional): If given a command instance, this will be executed using</span>
+<span class="sd">            `called_by` as the caller, `raw_string` representing its arguments and (optionally)</span>
+<span class="sd">            `cmdobj_key` as its input command name. No cmdset lookup will be performed but</span>
+<span class="sd">            all other options apply as normal. This allows for running a specific Command</span>
+<span class="sd">            within the command system mechanism.</span>
+<span class="sd">        cmdobj_key (string, optional): Used together with `cmdobj` keyword to specify</span>
+<span class="sd">            which cmdname should be assigned when calling the specified Command instance. This</span>
+<span class="sd">            is made available as `self.cmdstring` when the Command runs.</span>
+<span class="sd">            If not given, the command will be assumed to be called as `cmdobj.key`.</span>
+
+<span class="sd">    Kwargs:</span>
+<span class="sd">        kwargs (any): other keyword arguments will be assigned as named variables on the</span>
+<span class="sd">            retrieved command object *before* it is executed. This is unused</span>
+<span class="sd">            in default Evennia but may be used by code to set custom flags or</span>
+<span class="sd">            special operating conditions for a command as it executes.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        deferred (Deferred): This deferred is fired with the return</span>
+<span class="sd">        value of the command&#39;s `func` method.  This is not used in</span>
+<span class="sd">        default Evennia.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@inlineCallbacks</span>
+    <span class="k">def</span> <span class="nf">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function: This initializes and runs the Command</span>
+<span class="sd">        instance once the parser has identified it as either a normal</span>
+<span class="sd">        command or one of the system commands.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd (Command): Command object</span>
+<span class="sd">            cmdname (str): Name of command</span>
+<span class="sd">            args (str): extra text entered after the identified command</span>
+<span class="sd">            raw_cmdname (str): Name of Command, unaffected by eventual</span>
+<span class="sd">                prefix-stripping (if no prefix-stripping, this is the same</span>
+<span class="sd">                as cmdname).</span>
+<span class="sd">            cmdset (CmdSet): Command sert the command belongs to (if any)..</span>
+<span class="sd">            session (Session): Session of caller (if any).</span>
+<span class="sd">            account (Account): Account of caller (if any).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            deferred (Deferred): this will fire with the return of the</span>
+<span class="sd">                command&#39;s `func` method.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If command recursion limit was reached.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_COMMAND_NESTING</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Assign useful variables to the instance</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdname</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">raw_cmdname</span> <span class="o">=</span> <span class="n">raw_cmdname</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">=</span> <span class="n">cmdname</span>  <span class="c1"># deprecated</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdset</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">account</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">raw_string</span> <span class="o">=</span> <span class="n">unformatted_raw_string</span>
+            <span class="c1"># cmd.obj  # set via on-object cmdset handler for each command,</span>
+            <span class="c1"># since this may be different for every command when</span>
+            <span class="c1"># merging multuple cmdsets</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">):</span>
+                <span class="c1"># cmd.obj is automatically made available by the cmdhandler.</span>
+                <span class="c1"># we make sure to validate its scripts.</span>
+                <span class="k">yield</span> <span class="n">cmd</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">_testing</span><span class="p">:</span>
+                <span class="c1"># only return the command instance</span>
+                <span class="n">returnValue</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+            <span class="c1"># assign custom kwargs to found cmd object</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+            <span class="n">_COMMAND_NESTING</span><span class="p">[</span><span class="n">called_by</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">_COMMAND_NESTING</span><span class="p">[</span><span class="n">called_by</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">_COMMAND_RECURSION_LIMIT</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="n">_ERROR_RECURSION_LIMIT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">recursion_limit</span><span class="o">=</span><span class="n">_COMMAND_RECURSION_LIMIT</span><span class="p">,</span>
+                    <span class="n">raw_cmdname</span><span class="o">=</span><span class="n">raw_cmdname</span><span class="p">,</span>
+                    <span class="n">cmdclass</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+            <span class="c1"># pre-command hook</span>
+            <span class="n">abort</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmd</span><span class="o">.</span><span class="n">at_pre_cmd</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">abort</span><span class="p">:</span>
+                <span class="c1"># abort sequence</span>
+                <span class="n">returnValue</span><span class="p">(</span><span class="n">abort</span><span class="p">)</span>
+
+            <span class="c1"># Parse and execute</span>
+            <span class="k">yield</span> <span class="n">cmd</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+
+            <span class="c1"># main command code</span>
+            <span class="c1"># (return value is normally None)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">GeneratorType</span><span class="p">):</span>
+                <span class="c1"># cmd.func() is a generator, execute progressively</span>
+                <span class="n">_progressive_cmd_run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">ret</span>
+
+            <span class="c1"># post-command hook</span>
+            <span class="k">yield</span> <span class="n">cmd</span><span class="o">.</span><span class="n">at_post_cmd</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">save_for_next</span><span class="p">:</span>
+                <span class="c1"># store a reference to this command, possibly</span>
+                <span class="c1"># accessible by the next command.</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">copy</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># return result to the deferred</span>
+            <span class="n">returnValue</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">InterruptCommand</span><span class="p">:</span>
+            <span class="c1"># Do nothing, clean exit</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">_msg_err</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">_ERROR_UNTRAPPED</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ErrorReported</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">_COMMAND_NESTING</span><span class="p">[</span><span class="n">called_by</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">session</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;session&quot;</span><span class="p">:</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">called_by</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
+    <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">called_by</span>
+        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
+    <span class="k">elif</span> <span class="n">callertype</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">called_by</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;cmdhandler: callertype </span><span class="si">%s</span><span class="s2"> is not valid.&quot;</span> <span class="o">%</span> <span class="n">callertype</span><span class="p">)</span>
+    <span class="c1"># the caller will be the one to receive messages and excert its permissions.</span>
+    <span class="c1"># we assign the caller with preference &#39;bottom up&#39;</span>
+    <span class="n">caller</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="n">account</span> <span class="ow">or</span> <span class="n">session</span>
+    <span class="c1"># The error_to is the default recipient for errors. Tries to make sure an account</span>
+    <span class="c1"># does not get spammed for errors while preserving character mirroring.</span>
+    <span class="n">error_to</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">account</span>
+
+    <span class="k">try</span><span class="p">:</span>  <span class="c1"># catch bugs in cmdhandler itself</span>
+        <span class="k">try</span><span class="p">:</span>  <span class="c1"># catch special-type commands</span>
+            <span class="k">if</span> <span class="n">cmdobj</span><span class="p">:</span>
+                <span class="c1"># the command object is already given</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmdobj</span><span class="p">()</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdobj</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmdobj</span>
+                <span class="n">cmdname</span> <span class="o">=</span> <span class="n">cmdobj_key</span> <span class="k">if</span> <span class="n">cmdobj_key</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">raw_string</span>
+                <span class="n">unformatted_raw_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+                <span class="n">cmdset</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">raw_cmdname</span> <span class="o">=</span> <span class="n">cmdname</span>
+                <span class="c1"># session = session</span>
+                <span class="c1"># account = account</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># no explicit cmdobject given, figure it out</span>
+                <span class="n">cmdset</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">get_and_merge_cmdsets</span><span class="p">(</span>
+                    <span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callertype</span><span class="p">,</span> <span class="n">raw_string</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdset</span><span class="p">:</span>
+                    <span class="c1"># this is bad and shouldn&#39;t happen.</span>
+                    <span class="k">raise</span> <span class="n">NoCmdSets</span>
+                <span class="c1"># store the completely unmodified raw string - including</span>
+                <span class="c1"># whitespace and eventual prefixes-to-be-stripped.</span>
+                <span class="n">unformatted_raw_string</span> <span class="o">=</span> <span class="n">raw_string</span>
+                <span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_string</span><span class="p">:</span>
+                    <span class="c1"># Empty input. Test for system command instead.</span>
+                    <span class="n">syscmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_NOINPUT</span><span class="p">)</span>
+                    <span class="n">sysarg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
+                <span class="c1"># Parse the input string and match to available cmdset.</span>
+                <span class="c1"># This also checks for permissions, so all commands in match</span>
+                <span class="c1"># are commands the caller is allowed to call.</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_COMMAND_PARSER</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">caller</span><span class="p">)</span>
+
+                <span class="c1"># Deal with matches</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># We have a multiple-match</span>
+                    <span class="n">syscmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_MULTIMATCH</span><span class="p">)</span>
+                    <span class="n">sysarg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;There were multiple matches.&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">syscmd</span><span class="p">:</span>
+                        <span class="c1"># use custom CMD_MULTIMATCH</span>
+                        <span class="n">syscmd</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># fall back to default error handling</span>
+                        <span class="n">sysarg</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_SEARCH_AT_RESULT</span><span class="p">(</span>
+                            <span class="p">[</span><span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">],</span> <span class="n">caller</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
+
+                <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">raw_cmdname</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># We have a unique command match. But it may still be invalid.</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">raw_cmdname</span> <span class="o">=</span> <span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">match</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="c1"># No commands match our entered command</span>
+                    <span class="n">syscmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_NOMATCH</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">syscmd</span><span class="p">:</span>
+                        <span class="c1"># use custom CMD_NOMATCH command</span>
+                        <span class="n">sysarg</span> <span class="o">=</span> <span class="n">raw_string</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># fallback to default error text</span>
+                        <span class="n">sysarg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Command &#39;</span><span class="si">{command}</span><span class="s2">&#39; is not available.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">command</span><span class="o">=</span><span class="n">raw_string</span>
+                        <span class="p">)</span>
+                        <span class="n">suggestions</span> <span class="o">=</span> <span class="n">string_suggestions</span><span class="p">(</span>
+                            <span class="n">raw_string</span><span class="p">,</span>
+                            <span class="n">cmdset</span><span class="o">.</span><span class="n">get_all_cmd_keys_and_aliases</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span>
+                            <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+                            <span class="n">maxnum</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">suggestions</span><span class="p">:</span>
+                            <span class="n">sysarg</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; Maybe you meant </span><span class="si">{command}</span><span class="s2">?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">command</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">list_to_string</span><span class="p">(</span><span class="n">suggestions</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">),</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">sysarg</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39; Type &quot;help&quot; for help.&#39;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">syscmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
+
+                <span class="c1"># Check if this is a Channel-cmd match.</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;is_channel&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">is_channel</span><span class="p">:</span>
+                    <span class="c1"># even if a user-defined syscmd is not defined, the</span>
+                    <span class="c1"># found cmd is already a system command in its own right.</span>
+                    <span class="n">syscmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_CHANNEL</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">syscmd</span><span class="p">:</span>
+                        <span class="c1"># replace system command with custom version</span>
+                        <span class="n">cmd</span> <span class="o">=</span> <span class="n">syscmd</span>
+                    <span class="n">cmd</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+                    <span class="n">sysarg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ExecSystemCommand</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">)</span>
+
+            <span class="c1"># A normal command.</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
+            <span class="n">returnValue</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">ErrorReported</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="c1"># this error was already reported, so we</span>
+            <span class="c1"># catch it here and don&#39;t pass it on.</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;User input was: &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">exc</span><span class="o">.</span><span class="n">raw_string</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">ExecSystemCommand</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="c1"># Not a normal command: run a system command, if available,</span>
+            <span class="c1"># or fall back to a return string.</span>
+            <span class="n">syscmd</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">syscmd</span>
+            <span class="n">sysarg</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">sysarg</span>
+
+            <span class="k">if</span> <span class="n">syscmd</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">_run_command</span><span class="p">(</span>
+                    <span class="n">syscmd</span><span class="p">,</span> <span class="n">syscmd</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">sysarg</span><span class="p">,</span> <span class="n">unformatted_raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">account</span>
+                <span class="p">)</span>
+                <span class="n">returnValue</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">sysarg</span><span class="p">:</span>
+                <span class="c1"># return system arg</span>
+                <span class="n">error_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">sysarg</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">NoCmdSets</span><span class="p">:</span>
+            <span class="c1"># Critical error.</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;No cmdsets found: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="p">)</span>
+            <span class="n">error_to</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERROR_NOCMDSETS</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># We should not end up here. If we do, it&#39;s a programming bug.</span>
+            <span class="n">_msg_err</span><span class="p">(</span><span class="n">error_to</span><span class="p">,</span> <span class="n">_ERROR_UNTRAPPED</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># This catches exceptions in cmdhandler exceptions themselves</span>
+        <span class="n">_msg_err</span><span class="p">(</span><span class="n">error_to</span><span class="p">,</span> <span class="n">_ERROR_CMDHANDLER</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="cmdhandler.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
