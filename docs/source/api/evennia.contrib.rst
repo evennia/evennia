@@ -20,14 +20,6 @@ Subpackages
 Submodules
 ----------
 
-evennia.contrib module
-----------------------
-
-.. automodule:: evennia.contrib
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 evennia.contrib.barter module
 -----------------------------
 
