@@ -19,7 +19,10 @@ mv build ..
 cd ..
 rm -Rf docs/*
 cp -Rf build/html/versions/* docs/
-ln -s docs/v1.0-dev docs/latest 
+
+# TODO automate this? 
+ln -s 1.0-dev docs/latest
+
 git add docs/*
 git commit -a -m "Updated HTML docs"
 
