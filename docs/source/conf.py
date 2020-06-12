@@ -48,7 +48,7 @@ copyright = '2020, The Evennia developer community'
 author = 'The Evennia developer community'
 
 # The full version, including alpha/beta/rc tags
-release = '0.9'
+release = '0.9.1'
 
 # -- General configuration ---------------------------------------------------
 
@@ -140,7 +140,8 @@ html_theme = 'alabaster'
 # sphinx-multiversion config
 
 smv_tag_whitelist = r"^$"
-smv_branch_whitelist = r"^static-file-docs$|^static-file-dev$"
+# smv_branch_whitelist = r"^static-file-docs$|^static-file-dev$"
+smv_branch_whitelist = r"^master$|^v1.0$"
 smv_outputdir_format = "versions" + sep + "{config.release}"
 
 
