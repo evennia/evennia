@@ -17,7 +17,8 @@ mv build/html/versions .
 git add versions
 
 git commit -a -m "Updated HTML docs"
-git push origin gh-pages
+echo "Skipping deployment"
+# git push origin gh-pages
 
 # get back to previous branch
 
