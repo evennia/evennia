@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.contrib.ingame_python.eventfuncs &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.ingame_python.eventfuncs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module defining basic eventfuncs for the event system.</span>
+
+<span class="sd">Eventfuncs are just Python functions that can be used inside of calllbacks.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">ObjectDB</span><span class="p">,</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.ingame_python.utils</span> <span class="k">import</span> <span class="n">InterruptEvent</span>
+
+
+<div class="viewcode-block" id="deny"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.eventfuncs.deny">[docs]</a><span class="k">def</span> <span class="nf">deny</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deny, that is stop, the callback here.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This function will raise an exception to terminate the callback</span>
+<span class="sd">        in a controlled way.  If you use this function in an event called</span>
+<span class="sd">        prior to a command, the command will be cancelled as well.  Good</span>
+<span class="sd">        situations to use the `deny()` function are in events that begins</span>
+<span class="sd">        by `can_`, because they usually can be cancelled as easily as that.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="n">InterruptEvent</span></div>
+
+
+<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.eventfuncs.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an object with the given search option or None if None is found.</span>
+
+<span class="sd">    Kwargs:</span>
+<span class="sd">        Any searchable data or property (id, db_key, db_location...).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The object found that meet these criteria for research, or</span>
+<span class="sd">        None if none is found.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This function is very useful to retrieve objects with a specific</span>
+<span class="sd">        ID.  You know that room #32 exists, but you don&#39;t have it in</span>
+<span class="sd">        the callback variables.  Quite simple:</span>
+<span class="sd">            room = get(id=32)</span>
+
+<span class="sd">        This function doesn&#39;t perform a search on objects, but a direct</span>
+<span class="sd">        search in the database.  It&#39;s recommended to use it for objects</span>
+<span class="sd">        you know exist, using their IDs or other unique attributes.</span>
+<span class="sd">        Looking for objects by key is possible (use `db_key` as an</span>
+<span class="sd">        argument) but remember several objects can share the same key.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">object</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="nb">object</span></div>
+
+
+<div class="viewcode-block" id="call_event"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.eventfuncs.call_event">[docs]</a><span class="k">def</span> <span class="nf">call_event</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event_name</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call the specified event in X seconds.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (Object): the typeclassed object containing the event.</span>
+<span class="sd">        event_name (str): the event name to be called.</span>
+<span class="sd">        seconds (int or float): the number of seconds to wait before calling</span>
+<span class="sd">                the event.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This eventfunc can be used to call other events from inside of an</span>
+<span class="sd">        event in a given time.  This will create a pause between events.  This</span>
+<span class="sd">        will not freeze the game, and you can expect characters to move</span>
+<span class="sd">        around (unless you prevent them from doing so).</span>
+
+<span class="sd">        Variables that are accessible in your event using &#39;call()&#39; will be</span>
+<span class="sd">        kept and passed on to the event to call.</span>
+
+<span class="sd">        Chained callbacks are designed for this very purpose: they</span>
+<span class="sd">        are never called automatically by the game, rather, they need</span>
+<span class="sd">        to be called from inside another event.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">callbacks</span><span class="p">)</span><span class="o">.</span><span class="n">script</span>
+    <span class="k">if</span> <span class="n">script</span><span class="p">:</span>
+        <span class="c1"># If seconds is 0, call the event immediately</span>
+        <span class="k">if</span> <span class="n">seconds</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">locals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">current_locals</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">event_name</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Schedule the task</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">set_task</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event_name</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="eventfuncs.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

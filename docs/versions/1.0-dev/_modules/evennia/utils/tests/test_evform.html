@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.tests.test_evform &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.tests.test_evform</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Unit tests for the EvForm text form generator</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">evform</span>
+
+
+<div class="viewcode-block" id="TestEvForm"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_evform.TestEvForm">[docs]</a><span class="k">class</span> <span class="nc">TestEvForm</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvForm.test_form"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_evform.TestEvForm.test_form">[docs]</a>    <span class="k">def</span> <span class="nf">test_form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">form1</span> <span class="o">=</span> <span class="n">evform</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+        <span class="n">form2</span> <span class="o">=</span> <span class="n">evform</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">form1</span><span class="p">,</span> <span class="n">form2</span><span class="p">)</span></div>
+
+        <span class="c1"># self.assertEqual(form1, &quot;&quot;)</span>
+        <span class="c1"># &#39;.------------------------------------------------.\n&#39;</span>
+        <span class="c1"># &#39;|                                                |\n&#39;</span>
+        <span class="c1"># &#39;|  Name: \x1b[0m\x1b[1m\x1b[32mTom\x1b[1m\x1b[32m \x1b&#39;</span>
+        <span class="c1"># &#39;[1m\x1b[32mthe\x1b[1m\x1b[32m \x1b[0m   \x1b[0m    &#39;</span>
+        <span class="c1"># &#39;Account: \x1b[0m\x1b[1m\x1b[33mGriatch        &#39;</span>
+        <span class="c1"># &#39;\x1b[0m\x1b[0m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[1m\x1b[32m\x1b[0m\x1b[0m &#39;</span>
+        <span class="c1"># &#39;|\n&#39;</span>
+        <span class="c1"># &#39;|        \x1b[0m\x1b[1m\x1b[32mBouncer\x1b[0m    \x1b[0m                             |\n&#39;</span>
+        <span class="c1"># &#39;|                                                |\n&#39;</span>
+        <span class="c1"># &#39; &gt;----------------------------------------------&lt; \n&#39;</span>
+        <span class="c1"># &#39;|                                                |\n&#39;</span>
+        <span class="c1"># &#39;| Desc:  \x1b[0mA sturdy \x1b[0m  \x1b[0m&#39;</span>
+        <span class="c1"># &#39;    STR: \x1b[0m12 \x1b[0m\x1b[0m\x1b[0m\x1b[0m&#39;</span>
+        <span class="c1"># &#39;    DEX: \x1b[0m10 \x1b[0m\x1b[0m\x1b[0m\x1b[0m     |\n&#39;</span>
+        <span class="c1"># &#39;|        \x1b[0mfellow\x1b[0m     \x1b[0m&#39;</span>
+        <span class="c1"># &#39;    INT: \x1b[0m5  \x1b[0m\x1b[0m\x1b[0m\x1b[0m&#39;</span>
+        <span class="c1"># &#39;    STA: \x1b[0m18 \x1b[0m\x1b[0m\x1b[0m\x1b[0m     |\n&#39;</span>
+        <span class="c1"># &#39;|        \x1b[0m           \x1b[0m&#39;</span>
+        <span class="c1"># &#39;    LUC: \x1b[0m10 \x1b[0m\x1b[0m\x1b[0m&#39;</span>
+        <span class="c1"># &#39;    MAG: \x1b[0m3  \x1b[0m\x1b[0m\x1b[0m     |\n&#39;</span>
+        <span class="c1"># &#39;|                                                |\n&#39;</span>
+        <span class="c1"># &#39; &gt;----------.-----------------------------------&lt; \n&#39;</span>
+        <span class="c1"># &#39;|           |                                    |\n&#39;</span>
+        <span class="c1"># &#39;| \x1b[0mHP\x1b[0m|\x1b[0mMV \x1b[0m|\x1b[0mMP\x1b[0m &#39;</span>
+        <span class="c1"># &#39;| \x1b[0mSkill      \x1b[0m|\x1b[0mValue     \x1b[0m&#39;</span>
+        <span class="c1"># &#39;|\x1b[0mExp        \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n&#39;</span>
+        <span class="c1"># &#39;| ~~+~~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~+~~~~~~~~~~~ |\n&#39;</span>
+        <span class="c1"># &#39;| \x1b[0m**\x1b[0m|\x1b[0m***\x1b[0m\x1b[0m|\x1b[0m**\x1b[0m\x1b[0m &#39;</span>
+        <span class="c1"># &#39;| \x1b[0mShooting   \x1b[0m|\x1b[0m12        \x1b[0m&#39;</span>
+        <span class="c1"># &#39;|\x1b[0m550/1200   \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n&#39;</span>
+        <span class="c1"># &#39;| \x1b[0m  \x1b[0m|\x1b[0m**\x1b[0m \x1b[0m|\x1b[0m*\x1b[0m \x1b[0m &#39;</span>
+        <span class="c1"># &#39;| \x1b[0mHerbalism  \x1b[0m|\x1b[0m14        \x1b[0m&#39;</span>
+        <span class="c1"># &#39;|\x1b[0m990/1400   \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n&#39;</span>
+        <span class="c1"># &#39;| \x1b[0m  \x1b[0m|\x1b[0m   \x1b[0m|\x1b[0m  \x1b[0m &#39;</span>
+        <span class="c1"># &#39;| \x1b[0mSmithing   \x1b[0m|\x1b[0m9         \x1b[0m&#39;</span>
+        <span class="c1"># &#39;|\x1b[0m205/900    \x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m\x1b[0m |\n&#39;</span>
+        <span class="c1"># &#39;|           |                                    |\n&#39;</span>
+        <span class="c1"># &#39; -----------`-------------------------------------\n&#39;</span>
+        <span class="c1"># &#39; Footer: \x1b[0mrev 1  \x1b[0m                                  \n&#39;</span>
+        <span class="c1"># &#39; info                                             \n&#39;</span>
+        <span class="c1"># &#39;                                                  &#39;)</span>
+
+<div class="viewcode-block" id="TestEvForm.test_ansi_escape"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_evform.TestEvForm.test_ansi_escape">[docs]</a>    <span class="k">def</span> <span class="nf">test_ansi_escape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># note that in a msg() call, the result would be the  correct |-----,</span>
+        <span class="c1"># in a print, ansi only gets called once, so ||----- is the result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">evform</span><span class="o">.</span><span class="n">EvForm</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;FORM&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">||-----&quot;</span><span class="p">})),</span> <span class="s2">&quot;||-----&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="test_evform.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

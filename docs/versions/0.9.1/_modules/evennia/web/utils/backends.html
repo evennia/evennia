@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.web.utils.backends &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.utils.backends</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.contrib.auth.backends</span> <span class="k">import</span> <span class="n">ModelBackend</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="k">import</span> <span class="n">get_user_model</span>
+
+
+<div class="viewcode-block" id="CaseInsensitiveModelBackend"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.backends.CaseInsensitiveModelBackend">[docs]</a><span class="k">class</span> <span class="nc">CaseInsensitiveModelBackend</span><span class="p">(</span><span class="n">ModelBackend</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    By default ModelBackend does case _sensitive_ username</span>
+<span class="sd">    authentication, which isn&#39;t what is generally expected.  This</span>
+<span class="sd">    backend supports case insensitive username authentication.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CaseInsensitiveModelBackend.authenticate"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate">[docs]</a>    <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autologin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Custom authenticate with bypass for auto-logins</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (Request): Request object.</span>
+<span class="sd">            username (str, optional): Name of user to authenticate.</span>
+<span class="sd">            password (str, optional): Password of user</span>
+<span class="sd">            autologin (Account, optional): If given, assume this is</span>
+<span class="sd">              an already authenticated account and bypass authentication.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">autologin</span><span class="p">:</span>
+            <span class="c1"># Note: Setting .backend on account is critical in order to</span>
+            <span class="c1"># be allowed to call django.auth.login(account) later. This</span>
+            <span class="c1"># is necessary for the auto-login feature of the webclient,</span>
+            <span class="c1"># but it&#39;s important to make sure Django doesn&#39;t change this</span>
+            <span class="c1"># requirement or the name of the property down the line. /Griatch</span>
+            <span class="n">autologin</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;evennia.web.utils.backends.CaseInsensitiveModelBackend&quot;</span>
+            <span class="k">return</span> <span class="n">autologin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># In this case .backend will be assigned automatically</span>
+            <span class="c1"># somewhere along the way.</span>
+            <span class="n">Account</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">account</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">check_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">account</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">except</span> <span class="n">Account</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="backends.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

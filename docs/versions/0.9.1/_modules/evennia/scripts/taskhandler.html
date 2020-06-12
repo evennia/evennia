@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.scripts.taskhandler &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.scripts.taskhandler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing the task handler for Evennia deferred tasks, persistent or not.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">deferLater</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">log_err</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">dbunserialize</span>
+
+<span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="TaskHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler">[docs]</a><span class="k">class</span> <span class="nc">TaskHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A light singleton wrapper allowing to access permanent tasks.</span>
+
+<span class="sd">    When `utils.delay` is called, the task handler is used to create</span>
+<span class="sd">    the task.  If `utils.delay`  is called with `persistent=True`, the</span>
+<span class="sd">    task handler stores the new task and saves.</span>
+
+<span class="sd">    It&#39;s easier to access these tasks (should it be necessary) using</span>
+<span class="sd">    `evennia.scripts.taskhandler.TASK_HANDLER`, which contains one</span>
+<span class="sd">    instance of this class, and use its `add` and `remove` methods.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TaskHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="TaskHandler.load"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load from the ServerConfig.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This should be automatically called when Evennia starts.</span>
+<span class="sd">            It populates `self.tasks` according to the ServerConfig.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_save</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;delayed_tasks&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">tasks</span> <span class="o">=</span> <span class="n">dbunserialize</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tasks</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># At this point, `tasks` contains a dictionary of still-serialized tasks</span>
+        <span class="k">for</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">date</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">dbunserialize</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="c1"># `callback` can be an object and name for instance methods</span>
+                <span class="n">obj</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">callback</span>
+                <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">to_save</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">continue</span>
+
+                <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">to_save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TaskHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save the tasks in ServerConfig.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">task_id</span><span class="p">,</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="s2">&quot;__self__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="c1"># `callback` is an instance method</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__self__</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+            <span class="c1"># Check if callback can be pickled. args and kwargs have been checked</span>
+            <span class="n">safe_callback</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dbserialize</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;the specified callback </span><span class="si">{}</span><span class="s2"> cannot be pickled. &quot;</span>
+                    <span class="s2">&quot;It must be a top-level function in a module or an &quot;</span>
+                    <span class="s2">&quot;instance method.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">safe_callback</span> <span class="o">=</span> <span class="n">callback</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="p">((</span><span class="n">date</span><span class="p">,</span> <span class="n">safe_callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;delayed_tasks&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TaskHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a new persistent task in the configuration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timedelay (int or float): time in sedconds before calling the callback.</span>
+<span class="sd">            callback (function or instance method): the callback itself</span>
+<span class="sd">            any (any): any additional positional arguments to send to the callback</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            persistent (bool, optional): persist the task (store it).</span>
+<span class="sd">            any (any): additional keyword arguments to send to the callback</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;persistent&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">persistent</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;persistent&quot;</span><span class="p">]</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">timedelay</span><span class="p">)</span>
+
+            <span class="c1"># Choose a free task_id</span>
+            <span class="n">safe_args</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">safe_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">used_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">task_id</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">used_ids</span><span class="p">:</span>
+                <span class="n">task_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Check that args and kwargs contain picklable information</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dbserialize</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                    <span class="n">log_err</span><span class="p">(</span>
+                        <span class="s2">&quot;The positional argument </span><span class="si">{}</span><span class="s2"> cannot be &quot;</span>
+                        <span class="s2">&quot;pickled and will not be present in the arguments &quot;</span>
+                        <span class="s2">&quot;fed to the callback </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">safe_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dbserialize</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                    <span class="n">log_err</span><span class="p">(</span>
+                        <span class="s2">&quot;The </span><span class="si">{}</span><span class="s2"> keyword argument </span><span class="si">{}</span><span class="s2"> cannot be &quot;</span>
+                        <span class="s2">&quot;pickled and will not be present in the arguments &quot;</span>
+                        <span class="s2">&quot;fed to the callback </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">safe_kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">now</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">safe_args</span><span class="p">,</span> <span class="n">safe_kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_task</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_id</span><span class="p">]</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">return</span> <span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TaskHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove a persistent task without executing it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_id (int): an existing task ID.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            A non-persistent task doesn&#39;t have a task_id, it is not stored</span>
+<span class="sd">            in the TaskHandler.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TaskHandler.do_task"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.do_task">[docs]</a>    <span class="k">def</span> <span class="nf">do_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the task (call its callback).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_id (int): a valid task ID.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This will also remove it from the list of current tasks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">date</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TaskHandler.create_delays"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.create_delays">[docs]</a>    <span class="k">def</span> <span class="nf">create_delays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the delayed tasks for the persistent tasks.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should be automatically called when Evennia starts.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">task_id</span><span class="p">,</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">callbac</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">date</span> <span class="o">-</span> <span class="n">now</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+            <span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_task</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Create the soft singleton</span>
+<span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="n">TaskHandler</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="taskhandler.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

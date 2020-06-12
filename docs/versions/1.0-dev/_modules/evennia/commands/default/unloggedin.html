@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.commands.default.unloggedin &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.default.unloggedin</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Commands that are available from the connect screen.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">codecs</span> <span class="k">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">gametime</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="k">import</span> <span class="n">CMD_LOGINSTART</span>
+
+<span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
+
+<span class="c1"># limit symbol import for API</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;CmdUnconnectedConnect&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnconnectedCreate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnconnectedQuit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnconnectedLook&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CmdUnconnectedHelp&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
+<span class="n">CONNECTION_SCREEN_MODULE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CONNECTION_SCREEN_MODULE</span>
+
+
+<span class="k">def</span> <span class="nf">create_guest_account</span><span class="p">(</span><span class="n">session</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a guest account/character for this session, if one is available.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        session (Session): the session which will use the guest account/character.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        GUEST_ENABLED (boolean), account (Account):</span>
+<span class="sd">            the boolean is whether guest accounts are enabled at all.</span>
+<span class="sd">            the Account which was created from an available guest name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">enabled</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GUEST_ENABLED</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">address</span>
+
+    <span class="c1"># Get account class</span>
+    <span class="n">Guest</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_GUEST_TYPECLASS</span><span class="p">)</span>
+
+    <span class="c1"># Get an available guest account</span>
+    <span class="c1"># authenticate() handles its own throttling</span>
+    <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">enabled</span><span class="p">,</span> <span class="n">account</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">enabled</span><span class="p">,</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">create_normal_account</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates an account with the given name and password.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        session (Session): the session which is requesting to create an account.</span>
+<span class="sd">        name (str): the name that the account wants to use for login.</span>
+<span class="sd">        password (str): the password desired by this account, for login.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        account (Account): the account which was created from the name and password.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get account class</span>
+    <span class="n">Account</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
+
+    <span class="n">address</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">address</span>
+
+    <span class="c1"># Match account name and check password</span>
+    <span class="c1"># authenticate() handles all its own throttling</span>
+    <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
+        <span class="c1"># No accountname or password match</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">account</span>
+
+
+<div class="viewcode-block" id="CmdUnconnectedConnect"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedConnect">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedConnect</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    connect to the game</span>
+
+<span class="sd">    Usage (at login screen):</span>
+<span class="sd">      connect accountname password</span>
+<span class="sd">      connect &quot;account name&quot; &quot;pass word&quot;</span>
+
+<span class="sd">    Use the create command to first create an account before logging in.</span>
+
+<span class="sd">    If you have spaces in your name, enclose it in double quotes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;connect&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;conn&quot;</span><span class="p">,</span> <span class="s2">&quot;con&quot;</span><span class="p">,</span> <span class="s2">&quot;co&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>  <span class="c1"># not really needed</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s.*?|$&quot;</span>
+
+<div class="viewcode-block" id="CmdUnconnectedConnect.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedConnect.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses the Django admin api. Note that unlogged-in commands</span>
+<span class="sd">        have a unique position in that their func() receives</span>
+<span class="sd">        a session object instead of a source_object like all</span>
+<span class="sd">        other types of logged-in commands (this is because</span>
+<span class="sd">        there is no object yet before the account has logged in)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">address</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="c1"># extract double quote parts</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># this was (hopefully) due to no double quotes being found, or a guest login</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Guest login</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;guest&quot;</span><span class="p">:</span>
+                <span class="c1"># Get Guest typeclass</span>
+                <span class="n">Guest</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_GUEST_TYPECLASS</span><span class="p">)</span>
+
+                <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+                    <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2"> Usage (without &lt;&gt;): connect &lt;name&gt; &lt;password&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Get account class</span>
+        <span class="n">Account</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
+
+        <span class="n">name</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">parts</span>
+        <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUnconnectedCreate"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedCreate</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    create a new account account</span>
+
+<span class="sd">    Usage (at login screen):</span>
+<span class="sd">      create &lt;accountname&gt; &lt;password&gt;</span>
+<span class="sd">      create &quot;account name&quot; &quot;pass word&quot;</span>
+
+<span class="sd">    This creates a new account account.</span>
+
+<span class="sd">    If you have spaces in your name, enclose it in double quotes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;create&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cre&quot;</span><span class="p">,</span> <span class="s2">&quot;cr&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s.*?|$&quot;</span>
+
+<div class="viewcode-block" id="CmdUnconnectedCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Do checks and create account&quot;&quot;&quot;</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">address</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">address</span>
+
+        <span class="c1"># Get account class</span>
+        <span class="n">Account</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
+
+        <span class="c1"># extract double quoted parts</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># this was (hopefully) due to no quotes being found</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Usage (without &lt;&gt;): create &lt;name&gt; &lt;password&gt;&quot;</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">If &lt;name&gt; or &lt;password&gt; contains spaces, enclose it in double quotes.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">username</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">parts</span>
+
+        <span class="c1"># everything&#39;s ok. Create the new account account.</span>
+        <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="c1"># tell the caller everything went well.</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;A new account &#39;</span><span class="si">%s</span><span class="s2">&#39; was created. Welcome!&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">username</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">You can now log in with the command &#39;connect </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> &lt;your password&gt;&#39;.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">You can now log with the command &#39;connect </span><span class="si">%s</span><span class="s2"> &lt;your password&gt;&#39;.&quot;</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">username</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUnconnectedQuit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedQuit">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedQuit</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    quit when in unlogged-in state</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      quit</span>
+
+<span class="sd">    We maintain a different version of the quit command</span>
+<span class="sd">    here for unconnected accounts for the sake of simplicity. The logged in</span>
+<span class="sd">    version is a bit more complicated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quit&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;qu&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdUnconnectedQuit.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedQuit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Simply close the connection.&quot;&quot;&quot;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="s2">&quot;Good bye! Disconnecting.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUnconnectedLook"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedLook">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedLook</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    look when in unlogged-in state</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      look</span>
+
+<span class="sd">    This is an unconnected version of the look command for simplicity.</span>
+
+<span class="sd">    This is called by the server and kicks everything in gear.</span>
+<span class="sd">    All it does is display the connect screen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_LOGINSTART</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdUnconnectedLook.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Show the connect screen.&quot;&quot;&quot;</span>
+
+        <span class="n">callables</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">callables_from_module</span><span class="p">(</span><span class="n">CONNECTION_SCREEN_MODULE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;connection_screen&quot;</span> <span class="ow">in</span> <span class="n">callables</span><span class="p">:</span>
+            <span class="n">connection_screen</span> <span class="o">=</span> <span class="n">callables</span><span class="p">[</span><span class="s2">&quot;connection_screen&quot;</span><span class="p">]()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">connection_screen</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">random_string_from_module</span><span class="p">(</span><span class="n">CONNECTION_SCREEN_MODULE</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">connection_screen</span><span class="p">:</span>
+                <span class="n">connection_screen</span> <span class="o">=</span> <span class="s2">&quot;No connection screen found. Please contact an admin.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">connection_screen</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUnconnectedHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedHelp</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get help when in unconnected-in state</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      help</span>
+
+<span class="sd">    This is an unconnected version of the help command,</span>
+<span class="sd">    for simplicity. It shows a pane of info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;help&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+<div class="viewcode-block" id="CmdUnconnectedHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.unloggedin.CmdUnconnectedHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shows help&quot;&quot;&quot;</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are not yet logged into the game. Commands available at this point:</span>
+
+<span class="s2">  |wcreate|n - create a new account</span>
+<span class="s2">  |wconnect|n - connect with an existing account</span>
+<span class="s2">  |wlook|n - re-show the connection screen</span>
+<span class="s2">  |whelp|n - show this help</span>
+<span class="s2">  |wencoding|n - change the text encoding to match your client</span>
+<span class="s2">  |wscreenreader|n - make the server more suitable for use with screen readers</span>
+<span class="s2">  |wquit|n - abort the connection</span>
+
+<span class="s2">First create an account e.g. with |wcreate Anna c67jHL8p|n</span>
+<span class="s2">(If you have spaces in your name, use double quotes: |wcreate &quot;Anna the Barbarian&quot; c67jHL8p|n</span>
+<span class="s2">Next you can connect to the game: |wconnect Anna c67jHL8p|n</span>
+
+<span class="s2">You can use the |wlook|n command if you want to see the connect screen again.</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">STAFF_CONTACT_EMAIL</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;For support, please contact: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">STAFF_CONTACT_EMAIL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">CmdUnconnectedEncoding</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    set which text encoding to use in unconnected-in state</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      encoding/switches [&lt;encoding&gt;]</span>
+
+<span class="sd">    Switches:</span>
+<span class="sd">      clear - clear your custom encoding</span>
+
+
+<span class="sd">    This sets the text encoding for communicating with Evennia. This is mostly</span>
+<span class="sd">    an issue only if you want to use non-ASCII characters (i.e. letters/symbols</span>
+<span class="sd">    not found in English). If you see that your characters look strange (or you</span>
+<span class="sd">    get encoding errors), you should use this command to set the server</span>
+<span class="sd">    encoding to be the same used in your client program.</span>
+
+<span class="sd">    Common encodings are utf-8 (default), latin-1, ISO-8859-1 etc.</span>
+
+<span class="sd">    If you don&#39;t submit an encoding, the current encoding will be displayed</span>
+<span class="sd">    instead.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;encoding&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;encode&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the encoding.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">sync</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s2">&quot;clear&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
+            <span class="c1"># remove customization</span>
+            <span class="n">old_encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ENCODING&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">old_encoding</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Your custom text encoding (&#39;</span><span class="si">%s</span><span class="s2">&#39;) was cleared.&quot;</span> <span class="o">%</span> <span class="n">old_encoding</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;No custom encoding was set.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;ENCODING&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+            <span class="n">sync</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="c1"># just list the encodings supported</span>
+            <span class="n">pencoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ENCODING&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">pencoding</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Default encoding: |g</span><span class="si">%s</span><span class="s2">|n (change with |wencoding &lt;encoding&gt;|n)&quot;</span> <span class="o">%</span> <span class="n">pencoding</span>
+                <span class="p">)</span>
+            <span class="n">encodings</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ENCODINGS</span>
+            <span class="k">if</span> <span class="n">encodings</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Server&#39;s alternative encodings (tested in this order):</span><span class="se">\n</span><span class="s2">   |g</span><span class="si">%s</span><span class="s2">|n&quot;</span>
+                    <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">encodings</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">string</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;No encodings found.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># change encoding</span>
+            <span class="n">old_encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ENCODING&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">codecs_lookup</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">LookupError</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;|rThe encoding &#39;|w</span><span class="si">%s</span><span class="s2">|r&#39; is invalid. Keeping the previous encoding &#39;|w</span><span class="si">%s</span><span class="s2">|r&#39;.|n&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">old_encoding</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;ENCODING&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoding</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Your custom text encoding was changed from &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39; to &#39;|w</span><span class="si">%s</span><span class="s2">|n&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">old_encoding</span><span class="p">,</span>
+                    <span class="n">encoding</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">sync</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">sync</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">session_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+
+<span class="k">class</span> <span class="nc">CmdUnconnectedScreenreader</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Activate screenreader mode.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        screenreader</span>
+
+<span class="sd">    Used to flip screenreader mode on and off before logging in (when</span>
+<span class="sd">    logged in, use option screenreader on).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;screenreader&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Flips screenreader setting.&quot;&quot;&quot;</span>
+        <span class="n">new_setting</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_setting</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Screenreader mode turned |w</span><span class="si">%s</span><span class="s2">|n.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;on&quot;</span> <span class="k">if</span> <span class="n">new_setting</span> <span class="k">else</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">session_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CmdUnconnectedInfo</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides MUDINFO output, so that Evennia games can be added to Mudconnector</span>
+<span class="sd">    and Mudstats.  Sadly, the MUDINFO specification seems to have dropped off the</span>
+<span class="sd">    face of the net, but it is still used by some crawlers.  This implementation</span>
+<span class="sd">    was created by looking at the MUDINFO implementation in MUX2, TinyMUSH, Rhost,</span>
+<span class="sd">    and PennMUSH.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="s2">&quot;## BEGIN INFO 1.1</span><span class="se">\n</span><span class="s2">Name: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Uptime: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Connected: </span><span class="si">%d</span><span class="se">\n</span><span class="s2">Version: Evennia </span><span class="si">%s</span><span class="se">\n</span><span class="s2">## END INFO&quot;</span>
+            <span class="o">%</span> <span class="p">(</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="p">,</span>
+                <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">gametime</span><span class="o">.</span><span class="n">SERVER_START_TIME</span><span class="p">)</span><span class="o">.</span><span class="n">ctime</span><span class="p">(),</span>
+                <span class="n">SESSIONS</span><span class="o">.</span><span class="n">account_count</span><span class="p">(),</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">get_evennia_version</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create_account</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">accountname</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function, creates an account of the specified typeclass.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new_account</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_account</span><span class="p">(</span>
+            <span class="n">accountname</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="s2">&quot;There was an error creating the Account:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2"> If this problem persists, contact an admin.&quot;</span>
+            <span class="o">%</span> <span class="n">e</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># This needs to be set so the engine knows this account is</span>
+    <span class="c1"># logging in for the first time. (so it knows to call the right</span>
+    <span class="c1"># hooks during login later)</span>
+    <span class="n">new_account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">FIRST_LOGIN</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># join the new account to the public channel</span>
+    <span class="n">pchannel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pchannel</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pchannel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">new_account</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;New account &#39;</span><span class="si">%s</span><span class="s2">&#39; could not connect to public channel!&quot;</span> <span class="o">%</span> <span class="n">new_account</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_account</span>
+
+
+<span class="k">def</span> <span class="nf">_create_character</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">new_account</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">home</span><span class="p">,</span> <span class="n">permissions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function, creates a character based on an account&#39;s name.</span>
+<span class="sd">    This is meant for Guest and MULTISESSION_MODE &lt; 2 situations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+            <span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">new_account</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="n">home</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span>
+        <span class="p">)</span>
+        <span class="c1"># set playable character list</span>
+        <span class="n">new_account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span>
+
+        <span class="c1"># allow only the character itself and the account to puppet this character (and Developers).</span>
+        <span class="n">new_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developer) or pperm(Developer)&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">new_character</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">new_account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># If no description is set, set a default description</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
+            <span class="n">new_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a character.&quot;</span>
+        <span class="c1"># We need to set this to have ic auto-connect to this character</span>
+        <span class="n">new_account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">new_character</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="s2">&quot;There was an error creating the Character:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2"> If this problem persists, contact an admin.&quot;</span>
+            <span class="o">%</span> <span class="n">e</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="unloggedin.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

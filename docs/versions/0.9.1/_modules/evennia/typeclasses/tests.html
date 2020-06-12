@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.typeclasses.tests &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.typeclasses.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Unit tests for typeclass base system</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">patch</span>
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># Manager tests</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="TestAttributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestAttributes">[docs]</a><span class="k">class</span> <span class="nc">TestAttributes</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestAttributes.test_attrhandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestAttributes.test_attrhandler">[docs]</a>    <span class="k">def</span> <span class="nf">test_attrhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;testattr&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;test attr value &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">testattr</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">testattr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestAttributes.test_attrhandler_nocache"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestAttributes.test_attrhandler_nocache">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">TYPECLASS_AGGRESSIVE_CACHE</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.typeclasses.attributes._TYPECLASS_AGGRESSIVE_CACHE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_attrhandler_nocache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;testattr&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;test attr value &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">_cache</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">testattr</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">testattr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">_cache</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestAttributes.test_weird_text_save"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestAttributes.test_weird_text_save">[docs]</a>    <span class="k">def</span> <span class="nf">test_weird_text_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;test &#39;weird&#39; text type (different in py2 vs py3)&quot;</span>
+        <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="k">import</span> <span class="n">SafeText</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test attr 2&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">SafeText</span><span class="p">(</span><span class="s2">&quot;test attr value 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestTypedObjectManager"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestTypedObjectManager">[docs]</a><span class="k">class</span> <span class="nc">TestTypedObjectManager</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTypedObjectManager._manager"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestTypedObjectManager._manager">[docs]</a>    <span class="k">def</span> <span class="nf">_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methodname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">objects</span><span class="p">,</span> <span class="n">methodname</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestTypedObjectManager.test_get_by_tag_no_category"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestTypedObjectManager.test_get_by_tag_no_category">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_by_tag_no_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag2c&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag2a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag2b&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag3 with spaces&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag4&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag2c&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="s2">&quot;tag1&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="s2">&quot;tag2&quot;</span><span class="p">)),</span> <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="s2">&quot;tag2a&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="s2">&quot;tag3 with spaces&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tag2a&quot;</span><span class="p">,</span> <span class="s2">&quot;tag2b&quot;</span><span class="p">]),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tag2a&quot;</span><span class="p">,</span> <span class="s2">&quot;tag1&quot;</span><span class="p">]),</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tag2a&quot;</span><span class="p">,</span> <span class="s2">&quot;tag4&quot;</span><span class="p">,</span> <span class="s2">&quot;tag2c&quot;</span><span class="p">]),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTypedObjectManager.test_get_by_tag_and_category"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestTypedObjectManager.test_get_by_tag_and_category">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_by_tag_and_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag5&quot;</span><span class="p">,</span> <span class="s2">&quot;category1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag6&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag7&quot;</span><span class="p">,</span> <span class="s2">&quot;category1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag6&quot;</span><span class="p">,</span> <span class="s2">&quot;category3&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag7&quot;</span><span class="p">,</span> <span class="s2">&quot;category4&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag5&quot;</span><span class="p">,</span> <span class="s2">&quot;category1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag5&quot;</span><span class="p">,</span> <span class="s2">&quot;category2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag6&quot;</span><span class="p">,</span> <span class="s2">&quot;category3&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag7&quot;</span><span class="p">,</span> <span class="s2">&quot;category1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag7&quot;</span><span class="p">,</span> <span class="s2">&quot;category5&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag8&quot;</span><span class="p">,</span> <span class="s2">&quot;category6&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tag9&quot;</span><span class="p">,</span> <span class="s2">&quot;category6&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="s2">&quot;tag5&quot;</span><span class="p">,</span> <span class="s2">&quot;category1&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="s2">&quot;tag6&quot;</span><span class="p">,</span> <span class="s2">&quot;category1&quot;</span><span class="p">),</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="s2">&quot;tag6&quot;</span><span class="p">,</span> <span class="s2">&quot;category3&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tag5&quot;</span><span class="p">,</span> <span class="s2">&quot;tag6&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;category1&quot;</span><span class="p">,</span> <span class="s2">&quot;category3&quot;</span><span class="p">]),</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tag5&quot;</span><span class="p">,</span> <span class="s2">&quot;tag7&quot;</span><span class="p">],</span> <span class="s2">&quot;category1&quot;</span><span class="p">),</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;category1&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;category2&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;category1&quot;</span><span class="p">,</span> <span class="s2">&quot;category3&quot;</span><span class="p">]),</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;category1&quot;</span><span class="p">,</span> <span class="s2">&quot;category2&quot;</span><span class="p">]),</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;category5&quot;</span><span class="p">,</span> <span class="s2">&quot;category4&quot;</span><span class="p">]),</span> <span class="p">[]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;category1&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span><span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;category6&quot;</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTypedObjectManager.test_get_tag_with_all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestTypedObjectManager.test_get_tag_with_all">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_tag_with_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tagA&quot;</span><span class="p">,</span> <span class="s2">&quot;categoryA&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span>
+                <span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tagA&quot;</span><span class="p">,</span> <span class="s2">&quot;tagB&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;categoryA&quot;</span><span class="p">,</span> <span class="s2">&quot;categoryB&quot;</span><span class="p">],</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;all&quot;</span>
+            <span class="p">),</span>
+            <span class="p">[],</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTypedObjectManager.test_get_tag_with_any"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestTypedObjectManager.test_get_tag_with_any">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_tag_with_any</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tagA&quot;</span><span class="p">,</span> <span class="s2">&quot;categoryA&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span>
+                <span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tagA&quot;</span><span class="p">,</span> <span class="s2">&quot;tagB&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;categoryA&quot;</span><span class="p">,</span> <span class="s2">&quot;categoryB&quot;</span><span class="p">],</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;any&quot;</span>
+            <span class="p">),</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTypedObjectManager.test_get_tag_withnomatch"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.tests.TestTypedObjectManager.test_get_tag_withnomatch">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_tag_withnomatch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;tagC&quot;</span><span class="p">,</span> <span class="s2">&quot;categoryC&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="p">(</span>
+                <span class="s2">&quot;get_by_tag&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tagA&quot;</span><span class="p">,</span> <span class="s2">&quot;tagB&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;categoryA&quot;</span><span class="p">,</span> <span class="s2">&quot;categoryB&quot;</span><span class="p">],</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;any&quot;</span>
+            <span class="p">),</span>
+            <span class="p">[],</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tests.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

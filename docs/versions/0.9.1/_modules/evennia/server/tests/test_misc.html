@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.server.tests.test_misc &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.tests.test_misc</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Testing various individual functionalities in the server package.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
+
+<span class="kn">from</span> <span class="nn">evennia.server.validators</span> <span class="k">import</span> <span class="n">EvenniaPasswordValidator</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">EvenniaTest</span>
+
+<span class="kn">from</span> <span class="nn">django.test.runner</span> <span class="k">import</span> <span class="n">DiscoverRunner</span>
+
+<span class="kn">from</span> <span class="nn">evennia.server.throttle</span> <span class="k">import</span> <span class="n">Throttle</span>
+
+<span class="kn">from</span> <span class="nn">..deprecations</span> <span class="k">import</span> <span class="n">check_errors</span>
+
+
+<div class="viewcode-block" id="MockSettings"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.MockSettings">[docs]</a><span class="k">class</span> <span class="nc">MockSettings</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for simulating django.conf.settings. Created with a single value, and then sets the required</span>
+<span class="sd">    WEBSERVER_ENABLED setting to True or False depending if we&#39;re testing WEBSERVER_PORTS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MockSettings.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.MockSettings.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">setting</span> <span class="o">==</span> <span class="s2">&quot;WEBSERVER_PORTS&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">WEBSERVER_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">WEBSERVER_ENABLED</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="TestDeprecations"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.TestDeprecations">[docs]</a><span class="k">class</span> <span class="nc">TestDeprecations</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for testing deprecations.check_errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">deprecated_settings</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;CMDSET_DEFAULT&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CMDSET_OOC&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;BASE_COMM_TYPECLASS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;COMM_TYPECLASS_PATHS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CHARACTER_DEFAULT_HOME&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OBJECT_TYPECLASS_PATHS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SCRIPT_TYPECLASS_PATHS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ACCOUNT_TYPECLASS_PATHS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CHANNEL_TYPECLASS_PATHS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SEARCH_MULTIMATCH_SEPARATOR&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TIME_SEC_PER_MIN&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TIME_MIN_PER_HOUR&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TIME_HOUR_PER_DAY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TIME_DAY_PER_WEEK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TIME_WEEK_PER_MONTH&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TIME_MONTH_PER_YEAR&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;GAME_DIRECTORY_LISTING&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="TestDeprecations.test_check_errors"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.TestDeprecations.test_check_errors">[docs]</a>    <span class="k">def</span> <span class="nf">test_check_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        All settings in deprecated_settings should raise a DeprecationWarning if they exist.</span>
+<span class="sd">        WEBSERVER_PORTS raises an error if the iterable value passed does not have a tuple as its</span>
+<span class="sd">        first element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">deprecated_settings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">check_errors</span><span class="p">,</span> <span class="n">MockSettings</span><span class="p">(</span><span class="n">setting</span><span class="p">))</span>
+        <span class="c1"># test check for WEBSERVER_PORTS having correct value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">check_errors</span><span class="p">,</span> <span class="n">MockSettings</span><span class="p">(</span><span class="s2">&quot;WEBSERVER_PORTS&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;not a tuple&quot;</span><span class="p">])</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ValidatorTest"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.ValidatorTest">[docs]</a><span class="k">class</span> <span class="nc">ValidatorTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="ValidatorTest.test_validator"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.ValidatorTest.test_validator">[docs]</a>    <span class="k">def</span> <span class="nf">test_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Validator returns None on success and ValidationError on failure.</span>
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">EvenniaPasswordValidator</span><span class="p">()</span>
+
+        <span class="c1"># This password should meet Evennia standards.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="s2">&quot;testpassword&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">))</span>
+
+        <span class="c1"># This password contains illegal characters and should raise an Exception.</span>
+        <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ValidationError</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">,</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">,</span> <span class="s2">&quot;(#)[#]&lt;&gt;&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ThrottleTest"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.ThrottleTest">[docs]</a><span class="k">class</span> <span class="nc">ThrottleTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for testing the connection/IP throttle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ThrottleTest.test_throttle"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_misc.ThrottleTest.test_throttle">[docs]</a>    <span class="k">def</span> <span class="nf">test_throttle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ips</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;94.100.176.153&quot;</span><span class="p">,</span> <span class="s2">&quot;45.56.148.77&quot;</span><span class="p">,</span> <span class="s2">&quot;5.196.1.129&quot;</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">15</span> <span class="o">*</span> <span class="mi">60</span><span class="p">}</span>
+
+        <span class="n">throttle</span> <span class="o">=</span> <span class="n">Throttle</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ips</span><span class="p">:</span>
+            <span class="c1"># Throttle should not be engaged by default</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">throttle</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span>
+
+            <span class="c1"># Pretend to fail a bunch of events</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">throttle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+            <span class="c1"># Next ones should be blocked</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">throttle</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">throttle</span><span class="o">.</span><span class="n">cache_size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">throttle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+            <span class="c1"># Should still be blocked</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">throttle</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span>
+
+            <span class="c1"># Number of values should be limited by cache size</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">throttle</span><span class="o">.</span><span class="n">cache_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">throttle</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">)))</span>
+
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">throttle</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="c1"># Make sure there are entries for each IP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ips</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+        <span class="c1"># There should only be (cache_size * num_ips) total in the Throttle cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()]),</span> <span class="n">throttle</span><span class="o">.</span><span class="n">cache_size</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ips</span><span class="p">))</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="test_misc.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

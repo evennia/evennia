@@ -1,0 +1,552 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Evennia MUD/MUX/MU* creation system</span>
+
+<span class="sd">This is the main top-level API for Evennia. You can explore the evennia library</span>
+<span class="sd">by accessing evennia.&lt;subpackage&gt; directly. From inside the game you can read</span>
+<span class="sd">docs of all object by viewing its `__doc__` string, such as through</span>
+
+<span class="sd">    @py evennia.ObjectDB.__doc__</span>
+
+<span class="sd">For full functionality you should explore this module via a django-</span>
+<span class="sd">aware shell. Go to your game directory and use the command</span>
+
+<span class="sd">   evennia shell</span>
+
+<span class="sd">to launch such a shell (using python or ipython depending on your install).</span>
+<span class="sd">See www.evennia.com for full documentation.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># docstring header</span>
+
+<span class="n">DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">|cEvennia|n &#39;flat&#39; API (use |wevennia.&lt;component&gt;.__doc__|n to read doc-strings</span>
+<span class="s2">                        and |wdict(evennia.component)|n or</span>
+<span class="s2">                        |wevennia.component.__dict__ to see contents)</span>
+<span class="s2">|cTypeclass-bases:|n                      |cDatabase models|n:</span>
+<span class="s2">   DefaultAccount     DefaultObject          AccountDB     ObjectDB</span>
+<span class="s2">     DefaultGuest       DefaultCharacter     ChannelDB</span>
+<span class="s2">                        DefaultRoom          ScriptDB</span>
+<span class="s2">   DefaultChannel       DefaultExit          Msg</span>
+<span class="s2">   DefaultScript</span>
+<span class="s2">|cSearch functions:|n                     |cCommand parents and helpers:|n</span>
+<span class="s2">   search_account       search_object        default_cmds</span>
+<span class="s2">   search_script        search_channel       Command       InterruptCommand</span>
+<span class="s2">   search_help          search_message       CmdSet</span>
+<span class="s2">   search_tag           managers          |cUtilities:|n</span>
+<span class="s2">|cCreate functions:|n                        settings       lockfuncs</span>
+<span class="s2">   create_account       create_object        logger         gametime</span>
+<span class="s2">   create_script        create_channel       ansi           spawn</span>
+<span class="s2">   create_help_entry    create_message       contrib        managers</span>
+<span class="s2">|cGlobal handlers:|n                         set_trace</span>
+<span class="s2">   TICKER_HANDLER       TASK_HANDLER         EvMenu         EvTable</span>
+<span class="s2">   SESSION_HANDLER      CHANNEL_HANDLER      EvForm         EvEditor &quot;&quot;&quot;</span>
+
+<span class="c1"># Delayed loading of properties</span>
+
+<span class="c1"># Typeclasses</span>
+
+<span class="n">DefaultAccount</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DefaultGuest</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DefaultObject</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DefaultCharacter</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DefaultRoom</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DefaultExit</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DefaultChannel</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DefaultScript</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Database models</span>
+<span class="n">ObjectDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">AccountDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">ScriptDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">ChannelDB</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">Msg</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># commands</span>
+<span class="n">Command</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">CmdSet</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">default_cmds</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">syscmdkeys</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">InterruptCommand</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># search functions</span>
+<span class="n">search_object</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">search_script</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">search_account</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">search_channel</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">search_message</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">search_help</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">search_tag</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># create functions</span>
+<span class="n">create_object</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">create_script</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">create_account</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">create_channel</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">create_message</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">create_help_entry</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># utilities</span>
+<span class="n">settings</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">lockfuncs</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">inputhandler</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">gametime</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">ansi</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">spawn</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">managers</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">contrib</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">EvMenu</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">EvTable</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">EvForm</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">EvEditor</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">EvMore</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">ANSIString</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">signals</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Handlers</span>
+<span class="n">SESSION_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">MONITOR_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">CHANNEL_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Containers</span>
+<span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">OPTION_CLASSES</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># typeclasses</span>
+<span class="n">BASE_ACCOUNT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">BASE_OBJECT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">BASE_CHARACTER_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">BASE_ROOM_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">BASE_EXIT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">BASE_CHANNEL_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">BASE_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">BASE_GUEST_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">_create_version</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function for building the version string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">check_output</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">STDOUT</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;VERSION.txt&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rev</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">check_output</span><span class="p">(</span><span class="s2">&quot;git rev-parse --short HEAD&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">STDOUT</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (rev </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="n">rev</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">IOError</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">):</span>
+        <span class="c1"># ignore if we cannot get to git</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">version</span>
+
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="n">_create_version</span><span class="p">()</span>
+<span class="k">del</span> <span class="n">_create_version</span>
+
+
+<div class="viewcode-block" id="_init"><a class="viewcode-back" href="../api/evennia.html#evennia._init">[docs]</a><span class="k">def</span> <span class="nf">_init</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is called automatically by the launcher only after</span>
+<span class="sd">    Evennia has fully initialized all its models. It sets up the API</span>
+<span class="sd">    in a safe environment where all models are available already.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">DefaultAccount</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultGuest</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
+    <span class="k">global</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultChannel</span><span class="p">,</span> <span class="n">DefaultScript</span>
+    <span class="k">global</span> <span class="n">ObjectDB</span><span class="p">,</span> <span class="n">AccountDB</span><span class="p">,</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
+    <span class="k">global</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">syscmdkeys</span><span class="p">,</span> <span class="n">InterruptCommand</span>
+    <span class="k">global</span> <span class="n">search_object</span><span class="p">,</span> <span class="n">search_script</span><span class="p">,</span> <span class="n">search_account</span><span class="p">,</span> <span class="n">search_channel</span>
+    <span class="k">global</span> <span class="n">search_help</span><span class="p">,</span> <span class="n">search_tag</span><span class="p">,</span> <span class="n">search_message</span>
+    <span class="k">global</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">create_script</span><span class="p">,</span> <span class="n">create_account</span><span class="p">,</span> <span class="n">create_channel</span>
+    <span class="k">global</span> <span class="n">create_message</span><span class="p">,</span> <span class="n">create_help_entry</span>
+    <span class="k">global</span> <span class="n">signals</span>
+    <span class="k">global</span> <span class="n">settings</span><span class="p">,</span> <span class="n">lockfuncs</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">spawn</span><span class="p">,</span> <span class="n">managers</span>
+    <span class="k">global</span> <span class="n">contrib</span><span class="p">,</span> <span class="n">TICKER_HANDLER</span><span class="p">,</span> <span class="n">MONITOR_HANDLER</span><span class="p">,</span> <span class="n">SESSION_HANDLER</span>
+    <span class="k">global</span> <span class="n">CHANNEL_HANDLER</span><span class="p">,</span> <span class="n">TASK_HANDLER</span>
+    <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
+    <span class="k">global</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvMore</span><span class="p">,</span> <span class="n">EvEditor</span>
+    <span class="k">global</span> <span class="n">ANSIString</span>
+
+    <span class="k">global</span> <span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_CHARACTER_TYPECLASS</span>
+    <span class="k">global</span> <span class="n">BASE_ROOM_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_EXIT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_CHANNEL_TYPECLASS</span>
+    <span class="k">global</span> <span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">,</span> <span class="n">BASE_GUEST_TYPECLASS</span>
+
+    <span class="c1"># Parent typeclasses</span>
+    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="k">import</span> <span class="n">DefaultAccount</span>
+    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="k">import</span> <span class="n">DefaultGuest</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultObject</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultCharacter</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultRoom</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="k">import</span> <span class="n">DefaultExit</span>
+    <span class="kn">from</span> <span class="nn">.comms.comms</span> <span class="k">import</span> <span class="n">DefaultChannel</span>
+    <span class="kn">from</span> <span class="nn">.scripts.scripts</span> <span class="k">import</span> <span class="n">DefaultScript</span>
+
+    <span class="c1"># Database models</span>
+    <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+    <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+    <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
+    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
+    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="k">import</span> <span class="n">Msg</span>
+
+    <span class="c1"># commands</span>
+    <span class="kn">from</span> <span class="nn">.commands.command</span> <span class="k">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
+    <span class="kn">from</span> <span class="nn">.commands.cmdset</span> <span class="k">import</span> <span class="n">CmdSet</span>
+
+    <span class="c1"># search functions</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_object</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_script</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_account</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_message</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_channel</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_help</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="k">import</span> <span class="n">search_tag</span>
+
+    <span class="c1"># create functions</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_object</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_script</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_account</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_channel</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_message</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="k">import</span> <span class="n">create_help_entry</span>
+
+    <span class="c1"># utilities</span>
+    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+    <span class="kn">from</span> <span class="nn">.locks</span> <span class="k">import</span> <span class="n">lockfuncs</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">logger</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">gametime</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ansi</span>
+    <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="k">import</span> <span class="n">spawn</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">contrib</span>
+    <span class="kn">from</span> <span class="nn">.utils.evmenu</span> <span class="k">import</span> <span class="n">EvMenu</span>
+    <span class="kn">from</span> <span class="nn">.utils.evtable</span> <span class="k">import</span> <span class="n">EvTable</span>
+    <span class="kn">from</span> <span class="nn">.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
+    <span class="kn">from</span> <span class="nn">.utils.evform</span> <span class="k">import</span> <span class="n">EvForm</span>
+    <span class="kn">from</span> <span class="nn">.utils.eveditor</span> <span class="k">import</span> <span class="n">EvEditor</span>
+    <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="k">import</span> <span class="n">ANSIString</span>
+    <span class="kn">from</span> <span class="nn">.server</span> <span class="k">import</span> <span class="n">signals</span>
+
+    <span class="c1"># handlers</span>
+    <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="k">import</span> <span class="n">TICKER_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="k">import</span> <span class="n">TASK_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSION_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.comms.channelhandler</span> <span class="k">import</span> <span class="n">CHANNEL_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span>
+
+    <span class="c1"># containers</span>
+    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="k">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="k">import</span> <span class="n">OPTION_CLASSES</span>
+
+    <span class="c1"># initialize the doc string</span>
+    <span class="k">global</span> <span class="vm">__doc__</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">DOCSTRING</span><span class="p">)</span>
+
+    <span class="c1"># API containers</span>
+
+    <span class="k">class</span> <span class="nc">_EvContainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parent for other containers</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="s2">&quot;Returns list of contents&quot;</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+            <span class="n">names</span> <span class="o">+=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+
+        <span class="n">help</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_help</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">DBmanagers</span><span class="p">(</span><span class="n">_EvContainer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Links to instantiated Django database managers. These are used</span>
+<span class="sd">        to perform more advanced custom database queries than the standard</span>
+<span class="sd">        search functions allow.</span>
+
+<span class="sd">        helpentries - HelpEntry.objects</span>
+<span class="sd">        accounts - AccountDB.objects</span>
+<span class="sd">        scripts - ScriptDB.objects</span>
+<span class="sd">        msgs    - Msg.objects</span>
+<span class="sd">        channels - Channel.objects</span>
+<span class="sd">        objects - ObjectDB.objects</span>
+<span class="sd">        serverconfigs - ServerConfig.objects</span>
+<span class="sd">        tags - Tags.objects</span>
+<span class="sd">        attributes - Attributes.objects</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">.help.models</span> <span class="k">import</span> <span class="n">HelpEntry</span>
+        <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+        <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
+        <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="k">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+        <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
+        <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="k">import</span> <span class="n">Attribute</span>
+        <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="k">import</span> <span class="n">Tag</span>
+
+        <span class="c1"># create container&#39;s properties</span>
+        <span class="n">helpentries</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">accounts</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">scripts</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">msgs</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">objects</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">serverconfigs</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">Attribute</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">Tag</span><span class="o">.</span><span class="n">objects</span>
+        <span class="c1"># remove these so they are not visible as properties</span>
+        <span class="k">del</span> <span class="n">HelpEntry</span><span class="p">,</span> <span class="n">AccountDB</span><span class="p">,</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+        <span class="c1"># del ExternalChannelConnection</span>
+        <span class="k">del</span> <span class="n">ObjectDB</span><span class="p">,</span> <span class="n">ServerConfig</span><span class="p">,</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">Attribute</span>
+
+    <span class="n">managers</span> <span class="o">=</span> <span class="n">DBmanagers</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">DBmanagers</span>
+
+    <span class="k">class</span> <span class="nc">DefaultCmds</span><span class="p">(</span><span class="n">_EvContainer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This container holds direct shortcuts to all default commands in Evennia.</span>
+
+<span class="sd">        To access in code, do &#39;from evennia import default_cmds&#39; then</span>
+<span class="sd">        access the properties on the imported default_cmds object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_character</span> <span class="k">import</span> <span class="n">CharacterCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_account</span> <span class="k">import</span> <span class="n">AccountCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_unloggedin</span> <span class="k">import</span> <span class="n">UnloggedinCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_session</span> <span class="k">import</span> <span class="n">SessionCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.muxcommand</span> <span class="k">import</span> <span class="n">MuxCommand</span><span class="p">,</span> <span class="n">MuxAccountCommand</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="s2">&quot;populate the object with commands&quot;</span>
+
+            <span class="k">def</span> <span class="nf">add_cmds</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+                <span class="s2">&quot;helper method for populating this object with cmds&quot;</span>
+                <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">utils</span>
+
+                <span class="n">cmdlist</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">variable_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">module</span><span class="o">.</span><span class="n">__all__</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmdlist</span><span class="p">]))</span>
+
+            <span class="kn">from</span> <span class="nn">.commands.default</span> <span class="k">import</span> <span class="p">(</span>
+                <span class="n">admin</span><span class="p">,</span>
+                <span class="n">batchprocess</span><span class="p">,</span>
+                <span class="n">building</span><span class="p">,</span>
+                <span class="n">comms</span><span class="p">,</span>
+                <span class="n">general</span><span class="p">,</span>
+                <span class="n">account</span><span class="p">,</span>
+                <span class="n">help</span><span class="p">,</span>
+                <span class="n">system</span><span class="p">,</span>
+                <span class="n">unloggedin</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">admin</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">building</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">batchprocess</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">building</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">comms</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">general</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">help</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+            <span class="n">add_cmds</span><span class="p">(</span><span class="n">unloggedin</span><span class="p">)</span>
+
+    <span class="n">default_cmds</span> <span class="o">=</span> <span class="n">DefaultCmds</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">DefaultCmds</span>
+
+    <span class="k">class</span> <span class="nc">SystemCmds</span><span class="p">(</span><span class="n">_EvContainer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creating commands with keys set to these constants will make</span>
+<span class="sd">        them system commands called as a replacement by the parser when</span>
+<span class="sd">        special situations occur. If not defined, the hard-coded</span>
+<span class="sd">        responses in the server are used.</span>
+
+<span class="sd">        CMD_NOINPUT - no input was given on command line</span>
+<span class="sd">        CMD_NOMATCH - no valid command key was found</span>
+<span class="sd">        CMD_MULTIMATCH - multiple command matches were found</span>
+<span class="sd">        CMD_CHANNEL - the command name is a channel name</span>
+<span class="sd">        CMD_LOGINSTART - this command will be called as the very</span>
+<span class="sd">                         first command when an account connects to</span>
+<span class="sd">                         the server.</span>
+
+<span class="sd">        To access in code, do &#39;from evennia import syscmdkeys&#39; then</span>
+<span class="sd">        access the properties on the imported syscmdkeys object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">.commands</span> <span class="k">import</span> <span class="n">cmdhandler</span>
+
+        <span class="n">CMD_NOINPUT</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_NOINPUT</span>
+        <span class="n">CMD_NOMATCH</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_NOMATCH</span>
+        <span class="n">CMD_MULTIMATCH</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_MULTIMATCH</span>
+        <span class="n">CMD_CHANNEL</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_CHANNEL</span>
+        <span class="n">CMD_LOGINSTART</span> <span class="o">=</span> <span class="n">cmdhandler</span><span class="o">.</span><span class="n">CMD_LOGINSTART</span>
+        <span class="k">del</span> <span class="n">cmdhandler</span>
+
+    <span class="n">syscmdkeys</span> <span class="o">=</span> <span class="n">SystemCmds</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">SystemCmds</span>
+    <span class="k">del</span> <span class="n">_EvContainer</span>
+
+    <span class="c1"># typeclases</span>
+    <span class="kn">from</span> <span class="nn">.utils.utils</span> <span class="k">import</span> <span class="n">class_from_module</span>
+
+    <span class="n">BASE_ACCOUNT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">BASE_OBJECT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">BASE_CHARACTER_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">)</span>
+    <span class="n">BASE_ROOM_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span><span class="p">)</span>
+    <span class="n">BASE_EXIT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">BASE_CHANNEL_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">)</span>
+    <span class="n">BASE_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">BASE_GUEST_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_GUEST_TYPECLASS</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">class_from_module</span>
+
+    <span class="c1"># delayed starts</span>
+    <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="set_trace"><a class="viewcode-back" href="../api/evennia.html#evennia.set_trace">[docs]</a><span class="k">def</span> <span class="nf">set_trace</span><span class="p">(</span><span class="n">term_size</span><span class="o">=</span><span class="p">(</span><span class="mi">140</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="n">debugger</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function for running a debugger inside the Evennia event loop.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        term_size (tuple, optional): Only used for Pudb and defines the size of the terminal</span>
+<span class="sd">            (width, height) in number of characters.</span>
+<span class="sd">        debugger (str, optional): One of &#39;auto&#39;, &#39;pdb&#39; or &#39;pudb&#39;. Pdb is the standard debugger. Pudb</span>
+<span class="sd">            is an external package with a different, more &#39;graphical&#39;, ncurses-based UI. With</span>
+<span class="sd">            &#39;auto&#39;, will use pudb if possible, otherwise fall back to pdb. Pudb is available through</span>
+<span class="sd">            `pip install pudb`.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        To use:</span>
+
+<span class="sd">        1) add this to a line to act as a breakpoint for entering the debugger:</span>
+
+<span class="sd">            from evennia import set_trace; set_trace()</span>
+
+<span class="sd">        2) restart evennia in interactive mode</span>
+
+<span class="sd">            evennia istart</span>
+
+<span class="sd">        3) debugger will appear in the interactive terminal when breakpoint is reached. Exit</span>
+<span class="sd">           with &#39;q&#39;, remove the break line and restart server when finished.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">dbg</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">debugger</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;pudb&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">pudb</span> <span class="k">import</span> <span class="n">debugger</span>
+
+            <span class="n">dbg</span> <span class="o">=</span> <span class="n">debugger</span><span class="o">.</span><span class="n">Debugger</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">,</span> <span class="n">term_size</span><span class="o">=</span><span class="n">term_size</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">debugger</span> <span class="o">==</span> <span class="s2">&quot;pudb&quot;</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dbg</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">pdb</span>
+
+        <span class="n">dbg</span> <span class="o">=</span> <span class="n">pdb</span><span class="o">.</span><span class="n">Pdb</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Start debugger, forcing it up one stack frame (otherwise `set_trace` will start debugger</span>
+        <span class="c1"># this point, not the actual code location)</span>
+        <span class="n">dbg</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># Stopped at breakpoint. Press &#39;n&#39; to continue into the code.</span>
+        <span class="n">dbg</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
