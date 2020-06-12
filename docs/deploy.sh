@@ -19,16 +19,16 @@ mv build ..
 cd ..
 rm -Rf docs/*
 cp -Rf build/html/versions/* docs/
+ln -s docs/v1.0-dev latest 
 git add docs/*
-rm -Rf build
-
 git commit -a -m "Updated HTML docs"
+
+mv build docs/
 
 echo "Skipping deployment"
 # git push origin gh-pages
 
-# get back to previous branch (go into docs/ so we end up where we started)
-cd docs 
+# get back to previous branch 
 git checkout -
 
 echo "Deployed to https://evennia.github.io/evennia-docs."
