@@ -4,14 +4,13 @@
 # VERSION WARNING
 
 > This is the experimental static v0.9 documentation of Evennia, _automatically_ generated from the 
-> [evennia wiki]() at 2020-06-12 21:01:35.429785.
+> [evennia wiki](https://github.com/evennia/evennia/wiki/) at 2020-06-12 22:36:53.868703.
 > There are known conversion issues which  will _not_ be addressed in this version - refer to 
 > the original wiki if you have trouble.
 >
 > Manual conversion and cleanup will instead happen during development of the upcoming v1.0
 > version of this static documentation. 
 
-[](Wiki-front-page.)
 # Evennia Documentation
 
 This is the manual of [Evennia](http://www.evennia.com), the open source Python `MU*` creation system.
@@ -33,6 +32,8 @@ There is [a lengthier introduction](Evennia-Introduction) to read. You might als
 - The [Developer Central](Developer-Central) describes how Evennia works and is used by coders.
 - The [Tutorials & Examples](Tutorials) contains help pages on a step-by-step or tutorial format.
 - The [API](api:evennia) documentation is created from the latest source code.
+- The [TOC](toc) lists all regular documentation pages.
+
 
 [search]: https://www.google.com/cse/publicurl?cx=010440404980795145992:6ztkvqc46je
 [group]: https://groups.google.com/forum/#%21forum/evennia
