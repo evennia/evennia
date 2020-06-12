@@ -20,14 +20,6 @@ Subpackages
 Submodules
 ----------
 
-evennia.server module
----------------------
-
-.. automodule:: evennia.server
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 evennia.server.admin module
 ---------------------------
 
