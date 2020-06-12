@@ -175,7 +175,7 @@ All *global callables* in your added module will be considered a new protfunc. T
 The default protfuncs available out of the box are defined in `evennia/prototypes/profuncs.py`. To override the ones available, just add the same-named function in your own protfunc module.
 
 | Protfunc | Description | 
-|----------|-------------|
+
 | `$random()` | Returns random value in range [0, 1) |
 | `$randint(start, end)` | Returns random value in range [start, end] |
 | `$left_justify(<text>)` | Left-justify text |

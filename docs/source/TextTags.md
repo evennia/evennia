@@ -59,7 +59,7 @@ to get a list of all supported ANSI colours and the tags used to produce them.
 A few additional ANSI codes are supported: 
 
 - `|/` A line break. You cannot put the normal Python `\n` line breaks in text entered inside the game (Evennia will filter this for security reasons). This is what you use instead: use the `|/` marker to format text with line breaks from the game command line.
-- `|-` This will translate into a `TAB` character. This will not always show (or show differently) to the client since it depends on their local settings. It's often better to use multiple spaces.
+- `` This will translate into a `TAB` character. This will not always show (or show differently) to the client since it depends on their local settings. It's often better to use multiple spaces.
 - `|_` This is a space. You can usually use the normal space character, but if the space is *at the end of the line*, Evennia will likely crop it. This tag will not be cropped but always result in a space.
 - `|*` This will invert the current text/background colours. Can be useful to mark things (but see below).
 

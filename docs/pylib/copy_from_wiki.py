@@ -15,14 +15,32 @@ We also need to build the toc-tree and should do so automatically for now.
 
 import glob
 import re
+import datetime 
 
 _RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
 _RE_REF_LINK = re.compile(r"\[[\w -\[\]]+?\]\(.+?\)", re.I + re.S + re.U)
+
+_RE_CLEAN = re.compile(r"\|-+?|-+\|", re.I + re.S + re.U)
 
 _IGNORE_FILES = (
     "_Sidebar.md",
     "Wiki-Index.md"
 )
+
+_INDEX_PREFIX = f"""
+
+
+# VERSION WARNING
+
+> This is the experimental static v0.9 documentation of Evennia, _automatically_ generated from the 
+> [evennia wiki](https://github.com/evennia/evennia/wiki/) at {datetime.datetime.now()}.
+> There are known conversion issues which  will _not_ be addressed in this version - refer to 
+> the original wiki if you have trouble.
+>
+> Manual conversion and cleanup will instead happen during development of the upcoming v1.0
+> version of this static documentation. 
+
+"""
 
 _WIKI_DIR = "../../../evennia.wiki/"
 _INFILES = [path for path in sorted(glob.glob(_WIKI_DIR + "/*.md"))
@@ -201,9 +219,11 @@ def convert_links(files, outdir):
 
     for inpath in files:
 
+        is_index = False 
         outfile = inpath.rsplit('/', 1)[-1]
         if outfile == "Home.md":
             outfile = "index.md"
+            is_index = True
         outfile = _OUTDIR + outfile
 
         title = inpath.rsplit("/", 1)[-1].split(".", 1)[0].replace("-", " ")
@@ -211,11 +231,19 @@ def convert_links(files, outdir):
         print(f"Converting links in {inpath} -> {outfile} ...")
         with open(inpath) as fil:
             text = fil.read()
+
+            if is_index:
+                text = _INDEX_PREFIX + text 
+
             _CURRENT_TITLE = title.replace(" ", "-")
+            text = _RE_CLEAN.sub("", text)
             text = _RE_REF_LINK.sub(_sub_remap, text)
             text = _RE_MD_LINK.sub(_sub_link, text)
             text = text.split('\n')[1:] if text.split('\n')[0].strip().startswith('[]') else text.split('\n')
-            text = f"# {title}\n\n" + '\n'.join(text)
+            text = "\n".join(text)
+
+            if not is_index:
+                text = f"# {title}\n\n{text}"
 
         with open(outfile, 'w') as fil:
             fil.write(text)

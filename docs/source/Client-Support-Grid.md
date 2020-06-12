@@ -11,7 +11,7 @@ This grid tries to gather Evennia-specific knowledge about the various clients a
 ## Client Grid
 
 Name                   | Version  | Comments
------------------------|:----------:|-------------
+:----------:------------
 [Evennia webclient][1] | 0.6  | Uses WS/AJAX. [Current client issues][2]
 [tintin++][3]          | 2.0+ | No MXP support
 [tinyfugue][4]         | 5.0+ | No UTF-8 support
