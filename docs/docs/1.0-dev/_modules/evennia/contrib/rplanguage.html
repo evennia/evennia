@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.contrib.rplanguage &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.rplanguage</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Language and whisper obfuscation system</span>
+
+<span class="sd">Evennia contrib - Griatch 2015</span>
+
+
+<span class="sd">This module is intented to be used with an emoting system (such as</span>
+<span class="sd">contrib/rpsystem.py). It offers the ability to obfuscate spoken words</span>
+<span class="sd">in the game in various ways:</span>
+
+<span class="sd">- Language: The language functionality defines a pseudo-language map</span>
+<span class="sd">    to any number of languages.  The string will be obfuscated depending</span>
+<span class="sd">    on a scaling that (most likely) will be input as a weighted average of</span>
+<span class="sd">    the language skill of the speaker and listener.</span>
+<span class="sd">- Whisper: The whisper functionality will gradually &quot;fade out&quot; a</span>
+<span class="sd">    whisper along as scale 0-1, where the fading is based on gradually</span>
+<span class="sd">    removing sections of the whisper that is (supposedly) easier to</span>
+<span class="sd">    overhear (for example &quot;s&quot; sounds tend to be audible even when no other</span>
+<span class="sd">    meaning can be determined).</span>
+
+<span class="sd">Usage:</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    from evennia.contrib import rplanguage</span>
+
+<span class="sd">    # need to be done once, here we create the &quot;default&quot; lang</span>
+<span class="sd">    rplanguage.add_language()</span>
+
+<span class="sd">    say = &quot;This is me talking.&quot;</span>
+<span class="sd">    whisper = &quot;This is me whispering.</span>
+
+<span class="sd">    print rplanguage.obfuscate_language(say, level=0.0)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;This is me talking.&quot;</span>
+<span class="sd">    print rplanguage.obfuscate_language(say, level=0.5)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;This is me byngyry.&quot;</span>
+<span class="sd">    print rplanguage.obfuscate_language(say, level=1.0)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;Daly ly sy byngyry.&quot;</span>
+
+<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.0)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;This is me whispering&quot;</span>
+<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.2)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;This is m- whisp-ring&quot;</span>
+<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.5)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;---s -s -- ---s------&quot;</span>
+<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.7)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;---- -- -- ----------&quot;</span>
+<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=1.0)</span>
+<span class="sd">    &lt;&lt;&lt; &quot;...&quot;</span>
+
+<span class="sd">    ```</span>
+
+<span class="sd">    To set up new languages, import and use the `add_language()`</span>
+<span class="sd">    helper method in this module. This allows you to customize the</span>
+<span class="sd">    &quot;feel&quot; of the semi-random language you are creating. Especially</span>
+<span class="sd">    the `word_length_variance` helps vary the length of translated</span>
+<span class="sd">    words compared to the original and can help change the &quot;feel&quot; for</span>
+<span class="sd">    the language you are creating. You can also add your own</span>
+<span class="sd">    dictionary and &quot;fix&quot; random words for a list of input words.</span>
+
+<span class="sd">    Below is an example of &quot;elvish&quot;, using &quot;rounder&quot; vowels and sounds:</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    phonemes = &quot;oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy &quot; \</span>
+<span class="sd">               &quot;oy ua uh uw y p b t d f v t dh s z sh zh ch jh k &quot; \</span>
+<span class="sd">               &quot;ng g m n l r w&quot;,</span>
+<span class="sd">    vowels = &quot;eaoiuy&quot;</span>
+<span class="sd">    grammar = &quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot; \</span>
+<span class="sd">              &quot;vcvvccvvc cvcvvcvvcc vcvcvvccvcvv&quot;,</span>
+<span class="sd">    word_length_variance = 1</span>
+<span class="sd">    noun_postfix = &quot;&#39;la&quot;</span>
+<span class="sd">    manual_translations = {&quot;the&quot;:&quot;y&#39;e&quot;, &quot;we&quot;:&quot;uyi&quot;, &quot;she&quot;:&quot;semi&quot;, &quot;he&quot;:&quot;emi&quot;,</span>
+<span class="sd">                          &quot;you&quot;: &quot;do&quot;, &#39;me&#39;:&#39;mi&#39;,&#39;i&#39;:&#39;me&#39;, &#39;be&#39;:&quot;hy&#39;e&quot;, &#39;and&#39;:&#39;y&#39;}</span>
+
+<span class="sd">    rplanguage.add_language(key=&quot;elvish&quot;, phonemes=phonemes, grammar=grammar,</span>
+<span class="sd">                             word_length_variance=word_length_variance,</span>
+<span class="sd">                             noun_postfix=noun_postfix, vowels=vowels,</span>
+<span class="sd">                             manual_translations=manual_translations</span>
+<span class="sd">                             auto_translations=&quot;my_word_file.txt&quot;)</span>
+
+<span class="sd">    ```</span>
+
+<span class="sd">    This will produce a decicively more &quot;rounded&quot; and &quot;soft&quot; language</span>
+<span class="sd">    than the default one. The few manual_translations also make sure</span>
+<span class="sd">    to make it at least look superficially &quot;reasonable&quot;.</span>
+
+<span class="sd">    The `auto_translations` keyword is useful, this accepts either a</span>
+<span class="sd">    list or a path to a file of words (one per line) to automatically</span>
+<span class="sd">    create fixed translations for according to the grammatical rules.</span>
+<span class="sd">    This allows to quickly build a large corpus of translated words</span>
+<span class="sd">    that never change (if this is desired).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Obfuscate language</span>
+<span class="c1">#</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+<span class="c1"># default language grammar</span>
+<span class="n">_PHONEMES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh &quot;</span>
+    <span class="s2">&quot;s z sh zh ch jh k ng g m n l r w&quot;</span>
+<span class="p">)</span>
+<span class="n">_VOWELS</span> <span class="o">=</span> <span class="s2">&quot;eaoiuy&quot;</span>
+<span class="c1"># these must be able to be constructed from phonemes (so for example,</span>
+<span class="c1"># if you have v here, there must exist at least one single-character</span>
+<span class="c1"># vowel phoneme defined above)</span>
+<span class="n">_GRAMMAR</span> <span class="o">=</span> <span class="s2">&quot;v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv&quot;</span>
+
+<span class="n">_RE_FLAGS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span>
+<span class="n">_RE_GRAMMAR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;vv|cc|v|c&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
+<span class="n">_RE_WORD</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\w+&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
+<span class="n">_RE_EXTRA_CHARS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+(?=\W)|[,.?;](?=[,.?;]|\s+[,.?;])&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="LanguageError"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.LanguageError">[docs]</a><span class="k">class</span> <span class="nc">LanguageError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="LanguageExistsError"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.LanguageExistsError">[docs]</a><span class="k">class</span> <span class="nc">LanguageExistsError</span><span class="p">(</span><span class="n">LanguageError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="LanguageHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.LanguageHandler">[docs]</a><span class="k">class</span> <span class="nc">LanguageHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a storage class that should usually not be created on its</span>
+<span class="sd">    own. It&#39;s automatically created by a call to `obfuscate_language`</span>
+<span class="sd">    or `add_language` below.</span>
+
+<span class="sd">    Languages are implemented as a &quot;logical&quot; pseudo- consistent language</span>
+<span class="sd">    algorith here. The idea is that a language is built up from</span>
+<span class="sd">    phonemes. These are joined together according to a &quot;grammar&quot; of</span>
+<span class="sd">    possible phoneme- combinations and allowed characters. It may</span>
+<span class="sd">    sound simplistic, but this allows to easily make</span>
+<span class="sd">    &quot;similar-sounding&quot; languages. One can also custom-define a</span>
+<span class="sd">    dictionary of some common words to give further consistency.</span>
+<span class="sd">    Optionally, the system also allows an input list of common words</span>
+<span class="sd">    to be loaded and given random translations. These will be stored</span>
+<span class="sd">    to disk and will thus not change. This gives a decent &quot;stability&quot;</span>
+<span class="sd">    of the language but if the goal is to obfuscate, this may allow</span>
+<span class="sd">    players to eventually learn to understand the gist of a sentence</span>
+<span class="sd">    even if their characters can not. Any number of languages can be</span>
+<span class="sd">    created this way.</span>
+
+<span class="sd">    This nonsense language will partially replace the actual spoken</span>
+<span class="sd">    language when so desired (usually because the speaker/listener</span>
+<span class="sd">    don&#39;t know the language well enough).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LanguageHandler.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.LanguageHandler.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Called when script is first started&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;language_handler&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">language_storage</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="LanguageHandler.add"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.LanguageHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">phonemes</span><span class="o">=</span><span class="n">_PHONEMES</span><span class="p">,</span>
+        <span class="n">grammar</span><span class="o">=</span><span class="n">_GRAMMAR</span><span class="p">,</span>
+        <span class="n">word_length_variance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">noun_translate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">noun_prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">noun_postfix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">vowels</span><span class="o">=</span><span class="n">_VOWELS</span><span class="p">,</span>
+        <span class="n">manual_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">auto_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new language. Note that you generally only need to do</span>
+<span class="sd">        this once per language and that adding an existing language</span>
+<span class="sd">        will re-initialize all the random components to new permanent</span>
+<span class="sd">        values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str, optional): The name of the language. This</span>
+<span class="sd">                will be used as an identifier for the language so it</span>
+<span class="sd">                should be short and unique.</span>
+<span class="sd">            phonemes (str, optional): Space-separated string of all allowed</span>
+<span class="sd">                phonemes in this language. If either of the base phonemes</span>
+<span class="sd">                (c, v, cc, vv) are present in the grammar, the phoneme list must</span>
+<span class="sd">                at least include one example of each.</span>
+<span class="sd">            grammar (str): All allowed consonant (c) and vowel (v) combinations</span>
+<span class="sd">                allowed to build up words. Grammars are broken into the base phonemes</span>
+<span class="sd">                (c, v, cc, vv) prioritizing the longer bases. So cvv would be a</span>
+<span class="sd">                the c + vv (would allow for a word like &#39;die&#39; whereas</span>
+<span class="sd">                cvcvccc would be c+v+c+v+cc+c (a word like &#39;galosch&#39;).</span>
+<span class="sd">            word_length_variance (real): The variation of length of words.</span>
+<span class="sd">                0 means a minimal variance, higher variance may mean words</span>
+<span class="sd">                have wildly varying length; this strongly affects how the</span>
+<span class="sd">                language &quot;looks&quot;.</span>
+<span class="sd">            noun_translate (bool, optional): If a proper noun, identified as a</span>
+<span class="sd">                capitalized word, should be translated or not. By default they</span>
+<span class="sd">                will not, allowing for e.g. the names of characters to be understandable.</span>
+<span class="sd">            noun_prefix (str, optional): A prefix to go before every noun</span>
+<span class="sd">                in this language (if any).</span>
+<span class="sd">            noun_postfix (str, optuonal): A postfix to go after every noun</span>
+<span class="sd">                in this language (if any, usually best to avoid combining</span>
+<span class="sd">                with `noun_prefix` or language becomes very wordy).</span>
+<span class="sd">            vowels (str, optional): Every vowel allowed in this language.</span>
+<span class="sd">            manual_translations (dict, optional): This allows for custom-setting</span>
+<span class="sd">                certain words in the language to mean the same thing. It is</span>
+<span class="sd">                on the form `{real_word: fictional_word}`, for example</span>
+<span class="sd">                `{&quot;the&quot;, &quot;y&#39;e&quot;}` .</span>
+<span class="sd">            auto_translations (str or list, optional): These are lists</span>
+<span class="sd">                words that should be auto-translated with a random, but</span>
+<span class="sd">                fixed, translation. If a path to a file, this file should</span>
+<span class="sd">                contain a list of words to produce translations for, one</span>
+<span class="sd">                word per line.  If a list, the list&#39;s elements should be</span>
+<span class="sd">                the words to translate.  The `manual_translations` will</span>
+<span class="sd">                always override overlapping translations created</span>
+<span class="sd">                automatically.</span>
+<span class="sd">            force (bool, optional): Unless true, will not allow the addition</span>
+<span class="sd">                of a language that is already created.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            LanguageExistsError: Raised if trying to adding a language</span>
+<span class="sd">                with a key that already exists, without `force` being set.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            The `word_file` is for example a word-frequency list for</span>
+<span class="sd">            the N most common words in the host language. The</span>
+<span class="sd">            translations will be random, but will be stored</span>
+<span class="sd">            persistently to always be the same. This allows for</span>
+<span class="sd">            building a quick, decently-sounding fictive language that</span>
+<span class="sd">            tend to produce the same &quot;translation&quot; (mostly) with the</span>
+<span class="sd">            same input sentence.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">language_storage</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LanguageExistsError</span><span class="p">(</span>
+                <span class="s2">&quot;Language is already created. Re-adding it will re-build&quot;</span>
+                <span class="s2">&quot; its dictionary map. Use &#39;force=True&#39; keyword if you are sure.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># create grammar_component-&gt;phoneme mapping</span>
+        <span class="c1"># {&quot;vv&quot;: [&quot;ea&quot;, &quot;oh&quot;, ...], ...}</span>
+        <span class="n">grammar2phonemes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">phoneme</span> <span class="ow">in</span> <span class="n">phonemes</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;\W&quot;</span><span class="p">,</span> <span class="n">phoneme</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">LanguageError</span><span class="p">(</span><span class="s2">&quot;The phoneme &#39;</span><span class="si">%s</span><span class="s2">&#39; contains an invalid character&quot;</span> <span class="o">%</span> <span class="n">phoneme</span><span class="p">)</span>
+            <span class="n">gram</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;v&quot;</span> <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">vowels</span> <span class="k">else</span> <span class="s2">&quot;c&quot;</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">phoneme</span><span class="p">])</span>
+            <span class="n">grammar2phonemes</span><span class="p">[</span><span class="n">gram</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phoneme</span><span class="p">)</span>
+
+        <span class="c1"># allowed grammar are grouped by length</span>
+        <span class="n">gramdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">grammar</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;\W|(!=[cv])&quot;</span><span class="p">,</span> <span class="n">gram</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">LanguageError</span><span class="p">(</span>
+                    <span class="s2">&quot;The grammar &#39;</span><span class="si">%s</span><span class="s2">&#39; is invalid (only &#39;c&#39; and &#39;v&#39; are allowed)&quot;</span> <span class="o">%</span> <span class="n">gram</span>
+                <span class="p">)</span>
+            <span class="n">gramdict</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">gram</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gram</span><span class="p">)</span>
+        <span class="n">grammar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">gramdict</span><span class="p">)</span>
+
+        <span class="c1"># create automatic translation</span>
+        <span class="n">translation</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">auto_translations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auto_translations</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="c1"># path to a file rather than a list</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">auto_translations</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">auto_translations</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">auto_translations</span><span class="p">:</span>
+                <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">lword</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+                <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">wlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lword</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">word_length_variance</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="n">wlen</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grammar</span><span class="p">:</span>
+                    <span class="c1"># always create a translation, use random length</span>
+                    <span class="n">structure</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">grammar</span><span class="p">[</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">grammar</span><span class="p">))])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># use the corresponding length</span>
+                    <span class="n">structure</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">grammar</span><span class="p">[</span><span class="n">wlen</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_GRAMMAR</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">structure</span><span class="p">):</span>
+                    <span class="n">new_word</span> <span class="o">+=</span> <span class="n">choice</span><span class="p">(</span><span class="n">grammar2phonemes</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()])</span>
+                <span class="n">translation</span><span class="p">[</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">new_word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">manual_translations</span><span class="p">:</span>
+            <span class="c1"># update with manual translations</span>
+            <span class="n">translation</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">manual_translations</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="p">)</span>
+
+        <span class="c1"># store data</span>
+        <span class="n">storage</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;translation&quot;</span><span class="p">:</span> <span class="n">translation</span><span class="p">,</span>
+            <span class="s2">&quot;grammar&quot;</span><span class="p">:</span> <span class="n">grammar</span><span class="p">,</span>
+            <span class="s2">&quot;grammar2phonemes&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">grammar2phonemes</span><span class="p">),</span>
+            <span class="s2">&quot;word_length_variance&quot;</span><span class="p">:</span> <span class="n">word_length_variance</span><span class="p">,</span>
+            <span class="s2">&quot;noun_translate&quot;</span><span class="p">:</span> <span class="n">noun_translate</span><span class="p">,</span>
+            <span class="s2">&quot;noun_prefix&quot;</span><span class="p">:</span> <span class="n">noun_prefix</span><span class="p">,</span>
+            <span class="s2">&quot;noun_postfix&quot;</span><span class="p">:</span> <span class="n">noun_postfix</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">language_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">storage</span></div>
+
+<div class="viewcode-block" id="LanguageHandler._translate_sub"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.LanguageHandler._translate_sub">[docs]</a>    <span class="k">def</span> <span class="nf">_translate_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replacer method called by re.sub when</span>
+<span class="sd">        traversing the language string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            match (re.matchobj): Match object from regex.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            converted word.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            Assumes self.lastword and self.level is available</span>
+<span class="sd">            on the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">word</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+        <span class="n">lword</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">:</span>
+            <span class="c1"># below level. Don&#39;t translate</span>
+            <span class="n">new_word</span> <span class="o">=</span> <span class="n">word</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># try to translate the word from dictionary</span>
+            <span class="n">new_word</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">new_word</span><span class="p">:</span>
+                <span class="c1"># no dictionary translation. Generate one</span>
+
+                <span class="c1"># find out what preceeded this word</span>
+                <span class="n">wpos</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="n">preceeding</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">string</span><span class="p">[:</span><span class="n">wpos</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">start_sentence</span> <span class="o">=</span> <span class="n">preceeding</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">preceeding</span>
+
+                <span class="c1"># make up translation on the fly. Length can</span>
+                <span class="c1"># vary from un-translated word.</span>
+                <span class="n">wlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="n">lword</span>
+                    <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">[</span><span class="s2">&quot;word_length_variance&quot;</span><span class="p">])),</span>
+                <span class="p">)</span>
+                <span class="n">grammar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">[</span><span class="s2">&quot;grammar&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">wlen</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grammar</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># this word has no direct translation!</span>
+                        <span class="n">wlen</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># use random word length</span>
+                        <span class="n">wlen</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+                <span class="k">if</span> <span class="n">wlen</span><span class="p">:</span>
+                    <span class="n">structure</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">grammar</span><span class="p">[</span><span class="n">wlen</span><span class="p">])</span>
+                    <span class="n">grammar2phonemes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">[</span><span class="s2">&quot;grammar2phonemes&quot;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_GRAMMAR</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">structure</span><span class="p">):</span>
+                        <span class="c1"># there are only four combinations: vv,cc,c,v</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">new_word</span> <span class="o">+=</span> <span class="n">choice</span><span class="p">(</span><span class="n">grammar2phonemes</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()])</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span>
+                                <span class="s2">&quot;You need to supply at least one example of each of &quot;</span>
+                                <span class="s2">&quot;the four base phonemes (c, v, cc, vv)&quot;</span>
+                            <span class="p">)</span>
+                            <span class="c1"># abort translation here</span>
+                            <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                            <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">istitle</span><span class="p">():</span>
+                    <span class="n">title_word</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">start_sentence</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;noun_translate&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                        <span class="c1"># don&#39;t translate what we identify as proper nouns (names)</span>
+                        <span class="n">title_word</span> <span class="o">=</span> <span class="n">word</span>
+                    <span class="k">elif</span> <span class="n">new_word</span><span class="p">:</span>
+                        <span class="n">title_word</span> <span class="o">=</span> <span class="n">new_word</span>
+
+                    <span class="k">if</span> <span class="n">title_word</span><span class="p">:</span>
+                        <span class="c1"># Regardless of if we translate or not, we will add the custom prefix/postfixes</span>
+                        <span class="n">new_word</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">[</span><span class="s2">&quot;noun_prefix&quot;</span><span class="p">],</span>
+                            <span class="n">title_word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">[</span><span class="s2">&quot;noun_postfix&quot;</span><span class="p">],</span>
+                        <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">word</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="c1"># keep LOUD words loud also when translated</span>
+                <span class="n">new_word</span> <span class="o">=</span> <span class="n">new_word</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new_word</span></div>
+
+<div class="viewcode-block" id="LanguageHandler.translate"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.LanguageHandler.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translate the text according to the given level.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to translate</span>
+<span class="sd">            level (real): Value between 0.0 and 1.0, where</span>
+<span class="sd">                0.0 means no obfuscation (text returned unchanged) and</span>
+<span class="sd">                1.0 means full conversion of every word. The closer to</span>
+<span class="sd">                1, the shorter words will be translated.</span>
+<span class="sd">            language (str): The language key identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            text (str): A translated string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="c1"># no translation</span>
+            <span class="k">return</span> <span class="n">text</span>
+        <span class="n">language</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">language_storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">language</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">language</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">language</span>
+
+        <span class="c1"># configuring the translation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))))</span>
+        <span class="n">translation</span> <span class="o">=</span> <span class="n">_RE_WORD</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_translate_sub</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># the substitution may create too long empty spaces, remove those</span>
+        <span class="k">return</span> <span class="n">_RE_EXTRA_CHARS</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">translation</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Language access functions</span>
+
+<span class="n">_LANGUAGE_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="obfuscate_language"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.obfuscate_language">[docs]</a><span class="k">def</span> <span class="nf">obfuscate_language</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main access method for the language parser.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): Text to obfuscate.</span>
+<span class="sd">        level (real, optional): A value from 0.0-1.0 determining</span>
+<span class="sd">            the level of obfuscation where 0 means no jobfuscation</span>
+<span class="sd">            (string returned unchanged) and 1.0 means the entire</span>
+<span class="sd">            string is obfuscated.</span>
+<span class="sd">        language (str, optional): The identifier of a language</span>
+<span class="sd">            the system understands.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        translated (str): The translated text.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># initialize the language handler and cache it</span>
+    <span class="k">global</span> <span class="n">_LANGUAGE_HANDLER</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_LANGUAGE_HANDLER</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_LANGUAGE_HANDLER</span> <span class="o">=</span> <span class="n">LanguageHandler</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;language_handler&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">LanguageHandler</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_LANGUAGE_HANDLER</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">create_script</span>
+
+                <span class="n">_LANGUAGE_HANDLER</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="n">LanguageHandler</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_LANGUAGE_HANDLER</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_language"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.add_language">[docs]</a><span class="k">def</span> <span class="nf">add_language</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Access function to creating a new language. See the docstring of</span>
+<span class="sd">    `LanguageHandler.add` for list of keyword arguments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_LANGUAGE_HANDLER</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_LANGUAGE_HANDLER</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_LANGUAGE_HANDLER</span> <span class="o">=</span> <span class="n">LanguageHandler</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;language_handler&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">LanguageHandler</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_LANGUAGE_HANDLER</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">create_script</span>
+
+                <span class="n">_LANGUAGE_HANDLER</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="n">LanguageHandler</span><span class="p">)</span>
+    <span class="n">_LANGUAGE_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="available_languages"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.available_languages">[docs]</a><span class="k">def</span> <span class="nf">available_languages</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns all available language keys.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        languages (list): List of key strings of all available</span>
+<span class="sd">        languages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_LANGUAGE_HANDLER</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_LANGUAGE_HANDLER</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_LANGUAGE_HANDLER</span> <span class="o">=</span> <span class="n">LanguageHandler</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;language_handler&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">LanguageHandler</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_LANGUAGE_HANDLER</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">create_script</span>
+
+                <span class="n">_LANGUAGE_HANDLER</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="n">LanguageHandler</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_LANGUAGE_HANDLER</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;language_storage&quot;</span><span class="p">,</span> <span class="p">{}))</span></div>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Whisper obscuration</span>
+<span class="c1">#</span>
+<span class="c1"># This obsucration table is designed by obscuring certain</span>
+<span class="c1"># vowels first, following by consonants that tend to be</span>
+<span class="c1"># more audible over long distances, like s. Finally it</span>
+<span class="c1"># does non-auditory replacements, like exclamation marks</span>
+<span class="c1"># and capitalized letters (assumed to be spoken louder) that may still</span>
+<span class="c1"># give a user some idea of the sentence structure. Then the  word</span>
+<span class="c1"># lengths are also obfuscated and finally the whisper # length itself.</span>
+<span class="c1">#</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<span class="n">_RE_WHISPER_OBSCURE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^$&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># This is a Test! #0 full whisper</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[ae]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># This -s - Test! #1 add uy</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[aeuy]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># This -s - Test! #2 add oue</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[aeiouy]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># Th-s -s - T-st! #3 add all consonants</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[aeiouybdhjlmnpqrv]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># T--s -s - T-st! #4 add hard consonants</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-eg-rt-z]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># T--s -s - T-s-! #5 add all capitals</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-EG-RT-Za-eg-rt-z]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># ---s -s - --s-! #6 add f</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-EG-RT-Za-rt-z]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># ---s -s - --s-! #7 add s</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-EG-RT-Za-z]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># ---- -- - ----! #8 add capital F</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-RT-Za-z]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># ---- -- - ----! #9 add capital S</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\w]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># ---- -- - ----! #10 non-alphanumerals</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\S]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># ---- -- - ----  #11 words</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\w\W]&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>  <span class="c1"># --------------  #12 whisper length</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>
+<span class="p">]</span>  <span class="c1"># ...             #13 (always same length)</span>
+
+
+<div class="viewcode-block" id="obfuscate_whisper"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rplanguage.obfuscate_whisper">[docs]</a><span class="k">def</span> <span class="nf">obfuscate_whisper</span><span class="p">(</span><span class="n">whisper</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obfuscate whisper depending on a pre-calculated level</span>
+<span class="sd">    (that may depend on distance, listening skill etc)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        whisper (str): The whisper string to obscure. The</span>
+<span class="sd">            entire string will be considered in the obscuration.</span>
+<span class="sd">        level (real, optional): This is a value 0-1, where 0</span>
+<span class="sd">            means not obscured (whisper returned unchanged) and 1</span>
+<span class="sd">            means fully obscured.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">level</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">olevel</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">13.0</span> <span class="o">*</span> <span class="n">level</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">olevel</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;...&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_RE_WHISPER_OBSCURE</span><span class="p">[</span><span class="n">olevel</span><span class="p">]</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">whisper</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="rplanguage.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

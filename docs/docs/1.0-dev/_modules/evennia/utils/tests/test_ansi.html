@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.tests.test_ansi &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.tests.test_ansi</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test of the ANSI parsing and ANSIStrings.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSIString</span> <span class="k">as</span> <span class="n">AN</span>
+
+
+<div class="viewcode-block" id="TestANSIString"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_ansi.TestANSIString">[docs]</a><span class="k">class</span> <span class="nc">TestANSIString</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies that ANSIString&#39;s string-API works as intended.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestANSIString.setUp"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_ansi.TestANSIString.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">example_raw</span> <span class="o">=</span> <span class="s2">&quot;|relectric |cboogaloo|n&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">example_ansi</span> <span class="o">=</span> <span class="n">AN</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">example_raw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">example_str</span> <span class="o">=</span> <span class="s2">&quot;electric boogaloo&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">example_output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31melectric </span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[36mboogaloo</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span></div>
+
+<div class="viewcode-block" id="TestANSIString.test_length"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_ansi.TestANSIString.test_length">[docs]</a>    <span class="k">def</span> <span class="nf">test_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">example_ansi</span><span class="p">),</span> <span class="mi">17</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestANSIString.test_clean"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_ansi.TestANSIString.test_clean">[docs]</a>    <span class="k">def</span> <span class="nf">test_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">example_ansi</span><span class="o">.</span><span class="n">clean</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">example_str</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestANSIString.test_raw"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_ansi.TestANSIString.test_raw">[docs]</a>    <span class="k">def</span> <span class="nf">test_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">example_ansi</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">example_output</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestANSIString.test_format"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_ansi.TestANSIString.test_format">[docs]</a>    <span class="k">def</span> <span class="nf">test_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.example_ansi:0&lt;20}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">example_output</span> <span class="o">+</span> <span class="s2">&quot;000&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestANSIString.test_split_with_mixed_strings"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_ansi.TestANSIString.test_split_with_mixed_strings">[docs]</a>    <span class="k">def</span> <span class="nf">test_split_with_mixed_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This tests the solution of a bug&quot;&quot;&quot;</span>
+
+        <span class="n">anstr1</span> <span class="o">=</span> <span class="n">AN</span><span class="p">(</span><span class="s2">&quot;Line1</span><span class="se">\n</span><span class="s2">Line2&quot;</span><span class="p">)</span>
+        <span class="n">anstr2</span> <span class="o">=</span> <span class="n">AN</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">AN</span><span class="p">(</span><span class="s2">&quot;Line1&quot;</span><span class="p">),</span> <span class="n">AN</span><span class="p">(</span><span class="s2">&quot;Line2&quot;</span><span class="p">)])</span>
+        <span class="n">anstr3</span> <span class="o">=</span> <span class="n">AN</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">AN</span><span class="p">(</span><span class="s2">&quot;Line1&quot;</span><span class="p">),</span> <span class="s2">&quot;Line2&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">anstr2</span><span class="p">,</span> <span class="n">anstr3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">anstr1</span><span class="p">,</span> <span class="n">anstr2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">anstr1</span><span class="p">,</span> <span class="n">anstr3</span><span class="p">)</span>
+
+        <span class="n">split1</span> <span class="o">=</span> <span class="n">anstr1</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">split2</span> <span class="o">=</span> <span class="n">anstr2</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">split3</span> <span class="o">=</span> <span class="n">anstr3</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">split2</span><span class="p">,</span> <span class="n">split3</span><span class="p">,</span> <span class="s2">&quot;Split 2 and 3 differ&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">split1</span><span class="p">,</span> <span class="n">split2</span><span class="p">,</span> <span class="s2">&quot;Split 1 and 2 differ&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">split1</span><span class="p">,</span> <span class="n">split3</span><span class="p">,</span> <span class="s2">&quot;Split 1 and 3 differ&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="test_ansi.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

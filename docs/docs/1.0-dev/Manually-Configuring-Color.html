@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Manually Configuring Color &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="manually-configuring-color">
+<h1>Manually Configuring Color<a class="headerlink" href="#manually-configuring-color" title="Permalink to this headline">¶</a></h1>
+<p>This is a small tutorial for customizing your character objects, using the example of letting users turn on and off ANSI color parsing as an example.  <code class="docutils literal notranslate"><span class="pre">&#64;options</span> <span class="pre">NOCOLOR=True</span></code> will now do what this tutorial shows, but the tutorial subject can be applied to other toggles you may want, as well.</p>
+<p>In the Building guide’s <a class="reference external" href="/TextTags.html#coloured-text">Colors</a> page you can learn how to add color to your game by using special markup. Colors enhance the gaming experience, but not all users want color. Examples would be users working from clients that don’t support color, or people with various seeing disabilities that rely on screen readers to play your game. Also, whereas Evennia normally automatically detects if a client supports color, it may get it wrong. Being able to turn it on manually if you know it <strong>should</strong> work could be a nice feature.</p>
+<p>So here’s how to allow those users to remove color. It basically means you implementing a simple configuration system for your characters. This is the basic sequence:</p>
+<ol class="simple">
+<li><p>Define your own default character typeclass, inheriting from Evennia’s default.</p></li>
+<li><p>Set an attribute on the character to control markup on/off.</p></li>
+<li><p>Set your custom character class to be the default for new accounts.</p></li>
+<li><p>Overload the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method on the typeclass and change how it uses markup.</p></li>
+<li><p>Create a custom command to allow users to change their setting.</p></li>
+</ol>
+<div class="section" id="setting-up-a-custom-typeclass">
+<h2>Setting up a custom Typeclass<a class="headerlink" href="#setting-up-a-custom-typeclass" title="Permalink to this headline">¶</a></h2>
+<p>Create a new module in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses</span></code> named, for example, <code class="docutils literal notranslate"><span class="pre">mycharacter.py</span></code>. Alternatively you can simply add a new class to ‘mygamegame/typeclasses/characters.py’.</p>
+<p>In your new module(or characters.py), create a new <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclass</span></a> inheriting from <code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code>. We will also import <code class="docutils literal notranslate"><span class="pre">evennia.utils.ansi</span></code>, which we will use later.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Character</span>
+    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
+
+    <span class="k">class</span> <span class="nc">ColorableCharacter</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
+        <span class="n">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c1"># set a color config value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</td></tr></table></div>
+<p>Above we set a simple config value as an <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a>.</p>
+<p>Let’s make sure that new characters are created of this type. Edit your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> file and add/change <code class="docutils literal notranslate"><span class="pre">BASE_CHARACTER_TYPECLASS</span></code> to point to your new character class. Observe that this will only affect <em>new</em> characters, not those already created. You have to convert already created characters to the new typeclass by using the <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> command (try on a secondary character first though, to test that everything works - you don’t want to render your root user unusable!).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@typeclass</span><span class="o">/</span><span class="n">reset</span><span class="o">/</span><span class="n">force</span> <span class="n">Bob</span> <span class="o">=</span> <span class="n">mycharacter</span><span class="o">.</span><span class="n">ColorableCharacter</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> changes Bob’s typeclass and runs all its creation hooks all over again. The <code class="docutils literal notranslate"><span class="pre">/reset</span></code> switch clears all attributes and properties back to the default for the new typeclass - this is useful in this case to avoid ending up with an object having a “mixture” of properties from the old typeclass and the new one. <code class="docutils literal notranslate"><span class="pre">/force</span></code> might be needed if you edit the typeclass and want to update the object despite the actual typeclass name not having changed.</p>
+</div>
+<div class="section" id="overload-the-msg-method">
+<h2>Overload the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method<a class="headerlink" href="#overload-the-msg-method" title="Permalink to this headline">¶</a></h2>
+<p>Next we need to overload the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method. What we want is to check the configuration value before calling the main function.  The original <code class="docutils literal notranslate"><span class="pre">msg</span></code> method call is seen in <code class="docutils literal notranslate"><span class="pre">evennia/objects/objects.py</span></code> and is called like this:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</pre></div>
+</td></tr></table></div>
+<p>As long as we define a method on our custom object with the same name and keep the same number of arguments/keywords we will overload the original. Here’s how it could look:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">ColorableCharacter</span><span class="p">(</span><span class="n">Character</span><span class="p">):</span>
+        <span class="c1"># [...]</span>
+        <span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="s2">&quot;our custom msg()&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> <span class="c1"># this would mean it was not set</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span><span class="p">:</span>
+                    <span class="c1"># remove the ANSI from the text</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span>
+                                               <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Above we create a custom version of the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method. If the configuration Attribute is set, it strips the ANSI from the text it is about to send, and then calls the parent <code class="docutils literal notranslate"><span class="pre">msg()</span></code> as usual. You need to <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> before your changes become visible.</p>
+<p>There we go! Just flip the attribute <code class="docutils literal notranslate"><span class="pre">config_color</span></code> to False and your users will not see any color. As superuser (assuming you use the Typeclass <code class="docutils literal notranslate"><span class="pre">ColorableCharacter</span></code>) you can test this with the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-color-config-command">
+<h2>Custom color config command<a class="headerlink" href="#custom-color-config-command" title="Permalink to this headline">¶</a></h2>
+<p>For completeness, let’s add a custom command so users can turn off their color display themselves if they want.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">mygame/commands</span></code>, create a new file, call it for example <code class="docutils literal notranslate"><span class="pre">configcmds.py</span></code> (it’s likely that you’ll want to add other commands for configuration down the line). You can also copy/rename the command template.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+
+    <span class="k">class</span> <span class="nc">CmdConfigColor</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configures your color</span>
+
+<span class="sd">        Usage:</span>
+<span class="sd">          @togglecolor on|off</span>
+
+<span class="sd">        This turns ANSI-colors on/off.</span>
+<span class="sd">        Default is on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@togglecolor&quot;</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@setcolor&quot;</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="s2">&quot;implements the command&quot;</span>
+            <span class="c1"># first we must remove whitespace from the argument</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="s2">&quot;off&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: @setcolor on|off&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s2">&quot;on&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="c1"># send a message with a tiny bit of formatting, just for fun</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Color was turned |won|W.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">config_color</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Color was turned off.&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Lastly, we make this command available to the user by adding it to the default <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and reloading the server. Make sure you also import the command:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mygame.commands</span> <span class="kn">import</span> <span class="n">configcmds</span>
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="c1"># [...]</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populates the cmdset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="c1"># any commands you add below will overload the default ones.</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># here is the only line that we edit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">configcmds</span><span class="o">.</span><span class="n">CmdConfigColor</span><span class="p">())</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="more-colors">
+<h2>More colors<a class="headerlink" href="#more-colors" title="Permalink to this headline">¶</a></h2>
+<p>Apart from ANSI colors, Evennia also supports <strong>Xterm256</strong> colors (See <a class="reference external" href="/TextTags.html#colored-text">Colors</a>). The <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method supports the <code class="docutils literal notranslate"><span class="pre">xterm256</span></code> keyword for manually activating/deactiving xterm256. It should be easy to expand the above example to allow players to customize xterm256 regardless of if Evennia thinks their client supports it or not.</p>
+<p>To get a better understanding of how <code class="docutils literal notranslate"><span class="pre">msg()</span></code> works with keywords, you can try this as superuser:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|123Dark blue with xterm256, bright blue with ANSI&quot;</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gThis should be uncolored&quot;</span><span class="p">,</span> <span class="n">nomarkup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Manually Configuring Color</a><ul>
+<li><a class="reference internal" href="#setting-up-a-custom-typeclass">Setting up a custom Typeclass</a></li>
+<li><a class="reference internal" href="#overload-the-msg-method">Overload the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method</a></li>
+<li><a class="reference internal" href="#custom-color-config-command">Custom color config command</a></li>
+<li><a class="reference internal" href="#more-colors">More colors</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Manually-Configuring-Color.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Manually-Configuring-Color.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Manually-Configuring-Color.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

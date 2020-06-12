@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Evennia Introduction &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="evennia-introduction">
+<h1>Evennia Introduction<a class="headerlink" href="#evennia-introduction" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p><em>A MUD (originally Multi-User Dungeon, with later variants Multi-User Dimension and Multi-User Domain) is a multiplayer real-time virtual world described primarily in text. MUDs combine elements of role-playing games, hack and slash, player versus player, interactive fiction and online chat. Players can read or view descriptions of rooms, objects, other players, non-player characters, and actions performed in the virtual world. Players typically interact with each other and the world by typing commands that resemble a natural language.</em> - <a class="reference external" href="http://en.wikipedia.org/wiki/MUD">Wikipedia</a></p>
+</div></blockquote>
+<p>If you are reading this, it’s quite likely you are dreaming of creating and running a text-based massively-multiplayer game (<a class="reference external" href="http://tinyurl.com/c5sc4bm">MUD/MUX/MUSH</a> etc) of your very own. You might just be starting to think about it, or you might have lugged around that <em>perfect</em> game in your mind for years … you know <em>just</em> how good it would be, if you could only make it come to reality. We know how you feel. That is, after all, why Evennia came to be.</p>
+<p>Evennia is in principle a MUD-building system: a bare-bones Python codebase and server intended to be highly extendable for any style of game. “Bare-bones” in this context means that we try to impose as few game-specific things on you as possible. So whereas we for convenience offer basic building blocks like objects, characters, rooms, default commands for building and administration etc, we don’t prescribe any combat rules, mob AI, races, skills, character classes or other things that will be different from game to game anyway. It is possible that we will offer some such systems as contributions in the future, but these will in that case all be optional.</p>
+<p>What we <em>do</em> however, is to provide a solid foundation for all the boring database, networking, and behind-the-scenes administration stuff that all online games need whether they like it or not. Evennia is <em>fully persistent</em>, that means things you drop on the ground somewhere will still be there a dozen server reboots later. Through Django we support a large variety of different database systems (a database is created for you automatically if you use the defaults).</p>
+<p>Using the full power of Python throughout the server offers some distinct advantages. All your coding, from object definitions and custom commands to AI scripts and economic systems is  done in normal Python modules rather than some ad-hoc scripting language. The fact that you script the game in the same high-level language that you code it in allows for very powerful and custom game implementations indeed.</p>
+<p>The server ships with a default set of player commands that are similar to the MUX command set. We <em>do not</em> aim specifically to be a MUX server, but we had to pick some default to go with (see <a class="reference internal" href="Soft-Code.html"><span class="doc">this</span></a> for more about our original motivations).  It’s easy to remove or add commands, or to have the command syntax mimic other systems, like Diku, LP, MOO and so on. Or why not create a new and better command system of your own design.</p>
+<div class="section" id="can-i-test-it-somewhere">
+<h2>Can I test it somewhere?<a class="headerlink" href="#can-i-test-it-somewhere" title="Permalink to this headline">¶</a></h2>
+<p>Evennia’s demo server can be found at <a class="reference external" href="http://demo.evennia.com">demo.evennia.com</a>. If you prefer to connect to the demo via your own telnet client you can do so at <code class="docutils literal notranslate"><span class="pre">silvren.com</span></code>, port <code class="docutils literal notranslate"><span class="pre">4280</span></code>. Here is a <a class="reference internal" href="Screenshot.html"><span class="doc">screenshot</span></a>.</p>
+<p>Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the possibilities <em>and</em> gives you a small single-player quest to play. The tutorial takes only one single in-game command to install as explained <a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc">here</span></a>.</p>
+</div>
+<div class="section" id="brief-summary-of-features">
+<h2>Brief summary of features<a class="headerlink" href="#brief-summary-of-features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="technical">
+<h3>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Game development is done by the server importing your normal Python modules. Specific server features are implemented by overloading hooks that the engine calls appropriately.</p></li>
+<li><p>All game entities are simply Python classes that handle database negotiations behind the scenes without you needing to worry.</p></li>
+<li><p>Command sets are stored on individual objects (including characters) to offer unique functionality and object-specific commands. Sets can be updated and modified on the fly to expand/limit player input options during play.</p></li>
+<li><p>Scripts are used to offer asynchronous/timed execution abilities. Scripts can also be persistent. There are easy mechanisms to thread particularly long-running processes and built-in ways to start “tickers” for games that wants them.</p></li>
+<li><p>In-game communication channels are modular and can be modified to any functionality, including mailing systems and full logging of all messages.</p></li>
+<li><p>Server can be fully rebooted/reloaded without users disconnecting.</p></li>
+<li><p>An Account can freely connect/disconnect from game-objects, offering an easy way to implement multi-character systems and puppeting.</p></li>
+<li><p>Each Account can optionally control multiple Characters/Objects at the same time using the same login information.</p></li>
+<li><p>Spawning of individual objects via a prototypes-like system.</p></li>
+<li><p>Tagging can be used to implement zones and object groupings.</p></li>
+<li><p>All source code is extensively documented.</p></li>
+<li><p>Unit-testing suite, including tests of default commands and plugins.</p></li>
+</ul>
+</div>
+<div class="section" id="default-content">
+<h3>Default content<a class="headerlink" href="#default-content" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Basic classes for Objects, Characters, Rooms and Exits</p></li>
+<li><p>Basic login system, using the Account’s login name as their in-game Character’s name for simplicity</p></li>
+<li><p>“MUX-like” command set with administration, building, puppeting, channels and social commands</p></li>
+<li><p>In-game Tutorial</p></li>
+<li><p>Contributions folder with working, but optional, code such as alternative login, menus, character generation and more</p></li>
+</ul>
+</div>
+<div class="section" id="standards-protocols-supported">
+<h3>Standards/Protocols supported<a class="headerlink" href="#standards-protocols-supported" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>TCP/websocket HTML5 browser web client, with ajax/comet fallback for older browsers</p></li>
+<li><p>Telnet and Telnet + SSL with mud-specific extensions (<a class="reference external" href="http://tintin.sourceforge.net/mccp/">MCCP</a>, <a class="reference external" href="http://tintin.sourceforge.net/mssp/">MSSP</a>, <a class="reference external" href="http://tintin.sourceforge.net/mtts/">TTYPE</a>, <a class="reference external" href="http://tintin.sourceforge.net/msdp/">MSDP</a>, <a class="reference external" href="https://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html">GMCP</a>, <a class="reference external" href="https://www.zuggsoft.com/zmud/mxp.htm">MXP</a> links)</p></li>
+<li><p>ANSI and xterm256 colours</p></li>
+<li><p>SSH</p></li>
+<li><p>HTTP - Website served by in-built webserver and connected to same database as game.</p></li>
+<li><p>IRC - external IRC channels can be connected to in-game chat channels</p></li>
+<li><p>RSS feeds can be echoed to in-game channels (things like Twitter can easily be added)</p></li>
+<li><p>Several different databases supported (SQLite3, MySQL, PostgreSQL, …)</p></li>
+</ul>
+<p>For more extensive feature information, see the <a class="reference internal" href="Developer-Central.html"><span class="doc">Developer Central</span></a>.</p>
+</div>
+</div>
+<div class="section" id="what-you-need-to-know-to-work-with-evennia">
+<h2>What you need to know to work with Evennia<a class="headerlink" href="#what-you-need-to-know-to-work-with-evennia" title="Permalink to this headline">¶</a></h2>
+<p>Assuming you have Evennia working (see the <a class="reference internal" href="Getting-Started.html"><span class="doc">quick start instructions</span></a>) and have gotten as far as to start the server and connect to it with the client of your choice, here’s what you need to know depending on your skills and needs.</p>
+<div class="section" id="i-don-t-know-or-don-t-want-to-do-any-programming-i-just-want-to-run-a-game">
+<h3>I don’t know (or don’t want to do) any programming - I just want to run a game!<a class="headerlink" href="#i-don-t-know-or-don-t-want-to-do-any-programming-i-just-want-to-run-a-game" title="Permalink to this headline">¶</a></h3>
+<p>Evennia comes with a default set of commands for the Python newbies and for those who need to get a game running <em>now</em>. Stock Evennia is enough for running a simple ‘Talker’-type game - you can build and describe rooms and basic objects, have chat channels, do emotes and other things suitable for a social or free-form MU*. Combat, mobs and other game elements are not included, so you’ll have a very basic game indeed if you are not willing to do at least <em>some</em> coding.</p>
+</div>
+<div class="section" id="i-know-basic-python-or-i-am-willing-to-learn">
+<h3>I know basic Python, or I am willing to learn<a class="headerlink" href="#i-know-basic-python-or-i-am-willing-to-learn" title="Permalink to this headline">¶</a></h3>
+<p>Evennia’s source code is extensively documented and is <a class="reference external" href="https://github.com/evennia/evennia">viewable online</a>. We also have a comprehensive <a class="reference external" href="https://github.com/evennia/evennia/wiki">online manual</a> with lots of examples. But while Python is considered a very easy programming language to get into, you do have a learning curve to climb if you are new to programming. You should probably sit down
+with a Python beginner’s <a class="reference external" href="http://docs.python.org/tutorial/">tutorial</a> (there are plenty of them on the web if you look around) so you at least know what you are seeing. See also our <a class="reference external" href="/Links.html#wiki-litterature">link page</a> for some reading suggestions. To efficiently code your dream game in Evennia you don’t need to be a Python guru, but you do need to be able to read example code containing at least these basic Python features:</p>
+<ul class="simple">
+<li><p>Importing and using python <a class="reference external" href="http://docs.python.org/3.7/tutorial/modules.html">modules</a></p></li>
+<li><p>Using <a class="reference external" href="http://www.tutorialspoint.com/python/python_variable_types.htm">variables</a>, <a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#if-statements">conditional statements</a>, <a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#for-statements">loops</a> and <a class="reference external" href="http://docs.python.org/tutorial/controlflow.html#defining-functions">functions</a></p></li>
+<li><p>Using <a class="reference external" href="http://docs.python.org/tutorial/datastructures.html">lists, dictionaries and list comprehensions</a></p></li>
+<li><p>Doing <a class="reference external" href="http://docs.python.org/tutorial/introduction.html#strings">string handling and formatting</a></p></li>
+<li><p>Have a basic understanding of <a class="reference external" href="http://www.tutorialspoint.com/python/python_classes_objects.htm">object-oriented programming</a>, using <a class="reference external" href="http://docs.python.org/tutorial/classes.html">Classes</a>, their methods and properties</p></li>
+</ul>
+<p>Obviously, the more things you feel comfortable with, the easier time you’ll have to find your way.  With just basic knowledge you should be able to define your own <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a>, create custom <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> as well as make your world come alive with basic <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>. You can definitely build a whole advanced and customized game from extending Evennia’s examples only.</p>
+</div>
+<div class="section" id="i-know-my-python-stuff-and-i-am-willing-to-use-it">
+<h3>I know my Python stuff and I am willing to use it!<a class="headerlink" href="#i-know-my-python-stuff-and-i-am-willing-to-use-it" title="Permalink to this headline">¶</a></h3>
+<p>Even if you started out as a Python beginner, you will likely get to this point after working on your game for a while.  With more general knowledge in Python the full power of Evennia opens up for you. Apart from modifying commands, objects and scripts, you can develop everything from advanced mob AI and economic systems, through sophisticated combat and social mini games, to redefining how commands, players, rooms or channels themselves work. Since you code your game by importing normal Python modules, there are few limits to what you can accomplish.</p>
+<p>If you <em>also</em> happen to know some web programming (HTML, CSS, Javascript) there is also a web presence (a website and a mud web client) to play around with …</p>
+</div>
+<div class="section" id="where-to-from-here">
+<h3>Where to from here?<a class="headerlink" href="#where-to-from-here" title="Permalink to this headline">¶</a></h3>
+<p>From here you can continue browsing the [online documentation](<a class="reference internal" href="index.html"><span class="doc">online documentation</span></a>) to find more info about Evennia. Or you can jump into the <a class="reference internal" href="Tutorials.html"><span class="doc">Tutorials</span></a> and get your hands dirty with code right away. You can also read the developer’s <a class="reference external" href="https://evennia.blogspot.com/">dev blog</a> for many tidbits and snippets about Evennia’s development and structure.</p>
+<p>Some more hints:</p>
+<ol class="simple">
+<li><p>Get engaged in the community. Make an introductory post to our <a class="reference external" href="https://groups.google.com/forum/#%21forum/evennia">mailing list/forum</a> and get to know people. It’s also highly recommended you hop onto our <a class="reference external" href="http://webchat.freenode.net/?channels=evennia&amp;uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">Developer chat</a> on IRC. This allows you to chat directly with other developers new and old as well as with the devs of Evennia itself. This chat is logged (you can find links on http://www.evennia.com) and can also be searched from the same place for discussion topics you are interested in.</p></li>
+<li><p>Read the <a class="reference internal" href="Game-Planning.html"><span class="doc">Game Planning</span></a> wiki page. It gives some ideas for your work flow and the state of mind you should aim for - including cutting down the scope of your game for its first release.</p></li>
+<li><p>Do the <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Tutorial for basic MUSH-like game</span></a> carefully from beginning to end and try to understand what does what. Even if you are not interested in a MUSH for your own game, you will end up with a small (very small) game that you can build or learn from.</p></li>
+</ol>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia Introduction</a><ul>
+<li><a class="reference internal" href="#can-i-test-it-somewhere">Can I test it somewhere?</a></li>
+<li><a class="reference internal" href="#brief-summary-of-features">Brief summary of features</a><ul>
+<li><a class="reference internal" href="#technical">Technical</a></li>
+<li><a class="reference internal" href="#default-content">Default content</a></li>
+<li><a class="reference internal" href="#standards-protocols-supported">Standards/Protocols supported</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#what-you-need-to-know-to-work-with-evennia">What you need to know to work with Evennia</a><ul>
+<li><a class="reference internal" href="#i-don-t-know-or-don-t-want-to-do-any-programming-i-just-want-to-run-a-game">I don’t know (or don’t want to do) any programming - I just want to run a game!</a></li>
+<li><a class="reference internal" href="#i-know-basic-python-or-i-am-willing-to-learn">I know basic Python, or I am willing to learn</a></li>
+<li><a class="reference internal" href="#i-know-my-python-stuff-and-i-am-willing-to-use-it">I know my Python stuff and I am willing to use it!</a></li>
+<li><a class="reference internal" href="#where-to-from-here">Where to from here?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Evennia-Introduction.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Evennia-Introduction.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Evennia-Introduction.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.server.tests.test_server &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.tests.test_server</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test the main server component</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="k">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">DEFAULT</span><span class="p">,</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">unload_module</span>
+
+
+<div class="viewcode-block" id="TestServer"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.server.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
+<span class="k">class</span> <span class="nc">TestServer</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test server module.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestServer.setUp"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">evennia.server</span> <span class="k">import</span> <span class="n">server</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span></div>
+
+<div class="viewcode-block" id="TestServer.test__server_maintenance_reset"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test__server_maintenance_reset">[docs]</a>    <span class="k">def</span> <span class="nf">test__server_maintenance_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span>
+            <span class="n">LoopingCall</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">Evennia</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_FLUSH_CACHE</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">connection</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">_MAINTENANCE_COUNT</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">456</span><span class="p">)</span>
+
+            <span class="c1"># flush cache</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_server_maintenance</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;runtime&quot;</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestServer.test__server_maintenance_flush"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test__server_maintenance_flush">[docs]</a>    <span class="k">def</span> <span class="nf">test__server_maintenance_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span>
+            <span class="n">LoopingCall</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">Evennia</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_FLUSH_CACHE</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">connection</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">_MAINTENANCE_COUNT</span><span class="o">=</span><span class="mi">600</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+            <span class="c1"># flush cache</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_server_maintenance</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;_FLUSH_CACHE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestServer.test__server_maintenance_validate_scripts"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test__server_maintenance_validate_scripts">[docs]</a>    <span class="k">def</span> <span class="nf">test__server_maintenance_validate_scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span>
+            <span class="n">LoopingCall</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">Evennia</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_FLUSH_CACHE</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">connection</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">_MAINTENANCE_COUNT</span><span class="o">=</span><span class="mi">3600</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.server.evennia.ScriptDB.objects.validate&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_server_maintenance</span><span class="p">()</span>
+                <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;_FLUSH_CACHE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+                <span class="n">mock</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestServer.test__server_maintenance_channel_handler_update"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test__server_maintenance_channel_handler_update">[docs]</a>    <span class="k">def</span> <span class="nf">test__server_maintenance_channel_handler_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span>
+            <span class="n">LoopingCall</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">Evennia</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_FLUSH_CACHE</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">connection</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">_MAINTENANCE_COUNT</span><span class="o">=</span><span class="mi">3700</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.server.evennia.CHANNEL_HANDLER.update&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_server_maintenance</span><span class="p">()</span>
+                <span class="n">mock</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestServer.test__server_maintenance_close_connection"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test__server_maintenance_close_connection">[docs]</a>    <span class="k">def</span> <span class="nf">test__server_maintenance_close_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span>
+            <span class="n">LoopingCall</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">Evennia</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_FLUSH_CACHE</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">connection</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">_MAINTENANCE_COUNT</span><span class="o">=</span><span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_server_maintenance</span><span class="p">()</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestServer.test__server_maintenance_idle_time"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test__server_maintenance_idle_time">[docs]</a>    <span class="k">def</span> <span class="nf">test__server_maintenance_idle_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span>
+            <span class="n">LoopingCall</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">Evennia</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_FLUSH_CACHE</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">connection</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_IDMAPPER_CACHE_MAXSIZE</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">_MAINTENANCE_COUNT</span><span class="o">=</span><span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">SESSIONS</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">_IDLE_TIMEOUT</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">time</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">sess1</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">sess2</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">sess3</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">sess4</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">sess1</span><span class="o">.</span><span class="n">cmd_last</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># should time out</span>
+            <span class="n">sess2</span><span class="o">.</span><span class="n">cmd_last</span> <span class="o">=</span> <span class="mi">999</span>  <span class="c1"># should not time out</span>
+            <span class="n">sess3</span><span class="o">.</span><span class="n">cmd_last</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># should not time (due to account)</span>
+            <span class="n">sess4</span><span class="o">.</span><span class="n">cmd_last</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># should time out (due to access)</span>
+            <span class="n">sess1</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">sess2</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">sess3</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">sess3</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">sess4</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">access</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;SESSIONS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">[</span><span class="n">sess1</span><span class="p">,</span> <span class="n">sess2</span><span class="p">,</span> <span class="n">sess3</span><span class="p">,</span> <span class="n">sess4</span><span class="p">])</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;SESSIONS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">_server_maintenance</span><span class="p">()</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;idle timeout exceeded&quot;</span>
+            <span class="n">calls</span> <span class="o">=</span> <span class="p">[</span><span class="n">call</span><span class="p">(</span><span class="n">sess1</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">),</span> <span class="n">call</span><span class="p">(</span><span class="n">sess4</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)]</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;SESSIONS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">(</span><span class="n">calls</span><span class="p">,</span> <span class="n">any_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestServer.test_evennia_start"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test_evennia_start">[docs]</a>    <span class="k">def</span> <span class="nf">test_evennia_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+            <span class="n">evennia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">Evennia</span><span class="p">(</span><span class="n">MagicMock</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestServer.test_update_defaults"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test_update_defaults">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.objects.models.ObjectDB&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.server.AccountDB&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.server.ScriptDB&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.comms.models.ChannelDB&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_update_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mockchan</span><span class="p">,</span> <span class="n">mockscript</span><span class="p">,</span> <span class="n">mockacct</span><span class="p">,</span> <span class="n">mockobj</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;evennia.server.server&quot;</span><span class="p">,</span> <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+
+            <span class="n">mockchan</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mockscript</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mockacct</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mockobj</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="c1"># fake mismatches</span>
+            <span class="n">settings_names</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;CMDSET_CHARACTER&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;CMDSET_ACCOUNT&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BASE_ACCOUNT_TYPECLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BASE_OBJECT_TYPECLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BASE_CHARACTER_TYPECLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BASE_ROOM_TYPECLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BASE_EXIT_TYPECLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BASE_SCRIPT_TYPECLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BASE_CHANNEL_TYPECLASS&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">fakes</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Dummy.path&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">settings_names</span><span class="p">}</span>
+
+            <span class="k">def</span> <span class="nf">_mock_conf</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">fakes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">_mock_conf</span>
+
+            <span class="n">evennia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">Evennia</span><span class="p">(</span><span class="n">MagicMock</span><span class="p">())</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">update_defaults</span><span class="p">()</span>
+
+            <span class="n">mockchan</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+            <span class="n">mockscript</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+            <span class="n">mockacct</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+            <span class="n">mockobj</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestServer.test_initial_setup"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test_initial_setup">[docs]</a>    <span class="k">def</span> <span class="nf">test_initial_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_account</span>
+
+        <span class="n">acct</span> <span class="o">=</span> <span class="n">create_account</span><span class="p">(</span><span class="s2">&quot;TestSuperuser&quot;</span><span class="p">,</span> <span class="s2">&quot;test@test.com&quot;</span><span class="p">,</span> <span class="s2">&quot;testpassword&quot;</span><span class="p">,</span> <span class="n">is_superuser</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.initial_setup&quot;</span><span class="p">,</span> <span class="n">reset_server</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span> <span class="n">AccountDB</span><span class="o">=</span><span class="n">DEFAULT</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;AccountDB&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">acct</span><span class="p">)</span>
+            <span class="n">evennia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">Evennia</span><span class="p">(</span><span class="n">MagicMock</span><span class="p">())</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">run_initial_setup</span><span class="p">()</span>
+        <span class="n">acct</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestServer.test_initial_setup_retry"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test_initial_setup_retry">[docs]</a>    <span class="k">def</span> <span class="nf">test_initial_setup_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_account</span>
+
+        <span class="n">acct</span> <span class="o">=</span> <span class="n">create_account</span><span class="p">(</span><span class="s2">&quot;TestSuperuser2&quot;</span><span class="p">,</span> <span class="s2">&quot;test@test.com&quot;</span><span class="p">,</span> <span class="s2">&quot;testpassword&quot;</span><span class="p">,</span> <span class="n">is_superuser</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.server.initial_setup&quot;</span><span class="p">,</span>
+            <span class="n">ServerConfig</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">reset_server</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+            <span class="n">AccountDB</span><span class="o">=</span><span class="n">DEFAULT</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mocks</span><span class="p">:</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;AccountDB&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">acct</span><span class="p">)</span>
+            <span class="c1"># a last_initial_setup_step &gt; 0</span>
+            <span class="n">mocks</span><span class="p">[</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">evennia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">Evennia</span><span class="p">(</span><span class="n">MagicMock</span><span class="p">())</span>
+            <span class="n">evennia</span><span class="o">.</span><span class="n">run_initial_setup</span><span class="p">()</span>
+        <span class="n">acct</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestServer.test_run_init_hooks"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test_run_init_hooks">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_run_init_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span>
+
+        <span class="n">obj1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;HookTestObj1&quot;</span><span class="p">)</span>
+        <span class="n">obj2</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;HookTestObj2&quot;</span><span class="p">)</span>
+        <span class="n">acct1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">account</span><span class="p">(</span><span class="s2">&quot;HookAcct1&quot;</span><span class="p">,</span> <span class="s2">&quot;hooktest1@test.com&quot;</span><span class="p">,</span> <span class="s2">&quot;testpasswd&quot;</span><span class="p">)</span>
+        <span class="n">acct2</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">account</span><span class="p">(</span><span class="s2">&quot;HookAcct2&quot;</span><span class="p">,</span> <span class="s2">&quot;hooktest2@test.com&quot;</span><span class="p">,</span> <span class="s2">&quot;testpasswd&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.objects.models.ObjectDB&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mockobj</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.server.AccountDB&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mockacct</span><span class="p">:</span>
+
+                <span class="n">mockacct</span><span class="o">.</span><span class="n">get_all_cached_instances</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">[</span><span class="n">acct1</span><span class="p">,</span> <span class="n">acct2</span><span class="p">])</span>
+                <span class="n">mockobj</span><span class="o">.</span><span class="n">get_all_cached_instances</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">[</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">])</span>
+                <span class="n">mockobj</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">clear_all_sessids</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+
+                <span class="n">evennia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">Evennia</span><span class="p">(</span><span class="n">MagicMock</span><span class="p">())</span>
+                <span class="n">evennia</span><span class="o">.</span><span class="n">run_init_hooks</span><span class="p">(</span><span class="s2">&quot;reload&quot;</span><span class="p">)</span>
+                <span class="n">evennia</span><span class="o">.</span><span class="n">run_init_hooks</span><span class="p">(</span><span class="s2">&quot;reset&quot;</span><span class="p">)</span>
+                <span class="n">evennia</span><span class="o">.</span><span class="n">run_init_hooks</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+
+                <span class="n">mockacct</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+                <span class="n">mockobj</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+                <span class="n">mockobj</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">clear_all_sessids</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">()</span>
+        <span class="n">obj1</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">obj2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">acct1</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">acct2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestServer.test_get_info_dict"><a class="viewcode-back" href="../../../../api/evennia.server.tests.html#evennia.server.tests.test_server.TestServer.test_get_info_dict">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.server.INFO_DICT&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">})</span>
+    <span class="k">def</span> <span class="nf">test_get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">evennia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">Evennia</span><span class="p">(</span><span class="n">MagicMock</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">get_info_dict</span><span class="p">(),</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">})</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="test_server.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

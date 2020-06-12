@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.server.initial_setup &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.initial_setup</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module handles initial database propagation, which is only run the first</span>
+<span class="sd">time the game starts. It will create some default channels, objects, and</span>
+<span class="sd">other things.</span>
+
+<span class="sd">Everything starts at handle_setup()</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
+
+
+<span class="n">ERROR_NO_SUPERUSER</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    No superuser exists yet. The superuser is the &#39;owner&#39; account on</span>
+<span class="s2">    the Evennia server. Create a new superuser using the command</span>
+
+<span class="s2">       evennia createsuperuser</span>
+
+<span class="s2">    Follow the prompts, then restart the server.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+
+<span class="n">LIMBO_DESC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if you need</span>
+<span class="sd">help, want to contribute, report issues or just join the community.</span>
+<span class="sd">As Account #1 you can create a demo/tutorial area with |w@batchcommand tutorial_world.build|n.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+
+
+<span class="n">WARNING_POSTGRESQL_FIX</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    PostgreSQL-psycopg2 compatibility fix:</span>
+<span class="s2">    The in-game channels </span><span class="si">{chan1}</span><span class="s2">, </span><span class="si">{chan2}</span><span class="s2"> and </span><span class="si">{chan3}</span><span class="s2"> were created,</span>
+<span class="s2">    but the superuser was not yet connected to them. Please use in</span>
+<span class="s2">    game commands to connect Account #1 to those channels when first</span>
+<span class="s2">    logging in.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="get_god_account"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.get_god_account">[docs]</a><span class="k">def</span> <span class="nf">get_god_account</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates the god user and don&#39;t take no for an answer.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">god_account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">(</span><span class="n">ERROR_NO_SUPERUSER</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">god_account</span></div>
+
+
+<div class="viewcode-block" id="create_objects"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.create_objects">[docs]</a><span class="k">def</span> <span class="nf">create_objects</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates the #1 account and Limbo room.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Initial setup: Creating objects (Account #1 and Limbo room) ...&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Set the initial User&#39;s account object&#39;s username on the #1 object.</span>
+    <span class="c1"># This object is pure django and only holds name, email and password.</span>
+    <span class="n">god_account</span> <span class="o">=</span> <span class="n">get_god_account</span><span class="p">()</span>
+
+    <span class="c1"># Create an Account &#39;user profile&#39; object to hold eventual</span>
+    <span class="c1"># mud-specific settings for the AccountDB object.</span>
+    <span class="n">account_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span>
+
+    <span class="c1"># run all creation hooks on god_account (we must do so manually</span>
+    <span class="c1"># since the manage.py command does not)</span>
+    <span class="n">god_account</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="n">account_typeclass</span><span class="p">,</span> <span class="n">clean_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">god_account</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
+    <span class="n">god_account</span><span class="o">.</span><span class="n">at_account_creation</span><span class="p">()</span>
+    <span class="n">god_account</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="s2">&quot;examine:perm(Developer);edit:false();delete:false();boot:false();msg:all()&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># this is necessary for quelling to work correctly.</span>
+    <span class="n">god_account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Limbo is the default &quot;nowhere&quot; starting room</span>
+
+    <span class="c1"># Create the in-game god-character for account #1 and set</span>
+    <span class="c1"># it to exist in Limbo.</span>
+    <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
+    <span class="n">god_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">character_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">god_account</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">god_character</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">god_character</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">god_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is User #1.&quot;</span><span class="p">)</span>
+    <span class="n">god_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="s2">&quot;examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># we set this low so that quelling is more useful</span>
+    <span class="n">god_character</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">)</span>
+
+    <span class="n">god_account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_first_login&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">god_account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_last_puppet&quot;</span><span class="p">,</span> <span class="n">god_character</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">god_account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">god_character</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">god_account</span><span class="o">.</span><span class="n">db_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">god_character</span><span class="p">]</span>
+
+    <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span>
+    <span class="n">limbo_obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Limbo&quot;</span><span class="p">),</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">limbo_obj</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">limbo_obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">limbo_obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">LIMBO_DESC</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">limbo_obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="c1"># Now that Limbo exists, try to set the user up in Limbo (unless</span>
+    <span class="c1"># the creation hooks already fixed this).</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">god_character</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+        <span class="n">god_character</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">limbo_obj</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">god_character</span><span class="o">.</span><span class="n">home</span><span class="p">:</span>
+        <span class="n">god_character</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">limbo_obj</span></div>
+
+
+<div class="viewcode-block" id="create_channels"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.create_channels">[docs]</a><span class="k">def</span> <span class="nf">create_channels</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates some sensible default channels.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Initial setup: Creating default channels ...&quot;</span><span class="p">)</span>
+
+    <span class="n">goduser</span> <span class="o">=</span> <span class="n">get_god_account</span><span class="p">()</span>
+
+    <span class="n">channel_mudinfo</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_MUDINFO</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">channel_mudinfo</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;settings.CHANNEL_MUDINFO must be defined.&quot;</span><span class="p">)</span>
+    <span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">channel_mudinfo</span><span class="p">)</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">goduser</span><span class="p">)</span>
+
+    <span class="n">channel_connectinfo</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_CONNECTINFO</span>
+    <span class="k">if</span> <span class="n">channel_connectinfo</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">channel_connectinfo</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">channeldict</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_CHANNELS</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="o">**</span><span class="n">channeldict</span><span class="p">)</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">goduser</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="at_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.at_initial_setup">[docs]</a><span class="k">def</span> <span class="nf">at_initial_setup</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom hook for users to overload some or all parts of the initial</span>
+<span class="sd">    setup. Called very last in the sequence. It tries to import and</span>
+<span class="sd">    srun a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail</span>
+<span class="sd">    silently if this does not exist or fails to load.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">modname</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">AT_INITIAL_SETUP_HOOK_MODULE</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">modname</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Initial setup: Running at_initial_setup() hook.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mod</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;at_initial_setup&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">mod</span><span class="o">.</span><span class="n">at_initial_setup</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.collectstatic">[docs]</a><span class="k">def</span> <span class="nf">collectstatic</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run collectstatic to make sure all web assets are loaded.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="k">import</span> <span class="n">call_command</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Initial setup: Gathering static resources using &#39;collectstatic&#39;&quot;</span><span class="p">)</span>
+    <span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;collectstatic&quot;</span><span class="p">,</span> <span class="s2">&quot;--noinput&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="reset_server"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.reset_server">[docs]</a><span class="k">def</span> <span class="nf">reset_server</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    We end the initialization by resetting the server. This makes sure</span>
+<span class="sd">    the first login is the same as all the following ones,</span>
+<span class="sd">    particularly it cleans all caches for the special objects.  It</span>
+<span class="sd">    also checks so the warm-reset mechanism works as it should.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_epoch&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Initial setup complete. Restarting Server once.&quot;</span><span class="p">)</span>
+    <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_reset_server</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="handle_setup"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.handle_setup">[docs]</a><span class="k">def</span> <span class="nf">handle_setup</span><span class="p">(</span><span class="n">last_step</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main logic for the module. It allows for restarting the</span>
+<span class="sd">    initialization at any point if one of the modules should crash.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        last_step (int): The last stored successful step, for starting</span>
+<span class="sd">            over on errors. If `&lt; 0`, initialization has finished and no</span>
+<span class="sd">            steps need to be redone.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">last_step</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># this means we don&#39;t need to handle setup since</span>
+        <span class="c1"># it already ran sucessfully once.</span>
+        <span class="k">return</span>
+    <span class="c1"># if None, set it to 0</span>
+    <span class="n">last_step</span> <span class="o">=</span> <span class="n">last_step</span> <span class="ow">or</span> <span class="mi">0</span>
+
+    <span class="c1"># setting up the list of functions to run</span>
+    <span class="n">setup_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">create_objects</span><span class="p">,</span> <span class="n">create_channels</span><span class="p">,</span> <span class="n">at_initial_setup</span><span class="p">,</span> <span class="n">collectstatic</span><span class="p">,</span> <span class="n">reset_server</span><span class="p">]</span>
+
+    <span class="c1"># step through queue, from last completed function</span>
+    <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">setup_func</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">setup_queue</span><span class="p">[</span><span class="n">last_step</span><span class="p">:]):</span>
+        <span class="c1"># run the setup function. Note that if there is a</span>
+        <span class="c1"># traceback we let it stop the system so the config</span>
+        <span class="c1"># step is not saved.</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">setup_func</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">last_step</span> <span class="o">+</span> <span class="n">num</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+
+                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">last_step</span> <span class="o">+</span> <span class="n">num</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
+
+                <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="k">raise</span>
+        <span class="c1"># save this step</span>
+        <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;last_initial_setup_step&quot;</span><span class="p">,</span> <span class="n">last_step</span> <span class="o">+</span> <span class="n">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># We got through the entire list. Set last_step to -1 so we don&#39;t</span>
+    <span class="c1"># have to run this again.</span>
+    <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;last_initial_setup_step&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="initial_setup.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

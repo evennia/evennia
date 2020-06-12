@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.game_template.server.conf.at_server_startstop &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.game_template.server.conf.at_server_startstop</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Server startstop hooks</span>
+
+<span class="sd">This module contains functions called by Evennia at various</span>
+<span class="sd">points during its startup, reload and shutdown sequence. It</span>
+<span class="sd">allows for customizing the server operation as desired.</span>
+
+<span class="sd">This module must contain at least these global functions:</span>
+
+<span class="sd">at_server_start()</span>
+<span class="sd">at_server_stop()</span>
+<span class="sd">at_server_reload_start()</span>
+<span class="sd">at_server_reload_stop()</span>
+<span class="sd">at_server_cold_start()</span>
+<span class="sd">at_server_cold_stop()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="at_server_start"><a class="viewcode-back" href="../../../../../api/evennia.game_template.server.conf.html#evennia.game_template.server.conf.at_server_startstop.at_server_start">[docs]</a><span class="k">def</span> <span class="nf">at_server_start</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called every time the server starts up, regardless of</span>
+<span class="sd">    how it was shut down.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="at_server_stop"><a class="viewcode-back" href="../../../../../api/evennia.game_template.server.conf.html#evennia.game_template.server.conf.at_server_startstop.at_server_stop">[docs]</a><span class="k">def</span> <span class="nf">at_server_stop</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called just before the server is shut down, regardless</span>
+<span class="sd">    of it is for a reload, reset or shutdown.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="at_server_reload_start"><a class="viewcode-back" href="../../../../../api/evennia.game_template.server.conf.html#evennia.game_template.server.conf.at_server_startstop.at_server_reload_start">[docs]</a><span class="k">def</span> <span class="nf">at_server_reload_start</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called only when server starts back up after a reload.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="at_server_reload_stop"><a class="viewcode-back" href="../../../../../api/evennia.game_template.server.conf.html#evennia.game_template.server.conf.at_server_startstop.at_server_reload_stop">[docs]</a><span class="k">def</span> <span class="nf">at_server_reload_stop</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called only time the server stops before a reload.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="at_server_cold_start"><a class="viewcode-back" href="../../../../../api/evennia.game_template.server.conf.html#evennia.game_template.server.conf.at_server_startstop.at_server_cold_start">[docs]</a><span class="k">def</span> <span class="nf">at_server_cold_start</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called only when the server starts &quot;cold&quot;, i.e. after a</span>
+<span class="sd">    shutdown or a reset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="at_server_cold_stop"><a class="viewcode-back" href="../../../../../api/evennia.game_template.server.conf.html#evennia.game_template.server.conf.at_server_startstop.at_server_cold_stop">[docs]</a><span class="k">def</span> <span class="nf">at_server_cold_stop</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called only when the server goes down due to a shutdown or</span>
+<span class="sd">    reset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  <li><a href="../../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="at_server_startstop.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
