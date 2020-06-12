@@ -115,6 +115,6 @@ deploy:
 # build and prepare the docs for release
 release:
 	make mv-local
-	make _mv-deploy
+	make deploy
 	@echo ""
 	@echo "Deployment complete."
