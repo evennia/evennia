@@ -17,11 +17,12 @@
     <div class="wrapper">
       <header>
         <h1 class="header">Evennia</h1>
-        <p class="header">Python mud development library</p>
+        <p class="header">The Python MU* Development Library</p>
 
         <ul>
-          <li class="download"><a class="buttons" href="https://github.com/evennia/evennia/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/evennia/evennia/tarball/master">Download TAR</a></li>
+          <!--li class="download"><a class="buttons" href="https://github.com/evennia/evennia/zipball/master">Download ZIP</a></li-->
+          <!--li class="download"><a class="buttons" href="https://github.com/evennia/evennia/tarball/master">Download TAR</a></li-->
+          <li class="documentation"><a class="buttons" href="docs/latest/index.html">Documentation</a></li>
           <li><a class="buttons github" href="https://github.com/evennia/evennia">View On GitHub</a></li>
         </ul>
 
@@ -35,30 +36,70 @@
 
 <p><em>Evennia</em> is an open-source Python-based MUD/MU* server/codebase using modern technologies. Evennia allows creators to design and flesh out text-based massively-multiplayer online games with great freedom.</p>
 
-<p><a href="http://www.evennia.com">http://www.evennia.com</a> is the main hub tracking all things Evennia. The documentation wiki is found <a href="https://github.com/evennia/evennia/wiki">here</a>.</p>
+<p><a href="http://www.evennia.com">http://www.evennia.com</a> is the main hub
+tracking all things Evennia. The <a href="docs/latest/index.html">documentation
+can be found here</a>.</p>
 
 <h2>
-<a name="features-and-philosophy" class="anchor" href="#features-and-philosophy"><span class="octicon octicon-link"></span></a>Features and Philosophy</h2>
+<a name="features-and-philosophy" class="anchor"
+  href="#features-and-philosophy"><span class="octicon
+    octicon-link"></span></a>Features and Philosophy</h2>
 
-<p>Evennia aims to supply a bare-bones MU* codebase that allows vast flexibility for game designers while taking care of all the gritty networking and database-handling behind the scenes. Evennia offers an easy API for handling persistent objects, time-dependent scripting and all the other low-level features needed to create a MU*. The idea is to allow the mud-coder to concentrate solely on designing the parts and systems of the mud that makes it uniquely fit their ideas.</p>
+<p>Evennia aims to supply a bare-bones MU* codebase that allows vast
+flexibility for game designers while taking care of all the gritty networking
+and database-handling behind the scenes. Evennia offers an easy API for
+handling persistent objects, time-dependent scripting and all the other
+low-level features needed to create a MU*. The idea is to allow the mud-coder
+to concentrate solely on designing the parts and systems of the mud that makes
+it uniquely fit their ideas.</p>
 
-<p>Coding in Evennia is primarily done by normal Python modules, making the codebase extremely flexible. The code is heavily documented and you use Python classes to represent your objects, scripts and players. The database layer is abstracted away.</p>
+<p>Coding in Evennia is primarily done by normal Python modules, making the
+codebase extremely flexible. The code is heavily documented and you use Python
+classes to represent your objects, scripts and players. The database layer is
+abstracted away.</p>
 
-<p>Evennia offers extensive connectivity options. A single server instance may offer connections over Telnet, SSH, SSL and HTTP. The latter is possible since Evennia is also its own web server: A default website as well as a browser-based comet-style mud client comes as part of the package (<a href="https://github.com/evennia/evennia/wiki/Screenshot">screenshot</a>). Due to our Django and Twisted foundations, web integration is a snap since the same code that powers the game may also be used to run its web presence (you may use a third-party webserver too if you prefer though). Evennia in-game channels can also be interlinked with external IRC and IMC2 channels so players can chat with people "outside" the game.</p>
+<p>Evennia offers extensive connectivity options. A single server instance may
+offer connections over Telnet, SSH, SSL and HTTP. The latter is possible since
+Evennia is also its own web server: A default website as well as a
+browser-based comet-style mud client comes as part of the package (<a
+href="https://github.com/evennia/evennia/wiki/Screenshot">screenshot</a>). Due
+to our Django and Twisted foundations, web integration is a snap since the same
+code that powers the game may also be used to run its web presence (you may use
+a third-party webserver too if you prefer though). Evennia in-game channels can
+also be interlinked with external IRC and IMC2 channels so players can chat
+with people "outside" the game.</p>
 
-<p>Whereas Evennia is intended to be customized to almost any level you like, we do offer some defaults you can build from. The code base comes with basic classes for objects, exits, rooms and characters. There is also a default command set for handling administration, building, chat channels, poses and so on. This is enough to run a 'Talker' or some other social-style game out of the box. Stock Evennia is however deliberately void of any game-world-specific systems. So you won't find any AI codes, mobs, skill systems, races or combat stats in the default distribution (we might expand our contributions folder with optional plugins in the future though).</p>
+<p>Whereas Evennia is intended to be customized to almost any level you like,
+we do offer some defaults you can build from. The code base comes with basic
+classes for objects, exits, rooms and characters. There is also a default
+command set for handling administration, building, chat channels, poses and so
+on. This is enough to run a 'Talker' or some other social-style game out of the
+box. Stock Evennia is however deliberately void of any game-world-specific
+systems. So you won't find any AI codes, mobs, skill systems, races or combat
+stats in the default distribution (we might expand our contributions folder
+with optional plugins in the future though).</p>
 
-<p>If this piqued your interest, there is also a <a href="https://github.com/evennia/evennia/wiki/Evennia-Introduction">lengthier introduction</a> to Evennia to read.</p>
+<p>If this piqued your interest, there is also a <a
+  href="docs/latest/Evennia-Introduction">lengthier
+  introduction</a> to Evennia to read.</p>
 
 <h2>
-<a name="current-status" class="anchor" href="#current-status"><span class="octicon octicon-link"></span></a>Current Status</h2>
+<a name="current-status" class="anchor" href="#current-status"><span
+    class="octicon octicon-link"></span></a>Current Status</h2>
 
-<p>The codebase is currently in <strong>Beta</strong>. While development continues, Evennia is already stable enough to be suitable for prototyping and development of your own games.</p>
+<p>The codebase is currently in <strong>Beta</strong>. While development
+continues, Evennia is already stable enough to be suitable for prototyping and
+development of your own games.</p>
 
 <h2>
-<a name="more-information" class="anchor" href="#more-information"><span class="octicon octicon-link"></span></a>More Information</h2>
+<a name="more-information" class="anchor" href="#more-information"><span
+    class="octicon octicon-link"></span></a>More Information</h2>
 
-<p>To learn how to get your hands on the code base, the <a href="https://github.com/evennia/evennia/wiki/Getting-Started">Getting started</a> page is the way to go. Otherwise you could browse the <a href="https://github.com/evennia/evennia/wiki">Documentation wiki</a> or why not come join the <a href="http://www.evennia.com">Evennia Community</a>. Welcome! </p>
+<p>To learn how to get your hands on the code base, the <a
+  href="docs/latest/Getting-Started">Getting Started</a> page is the way to go. Otherwise you could browse the <a
+href="docs/latest/index.html">Documentation</a> or why
+not come join the <a href="http://www.evennia.com">Evennia Community</a>.
+Welcome! </p>
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
