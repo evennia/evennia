@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Turn based Combat System &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="turn-based-combat-system">
+<h1>Turn based Combat System<a class="headerlink" href="#turn-based-combat-system" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial gives an example of a full, if simplified, combat system for Evennia. It was inspired by the discussions held on the <a class="reference external" href="https://groups.google.com/forum/#%21msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ">mailing list</a>.</p>
+<div class="section" id="overview-of-combat-system-concepts">
+<h2>Overview of combat system concepts<a class="headerlink" href="#overview-of-combat-system-concepts" title="Permalink to this headline">¶</a></h2>
+<p>Most MUDs will use some sort of combat system. There are several main variations:</p>
+<ul class="simple">
+<li><p><em>Freeform</em> - the simplest form of combat to implement, common to MUSH-style roleplaying games. This means the system only supplies dice rollers or maybe commands to compare skills and spit out the result. Dice rolls are done to resolve combat according to the rules of the game and to direct the scene. A game master may be required to resolve rule disputes.</p></li>
+<li><p><em>Twitch</em> - This is the traditional MUD hack&amp;slash style combat. In a twitch system there is often no difference between your normal “move-around-and-explore mode” and the “combat mode”. You enter an attack command and the system will calculate if the attack hits and how much damage was caused. Normally attack commands have some sort of timeout or notion of recovery/balance to reduce the advantage of spamming or client scripting. Whereas the simplest systems just means entering <code class="docutils literal notranslate"><span class="pre">kill</span> <span class="pre">&lt;target&gt;</span></code> over and over, more sophisticated twitch systems include anything from defensive stances to tactical positioning.</p></li>
+<li><p><em>Turn-based</em> - a turn based system means that the system pauses to make sure all combatants can choose their actions before continuing. In some systems, such entered actions happen immediately (like twitch-based) whereas in others the resolution happens simultaneously at the end of the turn. The disadvantage of a turn-based system is that the game must switch to a “combat mode” and one also needs to take special care of how to handle new combatants and the passage of time. The advantage is that success is not dependent on typing speed or of setting up quick client macros. This potentially allows for emoting as part of combat which is an advantage for roleplay-heavy games.</p></li>
+</ul>
+<p>To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py">contrib/dice.py</a> for an example dice roller. To implement at twitch-based system you basically need a few combat <a class="reference internal" href="Commands.html"><span class="doc">commands</span></a>, possibly ones with a <a class="reference internal" href="Command-Cooldown.html"><span class="doc">cooldown</span></a>. You also need a <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">game rule module</span></a> that makes use of it. We will focus on the turn-based variety here.</p>
+</div>
+<div class="section" id="tutorial-overview">
+<h2>Tutorial overview<a class="headerlink" href="#tutorial-overview" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial will implement the slightly more complex turn-based combat system. Our example has the following properties:</p>
+<ul class="simple">
+<li><p>Combat is initiated with <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">&lt;target&gt;</span></code>, this initiates the combat mode.</p></li>
+<li><p>Characters may join an ongoing battle using <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">&lt;target&gt;</span></code> against a character already in combat.</p></li>
+<li><p>Each turn every combating character will get to enter two commands, their internal order matters and they are compared one-to-one in the order given by each combatant.  Use of <code class="docutils literal notranslate"><span class="pre">say</span></code> and <code class="docutils literal notranslate"><span class="pre">pose</span></code> is free.</p></li>
+<li><p>The commands are (in our example) simple; they can either <code class="docutils literal notranslate"><span class="pre">hit</span> <span class="pre">&lt;target&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">feint</span> <span class="pre">&lt;target&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">parry</span> <span class="pre">&lt;target&gt;</span></code>. They can also <code class="docutils literal notranslate"><span class="pre">defend</span></code>, a generic passive defense. Finally they may choose to <code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>.</p></li>
+<li><p>When attacking we use a classic <a class="reference external" href="https://en.wikipedia.org/wiki/Rock-paper-scissors">rock-paper-scissors</a> mechanic to determine success: <code class="docutils literal notranslate"><span class="pre">hit</span></code> defeats <code class="docutils literal notranslate"><span class="pre">feint</span></code>, which defeats <code class="docutils literal notranslate"><span class="pre">parry</span></code> which defeats <code class="docutils literal notranslate"><span class="pre">hit</span></code>. <code class="docutils literal notranslate"><span class="pre">defend</span></code> is a general passive action that has a percentage chance to win against <code class="docutils literal notranslate"><span class="pre">hit</span></code> (only).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code> must be entered two times in a row and will only succeed if there is no <code class="docutils literal notranslate"><span class="pre">hit</span></code> against them in that time. If so they will leave combat mode.</p></li>
+<li><p>Once every player has entered two commands, all commands are resolved in order and the result is reported. A new turn then begins.</p></li>
+<li><p>If players are too slow the turn will time out and any unset commands will be set to <code class="docutils literal notranslate"><span class="pre">defend</span></code>.</p></li>
+</ul>
+<p>For creating the combat system we will need the following components:</p>
+<ul class="simple">
+<li><p>A combat handler. This is the main mechanic of the system. This is a <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a> object created for each combat.  It is not assigned to a specific object but is shared by the combating characters and handles all the combat information. Since Scripts are database entities it also means that the combat will not be affected by a server reload.</p></li>
+<li><p>A combat <a class="reference internal" href="Command-Sets.html"><span class="doc">command set</span></a> with the relevant commands needed for combat, such as the various attack/defend options and the <code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> command to leave the combat mode.</p></li>
+<li><p>A rule resolution system. The basics of making such a module is described in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system tutorial</span></a>. We will only sketch such a module here for our end-turn combat resolution.</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">attack</span></code> <a class="reference internal" href="Commands.html"><span class="doc">command</span></a> for initiating the combat mode. This is added to the default command set. It will create the combat handler and add the character(s) to it. It will also assign the combat command set to the characters.</p></li>
+</ul>
+</div>
+<div class="section" id="the-combat-handler">
+<h2>The combat handler<a class="headerlink" href="#the-combat-handler" title="Permalink to this headline">¶</a></h2>
+<p>The <em>combat handler</em> is implemented as a stand-alone <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a>.  This Script is created when the first Character decides to attack another and is deleted when no one is fighting any more. Each handler represents one instance of combat and one combat only. Each instance of combat can hold any number of characters but each character can only be part of one combat at a time (a player would need to disengage from the first combat before they could join another).</p>
+<p>The reason we don’t store this Script “on” any specific character is because any character may leave the combat at any time. Instead the script holds references to all characters involved in the combat.  Vice-versa, all characters holds a back-reference to the current combat handler. While we don’t use this very much here this might allow the combat commands on the characters to access and update the combat handler state directly.</p>
+<p><em>Note: Another way to implement a combat handler would be to use a normal Python object and handle time-keeping with the <a class="reference internal" href="TickerHandler.html"><span class="doc">TickerHandler</span></a>. This would require either adding custom hook methods on the character or to implement a custom child of the TickerHandler class to track turns. Whereas the TickerHandler is easy to use, a Script offers more power in this case.</em></p>
+<p>Here is a basic combat handler. Assuming our game folder is named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, we store it in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/combat_handler.py</span></code>:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/typeclasses/combat_handler.py</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">world.rules</span> <span class="kn">import</span> <span class="n">resolve_combat</span>
+
+<span class="k">class</span> <span class="nc">CombatHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This implements the combat handler.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># standard Script hooks </span>
+
+    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Called when script is first created&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;combat_handler_</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;handles combat&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># two minute timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="bp">True</span>   
+
+        <span class="c1"># store all combatants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># store all actions for each turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># number of actions entered per combatant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_init_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This initializes handler back-reference </span>
+<span class="sd">        and combat cmdset on a character</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;commands.combat.CombatCmdSet&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_cleanup_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove character from handler and clean </span>
+<span class="sd">        it of the back-reference and cmdset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dbref</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span> 
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span>        
+        <span class="k">del</span> <span class="n">character</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;commands.combat.CombatCmdSet&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called on first start but also when the script is restarted</span>
+<span class="sd">        after a server reboot. We need to re-assign this combat handler to </span>
+<span class="sd">        all characters as well as re-assign the cmdset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Called just before the script is stopped/destroyed.&quot;</span>
+        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="c1"># note: the list() call above disconnects list from database</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called every self.interval seconds (turn timeout) or </span>
+<span class="sd">        when force_repeat is called (because everyone has entered their </span>
+<span class="sd">        commands). We know this by checking the existence of the</span>
+<span class="sd">        `normal_turn_end` NAttribute, set just before calling </span>
+<span class="sd">        force_repeat.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">normal_turn_end</span><span class="p">:</span>
+            <span class="c1"># we get here because the turn ended normally</span>
+            <span class="c1"># (force_repeat was called) - no msg output</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">normal_turn_end</span>
+        <span class="k">else</span><span class="p">:</span>        
+            <span class="c1"># turn timeout</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;Turn timer timed out. Continuing.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_turn</span><span class="p">()</span>
+
+    <span class="c1"># Combat-handler methods</span>
+
+    <span class="k">def</span> <span class="nf">add_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="s2">&quot;Add combatant to handler&quot;</span>
+        <span class="n">dbref</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="n">character</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                                       <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">)]</span>
+        <span class="c1"># set up back-reference</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+       
+    <span class="k">def</span> <span class="nf">remove_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+        <span class="s2">&quot;Remove combatant from handler&quot;</span>
+        <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
+            <span class="c1"># if no more characters in battle, kill this handler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">msg_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="s2">&quot;Send message to all combatants&quot;</span>
+        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by combat commands to register an action with the handler.</span>
+
+<span class="sd">         action - string identifying the action, like &quot;hit&quot; or &quot;parry&quot;</span>
+<span class="sd">         character - the character performing the action</span>
+<span class="sd">         target - the target character or None</span>
+
+<span class="sd">        actions are stored in a dictionary keyed to each character, each</span>
+<span class="sd">        of which holds a list of max 2 actions. An action is stored as</span>
+<span class="sd">        a tuple (character, action, target). </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dbref</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># only allow 2 actions            </span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">dbref</span><span class="p">][</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>        
+            <span class="c1"># report if we already used too many actions</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">dbref</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">check_end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the command to eventually trigger </span>
+<span class="sd">        the resolution of the turn. We check if everyone</span>
+<span class="sd">        has added all their actions; if so we call force the</span>
+<span class="sd">        script to repeat immediately (which will call</span>
+<span class="sd">        `self.at_repeat()` while resetting all timers). </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">normal_turn_end</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">force_repeat</span><span class="p">()</span> 
+
+    <span class="k">def</span> <span class="nf">end_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This resolves all actions by calling the rules module. </span>
+<span class="sd">        It then resets everything and starts the next turn. It</span>
+<span class="sd">        is called by at_repeat().</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">resolve_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># less than 2 characters in battle, kill this handler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;Combat has ended&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># reset counters before next turn</span>
+            <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">characters</span><span class="p">[</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">character</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">action_count</span><span class="p">[</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn_actions</span><span class="p">[</span><span class="n">character</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                                                  <span class="p">(</span><span class="s2">&quot;defend&quot;</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="bp">None</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;Next turn begins ...&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>This implements all the useful properties of our combat handler. This Script will survive a reboot and will automatically re-assert itself when it comes back online. Even the current state of the combat should be unaffected since it is saved in Attributes at every turn. An important part to note is the use of the Script’s standard <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> hook and the <code class="docutils literal notranslate"><span class="pre">force_repeat</span></code> method to end each turn. This allows for everything to go through the same mechanisms with minimal repetition of code.</p>
+<p>What is not present in this handler is a way for players to view the actions they set or to change their actions once they have been added (but before the last one has added theirs). We leave this as an exercise.</p>
+</div>
+<div class="section" id="combat-commands">
+<h2>Combat commands<a class="headerlink" href="#combat-commands" title="Permalink to this headline">¶</a></h2>
+<p>Our combat commands - the commands that are to be available to us during the combat - are (in our example) very simple. In a full implementation the commands available might be determined by the weapon(s) held by the player or by which skills they know.</p>
+<p>We create them in <code class="docutils literal notranslate"><span class="pre">mygame/commands/combat.py</span></code>.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+
+<span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    hit an enemy</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      hit &lt;target&gt;</span>
+
+<span class="sd">    Strikes the given enemy with your current weapon.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;strike&quot;</span><span class="p">,</span> <span class="s2">&quot;slash&quot;</span><span class="p">]</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Implements the command&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: hit &lt;target&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span> 
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">add_action</span><span class="p">(</span><span class="s2">&quot;hit&quot;</span><span class="p">,</span> 
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> 
+                                                       <span class="n">target</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You add &#39;hit&#39; to the combat queue&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can only queue two actions per turn!&quot;</span><span class="p">)</span>
+ 
+        <span class="c1"># tell the handler to check if turn is over</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">check_end_turn</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>The other commands <code class="docutils literal notranslate"><span class="pre">CmdParry</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdFeint</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdDefend</span></code> and <code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code> look basically the same. We should also add a custom <code class="docutils literal notranslate"><span class="pre">help</span></code> command to list all the available combat commands and what they do.</p>
+<p>We just need to put them all in a cmdset. We do this at the end of the same module:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+
+<span class="k">class</span> <span class="nc">CombatCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;combat_cmdset&quot;</span>
+    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">10</span> 
+    <span class="n">no_exits</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHit</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdParry</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdFeint</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdDefend</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdDisengage</span><span class="p">())</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdHelp</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdPose</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdSay</span><span class="p">())</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="rules-module">
+<h2>Rules module<a class="headerlink" href="#rules-module" title="Permalink to this headline">¶</a></h2>
+<p>A general way to implement a rule module is found in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system tutorial</span></a>. Proper resolution would likely require us to change our Characters to store things like strength, weapon skills and so on. So for this example we will settle for a very simplistic rock-paper-scissors kind of setup with some randomness thrown in. We will not deal with damage here but just announce the results of each turn. In a real system the Character objects would hold stats to affect their skills, their chosen weapon affect the choices, they would be able to lose health etc.</p>
+<p>Within each turn, there are “sub-turns”, each consisting of one action per character. The actions within each sub-turn happens simultaneously and only once they have all been resolved we move on to the next sub-turn (or end the full turn).</p>
+<p><em>Note: In our simple example the sub-turns don’t affect each other (except for <code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>), nor do any effects carry over between turns. The real power of a turn-based system would be to add real tactical possibilities here though; For example if your hit got parried you could be out of balance and your next action would be at a disadvantage. A successful feint would open up for a subsequent attack and so on …</em></p>
+<p>Our rock-paper-scissor setup works like this:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hit</span></code> beats <code class="docutils literal notranslate"><span class="pre">feint</span></code> and <code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code>. It has a random chance to fail against <code class="docutils literal notranslate"><span class="pre">defend</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parry</span></code> beats <code class="docutils literal notranslate"><span class="pre">hit</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">feint</span></code> beats <code class="docutils literal notranslate"><span class="pre">parry</span></code> and is then counted as a <code class="docutils literal notranslate"><span class="pre">hit</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defend</span></code> does nothing but has a chance to beat <code class="docutils literal notranslate"><span class="pre">hit</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> must succeed two times in a row (i.e. not beaten by a <code class="docutils literal notranslate"><span class="pre">hit</span></code> once during the turn). If so the character leaves combat.</p></li>
+</ul>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/rules.py</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c1"># messages </span>
+
+<span class="k">def</span> <span class="nf">resolve_combat</span><span class="p">(</span><span class="n">combat_handler</span><span class="p">,</span> <span class="n">actiondict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is called by the combat handler</span>
+<span class="sd">    actiondict is a dictionary with a list of two actions</span>
+<span class="sd">    for each character:</span>
+<span class="sd">    {char.id:[(action1, char, target), (action2, char, target)], ...}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flee</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># track number of flee commands per character</span>
+    <span class="k">for</span> <span class="n">isub</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="c1"># loop over sub-turns</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">subturn</span> <span class="ow">in</span> <span class="p">(</span><span class="n">sub</span><span class="p">[</span><span class="n">isub</span><span class="p">]</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">actiondict</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="c1"># for each character, resolve the sub-turn</span>
+            <span class="n">action</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">subturn</span>
+            <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
+                <span class="n">taction</span><span class="p">,</span> <span class="n">tchar</span><span class="p">,</span> <span class="n">ttarget</span> <span class="o">=</span> <span class="n">actiondict</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="n">isub</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;hit&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;parry&quot;</span> <span class="ow">and</span> <span class="n">ttarget</span> <span class="o">==</span> <span class="n">char</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> tries to hit </span><span class="si">%s</span><span class="s2">, but </span><span class="si">%s</span><span class="s2"> parries the attack!&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;defend&quot;</span> <span class="ow">and</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> defends against the attack by </span><span class="si">%s</span><span class="s2">.&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">tchar</span><span class="p">,</span> <span class="n">char</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;flee&quot;</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> stops </span><span class="si">%s</span><span class="s2"> from disengaging, with a hit!&quot;</span>
+                    <span class="n">flee</span><span class="p">[</span><span class="n">tchar</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> hits </span><span class="si">%s</span><span class="s2">, bypassing their </span><span class="si">%s</span><span class="s2">!&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">,</span> <span class="n">taction</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;parry&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;hit&quot;</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> parries the attack by </span><span class="si">%s</span><span class="s2">.&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;feint&quot;</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> tries to parry, but </span><span class="si">%s</span><span class="s2"> feints and hits!&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> parries to no avail.&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;feint&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;parry&quot;</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> feints past </span><span class="si">%s</span><span class="s2">&#39;s parry, landing a hit!&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">taction</span> <span class="o">==</span> <span class="s2">&quot;hit&quot;</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> feints but is defeated by </span><span class="si">%s</span><span class="s2"> hit!&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">tchar</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> feints to no avail.&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;defend&quot;</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> defends.&quot;</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;flee&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">flee</span><span class="p">:</span>
+                    <span class="n">flee</span><span class="p">[</span><span class="n">char</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">flee</span><span class="p">[</span><span class="n">char</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> tries to disengage (two subsequent turns needed)&quot;</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+
+        <span class="c1"># echo results of each subturn</span>
+        <span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">messages</span><span class="p">))</span>
+
+    <span class="c1"># at the end of both sub-turns, test if anyone fled</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> withdraws from combat.&quot;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">fleevalue</span><span class="p">)</span> <span class="ow">in</span> <span class="n">flee</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">fleevalue</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+            <span class="n">combat_handler</span><span class="o">.</span><span class="n">remove_character</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>To make it simple (and to save space), this example rule module actually resolves each interchange twice - first when it gets to each character and then again when handling the target. Also, since we use the combat handler’s <code class="docutils literal notranslate"><span class="pre">msg_all</span></code> method here, the system will get pretty spammy. To clean it up, one could imagine tracking all the possible interactions to make sure each pair is only handled and reported once.</p>
+</div>
+<div class="section" id="combat-initiator-command">
+<h2>Combat initiator command<a class="headerlink" href="#combat-initiator-command" title="Permalink to this headline">¶</a></h2>
+<p>This is the last component we need, a command to initiate combat. This will tie everything together. We store this with the other combat commands.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/commands/combat.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span>
+
+<span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    initiates combat</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      attack &lt;target&gt;</span>
+
+<span class="sd">    This will initiate combat with &lt;target&gt;. If &lt;target is</span>
+<span class="sd">    already in combat, you will join the combat. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Handle command&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: attack &lt;target&gt;&quot;</span><span class="p">)</span>            
+            <span class="k">return</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># set up combat</span>
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="p">:</span>
+            <span class="c1"># target is already in combat - join it            </span>
+            <span class="n">target</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> joins combat!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create a new combat handler</span>
+            <span class="n">chandler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;combat_handler.CombatHandler&quot;</span><span class="p">)</span>
+            <span class="n">chandler</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="n">chandler</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You attack </span><span class="si">%s</span><span class="s2">! You are in combat.&quot;</span> <span class="o">%</span> <span class="n">target</span><span class="p">)</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> attacks you! You are in combat.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>       
+</pre></div>
+</td></tr></table></div>
+<p>The <code class="docutils literal notranslate"><span class="pre">attack</span></code> command will not go into the combat cmdset but rather into the default cmdset. See e.g. the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding Command Tutorial</span></a> if you are unsure about how to do this.</p>
+</div>
+<div class="section" id="expanding-the-example">
+<h2>Expanding the example<a class="headerlink" href="#expanding-the-example" title="Permalink to this headline">¶</a></h2>
+<p>At this point you should have a simple but flexible turn-based combat system. We have taken several shortcuts and simplifications in this example. The output to the players is likely too verbose during combat and too limited when it comes to informing about things surrounding it. Methods for changing your commands or list them, view who is in combat etc is likely needed - this will require play testing for each game and style. There is also currently no information displayed for other people happening to be in the same room as the combat - some less detailed information should probably be echoed to the room to
+show others what’s going on.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Turn based Combat System</a><ul>
+<li><a class="reference internal" href="#overview-of-combat-system-concepts">Overview of combat system concepts</a></li>
+<li><a class="reference internal" href="#tutorial-overview">Tutorial overview</a></li>
+<li><a class="reference internal" href="#the-combat-handler">The combat handler</a></li>
+<li><a class="reference internal" href="#combat-commands">Combat commands</a></li>
+<li><a class="reference internal" href="#rules-module">Rules module</a></li>
+<li><a class="reference internal" href="#combat-initiator-command">Combat initiator command</a></li>
+<li><a class="reference internal" href="#expanding-the-example">Expanding the example</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Turn-based-Combat-System.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Turn-based-Combat-System.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Turn-based-Combat-System.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

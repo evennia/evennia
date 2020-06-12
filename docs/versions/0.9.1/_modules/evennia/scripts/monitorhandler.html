@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.scripts.monitorhandler &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.scripts.monitorhandler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Monitors - catch changes to model fields and Attributes.</span>
+
+<span class="sd">The MONITOR_HANDLER singleton from this module offers the following</span>
+<span class="sd">functionality:</span>
+
+<span class="sd">- Field-monitor - track a object&#39;s specific database field and perform</span>
+<span class="sd">    an action whenever that field *changes* for whatever reason.</span>
+<span class="sd">- Attribute-monitor tracks an object&#39;s specific Attribute and perform</span>
+<span class="sd">    an action whenever that Attribute *changes* for whatever reason.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">dbunserialize</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">variable_from_module</span>
+
+<span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+<span class="n">_DA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__delattr__</span>
+
+
+<div class="viewcode-block" id="MonitorHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler">[docs]</a><span class="k">class</span> <span class="nc">MonitorHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a resource singleton that allows for registering</span>
+<span class="sd">    callbacks for when a field or Attribute is updated (saved).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MonitorHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the handler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">savekey</span> <span class="o">=</span> <span class="s2">&quot;_monitorhandler_save&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MonitorHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store our monitors to the database. This is called</span>
+<span class="sd">        by the server process.</span>
+
+<span class="sd">        Since dbserialize can&#39;t handle defaultdicts, we convert to an</span>
+<span class="sd">        intermediary save format ((obj,fieldname, idstring, callback, kwargs), ...)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">savedata</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">idstring</span><span class="p">,</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span>
+                        <span class="n">fieldname</span>
+                    <span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                        <span class="n">savedata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+            <span class="n">savedata</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="p">(</span><span class="n">savedata</span><span class="p">)</span>
+            <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">savekey</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">savedata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MonitorHandler.restore"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_reload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restore our monitors after a reload. This is called</span>
+<span class="sd">        by the server process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            server_reload (bool, optional): If this is False, it means</span>
+<span class="sd">                the server went through a cold reboot and all</span>
+<span class="sd">                non-persistent tickers must be killed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
+        <span class="n">restored_monitors</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">savekey</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">restored_monitors</span><span class="p">:</span>
+            <span class="n">restored_monitors</span> <span class="o">=</span> <span class="n">dbunserialize</span><span class="p">(</span><span class="n">restored_monitors</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="n">restored_monitors</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">server_reload</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">persistent</span><span class="p">:</span>
+                        <span class="c1"># this monitor will not be restarted</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="s2">&quot;session&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]:</span>
+                        <span class="c1"># the session was removed because it no longer</span>
+                        <span class="c1"># exists. Don&#39;t restart the monitor.</span>
+                        <span class="k">continue</span>
+                    <span class="n">modname</span><span class="p">,</span> <span class="n">varname</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">callback</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">varname</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">obj</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">continue</span>
+        <span class="c1"># make sure to clean data from database</span>
+        <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">savekey</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MonitorHandler.at_update"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.at_update">[docs]</a>    <span class="k">def</span> <span class="nf">at_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the field as it saves.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="ow">and</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">idstring</span><span class="p">,</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="o">=</span><span class="n">fieldname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Monitor callback was removed.&quot;</span><span class="p">)</span>
+        <span class="c1"># we cleanup non-found monitors (has to be done after loop)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="p">)</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MonitorHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add monitoring to a given field or Attribute. A field must</span>
+<span class="sd">        be specified with the full db_* name or it will be assumed</span>
+<span class="sd">        to be an Attribute (so `db_key`, not just `key`).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Typeclassed Entity): The entity on which to monitor a</span>
+<span class="sd">                field or Attribute.</span>
+<span class="sd">            fieldname (str): Name of field (db_*) or Attribute to monitor.</span>
+<span class="sd">            callback (callable): A callable on the form `callable(**kwargs),</span>
+<span class="sd">                where kwargs holds keys fieldname and obj.</span>
+<span class="sd">            idstring (str, optional): An id to separate this monitor from other monitors</span>
+<span class="sd">                of the same field and object.</span>
+<span class="sd">            persistent (bool, optional): If False, the monitor will survive</span>
+<span class="sd">                a server reload but not a cold restart. This is default.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            session (Session): If this keyword is given, the monitorhandler will</span>
+<span class="sd">                correctly analyze it and remove the monitor if after a reload/reboot</span>
+<span class="sd">                the session is no longer valid.</span>
+<span class="sd">            any (any): Any other kwargs are passed on to the callback. Remember that</span>
+<span class="sd">                all kwargs must be possible to pickle!</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
+            <span class="c1"># an Attribute - we track its db_value field</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">fieldname</span> <span class="o">=</span> <span class="s2">&quot;db_value&quot;</span>
+
+        <span class="c1"># we try to serialize this data to test it&#39;s valid. Otherwise we won&#39;t accept it.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;callback is not a function.&quot;</span><span class="p">)</span>
+            <span class="n">dbserialize</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Invalid monitor definition: </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span>
+                <span class="n">fieldname</span><span class="p">,</span>
+                <span class="n">callback</span><span class="p">,</span>
+                <span class="n">idstring</span><span class="p">,</span>
+                <span class="n">persistent</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MonitorHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a monitor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">fieldname</span> <span class="o">=</span> <span class="s2">&quot;db_value&quot;</span>
+
+        <span class="n">idstring_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">idstring</span> <span class="ow">in</span> <span class="n">idstring_dict</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MonitorHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete all monitors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MonitorHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List all monitors or all monitors of a given object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): The object on which to list all monitors.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            monitors (list): The handled monitors.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">objs</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span>
+
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">idstring</span><span class="p">,</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span>
+                    <span class="n">fieldname</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<span class="c1"># access object</span>
+<span class="n">MONITOR_HANDLER</span> <span class="o">=</span> <span class="n">MonitorHandler</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="monitorhandler.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

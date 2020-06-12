@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.tests.test_evmenu &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.tests.test_evmenu</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Unit tests for the EvMenu system</span>
+
+<span class="sd">This sets up a testing parent for testing EvMenu trees. It is configured by subclassing the</span>
+<span class="sd">`TestEvMenu` class from this module and setting the class variables to point to the menu that should</span>
+<span class="sd">be tested and how it should be called.</span>
+
+<span class="sd">Without adding any further test methods, the tester will process all nodes of the menu, depth first,</span>
+<span class="sd">by stepping through all options for every node. Optionally, it can check that all nodes are visited.</span>
+<span class="sd">It will create a hierarchical list of node names that describes the tree structure. This can then be</span>
+<span class="sd">compared against a template to make sure the menu structure is sound. Easiest way to use this is to</span>
+<span class="sd">run the test once to see how the structure looks.</span>
+
+<span class="sd">The system also allows for testing the returns of each node as part of the parsing.</span>
+
+<span class="sd">To help debug the menu, turn on `debug_output`, which will print the traversal process in detail.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">evmenu</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">ansi</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">MagicMock</span>
+
+
+<div class="viewcode-block" id="TestEvMenu"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.prototypes.tests.TestEvMenu">[docs]</a><span class="k">class</span> <span class="nc">TestEvMenu</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="s2">&quot;Run the EvMenu testing.&quot;</span>
+    <span class="n">menutree</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># can also be the path to the menu tree</span>
+    <span class="n">startnode</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
+    <span class="n">cmdset_mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
+    <span class="n">cmdset_priority</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">auto_quit</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">auto_look</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">auto_help</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">cmd_on_exit</span> <span class="o">=</span> <span class="s2">&quot;look&quot;</span>
+    <span class="n">persistent</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">startnode_input</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># if all nodes must be visited for the test to pass. This is not on</span>
+    <span class="c1"># by default since there may be exec-nodes that are made to not be</span>
+    <span class="c1"># visited.</span>
+    <span class="n">expect_all_nodes</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># this is compared against the full tree structure generated</span>
+    <span class="n">expected_tree</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># this allows for verifying that a given node returns a given text. The</span>
+    <span class="c1"># text is compared with .startswith, so the entire text need not be matched.</span>
+    <span class="n">expected_node_texts</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># just check the number of options from each node</span>
+    <span class="n">expected_node_options_count</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># check the actual options</span>
+    <span class="n">expected_node_options</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># set this to print the traversal as it happens (debugging)</span>
+    <span class="n">debug_output</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="TestEvMenu._debug_output"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.prototypes.tests.TestEvMenu._debug_output">[docs]</a>    <span class="k">def</span> <span class="nf">_debug_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug_output</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestEvMenu._test_menutree"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.prototypes.tests.TestEvMenu._test_menutree">[docs]</a>    <span class="k">def</span> <span class="nf">_test_menutree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a automatic tester of the menu tree by recursively progressing through the</span>
+<span class="sd">        structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_depth_first</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">indent</span><span class="p">):</span>
+
+            <span class="c1"># we are in a given node here</span>
+            <span class="n">nodename</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">nodename</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">test_options</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="p">(</span><span class="n">options</span><span class="p">,)</span>
+
+            <span class="c1"># run validation tests for this node</span>
+            <span class="n">compare_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_node_texts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">compare_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">compare_text</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">compare_text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">node_text</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">test_nodetext</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span>
+                    <span class="nb">bool</span><span class="p">(</span><span class="n">node_text</span><span class="p">),</span>
+                    <span class="s2">&quot;node: </span><span class="si">{}</span><span class="s2">: node-text is None, which was not expected.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node_text</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="n">node_text</span><span class="p">,</span> <span class="n">helptext</span> <span class="o">=</span> <span class="n">node_text</span>
+                <span class="n">node_text</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">node_text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">node_text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">compare_text</span><span class="p">),</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">node </span><span class="se">\&quot;</span><span class="si">{}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">Output:</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">Expected (startswith):</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">nodename</span><span class="p">,</span> <span class="n">node_text</span><span class="p">,</span> <span class="n">compare_text</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="n">compare_options_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_node_options_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">compare_options_count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">),</span>
+                    <span class="n">compare_options_count</span><span class="p">,</span>
+                    <span class="s2">&quot;Not the right number of options returned from node </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="n">compare_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_node_options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">compare_options</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                    <span class="n">options</span><span class="p">,</span>
+                    <span class="n">compare_options</span><span class="p">,</span>
+                    <span class="s2">&quot;Options returned from node </span><span class="si">{}</span><span class="s2"> does not match.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_debug_output</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span> <span class="s2">&quot;*</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="p">))</span>
+            <span class="n">subtree</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="p">:</span>
+                <span class="c1"># an end node</span>
+                <span class="k">if</span> <span class="n">nodename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="n">visited</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
+                <span class="n">subtree</span> <span class="o">=</span> <span class="n">nodename</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">optdict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+
+                    <span class="n">key</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="n">goto</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">optdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                        <span class="n">optdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                        <span class="n">optdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                        <span class="n">optdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;goto&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># prepare the key to pass to the menu</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_default&quot;</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test raw input&quot;</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+                    <span class="n">backup_menu</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">menu</span><span class="p">)</span>
+
+                    <span class="c1"># step the menu</span>
+                    <span class="n">menu</span><span class="o">.</span><span class="n">parse_input</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                    <span class="c1"># from here on we are likely in a different node</span>
+                    <span class="n">nodename</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">nodename</span>
+
+                    <span class="k">if</span> <span class="n">menu</span><span class="o">.</span><span class="n">close_menu</span><span class="o">.</span><span class="n">called</span><span class="p">:</span>
+                        <span class="c1"># this was an end node</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_debug_output</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span> <span class="s2">&quot;    .. menu exited! Back to previous node.&quot;</span><span class="p">)</span>
+                        <span class="n">menu</span> <span class="o">=</span> <span class="n">backup_menu</span>
+                        <span class="n">menu</span><span class="o">.</span><span class="n">close_menu</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+                        <span class="n">visited</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
+                        <span class="n">subtree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">nodename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                        <span class="n">visited</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
+                        <span class="n">subtree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
+                        <span class="n">_depth_first</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">subtree</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">indent</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="c1"># self._debug_output(indent, &quot;    -&gt; arrived at {}&quot;.format(nodename))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">subtree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
+                        <span class="c1"># self._debug_output( indent, &quot;    -&gt; arrived at {} (circular call)&quot;.format(nodename))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_debug_output</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span> <span class="s2">&quot;-- </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">) -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">goto</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">subtree</span><span class="p">:</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subtree</span><span class="p">)</span>
+
+        <span class="c1"># the start node has already fired at this point</span>
+        <span class="n">visited_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">menu</span><span class="o">.</span><span class="n">nodename</span><span class="p">]</span>
+        <span class="n">traversal_tree</span> <span class="o">=</span> <span class="p">[</span><span class="n">menu</span><span class="o">.</span><span class="n">nodename</span><span class="p">]</span>
+        <span class="n">_depth_first</span><span class="p">(</span><span class="n">menu</span><span class="p">,</span> <span class="n">traversal_tree</span><span class="p">,</span> <span class="n">visited_nodes</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expect_all_nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">menu</span><span class="o">.</span><span class="n">_menutree</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">visited_nodes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">traversal_tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_tree</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvMenu.setUp"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.prototypes.tests.TestEvMenu.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">menutree</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Test&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller2</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller2</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Test&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session2</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session2</span><span class="o">.</span><span class="n">protocol_flags</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller2</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session2</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">evmenu</span><span class="o">.</span><span class="n">EvMenu</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">menutree</span><span class="p">,</span>
+                <span class="n">startnode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">startnode</span><span class="p">,</span>
+                <span class="n">cmdset_mergetype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_mergetype</span><span class="p">,</span>
+                <span class="n">cmdset_priority</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_priority</span><span class="p">,</span>
+                <span class="n">auto_quit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_quit</span><span class="p">,</span>
+                <span class="n">auto_look</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_look</span><span class="p">,</span>
+                <span class="n">auto_help</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_help</span><span class="p">,</span>
+                <span class="n">cmd_on_exit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_on_exit</span><span class="p">,</span>
+                <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">startnode_input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">startnode_input</span><span class="p">,</span>
+                <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># persistent version</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pmenu</span> <span class="o">=</span> <span class="n">evmenu</span><span class="o">.</span><span class="n">EvMenu</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller2</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">menutree</span><span class="p">,</span>
+                <span class="n">startnode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">startnode</span><span class="p">,</span>
+                <span class="n">cmdset_mergetype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_mergetype</span><span class="p">,</span>
+                <span class="n">cmdset_priority</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_priority</span><span class="p">,</span>
+                <span class="n">auto_quit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_quit</span><span class="p">,</span>
+                <span class="n">auto_look</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_look</span><span class="p">,</span>
+                <span class="n">auto_help</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_help</span><span class="p">,</span>
+                <span class="n">cmd_on_exit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_on_exit</span><span class="p">,</span>
+                <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">startnode_input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">startnode_input</span><span class="p">,</span>
+                <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session2</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">close_menu</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pmenu</span><span class="o">.</span><span class="n">close_menu</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestEvMenu.test_menu_structure"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.prototypes.tests.TestEvMenu.test_menu_structure">[docs]</a>    <span class="k">def</span> <span class="nf">test_menu_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_test_menutree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_test_menutree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pmenu</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestEvMenuExample"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.prototypes.tests.TestEvMenuExample">[docs]</a><span class="k">class</span> <span class="nc">TestEvMenuExample</span><span class="p">(</span><span class="n">TestEvMenu</span><span class="p">):</span>
+
+    <span class="n">menutree</span> <span class="o">=</span> <span class="s2">&quot;evennia.utils.evmenu&quot;</span>
+    <span class="n">startnode</span> <span class="o">=</span> <span class="s2">&quot;test_start_node&quot;</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;testval&quot;</span><span class="p">:</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;testval2&quot;</span><span class="p">:</span> <span class="s2">&quot;val2&quot;</span><span class="p">}</span>
+    <span class="n">debug_output</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">expected_node_texts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test_view_node&quot;</span><span class="p">:</span> <span class="s2">&quot;Your name is&quot;</span><span class="p">}</span>
+
+    <span class="n">expected_tree</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;test_start_node&quot;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;test_set_node&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;test_start_node&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;test_look_node&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;test_start_node&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;test_view_node&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;test_start_node&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;test_start_node&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;test_end_node&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;test_displayinput_node&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;test_start_node&quot;</span><span class="p">],</span>
+        <span class="p">],</span>
+    <span class="p">]</span>
+
+<div class="viewcode-block" id="TestEvMenuExample.test_kwargsave"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.prototypes.tests.TestEvMenuExample.test_kwargsave">[docs]</a>    <span class="k">def</span> <span class="nf">test_kwargsave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">,</span> <span class="s2">&quot;testval&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">,</span> <span class="s2">&quot;testval2&quot;</span><span class="p">))</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="test_evmenu.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

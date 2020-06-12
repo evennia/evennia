@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.tests.test_tagparsing &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.tests.test_tagparsing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Unit tests for all sorts of inline text-tag parsing, like ANSI, html conversion, inlinefuncs etc</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="k">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSIString</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.text2html</span> <span class="k">import</span> <span class="n">TextToHTMLparser</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">inlinefuncs</span>
+
+
+<div class="viewcode-block" id="ANSIStringTestCase"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase">[docs]</a><span class="k">class</span> <span class="nc">ANSIStringTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIStringTestCase.checker"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.checker">[docs]</a>    <span class="k">def</span> <span class="nf">checker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">clean</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies the raw and clean strings of an ANSIString match expected</span>
+<span class="sd">        output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ansi</span><span class="o">.</span><span class="n">clean</span><span class="p">()),</span> <span class="n">clean</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ansi</span><span class="o">.</span><span class="n">raw</span><span class="p">()),</span> <span class="n">raw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.table_check"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.table_check">[docs]</a>    <span class="k">def</span> <span class="nf">table_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies the indexes in an ANSIString match what they should.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">ansi</span><span class="o">.</span><span class="n">_char_indexes</span><span class="p">,</span> <span class="n">char</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">ansi</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_instance"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_instance">[docs]</a>    <span class="k">def</span> <span class="nf">test_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure the ANSIString is always constructed correctly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="s2">&quot;This isA|r testTest&quot;</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mThis is</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31mA|r test</span><span class="se">\x1b</span><span class="s2">[0mTest</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|gThis is|rA||r test|nTest|n&quot;</span><span class="p">)</span>
+        <span class="n">char_table</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">39</span><span class="p">,</span> <span class="mi">40</span><span class="p">]</span>
+        <span class="n">code_table</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">,</span>
+            <span class="mi">8</span><span class="p">,</span>
+            <span class="mi">16</span><span class="p">,</span>
+            <span class="mi">17</span><span class="p">,</span>
+            <span class="mi">18</span><span class="p">,</span>
+            <span class="mi">19</span><span class="p">,</span>
+            <span class="mi">20</span><span class="p">,</span>
+            <span class="mi">21</span><span class="p">,</span>
+            <span class="mi">22</span><span class="p">,</span>
+            <span class="mi">23</span><span class="p">,</span>
+            <span class="mi">24</span><span class="p">,</span>
+            <span class="mi">33</span><span class="p">,</span>
+            <span class="mi">34</span><span class="p">,</span>
+            <span class="mi">35</span><span class="p">,</span>
+            <span class="mi">36</span><span class="p">,</span>
+            <span class="mi">41</span><span class="p">,</span>
+            <span class="mi">42</span><span class="p">,</span>
+            <span class="mi">43</span><span class="p">,</span>
+            <span class="mi">44</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">encoded</span><span class="p">,</span> <span class="n">clean</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_check</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">char_table</span><span class="p">,</span> <span class="n">code_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="n">encoded</span><span class="p">,</span> <span class="n">clean</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_check</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="n">char_table</span><span class="p">,</span> <span class="n">code_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">encoded</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">encoded</span><span class="p">,</span> <span class="n">clean</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_check</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">encoded</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">char_table</span><span class="p">,</span> <span class="n">code_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;Test&quot;</span><span class="p">),</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="s2">&quot;Test&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_check</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;Test&quot;</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_slice"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_slice">[docs]</a>    <span class="k">def</span> <span class="nf">test_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies that slicing an ANSIString results in expected color code</span>
+<span class="sd">        distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|gTest|rTest|n&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">target</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTes&quot;</span><span class="p">,</span> <span class="s2">&quot;Tes&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">target</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTest</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31m&quot;</span><span class="p">,</span> <span class="s2">&quot;Test&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">target</span><span class="p">[:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTest</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31mTest</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span><span class="p">,</span> <span class="s2">&quot;TestTest&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">target</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTest</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31mTes&quot;</span><span class="p">,</span> <span class="s2">&quot;TestTes&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_split"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_split">[docs]</a>    <span class="k">def</span> <span class="nf">test_split</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies that re.split and .split behave similarly and that color</span>
+<span class="sd">        codes end up where they should.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|gThis is |nA split string|g&quot;</span><span class="p">)</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mThis is </span><span class="se">\x1b</span><span class="s2">[0m&quot;</span><span class="p">,</span> <span class="s2">&quot;This is &quot;</span><span class="p">)</span>
+        <span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32m</span><span class="se">\x1b</span><span class="s2">[0m split string</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32m&quot;</span><span class="p">,</span> <span class="s2">&quot; split string&quot;</span><span class="p">)</span>
+        <span class="n">re_split</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">normal_split</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">re_split</span><span class="p">,</span> <span class="n">normal_split</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">normal_split</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">normal_split</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="n">first</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">normal_split</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">*</span><span class="n">second</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_join"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_join">[docs]</a>    <span class="k">def</span> <span class="nf">test_join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify that joining a set of ANSIStrings works.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This isn&#39;t the desired behavior, but the expected one. Python</span>
+        <span class="c1"># concatenates the in-memory representation with the built-in string&#39;s</span>
+        <span class="c1"># join.</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|gTest|r&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+        <span class="c1"># Force the generator to be evaluated.</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="s2">&quot;TestTestTest&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span>
+            <span class="n">result</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTest</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31m</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;[32mTest</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31m</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTest&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[31m&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TestTestTest&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_len"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_len">[docs]</a>    <span class="k">def</span> <span class="nf">test_len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure that length reporting on ANSIStrings does not include</span>
+<span class="sd">        ANSI codes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|gTest|n&quot;</span><span class="p">)),</span> <span class="mi">4</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_capitalize"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_capitalize">[docs]</a>    <span class="k">def</span> <span class="nf">test_capitalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure that capitalization works. This is the simplest of the</span>
+<span class="sd">        _transform functions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|gtest|n&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTest</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">result</span><span class="p">,</span> <span class="s2">&quot;Test&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_mxp_agnostic"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_mxp_agnostic">[docs]</a>    <span class="k">def</span> <span class="nf">test_mxp_agnostic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure MXP tags are not treated like ANSI codes, but normal text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mxp1</span> <span class="o">=</span> <span class="s2">&quot;|lclook|ltat|le&quot;</span>
+        <span class="n">mxp2</span> <span class="o">=</span> <span class="s2">&quot;Start to |lclook here|ltclick somewhere here|le first&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp1</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">53</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp2</span><span class="p">)))</span>
+        <span class="c1"># These would indicate an issue with the tables.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp1</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp1</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp2</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp2</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mxp1</span><span class="p">,</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mxp2</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="n">mxp2</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_add"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_add">[docs]</a>    <span class="k">def</span> <span class="nf">test_add</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify concatenation works correctly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|gTest&quot;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|cString|n&quot;</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[32mTest</span><span class="se">\x1b</span><span class="s2">[1m</span><span class="se">\x1b</span><span class="s2">[36mString</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checker</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="s2">&quot;TestString&quot;</span><span class="p">)</span>
+        <span class="n">char_table</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">]</span>
+        <span class="n">code_table</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_check</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">char_table</span><span class="p">,</span> <span class="n">code_table</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ANSIStringTestCase.test_strip"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.ANSIStringTestCase.test_strip">[docs]</a>    <span class="k">def</span> <span class="nf">test_strip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test the ansi-aware .strip() methods</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;   |r   Test of stuff |b with spaces   |n   &quot;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|r|b&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|rTest of stuff |b with spaces|n&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(),</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;|rTest of stuff |b with spaces   |n   &quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;   |r   Test of stuff |b with spaces|n&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">b</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestTextToHTMLparser"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser">[docs]</a><span class="k">class</span> <span class="nc">TestTextToHTMLparser</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTextToHTMLparser.setUp"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">TextToHTMLparser</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.tearDown"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_scheme_ftp"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_scheme_ftp">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_scheme_ftp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;ftp.example.com&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;ftp.example.com&quot; target=&quot;_blank&quot;&gt;ftp.example.com&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_scheme_www"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_scheme_www">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_scheme_www</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;www.example.com&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;www.example.com&quot; target=&quot;_blank&quot;&gt;www.example.com&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_scheme_ftpproto"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_scheme_ftpproto">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_scheme_ftpproto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;ftp://ftp.example.com&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;ftp://ftp.example.com&quot; target=&quot;_blank&quot;&gt;ftp://ftp.example.com&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_scheme_http"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_scheme_http">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_scheme_http</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;http://example.com&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;http://example.com&quot; target=&quot;_blank&quot;&gt;http://example.com&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_scheme_https"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_scheme_https">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_scheme_https</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;https://example.com&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;https://example.com&quot; target=&quot;_blank&quot;&gt;https://example.com&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_chars_slash"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_chars_slash">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_chars_slash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;www.example.com/homedir&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;www.example.com/homedir&quot; target=&quot;_blank&quot;&gt;www.example.com/homedir&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_chars_colon"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_chars_colon">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_chars_colon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;https://example.com:8000/login/&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;https://example.com:8000/login/&quot; target=&quot;_blank&quot;&gt;&#39;</span>
+            <span class="s2">&quot;https://example.com:8000/login/&lt;/a&gt;&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_chars_querystring"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_chars_querystring">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_chars_querystring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;https://example.com/submitform?field1=val1+val3&amp;field2=val2&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;https://example.com/submitform?field1=val1+val3&amp;field2=val2&quot; target=&quot;_blank&quot;&gt;&#39;</span>
+            <span class="s2">&quot;https://example.com/submitform?field1=val1+val3&amp;field2=val2&lt;/a&gt;&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_chars_anchor"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_chars_anchor">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_chars_anchor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;http://www.example.com/menu#section_1&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;http://www.example.com/menu#section_1&quot; target=&quot;_blank&quot;&gt;&#39;</span>
+            <span class="s2">&quot;http://www.example.com/menu#section_1&lt;/a&gt;&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_chars_exclam"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_chars_exclam">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_chars_exclam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span>
+                <span class="s2">&quot;https://groups.google.com/forum/&quot;</span> <span class="s2">&quot;?fromgroups#!categories/evennia/ainneve&quot;</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve&quot;&#39;</span>
+            <span class="s1">&#39; target=&quot;_blank&quot;&gt;https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_edge_leadingw"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_edge_leadingw">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_edge_leadingw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;wwww.example.com&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;w&lt;a href=&quot;www.example.com&quot; target=&quot;_blank&quot;&gt;www.example.com&lt;/a&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_edge_following_period_eol"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_edge_following_period_eol">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_edge_following_period_eol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;www.example.com.&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;www.example.com&quot; target=&quot;_blank&quot;&gt;www.example.com&lt;/a&gt;.&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_edge_following_period"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_edge_following_period">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_edge_following_period</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;see www.example.com. &quot;</span><span class="p">),</span>
+            <span class="s1">&#39;see &lt;a href=&quot;www.example.com&quot; target=&quot;_blank&quot;&gt;www.example.com&lt;/a&gt;. &#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_edge_brackets"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_edge_brackets">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_edge_brackets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;[http://example.com/]&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;[&lt;a href=&quot;http://example.com/&quot; target=&quot;_blank&quot;&gt;http://example.com/&lt;/a&gt;]&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_edge_multiline"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_edge_multiline">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_edge_multiline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;  * http://example.com/info</span><span class="se">\n</span><span class="s2">  * bullet&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;  * &lt;a href=&quot;http://example.com/info&quot; target=&quot;_blank&quot;&gt;&#39;</span>
+            <span class="s2">&quot;http://example.com/info&lt;/a&gt;</span><span class="se">\n</span><span class="s2">  * bullet&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_edge_following_htmlentity"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_edge_following_htmlentity">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_edge_following_htmlentity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s2">&quot;http://example.com/info&amp;lt;span&amp;gt;&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;a href=&quot;http://example.com/info&quot; target=&quot;_blank&quot;&gt;http://example.com/info&lt;/a&gt;&amp;lt;span&amp;gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTextToHTMLparser.test_url_edge_surrounded_spans"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestTextToHTMLparser.test_url_edge_surrounded_spans">[docs]</a>    <span class="k">def</span> <span class="nf">test_url_edge_surrounded_spans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="s1">&#39;&lt;/span&gt;http://example.com/&lt;span class=&quot;red&quot;&gt;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;&lt;/span&gt;&lt;a href=&quot;http://example.com/&quot; target=&quot;_blank&quot;&gt;&#39;</span>
+            <span class="s1">&#39;http://example.com/&lt;/a&gt;&lt;span class=&quot;red&quot;&gt;&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestInlineFuncs"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestInlineFuncs">[docs]</a><span class="k">class</span> <span class="nc">TestInlineFuncs</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test the nested inlinefunc module&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestInlineFuncs.test_nofunc"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestInlineFuncs.test_nofunc">[docs]</a>    <span class="k">def</span> <span class="nf">test_nofunc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">inlinefuncs</span><span class="o">.</span><span class="n">parse_inlinefunc</span><span class="p">(</span><span class="s2">&quot;as$382ewrw w we w werw,|44943}&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;as$382ewrw w we w werw,|44943}&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInlineFuncs.test_incomplete"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestInlineFuncs.test_incomplete">[docs]</a>    <span class="k">def</span> <span class="nf">test_incomplete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">inlinefuncs</span><span class="o">.</span><span class="n">parse_inlinefunc</span><span class="p">(</span><span class="s2">&quot;testing $blah{without an ending.&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;testing $blah{without an ending.&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInlineFuncs.test_single_func"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestInlineFuncs.test_single_func">[docs]</a>    <span class="k">def</span> <span class="nf">test_single_func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">inlinefuncs</span><span class="o">.</span><span class="n">parse_inlinefunc</span><span class="p">(</span><span class="s2">&quot;this is a test with $pad(centered, 20) text in it.&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;this is a test with       centered       text in it.&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInlineFuncs.test_nested"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestInlineFuncs.test_nested">[docs]</a>    <span class="k">def</span> <span class="nf">test_nested</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">inlinefuncs</span><span class="o">.</span><span class="n">parse_inlinefunc</span><span class="p">(</span>
+                <span class="s2">&quot;this $crop(is a test with $pad(padded, 20) text in $pad(pad2, 10) a crop, 80)&quot;</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;this is a test with        padded        text in    pad2    a crop&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInlineFuncs.test_escaped"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestInlineFuncs.test_escaped">[docs]</a>    <span class="k">def</span> <span class="nf">test_escaped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">inlinefuncs</span><span class="o">.</span><span class="n">parse_inlinefunc</span><span class="p">(</span>
+                <span class="s2">&quot;this should be $pad(&#39;&#39;&#39;escaped,&#39;&#39;&#39; and &#39;&#39;&#39;instead,&#39;&#39;&#39; cropped $crop(with a long,5) text., 80)&quot;</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;this should be                    escaped, and instead, cropped with  text.                    &quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInlineFuncs.test_escaped2"><a class="viewcode-back" href="../../../../api/evennia.utils.tests.html#evennia.utils.tests.test_tagparsing.TestInlineFuncs.test_escaped2">[docs]</a>    <span class="k">def</span> <span class="nf">test_escaped2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">inlinefuncs</span><span class="o">.</span><span class="n">parse_inlinefunc</span><span class="p">(</span>
+                <span class="s1">&#39;this should be $pad(&quot;&quot;&quot;escaped,&quot;&quot;&quot; and &quot;&quot;&quot;instead,&quot;&quot;&quot; cropped $crop(with a long,5) text., 80)&#39;</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;this should be                    escaped, and instead, cropped with  text.                    &quot;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="test_tagparsing.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

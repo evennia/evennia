@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.web.utils.middleware &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.utils.middleware</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="k">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">login</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+
+
+<div class="viewcode-block" id="SharedLoginMiddleware"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.middleware.SharedLoginMiddleware">[docs]</a><span class="k">class</span> <span class="nc">SharedLoginMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle the shared login between website and webclient.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SharedLoginMiddleware.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.middleware.SharedLoginMiddleware.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_response</span><span class="p">):</span>
+        <span class="c1"># One-time configuration and initialization.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_response</span> <span class="o">=</span> <span class="n">get_response</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="c1"># Code to be executed for each request before</span>
+        <span class="c1"># the view (and later middleware) are called.</span>
+
+        <span class="c1"># Synchronize credentials between webclient and website</span>
+        <span class="c1"># Must be performed *before* rendering the view (issue #1723)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_shared_login</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="c1"># Process view</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="c1"># Code to be executed for each request/response after</span>
+        <span class="c1"># the view is called.</span>
+
+        <span class="c1"># Return processed view</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+<div class="viewcode-block" id="SharedLoginMiddleware.make_shared_login"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.middleware.SharedLoginMiddleware.make_shared_login">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_shared_login</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">csession</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">website_uid</span> <span class="o">=</span> <span class="n">csession</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;website_authenticated_uid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">webclient_uid</span> <span class="o">=</span> <span class="n">csession</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webclient_authenticated_uid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">csession</span><span class="o">.</span><span class="n">session_key</span><span class="p">:</span>
+            <span class="c1"># this is necessary to build the sessid key</span>
+            <span class="n">csession</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+            <span class="c1"># Logged into website</span>
+            <span class="k">if</span> <span class="n">website_uid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># fresh website login (just from login page)</span>
+                <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;website_authenticated_uid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="n">webclient_uid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># auto-login web client</span>
+                <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;webclient_authenticated_uid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="k">elif</span> <span class="n">webclient_uid</span><span class="p">:</span>
+            <span class="c1"># Not logged into website, but logged into webclient</span>
+            <span class="k">if</span> <span class="n">website_uid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;website_authenticated_uid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">webclient_uid</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># calls our custom authenticate, in web/utils/backend.py</span>
+                    <span class="n">authenticate</span><span class="p">(</span><span class="n">autologin</span><span class="o">=</span><span class="n">account</span><span class="p">)</span>
+                    <span class="n">login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">csession</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webclient_authenticated_uid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># set a nonce to prevent the webclient from erasing the webclient_authenticated_uid value</span>
+            <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;webclient_authenticated_nonce&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">csession</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webclient_authenticated_nonce&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="p">)</span>
+            <span class="c1"># wrap around to prevent integer overflows</span>
+            <span class="k">if</span> <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;webclient_authenticated_nonce&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">32</span><span class="p">:</span>
+                <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;webclient_authenticated_nonce&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="middleware.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
