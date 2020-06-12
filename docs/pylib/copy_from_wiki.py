@@ -17,6 +17,7 @@ import glob
 import re
 
 _RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
+_RE_REF_LINK = re.compile(r"\[[\w -\[\]]+?\]\(.+?\)", re.I + re.S + re.U)
 
 _IGNORE_FILES = (
     "_Sidebar.md",
@@ -55,6 +56,16 @@ _CUSTOM_LINK_REMAP = {
     "Adding-Object-Typeclass-tutorial": "Adding-Object-Typeclass-Tutorial",
     "EvTable": _API_PREFIX + "evennia.utils#module-evennia.utils.evtable",
 }
+# complete reference remaps
+_REF_REMAP = {
+    "[![Getting Started][icon_new]](Getting-Started)": "![Getting Started][icon_new]",
+    "[![Admin Docs][icon_admin]](Administrative-Docs)": "![Admin Docs][icon_admin]",
+    "[![Builder Docs][icon_builder]](Builder-Docs)": "![Builder Docs][icon_builder]",
+    "[![Developer-Central][icon_devel]](Developer-Central)": "![Developer-Central][icon_devel]",
+    "[![tutorial][icon_tutorial]](Tutorials)": "![Tutorials][icon_tutorial]",
+    "[![API][icon_api]](evennia)": "![API][icon_api]",
+}
+
 
 # absolute links (mainly github links) that should not be converted. This
 # should be given without any #anchor.
@@ -82,6 +93,17 @@ _REF_SKIP = (
 
 _CURRENT_TITLE = ""
 
+
+def _sub_remap(match):
+    """Total remaps"""
+    ref = match.group(0)
+    if ref in _REF_REMAP:
+        new_ref = _REF_REMAP[ref]
+        print(f" Replacing reference {ref} -> {new_ref}")
+        return new_ref
+    return ref
+
+
 def _sub_link(match):
 
     mdict = match.groupdict()
@@ -91,6 +113,7 @@ def _sub_link(match):
     #     # the 'comment' is not supported by Mkdocs
     #     return ""
     print(f" [{txt}]({url})")
+
 
     url = _CUSTOM_LINK_REMAP.get(url, url)
 
@@ -168,6 +191,9 @@ def create_toctree(files):
             ref = filename.rsplit(".", 1)[0]
             linkname = ref.replace("-", " ")
 
+            if ref == "Home":
+                ref = "index"
+
             fil.write(f"\n* [{linkname}]({ref}.md)")
 
 def convert_links(files, outdir):
@@ -186,6 +212,7 @@ def convert_links(files, outdir):
         with open(inpath) as fil:
             text = fil.read()
             _CURRENT_TITLE = title.replace(" ", "-")
+            text = _RE_REF_LINK.sub(_sub_remap, text)
             text = _RE_MD_LINK.sub(_sub_link, text)
             text = text.split('\n')[1:] if text.split('\n')[0].strip().startswith('[]') else text.split('\n')
             text = f"# {title}\n\n" + '\n'.join(text)

@@ -163,9 +163,11 @@ def url_resolver(url):
     elif url.startswith(urlstart):
         return _github_code_root + url[len(urlstart):]
     elif url.startswith(apistart):
+        print("api: -> api ref")
         return "api/" + url[len(apistart):] + ".html"
-    else:
-        return _github_doc_root + url
+    return url
+    # else:
+    #     return _github_doc_root + url
 
 
 # auto-create TOCs if a list of links is under these headers

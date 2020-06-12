@@ -11,7 +11,8 @@ suggestion box][form]!
 There is [a lengthier introduction](Evennia-Introduction) to read. You might also want to read about
 [how to get and give help](How-To-Get-And-Give-Help).
 
-| [![Getting Started][icon_new]](Getting-Started)| [![Admin Docs][icon_admin]](Administrative-Docs) | [![Builder Docs][icon_builder]](Builder-Docs) | [![Developer-Central][icon_devel]](Developer-Central) | [![tutorial][icon_tutorial]](Tutorials) | [![API][icon_API]](api:evennia) |
+
+| ![Getting Started][icon_new]| ![Admin Docs][icon_admin] | ![Builder Docs][icon_builder] | ![Developer-Central][icon_devel] | ![Tutorials][icon_tutorial] | [![API][icon_API]](api:evennia) |
 |-----------------|----------------------|--------------------------|----------------------|----------------------------|--------------------|
 |[Getting Started](Getting-Started)| [Admin Docs](Administrative-Docs) | [Builder Docs](Builder-Docs) | [Developer Central](Developer-Central) | [Tutorials & Examples](Tutorials) | [API](api:evennia) |
 

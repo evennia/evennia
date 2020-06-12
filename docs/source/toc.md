@@ -69,7 +69,7 @@
 * [HAProxy Config (Optional)](HAProxy-Config-(Optional).md)
 * [Help System Tutorial](Help-System-Tutorial.md)
 * [Help System](Help-System.md)
-* [Home](Home.md)
+* [Home](index.md)
 * [How To Get And Give Help](How-To-Get-And-Give-Help.md)
 * [How to connect Evennia to Twitter](How-to-connect-Evennia-to-Twitter.md)
 * [IRC](IRC.md)
