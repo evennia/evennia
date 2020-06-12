@@ -1,15 +1,13 @@
-
-
-
 # VERSION WARNING
 
-> This is the experimental static v0.9 documentation of Evennia, _automatically_ generated from the 
-> [evennia wiki](https://github.com/evennia/evennia/wiki/) at 2020-06-12 22:36:53.868703.
-> There are known conversion issues which  will _not_ be addressed in this version - refer to 
-> the original wiki if you have trouble.
->
-> Manual conversion and cleanup will instead happen during development of the upcoming v1.0
-> version of this static documentation. 
+> This is the _experimental_ and _unstable_ documentation for the
+> development branch of Evennia (v1.0-dev). It's based on converted docs
+> from the [evennia wiki](https://github.com/evennia/evennia/wiki/) at
+> 2020-06-12 22:36:53.  There are known conversion issues. This will
+> slowly be ironed out as this is developed. 
+
+> For now you are best off using the original wiki, or the less changing v0.9.1
+> of these docs. You have been warned.
 
 # Evennia Documentation
 
@@ -21,10 +19,6 @@ suggestion box][form]!
 
 There is [a lengthier introduction](Evennia-Introduction) to read. You might also want to read about
 [how to get and give help](How-To-Get-And-Give-Help).
-
-| ![Getting Started][icon_new]| ![Admin Docs][icon_admin] | ![Builder Docs][icon_builder] | ![Developer-Central][icon_devel] | ![Tutorials][icon_tutorial] | [![API][icon_API]](api:evennia) |
-
-|[Getting Started](Getting-Started)| [Admin Docs](Administrative-Docs) | [Builder Docs](Builder-Docs) | [Developer Central](Developer-Central) | [Tutorials & Examples](Tutorials) | [API](api:evennia) |
 
 - The [Getting Started](Getting-Started) page helps installing and starting Evennia for the first time.
 - The [Admin Docs](Administrative-Docs) covers running and maintaining an Evennia server.
